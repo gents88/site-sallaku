@@ -398,6 +398,24 @@ img {
 }
 
 .hero-bg-grid {
+
+/* WIP banner style (inserted dynamically in index.html) */
+.wip-banner {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg,#ffd54a,#ffb84d);
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    z-index: 1200;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+/* Honeypot hidden field */
+.hp-field { display: none !important; }
     position: absolute;
     inset: 0;
     background-image: 

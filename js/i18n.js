@@ -26,6 +26,26 @@ const i18n = {
             'hero.stat.years': 'Anni di esperienza',
             'hero.stat.companies': 'Aziende enterprise',
             'hero.stat.projects': 'Progetti completati',
+            'hero.tag.1': 'Angular',
+            'hero.tag.2': 'Web Applications',
+            'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
+            'hero.scroll': 'Scorri',
+
+            // Banner / accessibility
+            'banner.wip': 'Sito in costruzione — Work in progress',
+            'skip.link': 'Vai al contenuto principale',
+
+            // Contact cards
+            'contact.card.email.title': 'Email',
+            'contact.card.email.desc': 'gentsallaku@email.com',
+            'contact.card.phone.title': 'Telefono',
+            'contact.card.phone.desc': '+39 389235229',
+            'contact.card.pec.title': 'PEC',
+            'contact.card.pec.desc': 'gent.sallaku@pec.it',
+            'contact.card.linkedin.title': 'LinkedIn',
+            'contact.card.linkedin.desc': '/in/gent-sallaku',
+            'contact.card.github.title': 'GitHub',
+            'contact.card.github.desc': '/gentsallaku',
 
             // About
             'about.tag': '&lt;about&gt;',
@@ -50,6 +70,7 @@ const i18n = {
 
             // Projects
             'projects.tag': '&lt;projects&gt;',
+            'projects.lead': 'Una panoramica più ampia dei lavori svolti in ambito enterprise: visualizzazione geospaziale, dashboard analitiche, librarie digitali e piattaforme assicurative con attenzione a UX, performance e integrazione API.',
             'projects.title.1': 'Progetti ',
             'projects.title.2': 'Chiave',
             'projects.geo.title': 'Visualizzazione 3D Geospaziale',
@@ -83,6 +104,10 @@ const i18n = {
             'projects.ins.f3': 'Integrazione con servizi esterni',
             'projects.ins.f4': 'Audit trail e sicurezza dati',
 
+            // Projects page CTA
+            'projects.cta.ask.title': 'Vuoi parlarne?',
+            'projects.cta.ask.desc': 'Se stai cercando uno sviluppo web enterprise o una consulenza su API, Angular, .NET o Django, puoi contattarmi direttamente dalla homepage.',
+
             'faq.tag': '&lt;faq&gt;',
             'faq.title.1': 'Domande ',
             'faq.title.2': 'Frequenti',
@@ -111,7 +136,7 @@ const i18n = {
 
             'exp.1.title': 'Architettura Angular & 3D Web Enterprise',
             'exp.1.role': 'Senior Front-End Developer · ',
-            'exp.1.desc': 'Guida tecnica su progetti enterprise nei settori aerospace e defence. Architettura Angular avanzata con moduli scalabili, visualizzazione 3D geospaziale con Cesium.js, mentoring del team front-end e definizione di standard di sviluppo.',
+            'exp.1.desc': 'Guida tecnica su progetti enterprise nei settori aerospace e defence. Architettura Angular avanzata con moduli scalabili, visualizzazione 3D geospaziale con Cesium.js',
             'exp.2.title': 'Piattaforme Digitali & Data Visualization',
             'exp.2.role': 'Front-End Developer · Specialista Data Viz',
             'exp.2.desc': 'Sviluppo di piattaforme digitali innovative nel settore telco e media. Dashboard analitiche con Looker Embedded, virtual tour immersivi con Photo Sphere Viewer, integrazione API complesse e focus su performance e UX.',
@@ -144,6 +169,21 @@ const i18n = {
             'contact.title.2': 'Progetto',
             'contact.subtitle': '....',
 
+            // Services
+            'services.tag': '&lt;services&gt;',
+            'services.title': 'Servizi di sviluppo web e API',
+            'services.lead': 'Progetto e sviluppo soluzioni enterprise per banking, telco, aerospace e insurance. Lavoro su interfacce Angular, backend .NET e Django, API REST, data visualization e web experience interattive.',
+            'services.web.title': 'Sviluppo Web Enterprise',
+            'services.web.desc': 'Architetture frontend scalabili, UI moderne, componenti riutilizzabili e attenzione costante a performance e manutenzione del codice.',
+            'services.api.title': 'Sviluppo API',
+            'services.api.desc': 'Progettazione e integrazione di API REST per applicazioni enterprise, con focus su sicurezza, chiarezza dei contratti e affidabilità.',
+            'services.dataviz.title': 'Data Visualization',
+            'services.dataviz.desc': 'Dashboard, KPI e visualizzazioni complesse per trasformare i dati in strumenti operativi utili ai decision maker.',
+            'services.threed.title': '3D Web & Interactive UI',
+            'services.threed.desc': 'Esperienze web immersive con Cesium.js, WebGL e interfacce interattive ottimizzate per mobile e desktop.',
+            'services.cta.contact': 'Contatti',
+            'services.cta.projects': 'Case Study',
+
             // Footer
             'footer.text': 'Progettato & Sviluppato da',
             'footer.highlight': 'Gent Sallaku',
@@ -167,6 +207,26 @@ const i18n = {
             'hero.stat.years': 'Years of experience',
             'hero.stat.companies': 'Enterprise companies',
             'hero.stat.projects': 'Completed projects',
+            'hero.tag.1': 'Angular',
+            'hero.tag.2': 'Web Applications',
+            'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
+            'hero.scroll': 'Scroll',
+
+            // Banner / accessibility
+            'banner.wip': 'Site under construction — Work in progress',
+            'skip.link': 'Skip to main content',
+
+            // Contact cards
+            'contact.card.email.title': 'Email',
+            'contact.card.email.desc': 'gentsallaku@email.com',
+            'contact.card.phone.title': 'Phone',
+            'contact.card.phone.desc': '+39 389235229',
+            'contact.card.pec.title': 'PEC',
+            'contact.card.pec.desc': 'gent.sallaku@pec.it',
+            'contact.card.linkedin.title': 'LinkedIn',
+            'contact.card.linkedin.desc': '/in/gent-sallaku',
+            'contact.card.github.title': 'GitHub',
+            'contact.card.github.desc': '/gentsallaku',
 
             'about.tag': '&lt;about&gt;',
             'about.title.1': 'About ',
@@ -188,6 +248,7 @@ const i18n = {
             'tech.cat.devops': 'DevOps & Tools',
 
             'projects.tag': '&lt;projects&gt;',
+            'projects.lead': 'A broader overview of work done in the enterprise space: geospatial visualization, analytical dashboards, digital library platforms and insurance platforms, with focus on UX, performance and API integration.',
             'projects.title.1': 'Key ',
             'projects.title.2': 'Projects',
             'projects.geo.title': '3D Geospatial Visualization',
@@ -279,6 +340,21 @@ const i18n = {
             'contact.title.2': 'Project',
             'contact.subtitle': '....',
 
+            // Services
+            'services.tag': '&lt;services&gt;',
+            'services.title': 'Web & API Development Services',
+            'services.lead': 'I design and build enterprise solutions for banking, telco, aerospace and insurance. I work on Angular frontends, .NET/Django backends, REST APIs, data visualization and interactive web experiences.',
+            'services.web.title': 'Enterprise Web Development',
+            'services.web.desc': 'Scalable frontend architectures, modern UIs, reusable components and strong focus on performance and maintainability.',
+            'services.api.title': 'API Development',
+            'services.api.desc': 'Design and integration of REST APIs for enterprise applications, focusing on security, clear contracts and reliability.',
+            'services.dataviz.title': 'Data Visualization',
+            'services.dataviz.desc': 'Dashboards, KPIs and complex visualizations to turn data into actionable tools for decision makers.',
+            'services.threed.title': '3D Web & Interactive UI',
+            'services.threed.desc': 'Immersive web experiences with Cesium.js, WebGL and interactive UIs optimized for mobile and desktop.',
+            'services.cta.contact': 'Contact',
+            'services.cta.projects': 'Case Studies',
+
             'footer.text': 'Designed & Developed by',
             'footer.highlight': 'Gent Sallaku',
         },
@@ -295,12 +371,32 @@ const i18n = {
 
             'hero.badge': 'I disponueshëm për projekte enterprise',
             'hero.role': 'Senior Front-End Developer',
-                'hero.description': 'Kam lindur ne Blinisht, ne zonen e Zadrimes, nje fshat i vogel ne veriperendim te Shqiperise, i rrethuar nga kodra, male dhe bregdeti Adriatik. Te rritesh me kater vellezer e beri femijerine time te gjalle dhe formuese, te karakterizuar nga bashkepunimi, kreativiteti dhe nje ndjenje e forte komuniteti. Pas Revoltes shqiptare te vitit 1997, iu bashkova Shoqates Ambasadoret e Paqes, duke kontribuar ne aktivitetet e cminimit dhe ne mbeshtetjen e komuniteteve te prekura. Kjo pervoje forcoi tek une qendresen, pergjegjesine dhe shpirtin e sherbimit. Ne boten e informatikes hodha hapat e pare qe ne vitin 2005, duke programuar aplikacione te vogla dhe duke ndertuar, me kalimin e kohes, nje rrugetim te mbeshtetur nga studimi dhe pervoja te ndryshme pune qe forcuan aftesite e mia teknike. Sot jetoj ne Torino, pas shume vitesh te kaluara ne Milano. Qe nga viti 2018 projektoj dhe zhvilloj nderfaqe enterprise dhe aplikacione me performance te larte ne sektoret bankar, telekomunikacion dhe hapesinor. Me nje sfond full-stack .NET, sot jam i specializuar ne arkitektura te shkallezueshme te bazuara ne Angular dhe JavaScript, duke shfrytezuar librari te ndryshme per te krijuar aplikacione moderne, interaktive dhe te orientuara nga te dhenat, me fokus te vecante te data visualization dhe 3D web.',
+            'hero.description': 'Kam lindur ne Blinisht, ne zonen e Zadrimes, nje fshat i vogel ne veriperendim te Shqiperise, i rrethuar nga kodra, male dhe bregdeti Adriatik. Te rritesh me kater vellezer e beri femijerine time te gjalle dhe formuese, te karakterizuar nga bashkepunimi, kreativiteti dhe nje ndjenje e forte komuniteti. Pas Revoltes shqiptare te vitit 1997, iu bashkova Shoqates Ambasadoret e Paqes, duke kontribuar ne aktivitetet e ndryshme dhe ne mbeshtetjen e komuniteteve te prekura. Kjo pervoje forcoi tek une qendresen, pergjegjesine dhe shpirtin e sherbimit. Ne boten e informatikes hodha hapat e pare qe ne vitin 2005, duke programuar aplikacione te vogla dhe duke ndertuar, me kalimin e kohes, nje rrugetim te mbeshtetur nga studimi dhe pervoja te ndryshme pune qe forcuan aftesite e mia teknike. Sot jetoj ne Torino, pas shume vitesh te kaluara ne Milano. Qe nga viti 2018 projektoj dhe zhvilloj nderfaqe enterprise dhe aplikacione me performance te larte ne sektoret bankar, telekomunikacion dhe hapesinor. Me nje sfond full-stack .NET, sot jam i specializuar ne arkitektura te shkallezueshme te bazuara ne Angular dhe JavaScript, duke shfrytezuar librari te ndryshme per te krijuar aplikacione moderne, interaktive dhe te orientuara nga te dhenat, me fokus te vecante te data visualization dhe 3D web.',
             'hero.cta.projects': 'Projekte',
             'hero.cta.contact': 'Kontakt',
             'hero.stat.years': 'Vite përvojë',
             'hero.stat.companies': 'Kompani enterprise',
             'hero.stat.projects': 'Projekte të përfunduara',
+            'hero.tag.1': 'Angular',
+            'hero.tag.2': 'Aplikacione Web',
+            'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
+            'hero.scroll': 'Shkruaj',
+
+            // Banner / accessibility
+            'banner.wip': 'Faqja në ndërtim — Work in progress',
+            'skip.link': 'Shko te përmbajtja kryesore',
+
+            // Contact cards
+            'contact.card.email.title': 'Email',
+            'contact.card.email.desc': 'gentsallaku@email.com',
+            'contact.card.phone.title': 'Telefon',
+            'contact.card.phone.desc': '+39 389235229',
+            'contact.card.pec.title': 'PEC',
+            'contact.card.pec.desc': 'gent.sallaku@pec.it',
+            'contact.card.linkedin.title': 'LinkedIn',
+            'contact.card.linkedin.desc': '/in/gent-sallaku',
+            'contact.card.github.title': 'GitHub',
+            'contact.card.github.desc': '/gentsallaku',
 
             'about.tag': '&lt;about&gt;',
             'about.title.1': 'Rreth ',
@@ -322,6 +418,7 @@ const i18n = {
             'tech.cat.devops': 'DevOps & Tools',
 
             'projects.tag': '&lt;projects&gt;',
+            'projects.lead': 'Një përmbledhje më e gjerë e punëve në fushën enterprise: vizualizim gjeohapësinor, dashboard analitike, platforma biblioteka digjitale dhe platforma sigurimesh, me fokus në UX, performancë dhe integrim API.',
             'projects.title.1': 'Projekte ',
             'projects.title.2': 'Kryesore',
             'projects.geo.title': 'Vizualizim 3D Gjeohapësinor',
@@ -413,8 +510,26 @@ const i18n = {
             'contact.title.2': 'Projektin tënd',
             'contact.subtitle': '....',
 
+            // Services
+            'services.tag': '&lt;services&gt;',
+            'services.title': 'Shërbime zhvillimi web dhe API',
+            'services.lead': 'Projektim dhe zhvillim zgjidhjesh enterprise për banking, telco, aerospace dhe insurance.',
+            'services.web.title': 'Zhvillim Web Enterprise',
+            'services.web.desc': 'Arkitektura frontend të shkallëzueshme, UI moderne, komponentë të ripërdorshëm dhe fokus i vazhdueshëm në performancë dhe mirëmbajtje të kodit.',
+            'services.api.title': 'Zhvillim API',
+            'services.api.desc': 'Projektim dhe integrim API REST për aplikacione enterprise, me fokus në siguri, qartësi kontraktesh dhe besueshmëri.',
+            'services.dataviz.title': 'Data Visualization',
+            'services.dataviz.desc': 'Dashboard, KPI dhe vizualizime komplekse për të kthyer të dhënat në mjete operacionale për vendimmarrësit.',
+            'services.threed.title': '3D Web & UI Interaktive',
+            'services.threed.desc': 'Eksperienca web imersive me Cesium.js, WebGL dhe ndërfaqe interaktive të optimizuara për mobile dhe desktop.',
+                'services.cta.contact': 'Kontakt',
+                'services.cta.projects': 'Case Study',
+
             'footer.text': 'Projektuar & Zhvilluar nga',
             'footer.highlight': 'Gent Sallaku',
+                // Projects page CTA (sq)
+                'projects.cta.ask.title': 'Doni të flasim?',
+                'projects.cta.ask.desc': 'Nëse po kërkoni zhvillim web enterprise ose konsultim për API, Angular, .NET ose Django, mund të më kontaktoni drejtpërdrejt nga faqja kryesore.',
         }
     },
 
