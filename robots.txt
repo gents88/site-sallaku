@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Replace the placeholder domain below with the final production domain before publishing.
+Sitemap: https://gentsallaku.it/sitemap.xml
