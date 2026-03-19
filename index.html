@@ -222,7 +222,7 @@
             <h1 class="hero-name animate-fade-up delay-1">
                 Gent <span class="text-gradient">Sallaku</span>
             </h1>
-            <h2 class="hero-role animate-fade-up delay-2">UI Angular të mirëmbajtshme dhe të shkallëzueshme për kontekste enterprise</h2>
+            <h2 class="hero-role animate-fade-up delay-2" data-i18n="hero.heading"></h2>
             <div class="hero-tagline animate-fade-up delay-3">
                 <span class="tag" data-i18n="hero.tag.1">Angular</span>
                 <span class="tag-separator">|</span>
@@ -231,6 +231,7 @@
                 <span class="tag" data-i18n="hero.tag.3">UI/UX & Data Visualization 3D Web</span>
             </div>
             <p class="hero-description animate-fade-up delay-4" data-i18n="hero.short"></p>
+            <!--
             <div class="hero-cta animate-fade-up delay-5">
                 <a href="#contact" class="btn btn-primary primary-cta" data-i18n-attr="aria-label:cta.review">
                     <i class="fas fa-search" aria-hidden="true"></i> <span data-i18n="cta.review">Richiedi una review architetturale</span>
@@ -242,6 +243,7 @@
                     <i class="fas fa-clock" aria-hidden="true"></i> <span data-i18n="cta.consult">Avvia una consulenza tecnica (15 min)</span>
                 </a>
             </div>
+            -->
 
             <!-- KPI strip: concise metrics for quick credibility -->
             <div class="hero-kpis animate-fade-up delay-5">
@@ -321,8 +323,24 @@
                 <h2 class="section-title" data-i18n-title="about.title">Chi <span class="text-gradient">Sono</span></h2>
                 <div class="section-line"></div>
             </div>
-            <div class="about-intro reveal" data-i18n-html="true" data-i18n="about.intro" style="margin-bottom:18px;"></div>
-            <div class="about-grid">
+            <div class="about-intro reveal about-bio" style="margin-bottom:18px;">
+                <div class="about-photo reveal" style="margin-bottom:12px;max-width:240px;">
+                    <figure>
+                        <img src="public/assets/profil.jpeg" alt="Gent Sallaku" class="profile-photo" style="width:220px;height:auto;border-radius:8px;object-fit:cover;display:block;margin:0 auto;">
+                        <figcaption class="photo-caption" style="text-align:center;margin-top:8px;font-size:0.95rem;color:var(--muted)">
+                            <div><strong>Gent Sallaku</strong> — <span data-i18n="hero.role">Senior Front‑End Developer</span></div>
+                            <small style="display:block;margin-top:6px;color:var(--muted);font-size:0.85rem;" data-i18n="about.birth">Nato a Blinisht-Lezhe (Albania) il 25/04/1988</small>
+                        </figcaption>
+                    </figure>
+                </div>
+                <div data-i18n-html="true" data-i18n="about.intro"></div>
+
+                <div class="bio-actions" style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+                    <a href="#projects" class="btn btn-outline" data-i18n="projects.cta.ask.title">Vuoi parlarne?</a>
+                    <a href="#contact" class="btn btn-primary" data-i18n="contact.form.submit">Contattami</a>
+                </div>
+            </div>
+            <div class="about-grid" style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;">
                 <div class="about-text reveal">
                     <div class="about-card glass-card">
                         <div class="about-icon-wrapper">
@@ -887,19 +905,47 @@
             </div>
             <div class="faq-grid">
                 <details class="faq-item glass-card reveal">
-                    <summary data-i18n="faq.q1">Di cosa ti occupi principalmente?</summary>
+                    <summary>
+                        <span class="faq-label" data-i18n="faq.q1">Di cosa ti occupi principalmente?</span>
+                        <span class="faq-chevron" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                    </summary>
                     <p data-i18n="faq.a1">Mi occupo di sviluppo web enterprise, interfacce Angular, API REST, data visualization e applicazioni 3D web.</p>
                 </details>
                 <details class="faq-item glass-card reveal">
-                    <summary data-i18n="faq.q2">Lavori anche su backend?</summary>
+                    <summary>
+                        <span class="faq-label" data-i18n="faq.q2">Lavori anche su backend?</span>
+                        <span class="faq-chevron" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                    </summary>
                     <p data-i18n="faq.a2">Sì, ho esperienza anche su .NET, Django, Python e integrazione di servizi API.</p>
                 </details>
                 <details class="faq-item glass-card reveal">
-                    <summary data-i18n="faq.q3">Sei disponibile per progetti da remoto o ibridi?</summary>
+                    <summary>
+                        <span class="faq-label" data-i18n="faq.q3">Sei disponibile per progetti da remoto o ibridi?</span>
+                        <span class="faq-chevron" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                    </summary>
                     <p data-i18n="faq.a3">Sì, posso lavorare da remoto o in modalità ibrida a seconda delle esigenze del progetto.</p>
                 </details>
                 <details class="faq-item glass-card reveal">
-                    <summary data-i18n="faq.q4">Come posso contattarti?</summary>
+                    <summary>
+                        <span class="faq-label" data-i18n="faq.q4">Come posso contattarti?</span>
+                        <span class="faq-chevron" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </span>
+                    </summary>
                     <p data-i18n="faq.a4">Puoi scrivermi via email, PEC, chiamarmi o contattarmi su WhatsApp usando i riferimenti nella sezione contatti.</p>
                 </details>
             </div>

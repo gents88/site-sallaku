@@ -414,6 +414,64 @@ img {
     box-shadow: 0 6px 20px rgba(0,0,0,0.35);
 }
 
+/* FAQ improvements: make summary clearly clickable with chevron */
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+.faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-radius: 8px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+    display: none;
+}
+.faq-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 12px;
+    color: var(--text-secondary);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+    flex-shrink: 0;
+}
+.faq-chevron svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    color: inherit;
+}
+details[open] .faq-chevron {
+    transform: rotate(180deg);
+    color: var(--primary-400);
+}
+.faq-label {
+    flex: 1 1 auto;
+}
+.faq-item p {
+    padding: 0 18px 18px 18px;
+    color: var(--text-secondary);
+}
+.faq-item:hover summary {
+    background: rgba(79, 106, 245, 0.03);
+}
+.faq-item summary:focus {
+    outline: 2px solid rgba(79,106,245,0.18);
+    outline-offset: 4px;
+}
+
 /* Honeypot hidden field */
 .hp-field { display: none !important; }
     position: absolute;

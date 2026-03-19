@@ -33,6 +33,7 @@ const i18n = {
 
             // Short hero / positioning
             'hero.short': 'Angular, JavaScript e TypeScript con RxJS — architetture modulari orientate a performance prevedibili e gestione reattiva dello stato. Integrazione di librerie JavaScript per data visualization e interfacce avanzate, con strategie di code splitting, lazy loading e telemetry per osservabilità e ottimizzazione runtime.',
+            'hero.heading': 'Interfacce Angular manutenibili e scalabili per contesti enterprise',
             'cta.review': 'Richiedi una review architetturale',
             'cta.demo': 'Mostrami i tuoi dati — prenota una demo',
             'cta.consult': 'Avvia una consulenza tecnica (15 min)',
@@ -74,6 +75,7 @@ const i18n = {
             'about.lead.title': 'Leadership & Mentoring',
             'about.lead.desc': 'Guida tecnica di team front-end, definizione di best practice, code review strutturate e sessioni di mentoring. Costruisco team autonomi e competenti, promuovendo una cultura di qualità del codice.',
             'about.intro': '<p>Sono Gent Sallaku, Senior Front‑End & API Developer con oltre otto anni di esperienza nella progettazione e realizzazione di interfacce enterprise ad alte prestazioni. Mi occupo di architetture Angular scalabili, ottimizzazione delle performance, data visualization e soluzioni 3D per applicazioni realtime. Ho guidato refactor e iniziative di observability in contesti banking, telco e aerospace, riducendo la latenza e aumentando l\'affidabilità operativa.</p><p>Offro consulenza tecnica, code review e mentoring: trasformo requisiti complessi in soluzioni manutenibili, sicure e misurabili. Lavoro a stretto contatto con product team e ingegneri backend per mettere in produzione componenti che resistono al carico e facilitano decisioni operative basate sui dati.</p>',
+            'about.birth': 'Nato a Blinisht-Lezhe (Albania) il 25/04/1988',
             'hero.stat.latency': 'Riduzione latenza (tipica)',
 
             // Tech Stack
@@ -232,6 +234,7 @@ const i18n = {
 
             // Short hero / positioning
             'hero.short': 'Angular, JavaScript and TypeScript with RxJS — modular architectures focused on predictable performance and reactive state management. Integration of JavaScript libraries for data visualization and advanced interfaces, with code-splitting strategies, lazy loading and telemetry for observability and runtime optimization.',
+            'hero.heading': 'Maintainable, scalable Angular UIs for enterprise contexts',
             'cta.review': 'Request an architecture review',
             'cta.demo': 'Show me your data — book a demo',
             'cta.consult': 'Start a technical consultation (15 min)',
@@ -272,6 +275,7 @@ const i18n = {
             'about.lead.title': 'Leadership & Mentoring',
             'about.lead.desc': 'Technical leadership of front-end teams, defining best practices, structured code reviews, and mentoring sessions. I build autonomous and skilled teams, promoting a culture of code quality.',
             'about.intro': '<p>I\'m Gent Sallaku, a Senior Front‑End & API Developer with over eight years of experience designing and delivering high-performance enterprise interfaces. I focus on scalable Angular architectures, performance optimization, data visualization, and 3D solutions for realtime applications. I have led refactors and observability initiatives in banking, telco and aerospace contexts, reducing latency and improving operational reliability.</p><p>I offer technical consulting, code reviews and mentoring: I turn complex requirements into maintainable, secure and measurable solutions. I work closely with product teams and backend engineers to ship components that withstand load and enable data-driven operational decisions.</p>',
+            'about.birth': 'Born in Blinisht-Lezhe (Albania) on 25/04/1988',
             'hero.stat.latency': 'Typical latency reduction',
 
             'tech.tag': '&lt;tech-stack&gt;',
@@ -334,7 +338,7 @@ const i18n = {
             'contact.form.name': 'Full name',
             'contact.form.email': 'Email',
             'contact.form.message': 'Message',
-            'contact.form.submit': 'Send via Email',
+            'contact.form.submit': 'Send by Email',
             'contact.form.note': 'The form opens your email client with the message prefilled. Automatic sending requires a server endpoint.',
 
             'exp.tag': '&lt;experience&gt;',
@@ -420,6 +424,7 @@ const i18n = {
 
             // Short hero / positioning
             'hero.short': 'Angular, JavaScript dhe TypeScript me RxJS — arkitektura modulare të orientuara drejt performancës së parashikueshme dhe menaxhimit reaktiv të gjendjes. Integrimi i bibliotekave JavaScript për vizualizimin e të dhënave dhe ndërfaqe të avancuara, me strategji për ndarjen e kodit (code-splitting), lazy loading dhe telemetry për vëzhgueshmëri dhe optimizim në kohë të ekzekutimit.',
+            'hero.heading': 'UI Angular të mirëmbajtshme dhe të shkallëzueshme për kontekste enterprise',
             'cta.review': 'Kërko një rishikim arkitekturor',
             'cta.demo': 'Trego të dhënat tuaja — rezervoni një demo',
             'cta.consult': 'Nisni një konsultë teknike (15 min)',
@@ -460,6 +465,7 @@ const i18n = {
             'about.lead.title': 'Lidershipi & Mentorimi',
             'about.lead.desc': 'Udhëheqje teknike e ekipeve front-end, përcaktimi i best practice, code review të strukturuara dhe sesione mentorimi. Ndërtoj ekipe autonome dhe kompetente, duke promovuar një kulturë të cilësisë së kodit.',
             'about.intro': '<p>Unë jam Gent Sallaku, Senior Front‑End & API Developer me mbi tetë vjet eksperiencë në projektimin dhe realizimin e ndërfaqeve enterprise me performancë të lartë. Merren me arkitektura Angular të shkallëzueshme, optimizimin e performancës, data visualization dhe zgjidhje 3D për aplikacione realtime. Kam udhëhequr refaktorime dhe iniciativa observability në sektorë si banking, telco dhe aerospace, duke ulur latencën dhe rritur besueshmërinë operative.</p><p>Ofroj konsulencë teknike, code review dhe mentoring: transformoj kërkesa komplekse në zgjidhje të mirëmbajtshme, të sigurta dhe të matshme. Bashkëpunoj ngushtë me product team dhe inxhinierë backend për të vënë në prodhim komponentë që përballojnë ngarkesën dhe lehtësojnë vendimmarrjen operacionale të bazuar në të dhëna.</p>',
+            'about.birth': 'Lindur në Blinisht-Lezhe (Shqipëri) më 25/04/1988',
             'hero.stat.latency': 'Reduktim tipik i latencës',
 
             'tech.tag': '&lt;tech-stack&gt;',
