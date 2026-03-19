@@ -20,16 +20,16 @@
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Vai al contenuto principale</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip.link">Vai al contenuto principale</a>
     <nav class="navbar scrolled" id="navbar">
         <div class="nav-container">
             <a href="index.html#hero" class="nav-logo"><span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span></a>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html#about" class="nav-link">About</a></li>
-                <li><a href="index.html#projects" class="nav-link">Progetti</a></li>
-                <li><a href="services.html" class="nav-link">Servizi</a></li>
-                <li><a href="projects.html" class="nav-link active">Case Study</a></li>
-                <li><a href="index.html#contact" class="nav-link">Contatti</a></li>
+                <li><a href="index.html#about" class="nav-link" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#projects" class="nav-link" data-i18n="nav.projects">Progetti</a></li>
+                <li><a href="services.html" class="nav-link" data-i18n="nav.services">Servizi</a></li>
+                <li><a href="projects.html" class="nav-link active" data-i18n="nav.projects">Case Study</a></li>
+                <li><a href="index.html#contact" class="nav-link" data-i18n="nav.contact">Contatti</a></li>
             </ul>
             <div class="nav-right">
                 <div class="lang-switcher" id="langSwitcher">
@@ -51,40 +51,40 @@
     <main id="main-content" class="page-shell">
         <div class="container">
             <section class="page-hero reveal">
-                <span class="section-tag">&lt;projects&gt;</span>
-                <h1>Case study e progetti principali</h1>
-                <p>Una panoramica più ampia dei lavori svolti in ambito enterprise: visualizzazione geospaziale, dashboard analitiche, librarie digitali e piattaforme assicurative con attenzione a UX, performance e integrazione API.</p>
+                <span class="section-tag" data-i18n-html data-i18n="projects.tag"></span>
+                <h1 data-i18n-title="projects.title"></h1>
+                <p data-i18n="projects.lead">Una panoramica più ampia dei lavori svolti in ambito enterprise: visualizzazione geospaziale, dashboard analitiche, librarie digitali e piattaforme assicurative con attenzione a UX, performance e integrazione API.</p>
             </section>
 
             <section class="project-page-grid">
                 <article class="project-page-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-earth-europe"></i></div>
-                    <h3>Visualizzazione 3D Geospaziale</h3>
-                    <p>Gestione di dati geolocalizzati, rendering 3D, layer multipli e integrazione con servizi GIS enterprise su Cesium.js.</p>
+                    <h3 data-i18n="projects.geo.title">Visualizzazione 3D Geospaziale</h3>
+                    <p data-i18n="projects.geo.desc">Gestione di dati geolocalizzati, rendering 3D, layer multipli e integrazione con servizi GIS enterprise su Cesium.js.</p>
                 </article>
                 <article class="project-page-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-chart-pie"></i></div>
-                    <h3>Dashboard Analytics</h3>
-                    <p>Dashboard real-time con KPI, drill-down multi-livello e integrazione Looker Embedded per stakeholder diversi.</p>
+                    <h3 data-i18n="projects.dash.title">Dashboard Analytics</h3>
+                    <p data-i18n="projects.dash.desc">Dashboard real-time con KPI, drill-down multi-livello e integrazione Looker Embedded per stakeholder diversi.</p>
                 </article>
                 <article class="project-page-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-book-open"></i></div>
-                    <h3>Libraria</h3>
-                    <p>Piattaforma digitale per catalogo, prestiti, notifiche e gestione operativa di librerie e biblioteche.</p>
+                    <h3 data-i18n="projects.lib.title">Libraria</h3>
+                    <p data-i18n="projects.lib.desc">Piattaforma digitale per catalogo, prestiti, notifiche e gestione operativa di librerie e biblioteche.</p>
                 </article>
                 <article class="project-page-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-shield-halved"></i></div>
-                    <h3>Piattaforma Assicurativa</h3>
-                    <p>Workflow per polizze e sinistri, integrazione servizi esterni e attenzione a sicurezza e audit trail.</p>
+                    <h3 data-i18n="projects.ins.title">Piattaforma Assicurativa</h3>
+                    <p data-i18n="projects.ins.desc">Workflow per polizze e sinistri, integrazione servizi esterni e attenzione a sicurezza e audit trail.</p>
                 </article>
             </section>
 
             <section class="page-hero reveal" style="margin-top: 40px;">
-                <h2>Vuoi parlarne?</h2>
-                <p>Se stai cercando uno sviluppo web enterprise o una consulenza su API, Angular, .NET o Django, puoi contattarmi direttamente dalla homepage.</p>
+                <h2 data-i18n="projects.cta.ask.title">Vuoi parlarne?</h2>
+                <p data-i18n="projects.cta.ask.desc">Se stai cercando uno sviluppo web enterprise o una consulenza su API, Angular, .NET o Django, puoi contattarmi direttamente dalla homepage.</p>
                 <div class="hero-cta" style="margin-top: 24px;">
-                    <a href="index.html#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Contatti</a>
-                    <a href="services.html" class="btn btn-outline"><i class="fas fa-compass"></i> Servizi</a>
+                    <a href="index.html#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> <span data-i18n="services.cta.contact">Contatti</span></a>
+                    <a href="services.html" class="btn btn-outline"><i class="fas fa-compass"></i> <span data-i18n="services.cta.projects">Servizi</span></a>
                 </div>
             </section>
         </div>
@@ -94,7 +94,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo"><span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span></div>
-                <p class="footer-text"><span>Progettato &amp; Sviluppato da</span> <span class="text-gradient">Gent Sallaku</span></p>
+                <p class="footer-text"><span data-i18n="footer.text">Progettato &amp; Sviluppato da</span> <span class="text-gradient" data-i18n="footer.highlight">Gent Sallaku</span></p>
                 <p class="footer-copy">&copy; 2026 Gent Sallaku. All rights reserved.</p>
             </div>
         </div>

@@ -20,16 +20,16 @@
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Vai al contenuto principale</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip.link">Vai al contenuto principale</a>
     <nav class="navbar scrolled" id="navbar">
         <div class="nav-container">
             <a href="index.html#hero" class="nav-logo"><span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span></a>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="index.html#about" class="nav-link">About</a></li>
-                <li><a href="index.html#projects" class="nav-link">Progetti</a></li>
-                <li><a href="services.html" class="nav-link active">Servizi</a></li>
-                <li><a href="projects.html" class="nav-link">Case Study</a></li>
-                <li><a href="index.html#contact" class="nav-link">Contatti</a></li>
+                <li><a href="index.html#about" class="nav-link" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#projects" class="nav-link" data-i18n="nav.projects">Progetti</a></li>
+                <li><a href="services.html" class="nav-link active" data-i18n="nav.services">Servizi</a></li>
+                <li><a href="projects.html" class="nav-link" data-i18n="nav.projects">Case Study</a></li>
+                <li><a href="index.html#contact" class="nav-link" data-i18n="nav.contact">Contatti</a></li>
             </ul>
             <div class="nav-right">
                 <div class="lang-switcher" id="langSwitcher">
@@ -51,35 +51,35 @@
     <main id="main-content" class="page-shell">
         <div class="container">
             <section class="page-hero reveal">
-                <span class="section-tag">&lt;services&gt;</span>
-                <h1>Servizi di sviluppo web e API</h1>
-                <p>Progetto e sviluppo soluzioni enterprise per banking, telco, aerospace e insurance. Lavoro su interfacce Angular, backend .NET e Django, API REST, data visualization e web experience interattive.</p>
+                <span class="section-tag" data-i18n-html data-i18n="services.tag">&lt;services&gt;</span>
+                <h1 data-i18n="services.title">Servizi di sviluppo web e API</h1>
+                <p data-i18n="services.lead">Progetto e sviluppo soluzioni enterprise per banking, telco, aerospace e insurance. Lavoro su interfacce Angular, backend .NET e Django, API REST, data visualization e web experience interattive.</p>
                 <div class="hero-cta" style="margin-top: 24px;">
-                    <a href="index.html#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Contatti</a>
-                    <a href="projects.html" class="btn btn-outline"><i class="fas fa-folder-open"></i> Case Study</a>
+                    <a href="index.html#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> <span data-i18n="services.cta.contact">Contatti</span></a>
+                    <a href="projects.html" class="btn btn-outline"><i class="fas fa-folder-open"></i> <span data-i18n="services.cta.projects">Case Study</span></a>
                 </div>
             </section>
 
             <section class="service-grid">
                 <article class="service-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-code"></i></div>
-                    <h3>Sviluppo Web Enterprise</h3>
-                    <p>Architetture frontend scalabili, UI moderne, componenti riutilizzabili e attenzione costante a performance e manutenzione del codice.</p>
+                    <h3 data-i18n="services.web.title">Sviluppo Web Enterprise</h3>
+                    <p data-i18n="services.web.desc">Architetture frontend scalabili, UI moderne, componenti riutilizzabili e attenzione costante a performance e manutenzione del codice.</p>
                 </article>
                 <article class="service-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-diagram-project"></i></div>
-                    <h3>Sviluppo API</h3>
-                    <p>Progettazione e integrazione di API REST per applicazioni enterprise, con focus su sicurezza, chiarezza dei contratti e affidabilità.</p>
+                    <h3 data-i18n="services.api.title">Sviluppo API</h3>
+                    <p data-i18n="services.api.desc">Progettazione e integrazione di API REST per applicazioni enterprise, con focus su sicurezza, chiarezza dei contratti e affidabilità.</p>
                 </article>
                 <article class="service-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-chart-line"></i></div>
-                    <h3>Data Visualization</h3>
-                    <p>Dashboard, KPI e visualizzazioni complesse per trasformare i dati in strumenti operativi utili ai decision maker.</p>
+                    <h3 data-i18n="services.dataviz.title">Data Visualization</h3>
+                    <p data-i18n="services.dataviz.desc">Dashboard, KPI e visualizzazioni complesse per trasformare i dati in strumenti operativi utili ai decision maker.</p>
                 </article>
                 <article class="service-card glass-card reveal">
                     <div class="project-icon-3d"><i class="fas fa-cube"></i></div>
-                    <h3>3D Web & Interactive UI</h3>
-                    <p>Esperienze web immersive con Cesium.js, WebGL e interfacce interattive ottimizzate per mobile e desktop.</p>
+                    <h3 data-i18n="services.threed.title">3D Web & Interactive UI</h3>
+                    <p data-i18n="services.threed.desc">Esperienze web immersive con Cesium.js, WebGL e interfacce interattive ottimizzate per mobile e desktop.</p>
                 </article>
             </section>
         </div>
@@ -89,7 +89,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo"><span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span></div>
-                <p class="footer-text"><span>Progettato &amp; Sviluppato da</span> <span class="text-gradient">Gent Sallaku</span></p>
+                <p class="footer-text"><span data-i18n="footer.text">Progettato &amp; Sviluppato da</span> <span class="text-gradient" data-i18n="footer.highlight">Gent Sallaku</span></p>
                 <p class="footer-copy">&copy; 2026 Gent Sallaku. All rights reserved.</p>
             </div>
         </div>

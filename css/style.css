@@ -398,6 +398,82 @@ img {
 }
 
 .hero-bg-grid {
+
+/* WIP banner style (inserted dynamically in index.html) */
+.wip-banner {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg,#ffd54a,#ffb84d);
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    z-index: 1200;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+/* FAQ improvements: make summary clearly clickable with chevron */
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+.faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-radius: 8px;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+    display: none;
+}
+.faq-chevron {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 12px;
+    color: var(--text-secondary);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+    flex-shrink: 0;
+}
+.faq-chevron svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    color: inherit;
+}
+details[open] .faq-chevron {
+    transform: rotate(180deg);
+    color: var(--primary-400);
+}
+.faq-label {
+    flex: 1 1 auto;
+}
+.faq-item p {
+    padding: 0 18px 18px 18px;
+    color: var(--text-secondary);
+}
+.faq-item:hover summary {
+    background: rgba(79, 106, 245, 0.03);
+}
+.faq-item summary:focus {
+    outline: 2px solid rgba(79,106,245,0.18);
+    outline-offset: 4px;
+}
+
+/* Honeypot hidden field */
+.hp-field { display: none !important; }
     position: absolute;
     inset: 0;
     background-image: 
@@ -744,6 +820,97 @@ img {
     line-height: 1.7;
 }
 
+/* About Intro — bordered container for the About Me lead text */
+.about-intro {
+    padding: 20px 22px;
+    border: 1px solid var(--glass-border);
+    background: linear-gradient(180deg, rgba(20,26,46,0.6), rgba(15,20,36,0.55));
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Layout: place photo at left and summary/bio at right (responsive) */
+.about-intro {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+.about-photo {
+    flex: 0 0 240px;
+}
+.about-body {
+    flex: 1 1 auto;
+}
+
+@media (max-width: 900px) {
+    .about-intro {
+        flex-direction: column;
+        align-items: center;
+    }
+    .about-photo { order: 0; }
+    .about-body { order: 1; }
+    .about-body .about-summary { text-align: center; }
+}
+
+/* Hero KPI strip styling */
+.hero-kpis {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.hero-kpis .kpi {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 140px;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(79,106,245,0.06);
+    border-radius: 12px;
+    text-align: center;
+    flex-direction: column;
+    box-shadow: 0 4px 18px rgba(2,6,23,0.45);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.hero-kpis .kpi:hover { transform: translateY(-6px); box-shadow: var(--shadow-glow); }
+
+.kpi-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(79,106,245,0.14), rgba(139,92,246,0.08));
+    color: var(--primary-500);
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+}
+
+.kpi-number {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.kpi-plus { font-size:0.85rem; margin-left:4px; color:var(--accent-400); }
+
+.kpi-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .hero-kpis .kpi { min-width: 120px; padding: 10px; }
+    .kpi-number { font-size: 1.25rem; }
+}
+
 /* Code Window */
 .about-visual {
     position: sticky;
@@ -998,6 +1165,57 @@ img {
     color: var(--primary-400);
     border-radius: 4px;
     border: 1px solid rgba(79, 106, 245, 0.15);
+}
+
+/* ══════════════════════════════════════════
+   CASE STUDIES
+   Responsive grid and card styling for case studies
+   ══════════════════════════════════════════ */
+.case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.case-card {
+    padding: 22px;
+    border-radius: var(--radius-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+}
+
+.case-card h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.case-card p {
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.case-card strong {
+    color: var(--text-primary);
+}
+
+.case-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    border-color: var(--glass-border-hover);
+}
+
+@media (min-width: 1100px) {
+    .case-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 767px) {
+    .projects-grid, .about-grid { grid-template-columns: 1fr; }
 }
 
 .project-title {
