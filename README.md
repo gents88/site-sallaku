@@ -100,15 +100,114 @@ translations: {
 
 ## 🚀 Prossimi Sviluppi Consigliati
 
-1. **Migrazione Angular** – Convertire in progetto Angular con routing e componenti standalone
-2. **Autenticazione Admin** – Login/Signup per dashboard di editing contenuti
-3. **Dashboard Admin** – CRUD per modificare progetti, esperienze, descrizioni
-4. **Blog/Articoli** – Sezione per articoli tecnici e case study
-5. **Download CV** – Pulsante per download curriculum PDF
-6. **Form contatto** – Form con validazione e invio email
-7. **Analytics** – Integrazione Google Analytics / Plausible
-8. **SEO avanzato** – Schema.org markup, Open Graph meta tags
-9. **Dark/Light toggle** – Possibilità di switch tema
+1. **Download CV** – Pulsante per download curriculum PDF
+
+---
+
+## 🏗️ Full-Stack Portfolio App (Angular 17 + NestJS)
+
+A complete rewrite of the portfolio as a full-stack web application with admin panel lives in the subdirectories:
+
+```
+portfolio-backend/    → NestJS 10 REST API
+portfolio-frontend/   → Angular 17 SPA
+docker-compose.yml    → One-command startup
+```
+
+### Features
+
+| Feature | Details |
+|---|---|
+| JWT Authentication | Register / Login with bcrypt, role-based guards |
+| Admin Dashboard | Full CRUD — Projects, Experiences, About, Blog |
+| Blog System | Slug-based posts, publish toggle, tag filtering, SEO |
+| Contact Form | Sends email via Nodemailer (SMTP) |
+| SEO | Dynamic title/meta, Open Graph, Twitter Cards, JSON-LD |
+| Dark / Light Theme | Angular Signals + localStorage persistence |
+| Responsive UI | Angular Material 17, mobile-first SCSS |
+| Analytics | Google Analytics 4 via `gtag()` on every route change |
+
+### Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Angular 17 (standalone), Angular Material 17, SCSS, Signals, RxJS 7 |
+| Backend | NestJS 10, Mongoose, Passport JWT, bcrypt, Nodemailer, Swagger |
+| Database | MongoDB 7 |
+| Infrastructure | Docker Compose, Nginx (SPA + API reverse proxy) |
+
+### Quick Start — Docker (recommended)
+
+```bash
+cp portfolio-backend/.env.example portfolio-backend/.env
+# Fill in SMTP credentials and JWT_SECRET in portfolio-backend/.env
+
+docker-compose up --build
+```
+
+| Service | URL |
+|---|---|
+| Angular app | http://localhost:4200 |
+| NestJS API | http://localhost:3000/api/v1 |
+| Swagger docs | http://localhost:3000/api/docs |
+
+### Quick Start — Local Development
+
+```bash
+# Terminal 1 – Backend
+cd portfolio-backend
+cp .env.example .env   # edit values
+npm install
+npm run start:dev
+
+# Terminal 2 – Frontend
+cd portfolio-frontend
+npm install
+ng serve               # proxies /api → localhost:3000
+```
+
+### Environment Variables (`portfolio-backend/.env`)
+
+| Variable | Example | Description |
+|---|---|---|
+| `PORT` | `3000` | API server port |
+| `MONGODB_URI` | `mongodb://localhost:27017/portfolio` | MongoDB connection string |
+| `JWT_SECRET` | *(long random string)* | JWT signing secret |
+| `JWT_EXPIRES_IN` | `7d` | Token expiry |
+| `SMTP_HOST` | `smtp.gmail.com` | SMTP server |
+| `SMTP_PORT` | `587` | SMTP port |
+| `SMTP_USER` | `you@gmail.com` | SMTP username |
+| `SMTP_PASS` | `app-password` | SMTP password |
+| `SMTP_FROM` | `"Portfolio" <you@gmail.com>` | From address |
+| `CONTACT_TO` | `you@gmail.com` | Recipient for contact emails |
+| `CORS_ORIGIN` | `http://localhost:4200` | Allowed CORS origin |
+
+### API Reference
+
+All routes are prefixed `/api/v1`. Routes marked 🔒 require `Authorization: Bearer <token>`.
+
+**Auth** — `/auth`
+- `POST /register` · `POST /login` · `GET /me` 🔒
+
+**Projects** — `/projects`
+- `GET /` · `GET /:slug` (public)
+- `POST /` · `PUT /:id` · `DELETE /:id` 🔒
+
+**Experiences** — `/experiences`
+- `GET /` (public) · `POST /` · `PUT /:id` · `DELETE /:id` 🔒
+
+**About** — `/about`
+- `GET /` (public) · `PUT /` 🔒
+
+**Blog** — `/blog`
+- `GET /posts` · `GET /posts/:slug` (public, supports `?tag=`)
+- `GET /admin/posts` · `POST /admin/posts` · `PUT /admin/posts/:id` · `DELETE /admin/posts/:id` 🔒
+
+**Contact** — `POST /contact` (public)
+
+### Admin Panel
+
+Navigate to **http://localhost:4200/admin/login**. Create your account with `POST /api/v1/auth/register` or visit `/admin/register` in the browser.
 
 ## 📐 Design System
 

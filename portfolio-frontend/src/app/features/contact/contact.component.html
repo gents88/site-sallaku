@@ -1,0 +1,59 @@
+<div class="container section contact-page">
+  <div class="contact-intro fade-in-up">
+    <h1>Get in Touch</h1>
+    <p class="text-muted">Have a project in mind, or just want to say hello? Fill out the form below and I'll get back to you as soon as possible.</p>
+  </div>
+
+  <div class="contact-layout">
+    <form class="card contact-form fade-in-up" [formGroup]="form" (ngSubmit)="send()" novalidate>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Jane Smith" />
+        @if (form.get('name')?.invalid && form.get('name')?.touched) {
+          <mat-error>Name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" placeholder="jane@example.com" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <mat-error>Valid email is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Subject</mat-label>
+        <input matInput formControlName="subject" placeholder="Project Inquiry" />
+        @if (form.get('subject')?.invalid && form.get('subject')?.touched) {
+          <mat-error>Subject is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Message</mat-label>
+        <textarea matInput formControlName="message" rows="6" placeholder="Hi, I'd like to discuss…"></textarea>
+        @if (form.get('message')?.invalid && form.get('message')?.touched) {
+          <mat-error>Message must be at least 10 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="sending" class="submit-btn">
+        @if (sending) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>send</mat-icon> }
+        {{ sending ? 'Sending…' : 'Send Message' }}
+      </button>
+    </form>
+
+    <aside class="contact-info fade-in-up">
+      <div class="card">
+        <h3>Let's connect</h3>
+        <p class="text-muted">I'm open to freelance projects, collaborations, and full-time opportunities.</p>
+        <ul class="contact-links">
+          <li><mat-icon>email</mat-icon> <a href="mailto:hello@portfolio.com">hello&#64;portfolio.com</a></li>
+          <li><mat-icon>location_on</mat-icon> Remote / Worldwide</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>

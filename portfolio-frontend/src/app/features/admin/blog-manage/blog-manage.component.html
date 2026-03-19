@@ -1,0 +1,107 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/admin" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <h1>Blog Posts</h1>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon> New Post
+    </button>
+  </header>
+
+  @if (showForm) {
+    <div class="card form-panel">
+      <h2>{{ editingId ? 'Edit' : 'New' }} Post</h2>
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title" />
+          @if (form.get('title')?.invalid && form.get('title')?.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Content (Markdown / HTML)</mat-label>
+          <textarea matInput formControlName="content" rows="12"></textarea>
+          @if (form.get('content')?.invalid && form.get('content')?.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Excerpt</mat-label>
+          <textarea matInput formControlName="excerpt" rows="2"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Cover Image URL</mat-label>
+            <input matInput formControlName="coverImage" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Meta Title (SEO)</mat-label>
+            <input matInput formControlName="metaTitle" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Meta Description (SEO)</mat-label>
+          <input matInput formControlName="metaDescription" />
+        </mat-form-field>
+
+        <!-- Tags -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tags (press Enter)</mat-label>
+          <mat-chip-grid #tagGrid>
+            @for (tag of tags; track tag) {
+              <mat-chip [removable]="true" (removed)="removeTag(tag)">
+                #{{ tag }}<button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip>
+            }
+          </mat-chip-grid>
+          <input [matChipInputFor]="tagGrid" [matChipInputSeparatorKeyCodes]="separatorKeys"
+                 (matChipInputTokenEnd)="addTag($event)" />
+        </mat-form-field>
+
+        <mat-checkbox formControlName="published">Publish immediately</mat-checkbox>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="showForm = false">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving">
+            {{ saving ? 'Saving…' : 'Save Post' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else if (!posts.length) {
+    <p class="empty-state">No posts yet. Write your first one!</p>
+  } @else {
+    <div class="list">
+      @for (post of posts; track post._id) {
+        <div class="card list-item">
+          @if (post.coverImage) {
+            <img [src]="post.coverImage" [alt]="post.title" class="list-item__thumb" />
+          }
+          <div class="list-item__info">
+            <h3>{{ post.title }}</h3>
+            <p class="text-muted">{{ post.excerpt | slice:0:100 }}</p>
+            <div style="margin-top:0.5rem">
+              <span class="badge" [style.color]="post.published ? 'var(--color-success)' : 'var(--color-warning)'">
+                {{ post.published ? 'Published' : 'Draft' }}
+              </span>
+            </div>
+          </div>
+          <div class="list-item__actions">
+            <button mat-icon-button (click)="openEdit(post)"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(post._id)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

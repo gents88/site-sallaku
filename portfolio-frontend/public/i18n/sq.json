@@ -1,0 +1,290 @@
+{
+  "nav": {
+    "about": "Rreth meje",
+    "tech": "Teknologjitë",
+    "projects": "Projektet",
+    "services": "Shërbimet",
+    "experience": "Eksperienca",
+    "skills": "Aftësitë",
+    "contact": "Kontakt",
+    "blog": "Blog",
+    "login": "Hyrje",
+    "admin": "Admin"
+  },
+  "lang": {
+    "label": "Gjuha",
+    "it": "Italiano",
+    "en": "English",
+    "sq": "Shqip"
+  },
+  "hero": {
+    "role": "Zhvillues Senior Front-End & API",
+    "tagline1": "Angular",
+    "tagline2": "Aplikacione Web",
+    "tagline3": "UI/UX & Vizualizim 3D Web",
+    "description": "Projektoj dhe ofroj ndërfaqe Angular të shkallëzueshme për sisteme enterprise të misionit kritik, duke ulur vonesën dhe rritur besueshmërinë operacionale.",
+    "kpi_years": "Vite eksperiencë",
+    "kpi_projects": "Projekte të realizuara",
+    "kpi_companies": "Kompani enterprise",
+    "kpi_latency": "Reduktim vonese (tipik)",
+    "scroll": "Poshtë"
+  },
+  "about": {
+    "tag": "about",
+    "title": "Rreth meje",
+    "subtitle": "Zhvillues senior me 8+ vite në web enterprise",
+    "bio1": "Jam një <strong>Zhvillues Senior Front-End</strong> i specializuar në Angular, TypeScript dhe arkitektura enterprise. Kam bashkëpunuar me kompani kryesore në sektorët aerospace, defence, telco dhe banking.",
+    "bio2": "Pasioni im? Transformimi i të dhënave komplekse në ndërfaqe intuitive me performancë të lartë.",
+    "birth": "Lindur në Blinisht-Lezhe (Shqipëri) më 25/04/1988",
+    "vision": {
+      "title": "Vizion End-to-End",
+      "desc": "Qasje e plotë arkitekturore, nga projektimi i design system deri në delivery në prodhim. Eksperiencë solide në kthimin e kërkesave komplekse të biznesit në ndërfaqe intuitive."
+    },
+    "perf": {
+      "title": "Performancë & Shkallëzim",
+      "desc": "Fokus i vazhdueshëm në optimizimin e performancës, lazy loading strategjik, change detection të optimizuar dhe arkitektura modulare për kontekste me trafik të lartë."
+    },
+    "lead": {
+      "title": "Udhëheqje & Mentoring",
+      "desc": "Udhëheqje teknike për ekipe front-end, përcaktim best practice, code review të strukturuara dhe sesione mentoring për zhvillues junior dhe mid-level."
+    },
+    "card_philosophy": "Arkitektura",
+    "card_philosophy_desc": "Module të shkallëzueshme, SOLID, kod i pastër dhe performance-first në çdo projekt enterprise.",
+    "card_ecosystem": "Ekosistemi Angular",
+    "card_ecosystem_desc": "Nga krijimi i aplikacioneve greenfield deri tek ristrukturimi i legacy, zotëroj ciklin e plotë.",
+    "card_data": "Vizualizim të Dhënash",
+    "card_data_desc": "Cesium.js, Chart.js, Looker Embedded, Photo Sphere Viewer për ndërfaqe të pasura me të dhëna."
+  },
+  "tech": {
+    "tag": "tech-stack",
+    "title": "Teknologjitë",
+    "subtitle": "Stack teknik i përdorur në prodhim për projekte enterprise",
+    "frontend": "Frontend",
+    "dataviz": "Vizualizim të Dhënash",
+    "backend": "Backend & API",
+    "devops": "DevOps & Tools"
+  },
+  "projects": {
+    "tag": "projects",
+    "title": "Projektet",
+    "subtitle": "Seleksion i projekteve enterprise të realizuara në prodhim",
+    "features_label": "Karakteristika kryesore",
+    "geo": {
+      "title": "Vizualizim 3D Gjeohapësinor",
+      "desc": "Platformë interaktive për vizualizim gjeohapësinor 3D me të dhëna në kohë reale mbi glob interaktiv.",
+      "f1": "Glob 3D interaktiv",
+      "f2": "Transmetim të dhënash në kohë reale",
+      "f3": "Menaxhim i avancuar i layer-ave",
+      "f4": "Performancë e optimizuar"
+    },
+    "vr": {
+      "title": "Tur Virtual 360°",
+      "desc": "Aplikacion imersiv për ture virtuale me navigim të rrjedhshëm midis ambienteve 360°.",
+      "f1": "Navigim imersiv 360°",
+      "f2": "Hotspot-e interaktive",
+      "f3": "Responsive për shumë pajisje",
+      "f4": "Tranzicione të rrjedhshme"
+    },
+    "dash": {
+      "title": "Dashboard Analytics",
+      "desc": "Suitë dashboard-esh analitike me Looker Embedded dhe vizualizime custom me performancë të lartë.",
+      "f1": "Integrim me Looker Embedded",
+      "f2": "KPI në kohë reale",
+      "f3": "Drill-down multi-nivel",
+      "f4": "Vizualizime të personalizuara"
+    },
+    "lib": {
+      "title": "Libraria",
+      "desc": "Platformë dixhitale për menaxhimin e plotë të bibliotekave, katalogut dhe huazimeve.",
+      "f1": "Katalog librash i centralizuar",
+      "f2": "Menaxhim i huazimeve dhe afateve",
+      "f3": "Kërkim i avancuar dhe filtra",
+      "f4": "Dashboard në kohë reale"
+    },
+    "ins": {
+      "title": "Platformë Sigurimesh",
+      "desc": "Zgjidhje web për sektorin e sigurimeve me menaxhim policash, dëmesh dhe workflow miratimesh.",
+      "f1": "Menaxhim end-to-end i policave",
+      "f2": "Workflow i dixhitalizuar i dëmeve",
+      "f3": "Integrim me shërbime të jashtme",
+      "f4": "Audit trail dhe siguri"
+    }
+  },
+  "experience": {
+    "tag": "experience",
+    "title": "Eksperienca",
+    "subtitle": "Rrugëtimi profesional në kompani teknologjike italiane dhe ndërkombëtare"
+  },
+  "exp": {
+    "current": "Aktuale",
+    "previous": "E mëparshme",
+    "1": {
+      "title": "Arkitekturë Angular & Enterprise 3D Web",
+      "role": "Zhvillues Senior Front-End",
+      "desc": "Udhëheqje teknike në projekte enterprise në sektorët aerospace dhe defence. Arkitekturë Angular e avancuar, vizualizim 3D gjeohapësinor me Cesium.js dhe dashboard-e analitike me performancë të lartë."
+    },
+    "2": {
+      "title": "Platforma Dixhitale & Vizualizim të Dhënash",
+      "role": "Front-End Developer · Specialist Data Viz",
+      "desc": "Zhvillim i platformave dixhitale inovative në sektorët telco dhe media. Dashboard-e analitike me Looker Embedded, ture virtuale imersive me Photo Sphere Viewer."
+    },
+    "3": {
+      "title": "Konsulencë Enterprise & Ekosistemi Microsoft",
+      "role": "Front-End Developer · Konsulent Angular",
+      "desc": "Konsulencë enterprise në projekte të bazuara në Microsoft për klientë banking. Zhvillim portalesh web komplekse, integrim Azure dhe kalim nga arkitektura legacy në Angular modern."
+    },
+    "4": {
+      "title": "Zhvillim Full-Stack & Arkitektura Softueri",
+      "role": "Full-Stack Developer",
+      "desc": "Zhvillim full-stack me teknologji .NET dhe Angular. Projektim arkitekturash softueri, API RESTful dhe ndërfaqe për sektorët financiarë dhe të sigurimeve."
+    },
+    "5": {
+      "title": "Bazat e Softuerit & Metodologjitë Agile",
+      "role": "Junior Developer",
+      "desc": "Fillimi i rrugëtimit profesional. Eksperiencat e para me .NET dhe Angular, trajnim mbi metodologjitë Agile dhe best practice të zhvillimit softuerik."
+    }
+  },
+  "skills": {
+    "tag": "skills",
+    "title": "Aftësitë e Buta",
+    "subtitle": "Kompetenca ndër-funksionale që bëjnë ndryshimin në ekipet enterprise",
+    "leadership": "Udhëheqje Teknike",
+    "leadership_desc": "Drejtoj ekipe zhvillimi drejt arkitekturave të shkallëzueshme dhe praktikave më të mira.",
+    "mentoring": "Mentoring & Trajnim",
+    "mentoring_desc": "Mbështetje aktive për juniorët, rishikime konstruktive të kodit dhe transferim njohurish.",
+    "problem": "Zgjidhje Problemesh",
+    "problem_desc": "Analizë e shpejtë e problemeve komplekse, debug metodologjik dhe zgjidhje pragmatike.",
+    "communication": "Komunikimi",
+    "communication_desc": "Ndërveprim efektiv me palët e interesuara teknike dhe jo-teknike, dokumentim i qartë."
+  },
+  "faq": {
+    "tag": "faq",
+    "title": "Pyetje të Shpeshta",
+    "subtitle": "Pyetjet më të shpeshta",
+    "q1": "Me çfarë merresh kryesisht?",
+    "a1": "Merrem me zhvillim web enterprise, ndërfaqe Angular, API REST, vizualizim të dhënash dhe aplikacione 3D web me Cesium.js dhe WebGL.",
+    "q2": "A punon edhe me backend?",
+    "a2": "Po, kam eksperiencë edhe me .NET, Django, Python, NestJS dhe integrim të shërbimeve API REST dhe GraphQL.",
+    "q3": "Je i disponueshëm për projekte remote ose hibride?",
+    "a3": "Po, mund të punoj remote ose në mënyrë hibride sipas nevojave të projektit.",
+    "q4": "Si mund të kontaktoj me ty?",
+    "a4": "Mund të më shkruash me email, PEC, të më telefonosh ose të më kontaktosh në LinkedIn duke përdorur kontaktet në seksionin më sipër."
+  },
+  "contact": {
+    "tag": "contact",
+    "title": "Kontakt",
+    "subtitle": "Disponibël për mundësi dhe bashkëpunime të reja",
+    "card": {
+      "email": {
+        "title": "Email",
+        "desc": "gentsallaku@email.com"
+      },
+      "phone": {
+        "title": "Telefon",
+        "desc": "+39 389 235 2291"
+      },
+      "pec": {
+        "title": "PEC",
+        "desc": "gent.sallaku@pec.it"
+      },
+      "linkedin": {
+        "title": "LinkedIn",
+        "desc": "/in/gent-sallaku"
+      },
+      "github": {
+        "title": "GitHub",
+        "desc": "/gentsallaku"
+      }
+    },
+    "form": {
+      "title": "Dërgo një mesazh",
+      "name": "Emër dhe mbiemër",
+      "email": "Email",
+      "message": "Mesazh",
+      "submit": "Dërgo me Email",
+      "note": "Formulari hap klientin e email-it me mesazhin e përgatitur."
+    },
+    "form_name": "Emri juaj",
+    "form_email": "Email-i juaj",
+    "form_message": "Mesazhi juaj",
+    "form_send": "Dërgo mesazhin",
+    "form_sent": "Mesazhi u dërgua! Do t'ju përgjigjem sa më shpejt.",
+    "form_name_req": "Emri është i detyrueshëm",
+    "form_email_req": "Email jo i vlefshëm",
+    "form_msg_req": "Mesazhi është i detyrueshëm (min 10 karaktere)"
+  },
+  "banner": {
+    "wip": "Faqja është në ndërtim — Work in progress"
+  },
+  "skip": {
+    "link": "Kalo te përmbajtja kryesore"
+  },
+  "footer": {
+    "designed": "Projektuar & Zhvilluar nga",
+    "rights": "Të gjitha të drejtat e rezervuara."
+  },
+  "auth": {
+    "login_title": "Hyrje në Dashboard",
+    "login_subtitle": "Hyni në portfolion tuaj",
+    "email": "Email",
+    "password": "Fjalëkalimi",
+    "login_btn": "Hyni",
+    "logging_in": "Duke hyrë…",
+    "no_account": "Nuk keni llogari?",
+    "create_one": "Krijoni një",
+    "register_title": "Krijo Llogari",
+    "register_subtitle": "Regjistrohuni në dashboard",
+    "name": "Emri",
+    "confirm_password": "Konfirmo fjalëkalimin",
+    "register_btn": "Regjistrohu",
+    "registering": "Duke u regjistruar…",
+    "have_account": "Keni llogari?",
+    "sign_in": "Hyni",
+    "email_required": "Kërkohet email i vlefshëm",
+    "password_required": "Fjalëkalimi duhet të ketë të paktën 6 karaktere",
+    "name_required": "Emri është i detyrueshëm",
+    "passwords_mismatch": "Fjalëkalimet nuk përputhen"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "welcome": "Mirësevini",
+    "projects": "Projekte",
+    "experiences": "Eksperienca",
+    "blog_posts": "Postime Blog",
+    "published": "Publikuar",
+    "drafts": "Draft",
+    "contacts": "Kontakte",
+    "users": "Përdorues",
+    "visits": "Vizita",
+    "visitors": "Vizitorë",
+    "manage_projects": "Menaxho Projektet",
+    "manage_experiences": "Menaxho Eksperiencën",
+    "manage_blog": "Menaxho Blogun",
+    "edit_about": "Modifiko About",
+    "logout": "Dil",
+    "loading": "Duke ngarkuar…",
+    "recent_activity": "Aktiviteti i fundit",
+    "no_activity": "Asnjë aktivitet i fundit",
+    "recent_contacts_chart": "Grafiku i kontakteve të fundit",
+    "visits_chart": "Grafiku i vizitave reale",
+    "last_7_days": "7 ditët e fundit",
+    "content_mix": "Përmbajtje të publikuara vs draft",
+    "content_status": "Statusi editorial i përmbajtjes",
+    "public_traffic": "Trafik publik i gjurmuar nga backend",
+    "quick_actions": "Veprime të shpejta"
+  },
+  "common": {
+    "loading": "Duke ngarkuar…",
+    "error": "Gabim në ngarkimin e të dhënave.",
+    "save": "Ruaj",
+    "cancel": "Anulo",
+    "delete": "Fshi",
+    "edit": "Modifiko",
+    "create": "Krijo",
+    "back": "Prapa",
+    "close": "Mbyll",
+    "confirm": "Konfirmo",
+    "yes": "Po",
+    "no": "Jo"
+  }
+}

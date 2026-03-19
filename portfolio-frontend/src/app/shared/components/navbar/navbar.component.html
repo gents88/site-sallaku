@@ -1,0 +1,49 @@
+<nav class="navbar" [class.scrolled]="scrolled">
+  <div class="nav-container">
+    <!-- Logo -->
+    <a routerLink="/" fragment="hero" class="nav-logo" (click)="closeMenu()">
+      <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
+    </a>
+
+    <!-- Desktop nav links -->
+    <ul class="nav-menu" [class.open]="mobileMenuOpen">
+      @for (link of navLinks; track link.labelKey) {
+        @if (link.route) {
+          <li>
+            <a [routerLink]="link.route" routerLinkActive="active"
+               class="nav-link" (click)="closeMenu()">{{ link.labelKey | translate }}</a>
+          </li>
+        } @else if (link.href) {
+          <li>
+            <a [href]="link.href"
+               class="nav-link" (click)="closeMenu()">{{ link.labelKey | translate }}</a>
+          </li>
+        } @else {
+          <li>
+            <a routerLink="/" [fragment]="link.fragment" class="nav-link"
+               [class.active]="activeSection === link.fragment"
+               (click)="closeMenu()">{{ link.labelKey | translate }}</a>
+          </li>
+        }
+      }
+      @if (!auth.isLoggedIn()) {
+        <li><a routerLink="/admin/login" class="nav-link" (click)="closeMenu()">{{ 'nav.login' | translate }}</a></li>
+      }
+      @if (auth.isLoggedIn()) {
+        <li><a routerLink="/admin" class="nav-link" (click)="closeMenu()">{{ 'nav.admin' | translate }}</a></li>
+      }
+    </ul>
+
+    <!-- Right actions -->
+    <div class="nav-right">
+      <app-lang-switcher />
+      <app-theme-toggle />
+
+      <!-- Hamburger -->
+      <button class="nav-toggle" [class.active]="mobileMenuOpen"
+              (click)="toggleMenu()" aria-label="Toggle menu">
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </div>
+</nav>

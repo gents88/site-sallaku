@@ -1,0 +1,76 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "portfolio-frontend": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": { "style": "scss", "standalone": true },
+        "@schematics/angular:directive": { "standalone": true },
+        "@schematics/angular:pipe": { "standalone": true }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/portfolio-frontend",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "public",
+                "output": "/"
+              }
+            ],
+            "styles": ["src/styles.scss", "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "600kb", "maximumError": "2mb" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "20kb" }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": { "buildTarget": "portfolio-frontend:build:production" },
+            "development": { "buildTarget": "portfolio-frontend:build:development" }
+          },
+          "defaultConfiguration": "development",
+          "options": { "proxyConfig": "proxy.conf.json" }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "runner": "jest"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "2550c2d9-c76b-4e2b-9da5-1cbd3b3ac1c9"
+  }
+}

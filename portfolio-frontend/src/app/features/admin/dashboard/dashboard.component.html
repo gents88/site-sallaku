@@ -1,0 +1,158 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <h1>{{ 'admin.dashboard' | translate }}</h1>
+      <p class="text-muted">
+        {{ 'admin.welcome' | translate }}, <strong>{{ auth.currentUser()?.name }}</strong>
+      </p>
+    </div>
+    <button mat-stroked-button color="warn" (click)="auth.logout()">
+      <mat-icon>logout</mat-icon> {{ 'admin.logout' | translate }}
+    </button>
+  </header>
+
+  @if (loading) {
+    <p class="text-muted">{{ 'common.loading' | translate }}</p>
+  } @else {
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      @for (stat of stats; track stat.labelKey) {
+        <a [routerLink]="stat.route" class="stat-card card">
+          <div class="stat-card__icon" [style.background]="stat.color + '22'" [style.color]="stat.color">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-card__content">
+            <p class="stat-card__value">{{ stat.value }}</p>
+            <p class="stat-card__label text-muted">{{ stat.labelKey | translate }}</p>
+            <div class="stat-mini-chart" aria-hidden="true">
+              @for (bar of stat.miniBars; track $index) {
+                <span class="stat-mini-chart__bar" [style.height.%]="bar" [style.background]="stat.color"></span>
+              }
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.recent_contacts_chart' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.last_7_days' | translate }}</p>
+          </div>
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+
+        <div class="contact-chart" aria-hidden="true">
+          @for (bar of contactBars; track bar.date) {
+            <div class="contact-chart__item">
+              <span class="contact-chart__value">{{ bar.value }}</span>
+              <div class="contact-chart__bar-wrap">
+                <span class="contact-chart__bar" [style.height]="contactBarHeight(bar.value)"></span>
+              </div>
+              <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.visits_chart' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.public_traffic' | translate }}</p>
+          </div>
+          <mat-icon>show_chart</mat-icon>
+        </div>
+
+        <div class="visit-summary">
+          <div class="visit-summary__item">
+            <strong>{{ totalViews }}</strong>
+            <span class="text-muted">{{ 'admin.visits' | translate }}</span>
+          </div>
+          <div class="visit-summary__item">
+            <strong>{{ uniqueVisitors }}</strong>
+            <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="contact-chart contact-chart--visits" aria-hidden="true">
+          @for (bar of visitBars; track bar.date) {
+            <div class="contact-chart__item">
+              <span class="contact-chart__value">{{ bar.value }}</span>
+              <div class="contact-chart__bar-wrap">
+                <span class="contact-chart__bar contact-chart__bar--visits" [style.height]="visitBarHeight(bar.value)"></span>
+              </div>
+              <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.content_mix' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.content_status' | translate }}</p>
+          </div>
+          <mat-icon>donut_large</mat-icon>
+        </div>
+
+        <div class="content-mix">
+          <div class="content-mix__bar" aria-hidden="true">
+            <span class="content-mix__segment content-mix__segment--published" [style.width.%]="publishedPercent"></span>
+            <span class="content-mix__segment content-mix__segment--drafts" [style.width.%]="draftPercent"></span>
+          </div>
+
+          <div class="content-mix__legend">
+            <div class="mix-item">
+              <span class="mix-item__dot mix-item__dot--published"></span>
+              <div>
+                <strong>{{ publishedPosts }}</strong>
+                <p class="text-muted">{{ 'admin.published' | translate }}</p>
+              </div>
+            </div>
+            <div class="mix-item">
+              <span class="mix-item__dot mix-item__dot--drafts"></span>
+              <div>
+                <strong>{{ draftPosts }}</strong>
+                <p class="text-muted">{{ 'admin.drafts' | translate }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Quick links -->
+    <h2 class="section-label">{{ 'admin.quick_actions' | translate }}</h2>
+    <div class="quick-links">
+      @for (link of quickLinks; track link.route) {
+        <a [routerLink]="link.route" class="quick-link card">
+          <mat-icon>{{ link.icon }}</mat-icon>
+          <span>{{ link.labelKey | translate }}</span>
+          <mat-icon class="arrow">arrow_forward</mat-icon>
+        </a>
+      }
+    </div>
+
+    <!-- Recent contacts -->
+    @if (recentContacts.length) {
+      <h2 class="section-label">{{ 'admin.recent_activity' | translate }}</h2>
+      <div class="contacts-list card">
+        @for (c of recentContacts; track c.email) {
+          <div class="contact-row">
+            <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
+            <div class="contact-body">
+              <span class="contact-name">{{ c.name }}</span>
+              <span class="contact-email text-muted">{{ c.email }}</span>
+              <span class="contact-subject">{{ c.subject }}</span>
+            </div>
+            <span class="contact-date text-muted">{{ c.createdAt | date:'dd/MM/yy' }}</span>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

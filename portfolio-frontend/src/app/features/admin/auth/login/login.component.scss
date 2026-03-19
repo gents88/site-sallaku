@@ -1,0 +1,49 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-alt);
+  padding: 1.5rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem;
+
+  &__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  &__footer {
+    text-align: center;
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  .logo-bracket { color: var(--color-primary); }
+}
+
+.form-field { width: 100%; margin-bottom: 0.5rem; }
+
+.submit-btn {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.text-muted { color: var(--color-text-muted); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }

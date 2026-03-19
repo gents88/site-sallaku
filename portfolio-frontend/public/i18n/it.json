@@ -1,0 +1,290 @@
+{
+  "nav": {
+    "about": "About",
+    "tech": "Tech Stack",
+    "projects": "Progetti",
+    "services": "Servizi",
+    "experience": "Esperienza",
+    "skills": "Soft Skills",
+    "contact": "Contatti",
+    "blog": "Blog",
+    "login": "Login",
+    "admin": "Admin"
+  },
+  "lang": {
+    "label": "Lingua",
+    "it": "Italiano",
+    "en": "English",
+    "sq": "Shqip"
+  },
+  "hero": {
+    "role": "Senior Front‑End & API Developer",
+    "tagline1": "Angular",
+    "tagline2": "Web Applications",
+    "tagline3": "UI/UX & Data Visualization 3D Web",
+    "description": "Progetto e consegno interfacce Angular scalabili per sistemi enterprise mission‑critical, riducendo latenza e aumentando affidabilità operativa.",
+    "kpi_years": "Anni esperienza",
+    "kpi_projects": "Progetti completati",
+    "kpi_companies": "Aziende enterprise",
+    "kpi_latency": "Riduzione latenza (tipica)",
+    "scroll": "Scroll"
+  },
+  "about": {
+    "tag": "about",
+    "title": "Chi sono",
+    "subtitle": "Sviluppatore senior con 8+ anni nel web enterprise",
+    "bio1": "Sono un <strong>Senior Front-End Developer</strong> specializzato in Angular, TypeScript e architetture enterprise. Ho collaborato con aziende leader nei settori aerospace, defence, telco e banking.",
+    "bio2": "La mia passione? Trasformare dati complessi in interfacce intuitive con prestazioni elevate.",
+    "birth": "Nato a Blinisht-Lezhe (Albania) il 25/04/1988",
+    "vision": {
+      "title": "Visione End-to-End",
+      "desc": "Approccio architetturale completo, dalla progettazione del design system alla delivery in produzione. Esperienza consolidata nel tradurre requisiti di business complessi in interfacce intuitive."
+    },
+    "perf": {
+      "title": "Performance & Scalabilità",
+      "desc": "Focus costante sull'ottimizzazione delle performance, lazy loading strategico, change detection ottimizzata e architetture modulari per contesti ad alto traffico."
+    },
+    "lead": {
+      "title": "Leadership & Mentoring",
+      "desc": "Guida tecnica di team front-end, definizione di best practice, code review strutturate e sessioni di mentoring per sviluppatori junior e mid-level."
+    },
+    "card_philosophy": "Architettura",
+    "card_philosophy_desc": "Moduli scalabili, SOLID, clean code e performance-first su ogni progetto enterprise.",
+    "card_ecosystem": "Ecosistema Angular",
+    "card_ecosystem_desc": "Dal bootstrapping di app greenfield al refactoring di legacy, padroneggio l'intero ciclo.",
+    "card_data": "Data Visualization",
+    "card_data_desc": "Cesium.js, Chart.js, Looker Embedded, Photo Sphere Viewer per interfacce data-rich."
+  },
+  "tech": {
+    "tag": "tech-stack",
+    "title": "Tecnologie",
+    "subtitle": "Stack tecnico utilizzato in produzione su progetti enterprise",
+    "frontend": "Frontend",
+    "dataviz": "Data Visualization",
+    "backend": "Backend & API",
+    "devops": "DevOps & Tools"
+  },
+  "projects": {
+    "tag": "projects",
+    "title": "Progetti",
+    "subtitle": "Selezione di progetti enterprise realizzati in produzione",
+    "features_label": "Features principali",
+    "geo": {
+      "title": "Visualizzazione 3D Geospaziale",
+      "desc": "Piattaforma interattiva per la visualizzazione geospaziale 3D con dati real-time su globe interattivo.",
+      "f1": "Globe 3D interattivo",
+      "f2": "Real-time data streaming",
+      "f3": "Layer management avanzato",
+      "f4": "Performance ottimizzate"
+    },
+    "vr": {
+      "title": "Virtual Tour 360°",
+      "desc": "Applicazione immersiva per virtual tour con navigazione fluida tra ambienti 360°.",
+      "f1": "Navigazione immersiva 360°",
+      "f2": "Hotspot interattivi",
+      "f3": "Multi-device responsive",
+      "f4": "Transizioni fluide"
+    },
+    "dash": {
+      "title": "Dashboard Analytics",
+      "desc": "Suite di dashboard analitiche con Looker Embedded e visualizzazioni custom ad alte prestazioni.",
+      "f1": "Looker Embedded integration",
+      "f2": "KPI real-time",
+      "f3": "Drill-down multi-livello",
+      "f4": "Custom visualizations"
+    },
+    "lib": {
+      "title": "Libraria",
+      "desc": "Piattaforma digitale per la gestione completa di librerie, catalogo e prestiti.",
+      "f1": "Catalogo libri centralizzato",
+      "f2": "Gestione prestiti e scadenze",
+      "f3": "Ricerca avanzata e filtri",
+      "f4": "Dashboard real-time"
+    },
+    "ins": {
+      "title": "Piattaforma Assicurativa",
+      "desc": "Soluzione web per il settore assicurativo con gestione polizze, sinistri e workflow approvativi.",
+      "f1": "Gestione polizze end-to-end",
+      "f2": "Workflow sinistri digitalizzato",
+      "f3": "Integrazione servizi esterni",
+      "f4": "Audit trail e sicurezza"
+    }
+  },
+  "experience": {
+    "tag": "experience",
+    "title": "Esperienza",
+    "subtitle": "Percorso professionale in aziende tech italiane ed internazionali"
+  },
+  "exp": {
+    "current": "Attuale",
+    "previous": "Precedente",
+    "1": {
+      "title": "Architettura Angular & 3D Web Enterprise",
+      "role": "Senior Front-End Developer",
+      "desc": "Guida tecnica su progetti enterprise nei settori aerospace e defence. Architettura Angular avanzata, visualizzazione 3D geospaziale con Cesium.js e dashboard analitiche ad alte prestazioni."
+    },
+    "2": {
+      "title": "Piattaforme Digitali & Data Visualization",
+      "role": "Front-End Developer · Specialista Data Viz",
+      "desc": "Sviluppo di piattaforme digitali innovative nel settore telco e media. Dashboard analitiche con Looker Embedded, virtual tour immersivi con Photo Sphere Viewer."
+    },
+    "3": {
+      "title": "Consulenza Enterprise & Ecosistema Microsoft",
+      "role": "Front-End Developer · Angular Consultant",
+      "desc": "Consulenza enterprise su progetti Microsoft-based per clienti banking. Sviluppo portali web complessi, integrazione Azure e transizione da architetture legacy ad Angular moderno."
+    },
+    "4": {
+      "title": "Full-Stack Development & Architetture Software",
+      "role": "Full-Stack Developer",
+      "desc": "Sviluppo full-stack con tecnologie .NET e Angular. Progettazione architetture software, API RESTful e interfacce per settori finanziario e assicurativo."
+    },
+    "5": {
+      "title": "Fondamenta Software & Metodologie Agile",
+      "role": "Junior Developer",
+      "desc": "Inizio del percorso professionale. Prime esperienze con .NET e Angular, formazione su metodologie Agile e best practice di sviluppo software."
+    }
+  },
+  "skills": {
+    "tag": "skills",
+    "title": "Soft Skills",
+    "subtitle": "Competenze trasversali che fanno la differenza nei team enterprise",
+    "leadership": "Leadership Tecnica",
+    "leadership_desc": "Guido team di sviluppo verso architetture scalabili e best practice condivise.",
+    "mentoring": "Mentoring & Formazione",
+    "mentoring_desc": "Supporto attivo ai junior, code review costruttive e trasferimento di conoscenze.",
+    "problem": "Problem Solving",
+    "problem_desc": "Analisi rapida di problemi complessi, debug metodico e soluzioni pragmatiche.",
+    "communication": "Comunicazione",
+    "communication_desc": "Interazione efficace con stakeholder tecnici e non tecnici, documentazione chiara."
+  },
+  "faq": {
+    "tag": "faq",
+    "title": "FAQ",
+    "subtitle": "Domande frequenti",
+    "q1": "Di cosa ti occupi principalmente?",
+    "a1": "Mi occupo di sviluppo web enterprise, interfacce Angular, API REST, data visualization e applicazioni 3D web con Cesium.js e WebGL.",
+    "q2": "Lavori anche su backend?",
+    "a2": "Sì, ho esperienza anche su .NET, Django, Python, NestJS e integrazione di servizi API REST e GraphQL.",
+    "q3": "Sei disponibile per progetti da remoto o ibridi?",
+    "a3": "Sì, posso lavorare da remoto o in modalità ibrida a seconda delle esigenze del progetto.",
+    "q4": "Come posso contattarti?",
+    "a4": "Puoi scrivermi via email, PEC, chiamarmi o contattarmi su LinkedIn usando i riferimenti nella sezione contatti qui sopra."
+  },
+  "contact": {
+    "tag": "contact",
+    "title": "Contatti",
+    "subtitle": "Disponibile per nuove opportunità e collaborazioni",
+    "card": {
+      "email": {
+        "title": "Email",
+        "desc": "gentsallaku@email.com"
+      },
+      "phone": {
+        "title": "Telefono",
+        "desc": "+39 389 235 2291"
+      },
+      "pec": {
+        "title": "PEC",
+        "desc": "gent.sallaku@pec.it"
+      },
+      "linkedin": {
+        "title": "LinkedIn",
+        "desc": "/in/gent-sallaku"
+      },
+      "github": {
+        "title": "GitHub",
+        "desc": "/gentsallaku"
+      }
+    },
+    "form": {
+      "title": "Invia un messaggio",
+      "name": "Nome e cognome",
+      "email": "Email",
+      "message": "Messaggio",
+      "submit": "Invia via Email",
+      "note": "Il form apre il client email con il messaggio compilato."
+    },
+    "form_name": "Il tuo nome",
+    "form_email": "La tua email",
+    "form_message": "Il tuo messaggio",
+    "form_send": "Invia messaggio",
+    "form_sent": "Messaggio inviato! Ti rispondo al più presto.",
+    "form_name_req": "Il nome è obbligatorio",
+    "form_email_req": "Email non valida",
+    "form_msg_req": "Il messaggio è obbligatorio (min 10 caratteri)"
+  },
+  "banner": {
+    "wip": "Sito in costruzione — Work in progress"
+  },
+  "skip": {
+    "link": "Vai al contenuto principale"
+  },
+  "footer": {
+    "designed": "Progettato & Sviluppato da",
+    "rights": "All rights reserved."
+  },
+  "auth": {
+    "login_title": "Accedi al Dashboard",
+    "login_subtitle": "Accedi al tuo portfolio",
+    "email": "Email",
+    "password": "Password",
+    "login_btn": "Accedi",
+    "logging_in": "Accesso in corso…",
+    "no_account": "Non hai un account?",
+    "create_one": "Creane uno",
+    "register_title": "Crea Account",
+    "register_subtitle": "Registrati al portfolio dashboard",
+    "name": "Nome",
+    "confirm_password": "Conferma password",
+    "register_btn": "Registrati",
+    "registering": "Registrazione…",
+    "have_account": "Hai già un account?",
+    "sign_in": "Accedi",
+    "email_required": "Email valida richiesta",
+    "password_required": "La password deve contenere almeno 6 caratteri",
+    "name_required": "Il nome è obbligatorio",
+    "passwords_mismatch": "Le password non coincidono"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "welcome": "Benvenuto",
+    "projects": "Progetti",
+    "experiences": "Esperienze",
+    "blog_posts": "Post Blog",
+    "published": "Pubblicati",
+    "drafts": "Bozze",
+    "contacts": "Contatti",
+    "users": "Utenti",
+    "visits": "Visite",
+    "visitors": "Visitatori",
+    "manage_projects": "Gestisci Progetti",
+    "manage_experiences": "Gestisci Esperienze",
+    "manage_blog": "Gestisci Blog",
+    "edit_about": "Modifica About",
+    "logout": "Esci",
+    "loading": "Caricamento…",
+    "recent_activity": "Attività recente",
+    "no_activity": "Nessuna attività recente",
+    "recent_contacts_chart": "Grafico contatti recenti",
+    "visits_chart": "Grafico visite reali",
+    "last_7_days": "Ultimi 7 giorni",
+    "content_mix": "Contenuti pubblicati vs bozze",
+    "content_status": "Stato editoriale dei contenuti",
+    "public_traffic": "Traffico pubblico tracciato lato backend",
+    "quick_actions": "Azioni rapide"
+  },
+  "common": {
+    "loading": "Caricamento…",
+    "error": "Errore nel caricamento dei dati.",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "create": "Crea",
+    "back": "Indietro",
+    "close": "Chiudi",
+    "confirm": "Conferma",
+    "yes": "Sì",
+    "no": "No"
+  }
+}
