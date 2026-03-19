@@ -207,6 +207,36 @@ const i18n = {
             // Footer
             'footer.text': 'Progettato & Sviluppato da',
             'footer.highlight': 'Gent Sallaku',
+            // Meta & SEO
+            'meta.title': 'Gent Sallaku | Senior Front-End & API Developer | Zhvillim Web',
+            'meta.description': 'Senior Front-End & API Developer. Projektim dhe zhvillim aplikacionesh enterprise me Angular, JavaScript, TypeScript, .NET dhe Django. Eksperiencë me REST API, data visualization dhe 3D web.',
+            'meta.keywords': 'Gent Sallaku, zhvillim web, Angular, JavaScript, TypeScript, .NET, Django, data visualization, 3D web',
+            'meta.og.description': 'Zhvillim web dhe API për aplikacione enterprise me Angular, JavaScript, TypeScript, .NET dhe Django.',
+            'meta.twitter.description': 'Zhvillim web dhe API për aplikacione enterprise me Angular, JavaScript, TypeScript, .NET dhe Django.',
+
+            // JSON-LD (Person + Website) and FAQ for SEO (albanian)
+            'ld.person': '{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Gent Sallaku","jobTitle":"Senior Front-End Developer","description":"Senior Front-End & API Developer i specializuar në zhvillimin enterprise me Angular, JavaScript, TypeScript, .NET dhe Django.","knowsAbout":["Zhvillim Web","API Development","REST API","Angular","JavaScript","TypeScript",".NET","Django","Data Visualization","3D Web"],"sameAs":["https://linkedin.com/in/gent-sallaku","https://github.com/gentsallaku"]},{"@type":"WebSite","name":"Gent Sallaku Portfolio","inLanguage":"sq-AL","about":["Zhvillim web","Zhvillim API","Front-end development"]}]}',
+            'ld.faq': '[{"@type":"Question","name":"Me çfarë merresh kryesisht?","acceptedAnswer":{"@type":"Answer","text":"Merren me zhvillim web enterprise, ndërfaqe Angular, API REST, vizualizim të dhënash dhe aplikacione 3D web."}},{"@type":"Question","name":"A punon edhe me backend?","acceptedAnswer":{"@type":"Answer","text":"Po, kam përvojë me .NET, Django, Python dhe integrime API."}},{"@type":"Question","name":"Je i disponueshëm për projekte remote ose hibride?","acceptedAnswer":{"@type":"Answer","text":"Po, mund të punoj remote ose në mënyrë hibride sipas nevojave të projektit."}},{"@type":"Question","name":"Si mund të kontaktoj me ty?","acceptedAnswer":{"@type":"Answer","text":"Mund të më kontaktoni me email, PEC, telefon ose WhatsApp duke përdorur të dhënat në seksionin e kontakteve."}}]',
+            // Meta & SEO
+            'meta.title': 'Gent Sallaku | Senior Front-End & API Developer | Web Development',
+            'meta.description': 'Senior Front-End & API Developer. I design and build enterprise web applications with Angular, JavaScript, TypeScript, .NET and Django. Experienced in REST APIs, data visualization and 3D web.',
+            'meta.keywords': 'Gent Sallaku, web development, Angular, JavaScript, TypeScript, .NET, Django, data visualization, 3D web',
+            'meta.og.description': 'Web & API development for enterprise applications using Angular, JavaScript, TypeScript, .NET and Django.',
+            'meta.twitter.description': 'Web & API development for enterprise applications using Angular, JavaScript, TypeScript, .NET and Django.',
+
+            // JSON-LD (Person + Website) and FAQ for SEO (english)
+            'ld.person': '{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Gent Sallaku","jobTitle":"Senior Front-End Developer","description":"Senior Front-End & API Developer specialized in enterprise web development with Angular, JavaScript, TypeScript, .NET and Django.","knowsAbout":["Web Development","API Development","REST API","Angular","JavaScript","TypeScript",".NET","Django","Data Visualization","3D Web"],"sameAs":["https://linkedin.com/in/gent-sallaku","https://github.com/gentsallaku"]},{"@type":"WebSite","name":"Gent Sallaku Portfolio","inLanguage":"en-US","about":["Web Development","API Development","Front-end development"]}]}',
+            'ld.faq': '[{"@type":"Question","name":"What do you mainly work on?","acceptedAnswer":{"@type":"Answer","text":"I focus on enterprise web development, Angular interfaces, REST APIs, data visualization, and 3D web applications."}},{"@type":"Question","name":"Do you also work on backend?","acceptedAnswer":{"@type":"Answer","text":"Yes, I have experience with .NET, Django, Python and API integrations."}},{"@type":"Question","name":"Are you available for remote or hybrid projects?","acceptedAnswer":{"@type":"Answer","text":"Yes, I can work remotely or in a hybrid model depending on project needs."}},{"@type":"Question","name":"How can I contact you?","acceptedAnswer":{"@type":"Answer","text":"You can email, send a PEC message, call, or reach out on WhatsApp using the contact details in the contact section."}}]',
+            // Meta & SEO
+            'meta.title': 'Gent Sallaku | Senior Front-End & API Developer | Sviluppo Web',
+            'meta.description': 'Senior Front-End Developer e API Developer. Sviluppo web enterprise con Angular, JavaScript, TypeScript, .NET e Django. Esperienza in REST API, data visualization e 3D web.',
+            'meta.keywords': 'Gent Sallaku, sviluppo web, Angular, JavaScript, TypeScript, .NET, Django, data visualization, 3D web',
+            'meta.og.description': 'Sviluppo web e API per applicazioni enterprise con Angular, JavaScript, TypeScript, .NET e Django.',
+            'meta.twitter.description': 'Sviluppo web e API per applicazioni enterprise con Angular, JavaScript, TypeScript, .NET e Django.',
+
+            // JSON-LD (Person + Website) and FAQ for SEO (italian)
+            'ld.person': '{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Gent Sallaku","jobTitle":"Senior Front-End Developer","description":"Senior Front-End Developer e API Developer specializzato in sviluppo web enterprise con Angular, JavaScript, TypeScript, .NET e Django.","knowsAbout":["Sviluppo Web","API Development","REST API","Angular","JavaScript","TypeScript",".NET","Django","Data Visualization","3D Web"],"sameAs":["https://linkedin.com/in/gent-sallaku","https://github.com/gentsallaku"]},{"@type":"WebSite","name":"Gent Sallaku Portfolio","inLanguage":"it-IT","about":["Sviluppo web","Sviluppo API","Front-end development"]}]}',
+            'ld.faq': '[{"@type":"Question","name":"Di cosa ti occupi principalmente?","acceptedAnswer":{"@type":"Answer","text":"Mi occupo di sviluppo web enterprise, interfacce Angular, API REST, data visualization e applicazioni 3D web."}},{"@type":"Question","name":"Lavori anche su backend?","acceptedAnswer":{"@type":"Answer","text":"Sì, ho esperienza anche su .NET, Django, Python e integrazione di servizi API."}},{"@type":"Question","name":"Sei disponibile per progetti da remoto o ibridi?","acceptedAnswer":{"@type":"Answer","text":"Sì, posso lavorare da remoto o in modalità ibrida a seconda delle esigenze del progetto."}},{"@type":"Question","name":"Come posso contattarti?","acceptedAnswer":{"@type":"Answer","text":"Puoi scrivermi via email, PEC, chiamarmi o contattarmi su WhatsApp usando i riferimenti nella sezione contatti."}}]',
         },
 
         // ══════════ ENGLISH ══════════
@@ -612,6 +642,18 @@ const i18n = {
         document.documentElement.lang = lang === 'sq' ? 'sq' : lang;
         this.updateDOM();
         this.updateLangSwitcher();
+
+        // SEO: update og:locale meta
+        const localeMap = { it: 'it_IT', en: 'en_US', sq: 'sq_AL' };
+        const ogLocale = document.querySelector('meta[property="og:locale"]');
+        if (ogLocale) ogLocale.setAttribute('content', localeMap[lang] || ogLocale.getAttribute('content'));
+
+        // Ensure document title reflects current language (updateDOM already updates <title> if data-i18n set)
+        // Move viewport to top and focus for accessibility / UX (keeps page ‘on top’ in browser)
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0,0); }
+        const main = document.getElementById('hero') || document.body;
+        if (main) main.setAttribute('tabindex', '-1');
+        main && main.focus();
     },
 
     /**

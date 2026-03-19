@@ -829,6 +829,29 @@ details[open] .faq-chevron {
     box-shadow: var(--shadow-sm);
 }
 
+/* Layout: place photo at left and summary/bio at right (responsive) */
+.about-intro {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+.about-photo {
+    flex: 0 0 240px;
+}
+.about-body {
+    flex: 1 1 auto;
+}
+
+@media (max-width: 900px) {
+    .about-intro {
+        flex-direction: column;
+        align-items: center;
+    }
+    .about-photo { order: 0; }
+    .about-body { order: 1; }
+    .about-body .about-summary { text-align: center; }
+}
+
 /* Hero KPI strip styling */
 .hero-kpis {
     display: flex;
