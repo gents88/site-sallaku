@@ -26,6 +26,43 @@ const i18n = {
             'hero.stat.years': 'Anni di esperienza',
             'hero.stat.companies': 'Aziende enterprise',
             'hero.stat.projects': 'Progetti completati',
+            'hero.tag.1': 'Angular',
+            'hero.tag.2': 'Web Applications',
+            'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
+            'hero.scroll': 'Scorri',
+
+            // Short hero / positioning
+            'hero.short': 'Angular, JavaScript e TypeScript con RxJS — architetture modulari orientate a performance prevedibili e gestione reattiva dello stato. Integrazione di librerie JavaScript per data visualization e interfacce avanzate, con strategie di code splitting, lazy loading e telemetry per osservabilità e ottimizzazione runtime.',
+            'hero.heading': 'Interfacce Angular manutenibili e scalabili per contesti enterprise',
+            'cta.review': 'Richiedi una review architetturale',
+            'cta.demo': 'Mostrami i tuoi dati — prenota una demo',
+            'cta.consult': 'Avvia una consulenza tecnica (15 min)',
+
+            // Positioning title + intro
+            'positioning.title': 'Posizionamento',
+            'positioning.intro': 'Progetto e consegno interfacce Angular scalabili per sistemi enterprise mission‑critical, riducendo latenza e aumentando affidabilità operativa.',
+
+            // Case studies (HTML)
+            'case.1': '<h3>Piattaforma Enterprise per Monitoraggio Operativo in Tempo Reale</h3><p><strong>Problema reale:</strong> Dashboard legacy non reggeva picchi di evento (latency &gt; 2s), memory leak lato client e dati aggregati troppo tardi per decisioni operative.</p><p><strong>Soluzione implementata:</strong> Rifattorizzazione in micro‑frontends Angular, stream processing WebSocket con backplane Kafka, lazy loading e OnPush change detection; cache LRU client-side e integrazione OpenTelemetry per observability.</p><p><strong>Tecnologie:</strong> Angular (standalone), RxJS, WebSocket, Kafka, Node.js gateway, OpenTelemetry, Chart.js.</p><p><strong>Impatto:</strong> -70% latenza dall\'evento alla visualizzazione, MTTR dimezzato, throughput x4 senza upgrade hardware, adozione interna +35%.</p>',
+            'case.title': 'Case Studies',
+            'case.2': '<h3>Suite di Dashboard Analitiche per KPI Finanziari</h3><p><strong>Problema reale:</strong> Serie storiche con milioni di punti causavano freeze UI e query lente lato API.</p><p><strong>Soluzione implementata:</strong> Pipeline di pre-aggregation su time-series DB, paginazione e virtual scroll nel client, caching semantico, Web Workers per calcoli pesanti e offscreen canvas per rendering complessi.</p><p><strong>Tecnologie:</strong> Angular, TypeScript, Web Workers, TimescaleDB, Redis, Chart.js / ApexCharts.</p><p><strong>Impatto:</strong> tempo medio di rendering ridotto da 6s a 800ms; CPU client peak -60%; affidabilità delle metriche aumentata grazie a materialized views.</p>',
+            'case.3': '<h3>Visualizzazione 3D Geospaziale per Fleet Management</h3><p><strong>Problema reale:</strong> Visualizzazione in tempo reale di milioni di entità causava overload GPU/CPU e degrado UX su dispositivi enterprise.</p><p><strong>Soluzione implementata:</strong> Server-side tiling e clustering, stream differenziale (deltas) verso client; Cesium.js con LOD dinamico, culling e modalità "lite" per dispositivi limitati.</p><p><strong>Tecnologie:</strong> Cesium.js, WebGL optimizations, Node.js tiling service, protobuf diff streams, Redis.</p><p><strong>Impatto:</strong> entità visualizzabili in real-time aumentate da 50k a 1M mantenendo frame-rate sostenuto; consumo GPU client -40%; time-to-insight ~3x più veloce.</p>',
+
+            // Banner / accessibility
+            'banner.wip': 'Sito in costruzione — Work in progress',
+            'skip.link': 'Vai al contenuto principale',
+
+            // Contact cards
+            'contact.card.email.title': 'Email',
+            'contact.card.email.desc': 'gentsallaku@email.com',
+            'contact.card.phone.title': 'Telefono',
+            'contact.card.phone.desc': '+39 3892352291',
+            'contact.card.pec.title': 'PEC',
+            'contact.card.pec.desc': 'gent.sallaku@pec.it',
+            'contact.card.linkedin.title': 'LinkedIn',
+            'contact.card.linkedin.desc': '/in/gent-sallaku',
+            'contact.card.github.title': 'GitHub',
+            'contact.card.github.desc': '/gentsallaku',
 
             // About
             'about.tag': '&lt;about&gt;',
@@ -37,6 +74,9 @@ const i18n = {
             'about.perf.desc': 'Focus costante sull\'ottimizzazione delle performance, lazy loading strategico, change detection ottimizzata e architetture modulari. Ogni componente è progettato per scalare in contesti ad alto traffico.',
             'about.lead.title': 'Leadership & Mentoring',
             'about.lead.desc': 'Guida tecnica di team front-end, definizione di best practice, code review strutturate e sessioni di mentoring. Costruisco team autonomi e competenti, promuovendo una cultura di qualità del codice.',
+            'about.intro': '<p>Sono Gent Sallaku, Senior Front‑End & API Developer con oltre otto anni di esperienza nella progettazione e realizzazione di interfacce enterprise ad alte prestazioni. Mi occupo di architetture Angular scalabili, ottimizzazione delle performance, data visualization e soluzioni 3D per applicazioni realtime. Ho guidato refactor e iniziative di observability in contesti banking, telco e aerospace, riducendo la latenza e aumentando l\'affidabilità operativa.</p><p>Offro consulenza tecnica, code review e mentoring: trasformo requisiti complessi in soluzioni manutenibili, sicure e misurabili. Lavoro a stretto contatto con product team e ingegneri backend per mettere in produzione componenti che resistono al carico e facilitano decisioni operative basate sui dati.</p>',
+            'about.birth': 'Nato a Blinisht-Lezhe (Albania) il 25/04/1988',
+            'hero.stat.latency': 'Riduzione latenza (tipica)',
 
             // Tech Stack
             'tech.tag': '&lt;tech-stack&gt;',
@@ -50,6 +90,7 @@ const i18n = {
 
             // Projects
             'projects.tag': '&lt;projects&gt;',
+            'projects.lead': 'Una panoramica più ampia dei lavori svolti in ambito enterprise: visualizzazione geospaziale, dashboard analitiche, librarie digitali e piattaforme assicurative con attenzione a UX, performance e integrazione API.',
             'projects.title.1': 'Progetti ',
             'projects.title.2': 'Chiave',
             'projects.geo.title': 'Visualizzazione 3D Geospaziale',
@@ -83,6 +124,10 @@ const i18n = {
             'projects.ins.f3': 'Integrazione con servizi esterni',
             'projects.ins.f4': 'Audit trail e sicurezza dati',
 
+            // Projects page CTA
+            'projects.cta.ask.title': 'Vuoi parlarne?',
+            'projects.cta.ask.desc': 'Se stai cercando uno sviluppo web enterprise o una consulenza su API, Angular, .NET o Django, puoi contattarmi direttamente dalla homepage.',
+
             'faq.tag': '&lt;faq&gt;',
             'faq.title.1': 'Domande ',
             'faq.title.2': 'Frequenti',
@@ -111,7 +156,7 @@ const i18n = {
 
             'exp.1.title': 'Architettura Angular & 3D Web Enterprise',
             'exp.1.role': 'Senior Front-End Developer · ',
-            'exp.1.desc': 'Guida tecnica su progetti enterprise nei settori aerospace e defence. Architettura Angular avanzata con moduli scalabili, visualizzazione 3D geospaziale con Cesium.js, mentoring del team front-end e definizione di standard di sviluppo.',
+            'exp.1.desc': 'Guida tecnica su progetti enterprise nei settori aerospace e defence. Architettura Angular avanzata con moduli scalabili, visualizzazione 3D geospaziale con Cesium.js',
             'exp.2.title': 'Piattaforme Digitali & Data Visualization',
             'exp.2.role': 'Front-End Developer · Specialista Data Viz',
             'exp.2.desc': 'Sviluppo di piattaforme digitali innovative nel settore telco e media. Dashboard analitiche con Looker Embedded, virtual tour immersivi con Photo Sphere Viewer, integrazione API complesse e focus su performance e UX.',
@@ -144,9 +189,54 @@ const i18n = {
             'contact.title.2': 'Progetto',
             'contact.subtitle': '....',
 
+            // Services
+            'services.tag': '&lt;services&gt;',
+            'services.title': 'Servizi di sviluppo web e API',
+            'services.lead': 'Progetto e sviluppo soluzioni enterprise per banking, telco, aerospace e insurance. Lavoro su interfacce Angular, backend .NET e Django, API REST, data visualization e web experience interattive.',
+            'services.web.title': 'Sviluppo Web Enterprise',
+            'services.web.desc': 'Architetture frontend scalabili, UI moderne, componenti riutilizzabili e attenzione costante a performance e manutenzione del codice.',
+            'services.api.title': 'Sviluppo API',
+            'services.api.desc': 'Progettazione e integrazione di API REST per applicazioni enterprise, con focus su sicurezza, chiarezza dei contratti e affidabilità.',
+            'services.dataviz.title': 'Data Visualization',
+            'services.dataviz.desc': 'Dashboard, KPI e visualizzazioni complesse per trasformare i dati in strumenti operativi utili ai decision maker.',
+            'services.threed.title': '3D Web & Interactive UI',
+            'services.threed.desc': 'Esperienze web immersive con Cesium.js, WebGL e interfacce interattive ottimizzate per mobile e desktop.',
+            'services.cta.contact': 'Contatti',
+            'services.cta.projects': 'Case Study',
+
             // Footer
             'footer.text': 'Progettato & Sviluppato da',
             'footer.highlight': 'Gent Sallaku',
+            // Meta & SEO
+            'meta.title': 'Gent Sallaku | Senior Front-End & API Developer | Zhvillim Web',
+            'meta.description': 'Senior Front-End & API Developer. Projektim dhe zhvillim aplikacionesh enterprise me Angular, JavaScript, TypeScript, .NET dhe Django. Eksperiencë me REST API, data visualization dhe 3D web.',
+            'meta.keywords': 'Gent Sallaku, zhvillim web, Angular, JavaScript, TypeScript, .NET, Django, data visualization, 3D web',
+            'meta.og.description': 'Zhvillim web dhe API për aplikacione enterprise me Angular, JavaScript, TypeScript, .NET dhe Django.',
+            'meta.twitter.description': 'Zhvillim web dhe API për aplikacione enterprise me Angular, JavaScript, TypeScript, .NET dhe Django.',
+
+            // JSON-LD (Person + Website) and FAQ for SEO (albanian)
+            'ld.person': '{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Gent Sallaku","jobTitle":"Senior Front-End Developer","description":"Senior Front-End & API Developer i specializuar në zhvillimin enterprise me Angular, JavaScript, TypeScript, .NET dhe Django.","knowsAbout":["Zhvillim Web","API Development","REST API","Angular","JavaScript","TypeScript",".NET","Django","Data Visualization","3D Web"],"sameAs":["https://linkedin.com/in/gent-sallaku","https://github.com/gentsallaku"]},{"@type":"WebSite","name":"Gent Sallaku Portfolio","inLanguage":"sq-AL","about":["Zhvillim web","Zhvillim API","Front-end development"]}]}',
+            'ld.faq': '[{"@type":"Question","name":"Me çfarë merresh kryesisht?","acceptedAnswer":{"@type":"Answer","text":"Merren me zhvillim web enterprise, ndërfaqe Angular, API REST, vizualizim të dhënash dhe aplikacione 3D web."}},{"@type":"Question","name":"A punon edhe me backend?","acceptedAnswer":{"@type":"Answer","text":"Po, kam përvojë me .NET, Django, Python dhe integrime API."}},{"@type":"Question","name":"Je i disponueshëm për projekte remote ose hibride?","acceptedAnswer":{"@type":"Answer","text":"Po, mund të punoj remote ose në mënyrë hibride sipas nevojave të projektit."}},{"@type":"Question","name":"Si mund të kontaktoj me ty?","acceptedAnswer":{"@type":"Answer","text":"Mund të më kontaktoni me email, PEC, telefon ose WhatsApp duke përdorur të dhënat në seksionin e kontakteve."}}]',
+            // Meta & SEO
+            'meta.title': 'Gent Sallaku | Senior Front-End & API Developer | Web Development',
+            'meta.description': 'Senior Front-End & API Developer. I design and build enterprise web applications with Angular, JavaScript, TypeScript, .NET and Django. Experienced in REST APIs, data visualization and 3D web.',
+            'meta.keywords': 'Gent Sallaku, web development, Angular, JavaScript, TypeScript, .NET, Django, data visualization, 3D web',
+            'meta.og.description': 'Web & API development for enterprise applications using Angular, JavaScript, TypeScript, .NET and Django.',
+            'meta.twitter.description': 'Web & API development for enterprise applications using Angular, JavaScript, TypeScript, .NET and Django.',
+
+            // JSON-LD (Person + Website) and FAQ for SEO (english)
+            'ld.person': '{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Gent Sallaku","jobTitle":"Senior Front-End Developer","description":"Senior Front-End & API Developer specialized in enterprise web development with Angular, JavaScript, TypeScript, .NET and Django.","knowsAbout":["Web Development","API Development","REST API","Angular","JavaScript","TypeScript",".NET","Django","Data Visualization","3D Web"],"sameAs":["https://linkedin.com/in/gent-sallaku","https://github.com/gentsallaku"]},{"@type":"WebSite","name":"Gent Sallaku Portfolio","inLanguage":"en-US","about":["Web Development","API Development","Front-end development"]}]}',
+            'ld.faq': '[{"@type":"Question","name":"What do you mainly work on?","acceptedAnswer":{"@type":"Answer","text":"I focus on enterprise web development, Angular interfaces, REST APIs, data visualization, and 3D web applications."}},{"@type":"Question","name":"Do you also work on backend?","acceptedAnswer":{"@type":"Answer","text":"Yes, I have experience with .NET, Django, Python and API integrations."}},{"@type":"Question","name":"Are you available for remote or hybrid projects?","acceptedAnswer":{"@type":"Answer","text":"Yes, I can work remotely or in a hybrid model depending on project needs."}},{"@type":"Question","name":"How can I contact you?","acceptedAnswer":{"@type":"Answer","text":"You can email, send a PEC message, call, or reach out on WhatsApp using the contact details in the contact section."}}]',
+            // Meta & SEO
+            'meta.title': 'Gent Sallaku | Senior Front-End & API Developer | Sviluppo Web',
+            'meta.description': 'Senior Front-End Developer e API Developer. Sviluppo web enterprise con Angular, JavaScript, TypeScript, .NET e Django. Esperienza in REST API, data visualization e 3D web.',
+            'meta.keywords': 'Gent Sallaku, sviluppo web, Angular, JavaScript, TypeScript, .NET, Django, data visualization, 3D web',
+            'meta.og.description': 'Sviluppo web e API per applicazioni enterprise con Angular, JavaScript, TypeScript, .NET e Django.',
+            'meta.twitter.description': 'Sviluppo web e API per applicazioni enterprise con Angular, JavaScript, TypeScript, .NET e Django.',
+
+            // JSON-LD (Person + Website) and FAQ for SEO (italian)
+            'ld.person': '{"@context":"https://schema.org","@graph":[{"@type":"Person","name":"Gent Sallaku","jobTitle":"Senior Front-End Developer","description":"Senior Front-End Developer e API Developer specializzato in sviluppo web enterprise con Angular, JavaScript, TypeScript, .NET e Django.","knowsAbout":["Sviluppo Web","API Development","REST API","Angular","JavaScript","TypeScript",".NET","Django","Data Visualization","3D Web"],"sameAs":["https://linkedin.com/in/gent-sallaku","https://github.com/gentsallaku"]},{"@type":"WebSite","name":"Gent Sallaku Portfolio","inLanguage":"it-IT","about":["Sviluppo web","Sviluppo API","Front-end development"]}]}',
+            'ld.faq': '[{"@type":"Question","name":"Di cosa ti occupi principalmente?","acceptedAnswer":{"@type":"Answer","text":"Mi occupo di sviluppo web enterprise, interfacce Angular, API REST, data visualization e applicazioni 3D web."}},{"@type":"Question","name":"Lavori anche su backend?","acceptedAnswer":{"@type":"Answer","text":"Sì, ho esperienza anche su .NET, Django, Python e integrazione di servizi API."}},{"@type":"Question","name":"Sei disponibile per progetti da remoto o ibridi?","acceptedAnswer":{"@type":"Answer","text":"Sì, posso lavorare da remoto o in modalità ibrida a seconda delle esigenze del progetto."}},{"@type":"Question","name":"Come posso contattarti?","acceptedAnswer":{"@type":"Answer","text":"Puoi scrivermi via email, PEC, chiamarmi o contattarmi su WhatsApp usando i riferimenti nella sezione contatti."}}]',
         },
 
         // ══════════ ENGLISH ══════════
@@ -167,6 +257,43 @@ const i18n = {
             'hero.stat.years': 'Years of experience',
             'hero.stat.companies': 'Enterprise companies',
             'hero.stat.projects': 'Completed projects',
+            'hero.tag.1': 'Angular',
+            'hero.tag.2': 'Web Applications',
+            'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
+            'hero.scroll': 'Scroll',
+
+            // Short hero / positioning
+            'hero.short': 'Angular, JavaScript and TypeScript with RxJS — modular architectures focused on predictable performance and reactive state management. Integration of JavaScript libraries for data visualization and advanced interfaces, with code-splitting strategies, lazy loading and telemetry for observability and runtime optimization.',
+            'hero.heading': 'Maintainable, scalable Angular UIs for enterprise contexts',
+            'cta.review': 'Request an architecture review',
+            'cta.demo': 'Show me your data — book a demo',
+            'cta.consult': 'Start a technical consultation (15 min)',
+
+            // Positioning title + intro
+            'positioning.title': 'Positioning',
+            'positioning.intro': 'I design and deliver scalable Angular interfaces for mission‑critical enterprise systems, reducing latency and improving operational reliability.',
+
+            // Case studies (HTML)
+            'case.1': '<h3>Real-time Operational Monitoring Platform</h3><p><strong>Problem:</strong> Legacy dashboard could not handle event spikes (latency &gt; 2s), client memory leaks and late aggregations.</p><p><strong>Solution:</strong> Rearchitected into Angular micro‑frontends, WebSocket streaming backed by Kafka, lazy loading and OnPush change detection; client LRU cache and OpenTelemetry for observability.</p><p><strong>Technologies:</strong> Angular (standalone), RxJS, WebSocket, Kafka, Node.js gateway, OpenTelemetry, Chart.js.</p><p><strong>Impact:</strong> 70% latency reduction from event to view, MTTR halved, throughput x4 without hardware upgrades, internal adoption +35%.</p>',
+            'case.title': 'Case Studies',
+            'case.2': '<h3>Analytical Dashboards for Financial KPIs</h3><p><strong>Problem:</strong> Time-series with millions of points caused UI freezes and slow API queries.</p><p><strong>Solution:</strong> Pre-aggregation pipeline on a time-series DB, client virtual scroll and pagination, semantic caching, Web Workers for heavy compute and offscreen canvas for complex rendering.</p><p><strong>Technologies:</strong> Angular, TypeScript, Web Workers, TimescaleDB, Redis, Chart.js / ApexCharts.</p><p><strong>Impact:</strong> Average render time dropped from 6s to 800ms; client CPU peaks -60%; metric reliability improved via materialized views.</p>',
+            'case.3': '<h3>Geospatial 3D Visualization for Fleet Management</h3><p><strong>Problem:</strong> Real-time visualization of millions of entities overloaded GPU/CPU and degraded UX on enterprise clients.</p><p><strong>Solution:</strong> Server-side tiling and clustering, differential (delta) streams to clients; Cesium.js with dynamic LOD, culling and a "lite" mode for constrained devices.</p><p><strong>Technologies:</strong> Cesium.js, WebGL optimizations, Node.js tiling service, protobuf diff streams, Redis.</p><p><strong>Impact:</strong> Real-time entities increased from 50k to 1M while maintaining stable frame-rate; client GPU usage -40%; time-to-insight ~3x faster.</p>',
+
+            // Banner / accessibility
+            'banner.wip': 'Site under construction — Work in progress',
+            'skip.link': 'Skip to main content',
+
+            // Contact cards
+            'contact.card.email.title': 'Email',
+            'contact.card.email.desc': 'gentsallaku@email.com',
+            'contact.card.phone.title': 'Phone',
+            'contact.card.phone.desc': '+39 3892352291',
+            'contact.card.pec.title': 'PEC',
+            'contact.card.pec.desc': 'gent.sallaku@pec.it',
+            'contact.card.linkedin.title': 'LinkedIn',
+            'contact.card.linkedin.desc': '/in/gent-sallaku',
+            'contact.card.github.title': 'GitHub',
+            'contact.card.github.desc': '/gentsallaku',
 
             'about.tag': '&lt;about&gt;',
             'about.title.1': 'About ',
@@ -177,6 +304,9 @@ const i18n = {
             'about.perf.desc': 'Constant focus on performance optimization, strategic lazy loading, optimized change detection, and modular architectures. Every component is designed to scale in high-traffic contexts.',
             'about.lead.title': 'Leadership & Mentoring',
             'about.lead.desc': 'Technical leadership of front-end teams, defining best practices, structured code reviews, and mentoring sessions. I build autonomous and skilled teams, promoting a culture of code quality.',
+            'about.intro': '<p>I\'m Gent Sallaku, a Senior Front‑End & API Developer with over eight years of experience designing and delivering high-performance enterprise interfaces. I focus on scalable Angular architectures, performance optimization, data visualization, and 3D solutions for realtime applications. I have led refactors and observability initiatives in banking, telco and aerospace contexts, reducing latency and improving operational reliability.</p><p>I offer technical consulting, code reviews and mentoring: I turn complex requirements into maintainable, secure and measurable solutions. I work closely with product teams and backend engineers to ship components that withstand load and enable data-driven operational decisions.</p>',
+            'about.birth': 'Born in Blinisht-Lezhe (Albania) on 25/04/1988',
+            'hero.stat.latency': 'Typical latency reduction',
 
             'tech.tag': '&lt;tech-stack&gt;',
             'tech.title.1': 'Tech ',
@@ -188,6 +318,7 @@ const i18n = {
             'tech.cat.devops': 'DevOps & Tools',
 
             'projects.tag': '&lt;projects&gt;',
+            'projects.lead': 'A broader overview of work done in the enterprise space: geospatial visualization, analytical dashboards, digital library platforms and insurance platforms, with focus on UX, performance and API integration.',
             'projects.title.1': 'Key ',
             'projects.title.2': 'Projects',
             'projects.geo.title': '3D Geospatial Visualization',
@@ -237,7 +368,7 @@ const i18n = {
             'contact.form.name': 'Full name',
             'contact.form.email': 'Email',
             'contact.form.message': 'Message',
-            'contact.form.submit': 'Send via Email',
+            'contact.form.submit': 'Send by Email',
             'contact.form.note': 'The form opens your email client with the message prefilled. Automatic sending requires a server endpoint.',
 
             'exp.tag': '&lt;experience&gt;',
@@ -279,6 +410,21 @@ const i18n = {
             'contact.title.2': 'Project',
             'contact.subtitle': '....',
 
+            // Services
+            'services.tag': '&lt;services&gt;',
+            'services.title': 'Web & API Development Services',
+            'services.lead': 'I design and build enterprise solutions for banking, telco, aerospace and insurance. I work on Angular frontends, .NET/Django backends, REST APIs, data visualization and interactive web experiences.',
+            'services.web.title': 'Enterprise Web Development',
+            'services.web.desc': 'Scalable frontend architectures, modern UIs, reusable components and strong focus on performance and maintainability.',
+            'services.api.title': 'API Development',
+            'services.api.desc': 'Design and integration of REST APIs for enterprise applications, focusing on security, clear contracts and reliability.',
+            'services.dataviz.title': 'Data Visualization',
+            'services.dataviz.desc': 'Dashboards, KPIs and complex visualizations to turn data into actionable tools for decision makers.',
+            'services.threed.title': '3D Web & Interactive UI',
+            'services.threed.desc': 'Immersive web experiences with Cesium.js, WebGL and interactive UIs optimized for mobile and desktop.',
+            'services.cta.contact': 'Contact',
+            'services.cta.projects': 'Case Studies',
+
             'footer.text': 'Designed & Developed by',
             'footer.highlight': 'Gent Sallaku',
         },
@@ -295,12 +441,49 @@ const i18n = {
 
             'hero.badge': 'I disponueshëm për projekte enterprise',
             'hero.role': 'Senior Front-End Developer',
-                'hero.description': 'Kam lindur ne Blinisht, ne zonen e Zadrimes, nje fshat i vogel ne veriperendim te Shqiperise, i rrethuar nga kodra, male dhe bregdeti Adriatik. Te rritesh me kater vellezer e beri femijerine time te gjalle dhe formuese, te karakterizuar nga bashkepunimi, kreativiteti dhe nje ndjenje e forte komuniteti. Pas Revoltes shqiptare te vitit 1997, iu bashkova Shoqates Ambasadoret e Paqes, duke kontribuar ne aktivitetet e cminimit dhe ne mbeshtetjen e komuniteteve te prekura. Kjo pervoje forcoi tek une qendresen, pergjegjesine dhe shpirtin e sherbimit. Ne boten e informatikes hodha hapat e pare qe ne vitin 2005, duke programuar aplikacione te vogla dhe duke ndertuar, me kalimin e kohes, nje rrugetim te mbeshtetur nga studimi dhe pervoja te ndryshme pune qe forcuan aftesite e mia teknike. Sot jetoj ne Torino, pas shume vitesh te kaluara ne Milano. Qe nga viti 2018 projektoj dhe zhvilloj nderfaqe enterprise dhe aplikacione me performance te larte ne sektoret bankar, telekomunikacion dhe hapesinor. Me nje sfond full-stack .NET, sot jam i specializuar ne arkitektura te shkallezueshme te bazuara ne Angular dhe JavaScript, duke shfrytezuar librari te ndryshme per te krijuar aplikacione moderne, interaktive dhe te orientuara nga te dhenat, me fokus te vecante te data visualization dhe 3D web.',
+            'hero.description': 'Kam lindur ne Blinisht, ne zonen e Zadrimes, nje fshat i vogel ne veriperendim te Shqiperise, i rrethuar nga kodra, male dhe bregdeti Adriatik. Te rritesh me kater vellezer e beri femijerine time te gjalle dhe formuese, te karakterizuar nga bashkepunimi, kreativiteti dhe nje ndjenje e forte komuniteti. Pas Revoltes shqiptare te vitit 1997, iu bashkova Shoqates Ambasadoret e Paqes, duke kontribuar ne aktivitetet e ndryshme dhe ne mbeshtetjen e komuniteteve te prekura. Kjo pervoje forcoi tek une qendresen, pergjegjesine dhe shpirtin e sherbimit. Ne boten e informatikes hodha hapat e pare qe ne vitin 2005, duke programuar aplikacione te vogla dhe duke ndertuar, me kalimin e kohes, nje rrugetim te mbeshtetur nga studimi dhe pervoja te ndryshme pune qe forcuan aftesite e mia teknike. Sot jetoj ne Torino, pas shume vitesh te kaluara ne Milano. Qe nga viti 2018 projektoj dhe zhvilloj nderfaqe enterprise dhe aplikacione me performance te larte ne sektoret bankar, telekomunikacion dhe hapesinor. Me nje sfond full-stack .NET, sot jam i specializuar ne arkitektura te shkallezueshme te bazuara ne Angular dhe JavaScript, duke shfrytezuar librari te ndryshme per te krijuar aplikacione moderne, interaktive dhe te orientuara nga te dhenat, me fokus te vecante te data visualization dhe 3D web.',
             'hero.cta.projects': 'Projekte',
             'hero.cta.contact': 'Kontakt',
             'hero.stat.years': 'Vite përvojë',
             'hero.stat.companies': 'Kompani enterprise',
             'hero.stat.projects': 'Projekte të përfunduara',
+            'hero.tag.1': 'Angular',
+            'hero.tag.2': 'Aplikacione Web',
+            'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
+            'hero.scroll': 'Shkruaj',
+
+            // Short hero / positioning
+            'hero.short': 'Angular, JavaScript dhe TypeScript me RxJS — arkitektura modulare të orientuara drejt performancës së parashikueshme dhe menaxhimit reaktiv të gjendjes. Integrimi i bibliotekave JavaScript për vizualizimin e të dhënave dhe ndërfaqe të avancuara, me strategji për ndarjen e kodit (code-splitting), lazy loading dhe telemetry për vëzhgueshmëri dhe optimizim në kohë të ekzekutimit.',
+            'hero.heading': 'UI Angular të mirëmbajtshme dhe të shkallëzueshme për kontekste enterprise',
+            'cta.review': 'Kërko një rishikim arkitekturor',
+            'cta.demo': 'Trego të dhënat tuaja — rezervoni një demo',
+            'cta.consult': 'Nisni një konsultë teknike (15 min)',
+
+            // Positioning title + intro
+            'positioning.title': 'Pozicionimi',
+            'positioning.intro': 'Projektoj dhe dorëzoj ndërfaqe Angular të shkallëzueshme për sisteme enterprise mission‑critical, duke ulur vonesën dhe rritur besueshmërinë operative.',
+
+            // Case studies (HTML)
+            'case.1': '<h3>Platformë Monitoring Operacional në Kohë reale</h3><p><strong>Problem:</strong> Dashboard legacy nuk përballonte pikat e ngarkesës (latencë &gt; 2s), memory leak dhe agregime të vonuara.</p><p><strong>Zgjidhja:</strong> Rifaktorim në micro‑frontends Angular, stream WebSocket me backplane Kafka, lazy loading dhe OnPush; cache LRU klient-side dhe OpenTelemetry për observability.</p><p><strong>Teknologji:</strong> Angular, RxJS, WebSocket, Kafka, Node.js gateway, OpenTelemetry, Chart.js.</p><p><strong>Impakt:</strong> -70% latencë, MTTR u përgjysmua, throughput x4 pa upgrade hardware, adoption +35%.</p>',
+            'case.title': 'Studime Raste',
+            'case.2': '<h3>Dashboard Analitike për KPI Financiare</h3><p><strong>Problem:</strong> Seri kohore me miliona pika shkaktonin freeze UI dhe query të ngadalta.</p><p><strong>Zgjidhja:</strong> Pipeline pre-aggregation në time-series DB, virtual scroll dhe pagination në klient, semantic caching, Web Workers dhe offscreen canvas për rendering kompleks.</p><p><strong>Teknologji:</strong> Angular, TypeScript, Web Workers, TimescaleDB, Redis, Chart.js / ApexCharts.</p><p><strong>Impakt:</strong> Koha mesatare e rendering u ul nga 6s në 800ms; CPU -60%; besueshmëria e metrikave u përmirësua.</p>',
+            'case.3': '<h3>Vizualizim 3D Gjeohapësinor për Fleet Management</h3><p><strong>Problem:</strong> Vizualizimi real-time i miliona entiteteve ngarkonte GPU/CPU dhe degradoi UX.</p><p><strong>Zgjidhja:</strong> Server-side tiling dhe clustering, stream diferencial, Cesium.js me LOD dinamik, culling dhe modalitet "lite" për pajisje të kufizuara.</p><p><strong>Teknologji:</strong> Cesium.js, optimizime WebGL, Node.js tiling service, protobuf diff streams, Redis.</p><p><strong>Impakt:</strong> Entitetet real-time rritën nga 50k në 1M, frame-rate i qëndrueshëm; GPU -40%; time-to-insight ~3x më i shpejtë.</p>',
+
+            // Banner / accessibility
+            'banner.wip': 'Faqja në ndërtim — Work in progress',
+            'skip.link': 'Shko te përmbajtja kryesore',
+
+            // Contact cards
+            'contact.card.email.title': 'Email',
+            'contact.card.email.desc': 'gentsallaku@email.com',
+            'contact.card.phone.title': 'Telefon',
+            'contact.card.phone.desc': '+39 3892352291',
+            'contact.card.pec.title': 'PEC',
+            'contact.card.pec.desc': 'gent.sallaku@pec.it',
+            'contact.card.linkedin.title': 'LinkedIn',
+            'contact.card.linkedin.desc': '/in/gent-sallaku',
+            'contact.card.github.title': 'GitHub',
+            'contact.card.github.desc': '/gentsallaku',
 
             'about.tag': '&lt;about&gt;',
             'about.title.1': 'Rreth ',
@@ -311,6 +494,9 @@ const i18n = {
             'about.perf.desc': 'Fokus i vazhdueshëm në optimizimin e performancës, lazy loading strategjik, change detection i optimizuar dhe arkitektura modulare. Çdo komponent është projektuar për të shkallëzuar në kontekste me trafik të lartë.',
             'about.lead.title': 'Lidershipi & Mentorimi',
             'about.lead.desc': 'Udhëheqje teknike e ekipeve front-end, përcaktimi i best practice, code review të strukturuara dhe sesione mentorimi. Ndërtoj ekipe autonome dhe kompetente, duke promovuar një kulturë të cilësisë së kodit.',
+            'about.intro': '<p>Unë jam Gent Sallaku, Senior Front‑End & API Developer me mbi tetë vjet eksperiencë në projektimin dhe realizimin e ndërfaqeve enterprise me performancë të lartë. Merren me arkitektura Angular të shkallëzueshme, optimizimin e performancës, data visualization dhe zgjidhje 3D për aplikacione realtime. Kam udhëhequr refaktorime dhe iniciativa observability në sektorë si banking, telco dhe aerospace, duke ulur latencën dhe rritur besueshmërinë operative.</p><p>Ofroj konsulencë teknike, code review dhe mentoring: transformoj kërkesa komplekse në zgjidhje të mirëmbajtshme, të sigurta dhe të matshme. Bashkëpunoj ngushtë me product team dhe inxhinierë backend për të vënë në prodhim komponentë që përballojnë ngarkesën dhe lehtësojnë vendimmarrjen operacionale të bazuar në të dhëna.</p>',
+            'about.birth': 'Lindur në Blinisht-Lezhe (Shqipëri) më 25/04/1988',
+            'hero.stat.latency': 'Reduktim tipik i latencës',
 
             'tech.tag': '&lt;tech-stack&gt;',
             'tech.title.1': 'Tech ',
@@ -322,6 +508,7 @@ const i18n = {
             'tech.cat.devops': 'DevOps & Tools',
 
             'projects.tag': '&lt;projects&gt;',
+            'projects.lead': 'Një përmbledhje më e gjerë e punëve në fushën enterprise: vizualizim gjeohapësinor, dashboard analitike, platforma biblioteka digjitale dhe platforma sigurimesh, me fokus në UX, performancë dhe integrim API.',
             'projects.title.1': 'Projekte ',
             'projects.title.2': 'Kryesore',
             'projects.geo.title': 'Vizualizim 3D Gjeohapësinor',
@@ -413,8 +600,26 @@ const i18n = {
             'contact.title.2': 'Projektin tënd',
             'contact.subtitle': '....',
 
+            // Services
+            'services.tag': '&lt;services&gt;',
+            'services.title': 'Shërbime zhvillimi web dhe API',
+            'services.lead': 'Projektim dhe zhvillim zgjidhjesh enterprise për banking, telco, aerospace dhe insurance.',
+            'services.web.title': 'Zhvillim Web Enterprise',
+            'services.web.desc': 'Arkitektura frontend të shkallëzueshme, UI moderne, komponentë të ripërdorshëm dhe fokus i vazhdueshëm në performancë dhe mirëmbajtje të kodit.',
+            'services.api.title': 'Zhvillim API',
+            'services.api.desc': 'Projektim dhe integrim API REST për aplikacione enterprise, me fokus në siguri, qartësi kontraktesh dhe besueshmëri.',
+            'services.dataviz.title': 'Data Visualization',
+            'services.dataviz.desc': 'Dashboard, KPI dhe vizualizime komplekse për të kthyer të dhënat në mjete operacionale për vendimmarrësit.',
+            'services.threed.title': '3D Web & UI Interaktive',
+            'services.threed.desc': 'Eksperienca web imersive me Cesium.js, WebGL dhe ndërfaqe interaktive të optimizuara për mobile dhe desktop.',
+                'services.cta.contact': 'Kontakt',
+                'services.cta.projects': 'Case Study',
+
             'footer.text': 'Projektuar & Zhvilluar nga',
             'footer.highlight': 'Gent Sallaku',
+                // Projects page CTA (sq)
+                'projects.cta.ask.title': 'Doni të flasim?',
+                'projects.cta.ask.desc': 'Nëse po kërkoni zhvillim web enterprise ose konsultim për API, Angular, .NET ose Django, mund të më kontaktoni drejtpërdrejt nga faqja kryesore.',
         }
     },
 
@@ -437,6 +642,18 @@ const i18n = {
         document.documentElement.lang = lang === 'sq' ? 'sq' : lang;
         this.updateDOM();
         this.updateLangSwitcher();
+
+        // SEO: update og:locale meta
+        const localeMap = { it: 'it_IT', en: 'en_US', sq: 'sq_AL' };
+        const ogLocale = document.querySelector('meta[property="og:locale"]');
+        if (ogLocale) ogLocale.setAttribute('content', localeMap[lang] || ogLocale.getAttribute('content'));
+
+        // Ensure document title reflects current language (updateDOM already updates <title> if data-i18n set)
+        // Move viewport to top and focus for accessibility / UX (keeps page ‘on top’ in browser)
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0,0); }
+        const main = document.getElementById('hero') || document.body;
+        if (main) main.setAttribute('tabindex', '-1');
+        main && main.focus();
     },
 
     /**
@@ -445,13 +662,35 @@ const i18n = {
     updateDOM() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
+                const translation = this.t(key);
+
+                // If translation missing, this.t returns the key itself — don't overwrite
+                if (!translation || translation === key) return;
+
+                if (el.hasAttribute('data-i18n-html')) {
+                    el.innerHTML = translation;
+                } else {
+                    el.textContent = translation;
+                }
+        });
+
+        // Update placeholders (inputs / textarea)
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
             const translation = this.t(key);
-            
-            if (el.hasAttribute('data-i18n-html')) {
-                el.innerHTML = translation;
-            } else {
-                el.textContent = translation;
-            }
+            if (translation) el.setAttribute('placeholder', translation);
+        });
+
+        // Update arbitrary attributes via data-i18n-attr="attr:key,attr2:key2"
+        document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+            const raw = el.getAttribute('data-i18n-attr');
+            // pairs like "aria-label:cta.review,title:some.key"
+            raw.split(',').forEach(pair => {
+                const [attr, k] = pair.split(':').map(s => s && s.trim());
+                if (!attr || !k) return;
+                const translation = this.t(k);
+                if (translation && translation !== k) el.setAttribute(attr, translation);
+            });
         });
 
         // Update section titles with gradient spans
