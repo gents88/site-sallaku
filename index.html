@@ -222,7 +222,7 @@
             <h1 class="hero-name animate-fade-up delay-1">
                 Gent <span class="text-gradient">Sallaku</span>
             </h1>
-            <h2 class="hero-role animate-fade-up delay-2" data-i18n="hero.role">Senior Front-End Developer</h2>
+            <h2 class="hero-role animate-fade-up delay-2">UI Angular të mirëmbajtshme dhe të shkallëzueshme për kontekste enterprise</h2>
             <div class="hero-tagline animate-fade-up delay-3">
                 <span class="tag" data-i18n="hero.tag.1">Angular</span>
                 <span class="tag-separator">|</span>
@@ -230,35 +230,40 @@
                 <span class="tag-separator">|</span>
                 <span class="tag" data-i18n="hero.tag.3">UI/UX & Data Visualization 3D Web</span>
             </div>
-            <p class="hero-description animate-fade-up delay-4" data-i18n="hero.description">
-                Sono nato a Blinisht, nella regione di Zadrima, un piccolo villaggio nel nord-ovest dell’Albania, incastonato tra colline, montagne e la costa adriatica. Crescere con quattro fratelli ha reso la mia infanzia vivace e formativa, fatta di collaborazione, creatività e un forte senso di comunità.
-Dopo la Rivolta albanese del 1997, mi sono unito all’Associazione Ambasciatori di Pace, contribuendo alle attività di sminamento e al supporto delle comunità colpite. Questa esperienza ha rafforzato in me resilienza, responsabilità e spirito di servizio.
-Nel mondo dell’informatica ho iniziato a muovere i primi passi già dal 2005, programmando piccole applicazioni e costruendo, nel tempo, un percorso fatto di studio e diverse esperienze lavorative che hanno consolidato le mie competenze tecniche. Oggi vivo a Torino, dopo molti anni vissuti a Milano.
-Dal 2018 progetto e sviluppo interfacce enterprise ad alte prestazioni nei settori banking, telco e aerospace. Con un background full-stack .NET, oggi sono specializzato in architetture scalabili basate su Angular e JavaScript, utilizzando diverse librerie per costruire applicazioni moderne, interattive e orientate ai dati, con particolare attenzione alla data visualization e al 3D web.
-            </p>
+            <p class="hero-description animate-fade-up delay-4" data-i18n="hero.short"></p>
             <div class="hero-cta animate-fade-up delay-5">
-                <a href="#projects" class="btn btn-primary">
-                    <i class="fas fa-rocket"></i> <span data-i18n="hero.cta.projects">Progetti</span>
+                <a href="#contact" class="btn btn-primary primary-cta" data-i18n-attr="aria-label:cta.review">
+                    <i class="fas fa-search" aria-hidden="true"></i> <span data-i18n="cta.review">Richiedi una review architetturale</span>
                 </a>
-                <a href="services.html" class="btn btn-outline">
-                    <i class="fas fa-compass"></i> <span data-i18n="nav.services">Servizi</span>
+                <a href="#projects" class="btn btn-outline secondary-cta" aria-label="">
+                    <i class="fas fa-chart-line" aria-hidden="true"></i> <span data-i18n="cta.demo">Mostrami i tuoi dati — prenota una demo</span>
                 </a>
-                <a href="#contact" class="btn btn-outline">
-                    <i class="fas fa-paper-plane"></i> <span data-i18n="hero.cta.contact">Contatti</span>
+                <a href="#contact" class="btn btn-outline secondary-cta" aria-label="">
+                    <i class="fas fa-clock" aria-hidden="true"></i> <span data-i18n="cta.consult">Avvia una consulenza tecnica (15 min)</span>
                 </a>
             </div>
-            <div class="hero-stats animate-fade-up delay-5">
-                <div class="stat">
-                    <span class="stat-number" data-count="8">0</span><span class="stat-plus">+</span>
-                    <span class="stat-label" data-i18n="hero.stat.years">Anni di esperienza</span>
+
+            <!-- KPI strip: concise metrics for quick credibility -->
+            <div class="hero-kpis animate-fade-up delay-5">
+                <div class="kpi">
+                    <div class="kpi-icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
+                    <div class="kpi-number">8<span class="kpi-plus">+</span></div>
+                    <div class="kpi-label" data-i18n="hero.stat.years">Anni esperienza</div>
                 </div>
-                <div class="stat">
-                    <span class="stat-number" data-count="4">0</span><span class="stat-plus">+</span>
-                    <span class="stat-label" data-i18n="hero.stat.companies">Aziende enterprise</span>
+                <div class="kpi">
+                    <div class="kpi-icon"><i class="fas fa-folder-open" aria-hidden="true"></i></div>
+                    <div class="kpi-number">20<span class="kpi-plus">+</span></div>
+                    <div class="kpi-label" data-i18n="hero.stat.projects">Progetti completati</div>
                 </div>
-                <div class="stat">
-                    <span class="stat-number" data-count="20">0</span><span class="stat-plus">+</span>
-                    <span class="stat-label" data-i18n="hero.stat.projects">Progetti completati</span>
+                <div class="kpi">
+                    <div class="kpi-icon"><i class="fas fa-building" aria-hidden="true"></i></div>
+                    <div class="kpi-number">4</div>
+                    <div class="kpi-label" data-i18n="hero.stat.companies">Aziende enterprise</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-icon"><i class="fas fa-bolt" aria-hidden="true"></i></div>
+                    <div class="kpi-number">70<span class="kpi-plus">%</span></div>
+                    <div class="kpi-label" data-i18n="hero.stat.latency">Riduzione latenza (tipica)</div>
                 </div>
             </div>
         </div>
@@ -271,6 +276,44 @@ Dal 2018 progetto e sviluppo interfacce enterprise ad alte prestazioni nei setto
     </section>
 
     <!-- ═══════════ ABOUT ═══════════ -->
+    <!-- Posizionamento: seniority, complessità, impatto -->
+    <section class="section" id="positioning">
+        <div class="container">
+            <div class="section-header reveal">
+                <h3 class="section-title" data-i18n="positioning.title">Posizionamento</h3>
+                <div class="section-line"></div>
+            </div>
+            <div class="glass-card reveal" style="padding:20px;margin-top:12px;">
+                <p class="lead" data-i18n="positioning.intro" style="margin:0;font-size:1.05rem;">Progetto e consegno interfacce Angular scalabili per sistemi enterprise mission‑critical, riducendo latenza e aumentando affidabilità operativa.</p>
+                <!-- Alternative concise versions (kept for editing):
+                    - Guida architetture front-end TypeScript che trasformano dataset complessi in dashboard operative per decisioni in tempo reale.
+                    - Realizzo visualizzazioni 3D e dashboard ad alte prestazioni che convertono segnali grezzi in insight azionabili per team operativi.
+                -->
+                <!-- Longer options (editable):
+                    - Coordino progetti Angular enterprise end-to-end: definisco architetture modulari, ottimizzo bundle e telemetry, e garantisco stabilità sotto carico. Integro data visualization e 3D per creare cruscotti operativi utilizzabili in produzione.
+                    - Progetto front-end resilienti per applicazioni mission-critical, implementando strategie di scalabilità e observability che prevengono degradazione prestazionale nei picchi di carico. Connetto pipeline dati a visualizzazioni interattive per supportare interventi immediati.
+                -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ CASE STUDIES ═══════════ -->
+    <section class="section" id="case-studies">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2 class="section-title" data-i18n="case.title">Case Studies</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <div class="case-grid">
+                <article class="case-card glass-card reveal" data-i18n="case.1" data-i18n-html></article>
+
+                <article class="case-card glass-card reveal" data-i18n="case.2" data-i18n-html></article>
+
+                <article class="case-card glass-card reveal" data-i18n="case.3" data-i18n-html></article>
+            </div>
+        </div>
+    </section>
     <section class="section" id="about">
         <div class="container">
             <div class="section-header reveal">
@@ -278,6 +321,7 @@ Dal 2018 progetto e sviluppo interfacce enterprise ad alte prestazioni nei setto
                 <h2 class="section-title" data-i18n-title="about.title">Chi <span class="text-gradient">Sono</span></h2>
                 <div class="section-line"></div>
             </div>
+            <div class="about-intro reveal" data-i18n-html="true" data-i18n="about.intro" style="margin-bottom:18px;"></div>
             <div class="about-grid">
                 <div class="about-text reveal">
                     <div class="about-card glass-card">
@@ -684,7 +728,7 @@ Dal 2018 progetto e sviluppo interfacce enterprise ad alte prestazioni nei setto
                             e sviluppo di dashboard analitiche ad alte prestazioni.
                         </p>
                         <div class="timeline-tags">
-                            <span>Angular 17+</span>
+                            <span data-i18n="hero.tag.1">Angular</span>
                             <span>Cesium.js</span>
                             <span>TypeScript</span>
                             <span>RxJS</span>

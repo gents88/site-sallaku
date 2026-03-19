@@ -31,6 +31,22 @@ const i18n = {
             'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
             'hero.scroll': 'Scorri',
 
+            // Short hero / positioning
+            'hero.short': 'Angular, JavaScript e TypeScript con RxJS — architetture modulari orientate a performance prevedibili e gestione reattiva dello stato. Integrazione di librerie JavaScript per data visualization e interfacce avanzate, con strategie di code splitting, lazy loading e telemetry per osservabilità e ottimizzazione runtime.',
+            'cta.review': 'Richiedi una review architetturale',
+            'cta.demo': 'Mostrami i tuoi dati — prenota una demo',
+            'cta.consult': 'Avvia una consulenza tecnica (15 min)',
+
+            // Positioning title + intro
+            'positioning.title': 'Posizionamento',
+            'positioning.intro': 'Progetto e consegno interfacce Angular scalabili per sistemi enterprise mission‑critical, riducendo latenza e aumentando affidabilità operativa.',
+
+            // Case studies (HTML)
+            'case.1': '<h3>Piattaforma Enterprise per Monitoraggio Operativo in Tempo Reale</h3><p><strong>Problema reale:</strong> Dashboard legacy non reggeva picchi di evento (latency &gt; 2s), memory leak lato client e dati aggregati troppo tardi per decisioni operative.</p><p><strong>Soluzione implementata:</strong> Rifattorizzazione in micro‑frontends Angular, stream processing WebSocket con backplane Kafka, lazy loading e OnPush change detection; cache LRU client-side e integrazione OpenTelemetry per observability.</p><p><strong>Tecnologie:</strong> Angular (standalone), RxJS, WebSocket, Kafka, Node.js gateway, OpenTelemetry, Chart.js.</p><p><strong>Impatto:</strong> -70% latenza dall\'evento alla visualizzazione, MTTR dimezzato, throughput x4 senza upgrade hardware, adozione interna +35%.</p>',
+            'case.title': 'Case Studies',
+            'case.2': '<h3>Suite di Dashboard Analitiche per KPI Finanziari</h3><p><strong>Problema reale:</strong> Serie storiche con milioni di punti causavano freeze UI e query lente lato API.</p><p><strong>Soluzione implementata:</strong> Pipeline di pre-aggregation su time-series DB, paginazione e virtual scroll nel client, caching semantico, Web Workers per calcoli pesanti e offscreen canvas per rendering complessi.</p><p><strong>Tecnologie:</strong> Angular, TypeScript, Web Workers, TimescaleDB, Redis, Chart.js / ApexCharts.</p><p><strong>Impatto:</strong> tempo medio di rendering ridotto da 6s a 800ms; CPU client peak -60%; affidabilità delle metriche aumentata grazie a materialized views.</p>',
+            'case.3': '<h3>Visualizzazione 3D Geospaziale per Fleet Management</h3><p><strong>Problema reale:</strong> Visualizzazione in tempo reale di milioni di entità causava overload GPU/CPU e degrado UX su dispositivi enterprise.</p><p><strong>Soluzione implementata:</strong> Server-side tiling e clustering, stream differenziale (deltas) verso client; Cesium.js con LOD dinamico, culling e modalità "lite" per dispositivi limitati.</p><p><strong>Tecnologie:</strong> Cesium.js, WebGL optimizations, Node.js tiling service, protobuf diff streams, Redis.</p><p><strong>Impatto:</strong> entità visualizzabili in real-time aumentate da 50k a 1M mantenendo frame-rate sostenuto; consumo GPU client -40%; time-to-insight ~3x più veloce.</p>',
+
             // Banner / accessibility
             'banner.wip': 'Sito in costruzione — Work in progress',
             'skip.link': 'Vai al contenuto principale',
@@ -57,6 +73,8 @@ const i18n = {
             'about.perf.desc': 'Focus costante sull\'ottimizzazione delle performance, lazy loading strategico, change detection ottimizzata e architetture modulari. Ogni componente è progettato per scalare in contesti ad alto traffico.',
             'about.lead.title': 'Leadership & Mentoring',
             'about.lead.desc': 'Guida tecnica di team front-end, definizione di best practice, code review strutturate e sessioni di mentoring. Costruisco team autonomi e competenti, promuovendo una cultura di qualità del codice.',
+            'about.intro': '<p>Sono Gent Sallaku, Senior Front‑End & API Developer con oltre otto anni di esperienza nella progettazione e realizzazione di interfacce enterprise ad alte prestazioni. Mi occupo di architetture Angular scalabili, ottimizzazione delle performance, data visualization e soluzioni 3D per applicazioni realtime. Ho guidato refactor e iniziative di observability in contesti banking, telco e aerospace, riducendo la latenza e aumentando l\'affidabilità operativa.</p><p>Offro consulenza tecnica, code review e mentoring: trasformo requisiti complessi in soluzioni manutenibili, sicure e misurabili. Lavoro a stretto contatto con product team e ingegneri backend per mettere in produzione componenti che resistono al carico e facilitano decisioni operative basate sui dati.</p>',
+            'hero.stat.latency': 'Riduzione latenza (tipica)',
 
             // Tech Stack
             'tech.tag': '&lt;tech-stack&gt;',
@@ -212,6 +230,22 @@ const i18n = {
             'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
             'hero.scroll': 'Scroll',
 
+            // Short hero / positioning
+            'hero.short': 'Angular, JavaScript and TypeScript with RxJS — modular architectures focused on predictable performance and reactive state management. Integration of JavaScript libraries for data visualization and advanced interfaces, with code-splitting strategies, lazy loading and telemetry for observability and runtime optimization.',
+            'cta.review': 'Request an architecture review',
+            'cta.demo': 'Show me your data — book a demo',
+            'cta.consult': 'Start a technical consultation (15 min)',
+
+            // Positioning title + intro
+            'positioning.title': 'Positioning',
+            'positioning.intro': 'I design and deliver scalable Angular interfaces for mission‑critical enterprise systems, reducing latency and improving operational reliability.',
+
+            // Case studies (HTML)
+            'case.1': '<h3>Real-time Operational Monitoring Platform</h3><p><strong>Problem:</strong> Legacy dashboard could not handle event spikes (latency &gt; 2s), client memory leaks and late aggregations.</p><p><strong>Solution:</strong> Rearchitected into Angular micro‑frontends, WebSocket streaming backed by Kafka, lazy loading and OnPush change detection; client LRU cache and OpenTelemetry for observability.</p><p><strong>Technologies:</strong> Angular (standalone), RxJS, WebSocket, Kafka, Node.js gateway, OpenTelemetry, Chart.js.</p><p><strong>Impact:</strong> 70% latency reduction from event to view, MTTR halved, throughput x4 without hardware upgrades, internal adoption +35%.</p>',
+            'case.title': 'Case Studies',
+            'case.2': '<h3>Analytical Dashboards for Financial KPIs</h3><p><strong>Problem:</strong> Time-series with millions of points caused UI freezes and slow API queries.</p><p><strong>Solution:</strong> Pre-aggregation pipeline on a time-series DB, client virtual scroll and pagination, semantic caching, Web Workers for heavy compute and offscreen canvas for complex rendering.</p><p><strong>Technologies:</strong> Angular, TypeScript, Web Workers, TimescaleDB, Redis, Chart.js / ApexCharts.</p><p><strong>Impact:</strong> Average render time dropped from 6s to 800ms; client CPU peaks -60%; metric reliability improved via materialized views.</p>',
+            'case.3': '<h3>Geospatial 3D Visualization for Fleet Management</h3><p><strong>Problem:</strong> Real-time visualization of millions of entities overloaded GPU/CPU and degraded UX on enterprise clients.</p><p><strong>Solution:</strong> Server-side tiling and clustering, differential (delta) streams to clients; Cesium.js with dynamic LOD, culling and a "lite" mode for constrained devices.</p><p><strong>Technologies:</strong> Cesium.js, WebGL optimizations, Node.js tiling service, protobuf diff streams, Redis.</p><p><strong>Impact:</strong> Real-time entities increased from 50k to 1M while maintaining stable frame-rate; client GPU usage -40%; time-to-insight ~3x faster.</p>',
+
             // Banner / accessibility
             'banner.wip': 'Site under construction — Work in progress',
             'skip.link': 'Skip to main content',
@@ -237,6 +271,8 @@ const i18n = {
             'about.perf.desc': 'Constant focus on performance optimization, strategic lazy loading, optimized change detection, and modular architectures. Every component is designed to scale in high-traffic contexts.',
             'about.lead.title': 'Leadership & Mentoring',
             'about.lead.desc': 'Technical leadership of front-end teams, defining best practices, structured code reviews, and mentoring sessions. I build autonomous and skilled teams, promoting a culture of code quality.',
+            'about.intro': '<p>I\'m Gent Sallaku, a Senior Front‑End & API Developer with over eight years of experience designing and delivering high-performance enterprise interfaces. I focus on scalable Angular architectures, performance optimization, data visualization, and 3D solutions for realtime applications. I have led refactors and observability initiatives in banking, telco and aerospace contexts, reducing latency and improving operational reliability.</p><p>I offer technical consulting, code reviews and mentoring: I turn complex requirements into maintainable, secure and measurable solutions. I work closely with product teams and backend engineers to ship components that withstand load and enable data-driven operational decisions.</p>',
+            'hero.stat.latency': 'Typical latency reduction',
 
             'tech.tag': '&lt;tech-stack&gt;',
             'tech.title.1': 'Tech ',
@@ -382,6 +418,22 @@ const i18n = {
             'hero.tag.3': 'UI/UX & Data Visualization 3D Web',
             'hero.scroll': 'Shkruaj',
 
+            // Short hero / positioning
+            'hero.short': 'Angular, JavaScript dhe TypeScript me RxJS — arkitektura modulare të orientuara drejt performancës së parashikueshme dhe menaxhimit reaktiv të gjendjes. Integrimi i bibliotekave JavaScript për vizualizimin e të dhënave dhe ndërfaqe të avancuara, me strategji për ndarjen e kodit (code-splitting), lazy loading dhe telemetry për vëzhgueshmëri dhe optimizim në kohë të ekzekutimit.',
+            'cta.review': 'Kërko një rishikim arkitekturor',
+            'cta.demo': 'Trego të dhënat tuaja — rezervoni një demo',
+            'cta.consult': 'Nisni një konsultë teknike (15 min)',
+
+            // Positioning title + intro
+            'positioning.title': 'Pozicionimi',
+            'positioning.intro': 'Projektoj dhe dorëzoj ndërfaqe Angular të shkallëzueshme për sisteme enterprise mission‑critical, duke ulur vonesën dhe rritur besueshmërinë operative.',
+
+            // Case studies (HTML)
+            'case.1': '<h3>Platformë Monitoring Operacional në Kohë reale</h3><p><strong>Problem:</strong> Dashboard legacy nuk përballonte pikat e ngarkesës (latencë &gt; 2s), memory leak dhe agregime të vonuara.</p><p><strong>Zgjidhja:</strong> Rifaktorim në micro‑frontends Angular, stream WebSocket me backplane Kafka, lazy loading dhe OnPush; cache LRU klient-side dhe OpenTelemetry për observability.</p><p><strong>Teknologji:</strong> Angular, RxJS, WebSocket, Kafka, Node.js gateway, OpenTelemetry, Chart.js.</p><p><strong>Impakt:</strong> -70% latencë, MTTR u përgjysmua, throughput x4 pa upgrade hardware, adoption +35%.</p>',
+            'case.title': 'Studime Raste',
+            'case.2': '<h3>Dashboard Analitike për KPI Financiare</h3><p><strong>Problem:</strong> Seri kohore me miliona pika shkaktonin freeze UI dhe query të ngadalta.</p><p><strong>Zgjidhja:</strong> Pipeline pre-aggregation në time-series DB, virtual scroll dhe pagination në klient, semantic caching, Web Workers dhe offscreen canvas për rendering kompleks.</p><p><strong>Teknologji:</strong> Angular, TypeScript, Web Workers, TimescaleDB, Redis, Chart.js / ApexCharts.</p><p><strong>Impakt:</strong> Koha mesatare e rendering u ul nga 6s në 800ms; CPU -60%; besueshmëria e metrikave u përmirësua.</p>',
+            'case.3': '<h3>Vizualizim 3D Gjeohapësinor për Fleet Management</h3><p><strong>Problem:</strong> Vizualizimi real-time i miliona entiteteve ngarkonte GPU/CPU dhe degradoi UX.</p><p><strong>Zgjidhja:</strong> Server-side tiling dhe clustering, stream diferencial, Cesium.js me LOD dinamik, culling dhe modalitet "lite" për pajisje të kufizuara.</p><p><strong>Teknologji:</strong> Cesium.js, optimizime WebGL, Node.js tiling service, protobuf diff streams, Redis.</p><p><strong>Impakt:</strong> Entitetet real-time rritën nga 50k në 1M, frame-rate i qëndrueshëm; GPU -40%; time-to-insight ~3x më i shpejtë.</p>',
+
             // Banner / accessibility
             'banner.wip': 'Faqja në ndërtim — Work in progress',
             'skip.link': 'Shko te përmbajtja kryesore',
@@ -407,6 +459,8 @@ const i18n = {
             'about.perf.desc': 'Fokus i vazhdueshëm në optimizimin e performancës, lazy loading strategjik, change detection i optimizuar dhe arkitektura modulare. Çdo komponent është projektuar për të shkallëzuar në kontekste me trafik të lartë.',
             'about.lead.title': 'Lidershipi & Mentorimi',
             'about.lead.desc': 'Udhëheqje teknike e ekipeve front-end, përcaktimi i best practice, code review të strukturuara dhe sesione mentorimi. Ndërtoj ekipe autonome dhe kompetente, duke promovuar një kulturë të cilësisë së kodit.',
+            'about.intro': '<p>Unë jam Gent Sallaku, Senior Front‑End & API Developer me mbi tetë vjet eksperiencë në projektimin dhe realizimin e ndërfaqeve enterprise me performancë të lartë. Merren me arkitektura Angular të shkallëzueshme, optimizimin e performancës, data visualization dhe zgjidhje 3D për aplikacione realtime. Kam udhëhequr refaktorime dhe iniciativa observability në sektorë si banking, telco dhe aerospace, duke ulur latencën dhe rritur besueshmërinë operative.</p><p>Ofroj konsulencë teknike, code review dhe mentoring: transformoj kërkesa komplekse në zgjidhje të mirëmbajtshme, të sigurta dhe të matshme. Bashkëpunoj ngushtë me product team dhe inxhinierë backend për të vënë në prodhim komponentë që përballojnë ngarkesën dhe lehtësojnë vendimmarrjen operacionale të bazuar në të dhëna.</p>',
+            'hero.stat.latency': 'Reduktim tipik i latencës',
 
             'tech.tag': '&lt;tech-stack&gt;',
             'tech.title.1': 'Tech ',
@@ -560,13 +614,35 @@ const i18n = {
     updateDOM() {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
+                const translation = this.t(key);
+
+                // If translation missing, this.t returns the key itself — don't overwrite
+                if (!translation || translation === key) return;
+
+                if (el.hasAttribute('data-i18n-html')) {
+                    el.innerHTML = translation;
+                } else {
+                    el.textContent = translation;
+                }
+        });
+
+        // Update placeholders (inputs / textarea)
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
             const translation = this.t(key);
-            
-            if (el.hasAttribute('data-i18n-html')) {
-                el.innerHTML = translation;
-            } else {
-                el.textContent = translation;
-            }
+            if (translation) el.setAttribute('placeholder', translation);
+        });
+
+        // Update arbitrary attributes via data-i18n-attr="attr:key,attr2:key2"
+        document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+            const raw = el.getAttribute('data-i18n-attr');
+            // pairs like "aria-label:cta.review,title:some.key"
+            raw.split(',').forEach(pair => {
+                const [attr, k] = pair.split(':').map(s => s && s.trim());
+                if (!attr || !k) return;
+                const translation = this.t(k);
+                if (translation && translation !== k) el.setAttribute(attr, translation);
+            });
         });
 
         // Update section titles with gradient spans

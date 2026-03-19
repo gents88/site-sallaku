@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Contatto - Test invio email</title>
+  <title data-i18n="contact.page.title">Contatto - Test invio email</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/favicon.svg">
   <style>
@@ -15,17 +15,22 @@
   </style>
 </head>
 <body>
-  <h1>Contatto - Test invio email</h1>
+  <h1 data-i18n="contact.page.title">Contatto - Test invio email</h1>
   <form id="contactForm">
-    <input type="text" id="name" name="name" placeholder="Nome" required />
-    <input type="email" id="email" name="email" placeholder="Email" required />
-    <textarea id="message" name="message" placeholder="Messaggio" rows="6" required></textarea>
+    <input type="text" id="name" name="name" data-i18n-placeholder="contact.form.name" required />
+    <input type="email" id="email" name="email" data-i18n-placeholder="contact.form.email" required />
+    <textarea id="message" name="message" data-i18n-placeholder="contact.form.message" rows="6" required></textarea>
     <!-- Honeypot field: keep hidden from users, bots may fill it -->
     <input type="text" id="hp" name="hp" class="hp-field" autocomplete="off" aria-hidden="true" tabindex="-1" />
-    <button type="submit">Invia</button>
+    <button type="submit" data-i18n="contact.form.submit">Invia</button>
     <div id="status" aria-live="polite"></div>
   </form>
-
+  <script src="/js/i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      if (window.i18n) i18n.init();
+    });
+  </script>
   <script src="/js/contact.js"></script>
 </body>
 </html>

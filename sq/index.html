@@ -21,10 +21,67 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <main>
+    <main>
     <h1>Gent Sallaku</h1>
     <h2>Zhvillues Senior Front-End & API</h2>
     <p>Zhvillues web dhe API i specializuar në aplikacione enterprise me Angular dhe TypeScript. Projekte në data visualization dhe 3D web.</p>
+    <div class="hero-kpis">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
+        <div class="kpi-number">8<span class="kpi-plus">+</span></div>
+        <div class="kpi-label" data-i18n="hero.stat.years">Vite përvojë</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-folder-open" aria-hidden="true"></i></div>
+        <div class="kpi-number">20<span class="kpi-plus">+</span></div>
+        <div class="kpi-label" data-i18n="hero.stat.projects">Projekte të përfunduara</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-building" aria-hidden="true"></i></div>
+        <div class="kpi-number">4</div>
+        <div class="kpi-label" data-i18n="hero.stat.companies">Kompanitë enterprise</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-bolt" aria-hidden="true"></i></div>
+        <div class="kpi-number">70<span class="kpi-plus">%</span></div>
+        <div class="kpi-label" data-i18n="hero.stat.latency">Reduktim tipik latence</div>
+      </div>
+    </div>
+    <section id="positioning" style="margin-top:18px;">
+      <h3>Pozicionimi</h3>
+      <p>Projektiej dhe dorëzoj ndërfaqe Angular të shkallëzueshme për sisteme enterprise mission‑critical, duke ulur vonesën dhe rritur besueshmërinë operative.</p>
+      <!-- Alternatives:
+        - Udhëheq arkitektura front-end TypeScript që kthejnë dataset komplekse në dashboard operacionale për vendime në kohë reale.
+        - Krijoj vizualizime 3D performante dhe dashboard që shndërrojnë sinjalet e papërpunuara në insight të përdorshëm.
+      -->
+    </section>
+    <section id="case-studies" style="margin-top:18px;">
+      <h2>Case Studies</h2>
+      <p>Tre case study teknike (versione inglese). Traduzione shqip disponibile su richiesta.</p>
+
+      <div class="case-grid">
+        <article class="case-card glass-card">
+          <h3>Real-time Operational Monitoring Platform</h3>
+          <p><strong>Problem:</strong> Legacy dashboard could not handle event spikes (latency &gt; 2s), client memory issues and late aggregations.</p>
+          <p><strong>Solution:</strong> Reworked into Angular micro-frontends, WebSocket streaming with Kafka, lazy loading, OnPush, client LRU cache and OpenTelemetry observability.</p>
+          <p><strong>Impact:</strong> 70% latency reduction, MTTR halved, throughput x4, adoption +35%.</p>
+        </article>
+
+        <article class="case-card glass-card">
+          <h3>Analytical Dashboards for Financial KPIs</h3>
+          <p><strong>Problem:</strong> Millions-point time-series caused UI freezes and slow API queries.</p>
+          <p><strong>Solution:</strong> Pre-aggregation (TimescaleDB), virtual scroll, semantic cache, offload compute to Web Workers and offscreen canvas rendering.</p>
+          <p><strong>Impact:</strong> Render time from 6s to 800ms; client CPU peaks -60%.</p>
+        </article>
+
+        <article class="case-card glass-card">
+          <h3>Geospatial 3D Visualization for Fleet Management</h3>
+          <p><strong>Problem:</strong> Real-time visualization of millions of entities overloaded client GPUs and degraded UX.</p>
+          <p><strong>Solution:</strong> Server-side tiling & clustering, delta streams, Cesium.js with LOD and culling, "lite" mode for constrained devices.</p>
+          <p><strong>Impact:</strong> Entities visualized real-time from 50k to 1M; GPU usage -40%; time-to-insight ~3x faster.</p>
+        </article>
+      </div>
+    </section>
     <p><a href="/">Shko te faqja në italisht</a> · <a href="/projects.html">Projekte</a> · <a href="/services.html">Shërbimet</a></p>
   </main>
   <script src="/js/i18n.js"></script>

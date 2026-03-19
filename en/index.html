@@ -21,10 +21,69 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <main>
+    <main>
     <h1>Gent Sallaku</h1>
     <h2>Senior Front-End & API Developer</h2>
     <p>Web and API developer specialized in building enterprise-grade applications with Angular, JavaScript and TypeScript. Projects include data visualization and 3D web.</p>
+    <div class="hero-kpis">
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
+        <div class="kpi-number">8<span class="kpi-plus">+</span></div>
+        <div class="kpi-label" data-i18n="hero.stat.years">Years experience</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-folder-open" aria-hidden="true"></i></div>
+        <div class="kpi-number">20<span class="kpi-plus">+</span></div>
+        <div class="kpi-label" data-i18n="hero.stat.projects">Projects completed</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-building" aria-hidden="true"></i></div>
+        <div class="kpi-number">4</div>
+        <div class="kpi-label" data-i18n="hero.stat.companies">Enterprise companies</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-icon"><i class="fas fa-bolt" aria-hidden="true"></i></div>
+        <div class="kpi-number">70<span class="kpi-plus">%</span></div>
+        <div class="kpi-label" data-i18n="hero.stat.latency">Typical latency reduction</div>
+      </div>
+    </div>
+    <section id="positioning" style="margin-top:18px;">
+      <h3>Positioning</h3>
+      <p>I design and deliver scalable Angular interfaces for enterprise, mission-critical systems—lowering latency and increasing operational reliability.</p>
+      <!-- Alternatives:
+        - I lead TypeScript front-end architectures that turn complex datasets into operational dashboards for real-time decisions.
+        - I build high-performance 3D visualizations and dashboards that convert raw signals into actionable insights.
+      -->
+    </section>
+    <section id="case-studies" style="margin-top:18px;">
+      <h2>Case Studies</h2>
+
+      <div class="case-grid">
+        <article class="case-card glass-card">
+          <h3>Real-time Operational Monitoring Platform</h3>
+          <p><strong>Problem:</strong> Legacy dashboard could not handle event spikes (latency &gt; 2s), client memory leaks and late aggregations.</p>
+          <p><strong>Solution:</strong> Rearchitected into Angular micro‑frontends, introduced WebSocket streaming backed by Kafka, segmented bundles with lazy loading and OnPush. Added client LRU cache and OpenTelemetry for observability.</p>
+          <p><strong>Tech:</strong> Angular (standalone), RxJS, WebSocket, Kafka, Node.js gateway, OpenTelemetry, Chart.js.</p>
+          <p><strong>Impact:</strong> 70% latency reduction from event to view, MTTR halved, throughput x4 without hardware upgrades, internal adoption +35%.</p>
+        </article>
+
+        <article class="case-card glass-card">
+          <h3>Analytical Dashboards for Financial KPIs</h3>
+          <p><strong>Problem:</strong> Time-series queries with millions of points caused UI freezes and slow API responses.</p>
+          <p><strong>Solution:</strong> Built pre-aggregation pipeline on time-series DB, implemented client virtual scroll and pagination, semantic caching, moved heavy compute to Web Workers and used offscreen canvas for complex charts.</p>
+          <p><strong>Tech:</strong> Angular, TypeScript, Web Workers, TimescaleDB, Redis, Chart.js / ApexCharts.</p>
+          <p><strong>Impact:</strong> Average render time dropped from 6s to 800ms; client CPU peaks -60%; production use of dashboards for operational decisions increased.</p>
+        </article>
+
+        <article class="case-card glass-card">
+          <h3>Geospatial 3D Visualization for Fleet Management</h3>
+          <p><strong>Problem:</strong> Real-time geospatial visualization of millions of entities overloaded GPU/CPU and degraded UX on enterprise clients.</p>
+          <p><strong>Solution:</strong> Layered architecture with server-side tiling and clustering, differential (delta) streams to clients; Cesium.js with dynamic LOD, culling and a "lite" mode for constrained devices.</p>
+          <p><strong>Tech:</strong> Cesium.js, WebGL optimizations, Node.js tiling service, protobuf diff streams, Redis.</p>
+          <p><strong>Impact:</strong> Real-time entities increased from 50k to 1M while maintaining stable frame-rate; client GPU usage -40%; time-to-insight ~3x faster.</p>
+        </article>
+      </div>
+    </section>
     <p><a href="/">Go to Italian site</a> · <a href="/projects.html">Projects</a> · <a href="/services.html">Services</a></p>
   </main>
   <script src="/js/i18n.js"></script>
