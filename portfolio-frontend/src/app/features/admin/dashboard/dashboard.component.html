@@ -6,9 +6,6 @@
         {{ 'admin.welcome' | translate }}, <strong>{{ auth.currentUser()?.name }}</strong>
       </p>
     </div>
-    <button mat-stroked-button color="warn" (click)="auth.logout()">
-      <mat-icon>logout</mat-icon> {{ 'admin.logout' | translate }}
-    </button>
   </header>
 
   @if (loading) {
@@ -154,5 +151,17 @@
         }
       </div>
     }
+
+    <section class="admin-actions card">
+      <div>
+        <h2>{{ 'admin.logout' | translate }}</h2>
+        <p class="text-muted">Chiudi la sessione admin e torna alla pagina di accesso.</p>
+      </div>
+
+      <button mat-stroked-button color="warn" class="logout-btn" [disabled]="logoutLoading" (click)="logout()">
+        <mat-icon [class.spin]="logoutLoading">{{ logoutLoading ? 'sync' : 'logout' }}</mat-icon>
+        {{ logoutLoading ? ('common.loading' | translate) : ('admin.logout' | translate) }}
+      </button>
+    </section>
   }
 </div>

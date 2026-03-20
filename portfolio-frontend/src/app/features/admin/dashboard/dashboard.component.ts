@@ -67,6 +67,7 @@ export class DashboardComponent implements OnInit {
   totalViews = 0;
   uniqueVisitors = 0;
   loading = true;
+  logoutLoading = false;
 
   readonly quickLinks = [
     { labelKey: 'admin.manage_projects',    icon: 'work',       route: '/admin/projects' },
@@ -163,6 +164,20 @@ export class DashboardComponent implements OnInit {
   visitBarHeight(value: number): string {
     const percent = (value / this.maxVisitBarValue) * 100;
     return `${Math.max(percent, value > 0 ? 18 : 8)}%`;
+  }
+
+  async logout(): Promise<void> {
+    if (this.logoutLoading) {
+      return;
+    }
+
+    this.logoutLoading = true;
+
+    try {
+      await Promise.resolve(this.auth.logout());
+    } catch {
+      this.logoutLoading = false;
+    }
   }
 
   private buildMiniBars(value: number, maxValue: number, seed: number): number[] {

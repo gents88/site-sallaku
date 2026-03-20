@@ -36,11 +36,8 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    this._token.set(null);
-    this._user.set(null);
-    this.router.navigate(['/admin/login']);
+    this.clearSession();
+    void this.router.navigateByUrl('/admin/login', { replaceUrl: true });
   }
 
   getToken(): string | null {
@@ -52,6 +49,13 @@ export class AuthService {
     localStorage.setItem(USER_KEY, JSON.stringify(res.user));
     this._token.set(res.access_token);
     this._user.set(res.user);
+  }
+
+  private clearSession(): void {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    this._token.set(null);
+    this._user.set(null);
   }
 
   private parseStoredUser(): User | null {

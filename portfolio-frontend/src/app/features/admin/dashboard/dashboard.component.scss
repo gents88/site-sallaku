@@ -254,6 +254,29 @@
   margin-top: 0.5rem;
 }
 
+.admin-actions {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.logout-btn {
+  min-width: 150px;
+  justify-content: center;
+}
+
 .contact-row {
   display: flex;
   align-items: center;
@@ -282,6 +305,12 @@
 
 .text-muted { color: var(--color-text-muted); }
 
+.spin { animation: spin 0.9s linear infinite; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 960px) {
   .visit-summary {
     grid-template-columns: 1fr;
@@ -297,6 +326,15 @@
 
   .content-mix__legend {
     grid-template-columns: 1fr;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .logout-btn {
+    width: 100%;
   }
 
   .contact-row {
