@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -21,7 +21,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
 
   loading = false;
   showPassword = false;
+  private redirectTimeoutId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -39,7 +40,18 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.auth.isLoggedIn()) this.router.navigate(['/admin']);
+    if (this.auth.isLoggedIn() && this.auth.isAdmin()) {
+      this.scheduleAdminRedirect();
+      return;
+    }
+
+    if (this.auth.isLoggedIn() && !this.auth.isAdmin()) {
+      this.auth.logout();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.clearRedirectTimeout();
   }
 
   login(): void {
@@ -47,7 +59,20 @@ export class LoginComponent implements OnInit {
     this.loading = true;
 
     this.auth.login(this.form.value as any).subscribe({
-      next: () => this.router.navigate(['/admin']),
+      next: () => {
+        if (this.auth.isAdmin()) {
+          this.scheduleAdminRedirect();
+          return;
+        }
+
+        this.loading = false;
+        this.auth.logout();
+        this.snackBar.open(
+          'Questo account non ha accesso alla dashboard admin.',
+          this.translate.instant('common.close'),
+          { duration: 4000 },
+        );
+      },
       error: (err) => {
         this.loading = false;
         const msg = err?.error?.message?.message
@@ -55,5 +80,20 @@ export class LoginComponent implements OnInit {
         this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 4000 });
       },
     });
+  }
+
+  private scheduleAdminRedirect(): void {
+    this.clearRedirectTimeout();
+    this.redirectTimeoutId = window.setTimeout(() => {
+      this.loading = false;
+      this.router.navigate(['/admin']);
+    }, 300);
+  }
+
+  private clearRedirectTimeout(): void {
+    if (this.redirectTimeoutId !== null) {
+      window.clearTimeout(this.redirectTimeoutId);
+      this.redirectTimeoutId = null;
+    }
   }
 }

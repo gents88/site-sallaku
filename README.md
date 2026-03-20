@@ -166,6 +166,27 @@ npm install
 ng serve               # proxies /api → localhost:3000
 ```
 
+### Deploy Frontend On Apache/Plesk
+
+The production Angular frontend is already configured to call the Railway API directly via:
+
+`https://portfolio-backend-production-e76d.up.railway.app/api/v1`
+
+This means Apache/Plesk only needs to serve the static Angular build.
+
+```bash
+cd portfolio-frontend
+npm install
+npm run build:prod
+```
+
+Upload the contents of `portfolio-frontend/dist/portfolio-frontend/browser/` to the Plesk document root for the site.
+
+Important:
+- Keep the generated `.htaccess` file in the document root. It enables Angular SPA routing, so routes like `/admin/login` resolve to `index.html`.
+- Remove old frontend files from the Apache document root before uploading the new build, otherwise stale hashed assets can break the app.
+- No Apache reverse proxy is required for `/api`; the production frontend already uses the absolute Railway backend URL.
+
 ### Environment Variables (`portfolio-backend/.env`)
 
 | Variable | Example | Description |

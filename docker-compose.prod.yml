@@ -45,7 +45,6 @@ services:
     env_file:
       - ./portfolio-backend/.env
     environment:
-      MONGODB_URI: mongodb://mongo:27017/portfolio
       PORT: 3000
       NODE_ENV: production
     expose:

@@ -6,9 +6,17 @@ import helmet from 'helmet';
 import * as compression from 'compression';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
+function parseCorsOrigins(rawOrigins?: string): string[] {
+  return (rawOrigins ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
+  const allowedOrigins = parseCorsOrigins(process.env.CORS_ORIGIN);
 
   // ── Security middleware ──────────────────────────────
   app.use(helmet());
@@ -16,7 +24,19 @@ async function bootstrap() {
 
   // ── CORS ─────────────────────────────────────────────
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+    origin: (origin, callback) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error('Origin not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
