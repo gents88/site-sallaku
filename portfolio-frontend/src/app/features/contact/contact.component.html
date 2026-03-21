@@ -1,59 +1,145 @@
-<div class="container section contact-page">
-  <div class="contact-intro fade-in-up">
-    <h1>Get in Touch</h1>
-    <p class="text-muted">Have a project in mind, or just want to say hello? Fill out the form below and I'll get back to you as soon as possible.</p>
+<!-- ══════════════════════════════════════════════════
+     CONTACT PAGE
+     ══════════════════════════════════════════════════ -->
+
+<!-- ── Hero ─────────────────────────────────────────── -->
+<section class="contact-hero" aria-labelledby="contact-title">
+  <div class="contact-hero__glow" aria-hidden="true"></div>
+  <div class="container contact-hero__inner">
+    <span class="section-tag animate-fade-up">{{ 'contact.tag' | translate }}</span>
+    <h1 id="contact-title" class="section-title text-gradient animate-fade-up delay-1">
+      {{ 'contact.title' | translate }}
+    </h1>
+    <!-- <p class="section-subtitle animate-fade-up delay-2">
+      {{ 'contact.subtitle' | translate }}
+    </p> -->
   </div>
+</section>
 
-  <div class="contact-layout">
-    <form class="card contact-form fade-in-up" [formGroup]="form" (ngSubmit)="send()" novalidate>
+<!-- ── Body ──────────────────────────────────────────── -->
+<section class="contact-body">
+  <div class="container contact-layout">
 
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="name" placeholder="Jane Smith" />
-        @if (form.get('name')?.invalid && form.get('name')?.touched) {
-          <mat-error>Name is required</mat-error>
-        }
-      </mat-form-field>
+    <!-- Form -->
+    <form class="contact-form glass-card reveal"
+          [formGroup]="form" (ngSubmit)="send()" novalidate
+          aria-label="Contact form">
 
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" placeholder="jane@example.com" />
-        @if (form.get('email')?.invalid && form.get('email')?.touched) {
-          <mat-error>Valid email is required</mat-error>
-        }
-      </mat-form-field>
+      <div class="form-row">
+        <div class="field-group">
+          <label class="field-label" for="contact-name">{{ 'contact.form.name' | translate }}</label>
+          <input class="field-input" id="contact-name" type="text"
+                 formControlName="name"
+                 [placeholder]="'contact.form.name_ph' | translate" />
+          @if (form.get('name')?.invalid && form.get('name')?.touched) {
+            <span class="field-error">{{ 'contact.form.name_err' | translate }}</span>
+          }
+        </div>
 
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Subject</mat-label>
-        <input matInput formControlName="subject" placeholder="Project Inquiry" />
+        <div class="field-group">
+          <label class="field-label" for="contact-email">{{ 'contact.form.email' | translate }}</label>
+          <input class="field-input" id="contact-email" type="email"
+                 formControlName="email"
+                 [placeholder]="'contact.form.email_ph' | translate" />
+          @if (form.get('email')?.invalid && form.get('email')?.touched) {
+            <span class="field-error">{{ 'contact.form.email_err' | translate }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="contact-subject">{{ 'contact.form.subject' | translate }}</label>
+        <input class="field-input" id="contact-subject" type="text"
+               formControlName="subject"
+               [placeholder]="'contact.form.subject_ph' | translate" />
         @if (form.get('subject')?.invalid && form.get('subject')?.touched) {
-          <mat-error>Subject is required</mat-error>
+          <span class="field-error">{{ 'contact.form.subject_err' | translate }}</span>
         }
-      </mat-form-field>
+      </div>
 
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Message</mat-label>
-        <textarea matInput formControlName="message" rows="6" placeholder="Hi, I'd like to discuss…"></textarea>
+      <div class="field-group">
+        <label class="field-label" for="contact-message">{{ 'contact.form.message' | translate }}</label>
+        <textarea class="field-input" id="contact-message"
+                  formControlName="message" rows="6"
+                  [placeholder]="'contact.form.message_ph' | translate"></textarea>
         @if (form.get('message')?.invalid && form.get('message')?.touched) {
-          <mat-error>Message must be at least 10 characters</mat-error>
+          <span class="field-error">{{ 'contact.form.message_err' | translate }}</span>
         }
-      </mat-form-field>
+      </div>
 
-      <button mat-raised-button color="primary" type="submit" [disabled]="sending" class="submit-btn">
-        @if (sending) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>send</mat-icon> }
-        {{ sending ? 'Sending…' : 'Send Message' }}
-      </button>
+      <div class="form-footer">
+        <button class="btn btn-primary submit-btn" type="submit" [disabled]="sending">
+          @if (sending) {
+            <mat-icon class="spin">sync</mat-icon>
+            {{ 'contact.form.sending' | translate }}
+          } @else {
+            <mat-icon>send</mat-icon>
+            {{ 'contact.form.send' | translate }}
+          }
+        </button>
+
+        @if (sent) {
+          <span class="sent-badge">
+            <mat-icon>check_circle</mat-icon>
+            {{ 'contact.form.sent' | translate }}
+          </span>
+        }
+      </div>
     </form>
 
-    <aside class="contact-info fade-in-up">
-      <div class="card">
-        <h3>Let's connect</h3>
-        <p class="text-muted">I'm open to freelance projects, collaborations, and full-time opportunities.</p>
-        <ul class="contact-links">
-          <li><mat-icon>email</mat-icon> <a href="mailto:hello@portfolio.com">hello&#64;portfolio.com</a></li>
-          <li><mat-icon>location_on</mat-icon> Remote / Worldwide</li>
-        </ul>
+    <!-- Info sidebar -->
+    <aside class="contact-info reveal" aria-label="Contact information">
+
+      <div class="info-card glass-card">
+        <div class="info-card__icon-wrap" aria-hidden="true">
+          <mat-icon>handshake</mat-icon>
+        </div>
+        <!-- <h3 class="info-card__title">{{ 'contact.info.title' | translate }}</h3> -->
+        <!-- <p class="info-card__desc">{{ 'contact.info.desc' | translate }}</p> -->
       </div>
+
+      <ul class="contact-links">
+        <li class="contact-link">
+          <span class="contact-link__icon"><mat-icon>email</mat-icon></span>
+          <div>
+            <span class="contact-link__label">Email</span>
+            <a class="contact-link__value" href="mailto:gentsallaku@email.com">gentsallaku&#64;email.com</a>
+          </div>
+        </li>
+        <li class="contact-link">
+          <span class="contact-link__icon"><mat-icon>phone</mat-icon></span>
+          <div>
+            <span class="contact-link__label">{{ 'contact.card.phone.title' | translate }}</span>
+            <a class="contact-link__value" href="tel:+393892352291">+39 389 235 2291</a>
+          </div>
+        </li>
+        <li class="contact-link">
+          <span class="contact-link__icon"><mat-icon>mark_email_read</mat-icon></span>
+          <div>
+            <span class="contact-link__label">PEC</span>
+            <a class="contact-link__value" href="mailto:gent.sallaku@pec.it">gent.sallaku&#64;pec.it</a>
+          </div>
+        </li>
+        <li class="contact-link">
+          <span class="contact-link__icon"><mat-icon>business</mat-icon></span>
+          <div>
+            <span class="contact-link__label">LinkedIn</span>
+            <a class="contact-link__value"
+               href="https://linkedin.com/in/gent-sallaku"
+               target="_blank" rel="noopener">/in/gent-sallaku</a>
+          </div>
+        </li>
+        <li class="contact-link">
+          <span class="contact-link__icon"><mat-icon>code</mat-icon></span>
+          <div>
+            <span class="contact-link__label">GitHub</span>
+            <a class="contact-link__value"
+               href="https://github.com/gentsallaku"
+               target="_blank" rel="noopener">/gentsallaku</a>
+          </div>
+        </li>
+      </ul>
     </aside>
+
   </div>
-</div>
+</section>
