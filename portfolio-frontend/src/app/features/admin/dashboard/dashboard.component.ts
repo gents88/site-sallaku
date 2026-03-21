@@ -88,6 +88,10 @@ export class DashboardComponent implements OnInit {
   actionMessageKey: string | null = null;
   private actionMessageTimeoutId: number | null = null;
 
+  // Multi-select state
+  selectedIds = new Set<string>();
+  bulkDeleting = false;
+
   // Advanced analytics
   topCountries: DonutItem[] = [];
   deviceBreakdown: DonutItem[] = [];
@@ -190,6 +194,15 @@ export class DashboardComponent implements OnInit {
       },
       error: () => { this.loading = false; },
     });
+  }
+
+  get allSelected(): boolean {
+    return this.recentContacts.length > 0 &&
+      this.recentContacts.every(c => c._id && this.selectedIds.has(c._id));
+  }
+
+  get anySelected(): boolean {
+    return this.selectedIds.size > 0;
   }
 
   get maxContactBarValue(): number {
@@ -340,6 +353,59 @@ export class DashboardComponent implements OnInit {
 
     const subject = encodeURIComponent(`Re: ${this.selectedContact.subject}`);
     window.location.href = `mailto:${this.selectedContact.email}?subject=${subject}`;
+  }
+
+  toggleSelectContact(id: string): void {
+    if (this.selectedIds.has(id)) {
+      this.selectedIds.delete(id);
+    } else {
+      this.selectedIds.add(id);
+    }
+    // Replace reference to trigger change detection
+    this.selectedIds = new Set(this.selectedIds);
+  }
+
+  toggleSelectAll(): void {
+    if (this.allSelected) {
+      this.selectedIds = new Set<string>();
+    } else {
+      this.selectedIds = new Set(
+        this.recentContacts.filter(c => c._id).map(c => c._id as string),
+      );
+    }
+  }
+
+  deleteSelected(): void {
+    if (!this.anySelected || this.bulkDeleting) return;
+
+    const ids = [...this.selectedIds];
+    const confirmed = window.confirm(
+      `Eliminare definitivamente ${ids.length} messaggio/i selezionato/i?`,
+    );
+    if (!confirmed) return;
+
+    this.bulkDeleting = true;
+    this.http.delete<{ success: boolean; deleted: number }>(
+      `${environment.apiUrl}/contact/bulk`,
+      { body: { ids } },
+    ).subscribe({
+      next: ({ deleted }) => {
+        this.recentContacts = this.recentContacts.filter(
+          c => !c._id || !ids.includes(c._id),
+        );
+        this.selectedIds = new Set<string>();
+        this.bulkDeleting = false;
+        this.stats = this.stats.map(stat =>
+          stat.labelKey === 'admin.contacts'
+            ? { ...stat, value: Math.max(stat.value - deleted, 0) }
+            : stat,
+        );
+        this.showActionMessage('admin.messages_deleted');
+      },
+      error: () => {
+        this.bulkDeleting = false;
+      },
+    });
   }
 
   private buildMiniBars(value: number, maxValue: number, seed: number): number[] {

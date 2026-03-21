@@ -94,6 +94,11 @@ export class ContactService {
     return { success: true };
   }
 
+  async deleteMany(ids: string[]): Promise<{ success: boolean; deleted: number }> {
+    const result = await this.contactModel.deleteMany({ _id: { $in: ids } }).exec();
+    return { success: true, deleted: result.deletedCount };
+  }
+
   async countByDay(days = 7): Promise<ContactCountByDay[]> {
     const end = new Date();
     end.setHours(23, 59, 59, 999);

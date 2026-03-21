@@ -254,21 +254,66 @@
     @if (recentContacts.length) {
       <h2 class="section-label">{{ 'admin.recent_activity' | translate }}</h2>
       <div class="contacts-list card">
+
+        <!-- Bulk action toolbar -->
+        <div class="contacts-toolbar">
+          <label class="contacts-toolbar__select-all">
+            <input
+              type="checkbox"
+              class="contact-checkbox"
+              [checked]="allSelected"
+              (change)="toggleSelectAll()"
+              aria-label="Select all messages">
+            <span class="contacts-toolbar__label">
+              @if (anySelected) {
+                {{ selectedIds.size }}&nbsp;{{ 'admin.selected' | translate }}
+              } @else {
+                {{ 'admin.select_all' | translate }}
+              }
+            </span>
+          </label>
+          @if (anySelected) {
+            <button
+              type="button"
+              class="contacts-delete-btn"
+              [disabled]="bulkDeleting"
+              (click)="deleteSelected()">
+              <mat-icon [class.spin]="bulkDeleting">{{ bulkDeleting ? 'sync' : 'delete_sweep' }}</mat-icon>
+              {{ bulkDeleting ? ('common.loading' | translate) : ('admin.delete_selected' | translate) }}
+            </button>
+          }
+        </div>
+
         @for (c of recentContacts; track c._id ?? c.email + c.createdAt) {
-          <button type="button" class="contact-row contact-row--interactive" [class.contact-row--unread]="!c.read" (click)="openContact(c)">
-            <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
-            <div class="contact-body">
-              <span class="contact-name">{{ c.name }}</span>
-              <span class="contact-email text-muted">{{ c.email }}</span>
-              <span class="contact-subject">
-                {{ c.subject }}
-                @if (!c.read) {
-                  <span class="contact-badge">Nuovo</span>
-                }
-              </span>
+          <div
+            class="contact-row"
+            [class.contact-row--unread]="!c.read"
+            [class.contact-row--selected]="c._id && selectedIds.has(c._id)">
+            <!-- Checkbox cell — click stops propagation to keep row-open separate -->
+            <div class="contact-check-cell" (click)="$event.stopPropagation()">
+              <input
+                type="checkbox"
+                class="contact-checkbox"
+                [checked]="c._id ? selectedIds.has(c._id) : false"
+                (change)="c._id ? toggleSelectContact(c._id) : null"
+                [attr.aria-label]="'Select message from ' + c.name">
             </div>
-            <span class="contact-date text-muted">{{ c.createdAt | date:'dd/MM/yy' }}</span>
-          </button>
+            <!-- Clickable area opens the modal -->
+            <button type="button" class="contact-row__btn" (click)="openContact(c)">
+              <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
+              <div class="contact-body">
+                <span class="contact-name" [class.contact-name--unread]="!c.read">{{ c.name }}</span>
+                <span class="contact-email text-muted">{{ c.email }}</span>
+                <span class="contact-subject">
+                  {{ c.subject }}
+                  @if (!c.read) {
+                    <span class="contact-badge">{{ 'admin.new_badge' | translate }}</span>
+                  }
+                </span>
+              </div>
+              <span class="contact-date text-muted">{{ c.createdAt | date:'dd/MM/yy' }}</span>
+            </button>
+          </div>
         }
       </div>
     }

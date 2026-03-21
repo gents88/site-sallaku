@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MaxLength, MinLength } from 'class-validator';
+import { IsString, IsEmail, MaxLength, MinLength, IsArray, ArrayNotEmpty, ArrayMaxSize } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ContactDto {
@@ -21,4 +21,13 @@ export class ContactDto {
   @MinLength(10)
   @MaxLength(2000)
   message: string;
+}
+
+export class BulkDeleteDto {
+  @ApiProperty({ example: ['64abc123', '64abc456'], type: [String] })
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayMaxSize(100)
+  @IsString({ each: true })
+  ids: string[];
 }

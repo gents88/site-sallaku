@@ -1,7 +1,7 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, Patch, Param, UseGuards, Delete, Req, HttpException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ContactService } from './contact.service';
-import { ContactDto } from './dto/contact.dto';
+import { ContactDto, BulkDeleteDto } from './dto/contact.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
@@ -44,6 +44,15 @@ export class ContactController {
   @ApiOperation({ summary: 'Mark contact message as read (admin)' })
   markAsRead(@Param('id') id: string, @Body() body?: { read?: boolean }) {
     return this.contactService.markAsRead(id, body?.read ?? true);
+  }
+
+  @Delete('bulk')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Bulk delete contact messages (admin)' })
+  bulkDeleteMessages(@Body() body: BulkDeleteDto) {
+    return this.contactService.deleteMany(body.ids);
   }
 
   @Delete(':id')
