@@ -34,8 +34,8 @@
     "tag": "about",
     "title": "Rreth meje",
     "subtitle": "Zhvillues senior me 8+ vite në web enterprise",
-    "bio1": "Jam një <strong>Zhvillues Senior Front-End</strong> i specializuar në Angular, TypeScript dhe arkitektura enterprise. Kam bashkëpunuar me kompani kryesore në sektorët aerospace, defence, telco dhe banking.",
-    "bio2": "Pasioni im? Transformimi i të dhënave komplekse në ndërfaqe intuitive me performancë të lartë.",
+    "bio1": "Jam një <strong>Zhvillues Senior Front-End</strong> që lëviz me lehtësi mes Angular, TypeScript dhe arkitekturave enterprise, duke bashkëpunuar me kompani udhëheqëse në sektorët aerospace, defence, telco dhe banking, ku saktësia dhe besueshmëria nuk janë opsionale.",
+    "bio2": "Pasioni im shkon përtej ndërfaqeve dhe aplikacioneve: më pëlqen gjithçka që lidhet me këtë botë, nga arkitektura te logjika e aplikacionit, deri te performanca dhe përvoja e përdoruesit. Transformoj të dhëna komplekse në zgjidhje të qarta, efikase dhe të këndshme për t'u përdorur. Për mua, çdo sfidë është një sistem për t'u kuptuar, thjeshtuar dhe përmirësuar.",
     "birth": "Lindur në Blinisht-Lezhe (Shqipëri) më 25/04/1988",
     "vision": {
       "title": "Vizion End-to-End",
@@ -200,7 +200,9 @@
     "form": {
       "title": "Dërgo një mesazh",
       "name": "Emër dhe mbiemër",
+      "name_placeholder": "Shkruaj emrin tënd",
       "email": "Email",
+      "email_placeholder": "Shkruaj email-in tënd që të të kontaktoj",
       "message": "Mesazh",
       "submit": "Dërgo mesazhin",
       "sending": "Duke u dërguar...",

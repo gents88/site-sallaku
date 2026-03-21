@@ -389,11 +389,11 @@
         <input type="text" name="honeypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" [(ngModel)]="honeypot" />
         <label>
           <span>{{ 'contact.form.name' | translate }}</span>
-          <input type="text" name="name" required autocomplete="name" placeholder="Gent Sallaku" [(ngModel)]="contactForm.name" />
+          <input type="text" name="name" required autocomplete="name" [placeholder]="'contact.form.name_placeholder' | translate" [(ngModel)]="contactForm.name" />
         </label>
         <label>
           <span>{{ 'contact.form.email' | translate }}</span>
-          <input type="email" name="email" required autocomplete="email" placeholder="gent&#64;example.com" [(ngModel)]="contactForm.email" />
+          <input type="email" name="email" required autocomplete="email" [placeholder]="'contact.form.email_placeholder' | translate" [(ngModel)]="contactForm.email" />
         </label>
         <label>
           <span>{{ 'contact.form.message' | translate }}</span>
@@ -420,17 +420,4 @@
     </div>
   </div>
 
-  @if (contactPopupOpen) {
-    <div class="contact-popup-backdrop" (click)="closeContactPopup()" aria-hidden="true"></div>
-    <section class="contact-popup" role="dialog" aria-modal="true" aria-labelledby="contact-popup-title">
-      <div class="contact-popup__icon" aria-hidden="true">
-        <i class="fas fa-check"></i>
-      </div>
-      <h3 id="contact-popup-title">{{ 'contact.popup.title' | translate }}</h3>
-      <p>{{ 'contact.popup.body' | translate }}</p>
-      <button type="button" class="btn btn-primary" (click)="closeContactPopup()">
-        {{ 'common.close' | translate }}
-      </button>
-    </section>
-  }
 </section>

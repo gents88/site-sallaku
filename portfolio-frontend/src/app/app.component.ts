@@ -100,7 +100,7 @@ import { AuthModalService } from './core/services/auth-modal.service';
       position: fixed;
       inset: 0;
       z-index: 1590;
-      background: rgba(6, 10, 18, 0.58);
+      background: var(--surface-overlay-strong, rgba(6, 10, 18, 0.58));
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
@@ -115,8 +115,8 @@ import { AuthModalService } from './core/services/auth-modal.service';
       border-radius: 26px;
       border: 1px solid rgba(148, 163, 184, 0.14);
       background:
-        radial-gradient(circle at top right, rgba(79, 106, 245, 0.22), transparent 34%),
-        linear-gradient(180deg, rgba(13, 18, 33, 0.98), rgba(8, 12, 24, 0.98));
+        radial-gradient(circle at top right, rgba(79, 106, 245, 0.18), transparent 34%),
+        var(--panel-gradient, linear-gradient(180deg, rgba(13, 18, 33, 0.98), rgba(8, 12, 24, 0.98)));
       box-shadow: 0 34px 90px rgba(2, 6, 23, 0.46);
       color: var(--text-primary, #f0f4ff);
       animation: accountModalIn 0.22s ease-out;
@@ -206,7 +206,7 @@ import { AuthModalService } from './core/services/auth-modal.service';
       padding: 0.85rem 0.9rem;
       border-radius: 18px;
       border: 1px solid rgba(148, 163, 184, 0.14);
-      background: rgba(15, 23, 42, 0.34);
+      background: var(--panel-surface, rgba(15, 23, 42, 0.34));
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }

@@ -1033,35 +1033,104 @@
                     return;
                 }
 
-                setSubmitting(true);
+                    // Optimistic UX: show spinner + optimistic success toast immediately
+                    setSubmitting(true);
+                    showToast('Invio in corso — messaggio mostrato come inviato', 'info');
 
-                try {
-                    const response = await fetch(getContactApiUrl(), {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name,
-                            email,
-                            subject: 'Contatto dal portfolio',
-                            message
-                        })
-                    });
+                    // Use AbortController to apply a timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-                    if (!response.ok) {
-                        throw new Error('Contact request failed');
+                    try {
+                        const response = await fetch(getContactApiUrl(), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                name,
+                                email,
+                                subject: 'Contatto dal portfolio',
+                                message
+                            }),
+                            signal: controller.signal,
+                        });
+
+                        clearTimeout(timeoutId);
+
+                        if (!response.ok) {
+                            // rollback optimistic UI
+                            if (successMessage) successMessage.hidden = true;
+                            if (errorMessage) errorMessage.hidden = false;
+                            showToast('Invio non riuscito — riprova più tardi', 'error');
+                        } else {
+                            form.reset();
+                            if (successMessage) successMessage.hidden = false;
+                            showToast('Messaggio inviato — grazie!', 'success');
+                        }
+                    } catch (err) {
+                        clearTimeout(timeoutId);
+                        if (err.name === 'AbortError') {
+                            if (successMessage) successMessage.hidden = true;
+                            if (errorMessage) errorMessage.hidden = false;
+                            showToast('Timeout durante l\'invio — riprova', 'error');
+                        } else {
+                            if (successMessage) successMessage.hidden = true;
+                            if (errorMessage) errorMessage.hidden = false;
+                            showToast('Invio non riuscito — riprova più tardi', 'error');
+                        }
+                    } finally {
+                        setSubmitting(false);
                     }
-
-                    form.reset();
-                    if (successMessage) successMessage.hidden = false;
-                } catch (error) {
-                    if (errorMessage) errorMessage.hidden = false;
-                } finally {
-                    setSubmitting(false);
-                }
             });
         })();
     </script>
+
+        <script>
+            // Simple toast helper for the static page
+            function showToast(message, type) {
+                const root = document.getElementById('__static_toast_root') || (() => {
+                    const el = document.createElement('div');
+                    el.id = '__static_toast_root';
+                    el.style.position = 'fixed';
+                    el.style.right = '16px';
+                    el.style.bottom = '16px';
+                    el.style.zIndex = '9999';
+                    el.style.display = 'flex';
+                    el.style.flexDirection = 'column';
+                    el.style.gap = '8px';
+                    document.body.appendChild(el);
+                    return el;
+                })();
+
+                const node = document.createElement('div');
+                node.textContent = message;
+                node.style.padding = '10px 14px';
+                node.style.borderRadius = '8px';
+                node.style.color = '#fff';
+                node.style.fontWeight = '600';
+                node.style.fontFamily = 'Inter, system-ui, sans-serif';
+                node.style.boxShadow = '0 6px 18px rgba(2,6,23,0.45)';
+                node.style.opacity = '0';
+                node.style.transition = 'opacity 180ms ease, transform 200ms ease';
+                node.style.transform = 'translateY(6px)';
+
+                if (type === 'success') node.style.background = 'linear-gradient(90deg,#10b981,#06b6d4)';
+                else if (type === 'error') node.style.background = 'linear-gradient(90deg,#ef4444,#fb923c)';
+                else node.style.background = 'linear-gradient(90deg,#64748b,#94a3b8)';
+
+                root.appendChild(node);
+                requestAnimationFrame(() => {
+                    node.style.opacity = '1';
+                    node.style.transform = 'translateY(0)';
+                });
+
+                setTimeout(() => {
+                    node.style.opacity = '0';
+                    node.style.transform = 'translateY(6px)';
+                    setTimeout(() => node.remove(), 240);
+                }, 3800);
+            }
+        </script>
 </body>
 </html>

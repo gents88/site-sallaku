@@ -34,8 +34,8 @@
     "tag": "about",
     "title": "Chi sono",
     "subtitle": "Sviluppatore senior con 8+ anni nel web enterprise",
-    "bio1": "Sono un <strong>Senior Front-End Developer</strong> specializzato in Angular, TypeScript e architetture enterprise. Ho collaborato con aziende leader nei settori aerospace, defence, telco e banking.",
-    "bio2": "La mia passione? Trasformare dati complessi in interfacce intuitive con prestazioni elevate.",
+    "bio1": "Sono un <strong>Senior Front-End Developer</strong> che si muove con naturalezza tra Angular, TypeScript e architetture enterprise, collaborando con aziende leader nei settori aerospace, defence, telco e banking, dove precisione e affidabilità non sono opzionali.",
+    "bio2": "La mia passione va oltre le interfacce e le applicazioni: mi diverto in tutto ciò che ruota attorno a questo mondo, dall’architettura alla logica applicativa, fino alla performance e all’esperienza utente. Trasformo dati complessi in soluzioni chiare, efficienti e piacevoli da usare. Per me, ogni sfida è un sistema da comprendere, semplificare e migliorare.",
     "birth": "Nato a Blinisht-Lezhe (Albania) il 25/04/1988",
     "vision": {
       "title": "Visione End-to-End",
@@ -200,7 +200,9 @@
     "form": {
       "title": "Invia un messaggio",
       "name": "Nome e cognome",
+      "name_placeholder": "Scrivi il tuo nome",
       "email": "Email",
+      "email_placeholder": "Scrivi la tua email per poterti contattare",
       "message": "Messaggio",
       "submit": "Invia messaggio",
       "sending": "Invio in corso...",

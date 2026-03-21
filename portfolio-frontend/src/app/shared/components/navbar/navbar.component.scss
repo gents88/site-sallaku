@@ -9,7 +9,7 @@
   background: transparent;
 
   &.scrolled {
-    background: rgba(10, 14, 26, 0.9);
+    background: var(--surface-overlay);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border);
@@ -51,7 +51,7 @@
       flex-direction: column;
       position: fixed;
       inset: 0;
-      background: rgba(10, 14, 26, 0.97);
+      background: var(--surface-overlay);
       backdrop-filter: blur(20px);
       align-items: center;
       justify-content: center;

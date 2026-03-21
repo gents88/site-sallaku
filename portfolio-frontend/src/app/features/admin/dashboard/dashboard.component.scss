@@ -19,8 +19,14 @@
 .admin-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: 2.5rem;
+
+  > div {
+    width: 100%;
+    text-align: center;
+  }
+
   h1 { font-size: 2rem; }
 }
 
@@ -206,7 +212,7 @@
   padding: 0.85rem 0.95rem;
   border: 1px solid var(--color-border, rgba(255,255,255,0.06));
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.18);
+  background: var(--panel-surface-soft);
 
   strong {
     display: block;
@@ -340,6 +346,12 @@
   &:last-child { border-bottom: none; }
 }
 
+.contact-row--unread {
+  background: var(--panel-surface-soft);
+  border-left: 4px solid var(--color-primary, #6366f1);
+  padding-left: calc(0.9rem + 0.25rem);
+}
+
 .contact-row--interactive {
   width: 100%;
   border-left: 0;
@@ -392,7 +404,7 @@
 .contact-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.72);
+  background: var(--surface-overlay-strong);
   backdrop-filter: blur(6px);
   z-index: 1200;
 }
@@ -410,6 +422,11 @@
   flex-direction: column;
   gap: 1rem;
   overflow: auto;
+  background: var(--panel-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border, rgba(255,255,255,0.06));
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(2,6,23,0.6);
 }
 
 .contact-modal__header {
@@ -470,8 +487,9 @@
   line-height: 1.7;
   padding: 1rem;
   border-radius: 14px;
-  background: rgba(15, 23, 42, 0.28);
+  background: var(--panel-surface-soft);
   border: 1px solid var(--color-border, rgba(255,255,255,0.06));
+  color: var(--color-text);
 }
 
 .contact-modal__actions {

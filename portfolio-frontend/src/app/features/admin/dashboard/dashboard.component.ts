@@ -198,15 +198,22 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.markingRead = true;
+    // Optimistic update: mark as read locally immediately so the "Nuovo" badge disappears
+    const prevRead = contact.read;
+    this.recentContacts = this.recentContacts.map(item => item._id === contact._id ? { ...item, read: true } : item);
+    this.selectedContact = { ...contact, read: true };
+
+    // Fire-and-forget mark-read request; don't toggle `markingRead` here so the
+    // spinner appears only when the user explicitly clicks the "mark read" button.
     this.http.patch<RecentContact>(`${environment.apiUrl}/contact/${contact._id}/read`, {}).subscribe({
       next: (updatedContact) => {
         this.recentContacts = this.recentContacts.map(item => item._id === updatedContact._id ? updatedContact : item);
         this.selectedContact = updatedContact;
-        this.markingRead = false;
       },
       error: () => {
-        this.markingRead = false;
+        // revert optimistic change on error
+        this.recentContacts = this.recentContacts.map(item => item._id === contact._id ? { ...item, read: prevRead } : item);
+        this.selectedContact = { ...contact, read: prevRead };
       },
     });
   }

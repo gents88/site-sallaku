@@ -8,6 +8,7 @@ import { ContactService } from '../../core/services/contact.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ExperiencesService } from '../../core/services/experiences.service';
 import { SeoService } from '../../core/services/seo.service';
+import { SnackbarService } from '../../core/services/snackbar.service';
 import { About } from '../../core/models/about.model';
 import { Project } from '../../core/models/project.model';
 import { Experience } from '../../core/models/experience.model';
@@ -34,7 +35,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   contactSending = false;
   contactError = false;
   contactInvalid = false;
-  contactPopupOpen = false;
   honeypot = '';
   contactForm = { name: '', email: '', message: '' };
 
@@ -168,6 +168,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private projectsService: ProjectsService,
     private experiencesService: ExperiencesService,
     private seo: SeoService,
+    private snackbar: SnackbarService,
   ) {}
 
   ngOnInit(): void {
@@ -241,7 +242,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    // Optimistic UX: show immediate feedback and enqueue send; rollback on error
     this.contactSending = true;
+    this.contactSent = true;
+    this.snackbar.show('Invio in corso — messaggio mostrato come inviato', 'info', 3000);
 
     this.contactService.send({
       name: normalizedName,
@@ -255,18 +259,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe({
       next: () => {
         this.contactForm = { name: '', email: '', message: '' };
-        this.contactSent = true;
-        this.contactPopupOpen = true;
         this.contactInvalid = false;
+        this.snackbar.show('Messaggio inviato — grazie!', 'success');
       },
       error: () => {
+        // rollback optimistic state
+        this.contactSent = false;
         this.contactError = true;
+        this.snackbar.show('Invio non riuscito — riprova più tardi', 'error');
       },
     });
   }
 
-  closeContactPopup(): void {
-    this.contactPopupOpen = false;
-  }
 }
 

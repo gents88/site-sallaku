@@ -87,6 +87,20 @@
   --color-success: #10b981;
   --color-error: #ef4444;
   --color-warning: #f59e0b;
+  --surface-soft: rgba(20, 26, 46, 0.6);
+  --surface-strong: rgba(20, 26, 46, 0.8);
+  --surface-overlay: rgba(10, 14, 26, 0.92);
+  --surface-overlay-strong: rgba(2, 6, 23, 0.72);
+  --panel-gradient: linear-gradient(180deg, rgba(15, 20, 36, 0.96), rgba(10, 14, 26, 0.98));
+  --panel-gradient-soft: linear-gradient(180deg, rgba(20, 26, 46, 0.6), rgba(15, 20, 36, 0.55));
+  --input-bg: rgba(15, 20, 36, 0.6);
+  --card-soft-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  --card-soft-border: rgba(79, 106, 245, 0.06);
+  --card-soft-shadow: 0 4px 18px rgba(2, 6, 23, 0.45);
+  --code-header-bg: rgba(20, 26, 46, 0.8);
+  --panel-surface: rgba(15, 23, 42, 0.28);
+  --panel-surface-soft: rgba(15, 23, 42, 0.18);
+  --auth-page-overlay: linear-gradient(180deg, rgba(5, 9, 18, 0.62), rgba(5, 9, 18, 0.74));
 }
 
 /* ── Light theme override ────────────────────────── */
@@ -103,13 +117,27 @@
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-tertiary: #64748b;
-  --text-muted: #94a3b8;
+  --text-muted: #526277;
   --color-text: #0f172a;
-  --color-text-muted: #475569;
+  --color-text-muted: #526277;
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
   --shadow-md: 0 8px 32px rgba(0,0,0,0.12);
   --shadow-lg: 0 16px 48px rgba(0,0,0,0.15);
   --shadow-glow: 0 0 40px rgba(79,106,245,0.1);
+  --surface-soft: rgba(255, 255, 255, 0.88);
+  --surface-strong: rgba(255, 255, 255, 0.96);
+  --surface-overlay: rgba(248, 250, 255, 0.94);
+  --surface-overlay-strong: rgba(148, 163, 184, 0.28);
+  --panel-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(240, 244, 255, 0.98));
+  --panel-gradient-soft: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(240, 244, 255, 0.88));
+  --input-bg: rgba(255, 255, 255, 0.96);
+  --card-soft-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(240, 244, 255, 0.88));
+  --card-soft-border: rgba(79, 106, 245, 0.12);
+  --card-soft-shadow: 0 12px 30px rgba(148, 163, 184, 0.18);
+  --code-header-bg: rgba(240, 244, 255, 0.95);
+  --panel-surface: rgba(255, 255, 255, 0.78);
+  --panel-surface-soft: rgba(255, 255, 255, 0.68);
+  --auth-page-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(240, 244, 255, 0.82));
 }
 
 /* ── Reset & base ────────────────────────────────── */

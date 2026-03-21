@@ -22,11 +22,15 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
   private transporter: nodemailer.Transporter;
   private readonly isConfigured: boolean;
+  private readonly smtpUser?: string;
 
   constructor(private config: ConfigService) {
     const smtpUser = this.config.get<string>('SMTP_USER');
     const smtpPass = this.config.get<string>('SMTP_PASS');
-    this.isConfigured = Boolean(smtpUser && smtpPass);
+    this.smtpUser = smtpUser;
+    const hasPlaceholderUser = smtpUser === 'la-tua-email@gmail.com';
+    const hasPlaceholderPass = smtpPass === 'la-tua-app-password-gmail';
+    this.isConfigured = Boolean(smtpUser && smtpPass && !hasPlaceholderUser && !hasPlaceholderPass);
 
     this.transporter = nodemailer.createTransport({
       host:   this.config.get<string>('SMTP_HOST', 'smtp.gmail.com'),
@@ -39,8 +43,14 @@ export class MailService {
     });
 
     if (!this.isConfigured) {
-      this.logger.warn('SMTP_USER / SMTP_PASS not configured. Email delivery is disabled.');
+      this.logger.warn('SMTP_USER / SMTP_PASS not configured with real values. Email delivery is disabled.');
     }
+  }
+
+  private getAdminInbox(): string {
+    return this.config.get<string>('EMAIL_TO')
+      || this.config.get<string>('ADMIN_EMAIL')
+      || 'gentsallaku@gmail.com';
   }
 
   async send(opts: MailOptions): Promise<MailDeliveryResult> {
@@ -51,7 +61,7 @@ export class MailService {
 
     const from = this.config.get<string>(
       'EMAIL_FROM',
-      '"Gent Sallaku" <noreply@gentsallaku.it>',
+      this.smtpUser ? `"Gent Sallaku" <${this.smtpUser}>` : '"Gent Sallaku" <noreply@gentsallaku.it>',
     );
     try {
       const info = await this.transporter.sendMail({ from, ...opts });
@@ -117,7 +127,7 @@ export class MailService {
 
   /** Notification sent to admin when a contact form is submitted */
   sendContactNotification(opts: { name: string; email: string; subject: string; message: string }): Promise<MailDeliveryResult> {
-    const adminEmail = this.config.get<string>('EMAIL_TO', 'gent.sallaku@email.com');
+    const adminEmail = this.getAdminInbox();
     return this.send({
       to: adminEmail,
       replyTo: opts.email,

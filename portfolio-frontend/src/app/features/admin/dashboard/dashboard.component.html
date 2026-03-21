@@ -1,12 +1,9 @@
 <div class="admin-page container">
-  <header class="admin-header">
+  <!-- <header class="admin-header">
     <div>
       <h1>{{ 'admin.dashboard' | translate }}</h1>
-      <p class="text-muted">
-        {{ 'admin.welcome' | translate }}, <strong>{{ auth.currentUser()?.name }}</strong>
-      </p>
     </div>
-  </header>
+  </header> -->
 
   @if (actionMessageKey) {
     <div class="dashboard-feedback" aria-live="polite">
@@ -152,7 +149,7 @@
       <h2 class="section-label">{{ 'admin.recent_activity' | translate }}</h2>
       <div class="contacts-list card">
         @for (c of recentContacts; track c._id ?? c.email + c.createdAt) {
-          <button type="button" class="contact-row contact-row--interactive" (click)="openContact(c)">
+          <button type="button" class="contact-row contact-row--interactive" [class.contact-row--unread]="!c.read" (click)="openContact(c)">
             <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
             <div class="contact-body">
               <span class="contact-name">{{ c.name }}</span>
