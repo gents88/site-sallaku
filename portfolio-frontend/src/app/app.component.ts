@@ -307,6 +307,14 @@ export class AppComponent implements OnInit {
     this.themeService.init();
     this.seoService.trackPageViews();
     document.documentElement.lang = this.langService.current();
+    // Apply language-based accent theme
+    this.applyLanguageAccent();
+  }
+
+  private applyLanguageAccent(): void {
+    const currentLang = this.langService.current();
+    const accent = currentLang === 'sq' ? 'albanian' as const : 'default' as const;
+    this.themeService.setLanguageAccent(accent);
   }
 
   closeAccountModal(): void {

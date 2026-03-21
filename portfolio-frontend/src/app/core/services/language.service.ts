@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ThemeService, type LanguageAccent } from './theme.service';
 
 export type Lang = 'it' | 'en' | 'sq';
 
@@ -14,6 +15,7 @@ const STORAGE_KEY = 'gs-portfolio-lang';
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
   private readonly _current = signal<Lang>(this.resolveInitialLang());
+  private readonly themeService = inject(ThemeService);
 
   readonly current = this._current.asReadonly();
   readonly supported = SUPPORTED_LANGS;
@@ -23,6 +25,7 @@ export class LanguageService {
     this.translate.setFallbackLang('it').subscribe();
     this.translate.use(this._current()).subscribe();
     document.documentElement.lang = this._current();
+    this.applyLanguageAccent(this._current());
   }
 
   setLang(lang: Lang): void {
@@ -34,6 +37,12 @@ export class LanguageService {
     });
     localStorage.setItem(STORAGE_KEY, lang);
     document.documentElement.lang = lang;
+    this.applyLanguageAccent(lang);
+  }
+
+  private applyLanguageAccent(lang: Lang): void {
+    const accent: LanguageAccent = lang === 'sq' ? 'albanian' : 'default';
+    this.themeService.setLanguageAccent(accent);
   }
 
   /** Return the label + flag for the current language */
