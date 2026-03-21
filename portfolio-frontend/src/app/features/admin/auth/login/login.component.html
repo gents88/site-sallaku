@@ -1,0 +1,46 @@
+<div class="auth-page" [class.auth-page--embedded]="embedded" (click)="closeModal()">
+  <div class="auth-card card fade-in-up" (click)="$event.stopPropagation()">
+    <div class="auth-card__accent" aria-hidden="true"></div>
+    <button type="button" class="auth-card__close" (click)="closeModal()" aria-label="Chiudi login">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div class="auth-card__header">
+      <div class="auth-avatar" aria-hidden="true">GS</div>
+      <span class="auth-chip">Admin Access</span>
+      <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
+      <p class="text-muted">{{ 'auth.login_subtitle' | translate }}</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="login()" novalidate>
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>{{ 'auth.email' | translate }}</mat-label>
+        <input matInput formControlName="email" type="email" autocomplete="email" placeholder="admin@portfolio.com" />
+        <mat-icon matSuffix>email</mat-icon>
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <mat-error>{{ 'auth.email_required' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>{{ 'auth.password' | translate }}</mat-label>
+        <input matInput formControlName="password" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" />
+        <button mat-icon-button matSuffix type="button" (click)="showPassword = !showPassword">
+          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <mat-error>{{ 'auth.password_required' | translate }}</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading" class="submit-btn">
+        @if (loading) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>login</mat-icon> }
+        {{ (loading ? 'auth.logging_in' : 'auth.login_btn') | translate }}
+      </button>
+    </form>
+
+    <p class="auth-card__footer text-muted">
+      {{ 'auth.no_account' | translate }}
+      <a routerLink="/admin/register">{{ 'auth.create_one' | translate }}</a>
+    </p>
+  </div>
+</div>

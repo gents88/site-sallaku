@@ -1,0 +1,123 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/admin" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <h1>Projects</h1>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon> New Project
+    </button>
+  </header>
+
+  <!-- Form panel -->
+  @if (showForm) {
+    <div class="card form-panel">
+      <h2>{{ editingId ? 'Edit' : 'New' }} Project</h2>
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" />
+            @if (form.get('title')?.invalid && form.get('title')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Order</mat-label>
+            <input matInput formControlName="order" type="number" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="4"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Live URL</mat-label>
+            <input matInput formControlName="liveUrl" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Repo URL</mat-label>
+            <input matInput formControlName="repoUrl" />
+          </mat-form-field>
+        </div>
+
+        <!-- Technologies chips -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Technologies (press Enter)</mat-label>
+          <mat-chip-grid #techGrid>
+            @for (tech of technologies; track tech) {
+              <mat-chip [removable]="true" (removed)="removeChip('technologies', tech)">
+                {{ tech }}<button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip>
+            }
+          </mat-chip-grid>
+          <input [matChipInputFor]="techGrid"
+                 [matChipInputSeparatorKeyCodes]="separatorKeys"
+                 (matChipInputTokenEnd)="addChip('technologies', $event)" />
+        </mat-form-field>
+
+        <!-- Image URLs chips -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Image URLs (press Enter)</mat-label>
+          <mat-chip-grid #imgGrid>
+            @for (img of images; track img) {
+              <mat-chip [removable]="true" (removed)="removeChip('images', img)">
+                {{ img | slice:0:40 }}…<button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip>
+            }
+          </mat-chip-grid>
+          <input [matChipInputFor]="imgGrid"
+                 [matChipInputSeparatorKeyCodes]="separatorKeys"
+                 (matChipInputTokenEnd)="addChip('images', $event)" />
+        </mat-form-field>
+
+        <mat-checkbox formControlName="featured">Featured project</mat-checkbox>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="showForm = false">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving">
+            {{ saving ? 'Saving…' : 'Save Project' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Project list -->
+  @if (loading) {
+    <app-loading-spinner />
+  } @else if (!projects.length) {
+    <p class="empty-state">No projects yet. Create your first one!</p>
+  } @else {
+    <div class="list">
+      @for (project of projects; track project._id) {
+        <div class="card list-item">
+          @if (project.images[0]) {
+            <img [src]="project.images[0]" [alt]="project.title" class="list-item__thumb" />
+          }
+          <div class="list-item__info">
+            <h3>{{ project.title }}</h3>
+            <p class="text-muted">{{ project.description | slice:0:100 }}…</p>
+            <div class="tech-tags">
+              @for (tech of project.technologies; track tech) {
+                <span class="badge">{{ tech }}</span>
+              }
+            </div>
+          </div>
+          <div class="list-item__actions">
+            @if (project.featured) { <span class="badge" style="color:#6366f1">Featured</span> }
+            <button mat-icon-button (click)="openEdit(project)" title="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="delete(project._id)" title="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
