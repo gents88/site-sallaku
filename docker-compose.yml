@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    # porta non esposta all'esterno — accessibile solo nella rete Docker interna
+    networks:
+      - portfolio_net
+
+  backend:
+    build:
+      context: ./portfolio-backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./portfolio-backend/.env
+    environment:
+      PORT: 3000
+    # porta non esposta all'esterno — nginx nel frontend fa da proxy
+    expose:
+      - '3000'
+    depends_on:
+      - mongo
+    networks:
+      - portfolio_net
+
+  frontend:
+    build:
+      context: ./portfolio-frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
+    networks:
+      - portfolio_net
+
+volumes:
+  mongo_data:
+
+networks:
+  portfolio_net:
+    driver: bridge

@@ -1,0 +1,80 @@
+version: '3.9'
+
+# Avviare con:
+#   docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  traefik:
+    image: traefik:v3.0
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Redirect automatico HTTP → HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Let's Encrypt (certificato SSL gratuito)
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.le.acme.email=gent@gentsallaku.it"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - portfolio_net
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - portfolio_net
+
+  backend:
+    build:
+      context: ./portfolio-backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./portfolio-backend/.env
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+    expose:
+      - "3000"
+    depends_on:
+      - mongo
+    networks:
+      - portfolio_net
+
+  frontend:
+    build:
+      context: ./portfolio-frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - portfolio_net
+    labels:
+      - "traefik.enable=true"
+      # Serve sia gentsallaku.it che www.gentsallaku.it
+      - "traefik.http.routers.frontend.rule=Host(`gentsallaku.it`) || Host(`www.gentsallaku.it`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=le"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+volumes:
+  mongo_data:
+  letsencrypt:
+
+networks:
+  portfolio_net:
+    driver: bridge

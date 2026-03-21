@@ -1,0 +1,206 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/admin" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <h1>Blog Posts</h1>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon> New Post
+    </button>
+  </header>
+
+  @if (showForm) {
+    <div class="card form-panel">
+      <div class="form-panel__header">
+        <div>
+          <h2>{{ editingId ? 'Edit' : 'New' }} Post</h2>
+          <p>Follow the guided flow: upload a PDF, review the generated content, then publish or save as draft.</p>
+        </div>
+        <div class="stepper">
+          <span class="stepper__item stepper__item--active">1. Upload</span>
+          <span class="stepper__item" [class.stepper__item--active]="generatingDraft || !!sourceSummary">2. Process</span>
+          <span class="stepper__item" [class.stepper__item--active]="!!form.get('title')?.value">3. Review</span>
+          <span class="stepper__item" [class.stepper__item--active]="!saving">4. Publish</span>
+        </div>
+      </div>
+
+      <app-blog-pdf-upload
+        [loading]="generatingDraft"
+        [progress]="uploadProgress"
+        [processing]="processingDraft"
+        (generateRequested)="generateDraft($event)"
+      />
+
+      @if (sourceSummary || generationWarnings.length) {
+        <div class="generation-summary">
+          @if (sourceSummary) {
+            <div class="generation-summary__meta">
+              <span class="generation-summary__label">Step 2</span>
+              <h3>Generated from {{ sourceSummary.fileName }}</h3>
+              <p>
+                {{ sourceSummary.pageCount }} pages •
+                {{ sourceSummary.wordCount }} words •
+                {{ (sourceSummary.sizeBytes / 1024 / 1024).toFixed(2) }} MB
+              </p>
+            </div>
+          }
+
+          @if (generationWarnings.length) {
+            <ul class="generation-summary__warnings">
+              @for (warning of generationWarnings; track warning) {
+                <li>{{ warning }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" />
+            @if (form.get('title')?.invalid && form.get('title')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Language</mat-label>
+            <mat-select formControlName="language">
+              <mat-option value="it">Italiano</mat-option>
+              <mat-option value="en">English</mat-option>
+              <mat-option value="sq">Shqip</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Subtitle / Description</mat-label>
+          <textarea matInput formControlName="subtitle" rows="2"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>SEO Slug</mat-label>
+            <input matInput formControlName="slug" placeholder="seo-friendly-url" />
+          </mat-form-field>
+
+          <div class="image-upload">
+            <label class="image-upload__label">Optional manual cover image</label>
+            <label class="image-upload__picker">
+              <mat-icon>image</mat-icon>
+              <span>Upload image</span>
+              <input type="file" accept="image/*" (change)="onCoverImageSelected($event)" />
+            </label>
+            <small>Supported: image files up to {{ coverImageMaxSizeMb }} MB.</small>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Content (Markdown / HTML)</mat-label>
+          <textarea matInput formControlName="content" rows="12"></textarea>
+          @if (form.get('content')?.invalid && form.get('content')?.touched) {
+            <mat-error>Required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Excerpt</mat-label>
+          <textarea matInput formControlName="excerpt" rows="2"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Cover Image URL</mat-label>
+            <input matInput formControlName="coverImage" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Meta Title (SEO)</mat-label>
+            <input matInput formControlName="metaTitle" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Meta Description (SEO)</mat-label>
+          <input matInput formControlName="metaDescription" />
+        </mat-form-field>
+
+        @if (featuredImagePrompt) {
+          <p class="helper-copy">Featured image suggestion: {{ featuredImagePrompt }}</p>
+        }
+
+        <!-- Tags -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tags (press Enter)</mat-label>
+          <mat-chip-grid #tagGrid>
+            @for (tag of tags; track tag) {
+              <mat-chip [removable]="true" (removed)="removeTag(tag)">
+                #{{ tag }}<button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip>
+            }
+          </mat-chip-grid>
+          <input [matChipInputFor]="tagGrid" [matChipInputSeparatorKeyCodes]="separatorKeys"
+                 (matChipInputTokenEnd)="addTag($event)" />
+        </mat-form-field>
+
+        <mat-checkbox formControlName="published">Publish immediately</mat-checkbox>
+
+        @if (form.get('content')?.value) {
+          <section class="preview-panel">
+            <div class="preview-panel__header">
+              <div>
+                <span class="generation-summary__label">Step 3</span>
+                <h3>Preview</h3>
+              </div>
+            </div>
+            @if (form.get('coverImage')?.value) {
+              <img class="preview-panel__image" [src]="form.get('coverImage')?.value" [alt]="form.get('title')?.value || 'Cover image preview'" />
+            }
+            <div class="preview-panel__content" [innerHTML]="form.get('content')?.value"></div>
+          </section>
+        }
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="closeForm()">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving">
+            {{ saving ? 'Saving…' : 'Save Post' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else if (!posts.length) {
+    <p class="empty-state">No posts yet. Write your first one!</p>
+  } @else {
+    <div class="list">
+      @for (post of posts; track post._id) {
+        <div class="card list-item">
+          @if (post.coverImage) {
+            <img [src]="post.coverImage" [alt]="post.title" class="list-item__thumb" />
+          }
+          <div class="list-item__info">
+            <h3>{{ post.title }}</h3>
+            @if (post.subtitle) {
+              <p class="text-muted">{{ post.subtitle }}</p>
+            }
+            <p class="text-muted">{{ post.excerpt | slice:0:100 }}</p>
+            <div style="margin-top:0.5rem">
+              <span class="badge" [style.color]="post.published ? 'var(--color-success)' : 'var(--color-warning)'">
+                {{ post.published ? 'Published' : 'Draft' }}
+              </span>
+              <span class="badge badge--language">{{ post.language.toUpperCase() }}</span>
+            </div>
+          </div>
+          <div class="list-item__actions">
+            <button mat-icon-button (click)="openEdit(post)"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(post._id)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

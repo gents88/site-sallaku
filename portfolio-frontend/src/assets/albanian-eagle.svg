@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 490">
+  <title>Aquila Shqiptare - Albanian Double-Headed Eagle</title>
+  <g fill="#cd212a">
+
+    <!-- ══ LEFT HEAD ══ -->
+    <ellipse cx="158" cy="78" rx="52" ry="52"/>
+    <!-- Upper beak -->
+    <path d="M 108,62 L 55,46 L 60,72 L 108,78 Z"/>
+    <!-- Lower beak hook -->
+    <path d="M 108,78 L 60,74 Q 62,96 74,94 L 108,87 Z"/>
+
+    <!-- ══ RIGHT HEAD ══ -->
+    <ellipse cx="342" cy="78" rx="52" ry="52"/>
+    <!-- Upper beak -->
+    <path d="M 392,62 L 445,46 L 440,72 L 392,78 Z"/>
+    <!-- Lower beak hook -->
+    <path d="M 392,78 L 440,74 Q 438,96 426,94 L 392,87 Z"/>
+
+    <!-- ══ LEFT NECK (bridge head to body) ══ -->
+    <path d="M 140,124 L 178,124 L 186,150 L 162,150 Z"/>
+
+    <!-- ══ RIGHT NECK ══ -->
+    <path d="M 360,124 L 322,124 L 314,150 L 338,150 Z"/>
+
+    <!-- ══ BODY ══ -->
+    <path d="M 174,144 C 200,128 224,120 250,118 C 276,120 300,128 326,144
+             L 340,254 C 337,318 307,344 250,346 C 193,344 163,318 160,254 Z"/>
+
+    <!-- ══ LEFT WING BASE (solid fill connecting feathers) ══ -->
+    <path d="M 170,160 C 145,146 116,130 90,115 C 63,100 36,95 16,103
+             C 8,113 10,128 21,131
+             C 43,124 68,121 95,129 C 126,140 156,157 169,168 Z"/>
+
+    <!-- ══ LEFT PRIMARY FEATHERS — 7 fingers pointing upward ══ -->
+    <path d="M 162,153 L 150,18  L 170,16  L 175,153 Z"/>
+    <path d="M 154,151 L 116,13  L 135,10  L 162,150 Z"/>
+    <path d="M 146,149 L 83,14   L 102,10  L 154,148 Z"/>
+    <path d="M 138,147 L 52,24   L 68,17   L 146,148 Z"/>
+    <path d="M 130,145 L 28,42   L 42,34   L 138,146 Z"/>
+    <path d="M 121,144 L 10,68   L 21,58   L 129,145 Z"/>
+    <path d="M 113,144 L 4,97    L 10,84   L 120,145 Z"/>
+
+    <!-- ══ LEFT SECONDARY FEATHERS (lower wing) ══ -->
+    <path d="M 164,166 L 124,210 L 136,216 L 169,170 Z"/>
+    <path d="M 156,174 L 110,222 L 122,228 L 161,178 Z"/>
+    <path d="M 147,182 L 96,237  L 108,241 L 152,186 Z"/>
+    <path d="M 138,190 L 83,250  L 96,254  L 143,194 Z"/>
+
+    <!-- ══ RIGHT WING BASE (mirror) ══ -->
+    <path d="M 330,160 C 355,146 384,130 410,115 C 437,100 464,95 484,103
+             C 492,113 490,128 479,131
+             C 457,124 432,121 405,129 C 374,140 344,157 331,168 Z"/>
+
+    <!-- ══ RIGHT PRIMARY FEATHERS — 7 fingers pointing upward ══ -->
+    <path d="M 338,153 L 350,18  L 330,16  L 325,153 Z"/>
+    <path d="M 346,151 L 384,13  L 365,10  L 338,150 Z"/>
+    <path d="M 354,149 L 417,14  L 398,10  L 346,148 Z"/>
+    <path d="M 362,147 L 448,24  L 432,17  L 354,148 Z"/>
+    <path d="M 370,145 L 472,42  L 458,34  L 362,146 Z"/>
+    <path d="M 379,144 L 490,68  L 479,58  L 371,145 Z"/>
+    <path d="M 387,144 L 496,97  L 490,84  L 380,145 Z"/>
+
+    <!-- ══ RIGHT SECONDARY FEATHERS (lower wing) ══ -->
+    <path d="M 336,166 L 376,210 L 364,216 L 331,170 Z"/>
+    <path d="M 344,174 L 390,222 L 378,228 L 339,178 Z"/>
+    <path d="M 353,182 L 404,237 L 392,241 L 348,186 Z"/>
+    <path d="M 362,190 L 417,250 L 404,254 L 357,194 Z"/>
+
+    <!-- ══ LEFT LEG ══ -->
+    <path d="M 216,342 L 208,424 L 228,424 L 240,342 Z"/>
+    <!-- Talons left -->
+    <path d="M 208,420 L 180,442 L 188,456 L 213,428 Z"/>
+    <path d="M 216,424 L 192,454 L 201,465 L 221,434 Z"/>
+    <path d="M 226,425 L 218,460 L 228,467 L 233,434 Z"/>
+    <path d="M 235,420 L 244,454 L 256,456 L 244,428 Z"/>
+
+    <!-- ══ RIGHT LEG (mirror) ══ -->
+    <path d="M 284,342 L 292,424 L 272,424 L 260,342 Z"/>
+    <!-- Talons right -->
+    <path d="M 292,420 L 320,442 L 312,456 L 287,428 Z"/>
+    <path d="M 284,424 L 308,454 L 299,465 L 279,434 Z"/>
+    <path d="M 274,425 L 282,460 L 272,467 L 267,434 Z"/>
+    <path d="M 265,420 L 256,454 L 244,456 L 256,428 Z"/>
+
+  </g>
+</svg>
