@@ -302,7 +302,19 @@
     "open_email": "Apri email",
     "message_deleted": "Messaggio eliminato.",
     "marked_read": "Messaggio segnato come letto.",
-    "marked_unread": "Messaggio segnato da leggere."
+    "marked_unread": "Messaggio segnato da leggere.",
+    "visitor_analytics": "Analisi Visitatori",
+    "visitor_overview": "Panoramica Visitatori",
+    "visitor_overview_desc": "Oggi, totale e visitatori unici",
+    "today_visitors": "Oggi",
+    "traffic_sources": "Sorgenti di Traffico",
+    "traffic_sources_desc": "Come i visitatori trovano il sito",
+    "device_breakdown": "Dispositivi",
+    "device_breakdown_desc": "Distribuzione Desktop, Mobile, Tablet",
+    "top_countries": "Paesi Principali",
+    "top_countries_desc": "Visitatori per paese (geolocalizzazione IP)",
+    "browser_breakdown": "Browser",
+    "browser_breakdown_desc": "Distribuzione per browser"
   },
   "common": {
     "loading": "Caricamento…",

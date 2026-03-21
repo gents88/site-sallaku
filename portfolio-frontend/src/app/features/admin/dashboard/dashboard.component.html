@@ -132,6 +132,112 @@
       </section>
     </div>
 
+    <!-- ── Advanced Visitor Analytics ─────────────────────────────────── -->
+    <h2 class="section-label">{{ 'admin.visitor_analytics' | translate }}</h2>
+
+    <div class="analytics-grid adv-top-grid">
+      <!-- Visitor overview card -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.visitor_overview' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.visitor_overview_desc' | translate }}</p>
+          </div>
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="visitor-overview">
+          <div class="visitor-overview__item">
+            <strong>{{ todayVisitors }}</strong>
+            <span class="text-muted">{{ 'admin.today_visitors' | translate }}</span>
+          </div>
+          <div class="visitor-overview__item">
+            <strong>{{ totalViews }}</strong>
+            <span class="text-muted">{{ 'admin.visits' | translate }}</span>
+          </div>
+          <div class="visitor-overview__item">
+            <strong>{{ uniqueVisitors }}</strong>
+            <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Traffic sources: donut chart -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.traffic_sources' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.traffic_sources_desc' | translate }}</p>
+          </div>
+          <mat-icon>alt_route</mat-icon>
+        </div>
+        <app-donut-chart [items]="trafficSources" [colors]="trafficColors" />
+      </section>
+
+      <!-- Device breakdown: donut chart -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.device_breakdown' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.device_breakdown_desc' | translate }}</p>
+          </div>
+          <mat-icon>devices</mat-icon>
+        </div>
+        <app-donut-chart [items]="deviceBreakdown" [colors]="deviceColors" />
+      </section>
+    </div>
+
+    <div class="analytics-grid adv-bottom-grid">
+      <!-- Top countries: horizontal bars -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.top_countries' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.top_countries_desc' | translate }}</p>
+          </div>
+          <mat-icon>public</mat-icon>
+        </div>
+        <div class="h-bars">
+          @for (item of topCountries; track item.label; let i = $index) {
+            <div class="h-bar-row">
+              <span class="h-bar-label text-muted">{{ item.label }}</span>
+              <div class="h-bar-track">
+                <div class="h-bar-fill" [style.width.%]="countryBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
+              </div>
+              <span class="h-bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (!topCountries.length) {
+            <p class="text-muted h-bars__empty">—</p>
+          }
+        </div>
+      </section>
+
+      <!-- Browser breakdown: horizontal bars -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.browser_breakdown' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.browser_breakdown_desc' | translate }}</p>
+          </div>
+          <mat-icon>web</mat-icon>
+        </div>
+        <div class="h-bars">
+          @for (item of browserBreakdown; track item.label; let i = $index) {
+            <div class="h-bar-row">
+              <span class="h-bar-label text-muted">{{ item.label }}</span>
+              <div class="h-bar-track">
+                <div class="h-bar-fill h-bar-fill--browser" [style.width.%]="browserBarWidth(item.count)" [style.background]="browserColors[i % browserColors.length]"></div>
+              </div>
+              <span class="h-bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (!browserBreakdown.length) {
+            <p class="text-muted h-bars__empty">—</p>
+          }
+        </div>
+      </section>
+    </div>
+
     <!-- Quick links -->
     <h2 class="section-label">{{ 'admin.quick_actions' | translate }}</h2>
     <div class="quick-links">

@@ -302,7 +302,19 @@
     "open_email": "Open email",
     "message_deleted": "Message deleted.",
     "marked_read": "Message marked as read.",
-    "marked_unread": "Message marked as unread."
+    "marked_unread": "Message marked as unread.",
+    "visitor_analytics": "Visitor Analytics",
+    "visitor_overview": "Visitor Overview",
+    "visitor_overview_desc": "Today, total and unique visitors",
+    "today_visitors": "Today",
+    "traffic_sources": "Traffic Sources",
+    "traffic_sources_desc": "How visitors find your site",
+    "device_breakdown": "Devices",
+    "device_breakdown_desc": "Desktop, Mobile, Tablet distribution",
+    "top_countries": "Top Countries",
+    "top_countries_desc": "Visitors by country (IP geolocation)",
+    "browser_breakdown": "Browsers",
+    "browser_breakdown_desc": "Browser distribution"
   },
   "common": {
     "loading": "Loading…",

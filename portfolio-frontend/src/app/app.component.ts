@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
@@ -9,6 +10,7 @@ import { ThemeService } from './core/services/theme.service';
 import { SeoService } from './core/services/seo.service';
 import { LanguageService } from './core/services/language.service';
 import { AuthModalService } from './core/services/auth-modal.service';
+import { AnalyticsTrackingService } from './core/services/analytics-tracking.service';
 
 @Component({
   selector: 'app-root',
@@ -301,14 +303,19 @@ export class AppComponent implements OnInit {
     private seoService: SeoService,
     private langService: LanguageService,
     private router: Router,
+    private analytics: AnalyticsTrackingService,
   ) {}
 
   ngOnInit(): void {
     this.themeService.init();
     this.seoService.trackPageViews();
     document.documentElement.lang = this.langService.current();
-    // Apply language-based accent theme
     this.applyLanguageAccent();
+
+    // Track each full navigation as a page-view (async, fire-and-forget)
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe(e => this.analytics.track((e as NavigationEnd).urlAfterRedirects));
   }
 
   private applyLanguageAccent(): void {

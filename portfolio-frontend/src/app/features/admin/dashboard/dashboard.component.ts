@@ -10,6 +10,7 @@ import { combineLatest, catchError, of, startWith } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { ExperiencesService } from '../../../core/services/experiences.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { DonutChartComponent, DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
 import { environment } from '../../../../environments/environment';
 
 interface StatCard {
@@ -53,10 +54,19 @@ interface AdminStatsResponse {
   };
 }
 
+interface AdvancedAnalytics {
+  todayCount: number;
+  topCountries: DonutItem[];
+  deviceBreakdown: DonutItem[];
+  browserBreakdown: DonutItem[];
+  osBreakdown: DonutItem[];
+  trafficSources: DonutItem[];
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatIconModule, MatButtonModule, TranslateModule],
+  imports: [CommonModule, RouterLink, MatCardModule, MatIconModule, MatButtonModule, TranslateModule, DonutChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
@@ -69,6 +79,7 @@ export class DashboardComponent implements OnInit {
   draftPosts = 0;
   totalViews = 0;
   uniqueVisitors = 0;
+  todayVisitors = 0;
   loading = true;
   logoutLoading = false;
   selectedContact: RecentContact | null = null;
@@ -76,6 +87,18 @@ export class DashboardComponent implements OnInit {
   deletingContact = false;
   actionMessageKey: string | null = null;
   private actionMessageTimeoutId: number | null = null;
+
+  // Advanced analytics
+  topCountries: DonutItem[] = [];
+  deviceBreakdown: DonutItem[] = [];
+  browserBreakdown: DonutItem[] = [];
+  osBreakdown: DonutItem[] = [];
+  trafficSources: DonutItem[] = [];
+
+  readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
+  readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
+  readonly browserColors = ['#f59e0b', '#6366f1', '#ef4444', '#14b8a6', '#8b5cf6', '#06b6d4', '#10b981', '#ec4899'];
+  readonly countryColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444', '#06b6d4', '#10b981', '#ec4899', '#8b5cf6', '#0ea5e9', '#a78bfa'];
 
   readonly quickLinks = [
     { labelKey: 'admin.manage_projects',    icon: 'work',       route: '/admin/projects' },
@@ -101,6 +124,15 @@ export class DashboardComponent implements OnInit {
       visits: { totalViews: 0, uniqueVisitors: 0, viewsByDay: [] },
     };
 
+    const emptyAdvanced: AdvancedAnalytics = {
+      todayCount: 0,
+      topCountries: [],
+      deviceBreakdown: [],
+      browserBreakdown: [],
+      osBreakdown: [],
+      trafficSources: [],
+    };
+
     combineLatest({
       projects: this.projectsService.getAll().pipe(catchError(() => of([])), startWith([])),
       experiences: this.experiencesService.getAll().pipe(catchError(() => of([])), startWith([])),
@@ -108,8 +140,12 @@ export class DashboardComponent implements OnInit {
         catchError(() => of(emptyStats)),
         startWith(emptyStats),
       ),
+      advanced: this.http.get<AdvancedAnalytics>(`${environment.apiUrl}/analytics/advanced`).pipe(
+        catchError(() => of(emptyAdvanced)),
+        startWith(emptyAdvanced),
+      ),
     }).subscribe({
-      next: ({ projects, experiences, adminStats }) => {
+      next: ({ projects, experiences, adminStats, advanced }) => {
         const totalPosts = adminStats.content.total;
         const publishedPosts = adminStats.content.published;
         const totalValues = [
@@ -125,14 +161,14 @@ export class DashboardComponent implements OnInit {
         const maxValue = Math.max(...totalValues, 1);
 
         this.stats = [
-          { labelKey: 'admin.projects',    value: projects.length,                       icon: 'work',                   route: '/admin/projects',    color: '#6366f1', miniBars: this.buildMiniBars(projects.length, maxValue, 0) },
-          { labelKey: 'admin.experiences', value: experiences.length,                    icon: 'history_edu',            route: '/admin/experiences', color: '#06b6d4', miniBars: this.buildMiniBars(experiences.length, maxValue, 1) },
-          { labelKey: 'admin.blog_posts',  value: totalPosts,                            icon: 'article',                route: '/admin/blog',        color: '#10b981', miniBars: this.buildMiniBars(totalPosts, maxValue, 2) },
-          { labelKey: 'admin.published',   value: publishedPosts,                        icon: 'published_with_changes', route: '/admin/blog',        color: '#f59e0b', miniBars: this.buildMiniBars(publishedPosts, maxValue, 3) },
-          { labelKey: 'admin.contacts',    value: adminStats.contacts,                   icon: 'mail',                   route: '/admin',             color: '#ec4899', miniBars: this.buildMiniBars(adminStats.contacts, maxValue, 4) },
-          { labelKey: 'admin.users',       value: adminStats.users,                      icon: 'group',                  route: '/admin',             color: '#8b5cf6', miniBars: this.buildMiniBars(adminStats.users, maxValue, 5) },
-          { labelKey: 'admin.visits',      value: adminStats.visits.totalViews,          icon: 'visibility',             route: '/admin',             color: '#14b8a6', miniBars: this.buildMiniBars(adminStats.visits.totalViews, maxValue, 6) },
-          { labelKey: 'admin.visitors',    value: adminStats.visits.uniqueVisitors,      icon: 'monitoring',             route: '/admin',             color: '#ef4444', miniBars: this.buildMiniBars(adminStats.visits.uniqueVisitors, maxValue, 7) },
+          { labelKey: 'admin.projects',    value: projects.length,                  icon: 'work',                   route: '/admin/projects',    color: '#6366f1', miniBars: this.buildMiniBars(projects.length, maxValue, 0) },
+          { labelKey: 'admin.experiences', value: experiences.length,               icon: 'history_edu',            route: '/admin/experiences', color: '#06b6d4', miniBars: this.buildMiniBars(experiences.length, maxValue, 1) },
+          { labelKey: 'admin.blog_posts',  value: totalPosts,                       icon: 'article',                route: '/admin/blog',        color: '#10b981', miniBars: this.buildMiniBars(totalPosts, maxValue, 2) },
+          { labelKey: 'admin.published',   value: publishedPosts,                   icon: 'published_with_changes', route: '/admin/blog',        color: '#f59e0b', miniBars: this.buildMiniBars(publishedPosts, maxValue, 3) },
+          { labelKey: 'admin.contacts',    value: adminStats.contacts,              icon: 'mail',                   route: '/admin',             color: '#ec4899', miniBars: this.buildMiniBars(adminStats.contacts, maxValue, 4) },
+          { labelKey: 'admin.users',       value: adminStats.users,                 icon: 'group',                  route: '/admin',             color: '#8b5cf6', miniBars: this.buildMiniBars(adminStats.users, maxValue, 5) },
+          { labelKey: 'admin.visits',      value: adminStats.visits.totalViews,     icon: 'visibility',             route: '/admin',             color: '#14b8a6', miniBars: this.buildMiniBars(adminStats.visits.totalViews, maxValue, 6) },
+          { labelKey: 'admin.visitors',    value: adminStats.visits.uniqueVisitors, icon: 'monitoring',             route: '/admin',             color: '#ef4444', miniBars: this.buildMiniBars(adminStats.visits.uniqueVisitors, maxValue, 7) },
         ];
         this.recentContacts = adminStats.recentContacts;
         this.contactBars = adminStats.contactsByDay.map(item => ({ date: item.date, value: item.count }));
@@ -141,6 +177,15 @@ export class DashboardComponent implements OnInit {
         this.draftPosts = adminStats.content.drafts;
         this.totalViews = adminStats.visits.totalViews;
         this.uniqueVisitors = adminStats.visits.uniqueVisitors;
+
+        // Advanced analytics
+        this.todayVisitors = advanced.todayCount;
+        this.topCountries = advanced.topCountries;
+        this.deviceBreakdown = advanced.deviceBreakdown;
+        this.browserBreakdown = advanced.browserBreakdown;
+        this.osBreakdown = advanced.osBreakdown;
+        this.trafficSources = advanced.trafficSources;
+
         this.loading = false;
       },
       error: () => { this.loading = false; },
@@ -153,6 +198,14 @@ export class DashboardComponent implements OnInit {
 
   get maxVisitBarValue(): number {
     return Math.max(...this.visitBars.map(bar => bar.value), 1);
+  }
+
+  get maxCountryCount(): number {
+    return Math.max(...this.topCountries.map(c => c.count), 1);
+  }
+
+  get maxBrowserCount(): number {
+    return Math.max(...this.browserBreakdown.map(b => b.count), 1);
   }
 
   get totalContent(): number {
@@ -175,6 +228,14 @@ export class DashboardComponent implements OnInit {
   visitBarHeight(value: number): string {
     const percent = (value / this.maxVisitBarValue) * 100;
     return `${Math.max(percent, value > 0 ? 18 : 8)}%`;
+  }
+
+  countryBarWidth(count: number): number {
+    return Math.max((count / this.maxCountryCount) * 100, count > 0 ? 6 : 0);
+  }
+
+  browserBarWidth(count: number): number {
+    return Math.max((count / this.maxBrowserCount) * 100, count > 0 ? 6 : 0);
   }
 
   async logout(): Promise<void> {

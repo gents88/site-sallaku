@@ -302,7 +302,19 @@
     "open_email": "Hap emailin",
     "message_deleted": "Mesazhi u fshi.",
     "marked_read": "Mesazhi u shënua si i lexuar.",
-    "marked_unread": "Mesazhi u shënua si i palexuar."
+    "marked_unread": "Mesazhi u shënua si i palexuar.",
+    "visitor_analytics": "Analitika e Vizitorëve",
+    "visitor_overview": "Vështrim i Vizitorëve",
+    "visitor_overview_desc": "Sot, gjithsej dhe vizitorë unikë",
+    "today_visitors": "Sot",
+    "traffic_sources": "Burimet e Trafikut",
+    "traffic_sources_desc": "Si gjejnë vizitorët faqen tuaj",
+    "device_breakdown": "Pajisjet",
+    "device_breakdown_desc": "Shpërndarja Desktop, Celular, Tabletë",
+    "top_countries": "Vendet Kryesore",
+    "top_countries_desc": "Vizitorë sipas vendit (gjeolokalizim IP)",
+    "browser_breakdown": "Shfletuesit",
+    "browser_breakdown_desc": "Shpërndarja sipas shfletuesit"
   },
   "common": {
     "loading": "Duke ngarkuar…",
