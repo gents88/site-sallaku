@@ -302,5 +302,45 @@
     "confirm": "Konfirmo",
     "yes": "Po",
     "no": "Jo"
+  },
+  "services": {
+    "tag": "shërbime",
+    "title": "Shërbimet e Mia",
+    "subtitle": "Çfarë ndërtoj dhe ofroj — zgjidhje enterprise nga koncepti deri në prodhim",
+    "frontend": {
+      "title": "Zhvillim Front‑End",
+      "desc": "Aplikacione Angular të shkallëzueshme me TypeScript, RxJS dhe arkitektura best-practice. Nga projektet greenfield tek migrimet legacy.",
+      "cta": "Mëso më shumë"
+    },
+    "web3d": {
+      "title": "Aplikacione 3D Web",
+      "desc": "Eksperienca gjeohapësinore dhe 3D imersive me Cesium.js, WebGL dhe Three.js për industritë aerospace, defence dhe hartografike.",
+      "cta": "Mëso më shumë"
+    },
+    "dataviz": {
+      "title": "Vizualizim i të Dhënave",
+      "desc": "Dashboard interaktive dhe grafike me Chart.js, Looker Embedded dhe D3 — duke transformuar të dhëna komplekse në njohuri.",
+      "cta": "Mëso më shumë"
+    },
+    "uiux": {
+      "title": "Dizajn UI/UX",
+      "desc": "Ndërfaqe pixel-perfect, të aksesueshme dhe responsive të përshtatura me sistema moderne dizajni dhe testime të përdorshmërisë.",
+      "cta": "Mëso më shumë"
+    },
+    "perf": {
+      "title": "Optimizim i Performancës",
+      "desc": "Lazy loading strategjik, change detection e optimizuar, rregullim Core Web Vitals dhe rishikim arkitekture për sisteme kritike.",
+      "cta": "Mëso më shumë"
+    },
+    "api": {
+      "title": "Integrim API",
+      "desc": "Integrime REST dhe GraphQL me NestJS, .NET dhe shërbime të palëve të treta, me trajtim të shëndoshë të gabimeve.",
+      "cta": "Mëso më shumë"
+    },
+    "contact": {
+      "title": "Keni një projekt në mendje?",
+      "desc": "Bashkëpunoj me kompani dhe ekipe që duan të ndërtojnë diçka kuptimplote. Le të flasim për sfidën tuaj tjetër.",
+      "btn": "Na Kontaktoni"
+    }
   }
 }

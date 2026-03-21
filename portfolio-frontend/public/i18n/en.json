@@ -302,5 +302,45 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No"
+  },
+  "services": {
+    "tag": "services",
+    "title": "My Services",
+    "subtitle": "What I build and deliver — enterprise-grade solutions from concept to production",
+    "frontend": {
+      "title": "Front‑End Development",
+      "desc": "Scalable Angular applications with TypeScript, RxJS and best-practice architecture. From greenfield projects to legacy migrations.",
+      "cta": "Learn more"
+    },
+    "web3d": {
+      "title": "3D Web Applications",
+      "desc": "Immersive geospatial and 3D experiences with Cesium.js, WebGL and Three.js for aerospace, defence and mapping industries.",
+      "cta": "Learn more"
+    },
+    "dataviz": {
+      "title": "Data Visualization",
+      "desc": "Interactive dashboards and charts with Chart.js, Looker Embedded and D3 — transforming complex data into actionable insights.",
+      "cta": "Learn more"
+    },
+    "uiux": {
+      "title": "UI/UX Design",
+      "desc": "Pixel-perfect, accessible and responsive interfaces aligned with modern design systems and real-user usability testing.",
+      "cta": "Learn more"
+    },
+    "perf": {
+      "title": "Performance Optimization",
+      "desc": "Strategic lazy loading, optimized change detection, Core Web Vitals tuning and architecture reviews for mission-critical systems.",
+      "cta": "Learn more"
+    },
+    "api": {
+      "title": "API Integration",
+      "desc": "Seamless REST and GraphQL integrations with NestJS, .NET and third-party services, backed by solid error handling.",
+      "cta": "Learn more"
+    },
+    "contact": {
+      "title": "Have a project in mind?",
+      "desc": "I collaborate with companies and teams that want to build something meaningful. Let's talk about your next challenge.",
+      "btn": "Get in Touch"
+    }
   }
 }

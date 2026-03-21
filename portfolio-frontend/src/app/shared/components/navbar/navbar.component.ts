@@ -9,6 +9,13 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService } from '../../../core/services/language.service';
 
+interface NavLink {
+  labelKey: string;
+  fragment?: string;
+  route?: string;
+  href?: string;
+}
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -21,11 +28,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   scrolled = false;
   activeSection = '';
 
-  readonly navLinks = [
+  readonly navLinks: NavLink[] = [
     { labelKey: 'nav.about',      fragment: 'about' },
     { labelKey: 'nav.tech',       fragment: 'tech-stack' },
     { labelKey: 'nav.projects',   fragment: 'projects' },
-    { labelKey: 'nav.services',   fragment: '', href: '/services.html' },
+    { labelKey: 'nav.services',   fragment: '', route: '/services' },
     { labelKey: 'nav.experience', fragment: 'experience' },
     { labelKey: 'nav.skills',     fragment: 'skills' },
     { labelKey: 'nav.contact',    fragment: 'contact' },
@@ -52,7 +59,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    const sectionIds = this.navLinks.map(l => l.fragment).filter(Boolean);
+    const sectionIds = this.navLinks.map(l => l.fragment).filter((f): f is string => !!f);
     this.sectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {

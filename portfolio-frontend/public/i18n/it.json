@@ -302,5 +302,45 @@
     "confirm": "Conferma",
     "yes": "Sì",
     "no": "No"
+  },
+  "services": {
+    "tag": "servizi",
+    "title": "I Miei Servizi",
+    "subtitle": "Cosa progetto e realizzo — soluzioni enterprise dal concept alla produzione",
+    "frontend": {
+      "title": "Sviluppo Front‑End",
+      "desc": "Applicazioni Angular scalabili con TypeScript, RxJS e architetture best-practice. Da progetti greenfield a migrazioni legacy.",
+      "cta": "Scopri di più"
+    },
+    "web3d": {
+      "title": "Applicazioni 3D Web",
+      "desc": "Esperienze geospaziali e 3D immersive con Cesium.js, WebGL e Three.js per aerospace, defence e settori cartografici.",
+      "cta": "Scopri di più"
+    },
+    "dataviz": {
+      "title": "Data Visualization",
+      "desc": "Dashboard interattive e grafici con Chart.js, Looker Embedded e D3 — trasformando dati complessi in insight operativi.",
+      "cta": "Scopri di più"
+    },
+    "uiux": {
+      "title": "UI/UX Design",
+      "desc": "Interfacce pixel-perfect, accessibili e responsive allineate a design system moderni e test di usabilità reali.",
+      "cta": "Scopri di più"
+    },
+    "perf": {
+      "title": "Ottimizzazione Performance",
+      "desc": "Lazy loading strategico, change detection ottimizzata, tuning Core Web Vitals e architecture review per sistemi mission-critical.",
+      "cta": "Scopri di più"
+    },
+    "api": {
+      "title": "Integrazione API",
+      "desc": "Integrazioni REST e GraphQL con NestJS, .NET e servizi di terze parti, con gestione robusta degli errori.",
+      "cta": "Scopri di più"
+    },
+    "contact": {
+      "title": "Hai un progetto in mente?",
+      "desc": "Collaboro con aziende e team che vogliono costruire qualcosa di significativo. Parliamo della tua prossima sfida.",
+      "btn": "Contattami"
+    }
   }
 }
