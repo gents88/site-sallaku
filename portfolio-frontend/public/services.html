@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gent Sallaku - servizi di sviluppo web, sviluppo API, Angular, JavaScript, TypeScript, .NET e Django per applicazioni enterprise performanti.">
+    <meta name="keywords" content="sviluppo web, sviluppo API, API developer, Angular developer, JavaScript, TypeScript, .NET, Django, enterprise web development, Gent Sallaku">
+    <meta name="author" content="Gent Sallaku">
+    <link rel="canonical" href="https://gentsallaku.it/services.html">
+    <meta property="og:url" content="https://gentsallaku.it/services.html">
+    <!-- Replace with the exact Google Search Console verification token when available. -->
+    <meta name="google-site-verification" content="PASTE_GOOGLE_SEARCH_CONSOLE_TOKEN_HERE">
+    <title>Servizi | Gent Sallaku - Sviluppo Web e API</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <a class="skip-link" href="#main-content" data-i18n="skip.link">Vai al contenuto principale</a>
+    <nav class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <a href="index.html#hero" class="nav-logo"><span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span></a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html#about" class="nav-link" data-i18n="nav.about">About</a></li>
+                <li><a href="index.html#projects" class="nav-link" data-i18n="nav.projects">Progetti</a></li>
+                <li><a href="services.html" class="nav-link active" data-i18n="nav.services">Servizi</a></li>
+                <li><a href="projects.html" class="nav-link" data-i18n="nav.projects">Case Study</a></li>
+                <li><a href="index.html#contact" class="nav-link" data-i18n="nav.contact">Contatti</a></li>
+            </ul>
+            <div class="nav-right">
+                <div class="lang-switcher" id="langSwitcher">
+                    <button class="lang-current" id="langToggle" aria-label="Change language">
+                        <span class="lang-flag" id="langFlag">🇮🇹</span>
+                        <i class="fas fa-chevron-down lang-arrow"></i>
+                    </button>
+                    <div class="lang-dropdown" id="langDropdown">
+                        <button class="lang-option active" data-lang="it" onclick="i18n.setLanguage('it')"><span class="lang-flag">🇮🇹</span><span>Italiano</span></button>
+                        <button class="lang-option" data-lang="en" onclick="i18n.setLanguage('en')"><span class="lang-flag">🇬🇧</span><span>English</span></button>
+                        <button class="lang-option" data-lang="sq" onclick="i18n.setLanguage('sq')"><span class="lang-flag">🇦🇱</span><span>Shqip</span></button>
+                    </div>
+                </div>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span class="hamburger"></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content" class="page-shell">
+        <div class="container">
+            <section class="page-hero reveal">
+                <span class="section-tag" data-i18n-html data-i18n="services.tag">&lt;services&gt;</span>
+                <h1 data-i18n="services.title">Servizi di sviluppo web e API</h1>
+                <p data-i18n="services.lead">Progetto e sviluppo soluzioni enterprise per banking, telco, aerospace e insurance. Lavoro su interfacce Angular, backend .NET e Django, API REST, data visualization e web experience interattive.</p>
+                <div class="hero-cta" style="margin-top: 24px;">
+                    <a href="index.html#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> <span data-i18n="services.cta.contact">Contatti</span></a>
+                    <a href="projects.html" class="btn btn-outline"><i class="fas fa-folder-open"></i> <span data-i18n="services.cta.projects">Case Study</span></a>
+                </div>
+            </section>
+
+            <section class="service-grid">
+                <article class="service-card glass-card reveal">
+                    <div class="project-icon-3d"><i class="fas fa-code"></i></div>
+                    <h3 data-i18n="services.web.title">Sviluppo Web Enterprise</h3>
+                    <p data-i18n="services.web.desc">Architetture frontend scalabili, UI moderne, componenti riutilizzabili e attenzione costante a performance e manutenzione del codice.</p>
+                </article>
+                <article class="service-card glass-card reveal">
+                    <div class="project-icon-3d"><i class="fas fa-diagram-project"></i></div>
+                    <h3 data-i18n="services.api.title">Sviluppo API</h3>
+                    <p data-i18n="services.api.desc">Progettazione e integrazione di API REST per applicazioni enterprise, con focus su sicurezza, chiarezza dei contratti e affidabilità.</p>
+                </article>
+                <article class="service-card glass-card reveal">
+                    <div class="project-icon-3d"><i class="fas fa-chart-line"></i></div>
+                    <h3 data-i18n="services.dataviz.title">Data Visualization</h3>
+                    <p data-i18n="services.dataviz.desc">Dashboard, KPI e visualizzazioni complesse per trasformare i dati in strumenti operativi utili ai decision maker.</p>
+                </article>
+                <article class="service-card glass-card reveal">
+                    <div class="project-icon-3d"><i class="fas fa-cube"></i></div>
+                    <h3 data-i18n="services.threed.title">3D Web & Interactive UI</h3>
+                    <p data-i18n="services.threed.desc">Esperienze web immersive con Cesium.js, WebGL e interfacce interattive ottimizzate per mobile e desktop.</p>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo"><span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span></div>
+                <p class="footer-text"><span data-i18n="footer.text">Progettato &amp; Sviluppato da</span> <span class="text-gradient" data-i18n="footer.highlight">Gent Sallaku</span></p>
+                <p class="footer-copy">&copy; 2026 Gent Sallaku. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
