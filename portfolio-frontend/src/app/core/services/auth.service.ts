@@ -35,9 +35,9 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  logout(redirectUrl = '/admin/login'): void {
     this.clearSession();
-    void this.router.navigateByUrl('/admin/login', { replaceUrl: true });
+    void this.router.navigateByUrl(redirectUrl, { replaceUrl: true });
   }
 
   getToken(): string | null {

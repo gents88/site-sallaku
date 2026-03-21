@@ -7,7 +7,7 @@
 
     <!-- Desktop nav links -->
     <ul class="nav-menu" [class.open]="mobileMenuOpen">
-      @for (link of navLinks; track link.labelKey) {
+      @for (link of desktopNavLinks; track link.labelKey + (link.route || link.fragment || link.href || '')) {
         @if (link.route) {
           <li>
             <a [routerLink]="link.route" routerLinkActive="active"
@@ -26,18 +26,34 @@
           </li>
         }
       }
-      @if (!auth.isLoggedIn()) {
-        <li><a routerLink="/admin/login" class="nav-link" (click)="closeMenu()">{{ 'nav.login' | translate }}</a></li>
-      }
-      @if (auth.isLoggedIn()) {
-        <li><a routerLink="/admin" class="nav-link" (click)="closeMenu()">{{ 'nav.admin' | translate }}</a></li>
-      }
+      <li class="nav-item-mobile-auth">
+        @if (!auth.isLoggedIn()) {
+          <button type="button" class="nav-link nav-link--button" (click)="openLoginModal()">{{ 'nav.login' | translate }}</button>
+        }
+        @if (auth.isLoggedIn()) {
+          <button type="button" class="nav-link nav-link--button" (click)="openAccountModal()">{{ auth.currentUser()?.name || 'Admin' }}</button>
+        }
+      </li>
     </ul>
 
     <!-- Right actions -->
     <div class="nav-right">
       <app-lang-switcher />
       <app-theme-toggle />
+      @if (!auth.isLoggedIn()) {
+        <button type="button" class="nav-link nav-link--account nav-link--button" (click)="openLoginModal()">
+          <span class="nav-account__avatar nav-account__avatar--login">
+            <mat-icon>login</mat-icon>
+          </span>
+          <span class="nav-account__label">{{ 'nav.login' | translate }}</span>
+        </button>
+      }
+      @if (auth.isLoggedIn()) {
+        <button type="button" class="nav-link nav-link--account nav-link--button" (click)="openAccountModal()">
+          <span class="nav-account__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</span>
+          <span class="nav-account__label">{{ auth.currentUser()?.name || 'Admin' }}</span>
+        </button>
+      }
 
       <!-- Hamburger -->
       <button class="nav-toggle" [class.active]="mobileMenuOpen"

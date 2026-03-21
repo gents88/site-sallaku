@@ -385,7 +385,7 @@
     </div>
     <div class="contact-form-wrapper reveal glass-card">
       <h3>{{ 'contact.form.title' | translate }}</h3>
-      <form class="contact-form" (ngSubmit)="submitContact()" #contactF="ngForm">
+      <form class="contact-form" (ngSubmit)="submitContact()" #contactF="ngForm" novalidate>
         <input type="text" name="honeypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" [(ngModel)]="honeypot" />
         <label>
           <span>{{ 'contact.form.name' | translate }}</span>
@@ -397,16 +397,40 @@
         </label>
         <label>
           <span>{{ 'contact.form.message' | translate }}</span>
-          <textarea name="message" rows="5" required [placeholder]="'contact.form.message' | translate" [(ngModel)]="contactForm.message"></textarea>
+          <textarea name="message" rows="5" required minlength="10" [placeholder]="'contact.form.message' | translate" [(ngModel)]="contactForm.message"></textarea>
         </label>
-        <button type="submit" class="btn btn-primary">
-          <i class="fas fa-paper-plane"></i> {{ 'contact.form.submit' | translate }}
+        <button type="submit" class="btn btn-primary" [disabled]="contactSending">
+          @if (contactSending) {
+            <i class="fas fa-spinner fa-spin"></i> {{ 'contact.form.sending' | translate }}
+          } @else {
+            <i class="fas fa-paper-plane"></i> {{ 'contact.form.submit' | translate }}
+          }
         </button>
         <p class="form-note">{{ 'contact.form.note' | translate }}</p>
+        @if (contactInvalid) {
+          <p class="form-error"><i class="fas fa-circle-exclamation"></i> {{ 'contact.form_invalid' | translate }}</p>
+        }
         @if (contactSent) {
           <p class="form-success"><i class="fas fa-check-circle"></i> {{ 'contact.form_sent' | translate }}</p>
+        }
+        @if (contactError) {
+          <p class="form-error"><i class="fas fa-triangle-exclamation"></i> {{ 'contact.form_error' | translate }}</p>
         }
       </form>
     </div>
   </div>
+
+  @if (contactPopupOpen) {
+    <div class="contact-popup-backdrop" (click)="closeContactPopup()" aria-hidden="true"></div>
+    <section class="contact-popup" role="dialog" aria-modal="true" aria-labelledby="contact-popup-title">
+      <div class="contact-popup__icon" aria-hidden="true">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 id="contact-popup-title">{{ 'contact.popup.title' | translate }}</h3>
+      <p>{{ 'contact.popup.body' | translate }}</p>
+      <button type="button" class="btn btn-primary" (click)="closeContactPopup()">
+        {{ 'common.close' | translate }}
+      </button>
+    </section>
+  }
 </section>

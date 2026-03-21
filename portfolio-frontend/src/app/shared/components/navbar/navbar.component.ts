@@ -2,15 +2,17 @@ import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { MatIconModule } from '@angular/material/icon';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 import { LangSwitcherComponent } from '../lang-switcher/lang-switcher.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, ThemeToggleComponent, LangSwitcherComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
@@ -30,9 +32,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     { labelKey: 'nav.blog',       fragment: '',  route: '/blog' },
   ];
 
+  get desktopNavLinks() {
+    return this.auth.isLoggedIn()
+      ? [...this.navLinks, { labelKey: 'nav.dashboard', fragment: '', route: '/admin' }]
+      : this.navLinks;
+  }
+
   private sectionObserver: IntersectionObserver | null = null;
 
-  constructor(public auth: AuthService, public langSvc: LanguageService) {}
+  constructor(
+    public auth: AuthService,
+    public authModal: AuthModalService,
+    public langSvc: LanguageService,
+  ) {}
 
   @HostListener('window:scroll')
   onScroll(): void {
@@ -61,4 +73,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   toggleMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
   closeMenu(): void { this.mobileMenuOpen = false; }
+
+  openLoginModal(): void {
+    this.closeMenu();
+    this.authModal.openLogin();
+  }
+
+  openAccountModal(): void {
+    this.closeMenu();
+    this.authModal.openAccount();
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/services/auth.service';
+import { AuthModalService } from '../../../../core/services/auth-modal.service';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,8 @@ import { AuthService } from '../../../../core/services/auth.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  @Input() embedded = false;
+
   form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -34,6 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
+    private authModal: AuthModalService,
     private router: Router,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
@@ -52,6 +56,29 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearRedirectTimeout();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    this.closeModal();
+  }
+
+  closeModal(): void {
+    if (this.loading) {
+      return;
+    }
+
+    if (this.embedded) {
+      this.authModal.closeLogin();
+      return;
+    }
+
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+
+    this.router.navigate(['/']);
   }
 
   login(): void {
@@ -86,8 +113,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.clearRedirectTimeout();
     this.redirectTimeoutId = window.setTimeout(() => {
       this.loading = false;
+      this.authModal.closeLogin();
+      this.authModal.closeAccount();
       this.router.navigate(['/admin']);
-    }, 300);
+    }, 80);
   }
 
   private clearRedirectTimeout(): void {

@@ -1,9 +1,10 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
+import { ContactService } from '../../core/services/contact.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ExperiencesService } from '../../core/services/experiences.service';
 import { SeoService } from '../../core/services/seo.service';
@@ -30,6 +31,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = true;
   barsFilled = false;
   contactSent = false;
+  contactSending = false;
+  contactError = false;
+  contactInvalid = false;
+  contactPopupOpen = false;
   honeypot = '';
   contactForm = { name: '', email: '', message: '' };
 
@@ -159,6 +164,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private aboutService: AboutService,
+    private contactService: ContactService,
     private projectsService: ProjectsService,
     private experiencesService: ExperiencesService,
     private seo: SeoService,
@@ -219,12 +225,48 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   submitContact(): void {
-    if (this.honeypot) return; // spam trap
+    if (this.honeypot || this.contactSending) return; // spam trap
     const { name, email, message } = this.contactForm;
-    if (!name || !email || !message) return;
-    const body = encodeURIComponent(`Da: ${name}\n\n${message}`);
-    window.location.href = `mailto:gent.sallaku@email.com?subject=Contatto dal sito&body=${body}`;
-    this.contactSent = true;
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim();
+    const normalizedMessage = message.trim();
+    const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
+
+    this.contactSent = false;
+    this.contactError = false;
+    this.contactInvalid = false;
+
+    if (!normalizedName || !hasValidEmail || !normalizedMessage || normalizedMessage.length < 10) {
+      this.contactInvalid = true;
+      return;
+    }
+
+    this.contactSending = true;
+
+    this.contactService.send({
+      name: normalizedName,
+      email: normalizedEmail,
+      subject: 'Contatto dal portfolio',
+      message: normalizedMessage,
+    }).pipe(
+      finalize(() => {
+        this.contactSending = false;
+      }),
+    ).subscribe({
+      next: () => {
+        this.contactForm = { name: '', email: '', message: '' };
+        this.contactSent = true;
+        this.contactPopupOpen = true;
+        this.contactInvalid = false;
+      },
+      error: () => {
+        this.contactError = true;
+      },
+    });
+  }
+
+  closeContactPopup(): void {
+    this.contactPopupOpen = false;
   }
 }
 

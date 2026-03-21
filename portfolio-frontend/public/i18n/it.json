@@ -9,7 +9,8 @@
     "contact": "Contatti",
     "blog": "Blog",
     "login": "Login",
-    "admin": "Admin"
+    "admin": "Admin",
+    "dashboard": "Dashboard"
   },
   "lang": {
     "label": "Lingua",
@@ -201,14 +202,21 @@
       "name": "Nome e cognome",
       "email": "Email",
       "message": "Messaggio",
-      "submit": "Invia via Email",
-      "note": "Il form apre il client email con il messaggio compilato."
+      "submit": "Invia messaggio",
+      "sending": "Invio in corso...",
+      "note": "Il messaggio viene inviato direttamente dal sito, senza aprire app esterne."
     },
     "form_name": "Il tuo nome",
     "form_email": "La tua email",
     "form_message": "Il tuo messaggio",
     "form_send": "Invia messaggio",
     "form_sent": "Messaggio inviato! Ti rispondo al più presto.",
+    "form_error": "Invio non riuscito. Riprova tra poco.",
+    "form_invalid": "Controlla nome, email e messaggio. Il messaggio deve avere almeno 10 caratteri.",
+    "popup": {
+      "title": "Messaggio inviato",
+      "body": "La richiesta e stata inviata correttamente al server. Se non ricevi risposte, controllero anche i log email del backend."
+    },
     "form_name_req": "Il nome è obbligatorio",
     "form_email_req": "Email non valida",
     "form_msg_req": "Il messaggio è obbligatorio (min 10 caratteri)"
@@ -271,7 +279,13 @@
     "content_mix": "Contenuti pubblicati vs bozze",
     "content_status": "Stato editoriale dei contenuti",
     "public_traffic": "Traffico pubblico tracciato lato backend",
-    "quick_actions": "Azioni rapide"
+    "quick_actions": "Azioni rapide",
+    "mark_read": "Segna letto",
+    "mark_unread": "Segna da leggere",
+    "open_email": "Apri email",
+    "message_deleted": "Messaggio eliminato.",
+    "marked_read": "Messaggio segnato come letto.",
+    "marked_unread": "Messaggio segnato da leggere."
   },
   "common": {
     "loading": "Caricamento…",

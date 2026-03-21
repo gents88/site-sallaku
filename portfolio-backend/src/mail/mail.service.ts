@@ -6,37 +6,74 @@ export interface MailOptions {
   to: string;
   subject: string;
   html: string;
+  text?: string;
   replyTo?: string;
+}
+
+export interface MailDeliveryResult {
+  success: boolean;
+  messageId?: string;
+  accepted: string[];
+  rejected: string[];
 }
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
   private transporter: nodemailer.Transporter;
+  private readonly isConfigured: boolean;
 
   constructor(private config: ConfigService) {
+    const smtpUser = this.config.get<string>('SMTP_USER');
+    const smtpPass = this.config.get<string>('SMTP_PASS');
+    this.isConfigured = Boolean(smtpUser && smtpPass);
+
     this.transporter = nodemailer.createTransport({
       host:   this.config.get<string>('SMTP_HOST', 'smtp.gmail.com'),
       port:   this.config.get<number>('SMTP_PORT', 587),
       secure: this.config.get<boolean>('SMTP_SECURE', false),
       auth: {
-        user: this.config.get<string>('SMTP_USER'),
-        pass: this.config.get<string>('SMTP_PASS'),
+        user: smtpUser,
+        pass: smtpPass,
       },
     });
+
+    if (!this.isConfigured) {
+      this.logger.warn('SMTP_USER / SMTP_PASS not configured. Email delivery is disabled.');
+    }
   }
 
-  async send(opts: MailOptions): Promise<void> {
+  async send(opts: MailOptions): Promise<MailDeliveryResult> {
+    if (!this.isConfigured) {
+      this.logger.error(`Failed to send email → ${opts.to}. SMTP is not configured.`);
+      return { success: false, accepted: [], rejected: [opts.to] };
+    }
+
     const from = this.config.get<string>(
       'EMAIL_FROM',
       '"Gent Sallaku" <noreply@gentsallaku.it>',
     );
     try {
-      await this.transporter.sendMail({ from, ...opts });
-      this.logger.log(`Email sent → ${opts.to} [${opts.subject}]`);
+      const info = await this.transporter.sendMail({ from, ...opts });
+      const accepted = (info.accepted ?? []).map(item => String(item));
+      const rejected = (info.rejected ?? []).map(item => String(item));
+      const success = accepted.length > 0 && rejected.length === 0;
+
+      if (success) {
+        this.logger.log(`Email accepted by SMTP → ${opts.to} [${opts.subject}] (${info.messageId})`);
+      } else {
+        this.logger.error(`Email not fully accepted by SMTP → ${opts.to} [${opts.subject}] accepted=${accepted.join(',')} rejected=${rejected.join(',')}`);
+      }
+
+      return {
+        success,
+        messageId: info.messageId,
+        accepted,
+        rejected,
+      };
     } catch (err) {
       this.logger.error(`Failed to send email → ${opts.to}`, err);
-      // Do not rethrow — mail failure should not block API response
+      return { success: false, accepted: [], rejected: [opts.to] };
     }
   }
 
@@ -45,6 +82,7 @@ export class MailService {
     this.send({
       to: email,
       subject: `Benvenuto nel Portfolio di Gent Sallaku`,
+      text: `Benvenuto, ${name}. Il tuo account e stato creato con successo. Vai su ${this.config.get('FRONTEND_URL', 'https://gentsallaku.it')}/admin per accedere al dashboard.`,
       html: `
         <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
           <div style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);padding:32px;text-align:center;">
@@ -74,16 +112,17 @@ export class MailService {
           </div>
         </div>
       `,
-    }).catch(() => {});
+    }).catch(() => ({ success: false, accepted: [], rejected: [email] }));
   }
 
   /** Notification sent to admin when a contact form is submitted */
-  sendContactNotification(opts: { name: string; email: string; subject: string; message: string }): void {
+  sendContactNotification(opts: { name: string; email: string; subject: string; message: string }): Promise<MailDeliveryResult> {
     const adminEmail = this.config.get<string>('EMAIL_TO', 'gent.sallaku@email.com');
-    this.send({
+    return this.send({
       to: adminEmail,
       replyTo: opts.email,
       subject: `[Portfolio Contact] ${opts.subject}`,
+      text: `Nuovo messaggio di contatto\n\nDa: ${opts.name}\nEmail: ${opts.email}\nOggetto: ${opts.subject}\n\n${opts.message}`,
       html: `
         <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;">
           <h2 style="color:#4f6af5;">Nuovo messaggio di contatto</h2>
@@ -96,14 +135,15 @@ export class MailService {
           <p style="line-height:1.7;">${opts.message.replace(/\n/g, '<br/>')}</p>
         </div>
       `,
-    }).catch(() => {});
+    });
   }
 
   /** Auto-reply sent to the person who submitted the contact form */
-  sendContactAutoReply(name: string, email: string): void {
-    this.send({
+  sendContactAutoReply(name: string, email: string): Promise<MailDeliveryResult> {
+    return this.send({
       to: email,
       subject: `Ho ricevuto il tuo messaggio! – Gent Sallaku`,
+      text: `Ciao ${name}, ho ricevuto il tuo messaggio. Ti rispondero il prima possibile. Nel frattempo puoi visitare ${this.config.get('FRONTEND_URL', 'https://gentsallaku.it')}.`,
       html: `
         <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
           <div style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);padding:32px;text-align:center;">
@@ -126,6 +166,6 @@ export class MailService {
           </div>
         </div>
       `,
-    }).catch(() => {});
+    });
   }
 }

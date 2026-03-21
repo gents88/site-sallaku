@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MailService } from '../mail/mail.service';
@@ -24,11 +24,15 @@ export class ContactService {
     // 1. Persist the message
     await this.contactModel.create(dto);
 
-    // 2. Notify admin (fire-and-forget)
-    this.mailService.sendContactNotification(dto);
+    // 2. Notify admin. This must succeed for the contact form to be considered delivered.
+    const delivery = await this.mailService.sendContactNotification(dto);
+    if (!delivery.success) {
+      this.logger.error(`Failed to deliver contact notification for ${dto.email}. accepted=${delivery.accepted.join(',')} rejected=${delivery.rejected.join(',')}`);
+      throw new ServiceUnavailableException('Email service is currently unavailable');
+    }
 
-    // 3. Auto-reply to sender (fire-and-forget)
-    this.mailService.sendContactAutoReply(dto.name, dto.email);
+    // 3. Auto-reply to sender (best-effort)
+    void this.mailService.sendContactAutoReply(dto.name, dto.email);
 
     return { success: true };
   }
@@ -43,6 +47,30 @@ export class ContactService {
       .sort({ createdAt: -1 })
       .limit(limit)
       .exec();
+  }
+
+  async markAsRead(id: string, read = true) {
+    const message = await this.contactModel.findByIdAndUpdate(
+      id,
+      { read },
+      { new: true },
+    ).exec();
+
+    if (!message) {
+      throw new NotFoundException('Contact message not found');
+    }
+
+    return message;
+  }
+
+  async deleteMessage(id: string): Promise<{ success: boolean }> {
+    const message = await this.contactModel.findByIdAndDelete(id).exec();
+
+    if (!message) {
+      throw new NotFoundException('Contact message not found');
+    }
+
+    return { success: true };
   }
 
   async countByDay(days = 7): Promise<ContactCountByDay[]> {

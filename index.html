@@ -939,12 +939,14 @@
                     </label>
                     <label>
                         <span data-i18n="contact.form.message">Messaggio</span>
-                        <textarea name="message" rows="5" required placeholder="Scrivi qui il tuo progetto..."></textarea>
+                        <textarea name="message" rows="5" required minlength="10" placeholder="Scrivi qui il tuo progetto..."></textarea>
                     </label>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> <span data-i18n="contact.form.submit">Invia via Email</span>
+                    <button type="submit" class="btn btn-primary" id="contactSubmitBtn">
+                        <i class="fas fa-paper-plane"></i> <span data-i18n="contact.form.submit">Invia messaggio</span>
                     </button>
-                    <p class="form-note" data-i18n="contact.form.note">Il form apre il client email con il messaggio compilato. Per l'invio automatico serve un endpoint server.</p>
+                    <p class="form-note" data-i18n="contact.form.note">Il messaggio viene inviato direttamente dal sito, senza aprire app esterne.</p>
+                    <p class="form-success" id="contactSuccess" hidden>Messaggio inviato! Ti rispondo al più presto.</p>
+                    <p class="form-error" id="contactError" hidden>Invio non riuscito. Riprova tra poco.</p>
                 </form>
             </div>
         </div>
@@ -970,5 +972,96 @@
     <script src="js/particles.js"></script>
     <script src="js/animations.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        (function () {
+            const form = document.getElementById('contactForm');
+            if (!form) return;
+
+            const submitButton = document.getElementById('contactSubmitBtn');
+            const submitLabel = submitButton ? submitButton.querySelector('span') : null;
+            const submitIcon = submitButton ? submitButton.querySelector('i') : null;
+            const successMessage = document.getElementById('contactSuccess');
+            const errorMessage = document.getElementById('contactError');
+            const defaultLabel = submitLabel ? submitLabel.textContent : 'Invia messaggio';
+            const sendingLabel = 'Invio in corso...';
+
+            function getContactApiUrl() {
+                const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+                if (isLocalhost) {
+                    return 'http://localhost:3000/api/v1/contact';
+                }
+
+                return 'https://portfolio-backend-production-e76d.up.railway.app/api/v1/contact';
+            }
+
+            function setSubmitting(isSubmitting) {
+                if (!submitButton) return;
+                submitButton.disabled = isSubmitting;
+                submitButton.style.opacity = isSubmitting ? '0.8' : '1';
+                submitButton.style.cursor = isSubmitting ? 'wait' : 'pointer';
+
+                if (submitLabel) {
+                    submitLabel.textContent = isSubmitting ? sendingLabel : defaultLabel;
+                }
+
+                if (submitIcon) {
+                    submitIcon.className = isSubmitting ? 'fas fa-spinner fa-spin' : 'fas fa-paper-plane';
+                }
+            }
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+                const honeypot = String(formData.get('honeypot') || '').trim();
+                const name = String(formData.get('name') || '').trim();
+                const email = String(formData.get('email') || '').trim();
+                const message = String(formData.get('message') || '').trim();
+
+                if (successMessage) successMessage.hidden = true;
+                if (errorMessage) errorMessage.hidden = true;
+
+                if (honeypot) {
+                    return;
+                }
+
+                if (!name || !email || !message || message.length < 10) {
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Compila tutti i campi. Il messaggio deve avere almeno 10 caratteri.';
+                        errorMessage.hidden = false;
+                    }
+                    return;
+                }
+
+                setSubmitting(true);
+
+                try {
+                    const response = await fetch(getContactApiUrl(), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name,
+                            email,
+                            subject: 'Contatto dal portfolio',
+                            message
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Contact request failed');
+                    }
+
+                    form.reset();
+                    if (successMessage) successMessage.hidden = false;
+                } catch (error) {
+                    if (errorMessage) errorMessage.hidden = false;
+                } finally {
+                    setSubmitting(false);
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

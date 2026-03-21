@@ -199,8 +199,8 @@ Important:
 | `SMTP_PORT` | `587` | SMTP port |
 | `SMTP_USER` | `you@gmail.com` | SMTP username |
 | `SMTP_PASS` | `app-password` | SMTP password |
-| `SMTP_FROM` | `"Portfolio" <you@gmail.com>` | From address |
-| `CONTACT_TO` | `you@gmail.com` | Recipient for contact emails |
+| `EMAIL_FROM` | `"Portfolio" <you@gmail.com>` | From address |
+| `EMAIL_TO` | `you@gmail.com` | Recipient for contact emails |
 | `CORS_ORIGIN` | `http://localhost:4200` | Allowed CORS origin |
 
 ### API Reference

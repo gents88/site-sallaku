@@ -8,8 +8,21 @@
     </div>
   </header>
 
+  @if (actionMessageKey) {
+    <div class="dashboard-feedback" aria-live="polite">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ actionMessageKey | translate }}</span>
+    </div>
+  }
+
   @if (loading) {
-    <p class="text-muted">{{ 'common.loading' | translate }}</p>
+    <section class="dashboard-loading card" aria-live="polite">
+      <div class="dashboard-loading__spinner" aria-hidden="true">
+        <mat-icon class="spin">sync</mat-icon>
+      </div>
+      <h2>{{ 'admin.dashboard' | translate }}</h2>
+      <p class="text-muted">{{ 'common.loading' | translate }}</p>
+    </section>
   } @else {
     <!-- Stats grid -->
     <div class="stats-grid">
@@ -138,16 +151,21 @@
     @if (recentContacts.length) {
       <h2 class="section-label">{{ 'admin.recent_activity' | translate }}</h2>
       <div class="contacts-list card">
-        @for (c of recentContacts; track c.email) {
-          <div class="contact-row">
+        @for (c of recentContacts; track c._id ?? c.email + c.createdAt) {
+          <button type="button" class="contact-row contact-row--interactive" (click)="openContact(c)">
             <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
             <div class="contact-body">
               <span class="contact-name">{{ c.name }}</span>
               <span class="contact-email text-muted">{{ c.email }}</span>
-              <span class="contact-subject">{{ c.subject }}</span>
+              <span class="contact-subject">
+                {{ c.subject }}
+                @if (!c.read) {
+                  <span class="contact-badge">Nuovo</span>
+                }
+              </span>
             </div>
             <span class="contact-date text-muted">{{ c.createdAt | date:'dd/MM/yy' }}</span>
-          </div>
+          </button>
         }
       </div>
     }
@@ -162,6 +180,64 @@
         <mat-icon [class.spin]="logoutLoading">{{ logoutLoading ? 'sync' : 'logout' }}</mat-icon>
         {{ logoutLoading ? ('common.loading' | translate) : ('admin.logout' | translate) }}
       </button>
+    </section>
+  }
+
+  @if (selectedContact) {
+    <div class="contact-modal-backdrop" (click)="closeContact()" aria-hidden="true"></div>
+    <section class="contact-modal card" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+      <div class="contact-modal__header">
+        <div>
+          <p class="text-muted">{{ selectedContact.email }}</p>
+          <h2 id="contact-modal-title">{{ selectedContact.subject }}</h2>
+        </div>
+        <button type="button" class="contact-modal__close" (click)="closeContact()" aria-label="Chiudi messaggio">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="contact-modal__meta text-muted">
+        <span>{{ selectedContact.name }}</span>
+        <span>{{ selectedContact.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+
+      <div class="contact-modal__status">
+        @if (selectedContact.read) {
+          <span class="contact-modal__pill contact-modal__pill--read">Letto</span>
+        } @else {
+          <span class="contact-modal__pill">Da leggere</span>
+        }
+        @if (markingRead) {
+          <span class="text-muted">Aggiornamento...</span>
+        }
+      </div>
+
+      <div class="contact-modal__body">
+        {{ selectedContact.message }}
+      </div>
+
+      <div class="contact-modal__actions">
+        <button mat-stroked-button type="button" (click)="closeContact()">Chiudi</button>
+        @if (selectedContact.read) {
+          <button mat-stroked-button type="button" [disabled]="markingRead" (click)="setSelectedContactReadState(false)">
+            <mat-icon [class.spin]="markingRead">{{ markingRead ? 'sync' : 'mark_email_unread' }}</mat-icon>
+            {{ 'admin.mark_unread' | translate }}
+          </button>
+        } @else {
+          <button mat-stroked-button type="button" [disabled]="markingRead" (click)="setSelectedContactReadState(true)">
+            <mat-icon [class.spin]="markingRead">{{ markingRead ? 'sync' : 'drafts' }}</mat-icon>
+            {{ 'admin.mark_read' | translate }}
+          </button>
+        }
+        <button mat-stroked-button color="warn" type="button" [disabled]="deletingContact" (click)="deleteSelectedContact()">
+          <mat-icon [class.spin]="deletingContact">{{ deletingContact ? 'sync' : 'delete' }}</mat-icon>
+          {{ deletingContact ? ('common.loading' | translate) : ('common.delete' | translate) }}
+        </button>
+        <button mat-raised-button color="primary" type="button" (click)="replyToSelectedContact()">
+          <mat-icon>reply</mat-icon>
+          {{ 'admin.open_email' | translate }}
+        </button>
+      </div>
     </section>
   }
 </div>

@@ -9,7 +9,8 @@
     "contact": "Contact",
     "blog": "Blog",
     "login": "Login",
-    "admin": "Admin"
+    "admin": "Admin",
+    "dashboard": "Dashboard"
   },
   "lang": {
     "label": "Language",
@@ -201,14 +202,21 @@
       "name": "Full name",
       "email": "Email",
       "message": "Message",
-      "submit": "Send via Email",
-      "note": "The form opens the email client with the composed message."
+      "submit": "Send message",
+      "sending": "Sending...",
+      "note": "The message is sent directly from the website, without opening external apps."
     },
     "form_name": "Your name",
     "form_email": "Your email",
     "form_message": "Your message",
     "form_send": "Send message",
     "form_sent": "Message sent! I'll get back to you soon.",
+    "form_error": "Unable to send the message right now. Please try again soon.",
+    "form_invalid": "Check name, email and message. The message must be at least 10 characters long.",
+    "popup": {
+      "title": "Message sent",
+      "body": "The request was sent successfully to the server. If emails still do not arrive, the next step is checking backend mail logs."
+    },
     "form_name_req": "Name is required",
     "form_email_req": "Invalid email",
     "form_msg_req": "Message is required (min 10 characters)"
@@ -271,7 +279,13 @@
     "content_mix": "Published vs draft content",
     "content_status": "Editorial status of content",
     "public_traffic": "Public traffic tracked by the backend",
-    "quick_actions": "Quick actions"
+    "quick_actions": "Quick actions",
+    "mark_read": "Mark as read",
+    "mark_unread": "Mark as unread",
+    "open_email": "Open email",
+    "message_deleted": "Message deleted.",
+    "marked_read": "Message marked as read.",
+    "marked_unread": "Message marked as unread."
   },
   "common": {
     "loading": "Loading…",

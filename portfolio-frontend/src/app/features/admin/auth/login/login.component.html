@@ -1,6 +1,12 @@
-<div class="auth-page">
-  <div class="auth-card card fade-in-up">
+<div class="auth-page" [class.auth-page--embedded]="embedded" (click)="closeModal()">
+  <div class="auth-card card fade-in-up" (click)="$event.stopPropagation()">
+    <div class="auth-card__accent" aria-hidden="true"></div>
+    <button type="button" class="auth-card__close" (click)="closeModal()" aria-label="Chiudi login">
+      <mat-icon>close</mat-icon>
+    </button>
     <div class="auth-card__header">
+      <div class="auth-avatar" aria-hidden="true">GS</div>
+      <span class="auth-chip">Admin Access</span>
       <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
       <p class="text-muted">{{ 'auth.login_subtitle' | translate }}</p>
     </div>
