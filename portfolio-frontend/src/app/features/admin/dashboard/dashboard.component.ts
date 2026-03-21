@@ -92,6 +92,14 @@ export class DashboardComponent implements OnInit {
   selectedIds = new Set<string>();
   bulkDeleting = false;
 
+  // Confirm dialog
+  confirmDialog: {
+    visible: boolean;
+    messageKey: string;
+    messageParams: Record<string, unknown>;
+    onConfirm: (() => void) | null;
+  } = { visible: false, messageKey: '', messageParams: {}, onConfirm: null };
+
   // Advanced analytics
   topCountries: DonutItem[] = [];
   deviceBreakdown: DonutItem[] = [];
@@ -318,31 +326,25 @@ export class DashboardComponent implements OnInit {
   }
 
   deleteSelectedContact(): void {
-    if (!this.selectedContact?._id || this.deletingContact || typeof window === 'undefined') {
-      return;
-    }
-
-    const shouldDelete = window.confirm('Vuoi eliminare definitivamente questo messaggio?');
-    if (!shouldDelete) {
-      return;
-    }
+    if (!this.selectedContact?._id || this.deletingContact) return;
 
     const contactId = this.selectedContact._id;
-    this.deletingContact = true;
-
-    this.http.delete<{ success: boolean }>(`${environment.apiUrl}/contact/${contactId}`).subscribe({
-      next: () => {
-        this.recentContacts = this.recentContacts.filter(item => item._id !== contactId);
-        this.stats = this.stats.map(stat => stat.labelKey === 'admin.contacts'
-          ? { ...stat, value: Math.max(stat.value - 1, 0) }
-          : stat,
-        );
-        this.closeContact();
-        this.showActionMessage('admin.message_deleted');
-      },
-      error: () => {
-        this.deletingContact = false;
-      },
+    this.openConfirmDialog('admin.confirm_delete_message', {}, () => {
+      this.deletingContact = true;
+      this.http.delete<{ success: boolean }>(`${environment.apiUrl}/contact/${contactId}`).subscribe({
+        next: () => {
+          this.recentContacts = this.recentContacts.filter(item => item._id !== contactId);
+          this.stats = this.stats.map(stat => stat.labelKey === 'admin.contacts'
+            ? { ...stat, value: Math.max(stat.value - 1, 0) }
+            : stat,
+          );
+          this.closeContact();
+          this.showActionMessage('admin.message_deleted');
+        },
+        error: () => {
+          this.deletingContact = false;
+        },
+      });
     });
   }
 
@@ -379,33 +381,48 @@ export class DashboardComponent implements OnInit {
     if (!this.anySelected || this.bulkDeleting) return;
 
     const ids = [...this.selectedIds];
-    const confirmed = window.confirm(
-      `Eliminare definitivamente ${ids.length} messaggio/i selezionato/i?`,
+    this.openConfirmDialog(
+      'admin.confirm_delete_bulk',
+      { count: ids.length },
+      () => {
+        this.bulkDeleting = true;
+        this.http.delete<{ success: boolean; deleted: number }>(
+          `${environment.apiUrl}/contact/bulk`,
+          { body: { ids } },
+        ).subscribe({
+          next: ({ deleted }) => {
+            this.recentContacts = this.recentContacts.filter(
+              c => !c._id || !ids.includes(c._id),
+            );
+            this.selectedIds = new Set<string>();
+            this.bulkDeleting = false;
+            this.stats = this.stats.map(stat =>
+              stat.labelKey === 'admin.contacts'
+                ? { ...stat, value: Math.max(stat.value - deleted, 0) }
+                : stat,
+            );
+            this.showActionMessage('admin.messages_deleted');
+          },
+          error: () => {
+            this.bulkDeleting = false;
+          },
+        });
+      },
     );
-    if (!confirmed) return;
+  }
 
-    this.bulkDeleting = true;
-    this.http.delete<{ success: boolean; deleted: number }>(
-      `${environment.apiUrl}/contact/bulk`,
-      { body: { ids } },
-    ).subscribe({
-      next: ({ deleted }) => {
-        this.recentContacts = this.recentContacts.filter(
-          c => !c._id || !ids.includes(c._id),
-        );
-        this.selectedIds = new Set<string>();
-        this.bulkDeleting = false;
-        this.stats = this.stats.map(stat =>
-          stat.labelKey === 'admin.contacts'
-            ? { ...stat, value: Math.max(stat.value - deleted, 0) }
-            : stat,
-        );
-        this.showActionMessage('admin.messages_deleted');
-      },
-      error: () => {
-        this.bulkDeleting = false;
-      },
-    });
+  openConfirmDialog(messageKey: string, messageParams: Record<string, unknown>, onConfirm: () => void): void {
+    this.confirmDialog = { visible: true, messageKey, messageParams, onConfirm };
+  }
+
+  confirmDialogAction(): void {
+    const fn = this.confirmDialog.onConfirm;
+    this.confirmDialog = { visible: false, messageKey: '', messageParams: {}, onConfirm: null };
+    fn?.();
+  }
+
+  cancelConfirmDialog(): void {
+    this.confirmDialog = { visible: false, messageKey: '', messageParams: {}, onConfirm: null };
   }
 
   private buildMiniBars(value: number, maxValue: number, seed: number): number[] {
