@@ -324,6 +324,13 @@
     "browser_breakdown": "Browser",
     "browser_breakdown_desc": "Distribuzione per browser"
   },
+  "session": {
+    "warning_title": "La sessione sta per scadere",
+    "warning_body": "Per sicurezza, la sessione admin terminerà a breve se non confermi che sei ancora attivo.",
+    "seconds_remaining": "secondi rimanenti",
+    "stay_logged_in": "Resta connesso",
+    "logout_now": "Esci ora"
+  },
   "common": {
     "loading": "Caricamento…",
     "error": "Errore nel caricamento dei dati.",

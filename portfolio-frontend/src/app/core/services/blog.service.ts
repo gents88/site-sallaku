@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Post, PostSummary, CreatePostPayload, UpdatePostPayload } from '../models/post.model';
+import {
+  Post,
+  PostSummary,
+  CreatePostPayload,
+  UpdatePostPayload,
+  BlogLanguage,
+  BlogPdfDraft,
+} from '../models/post.model';
 
 @Injectable({ providedIn: 'root' })
 export class BlogService {
@@ -24,4 +31,18 @@ export class BlogService {
   create(payload: CreatePostPayload): Observable<Post> { return this.http.post<Post>(this.adminUrl, payload); }
   update(id: string, payload: UpdatePostPayload): Observable<Post> { return this.http.put<Post>(`${this.adminUrl}/${id}`, payload); }
   remove(id: string): Observable<void> { return this.http.delete<void>(`${this.adminUrl}/${id}`); }
+
+  generateFromPdf(file: File, language: BlogLanguage, context = ''): Observable<HttpEvent<BlogPdfDraft>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('language', language);
+    if (context.trim()) {
+      formData.append('context', context.trim());
+    }
+
+    return this.http.post<BlogPdfDraft>(`${this.adminUrl}/generate-from-pdf`, formData, {
+      observe: 'events',
+      reportProgress: true,
+    });
+  }
 }

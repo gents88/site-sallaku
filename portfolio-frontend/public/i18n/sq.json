@@ -324,6 +324,13 @@
     "browser_breakdown": "Shfletuesit",
     "browser_breakdown_desc": "Shpërndarja sipas shfletuesit"
   },
+  "session": {
+    "warning_title": "Sesioni po skadon",
+    "warning_body": "Për siguri, sesioni admin do të mbyllet së shpejti nëse nuk konfirmoni që jeni ende aktiv.",
+    "seconds_remaining": "sekonda të mbetura",
+    "stay_logged_in": "Qëndro i kyçur",
+    "logout_now": "Dil tani"
+  },
   "common": {
     "loading": "Duke ngarkuar…",
     "error": "Gabim në ngarkimin e të dhënave.",

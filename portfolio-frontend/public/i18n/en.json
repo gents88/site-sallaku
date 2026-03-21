@@ -324,6 +324,13 @@
     "browser_breakdown": "Browsers",
     "browser_breakdown_desc": "Browser distribution"
   },
+  "session": {
+    "warning_title": "Session is about to expire",
+    "warning_body": "For your security, your admin session will end soon unless you confirm you are still active.",
+    "seconds_remaining": "seconds remaining",
+    "stay_logged_in": "Stay logged in",
+    "logout_now": "Logout now"
+  },
   "common": {
     "loading": "Loading…",
     "error": "Error loading data.",

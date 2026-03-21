@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { DEFAULT_BLOG_LANGUAGE, BLOG_LANGUAGES, BlogLanguage } from '../blog.constants';
 
 export type PostDocument = Post & Document;
 
@@ -7,6 +8,9 @@ export type PostDocument = Post & Document;
 export class Post {
   @Prop({ required: true, trim: true })
   title: string;
+
+  @Prop({ default: '' })
+  subtitle: string;
 
   @Prop({ unique: true })
   slug: string;
@@ -16,6 +20,9 @@ export class Post {
 
   @Prop({ default: '' })
   excerpt: string;
+
+  @Prop({ enum: BLOG_LANGUAGES, default: DEFAULT_BLOG_LANGUAGE })
+  language: BlogLanguage;
 
   @Prop({ default: '' })
   coverImage: string;

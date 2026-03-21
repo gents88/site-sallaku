@@ -1,21 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { filter } from 'rxjs';
+import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { LoginComponent } from './features/admin/auth/login/login.component';
 import { AuthService } from './core/services/auth.service';
-import { ThemeService } from './core/services/theme.service';
 import { SeoService } from './core/services/seo.service';
-import { LanguageService } from './core/services/language.service';
 import { AuthModalService } from './core/services/auth-modal.service';
-import { AnalyticsTrackingService } from './core/services/analytics-tracking.service';
+import { InactivityService } from './core/services/inactivity.service';
+import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent],
   template: `
     <a class="skip-link" href="#hero">{{ 'skip.link' | translate }}</a>
     <div class="wip-banner" role="status">{{ 'banner.wip' | translate }}</div>
@@ -59,6 +57,12 @@ import { AnalyticsTrackingService } from './core/services/analytics-tracking.ser
           <button type="button" class="account-modal__button account-modal__button--ghost" (click)="closeAccountModal()">{{ 'common.close' | translate }}</button>
         </div>
       </section>
+    }
+    @if (inactivity.warningVisible()) {
+      <app-session-timeout-modal
+        [countdownSeconds]="inactivity.countdownSeconds()"
+        (stayLoggedIn)="extendSession()"
+        (logoutNow)="logoutFromTimeout()" />
     }
   `,
   styles: [`
@@ -299,29 +303,14 @@ export class AppComponent implements OnInit {
   constructor(
     public authModal: AuthModalService,
     public auth: AuthService,
-    private themeService: ThemeService,
+    public inactivity: InactivityService,
     private seoService: SeoService,
-    private langService: LanguageService,
     private router: Router,
-    private analytics: AnalyticsTrackingService,
   ) {}
 
   ngOnInit(): void {
-    this.themeService.init();
+    this.inactivity.init();
     this.seoService.trackPageViews();
-    document.documentElement.lang = this.langService.current();
-    this.applyLanguageAccent();
-
-    // Track each full navigation as a page-view (async, fire-and-forget)
-    this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(e => this.analytics.track((e as NavigationEnd).urlAfterRedirects));
-  }
-
-  private applyLanguageAccent(): void {
-    const currentLang = this.langService.current();
-    const accent = currentLang === 'sq' ? 'albanian' as const : 'default' as const;
-    this.themeService.setLanguageAccent(accent);
   }
 
   closeAccountModal(): void {
@@ -336,5 +325,13 @@ export class AppComponent implements OnInit {
   logoutFromModal(): void {
     this.authModal.closeAll();
     this.auth.logout('/');
+  }
+
+  extendSession(): void {
+    this.inactivity.stayLoggedIn();
+  }
+
+  logoutFromTimeout(): void {
+    this.inactivity.logoutNow();
   }
 }

@@ -5,6 +5,7 @@ import slugify from 'slugify';
 import { Post, PostDocument } from './schemas/post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { DEFAULT_BLOG_LANGUAGE } from './blog.constants';
 
 interface ContentSummary {
   total: number;
@@ -15,6 +16,19 @@ interface ContentSummary {
 @Injectable()
 export class BlogService {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
+
+  private async ensureUniqueSlug(source: string, excludeId?: string): Promise<string> {
+    const baseSlug = slugify(source, { lower: true, strict: true }) || `post-${Date.now()}`;
+    let candidate = baseSlug;
+    let index = 2;
+
+    while (await this.postModel.exists({ slug: candidate, ...(excludeId ? { _id: { $ne: excludeId } } : {}) })) {
+      candidate = `${baseSlug}-${index}`;
+      index += 1;
+    }
+
+    return candidate;
+  }
 
   /** Public: published posts only */
   findPublished(tag?: string): Promise<PostDocument[]> {
@@ -43,15 +57,30 @@ export class BlogService {
   }
 
   async create(dto: CreatePostDto): Promise<PostDocument> {
-    const slug = slugify(dto.title, { lower: true, strict: true });
+    const slug = await this.ensureUniqueSlug(dto.slug || dto.title);
     const publishedAt = dto.published ? new Date() : null;
-    return this.postModel.create({ ...dto, slug, publishedAt });
+    return this.postModel.create({
+      ...dto,
+      slug,
+      language: dto.language || DEFAULT_BLOG_LANGUAGE,
+      publishedAt,
+    });
   }
 
   async update(id: string, dto: UpdatePostDto): Promise<PostDocument> {
+    const existing = await this.postModel.findById(id).exec();
+    if (!existing) throw new NotFoundException(`Post #${id} not found`);
+
     const update: any = { ...dto };
-    if (dto.title) update.slug = slugify(dto.title, { lower: true, strict: true });
-    if (dto.published !== undefined) update.publishedAt = dto.published ? new Date() : null;
+
+    if (dto.slug || dto.title) {
+      update.slug = await this.ensureUniqueSlug(dto.slug || dto.title, id);
+    }
+
+    if (dto.published !== undefined) {
+      update.publishedAt = dto.published ? existing.publishedAt || new Date() : null;
+    }
+
     const post = await this.postModel.findByIdAndUpdate(id, update, { new: true }).exec();
     if (!post) throw new NotFoundException(`Post #${id} not found`);
     return post;

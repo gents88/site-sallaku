@@ -12,9 +12,27 @@ export const SUPPORTED_LANGS: { code: Lang; label: string; flag: string }[] = [
 
 const STORAGE_KEY = 'gs-portfolio-lang';
 
+export function resolveInitialLanguage(): Lang {
+  if (typeof localStorage !== 'undefined') {
+    const stored = localStorage.getItem(STORAGE_KEY) as Lang | null;
+    if (stored && ['it', 'en', 'sq'].includes(stored)) {
+      return stored;
+    }
+  }
+
+  if (typeof navigator !== 'undefined') {
+    const browser = navigator.language.slice(0, 2) as Lang;
+    if (['it', 'en', 'sq'].includes(browser)) {
+      return browser;
+    }
+  }
+
+  return 'it';
+}
+
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
-  private readonly _current = signal<Lang>(this.resolveInitialLang());
+  private readonly _current = signal<Lang>(resolveInitialLanguage());
   private readonly themeService = inject(ThemeService);
 
   readonly current = this._current.asReadonly();
@@ -22,8 +40,6 @@ export class LanguageService {
 
   constructor(private translate: TranslateService) {
     this.translate.addLangs(['it', 'en', 'sq']);
-    this.translate.setFallbackLang('it').subscribe();
-    this.translate.use(this._current()).subscribe();
     document.documentElement.lang = this._current();
     this.applyLanguageAccent(this._current());
   }
@@ -48,15 +64,5 @@ export class LanguageService {
   /** Return the label + flag for the current language */
   get currentMeta() {
     return SUPPORTED_LANGS.find(l => l.code === this._current()) ?? SUPPORTED_LANGS[0];
-  }
-
-  private resolveInitialLang(): Lang {
-    const stored = localStorage.getItem(STORAGE_KEY) as Lang | null;
-    if (stored && ['it', 'en', 'sq'].includes(stored)) return stored;
-
-    const browser = navigator.language.slice(0, 2) as Lang;
-    if (['it', 'en', 'sq'].includes(browser)) return browser;
-
-    return 'it';
   }
 }

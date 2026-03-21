@@ -1,7 +1,8 @@
 import {
-  IsString, IsArray, IsOptional, IsBoolean, MaxLength, MinLength,
+  IsString, IsArray, IsOptional, IsBoolean, MaxLength, MinLength, Matches, IsIn,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BLOG_LANGUAGES, BlogLanguage } from '../blog.constants';
 
 export class CreatePostDto {
   @ApiProperty({ example: 'Building a CMS with NestJS' })
@@ -9,6 +10,18 @@ export class CreatePostDto {
   @MinLength(3)
   @MaxLength(200)
   title: string;
+
+  @ApiPropertyOptional({ example: 'A practical guide to turning source material into readable content.' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(220)
+  subtitle?: string;
+
+  @ApiPropertyOptional({ example: 'building-a-cms-with-nestjs' })
+  @IsString()
+  @IsOptional()
+  @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+  slug?: string;
 
   @ApiProperty({ example: '## Introduction\n\nIn this post...' })
   @IsString()
@@ -20,6 +33,11 @@ export class CreatePostDto {
   @IsOptional()
   @MaxLength(300)
   excerpt?: string;
+
+  @ApiPropertyOptional({ enum: BLOG_LANGUAGES, example: 'en' })
+  @IsIn(BLOG_LANGUAGES)
+  @IsOptional()
+  language?: BlogLanguage;
 
   @ApiPropertyOptional({ example: 'https://cdn.example.com/cover.jpg' })
   @IsString()

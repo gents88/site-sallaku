@@ -21,7 +21,9 @@ export class AuthService {
   readonly currentUser = computed(() => this._user());
   readonly isAdmin = computed(() => this._user()?.role === 'admin');
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    window.addEventListener('storage', this.handleStorageSync);
+  }
 
   login(payload: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, payload).pipe(
@@ -66,4 +68,25 @@ export class AuthService {
       return null;
     }
   }
+
+  private readonly handleStorageSync = (event: StorageEvent): void => {
+    if (event.storageArea !== localStorage) {
+      return;
+    }
+
+    if (event.key !== TOKEN_KEY && event.key !== USER_KEY) {
+      return;
+    }
+
+    const wasLoggedIn = this.isLoggedIn();
+    const token = localStorage.getItem(TOKEN_KEY);
+    const user = this.parseStoredUser();
+
+    this._token.set(token);
+    this._user.set(user);
+
+    if (wasLoggedIn && !token && this.router.url.startsWith('/admin')) {
+      void this.router.navigateByUrl('/admin/login', { replaceUrl: true });
+    }
+  };
 }
