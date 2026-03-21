@@ -365,27 +365,53 @@
       </div>
 
       <div class="contact-modal__actions">
-        <button mat-stroked-button type="button" (click)="closeContact()">Chiudi</button>
+        <button type="button" class="modal-btn modal-btn--plain" (click)="closeContact()">
+          <mat-icon>close</mat-icon>
+          Chiudi
+        </button>
         @if (selectedContact.read) {
-          <button mat-stroked-button type="button" [disabled]="markingRead" (click)="setSelectedContactReadState(false)">
+          <button type="button" class="modal-btn modal-btn--outline" [disabled]="markingRead" (click)="setSelectedContactReadState(false)">
             <mat-icon [class.spin]="markingRead">{{ markingRead ? 'sync' : 'mark_email_unread' }}</mat-icon>
             {{ 'admin.mark_unread' | translate }}
           </button>
         } @else {
-          <button mat-stroked-button type="button" [disabled]="markingRead" (click)="setSelectedContactReadState(true)">
+          <button type="button" class="modal-btn modal-btn--outline" [disabled]="markingRead" (click)="setSelectedContactReadState(true)">
             <mat-icon [class.spin]="markingRead">{{ markingRead ? 'sync' : 'drafts' }}</mat-icon>
             {{ 'admin.mark_read' | translate }}
           </button>
         }
-        <button mat-stroked-button color="warn" type="button" [disabled]="deletingContact" (click)="deleteSelectedContact()">
+        <button type="button" class="modal-btn modal-btn--warn" [disabled]="deletingContact" (click)="deleteSelectedContact()">
           <mat-icon [class.spin]="deletingContact">{{ deletingContact ? 'sync' : 'delete' }}</mat-icon>
           {{ deletingContact ? ('common.loading' | translate) : ('common.delete' | translate) }}
         </button>
-        <button mat-raised-button color="primary" type="button" (click)="replyToSelectedContact()">
+        <button type="button" class="modal-btn modal-btn--primary" (click)="replyToSelectedContact()">
           <mat-icon>reply</mat-icon>
           {{ 'admin.open_email' | translate }}
         </button>
       </div>
     </section>
+  }
+
+  @if (confirmDialog.visible) {
+    <div class="confirm-dialog-backdrop" (click)="cancelConfirmDialog()" aria-hidden="true"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
+      <div class="confirm-dialog__icon">
+        <mat-icon>warning_amber</mat-icon>
+      </div>
+      <h3 id="confirm-dialog-title">{{ 'admin.confirm_delete_title' | translate }}</h3>
+      <p class="confirm-dialog__message">
+        {{ confirmDialog.messageKey | translate: confirmDialog.messageParams }}
+      </p>
+      <div class="confirm-dialog__actions">
+        <button type="button" class="modal-btn modal-btn--plain" (click)="cancelConfirmDialog()">
+          <mat-icon>close</mat-icon>
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button type="button" class="modal-btn modal-btn--warn" (click)="confirmDialogAction()">
+          <mat-icon>delete</mat-icon>
+          {{ 'common.confirm' | translate }}
+        </button>
+      </div>
+    </div>
   }
 </div>

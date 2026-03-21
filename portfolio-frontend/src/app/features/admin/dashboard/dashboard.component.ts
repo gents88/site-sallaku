@@ -386,9 +386,9 @@ export class DashboardComponent implements OnInit {
       { count: ids.length },
       () => {
         this.bulkDeleting = true;
-        this.http.delete<{ success: boolean; deleted: number }>(
-          `${environment.apiUrl}/contact/bulk`,
-          { body: { ids } },
+        this.http.post<{ success: boolean; deleted: number }>(
+          `${environment.apiUrl}/contact/bulk-delete`,
+          { ids },
         ).subscribe({
           next: ({ deleted }) => {
             this.recentContacts = this.recentContacts.filter(

@@ -46,7 +46,8 @@ export class ContactController {
     return this.contactService.markAsRead(id, body?.read ?? true);
   }
 
-  @Delete('bulk')
+  @Post('bulk-delete')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiBearerAuth('access-token')
