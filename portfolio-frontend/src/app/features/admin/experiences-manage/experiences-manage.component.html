@@ -1,0 +1,106 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/admin" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <h1>Experiences</h1>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreate()">
+      <mat-icon>add</mat-icon> New Experience
+    </button>
+  </header>
+
+  @if (showForm) {
+    <div class="card form-panel">
+      <h2>{{ editingId ? 'Edit' : 'New' }} Experience</h2>
+      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Company</mat-label>
+            <input matInput formControlName="company" />
+            @if (form.get('company')?.invalid && form.get('company')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <input matInput formControlName="role" />
+            @if (form.get('role')?.invalid && form.get('role')?.touched) {
+              <mat-error>Required</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Start Date (e.g. 2022-01)</mat-label>
+            <input matInput formControlName="startDate" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>End Date</mat-label>
+            <input matInput formControlName="endDate" [disabled]="!!form.get('current')?.value" />
+          </mat-form-field>
+        </div>
+
+        <mat-checkbox formControlName="current" style="margin-bottom:1rem">Currently working here</mat-checkbox>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="4"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location" placeholder="Remote" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Order</mat-label>
+            <input matInput formControlName="order" type="number" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Technologies (press Enter)</mat-label>
+          <mat-chip-grid #grid>
+            @for (tech of technologies; track tech) {
+              <mat-chip [removable]="true" (removed)="removeTech(tech)">
+                {{ tech }}<button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip>
+            }
+          </mat-chip-grid>
+          <input [matChipInputFor]="grid" [matChipInputSeparatorKeyCodes]="separatorKeys"
+                 (matChipInputTokenEnd)="addTech($event)" />
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="showForm = false">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving">
+            {{ saving ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else if (!experiences.length) {
+    <p class="empty-state">No experiences yet.</p>
+  } @else {
+    <div class="list">
+      @for (exp of experiences; track exp._id) {
+        <div class="card list-item">
+          <div class="list-item__info">
+            <h3>{{ exp.role }} – <span class="text-muted">{{ exp.company }}</span></h3>
+            <p class="text-muted">{{ exp.startDate }} → {{ exp.current ? 'Present' : exp.endDate }}</p>
+            <p>{{ exp.description | slice:0:120 }}…</p>
+          </div>
+          <div class="list-item__actions">
+            <button mat-icon-button (click)="openEdit(exp)"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(exp._id)"><mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

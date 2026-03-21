@@ -1,0 +1,211 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 16px 0;
+  transition: var(--transition-base, all 0.3s ease);
+  background: transparent;
+
+  &.scrolled {
+    background: var(--surface-overlay);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 10px 0;
+  }
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary, #f0f4ff);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+
+  .logo-bracket { color: var(--primary-500, #4f6af5); }
+}
+
+.nav-menu {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @media (max-width: 900px) { display: none; }
+  @media (max-width: 900px) {
+    &.open {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      background: var(--surface-overlay);
+      backdrop-filter: blur(20px);
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      z-index: 999;
+    }
+  }
+}
+
+.nav-item-mobile-auth {
+  display: none;
+
+  @media (max-width: 900px) {
+    display: list-item;
+  }
+}
+
+.nav-link {
+  display: block;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary, #8892b0);
+  border-radius: 6px;
+  position: relative;
+  transition: var(--transition-base, all 0.3s ease);
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover,
+  &.active {
+    color: var(--text-primary, #f0f4ff);
+    background: rgba(79, 106, 245, 0.1);
+  }
+
+  &.active::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 2px;
+    background: var(--gradient-primary, linear-gradient(135deg, #4f6af5, #8b5cf6));
+    border-radius: 2px;
+  }
+
+  @media (max-width: 900px) {
+    font-size: 1.2rem;
+    padding: 12px 24px;
+  }
+}
+
+.nav-link--button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.nav-link--account {
+  font-size: 0.78rem;
+  padding: 6px 10px 6px 8px;
+  margin-left: 0.45rem;
+  background: rgba(79, 106, 245, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.nav-account__avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #f8fafc;
+  background: linear-gradient(135deg, #4f6af5, #8b5cf6);
+  text-transform: uppercase;
+}
+
+.nav-account__avatar--login {
+  background: rgba(79, 106, 245, 0.14);
+  color: var(--text-primary, #f0f4ff);
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+  }
+}
+
+.nav-account__label {
+  display: inline-block;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (min-width: 901px) {
+    margin-left: auto;
+  }
+}
+
+/* Hamburger */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+
+  @media (max-width: 900px) { display: flex; }
+}
+
+.hamburger-bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text-primary, #f0f4ff);
+  position: relative;
+  transition: all 0.3s ease;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary, #f0f4ff);
+    transition: all 0.3s ease;
+  }
+
+  &::before { top: -7px; }
+  &::after  { top: 7px; }
+}
+
+.nav-toggle.active .hamburger-bar {
+  background: transparent;
+  &::before { top: 0; transform: rotate(45deg); }
+  &::after  { top: 0; transform: rotate(-45deg); }
+}

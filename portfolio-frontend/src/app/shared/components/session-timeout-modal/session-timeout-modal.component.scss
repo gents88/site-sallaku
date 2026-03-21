@@ -1,0 +1,163 @@
+.session-timeout-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1690;
+  background:
+    radial-gradient(circle at top, rgba(251, 191, 36, 0.18), transparent 30%),
+    rgba(6, 10, 18, 0.76);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: timeoutBackdropIn 0.2s ease-out;
+}
+
+.session-timeout {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1700;
+  width: min(460px, calc(100vw - 32px));
+  padding: 1.5rem;
+  border-radius: 28px;
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  background:
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.2), transparent 34%),
+    linear-gradient(180deg, rgba(16, 24, 39, 0.98), rgba(10, 15, 26, 0.98));
+  color: #f8fafc;
+  box-shadow: 0 40px 110px rgba(2, 6, 23, 0.55);
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  animation: timeoutModalIn 0.24s ease-out;
+}
+
+.session-timeout__pulse {
+  position: absolute;
+  inset: -35% auto auto 68%;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.34), transparent 72%);
+  pointer-events: none;
+}
+
+.session-timeout__eyebrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+  color: #fcd34d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.session-timeout h2 {
+  position: relative;
+  margin: 1rem 0 0.55rem;
+  font-size: clamp(1.45rem, 2.8vw, 1.8rem);
+  line-height: 1.1;
+}
+
+.session-timeout__message {
+  position: relative;
+  margin: 0;
+  max-width: 34ch;
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+.session-timeout__countdown {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 0.25rem;
+  margin: 1.35rem 0 1.2rem;
+  padding: 1.1rem;
+  border-radius: 22px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(15, 23, 42, 0.46);
+}
+
+.session-timeout__seconds {
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 800;
+  line-height: 1;
+  color: #fde68a;
+}
+
+.session-timeout__label {
+  color: rgba(226, 232, 240, 0.74);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.session-timeout__actions {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.session-timeout__button {
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.session-timeout__button:hover {
+  transform: translateY(-1px);
+}
+
+.session-timeout__button--primary {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: #fff;
+  box-shadow: 0 18px 34px rgba(245, 158, 11, 0.22);
+}
+
+.session-timeout__button--warn {
+  border-color: rgba(248, 113, 113, 0.22);
+  background: rgba(127, 29, 29, 0.24);
+  color: #fecaca;
+}
+
+@keyframes timeoutBackdropIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes timeoutModalIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px)) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .session-timeout {
+    padding: 1.25rem;
+    border-radius: 24px;
+  }
+
+  .session-timeout__actions {
+    grid-template-columns: 1fr;
+  }
+}
