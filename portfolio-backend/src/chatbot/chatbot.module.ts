@@ -12,5 +12,6 @@ import { ChatSession, ChatSessionSchema } from './schemas/chat-session.schema';
   ],
   controllers: [ChatbotController],
   providers: [ChatbotService],
+  exports: [ChatbotService],
 })
 export class ChatbotModule {}

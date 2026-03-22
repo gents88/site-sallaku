@@ -126,23 +126,130 @@ export class MailService {
   }
 
   /** Notification sent to admin when a contact form is submitted */
-  sendContactNotification(opts: { name: string; email: string; subject: string; message: string }): Promise<MailDeliveryResult> {
+  sendContactNotification(opts: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    ip?: string;
+    location?: string;
+  }): Promise<MailDeliveryResult> {
     const adminEmail = this.getAdminInbox();
+    const timestamp = new Date().toLocaleString('en-GB', {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    });
+    const metaRows = [
+      opts.ip       ? `<tr><td style="padding:6px 8px;color:#64748b;white-space:nowrap;">IP</td><td style="padding:6px 8px;font-family:monospace;font-size:0.85rem;">${opts.ip}</td></tr>` : '',
+      opts.location ? `<tr><td style="padding:6px 8px;color:#64748b;white-space:nowrap;">Location</td><td style="padding:6px 8px;">${opts.location}</td></tr>` : '',
+    ].join('');
+
     return this.send({
       to: adminEmail,
       replyTo: opts.email,
-      subject: `[Portfolio Contact] ${opts.subject}`,
-      text: `Nuovo messaggio di contatto\n\nDa: ${opts.name}\nEmail: ${opts.email}\nOggetto: ${opts.subject}\n\n${opts.message}`,
+      subject: `[Contact Form] ${opts.subject}`,
+      text: `New contact form message\n\nFrom: ${opts.name}\nEmail: ${opts.email}\nSubject: ${opts.subject}\nTimestamp: ${timestamp}${opts.ip ? `\nIP: ${opts.ip}` : ''}${opts.location ? `\nLocation: ${opts.location}` : ''}\nSource: Contact Form\n\n${opts.message}`,
       html: `
-        <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;">
-          <h2 style="color:#4f6af5;">Nuovo messaggio di contatto</h2>
-          <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:8px;color:#64748b;">Da</td><td style="padding:8px;font-weight:600;">${opts.name}</td></tr>
-            <tr><td style="padding:8px;color:#64748b;">Email</td><td style="padding:8px;">${opts.email}</td></tr>
-            <tr><td style="padding:8px;color:#64748b;">Oggetto</td><td style="padding:8px;">${opts.subject}</td></tr>
-          </table>
-          <hr style="border:1px solid #e2e8f0;margin:16px 0;"/>
-          <p style="line-height:1.7;">${opts.message.replace(/\n/g, '<br/>')}</p>
+        <div style="font-family:Inter,sans-serif;max-width:580px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);padding:24px 32px;display:flex;align-items:center;gap:12px;">
+            <span style="font-family:monospace;font-size:1.6rem;font-weight:700;color:#fff;">&lt;GS /&gt;</span>
+            <div>
+              <div style="color:rgba(255,255,255,0.7);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">Portfolio Notification</div>
+              <h1 style="color:#fff;margin:0;font-size:1.15rem;">New Contact Form Message</h1>
+            </div>
+          </div>
+          <div style="padding:28px 32px;">
+            <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(79,106,245,0.25);overflow:hidden;margin-bottom:20px;">
+              <div style="background:rgba(79,106,245,0.15);padding:10px 16px;border-bottom:1px solid rgba(79,106,245,0.2);">
+                <span style="color:#818cf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">&#9993; Sender Details</span>
+              </div>
+              <table style="width:100%;border-collapse:collapse;">
+                <tr><td style="padding:8px 16px;color:#64748b;white-space:nowrap;width:90px;">Name</td><td style="padding:8px 16px;font-weight:600;color:#e2e8f0;">${opts.name}</td></tr>
+                <tr style="background:rgba(255,255,255,0.02);"><td style="padding:8px 16px;color:#64748b;">Email</td><td style="padding:8px 16px;"><a href="mailto:${opts.email}" style="color:#818cf8;">${opts.email}</a></td></tr>
+                <tr><td style="padding:8px 16px;color:#64748b;">Subject</td><td style="padding:8px 16px;color:#e2e8f0;">${opts.subject}</td></tr>
+                <tr style="background:rgba(255,255,255,0.02);"><td style="padding:8px 16px;color:#64748b;">Timestamp</td><td style="padding:8px 16px;color:#94a3b8;font-size:0.85rem;">${timestamp}</td></tr>
+                <tr><td style="padding:8px 16px;color:#64748b;">Source</td><td style="padding:8px 16px;"><span style="background:rgba(79,106,245,0.2);color:#818cf8;padding:2px 8px;border-radius:12px;font-size:0.8rem;">Contact Form</span></td></tr>
+                ${metaRows}
+              </table>
+            </div>
+            <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(148,163,184,0.1);overflow:hidden;">
+              <div style="background:rgba(148,163,184,0.05);padding:10px 16px;border-bottom:1px solid rgba(148,163,184,0.1);">
+                <span style="color:#94a3b8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">&#128235; Message</span>
+              </div>
+              <div style="padding:20px 24px;line-height:1.75;color:#cbd5e1;">${opts.message.replace(/\n/g, '<br/>')}</div>
+            </div>
+            <div style="margin-top:20px;text-align:center;">
+              <a href="mailto:${opts.email}?subject=Re: ${encodeURIComponent(opts.subject)}"
+                 style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;font-size:0.9rem;">
+                Reply to ${opts.name}
+              </a>
+            </div>
+          </div>
+          <div style="background:#070b15;padding:14px;text-align:center;font-size:0.78rem;color:#475569;">
+            © ${new Date().getFullYear()} Gent Sallaku · <a href="https://gentsallaku.it" style="color:#818cf8;">gentsallaku.it</a>
+          </div>
+        </div>
+      `,
+    });
+  }
+
+  /** Real-time admin notification when a chatbot message is received */
+  sendChatbotNotification(opts: {
+    message: string;
+    reply: string;
+    sessionId: string;
+    timestamp: Date;
+    userEmail?: string;
+    ip?: string;
+    location?: string;
+    userAgent?: string;
+  }): Promise<MailDeliveryResult> {
+    const adminEmail = this.getAdminInbox();
+    const timestamp = opts.timestamp.toLocaleString('en-GB', {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    });
+    const metaRows = [
+      opts.ip        ? `<tr style="background:rgba(255,255,255,0.02);"><td style="padding:8px 16px;color:#64748b;white-space:nowrap;">IP</td><td style="padding:8px 16px;font-family:monospace;font-size:0.85rem;color:#94a3b8;">${opts.ip}</td></tr>` : '',
+      opts.location  ? `<tr><td style="padding:8px 16px;color:#64748b;">Location</td><td style="padding:8px 16px;color:#e2e8f0;">${opts.location}</td></tr>` : '',
+      opts.userAgent ? `<tr style="background:rgba(255,255,255,0.02);"><td style="padding:8px 16px;color:#64748b;white-space:nowrap;">User-Agent</td><td style="padding:8px 16px;color:#94a3b8;font-size:0.78rem;word-break:break-all;">${opts.userAgent.slice(0, 120)}${opts.userAgent.length > 120 ? '…' : ''}</td></tr>` : '',
+    ].join('');
+
+    return this.send({
+      to: adminEmail,
+      subject: `[Chatbot] New message — ${opts.message.slice(0, 50)}${opts.message.length > 50 ? '…' : ''}`,
+      text: `New chatbot message\n\nSession: ${opts.sessionId}\nTimestamp: ${timestamp}${opts.userEmail ? `\nUser Email: ${opts.userEmail}` : ''}${opts.ip ? `\nIP: ${opts.ip}` : ''}${opts.location ? `\nLocation: ${opts.location}` : ''}\nSource: Chatbot\n\nUser: ${opts.message}\n\nAI: ${opts.reply}`,
+      html: `
+        <div style="font-family:Inter,sans-serif;max-width:580px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#059669,#0891b2);padding:24px 32px;">
+            <div style="color:rgba(255,255,255,0.7);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">Portfolio Notification</div>
+            <h1 style="color:#fff;margin:6px 0 0;font-size:1.15rem;">&#129302; New Chatbot Interaction</h1>
+          </div>
+          <div style="padding:28px 32px;">
+            <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(8,145,178,0.25);overflow:hidden;margin-bottom:20px;">
+              <div style="background:rgba(8,145,178,0.12);padding:10px 16px;border-bottom:1px solid rgba(8,145,178,0.2);">
+                <span style="color:#38bdf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">&#128203; Metadata</span>
+              </div>
+              <table style="width:100%;border-collapse:collapse;">
+                <tr><td style="padding:8px 16px;color:#64748b;white-space:nowrap;width:110px;">Session ID</td><td style="padding:8px 16px;font-family:monospace;font-size:0.82rem;color:#94a3b8;">${opts.sessionId}</td></tr>
+                <tr style="background:rgba(255,255,255,0.02);"><td style="padding:8px 16px;color:#64748b;">Timestamp</td><td style="padding:8px 16px;color:#94a3b8;font-size:0.85rem;">${timestamp}</td></tr>
+                ${opts.userEmail ? `<tr><td style="padding:8px 16px;color:#64748b;">User Email</td><td style="padding:8px 16px;"><a href="mailto:${opts.userEmail}" style="color:#818cf8;">${opts.userEmail}</a></td></tr>` : ''}
+                <tr style="background:rgba(255,255,255,0.02);"><td style="padding:8px 16px;color:#64748b;">Source</td><td style="padding:8px 16px;"><span style="background:rgba(5,150,105,0.2);color:#34d399;padding:2px 8px;border-radius:12px;font-size:0.8rem;">Chatbot</span></td></tr>
+                ${metaRows}
+              </table>
+            </div>
+            <div style="margin-bottom:12px;padding:16px 20px;background:#1e2a4a;border-radius:10px;border-left:3px solid #818cf8;">
+              <div style="color:#818cf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">&#128100; User</div>
+              <p style="margin:0;line-height:1.7;color:#e2e8f0;">${opts.message.replace(/\n/g, '<br/>')}</p>
+            </div>
+            <div style="padding:16px 20px;background:#0f1424;border-radius:10px;border-left:3px solid #34d399;">
+              <div style="color:#34d399;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">&#129302; AI Reply</div>
+              <p style="margin:0;line-height:1.7;color:#cbd5e1;">${opts.reply.replace(/\n/g, '<br/>')}</p>
+            </div>
+          </div>
+          <div style="background:#070b15;padding:14px;text-align:center;font-size:0.78rem;color:#475569;">
+            © ${new Date().getFullYear()} Gent Sallaku · <a href="https://gentsallaku.it" style="color:#818cf8;">gentsallaku.it</a>
+          </div>
         </div>
       `,
     });

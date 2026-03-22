@@ -22,7 +22,7 @@ export class ContactService {
     private mailQueue: MailQueueService,
   ) {}
 
-  async sendMessage(dto: ContactDto): Promise<{ success: boolean }> {
+  async sendMessage(dto: ContactDto, meta?: { ip?: string; location?: string }): Promise<{ success: boolean }> {
     // Prevent obvious duplicates: same email+message within last 60s
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
     const duplicate = await this.contactModel.findOne({
@@ -49,6 +49,8 @@ export class ContactService {
         subject: dto.subject,
         message: dto.message,
         contactId: String(created._id),
+        ip: meta?.ip,
+        location: meta?.location,
       });
     } catch (err) {
       this.logger.error('Failed to enqueue mail job', err as any);

@@ -13,6 +13,7 @@ import { StatsModule } from './stats/stats.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SystemModule } from './system/system.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     StatsModule,
     SystemModule,
     ChatbotModule,
+    CronModule,
   ],
 })
 export class AppModule {}

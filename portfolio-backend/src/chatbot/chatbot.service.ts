@@ -75,6 +75,7 @@ export class ChatbotService {
   async sendMessage(
     message: string,
     sessionId?: string,
+    meta?: { ip?: string; userAgent?: string },
   ): Promise<{ sessionId: string; reply: string; timestamp: Date }> {
     const sid = sessionId && sessionId.length > 0 ? sessionId : randomUUID();
 
@@ -105,6 +106,20 @@ export class ChatbotService {
     const session = await this.chatSessionModel.findOne({ sessionId }).exec();
     if (!session) throw new NotFoundException('Session not found');
     return session;
+  }
+
+  async getTodayInteractionCount(): Promise<number> {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    // Count sessions that had activity today by filtering lastActivity >= start
+    // or count messages with timestamp >= start across all sessions
+    const sessions = await this.chatSessionModel
+      .find({ lastActivity: { $gte: start } })
+      .exec();
+    // Count total user messages across those sessions today
+    return sessions.reduce((total, s) => {
+      return total + s.messages.filter(m => m.role === 'user' && new Date(m.timestamp) >= start).length;
+    }, 0);
   }
 
   async sendTranscript(sessionId: string, email: string): Promise<{ success: boolean }> {

@@ -54,7 +54,9 @@ export class ChatbotController {
   @ApiOperation({ summary: 'Send a chat message and receive an AI response' })
   sendMessage(@Req() req: any, @Body() dto: SendMessageDto) {
     this.checkRateLimit(req);
-    return this.chatbotService.sendMessage(dto.message, dto.sessionId);
+    const ip: string = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
+    const userAgent: string = req.headers?.['user-agent'] ?? '';
+    return this.chatbotService.sendMessage(dto.message, dto.sessionId, { ip, userAgent });
   }
 
   @Get('session/:sessionId')
