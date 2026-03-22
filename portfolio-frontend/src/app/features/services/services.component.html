@@ -1,0 +1,52 @@
+<!-- ══════════════════════════════════════════════════
+     SERVICES PAGE
+     ══════════════════════════════════════════════════ -->
+
+<!-- ── Hero ─────────────────────────────────────────── -->
+<section class="services-hero" aria-labelledby="services-title">
+  <div class="services-hero__glow" aria-hidden="true"></div>
+  <div class="container services-hero__inner">
+    <span class="section-tag animate-fade-up">{{ 'services.tag' | translate }}</span>
+    <h1 id="services-title" class="section-title text-gradient animate-fade-up delay-1">
+      {{ 'services.title' | translate }}
+    </h1>
+    <p class="section-subtitle animate-fade-up delay-2">
+      {{ 'services.subtitle' | translate }}
+    </p>
+  </div>
+</section>
+
+<!-- ── Services Grid ─────────────────────────────────── -->
+<section class="services-grid-section" aria-label="Services list">
+  <div class="container">
+    <div class="services-grid">
+      @for (svc of services; track svc.key) {
+        <article class="service-card glass-card reveal" [ngClass]="svc.colorClass">
+          <div class="service-card__icon-wrap" aria-hidden="true">
+            <mat-icon class="service-card__icon">{{ svc.icon }}</mat-icon>
+          </div>
+          <h2 class="service-card__title">{{ 'services.' + svc.key + '.title' | translate }}</h2>
+          <p class="service-card__desc">{{ 'services.' + svc.key + '.desc' | translate }}</p>
+          <a routerLink="/contact" class="service-card__cta btn btn-outline btn-sm">
+            {{ 'services.' + svc.key + '.cta' | translate }}
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA Banner ────────────────────────────────────── -->
+<section class="services-cta" aria-labelledby="services-cta-title">
+  <div class="container services-cta__inner reveal">
+    <h2 id="services-cta-title" class="services-cta__title">
+      {{ 'services.contact.title' | translate }}
+    </h2>
+    <p class="services-cta__desc">{{ 'services.contact.desc' | translate }}</p>
+    <a routerLink="/contact" class="btn btn-primary">
+      {{ 'services.contact.btn' | translate }}
+      <mat-icon>send</mat-icon>
+    </a>
+  </div>
+</section>

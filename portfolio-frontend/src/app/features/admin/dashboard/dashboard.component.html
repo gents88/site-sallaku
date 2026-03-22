@@ -1,0 +1,417 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+   
+    </div>
+  </header>
+
+  @if (actionMessageKey) {
+    <div class="dashboard-feedback" aria-live="polite">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ actionMessageKey | translate }}</span>
+    </div>
+  }
+
+  @if (loading) {
+    <section class="dashboard-loading card" aria-live="polite">
+      <div class="dashboard-loading__spinner" aria-hidden="true">
+        <mat-icon class="spin">sync</mat-icon>
+      </div>
+      <h2>{{ 'admin.dashboard' | translate }}</h2>
+      <p class="text-muted">{{ 'common.loading' | translate }}</p>
+    </section>
+  } @else {
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      @for (stat of stats; track stat.labelKey) {
+        <a [routerLink]="stat.route" class="stat-card card">
+          <div class="stat-card__icon" [style.background]="stat.color + '22'" [style.color]="stat.color">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-card__content">
+            <p class="stat-card__value">{{ stat.value }}</p>
+            <p class="stat-card__label text-muted">{{ stat.labelKey | translate }}</p>
+            <div class="stat-mini-chart" aria-hidden="true">
+              @for (bar of stat.miniBars; track $index) {
+                <span class="stat-mini-chart__bar" [style.height.%]="bar" [style.background]="stat.color"></span>
+              }
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.recent_contacts_chart' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.last_7_days' | translate }}</p>
+          </div>
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+
+        <div class="contact-chart" aria-hidden="true">
+          @for (bar of contactBars; track bar.date) {
+            <div class="contact-chart__item">
+              <span class="contact-chart__value">{{ bar.value }}</span>
+              <div class="contact-chart__bar-wrap">
+                <span class="contact-chart__bar" [style.height]="contactBarHeight(bar.value)"></span>
+              </div>
+              <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.visits_chart' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.public_traffic' | translate }}</p>
+          </div>
+          <mat-icon>show_chart</mat-icon>
+        </div>
+
+        <div class="visit-summary">
+          <div class="visit-summary__item">
+            <strong>{{ totalViews }}</strong>
+            <span class="text-muted">{{ 'admin.visits' | translate }}</span>
+          </div>
+          <div class="visit-summary__item">
+            <strong>{{ uniqueVisitors }}</strong>
+            <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
+          </div>
+        </div>
+
+        <div class="contact-chart contact-chart--visits" aria-hidden="true">
+          @for (bar of visitBars; track bar.date) {
+            <div class="contact-chart__item">
+              <span class="contact-chart__value">{{ bar.value }}</span>
+              <div class="contact-chart__bar-wrap">
+                <span class="contact-chart__bar contact-chart__bar--visits" [style.height]="visitBarHeight(bar.value)"></span>
+              </div>
+              <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.content_mix' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.content_status' | translate }}</p>
+          </div>
+          <mat-icon>donut_large</mat-icon>
+        </div>
+
+        <div class="content-mix">
+          <div class="content-mix__bar" aria-hidden="true">
+            <span class="content-mix__segment content-mix__segment--published" [style.width.%]="publishedPercent"></span>
+            <span class="content-mix__segment content-mix__segment--drafts" [style.width.%]="draftPercent"></span>
+          </div>
+
+          <div class="content-mix__legend">
+            <div class="mix-item">
+              <span class="mix-item__dot mix-item__dot--published"></span>
+              <div>
+                <strong>{{ publishedPosts }}</strong>
+                <p class="text-muted">{{ 'admin.published' | translate }}</p>
+              </div>
+            </div>
+            <div class="mix-item">
+              <span class="mix-item__dot mix-item__dot--drafts"></span>
+              <div>
+                <strong>{{ draftPosts }}</strong>
+                <p class="text-muted">{{ 'admin.drafts' | translate }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ── Advanced Visitor Analytics ─────────────────────────────────── -->
+    <h2 class="section-label">{{ 'admin.visitor_analytics' | translate }}</h2>
+
+    <div class="analytics-grid adv-top-grid">
+      <!-- Visitor overview card -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.visitor_overview' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.visitor_overview_desc' | translate }}</p>
+          </div>
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="visitor-overview">
+          <div class="visitor-overview__item">
+            <strong>{{ todayVisitors }}</strong>
+            <span class="text-muted">{{ 'admin.today_visitors' | translate }}</span>
+          </div>
+          <div class="visitor-overview__item">
+            <strong>{{ totalViews }}</strong>
+            <span class="text-muted">{{ 'admin.visits' | translate }}</span>
+          </div>
+          <div class="visitor-overview__item">
+            <strong>{{ uniqueVisitors }}</strong>
+            <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Traffic sources: donut chart -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.traffic_sources' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.traffic_sources_desc' | translate }}</p>
+          </div>
+          <mat-icon>alt_route</mat-icon>
+        </div>
+        <app-donut-chart [items]="trafficSources" [colors]="trafficColors" />
+      </section>
+
+      <!-- Device breakdown: donut chart -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.device_breakdown' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.device_breakdown_desc' | translate }}</p>
+          </div>
+          <mat-icon>devices</mat-icon>
+        </div>
+        <app-donut-chart [items]="deviceBreakdown" [colors]="deviceColors" />
+      </section>
+    </div>
+
+    <div class="analytics-grid adv-bottom-grid">
+      <!-- Top countries: horizontal bars -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.top_countries' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.top_countries_desc' | translate }}</p>
+          </div>
+          <mat-icon>public</mat-icon>
+        </div>
+        <div class="h-bars">
+          @for (item of topCountries; track item.label; let i = $index) {
+            <div class="h-bar-row">
+              <span class="h-bar-label text-muted">{{ item.label }}</span>
+              <div class="h-bar-track">
+                <div class="h-bar-fill" [style.width.%]="countryBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
+              </div>
+              <span class="h-bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (!topCountries.length) {
+            <p class="text-muted h-bars__empty">—</p>
+          }
+        </div>
+      </section>
+
+      <!-- Browser breakdown: horizontal bars -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.browser_breakdown' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.browser_breakdown_desc' | translate }}</p>
+          </div>
+          <mat-icon>web</mat-icon>
+        </div>
+        <div class="h-bars">
+          @for (item of browserBreakdown; track item.label; let i = $index) {
+            <div class="h-bar-row">
+              <span class="h-bar-label text-muted">{{ item.label }}</span>
+              <div class="h-bar-track">
+                <div class="h-bar-fill h-bar-fill--browser" [style.width.%]="browserBarWidth(item.count)" [style.background]="browserColors[i % browserColors.length]"></div>
+              </div>
+              <span class="h-bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (!browserBreakdown.length) {
+            <p class="text-muted h-bars__empty">—</p>
+          }
+        </div>
+      </section>
+    </div>
+
+    <!-- Quick links -->
+    <h2 class="section-label">{{ 'admin.quick_actions' | translate }}</h2>
+    <div class="quick-links">
+      @for (link of quickLinks; track link.route) {
+        <a [routerLink]="link.route" class="quick-link card">
+          <mat-icon>{{ link.icon }}</mat-icon>
+          <span>{{ link.labelKey | translate }}</span>
+          <mat-icon class="arrow">arrow_forward</mat-icon>
+        </a>
+      }
+    </div>
+
+    <!-- Recent contacts -->
+    @if (recentContacts.length) {
+      <h2 class="section-label">{{ 'admin.recent_activity' | translate }}</h2>
+      <div class="contacts-list card">
+
+        <!-- Bulk action toolbar -->
+        <div class="contacts-toolbar">
+          <label class="contacts-toolbar__select-all">
+            <input
+              type="checkbox"
+              class="contact-checkbox"
+              [checked]="allSelected"
+              (change)="toggleSelectAll()"
+              aria-label="Select all messages">
+            <span class="contacts-toolbar__label">
+              @if (anySelected) {
+                {{ selectedIds.size }}&nbsp;{{ 'admin.selected' | translate }}
+              } @else {
+                {{ 'admin.select_all' | translate }}
+              }
+            </span>
+          </label>
+          @if (anySelected) {
+            <button
+              type="button"
+              class="contacts-delete-btn"
+              [disabled]="bulkDeleting"
+              (click)="deleteSelected()">
+              <mat-icon [class.spin]="bulkDeleting">{{ bulkDeleting ? 'sync' : 'delete_sweep' }}</mat-icon>
+              {{ bulkDeleting ? ('common.loading' | translate) : ('admin.delete_selected' | translate) }}
+            </button>
+          }
+        </div>
+
+        @for (c of recentContacts; track c._id ?? c.email + c.createdAt) {
+          <div
+            class="contact-row"
+            [class.contact-row--unread]="!c.read"
+            [class.contact-row--selected]="c._id && selectedIds.has(c._id)">
+            <!-- Checkbox cell — click stops propagation to keep row-open separate -->
+            <div class="contact-check-cell" (click)="$event.stopPropagation()">
+              <input
+                type="checkbox"
+                class="contact-checkbox"
+                [checked]="c._id ? selectedIds.has(c._id) : false"
+                (change)="c._id ? toggleSelectContact(c._id) : null"
+                [attr.aria-label]="'Select message from ' + c.name">
+            </div>
+            <!-- Clickable area opens the modal -->
+            <button type="button" class="contact-row__btn" (click)="openContact(c)">
+              <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
+              <div class="contact-body">
+                <span class="contact-name" [class.contact-name--unread]="!c.read">{{ c.name }}</span>
+                <span class="contact-email text-muted">{{ c.email }}</span>
+                <span class="contact-subject">
+                  {{ c.subject }}
+                  @if (!c.read) {
+                    <span class="contact-badge">{{ 'admin.new_badge' | translate }}</span>
+                  }
+                </span>
+              </div>
+              <span class="contact-date text-muted">{{ c.createdAt | date:'dd/MM/yy' }}</span>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <section class="admin-actions card">
+      <div>
+        <h2>{{ 'admin.logout' | translate }}</h2>
+        <p class="text-muted">Chiudi la sessione admin e torna alla pagina di accesso.</p>
+      </div>
+
+      <button mat-stroked-button color="warn" class="logout-btn" [disabled]="logoutLoading" (click)="logout()">
+        <mat-icon [class.spin]="logoutLoading">{{ logoutLoading ? 'sync' : 'logout' }}</mat-icon>
+        {{ logoutLoading ? ('common.loading' | translate) : ('admin.logout' | translate) }}
+      </button>
+    </section>
+  }
+
+  @if (selectedContact) {
+    <div class="contact-modal-backdrop" (click)="closeContact()" aria-hidden="true"></div>
+    <section class="contact-modal card" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+      <div class="contact-modal__header">
+        <div>
+          <p class="text-muted">{{ selectedContact.email }}</p>
+          <h2 id="contact-modal-title">{{ selectedContact.subject }}</h2>
+        </div>
+        <button type="button" class="contact-modal__close" (click)="closeContact()" aria-label="Chiudi messaggio">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="contact-modal__meta text-muted">
+        <span>{{ selectedContact.name }}</span>
+        <span>{{ selectedContact.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+
+      <div class="contact-modal__status">
+        @if (selectedContact.read) {
+          <span class="contact-modal__pill contact-modal__pill--read">Letto</span>
+        } @else {
+          <span class="contact-modal__pill">Da leggere</span>
+        }
+        @if (markingRead) {
+          <span class="text-muted">Aggiornamento...</span>
+        }
+      </div>
+
+      <div class="contact-modal__body">
+        {{ selectedContact.message }}
+      </div>
+
+      <div class="contact-modal__actions">
+        <button type="button" class="modal-btn modal-btn--plain" (click)="closeContact()">
+          <mat-icon>close</mat-icon>
+          Chiudi
+        </button>
+        @if (selectedContact.read) {
+          <button type="button" class="modal-btn modal-btn--outline" [disabled]="markingRead" (click)="setSelectedContactReadState(false)">
+            <mat-icon [class.spin]="markingRead">{{ markingRead ? 'sync' : 'mark_email_unread' }}</mat-icon>
+            {{ 'admin.mark_unread' | translate }}
+          </button>
+        } @else {
+          <button type="button" class="modal-btn modal-btn--outline" [disabled]="markingRead" (click)="setSelectedContactReadState(true)">
+            <mat-icon [class.spin]="markingRead">{{ markingRead ? 'sync' : 'drafts' }}</mat-icon>
+            {{ 'admin.mark_read' | translate }}
+          </button>
+        }
+        <button type="button" class="modal-btn modal-btn--warn" [disabled]="deletingContact" (click)="deleteSelectedContact()">
+          <mat-icon [class.spin]="deletingContact">{{ deletingContact ? 'sync' : 'delete' }}</mat-icon>
+          {{ deletingContact ? ('common.loading' | translate) : ('common.delete' | translate) }}
+        </button>
+        <button type="button" class="modal-btn modal-btn--primary" (click)="replyToSelectedContact()">
+          <mat-icon>reply</mat-icon>
+          {{ 'admin.open_email' | translate }}
+        </button>
+      </div>
+    </section>
+  }
+
+  @if (confirmDialog.visible) {
+    <div class="confirm-dialog-backdrop" (click)="cancelConfirmDialog()" aria-hidden="true"></div>
+    <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
+      <div class="confirm-dialog__icon">
+        <mat-icon>warning_amber</mat-icon>
+      </div>
+      <h3 id="confirm-dialog-title">{{ 'admin.confirm_delete_title' | translate }}</h3>
+      <p class="confirm-dialog__message">
+        {{ confirmDialog.messageKey | translate: confirmDialog.messageParams }}
+      </p>
+      <div class="confirm-dialog__actions">
+        <button type="button" class="modal-btn modal-btn--plain" (click)="cancelConfirmDialog()">
+          <mat-icon>close</mat-icon>
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button type="button" class="modal-btn modal-btn--warn" (click)="confirmDialogAction()">
+          <mat-icon>delete</mat-icon>
+          {{ 'common.confirm' | translate }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

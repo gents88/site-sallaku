@@ -1,0 +1,86 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/admin" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <h1>About Section</h1>
+    </div>
+    <button mat-raised-button color="primary" [disabled]="saving" (click)="save()">
+      @if (saving) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>save</mat-icon> }
+      {{ saving ? 'Saving…' : 'Save Changes' }}
+    </button>
+  </header>
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else {
+    <div class="card form-panel">
+      <form [formGroup]="form" novalidate>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Headline</mat-label>
+          <input matInput formControlName="headline" placeholder="Full-Stack Developer & Open Source Enthusiast" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Bio</mat-label>
+          <textarea matInput formControlName="bio" rows="5"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location" placeholder="Remote / New York" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Avatar URL</mat-label>
+            <input matInput formControlName="avatarUrl" />
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Resume URL</mat-label>
+          <input matInput formControlName="resumeUrl" />
+        </mat-form-field>
+
+        <!-- Skills chips -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Skills (press Enter)</mat-label>
+          <mat-chip-grid #skillGrid>
+            @for (skill of skills; track skill) {
+              <mat-chip [removable]="true" (removed)="removeSkill(skill)">
+                {{ skill }}<button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip>
+            }
+          </mat-chip-grid>
+          <input [matChipInputFor]="skillGrid" [matChipInputSeparatorKeyCodes]="separatorKeys"
+                 (matChipInputTokenEnd)="addSkill($event)" />
+        </mat-form-field>
+
+        <h3 style="margin-bottom:1rem">Social Links</h3>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>GitHub URL</mat-label>
+            <mat-icon matPrefix>code</mat-icon>
+            <input matInput formControlName="github" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>LinkedIn URL</mat-label>
+            <mat-icon matPrefix>work</mat-icon>
+            <input matInput formControlName="linkedin" />
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Twitter URL</mat-label>
+            <mat-icon matPrefix>alternate_email</mat-icon>
+            <input matInput formControlName="twitter" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Contact Email</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input matInput formControlName="email" />
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+  }
+</div>

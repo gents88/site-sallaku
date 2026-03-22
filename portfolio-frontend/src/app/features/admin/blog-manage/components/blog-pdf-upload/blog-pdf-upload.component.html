@@ -1,0 +1,51 @@
+<section class="upload-panel">
+  <div class="upload-panel__header">
+    <div>
+      <span class="upload-panel__eyebrow">Step 1</span>
+      <h3>Upload PDF and generate a draft</h3>
+      <p>Choose the output language, upload a PDF, and let AI prepare a blog draft that you can edit before publishing.</p>
+    </div>
+    <label class="upload-panel__picker" [class.upload-panel__picker--disabled]="loading">
+      <mat-icon>upload_file</mat-icon>
+      <span>{{ selectedFile?.name || 'Select PDF' }}</span>
+      <input type="file" accept="application/pdf,.pdf" (change)="onFileSelected($event)" [disabled]="loading" />
+    </label>
+  </div>
+
+  <form [formGroup]="uploadForm">
+    <div class="upload-panel__grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Language</mat-label>
+        <mat-select formControlName="language">
+          <mat-option value="it">Italiano</mat-option>
+          <mat-option value="en">English</mat-option>
+          <mat-option value="sq">Shqip</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="upload-panel__context">
+        <mat-label>Optional AI instructions</mat-label>
+        <textarea matInput rows="3" formControlName="context" placeholder="Example: focus on technical takeaways and keep the tone practical."></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+
+  @if (validationMessage) {
+    <p class="upload-panel__error">{{ validationMessage }}</p>
+  }
+
+  @if (loading) {
+    <div class="upload-panel__progress">
+      <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+      <p>{{ processing ? 'PDF uploaded. AI is generating the article…' : 'Uploading PDF…' }} {{ progress }}%</p>
+    </div>
+  }
+
+  <div class="upload-panel__actions">
+    <span class="upload-panel__hint">Accepted format: PDF. Maximum size: {{ maxFileSizeMb }} MB.</span>
+    <button mat-raised-button color="primary" type="button" (click)="submit()" [disabled]="loading || !selectedFile">
+      <mat-icon>auto_awesome</mat-icon>
+      Generate Draft
+    </button>
+  </div>
+</section>

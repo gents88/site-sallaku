@@ -1,0 +1,388 @@
+{
+  "nav": {
+    "about": "About",
+    "tech": "Tech Stack",
+    "projects": "Projects",
+    "services": "Services",
+    "experience": "Experience",
+    "skills": "Soft Skills",
+    "contact": "Contact",
+    "blog": "Blog",
+    "login": "Login",
+    "admin": "Admin",
+    "dashboard": "Dashboard"
+  },
+  "lang": {
+    "label": "Language",
+    "it": "Italiano",
+    "en": "English",
+    "sq": "Shqip"
+  },
+  "hero": {
+    "role": "Senior Front‑End & API Developer",
+    "tagline1": "Angular",
+    "tagline2": "Web Applications",
+    "tagline3": "UI/UX & Data Visualization 3D Web",
+    "description": "I design and develop scalable applications and interfaces with Angular, JavaScript and leading frontend libraries. I optimize performance to reduce latency and improve system responsiveness. I deliver reliable, stable solutions ready for enterprise mission-critical environments.",
+    "kpi_years": "Years experience",
+    "kpi_projects": "Projects completed",
+    "kpi_companies": "Enterprise companies",
+    "kpi_latency": "Latency reduction (typical)",
+    "scroll": "Scroll"
+  },
+  "about": {
+    "tag": "about",
+    "title": "About Me",
+    "subtitle": "Senior developer with 8+ years in enterprise web",
+    "bio1": "I am a <strong>Senior Front-End Developer</strong> who moves effortlessly between Angular, TypeScript and enterprise architectures, collaborating with leading companies in the aerospace, defence, telco and banking sectors, where precision and reliability are not optional.",
+    "bio2": "My passion goes beyond interfaces and applications: I enjoy everything that revolves around this world, from architecture to application logic, to performance and user experience. I transform complex data into clear, efficient and pleasant-to-use solutions. For me, every challenge is a system to understand, simplify and improve.",
+    "birth": "Born in Blinisht-Lezhe (Albania) on 25/04/1988",
+    "vision": {
+      "title": "End-to-End Vision",
+      "desc": "A complete architectural approach, from design system planning to production delivery. Solid experience translating complex business requirements into intuitive interfaces."
+    },
+    "perf": {
+      "title": "Performance & Scalability",
+      "desc": "Constant focus on performance optimization, strategic lazy loading, optimized change detection and modular architectures for high-traffic contexts."
+    },
+    "lead": {
+      "title": "Leadership & Mentoring",
+      "desc": "Technical guidance for front-end teams, best-practice definition, structured code reviews and mentoring sessions for junior and mid-level developers."
+    },
+    "card_philosophy": "Architecture",
+    "card_philosophy_desc": "Scalable modules, SOLID, clean code and performance-first on every enterprise project.",
+    "card_ecosystem": "Angular Ecosystem",
+    "card_ecosystem_desc": "From bootstrapping greenfield apps to legacy refactoring, I master the full lifecycle.",
+    "card_data": "Data Visualization",
+    "card_data_desc": "Cesium.js, Chart.js, Looker Embedded, Photo Sphere Viewer for data-rich interfaces."
+  },
+  "tech": {
+    "tag": "tech-stack",
+    "title": "Technologies",
+    "subtitle": "Tech stack used in production on enterprise projects",
+    "frontend": "Frontend",
+    "dataviz": "Data Visualization",
+    "backend": "Backend & API",
+    "devops": "DevOps & Tools"
+  },
+  "projects": {
+    "tag": "projects",
+    "title": "Projects",
+    "subtitle": "Selection of enterprise projects delivered in production",
+    "features_label": "Key Features",
+    "geo": {
+      "title": "3D Geospatial Visualization",
+      "desc": "Interactive platform for 3D geospatial visualization with real-time data on an interactive globe.",
+      "f1": "Interactive 3D globe",
+      "f2": "Real-time data streaming",
+      "f3": "Advanced layer management",
+      "f4": "Optimized performance"
+    },
+    "vr": {
+      "title": "360° Virtual Tour",
+      "desc": "Immersive application for virtual tours with smooth navigation between 360° environments.",
+      "f1": "Immersive 360° navigation",
+      "f2": "Interactive hotspots",
+      "f3": "Multi-device responsive",
+      "f4": "Smooth transitions"
+    },
+    "dash": {
+      "title": "Analytics Dashboard",
+      "desc": "Analytics dashboard suite with Looker Embedded and high-performance custom visualizations.",
+      "f1": "Looker Embedded integration",
+      "f2": "Real-time KPIs",
+      "f3": "Multi-level drill-down",
+      "f4": "Custom visualizations"
+    },
+    "lib": {
+      "title": "Libraria",
+      "desc": "Digital platform for full library, catalog and lending management.",
+      "f1": "Centralized book catalog",
+      "f2": "Loan and deadline management",
+      "f3": "Advanced search and filters",
+      "f4": "Real-time dashboard"
+    },
+    "ins": {
+      "title": "Insurance Platform",
+      "desc": "Web solution for the insurance sector with policy, claims and approval workflow management.",
+      "f1": "End-to-end policy management",
+      "f2": "Digitized claims workflow",
+      "f3": "External service integration",
+      "f4": "Audit trail and security"
+    }
+  },
+  "experience": {
+    "tag": "experience",
+    "title": "Experience",
+    "subtitle": "Professional journey in Italian and international tech companies"
+  },
+  "exp": {
+    "current": "Current",
+    "previous": "Previous",
+    "1": {
+      "title": "Angular Architecture & Enterprise 3D Web",
+      "role": "Senior Front-End Developer",
+      "desc": "Technical leadership on enterprise projects in the aerospace and defence sectors. Advanced Angular architecture, 3D geospatial visualization with Cesium.js and high-performance analytics dashboards."
+    },
+    "2": {
+      "title": "Digital Platforms & Data Visualization",
+      "role": "Front-End Developer · Data Viz Specialist",
+      "desc": "Development of innovative digital platforms in the telco and media sectors. Analytics dashboards with Looker Embedded, immersive virtual tours with Photo Sphere Viewer."
+    },
+    "3": {
+      "title": "Enterprise Consulting & Microsoft Ecosystem",
+      "role": "Front-End Developer · Angular Consultant",
+      "desc": "Enterprise consulting on Microsoft-based projects for banking clients. Development of complex web portals, Azure integration and migration from legacy architectures to modern Angular."
+    },
+    "4": {
+      "title": "Full-Stack Development & Software Architectures",
+      "role": "Full-Stack Developer",
+      "desc": "Full-stack development with .NET and Angular technologies. Software architecture design, RESTful APIs and interfaces for financial and insurance sectors."
+    },
+    "5": {
+      "title": "Software Foundations & Agile Methodologies",
+      "role": "Junior Developer",
+      "desc": "Beginning of the professional journey. First experiences with .NET and Angular, training on Agile methodologies and software development best practices."
+    }
+  },
+  "skills": {
+    "tag": "skills",
+    "title": "Soft Skills",
+    "subtitle": "Cross-functional skills that make a difference in enterprise teams",
+    "leadership": "Technical Leadership",
+    "leadership_desc": "I guide development teams toward scalable architectures and shared best practices.",
+    "mentoring": "Mentoring & Training",
+    "mentoring_desc": "Active support for juniors, constructive code reviews and knowledge transfer.",
+    "problem": "Problem Solving",
+    "problem_desc": "Rapid analysis of complex problems, methodical debugging and pragmatic solutions.",
+    "communication": "Communication",
+    "communication_desc": "Effective interaction with technical and non-technical stakeholders, clear documentation."
+  },
+  "faq": {
+    "tag": "faq",
+    "title": "FAQ",
+    "subtitle": "Frequently asked questions",
+    "q1": "What do you mainly work on?",
+    "a1": "I work on enterprise web development, Angular interfaces, REST APIs, data visualization and 3D web applications with Cesium.js and WebGL.",
+    "q2": "Do you also work on backend?",
+    "a2": "Yes, I also have experience with .NET, Django, Python, NestJS and integration of REST and GraphQL API services.",
+    "q3": "Are you available for remote or hybrid projects?",
+    "a3": "Yes, I can work remotely or in a hybrid setup depending on project needs.",
+    "q4": "How can I contact you?",
+    "a4": "You can email me, send PEC, call me or reach me on LinkedIn using the contacts in the section above."
+  },
+  "contact": {
+    "tag": "contact",
+    "title": "Contact",
+    "subtitle": "Available for new opportunities and collaborations",
+    "card": {
+      "email": {
+        "title": "Email",
+        "desc": "gentsallaku@email.com"
+      },
+      "phone": {
+        "title": "Phone",
+        "desc": "+39 389 235 2291"
+      },
+      "pec": {
+        "title": "PEC",
+        "desc": "gent.sallaku@pec.it"
+      },
+      "linkedin": {
+        "title": "LinkedIn",
+        "desc": "/in/gent-sallaku"
+      },
+      "github": {
+        "title": "GitHub",
+        "desc": "/gentsallaku"
+      }
+    },
+    "form": {
+      "title": "Send a message",
+      "name": "Full name",
+      "name_ph": "Jane Smith",
+      "name_err": "Name is required",
+      "email": "Email",
+      "email_ph": "jane@example.com",
+      "email_err": "Valid email is required",
+      "subject": "Subject",
+      "subject_ph": "Project inquiry",
+      "subject_err": "Subject is required",
+      "message": "Message",
+      "message_ph": "Hi, I\u2019d like to discuss\u2026",
+      "message_err": "Message must be at least 10 characters",
+      "send": "Send Message",
+      "sending": "Sending\u2026",
+      "sent": "Message sent!",
+      "name_placeholder": "Write your name",
+      "email_placeholder": "Write your email so I can contact you",
+      "submit": "Send message",
+      "note": "The message is sent directly from the website, without opening external apps."
+    },
+    "info": {
+      "title": "Let\u2019s connect",
+      "desc": "I\u2019m open to freelance projects, collaborations and full-time opportunities."
+    },
+    "form_name": "Your name",
+    "form_email": "Your email",
+    "form_message": "Your message",
+    "form_send": "Send message",
+    "form_sent": "Message sent! I'll get back to you soon.",
+    "form_error": "Unable to send the message right now. Please try again soon.",
+    "form_invalid": "Check name, email and message. The message must be at least 10 characters long.",
+    "popup": {
+      "title": "Message sent",
+      "body": "The request was sent successfully to the server. If emails still do not arrive, the next step is checking backend mail logs."
+    },
+    "form_name_req": "Name is required",
+    "form_email_req": "Invalid email",
+    "form_msg_req": "Message is required (min 10 characters)"
+  },
+  "banner": {
+    "wip": "Website under construction — Work in progress"
+  },
+  "skip": {
+    "link": "Skip to main content"
+  },
+  "footer": {
+    "designed": "Designed & Developed by",
+    "rights": "All rights reserved."
+  },
+  "auth": {
+    "login_title": "Sign In to Dashboard",
+    "login_subtitle": "Access your portfolio",
+    "email": "Email",
+    "password": "Password",
+    "login_btn": "Sign In",
+    "logging_in": "Signing in…",
+    "no_account": "No account?",
+    "create_one": "Create one",
+    "register_title": "Create Account",
+    "register_subtitle": "Register for the portfolio dashboard",
+    "name": "Name",
+    "confirm_password": "Confirm password",
+    "register_btn": "Register",
+    "registering": "Registering…",
+    "have_account": "Already have an account?",
+    "sign_in": "Sign in",
+    "email_required": "Valid email required",
+    "password_required": "Password must be at least 6 characters",
+    "name_required": "Name is required",
+    "passwords_mismatch": "Passwords do not match"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "welcome": "Welcome",
+    "projects": "Projects",
+    "experiences": "Experiences",
+    "blog_posts": "Blog Posts",
+    "published": "Published",
+    "drafts": "Drafts",
+    "contacts": "Contacts",
+    "users": "Users",
+    "visits": "Visits",
+    "visitors": "Visitors",
+    "manage_projects": "Manage Projects",
+    "manage_experiences": "Manage Experiences",
+    "manage_blog": "Manage Blog",
+    "edit_about": "Edit About",
+    "logout": "Logout",
+    "loading": "Loading…",
+    "recent_activity": "Recent Activity",
+    "no_activity": "No recent activity",
+    "recent_contacts_chart": "Recent contacts chart",
+    "visits_chart": "Real visits chart",
+    "last_7_days": "Last 7 days",
+    "content_mix": "Published vs draft content",
+    "content_status": "Editorial status of content",
+    "public_traffic": "Public traffic tracked by the backend",
+    "quick_actions": "Quick actions",
+    "mark_read": "Mark as read",
+    "mark_unread": "Mark as unread",
+    "open_email": "Open email",
+    "message_deleted": "Message deleted.",
+    "messages_deleted": "Selected messages deleted.",
+    "marked_read": "Message marked as read.",
+    "marked_unread": "Message marked as unread.",
+    "new_badge": "NEW",
+    "select_all": "Select all",
+    "selected": "selected",
+    "delete_selected": "Delete selected",
+    "confirm_delete_title": "Confirm deletion",
+    "confirm_delete_message": "Do you want to permanently delete this message? This action cannot be undone.",
+    "confirm_delete_bulk": "Do you want to permanently delete {{count}} selected message(s)? This action cannot be undone.",
+    "visitor_analytics": "Visitor Analytics",
+    "visitor_overview": "Visitor Overview",
+    "visitor_overview_desc": "Today, total and unique visitors",
+    "today_visitors": "Today",
+    "traffic_sources": "Traffic Sources",
+    "traffic_sources_desc": "How visitors find your site",
+    "device_breakdown": "Devices",
+    "device_breakdown_desc": "Desktop, Mobile, Tablet distribution",
+    "top_countries": "Top Countries",
+    "top_countries_desc": "Visitors by country (IP geolocation)",
+    "browser_breakdown": "Browsers",
+    "browser_breakdown_desc": "Browser distribution"
+  },
+  "session": {
+    "warning_title": "Session is about to expire",
+    "warning_body": "For your security, your admin session will end soon unless you confirm you are still active.",
+    "seconds_remaining": "seconds remaining",
+    "stay_logged_in": "Stay logged in",
+    "logout_now": "Logout now"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Error loading data.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "services": {
+    "tag": "services",
+    "title": "My Services",
+    "subtitle": "What I build and deliver — enterprise-grade solutions from concept to production",
+    "frontend": {
+      "title": "Front‑End Development",
+      "desc": "Scalable Angular applications with TypeScript, RxJS and best-practice architecture. From greenfield projects to legacy migrations.",
+      "cta": "Learn more"
+    },
+    "web3d": {
+      "title": "3D Web Applications",
+      "desc": "Immersive geospatial and 3D experiences with Cesium.js, WebGL and Three.js for aerospace, defence and mapping industries.",
+      "cta": "Learn more"
+    },
+    "dataviz": {
+      "title": "Data Visualization",
+      "desc": "Interactive dashboards and charts with Chart.js, Looker Embedded and D3 — transforming complex data into actionable insights.",
+      "cta": "Learn more"
+    },
+    "uiux": {
+      "title": "UI/UX Design",
+      "desc": "Pixel-perfect, accessible and responsive interfaces aligned with modern design systems and real-user usability testing.",
+      "cta": "Learn more"
+    },
+    "perf": {
+      "title": "Performance Optimization",
+      "desc": "Strategic lazy loading, optimized change detection, Core Web Vitals tuning and architecture reviews for mission-critical systems.",
+      "cta": "Learn more"
+    },
+    "api": {
+      "title": "API Integration",
+      "desc": "Seamless REST and GraphQL integrations with NestJS, .NET and third-party services, backed by solid error handling.",
+      "cta": "Learn more"
+    },
+    "contact": {
+      "title": "Have a project in mind?",
+      "desc": "I collaborate with companies and teams that want to build something meaningful. Let's talk about your next challenge.",
+      "btn": "Get in Touch"
+    }
+  }
+}

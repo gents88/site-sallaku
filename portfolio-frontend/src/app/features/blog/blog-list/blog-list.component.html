@@ -1,0 +1,56 @@
+<div class="container section">
+  <h1 class="page-title">Blog</h1>
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else {
+    <!-- Search -->
+    <div class="blog-search">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Search articles…" [(ngModel)]="searchQuery" (input)="filter()" />
+    </div>
+
+    <!-- Tags -->
+    @if (allTags.length) {
+      <div class="tag-filter">
+        <button class="badge" [class.active]="!activeTag" (click)="setTag(null)">All</button>
+        @for (tag of allTags; track tag) {
+          <button class="badge" [class.active]="activeTag === tag" (click)="setTag(tag)">#{{ tag }}</button>
+        }
+      </div>
+    }
+
+    <div class="posts-grid">
+      @for (post of filteredPosts; track post._id) {
+        <article class="card post-card fade-in-up">
+          @if (post.coverImage) {
+            <img [src]="post.coverImage" [alt]="post.title" class="post-card__cover" loading="lazy" />
+          }
+          <div class="post-card__body">
+            <div class="post-card__tags">
+              @for (tag of post.tags; track tag) {
+                <span class="badge">#{{ tag }}</span>
+              }
+            </div>
+            <h2 class="post-card__title">
+              <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+            </h2>
+            <p class="text-muted">{{ post.excerpt }}</p>
+            <div class="post-card__footer">
+              <time [dateTime]="post.publishedAt ?? ''" class="text-muted post-card__date">
+                {{ post.publishedAt | date:'mediumDate' }}
+              </time>
+              <a [routerLink]="['/blog', post.slug]" class="btn btn-ghost btn-sm">
+                Read more <mat-icon>arrow_forward</mat-icon>
+              </a>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    @if (!filteredPosts.length) {
+      <p class="empty-state">No articles found.</p>
+    }
+  }
+</div>
