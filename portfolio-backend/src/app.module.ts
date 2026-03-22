@@ -12,6 +12,7 @@ import { MailModule } from './mail/mail.module';
 import { StatsModule } from './stats/stats.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SystemModule } from './system/system.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SystemModule } from './system/system.module';
     MailModule,
     StatsModule,
     SystemModule,
+    ChatbotModule,
   ],
 })
 export class AppModule {}

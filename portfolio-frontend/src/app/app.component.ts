@@ -9,11 +9,12 @@ import { SeoService } from './core/services/seo.service';
 import { AuthModalService } from './core/services/auth-modal.service';
 import { InactivityService } from './core/services/inactivity.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
+import { ChatbotComponent } from './features/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent],
   template: `
     <a class="skip-link" href="#hero">{{ 'skip.link' | translate }}</a>
     <div class="wip-banner" role="status">{{ 'banner.wip' | translate }}</div>
@@ -64,6 +65,7 @@ import { SessionTimeoutModalComponent } from './shared/components/session-timeou
         (stayLoggedIn)="extendSession()"
         (logoutNow)="logoutFromTimeout()" />
     }
+    <app-chatbot />
   `,
   styles: [`
     .skip-link {

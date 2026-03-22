@@ -178,4 +178,77 @@ export class MailService {
       `,
     });
   }
+
+  /** Chat transcript sent to an email address after a chatbot conversation */
+  sendChatTranscript(
+    to: string,
+    messages: { role: string; content: string; timestamp: Date }[],
+  ): Promise<MailDeliveryResult> {
+    const adminEmail = this.getAdminInbox();
+    const date = new Date().toLocaleDateString('it-IT', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    const messagesHtml = messages
+      .map((m) => {
+        const isUser = m.role === 'user';
+        const bgColor = isUser ? '#1e2a4a' : '#0f1424';
+        const label = isUser ? 'You' : 'AI Assistant';
+        const labelColor = isUser ? '#818cf8' : '#34d399';
+        const ts = new Date(m.timestamp).toLocaleTimeString('it-IT', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        return `
+          <div style="margin-bottom:12px;padding:14px 16px;background:${bgColor};border-radius:10px;border-left:3px solid ${labelColor};">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+              <strong style="color:${labelColor};font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;">${label}</strong>
+              <span style="color:#64748b;font-size:0.75rem;">${ts}</span>
+            </div>
+            <p style="margin:0;line-height:1.6;color:#e2e8f0;">${m.content.replace(/\n/g, '<br/>')}</p>
+          </div>`;
+      })
+      .join('');
+
+    const plainText = messages
+      .map((m) => {
+        const label = m.role === 'user' ? 'You' : 'AI';
+        const ts = new Date(m.timestamp).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+        return `[${ts}] ${label}: ${m.content}`;
+      })
+      .join('\n');
+
+    return this.send({
+      to: adminEmail,
+      replyTo: to,
+      subject: `[Portfolio Chatbot] Transcript – ${date}`,
+      text: `Chat transcript from ${to} on ${date}\n\n${plainText}`,
+      html: `
+        <div style="font-family:Inter,sans-serif;max-width:620px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);padding:28px 32px;">
+            <span style="font-family:monospace;font-size:1.8rem;font-weight:700;color:#fff;">&lt;GS /&gt;</span>
+            <h1 style="color:#fff;margin:10px 0 4px;font-size:1.25rem;">Chat Transcript</h1>
+            <p style="color:rgba(255,255,255,0.8);margin:0;font-size:0.9rem;">${date}</p>
+          </div>
+          <div style="padding:28px 32px;">
+            <p style="color:#94a3b8;margin-top:0;">A visitor requested the transcript of their chat session.</p>
+            <p style="margin-bottom:20px;"><strong>Sent to:</strong> <a href="mailto:${to}" style="color:#818cf8;">${to}</a></p>
+            <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(148,163,184,0.12);">
+              <div style="background:#0f1424;padding:12px 16px;border-bottom:1px solid rgba(148,163,184,0.12);">
+                <strong style="color:#94a3b8;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.05em;">Conversation — ${messages.length} messages</strong>
+              </div>
+              <div style="padding:16px;">${messagesHtml}</div>
+            </div>
+          </div>
+          <div style="background:#0f1424;padding:14px;text-align:center;font-size:0.8rem;color:#64748b;">
+            © ${new Date().getFullYear()} Gent Sallaku · <a href="https://gentsallaku.it" style="color:#818cf8;">gentsallaku.it</a>
+          </div>
+        </div>
+      `,
+    });
+  }
 }
