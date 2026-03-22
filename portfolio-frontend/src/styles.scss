@@ -496,8 +496,180 @@ img { max-width: 100%; display: block; }
 /* ── Form helpers ─────────────────────────────────── */
 .form-field { margin-bottom: 1.25rem; }
 
-/* ── Angular Material overrides ─────────────────── */
+/* ══════════════════════════════════════════════════
+   ANGULAR MATERIAL — Dark-theme MDC input overrides
+   Covers mat-form-field[appearance="outline"] used
+   across admin pages and login.
+   ══════════════════════════════════════════════════ */
+
 .mat-mdc-form-field { width: 100%; }
+
+/* Text-field wrapper background */
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background: var(--input-bg) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: background var(--transition-base), box-shadow var(--transition-base);
+}
+
+/* Outline borders — resting */
+.mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__trailing {
+  border-color: var(--glass-border) !important;
+  border-width: 1px !important;
+  transition: border-color var(--transition-base);
+}
+
+/* Outline borders — hover */
+.mat-mdc-form-field.mat-form-field-appearance-outline:not(.mat-form-field-disabled):hover
+  .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-form-field-appearance-outline:not(.mat-form-field-disabled):hover
+  .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-form-field-appearance-outline:not(.mat-form-field-disabled):hover
+  .mdc-notched-outline__trailing {
+  border-color: var(--glass-border-hover) !important;
+}
+
+/* Outline borders — focused */
+.mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-form-field-appearance-outline.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--primary-400) !important;
+  border-width: 2px !important;
+}
+
+/* Focus glow */
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  box-shadow: 0 0 0 3px rgba(79, 106, 245, 0.14) !important;
+}
+
+/* Error state outline */
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-form-field-invalid .mdc-notched-outline__trailing {
+  border-color: var(--color-error) !important;
+}
+.mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12) !important;
+}
+
+/* Actual input / textarea text */
+.mat-mdc-input-element {
+  color: var(--text-primary) !important;
+  caret-color: var(--primary-400) !important;
+  font-family: var(--font-main) !important;
+}
+
+/* Placeholder */
+.mat-mdc-input-element::placeholder {
+  color: var(--text-muted) !important;
+  opacity: 1;
+}
+
+/* Floating label — resting */
+.mat-mdc-form-field .mdc-floating-label,
+.mat-mdc-form-field .mdc-floating-label--float-above {
+  color: var(--text-secondary) !important;
+}
+
+/* Floating label — focused */
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: var(--primary-400) !important;
+}
+
+/* Floating label — error */
+.mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label {
+  color: var(--color-error) !important;
+}
+
+/* Hint and error text */
+.mat-mdc-form-field-hint,
+.mat-mdc-form-field-subscript-wrapper {
+  color: var(--text-secondary) !important;
+}
+.mat-mdc-form-field-error {
+  color: var(--color-error) !important;
+}
+
+/* Prefix / suffix icons */
+.mat-mdc-form-field .mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field .mat-mdc-form-field-icon-suffix {
+  color: var(--text-secondary) !important;
+}
+
+/* Select panel inside mat-form-field */
+.mat-mdc-select-value-text {
+  color: var(--text-primary) !important;
+}
+.mat-mdc-select-arrow {
+  color: var(--text-secondary) !important;
+}
+
+/* Native select inside mat-form-field */
+.mat-mdc-form-field select {
+  color: var(--text-primary) !important;
+  background: transparent;
+}
+
+/* ── Native .field-input (contact form) ──────────── */
+/* Sharpen visibility on dark background             */
+.field-input {
+  background: rgba(15, 20, 36, 0.7) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  &::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 1;
+  }
+
+  &:hover {
+    border-color: var(--glass-border-hover) !important;
+    background: rgba(15, 20, 36, 0.85) !important;
+  }
+
+  &:focus {
+    border-color: var(--primary-400) !important;
+    box-shadow: 0 0 0 3px rgba(79, 106, 245, 0.16) !important;
+    background: rgba(15, 20, 36, 0.9) !important;
+  }
+}
+
+/* ── Light theme adjustments ─────────────────────── */
+[data-theme='light'] {
+  .mat-mdc-form-field .mat-mdc-text-field-wrapper {
+    background: var(--input-bg) !important;
+  }
+
+  .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__leading,
+  .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__notch,
+  .mat-mdc-form-field.mat-form-field-appearance-outline .mdc-notched-outline__trailing {
+    border-color: rgba(99, 102, 241, 0.25) !important;
+  }
+
+  .mat-mdc-input-element {
+    color: var(--text-primary) !important;
+  }
+
+  .mat-mdc-form-field .mdc-floating-label {
+    color: var(--text-secondary) !important;
+  }
+
+  .field-input {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(99, 102, 241, 0.22) !important;
+    color: var(--text-primary) !important;
+
+    &:hover { border-color: rgba(99, 102, 241, 0.4) !important; }
+
+    &:focus {
+      border-color: var(--primary-500) !important;
+      background: #fff !important;
+    }
+  }
+}
 
 /* ── Tech bar animation ──────────────────────────── */
 @keyframes barFill { from { width: 0; } }
