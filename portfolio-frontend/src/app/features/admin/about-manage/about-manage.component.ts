@@ -10,6 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { finalize, timeout } from 'rxjs';
 import { AboutService } from '../../../core/services/about.service';
 import { About } from '../../../core/models/about.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -51,7 +52,10 @@ export class AboutManageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.aboutService.get().subscribe({
+    this.aboutService.get().pipe(
+      timeout(15000),
+      finalize(() => { this.loading = false; }),
+    ).subscribe({
       next: about => {
         this.skills = [...(about.skills ?? [])];
         this.form.patchValue({
@@ -62,9 +66,8 @@ export class AboutManageComponent implements OnInit {
           twitter: about.socials?.twitter ?? '',
           email: about.socials?.email ?? '',
         });
-        this.loading = false;
       },
-      error: () => { this.loading = false; },
+      error: () => {},
     });
   }
 

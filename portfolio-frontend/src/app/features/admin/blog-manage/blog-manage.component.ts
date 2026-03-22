@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPdfDraft, BlogLanguage, CreatePostPayload, Post } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -73,9 +74,12 @@ export class BlogManageComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.blogService.getAll().subscribe({
-      next: posts => { this.posts = posts; this.loading = false; },
-      error: () => { this.loading = false; },
+    this.blogService.getAll().pipe(
+      timeout(15000),
+      finalize(() => { this.loading = false; }),
+    ).subscribe({
+      next: posts => { this.posts = posts; },
+      error: () => {},
     });
   }
 

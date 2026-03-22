@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { PostSummary } from '../../../core/models/post.model';
@@ -27,15 +28,17 @@ export class BlogListComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.update({ title: 'Blog', description: 'Articles, tutorials and insights from a developer perspective.' });
-    this.blogService.getPublished().subscribe({
+    this.blogService.getPublished().pipe(
+      timeout(15000),
+      finalize(() => { this.loading = false; }),
+    ).subscribe({
       next: posts => {
         this.posts = posts;
         this.filteredPosts = posts;
         const tagsSet = new Set(posts.flatMap(p => p.tags));
         this.allTags = Array.from(tagsSet).sort();
-        this.loading = false;
       },
-      error: () => { this.loading = false; },
+      error: () => {},
     });
   }
 
