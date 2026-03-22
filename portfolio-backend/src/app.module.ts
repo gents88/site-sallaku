@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -20,6 +22,19 @@ import { CommonModule } from './common/common.module';
   imports: [
     // ── Config (global) ───────────────────────────────
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+
+    // ── Rate limiting (global default: 60 req / 60 s per IP) ─────────────
+    // Individual endpoints may override with @Throttle({ default: { limit, ttl } })
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (cfg: ConfigService) => [
+        {
+          ttl: cfg.get<number>('THROTTLE_TTL', 60000),
+          limit: cfg.get<number>('THROTTLE_LIMIT', 60),
+        },
+      ],
+      inject: [ConfigService],
+    }),
 
     // ── MongoDB ───────────────────────────────────────
     MongooseModule.forRootAsync({
@@ -47,6 +62,10 @@ import { CommonModule } from './common/common.module';
     SystemModule,
     ChatbotModule,
     CronModule,
+  ],
+  providers: [
+    // Apply ThrottlerGuard globally — all endpoints are rate-limited by default
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

@@ -20,6 +20,10 @@ export class User {
 
   @Prop({ default: 'user', enum: ['admin', 'user'] })
   role: string;
+
+  /** Bcrypt hash of the latest issued refresh token — null when logged out */
+  @Prop({ select: false, default: null })
+  refreshTokenHash?: string | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

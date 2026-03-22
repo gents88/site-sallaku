@@ -2,6 +2,8 @@ import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Req, 
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { AnalyticsService } from './analytics.service';
 import { TrackPageViewDto } from './dto/track-page-view.dto';
 
@@ -37,7 +39,8 @@ export class AnalyticsController {
   }
 
   @Get('advanced')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get advanced analytics breakdown (admin only)' })
   getAdvancedAnalytics() {

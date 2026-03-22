@@ -51,6 +51,16 @@ export class UsersService {
     return this.userModel.findById(id).exec();
   }
 
+  /** Returns the user with refreshTokenHash included (for verification). */
+  async findByIdWithRefreshToken(id: string): Promise<UserDocument | null> {
+    return this.userModel.findById(id).select('+refreshTokenHash').exec();
+  }
+
+  /** Persist the hashed refresh token for a given user. Pass null to revoke. */
+  async saveRefreshToken(userId: string, hash: string | null): Promise<void> {
+    await this.userModel.findByIdAndUpdate(userId, { refreshTokenHash: hash }).exec();
+  }
+
   async upsertAdmin(data: Partial<User> & { email: string; passwordHash: string }): Promise<UserDocument> {
     return this.userModel.findOneAndUpdate(
       { email: data.email.toLowerCase() },

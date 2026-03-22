@@ -21,7 +21,8 @@ import { Otp, OtpSchema } from './schemas/otp.schema';
       imports: [ConfigModule],
       useFactory: (cfg: ConfigService) => ({
         secret: cfg.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES_IN', '7d') },
+        // Short-lived access tokens — refresh tokens handle re-auth
+        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES_IN', '15m') },
       }),
       inject: [ConfigService],
     }),

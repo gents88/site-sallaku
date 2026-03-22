@@ -13,15 +13,59 @@ function parseCorsOrigins(rawOrigins?: string): string[] {
     .filter(Boolean);
 }
 
+function validateRequiredEnv(): void {
+  const required = ['JWT_SECRET', 'MONGODB_URI'];
+  const missing = required.filter((key) => !process.env[key]);
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing required environment variables: ${missing.join(', ')}. Server cannot start.`,
+    );
+  }
+  if ((process.env.JWT_SECRET?.length ?? 0) < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters long.');
+  }
+}
+
 async function bootstrap() {
+  validateRequiredEnv();
+
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
   const allowedOrigins = parseCorsOrigins(process.env.CORS_ORIGIN);
 
-  app.getHttpAdapter().getInstance().set('trust proxy', true);
+  // Trust only the first proxy hop — prevents IP spoofing via X-Forwarded-For
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   // ── Security middleware ──────────────────────────────
-  app.use(helmet());
+  app.use(
+    helmet({
+      // Explicit CSP — restricts what resources the API responses can load
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'"],
+          imgSrc: ["'self'", 'data:'],
+          connectSrc: ["'self'"],
+          fontSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'"],
+          frameSrc: ["'none'"],
+          formAction: ["'self'"],
+          upgradeInsecureRequests: [],
+        },
+      },
+      // HSTS: force HTTPS for 1 year, including subdomains
+      strictTransportSecurity: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      crossOriginEmbedderPolicy: false, // Allow embedding from trusted origins
+      crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+    }),
+  );
   app.use(compression());
 
   // ── CORS ─────────────────────────────────────────────
