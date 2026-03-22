@@ -187,6 +187,30 @@
     </div>
 
     <div class="analytics-grid adv-bottom-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.top_locations' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.top_locations_desc' | translate }}</p>
+          </div>
+          <mat-icon>location_on</mat-icon>
+        </div>
+        <div class="h-bars h-bars--locations">
+          @for (item of topLocations; track item.label; let i = $index) {
+            <div class="h-bar-row h-bar-row--locations">
+              <span class="h-bar-label text-muted">{{ item.label }}</span>
+              <div class="h-bar-track">
+                <div class="h-bar-fill h-bar-fill--location" [style.width.%]="locationBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
+              </div>
+              <span class="h-bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (!topLocations.length) {
+            <p class="text-muted h-bars__empty">—</p>
+          }
+        </div>
+      </section>
+
       <!-- Top countries: horizontal bars -->
       <section class="analytics-card card">
         <div class="analytics-card__header">

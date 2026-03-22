@@ -19,6 +19,7 @@ export class SeoService {
   private readonly defaultDescription =
     'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.';
   private readonly defaultImage = 'https://gentsallaku.it/assets/og-image.jpg';
+  private lastTrackedPath: string | null = null;
 
   constructor(
     private title: Title,
@@ -33,16 +34,12 @@ export class SeoService {
       this.loadGtag(environment.googleAnalyticsId);
     }
 
+    this.trackCurrentPageView();
+
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
     ).subscribe(() => {
-      this.trackBackendPageView();
-
-      if (environment.googleAnalyticsId && typeof gtag !== 'undefined') {
-        (window as any)['gtag']('config', environment.googleAnalyticsId, {
-          page_path: this.router.url,
-        });
-      }
+      this.trackCurrentPageView();
     });
   }
 
@@ -105,15 +102,31 @@ export class SeoService {
     (window as any)['gtag']('config', id);
   }
 
-  private trackBackendPageView(): void {
-    if (typeof window === 'undefined' || this.router.url.startsWith('/admin')) {
+  private trackCurrentPageView(): void {
+    const currentPath = this.router.url;
+    if (this.lastTrackedPath === currentPath) {
+      return;
+    }
+
+    this.lastTrackedPath = currentPath;
+    this.trackBackendPageView(currentPath);
+
+    if (environment.googleAnalyticsId && typeof gtag !== 'undefined') {
+      (window as any)['gtag']('config', environment.googleAnalyticsId, {
+        page_path: currentPath,
+      });
+    }
+  }
+
+  private trackBackendPageView(path: string): void {
+    if (typeof window === 'undefined' || path.startsWith('/admin')) {
       return;
     }
 
     const visitorId = this.getVisitorId();
     const payload = {
       visitorId,
-      path: this.router.url,
+      path,
       referrer: document.referrer || '',
       language: document.documentElement.lang || navigator.language || '',
       userAgent: navigator.userAgent || '',

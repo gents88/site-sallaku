@@ -319,6 +319,8 @@
     "traffic_sources_desc": "How visitors find your site",
     "device_breakdown": "Devices",
     "device_breakdown_desc": "Desktop, Mobile, Tablet distribution",
+    "top_locations": "Cities and Regions",
+    "top_locations_desc": "Visitor locations resolved from public IP and proxy headers",
     "top_countries": "Top Countries",
     "top_countries_desc": "Visitors by country (IP geolocation)",
     "browser_breakdown": "Browsers",

@@ -31,6 +31,9 @@ export class PageView {
   @Prop({ default: '' })
   city: string;
 
+  @Prop({ default: '' })
+  region: string;
+
   /** Desktop | Mobile | Tablet */
   @Prop({ default: 'Desktop', index: true })
   deviceType: string;

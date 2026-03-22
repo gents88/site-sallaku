@@ -56,6 +56,7 @@ interface AdminStatsResponse {
 
 interface AdvancedAnalytics {
   todayCount: number;
+  topLocations: DonutItem[];
   topCountries: DonutItem[];
   deviceBreakdown: DonutItem[];
   browserBreakdown: DonutItem[];
@@ -101,6 +102,7 @@ export class DashboardComponent implements OnInit {
   } = { visible: false, messageKey: '', messageParams: {}, onConfirm: null };
 
   // Advanced analytics
+  topLocations: DonutItem[] = [];
   topCountries: DonutItem[] = [];
   deviceBreakdown: DonutItem[] = [];
   browserBreakdown: DonutItem[] = [];
@@ -138,6 +140,7 @@ export class DashboardComponent implements OnInit {
 
     const emptyAdvanced: AdvancedAnalytics = {
       todayCount: 0,
+      topLocations: [],
       topCountries: [],
       deviceBreakdown: [],
       browserBreakdown: [],
@@ -192,6 +195,7 @@ export class DashboardComponent implements OnInit {
 
         // Advanced analytics
         this.todayVisitors = advanced.todayCount;
+        this.topLocations = advanced.topLocations;
         this.topCountries = advanced.topCountries;
         this.deviceBreakdown = advanced.deviceBreakdown;
         this.browserBreakdown = advanced.browserBreakdown;
@@ -225,6 +229,10 @@ export class DashboardComponent implements OnInit {
     return Math.max(...this.topCountries.map(c => c.count), 1);
   }
 
+  get maxLocationCount(): number {
+    return Math.max(...this.topLocations.map(location => location.count), 1);
+  }
+
   get maxBrowserCount(): number {
     return Math.max(...this.browserBreakdown.map(b => b.count), 1);
   }
@@ -253,6 +261,10 @@ export class DashboardComponent implements OnInit {
 
   countryBarWidth(count: number): number {
     return Math.max((count / this.maxCountryCount) * 100, count > 0 ? 6 : 0);
+  }
+
+  locationBarWidth(count: number): number {
+    return Math.max((count / this.maxLocationCount) * 100, count > 0 ? 6 : 0);
   }
 
   browserBarWidth(count: number): number {

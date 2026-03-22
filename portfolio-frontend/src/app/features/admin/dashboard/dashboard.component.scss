@@ -529,6 +529,10 @@
   gap: 0.7rem;
 }
 
+.h-bars--locations {
+  gap: 0.8rem;
+}
+
 .h-bars__empty {
   font-size: 0.85rem;
   padding: 0.5rem 0;
@@ -540,6 +544,10 @@
   align-items: center;
   gap: 0.6rem;
   font-size: 0.82rem;
+}
+
+.h-bar-row--locations {
+  grid-template-columns: minmax(130px, 2.2fr) minmax(110px, 1fr) 38px;
 }
 
 .h-bar-label {
@@ -561,6 +569,10 @@
   border-radius: 999px;
   background: linear-gradient(90deg, #6366f1, #8b5cf6);
   transition: width 0.5s ease;
+
+  &--location {
+    background: linear-gradient(90deg, #0ea5e9, #14b8a6);
+  }
 
   &--browser {
     background: linear-gradient(90deg, #14b8a6, #06b6d4);
@@ -879,5 +891,15 @@
 
   .contact-date {
     margin-left: 54px;
+  }
+
+  .h-bar-row--locations {
+    grid-template-columns: minmax(0, 1fr) 72px 30px;
+    gap: 0.45rem;
+  }
+
+  .h-bars--locations .h-bar-label {
+    white-space: normal;
+    line-height: 1.25;
   }
 }

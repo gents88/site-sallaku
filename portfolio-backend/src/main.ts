@@ -18,6 +18,8 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const allowedOrigins = parseCorsOrigins(process.env.CORS_ORIGIN);
 
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
+
   // ── Security middleware ──────────────────────────────
   app.use(helmet());
   app.use(compression());

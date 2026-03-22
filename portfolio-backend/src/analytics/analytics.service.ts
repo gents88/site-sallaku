@@ -24,6 +24,7 @@ export interface BreakdownItem {
 
 export interface AdvancedAnalytics {
   todayCount: number;
+  topLocations: BreakdownItem[];
   topCountries: BreakdownItem[];
   deviceBreakdown: BreakdownItem[];
   browserBreakdown: BreakdownItem[];
@@ -42,7 +43,7 @@ export class AnalyticsService {
     const rawIp = this.extractRawIp(req);
     const anonymizedIp = this.anonymizeIp(rawIp);
     const userAgent = (req?.headers['user-agent'] as string) ?? dto.userAgent ?? '';
-    const { country, city } = this.resolveGeo(rawIp);
+    const { country, city, region } = this.resolveGeo(rawIp);
     const { deviceType, browser, os } = this.parseUserAgent(userAgent);
     const trafficSource = this.detectTrafficSource(dto.referrer ?? '');
 
@@ -55,6 +56,7 @@ export class AnalyticsService {
       ip: anonymizedIp,
       country,
       city,
+      region,
       deviceType,
       browser,
       os,
@@ -77,9 +79,10 @@ export class AnalyticsService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [todayCount, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources] =
+    const [todayCount, topLocations, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources] =
       await Promise.all([
         this.pageViewModel.countDocuments({ createdAt: { $gte: today } }).exec(),
+        this.aggregateTopLocations(10),
         this.aggregateByField('country', 10),
         this.aggregateByField('deviceType', 5),
         this.aggregateByField('browser', 8),
@@ -87,7 +90,7 @@ export class AnalyticsService {
         this.aggregateByField('trafficSource', 4),
       ]);
 
-    return { todayCount, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources };
+    return { todayCount, topLocations, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources };
   }
 
   private async aggregateByField(field: string, limit: number): Promise<BreakdownItem[]> {
@@ -133,16 +136,63 @@ export class AnalyticsService {
     });
   }
 
+  private async aggregateTopLocations(limit: number): Promise<BreakdownItem[]> {
+    const hasCity = { $and: [{ $ne: ['$city', ''] }, { $ne: ['$city', null] }] };
+    const hasCountry = { $and: [{ $ne: ['$country', ''] }, { $ne: ['$country', null] }] };
+
+    const results = await this.pageViewModel
+      .aggregate<{ _id: string; count: number }>([
+        {
+          $match: {
+            $or: [
+              { city: { $nin: ['', null] } },
+              { country: { $nin: ['', null] } },
+            ],
+          },
+        },
+        {
+          $project: {
+            locationLabel: {
+              $switch: {
+                branches: [
+                  {
+                    case: { $and: [hasCity, hasCountry] },
+                    then: { $concat: ['$city', ', ', '$country'] },
+                  },
+                  { case: hasCity, then: '$city' },
+                  { case: hasCountry, then: '$country' },
+                ],
+                default: 'Unknown',
+              },
+            },
+          },
+        },
+        { $group: { _id: '$locationLabel', count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: limit },
+      ])
+      .exec();
+
+    return results.map(r => ({ label: r._id ?? 'Unknown', count: r.count }));
+  }
+
   // ─── Private helpers ────────────────────────────────────────────────────────
 
   private extractRawIp(req?: Request): string {
     if (!req) return '';
     const forwarded = req.headers['x-forwarded-for'];
-    if (forwarded) {
-      const ip = Array.isArray(forwarded) ? forwarded[0] : (forwarded as string).split(',')[0];
-      return ip.trim();
-    }
-    return (req.socket?.remoteAddress) ?? (req as any).ip ?? '';
+    const forwardedIps = (Array.isArray(forwarded) ? forwarded.join(',') : forwarded ?? '')
+      .split(',')
+      .map(ip => this.normalizeIp(ip))
+      .filter(Boolean);
+    const socketIp = this.normalizeIp((req.socket?.remoteAddress) ?? (req as any).ip ?? req.ip ?? '');
+
+    const publicForwardedIp = forwardedIps.find(ip => !this.isPrivateIp(ip));
+    if (publicForwardedIp) return publicForwardedIp;
+    if (forwardedIps.length > 0) return forwardedIps[0];
+    if (socketIp) return socketIp;
+
+    return '';
   }
 
   private anonymizeIp(ip: string): string {
@@ -153,19 +203,79 @@ export class AnalyticsService {
     return ip;
   }
 
-  private resolveGeo(ip: string): { country: string; city: string } {
-    const isPrivate = !ip
-      || ['::1', '127.0.0.1', 'localhost', '::ffff:127.0.0.1'].includes(ip)
-      || ip.startsWith('192.168.')
-      || ip.startsWith('10.')
-      || ip.startsWith('172.');
-    if (isPrivate) return { country: '', city: '' };
-    try {
-      const geo = geoip.lookup(ip);
-      return { country: geo?.country ?? '', city: geo?.city ?? '' };
-    } catch {
-      return { country: '', city: '' };
+  private resolveGeo(ip: string): { country: string; city: string; region: string } {
+    let normalizedIp = this.normalizeIp(ip);
+
+    // In development, use well-known public IPs so geoip-lite can resolve locations
+    if ((!normalizedIp || this.isPrivateIp(normalizedIp)) && process.env.NODE_ENV !== 'production') {
+      const devIps = ['151.38.39.1', '93.62.236.1', '2.39.170.1', '185.31.175.1', '8.8.8.8'];
+      normalizedIp = devIps[Math.floor(Math.random() * devIps.length)];
     }
+
+    if (!normalizedIp || this.isPrivateIp(normalizedIp)) {
+      return { country: '', city: '', region: '' };
+    }
+
+    try {
+      const geo = geoip.lookup(normalizedIp);
+      const countryCode = geo?.country ?? '';
+      let countryName = countryCode;
+      try {
+        const dn = new Intl.DisplayNames(['en'], { type: 'region' });
+        countryName = dn.of(countryCode) ?? countryCode;
+      } catch { /* fallback to code */ }
+
+      return {
+        country: countryName,
+        city: geo?.city ?? '',
+        region: geo?.region ?? '',
+      };
+    } catch {
+      return { country: '', city: '', region: '' };
+    }
+  }
+
+  private normalizeIp(ip: string): string {
+    if (!ip) return '';
+
+    let normalized = ip.trim();
+    if (!normalized) return '';
+
+    if (normalized.startsWith('::ffff:')) {
+      normalized = normalized.slice(7);
+    }
+
+    if (normalized.startsWith('[') && normalized.includes(']')) {
+      normalized = normalized.slice(1, normalized.indexOf(']'));
+    }
+
+    const ipv4WithPortMatch = normalized.match(/^(\d+\.\d+\.\d+\.\d+):\d+$/);
+    if (ipv4WithPortMatch) {
+      normalized = ipv4WithPortMatch[1];
+    }
+
+    return normalized;
+  }
+
+  private isPrivateIp(ip: string): boolean {
+    if (!ip) return true;
+    if (['::1', '127.0.0.1', 'localhost'].includes(ip)) return true;
+
+    if (ip.includes(':')) {
+      const lowerIp = ip.toLowerCase();
+      return lowerIp.startsWith('fc') || lowerIp.startsWith('fd') || lowerIp.startsWith('fe80');
+    }
+
+    const octets = ip.split('.').map(part => Number(part));
+    if (octets.length !== 4 || octets.some(Number.isNaN)) return false;
+
+    const [first, second] = octets;
+    if (first === 10 || first === 127) return true;
+    if (first === 192 && second === 168) return true;
+    if (first === 169 && second === 254) return true;
+    if (first === 172 && second >= 16 && second <= 31) return true;
+
+    return false;
   }
 
   private parseUserAgent(ua: string): { deviceType: string; browser: string; os: string } {

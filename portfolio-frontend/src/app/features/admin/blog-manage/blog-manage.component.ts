@@ -14,8 +14,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { BlogService } from '../../../core/services/blog.service';
-import { BlogPdfDraft, BlogLanguage, Post } from '../../../core/models/post.model';
+import { BlogPdfDraft, BlogLanguage, CreatePostPayload, Post } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { environment } from '../../../../environments/environment';
 import {
   BlogPdfUploadComponent,
   BlogPdfUploadRequest,
@@ -34,6 +35,7 @@ import {
   styleUrls: ['./blog-manage.component.scss'],
 })
 export class BlogManageComponent implements OnInit {
+  readonly pdfGenerationEnabled = environment.blogPdfUploadEnabled;
   posts: Post[] = [];
   loading = true;
   showForm = false;
@@ -47,7 +49,6 @@ export class BlogManageComponent implements OnInit {
   generationWarnings: string[] = [];
   sourceSummary: BlogPdfDraft['source'] | null = null;
   featuredImagePrompt = '';
-  readonly coverImageMaxSizeMb = 3;
 
   form = this.fb.group({
     title:           ['', Validators.required],
@@ -139,9 +140,14 @@ export class BlogManageComponent implements OnInit {
   }
 
   save(): void {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.snackBar.open('Serve almeno titolo e contenuto.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    const payload = this.buildPayload();
     this.saving = true;
-    const payload = { ...this.form.value, tags: this.tags } as any;
     const req$ = this.editingId
       ? this.blogService.update(this.editingId, payload)
       : this.blogService.create(payload);
@@ -152,7 +158,10 @@ export class BlogManageComponent implements OnInit {
         this.snackBar.open('Post saved!', 'Close', { duration: 3000 });
         this.load();
       },
-      error: () => { this.saving = false; this.snackBar.open('Failed to save.', 'Close', { duration: 3000 }); },
+      error: error => {
+        this.saving = false;
+        this.snackBar.open(this.resolveSaveError(error), 'Close', { duration: 4500 });
+      },
     });
   }
 
@@ -175,31 +184,6 @@ export class BlogManageComponent implements OnInit {
   removeTag(tag: string): void {
     const idx = this.tags.indexOf(tag);
     if (idx >= 0) this.tags.splice(idx, 1);
-  }
-
-  onCoverImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      this.snackBar.open('Only image files are allowed for the cover upload.', 'Close', { duration: 3500 });
-      input.value = '';
-      return;
-    }
-
-    if (file.size > this.coverImageMaxSizeMb * 1024 * 1024) {
-      this.snackBar.open(`Cover images must stay under ${this.coverImageMaxSizeMb} MB.`, 'Close', { duration: 3500 });
-      input.value = '';
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.form.patchValue({ coverImage: typeof reader.result === 'string' ? reader.result : '' });
-      this.snackBar.open('Cover image loaded into the draft.', 'Close', { duration: 2500 });
-    };
-    reader.readAsDataURL(file);
   }
 
   private applyGeneratedDraft(draft: BlogPdfDraft): void {
@@ -227,5 +211,91 @@ export class BlogManageComponent implements OnInit {
     this.generationWarnings = [];
     this.sourceSummary = null;
     this.featuredImagePrompt = '';
+  }
+
+  private buildPayload(): CreatePostPayload {
+    const raw = this.form.getRawValue();
+    const title = (raw.title ?? '').trim();
+    const content = (raw.content ?? '').trim();
+    const subtitle = this.cleanOptional(raw.subtitle);
+    const excerpt = this.cleanOptional(raw.excerpt);
+    const slug = this.slugifyValue(raw.slug);
+    const metaTitle = this.cleanOptional(raw.metaTitle);
+    const metaDescription = this.cleanOptional(raw.metaDescription);
+    const coverImage = this.normalizeCoverImage(raw.coverImage);
+    const tags = this.tags
+      .map(tag => tag.trim())
+      .filter(Boolean)
+      .filter((tag, index, all) => all.indexOf(tag) === index);
+
+    const payload: CreatePostPayload = {
+      title,
+      content,
+      language: raw.language || 'en',
+      published: !!raw.published,
+    };
+
+    if (subtitle) payload.subtitle = subtitle;
+    if (slug) payload.slug = slug;
+    if (excerpt) payload.excerpt = excerpt;
+    if (coverImage) payload.coverImage = coverImage;
+    if (tags.length) payload.tags = tags;
+    if (metaTitle) payload.metaTitle = metaTitle;
+    if (metaDescription) payload.metaDescription = metaDescription;
+
+    return payload;
+  }
+
+  private cleanOptional(value: string | null | undefined): string | undefined {
+    const cleaned = (value ?? '').trim();
+    return cleaned || undefined;
+  }
+
+  private slugifyValue(value: string | null | undefined): string | undefined {
+    const normalized = (value ?? '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return normalized || undefined;
+  }
+
+  private normalizeCoverImage(value: string | null | undefined): string | undefined {
+    const cleaned = this.cleanOptional(value);
+    if (!cleaned) {
+      return undefined;
+    }
+
+    // Avoid oversized JSON payloads from base64 images; backend currently accepts URL strings only reliably.
+    if (cleaned.startsWith('data:')) {
+      this.snackBar.open('Per la cover usa un URL immagine. L\'upload file diretto non e supportato in questo form.', 'Close', { duration: 5000 });
+      return undefined;
+    }
+
+    return cleaned;
+  }
+
+  private resolveSaveError(error: any): string {
+    const status = error?.status;
+    const message = error?.error?.message;
+
+    if (Array.isArray(message) && message.length) {
+      return message.join(', ');
+    }
+
+    if (typeof message === 'string' && message.trim()) {
+      return message;
+    }
+
+    if (status === 413) {
+      return 'Payload troppo grande. Rimuovi immagini inline/base64 e salva solo testo o URL immagine.';
+    }
+
+    if (status === 401 || status === 403) {
+      return 'Sessione admin non valida. Riesegui il login.';
+    }
+
+    return 'Salvataggio non riuscito. Controlla titolo, contenuto e slug.';
   }
 }

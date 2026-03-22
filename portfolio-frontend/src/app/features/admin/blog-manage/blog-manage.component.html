@@ -14,24 +14,35 @@
       <div class="form-panel__header">
         <div>
           <h2>{{ editingId ? 'Edit' : 'New' }} Post</h2>
-          <p>Follow the guided flow: upload a PDF, review the generated content, then publish or save as draft.</p>
+          <p>Compila titolo e contenuto. Gli altri campi sono opzionali e vengono completati automaticamente se li lasci vuoti.</p>
+          @if (!pdfGenerationEnabled) {
+            <p class="helper-copy">La generazione da PDF e temporaneamente disabilitata in produzione finche il backend Railway non viene riallineato.</p>
+          }
         </div>
         <div class="stepper">
-          <span class="stepper__item stepper__item--active">1. Upload</span>
-          <span class="stepper__item" [class.stepper__item--active]="generatingDraft || !!sourceSummary">2. Process</span>
-          <span class="stepper__item" [class.stepper__item--active]="!!form.get('title')?.value">3. Review</span>
-          <span class="stepper__item" [class.stepper__item--active]="!saving">4. Publish</span>
+          @if (pdfGenerationEnabled) {
+            <span class="stepper__item stepper__item--active">1. Upload</span>
+            <span class="stepper__item" [class.stepper__item--active]="generatingDraft || !!sourceSummary">2. Process</span>
+            <span class="stepper__item" [class.stepper__item--active]="!!form.get('title')?.value">3. Review</span>
+            <span class="stepper__item" [class.stepper__item--active]="!saving">4. Publish</span>
+          } @else {
+            <span class="stepper__item stepper__item--active">1. Write</span>
+            <span class="stepper__item" [class.stepper__item--active]="!!form.get('title')?.value">2. Review</span>
+            <span class="stepper__item" [class.stepper__item--active]="!saving">3. Save</span>
+          }
         </div>
       </div>
 
-      <app-blog-pdf-upload
-        [loading]="generatingDraft"
-        [progress]="uploadProgress"
-        [processing]="processingDraft"
-        (generateRequested)="generateDraft($event)"
-      />
+      @if (pdfGenerationEnabled) {
+        <app-blog-pdf-upload
+          [loading]="generatingDraft"
+          [progress]="uploadProgress"
+          [processing]="processingDraft"
+          (generateRequested)="generateDraft($event)"
+        />
+      }
 
-      @if (sourceSummary || generationWarnings.length) {
+      @if (pdfGenerationEnabled && (sourceSummary || generationWarnings.length)) {
         <div class="generation-summary">
           @if (sourceSummary) {
             <div class="generation-summary__meta">
@@ -73,28 +84,6 @@
               <mat-option value="sq">Shqip</mat-option>
             </mat-select>
           </mat-form-field>
-        </div>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Subtitle / Description</mat-label>
-          <textarea matInput formControlName="subtitle" rows="2"></textarea>
-        </mat-form-field>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline">
-            <mat-label>SEO Slug</mat-label>
-            <input matInput formControlName="slug" placeholder="seo-friendly-url" />
-          </mat-form-field>
-
-          <div class="image-upload">
-            <label class="image-upload__label">Optional manual cover image</label>
-            <label class="image-upload__picker">
-              <mat-icon>image</mat-icon>
-              <span>Upload image</span>
-              <input type="file" accept="image/*" (change)="onCoverImageSelected($event)" />
-            </label>
-            <small>Supported: image files up to {{ coverImageMaxSizeMb }} MB.</small>
-          </div>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -140,11 +129,54 @@
               </mat-chip>
             }
           </mat-chip-grid>
+
           <input [matChipInputFor]="tagGrid" [matChipInputSeparatorKeyCodes]="separatorKeys"
                  (matChipInputTokenEnd)="addTag($event)" />
         </mat-form-field>
 
         <mat-checkbox formControlName="published">Publish immediately</mat-checkbox>
+
+        <details class="form-advanced">
+          <summary>Campi avanzati opzionali</summary>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Subtitle / Description</mat-label>
+            <textarea matInput formControlName="subtitle" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>SEO Slug</mat-label>
+              <input matInput formControlName="slug" placeholder="auto-generated-if-empty" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Cover Image URL</mat-label>
+              <input matInput formControlName="coverImage" placeholder="https://..." />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Excerpt</mat-label>
+            <textarea matInput formControlName="excerpt" rows="2"></textarea>
+          </mat-form-field>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Meta Title (SEO)</mat-label>
+              <input matInput formControlName="metaTitle" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Meta Description (SEO)</mat-label>
+              <input matInput formControlName="metaDescription" />
+            </mat-form-field>
+          </div>
+        </details>
+
+        @if (featuredImagePrompt) {
+          <p class="helper-copy">Featured image suggestion: {{ featuredImagePrompt }}</p>
+        }
 
         @if (form.get('content')?.value) {
           <section class="preview-panel">
