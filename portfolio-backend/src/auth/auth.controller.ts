@@ -27,16 +27,16 @@ export class AuthController {
 
   @Post('otp/request')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Request a one-time password via SMS' })
+  @ApiOperation({ summary: 'Request a one-time password via SMS or email' })
   requestOtp(@Body() dto: RequestOtpDto) {
-    return this.authService.requestOtp(dto.phone);
+    return this.authService.requestOtp(dto.phone, dto.email);
   }
 
   @Post('otp/verify')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify OTP and receive JWT' })
   verifyOtp(@Body() dto: VerifyOtpDto) {
-    return this.authService.verifyOtp(dto.phone, dto.otp);
+    return this.authService.verifyOtp(dto.phone, dto.email, dto.otp);
   }
 
   @Get('me')

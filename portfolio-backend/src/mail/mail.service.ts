@@ -358,4 +358,36 @@ export class MailService {
       `,
     });
   }
+
+  /** OTP email for passwordless login */
+  sendOtpEmail(email: string, code: string): Promise<MailDeliveryResult> {
+    return this.send({
+      to: email,
+      subject: `Your verification code: ${code}`,
+      text: `Your one-time login code is: ${code}\n\nThis code expires in 5 minutes. Do not share it with anyone.`,
+      html: `
+        <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);padding:28px 32px;text-align:center;">
+            <span style="font-family:monospace;font-size:2rem;font-weight:700;color:#fff">&lt;GS /&gt;</span>
+            <h1 style="color:#fff;margin:10px 0 0;font-size:1.2rem;">Verification Code</h1>
+          </div>
+          <div style="padding:36px 32px;text-align:center;">
+            <p style="margin:0 0 8px;color:#94a3b8;font-size:0.95rem;">Use the code below to sign in to the Admin Dashboard</p>
+            <div style="display:inline-block;margin:24px auto;padding:20px 36px;background:#0f1831;border:2px solid rgba(99,102,241,0.4);border-radius:12px;letter-spacing:0.35em;font-size:2.4rem;font-weight:700;font-family:monospace;color:#a5b4fc;">
+              ${code}
+            </div>
+            <p style="margin:0;color:#64748b;font-size:0.82rem;">
+              ⏱ This code expires in <strong style="color:#e2e8f0;">5 minutes</strong>.<br/>
+              Never share this code with anyone.
+            </p>
+          </div>
+          <div style="background:#070b15;padding:14px;text-align:center;font-size:0.78rem;color:#475569;">
+            If you did not request this code, you can safely ignore this email.
+            &nbsp;·&nbsp;
+            <a href="https://gentsallaku.it" style="color:#818cf8;">gentsallaku.it</a>
+          </div>
+        </div>
+      `,
+    });
+  }
 }

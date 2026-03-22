@@ -11,21 +11,21 @@
       <p class="text-muted">{{ 'auth.otp_subtitle' | translate }}</p>
     </div>
 
-    <!-- ── Step 1: Phone number ── -->
-    @if (step === 'phone') {
-      <form [formGroup]="phoneForm" (ngSubmit)="requestOtp()" novalidate>
+    <!-- ── Step 1: Phone or Email ── -->
+    @if (step === 'identifier') {
+      <form [formGroup]="identifierForm" (ngSubmit)="requestOtp()" novalidate>
         <mat-form-field appearance="outline" class="form-field">
-          <mat-label>{{ 'auth.phone' | translate }}</mat-label>
+          <mat-label>{{ 'auth.phone_or_email' | translate }}</mat-label>
           <input
             matInput
-            formControlName="phone"
-            type="tel"
-            autocomplete="tel"
-            placeholder="+12025551234"
+            formControlName="identifier"
+            type="text"
+            autocomplete="username"
+            placeholder="+12025551234 or admin@email.com"
           />
-          <mat-icon matSuffix>phone_iphone</mat-icon>
-          @if (phoneForm.get('phone')?.invalid && phoneForm.get('phone')?.touched) {
-            <mat-error>{{ 'auth.phone_required' | translate }}</mat-error>
+          <mat-icon matSuffix>{{ identifierIcon }}</mat-icon>
+          @if (identifierForm.get('identifier')?.invalid && identifierForm.get('identifier')?.touched) {
+            <mat-error>{{ 'auth.phone_or_email_required' | translate }}</mat-error>
           }
         </mat-form-field>
 
@@ -49,10 +49,10 @@
     <!-- ── Step 2: OTP verification ── -->
     @if (step === 'otp') {
       <div class="otp-info">
-        <mat-icon class="otp-info__icon">sms</mat-icon>
+        <mat-icon class="otp-info__icon">{{ isEmail ? 'mark_email_read' : 'sms' }}</mat-icon>
         <p>
-          {{ 'auth.otp_sent_to' | translate }}
-          <strong>{{ phone }}</strong>
+          {{ (isEmail ? 'auth.otp_sent_to_email' : 'auth.otp_sent_to') | translate }}
+          <strong>{{ identifier }}</strong>
         </p>
       </div>
 
@@ -131,17 +131,17 @@
           mat-button
           type="button"
           class="back-btn"
-          (click)="backToPhone()"
+          (click)="backToIdentifier()"
         >
           <mat-icon>arrow_back</mat-icon>
-          {{ 'auth.change_phone' | translate }}
+          {{ 'auth.change_identifier' | translate }}
         </button>
       </div>
     }
 
     <p class="auth-card__footer text-muted">
       {{ 'auth.or' | translate }}
-      <a routerLink="/admin/login">{{ 'auth.login_with_email' | translate }}</a>
+      <a routerLink="/admin/login">{{ 'auth.login_with_email_password' | translate }}</a>
     </p>
   </div>
 </div>

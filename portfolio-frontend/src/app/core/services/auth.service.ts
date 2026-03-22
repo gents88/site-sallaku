@@ -37,15 +37,19 @@ export class AuthService {
     );
   }
 
-  /** Request an OTP sent via SMS to the given E.164 phone number. */
-  requestOtp(phone: string): Observable<OtpRequestResponse> {
-    return this.http.post<OtpRequestResponse>(`${this.apiUrl}/otp/request`, { phone });
+  /** Request an OTP sent via SMS (phone) or email. Pass whichever the user entered. */
+  requestOtp(identifier: string): Observable<OtpRequestResponse> {
+    const isEmail = identifier.includes('@');
+    const body = isEmail ? { email: identifier } : { phone: identifier };
+    return this.http.post<OtpRequestResponse>(`${this.apiUrl}/otp/request`, body);
   }
 
   /** Verify OTP and save session on success. */
-  verifyOtp(phone: string, otp: string): Observable<AuthResponse> {
+  verifyOtp(identifier: string, otp: string): Observable<AuthResponse> {
+    const isEmail = identifier.includes('@');
+    const body = isEmail ? { email: identifier, otp } : { phone: identifier, otp };
     return this.http
-      .post<AuthResponse>(`${this.apiUrl}/otp/verify`, { phone, otp })
+      .post<AuthResponse>(`${this.apiUrl}/otp/verify`, body)
       .pipe(tap(res => this.saveSession(res)));
   }
 

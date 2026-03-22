@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
@@ -13,6 +13,15 @@ import { AuthService } from '../../../../core/services/auth.service';
 
 const OTP_EXPIRY_SECONDS = 300; // matches backend 5-minute window
 const RESEND_COOLDOWN_SECONDS = 60;
+
+/** Validates that the value is either a valid E.164 phone OR a valid email. */
+function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | null {
+  const v: string = (control.value ?? '').trim();
+  if (!v) return { required: true };
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const isPhone = /^\+[1-9]\d{6,14}$/.test(v);
+  return isEmail || isPhone ? null : { phoneOrEmail: true };
+}
 
 @Component({
   selector: 'app-otp-login',
@@ -32,26 +41,20 @@ const RESEND_COOLDOWN_SECONDS = 60;
   styleUrls: ['./otp-login.component.scss'],
 })
 export class OtpLoginComponent implements OnDestroy {
-  step: 'phone' | 'otp' = 'phone';
-  phone = '';
+  step: 'identifier' | 'otp' = 'identifier';
+  identifier = '';
   loading = false;
   otpExpired = false;
 
   countdownSeconds = OTP_EXPIRY_SECONDS;
   resendCooldownSeconds = 0;
 
-  phoneForm = this.fb.group({
-    phone: [
-      '',
-      [Validators.required, Validators.pattern(/^\+[1-9]\d{6,14}$/)],
-    ],
+  identifierForm = this.fb.group({
+    identifier: ['', [Validators.required, phoneOrEmailValidator]],
   });
 
   otpForm = this.fb.group({
-    otp: [
-      '',
-      [Validators.required, Validators.pattern(/^\d{6}$/)],
-    ],
+    otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
   });
 
   private countdownSub?: Subscription;
@@ -77,6 +80,15 @@ export class OtpLoginComponent implements OnDestroy {
     if (!this.loading) this.router.navigate(['/']);
   }
 
+  get isEmail(): boolean {
+    return this.identifier.includes('@');
+  }
+
+  get identifierIcon(): string {
+    const raw = (this.identifierForm.value.identifier ?? '').trim();
+    return raw.includes('@') ? 'email' : 'phone_iphone';
+  }
+
   get formattedCountdown(): string {
     const m = Math.floor(this.countdownSeconds / 60);
     const s = this.countdownSeconds % 60;
@@ -84,17 +96,17 @@ export class OtpLoginComponent implements OnDestroy {
   }
 
   requestOtp(): void {
-    if (this.phoneForm.invalid) {
-      this.phoneForm.markAllAsTouched();
+    if (this.identifierForm.invalid) {
+      this.identifierForm.markAllAsTouched();
       return;
     }
     this.loading = true;
-    const phone = this.phoneForm.value.phone!.trim();
+    const id = this.identifierForm.value.identifier!.trim();
 
-    this.auth.requestOtp(phone).subscribe({
+    this.auth.requestOtp(id).subscribe({
       next: () => {
         this.loading = false;
-        this.phone = phone;
+        this.identifier = id;
         this.step = 'otp';
         this.otpExpired = false;
         this.otpForm.reset();
@@ -123,7 +135,7 @@ export class OtpLoginComponent implements OnDestroy {
     this.loading = true;
     const otp = this.otpForm.value.otp!.trim();
 
-    this.auth.verifyOtp(this.phone, otp).subscribe({
+    this.auth.verifyOtp(this.identifier, otp).subscribe({
       next: () => {
         this.loading = false;
         if (this.auth.isAdmin()) {
@@ -156,7 +168,7 @@ export class OtpLoginComponent implements OnDestroy {
     if (this.resendCooldownSeconds > 0 || this.loading) return;
     this.loading = true;
 
-    this.auth.requestOtp(this.phone).subscribe({
+    this.auth.requestOtp(this.identifier).subscribe({
       next: () => {
         this.loading = false;
         this.otpExpired = false;
@@ -181,10 +193,10 @@ export class OtpLoginComponent implements OnDestroy {
     });
   }
 
-  backToPhone(): void {
+  backToIdentifier(): void {
     this.countdownSub?.unsubscribe();
     this.resendSub?.unsubscribe();
-    this.step = 'phone';
+    this.step = 'identifier';
     this.otpForm.reset();
     this.otpExpired = false;
     this.countdownSeconds = OTP_EXPIRY_SECONDS;
@@ -198,6 +210,25 @@ export class OtpLoginComponent implements OnDestroy {
       this.countdownSeconds--;
       if (this.countdownSeconds <= 0) {
         this.countdownSeconds = 0;
+        this.otpExpired = true;
+        this.countdownSub?.unsubscribe();
+      }
+    });
+  }
+
+  private startResendCooldown(): void {
+    this.resendSub?.unsubscribe();
+    this.resendCooldownSeconds = RESEND_COOLDOWN_SECONDS;
+    this.resendSub = interval(1000).subscribe(() => {
+      this.resendCooldownSeconds--;
+      if (this.resendCooldownSeconds <= 0) {
+        this.resendCooldownSeconds = 0;
+        this.resendSub?.unsubscribe();
+      }
+    });
+  }
+}
+
         this.otpExpired = true;
         this.countdownSub?.unsubscribe();
       }

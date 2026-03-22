@@ -48,12 +48,12 @@ export class AuthService {
     return this.signToken(user);
   }
 
-  async requestOtp(phone: string): Promise<{ message: string }> {
-    return this.otpService.requestOtp(phone);
+  async requestOtp(phone?: string, email?: string): Promise<{ message: string }> {
+    return this.otpService.requestOtp(phone, email);
   }
 
-  async verifyOtp(phone: string, otp: string) {
-    const user = await this.otpService.verifyOtp(phone, otp);
+  async verifyOtp(phone?: string, email?: string, otp?: string) {
+    const user = await this.otpService.verifyOtp(phone, email, otp);
     return this.signToken(user);
   }
 

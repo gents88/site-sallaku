@@ -31,6 +31,22 @@ export class UsersService {
     });
   }
 
+  /**
+   * Finds an existing user by email (OTP path — no password required)
+   * or creates a new one. Does NOT select passwordHash.
+   */
+  async findOrCreateByEmailOtp(email: string): Promise<UserDocument> {
+    const normalized = email.toLowerCase();
+    const existing = await this.userModel.findOne({ email: normalized }).exec();
+    if (existing) return existing;
+
+    return this.userModel.create({
+      name: normalized.split('@')[0],
+      email: normalized,
+      role: 'user',
+    });
+  }
+
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
   }
