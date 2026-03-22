@@ -117,20 +117,20 @@ export class ChatbotService {
   }
 
   private async callAI(messages: { role: string; content: string }[]): Promise<string> {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    const apiKey = this.configService.get<string>('GROQ_API_KEY');
     if (!apiKey) {
       return this.getFallbackResponse(messages[messages.length - 1].content);
     }
 
     try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'llama-3.1-8b-instant',
           messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
           max_tokens: 350,
           temperature: 0.7,
@@ -139,7 +139,8 @@ export class ChatbotService {
       });
 
       if (!response.ok) {
-        this.logger.warn(`OpenAI responded with status ${response.status}`);
+        const err = await response.text();
+        this.logger.warn(`Groq responded with status ${response.status}: ${err}`);
         return this.getFallbackResponse(messages[messages.length - 1].content);
       }
 
@@ -148,7 +149,7 @@ export class ChatbotService {
         model: string;
         usage: { prompt_tokens: number; completion_tokens: number };
       };
-      this.logger.log(`OpenAI [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`);
+      this.logger.log(`Groq [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`);
       return data.choices?.[0]?.message?.content?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
