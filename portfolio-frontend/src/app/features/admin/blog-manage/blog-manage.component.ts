@@ -78,7 +78,7 @@ export class BlogManageComponent implements OnInit {
       timeout(15000),
       finalize(() => { this.loading = false; }),
     ).subscribe({
-      next: posts => { this.posts = posts; },
+      next: posts => { this.posts = posts; this.loading = false; },
       error: () => {},
     });
   }

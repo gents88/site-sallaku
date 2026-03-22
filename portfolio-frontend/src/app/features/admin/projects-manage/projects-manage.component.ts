@@ -65,7 +65,7 @@ export class ProjectsManageComponent implements OnInit {
       timeout(15000),
       finalize(() => { this.loading = false; }),
     ).subscribe({
-      next: p => { this.projects = p; },
+      next: p => { this.projects = p; this.loading = false; },
       error: () => {},
     });
   }

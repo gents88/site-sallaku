@@ -61,7 +61,7 @@ export class ExperiencesManageComponent implements OnInit {
       timeout(15000),
       finalize(() => { this.loading = false; }),
     ).subscribe({
-      next: e => { this.experiences = e; },
+      next: e => { this.experiences = e; this.loading = false; },
       error: () => {},
     });
   }

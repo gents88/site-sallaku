@@ -66,6 +66,7 @@ export class AboutManageComponent implements OnInit {
           twitter: about.socials?.twitter ?? '',
           email: about.socials?.email ?? '',
         });
+        this.loading = false;
       },
       error: () => {},
     });
