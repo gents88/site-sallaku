@@ -299,6 +299,8 @@
     "quick_actions": "Quick actions",
     "mark_read": "Mark as read",
     "mark_unread": "Mark as unread",
+    "status_read": "Read",
+    "status_unread": "Unread",
     "open_email": "Open email",
     "message_deleted": "Message deleted.",
     "messages_deleted": "Selected messages deleted.",

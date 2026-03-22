@@ -299,6 +299,8 @@
     "quick_actions": "Azioni rapide",
     "mark_read": "Segna letto",
     "mark_unread": "Segna da leggere",
+    "status_read": "Letto",
+    "status_unread": "Da leggere",
     "open_email": "Apri email",
     "message_deleted": "Messaggio eliminato.",
     "messages_deleted": "Messaggi selezionati eliminati.",

@@ -64,6 +64,10 @@ export class ContactService {
     return this.contactModel.countDocuments().exec();
   }
 
+  async countUnread(): Promise<number> {
+    return this.contactModel.countDocuments({ read: false }).exec();
+  }
+
   async findAll(limit = 20) {
     return this.contactModel
       .find()

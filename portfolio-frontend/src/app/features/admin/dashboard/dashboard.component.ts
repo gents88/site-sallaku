@@ -40,6 +40,7 @@ interface ChartBar {
 interface AdminStatsResponse {
   users: number;
   contacts: number;
+  unreadContacts: number;
   recentContacts: RecentContact[];
   contactsByDay: Array<{ date: string; count: number }>;
   content: {
@@ -83,6 +84,7 @@ export class DashboardComponent implements OnInit {
   todayVisitors = 0;
   loading = true;
   logoutLoading = false;
+  unreadCount = 0;
   selectedContact: RecentContact | null = null;
   markingRead = false;
   deletingContact = false;
@@ -132,6 +134,7 @@ export class DashboardComponent implements OnInit {
     const emptyStats: AdminStatsResponse = {
       users: 0,
       contacts: 0,
+      unreadContacts: 0,
       recentContacts: [],
       contactsByDay: [],
       content: { total: 0, published: 0, drafts: 0 },
@@ -186,6 +189,7 @@ export class DashboardComponent implements OnInit {
           { labelKey: 'admin.visitors',    value: adminStats.visits.uniqueVisitors, icon: 'monitoring',             route: '/admin',             color: '#ef4444', miniBars: this.buildMiniBars(adminStats.visits.uniqueVisitors, maxValue, 7) },
         ];
         this.recentContacts = adminStats.recentContacts;
+        this.unreadCount = adminStats.unreadContacts ?? 0;
         this.contactBars = adminStats.contactsByDay.map(item => ({ date: item.date, value: item.count }));
         this.visitBars = adminStats.visits.viewsByDay.map(item => ({ date: item.date, value: item.count }));
         this.publishedPosts = publishedPosts;
@@ -292,10 +296,11 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    // Optimistic update: mark as read locally immediately so the "Nuovo" badge disappears
+    // Optimistic update: mark as read locally immediately so the "NEW" badge disappears
     const prevRead = contact.read;
     this.recentContacts = this.recentContacts.map(item => item._id === contact._id ? { ...item, read: true } : item);
     this.selectedContact = { ...contact, read: true };
+    this.unreadCount = Math.max(0, this.unreadCount - 1);
 
     // Fire-and-forget mark-read request; don't toggle `markingRead` here so the
     // spinner appears only when the user explicitly clicks the "mark read" button.
@@ -308,6 +313,7 @@ export class DashboardComponent implements OnInit {
         // revert optimistic change on error
         this.recentContacts = this.recentContacts.map(item => item._id === contact._id ? { ...item, read: prevRead } : item);
         this.selectedContact = { ...contact, read: prevRead };
+        this.unreadCount += 1;
       },
     });
   }
@@ -323,12 +329,19 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
+    const wasRead = this.selectedContact.read;
     this.markingRead = true;
     this.http.patch<RecentContact>(`${environment.apiUrl}/contact/${this.selectedContact._id}/read`, { read }).subscribe({
       next: (updatedContact) => {
         this.recentContacts = this.recentContacts.map(item => item._id === updatedContact._id ? updatedContact : item);
         this.selectedContact = updatedContact;
         this.markingRead = false;
+        // Keep unread counter in sync with toggles done from the modal
+        if (read && !wasRead) {
+          this.unreadCount = Math.max(0, this.unreadCount - 1);
+        } else if (!read && wasRead) {
+          this.unreadCount += 1;
+        }
         this.showActionMessage(read ? 'admin.marked_read' : 'admin.marked_unread');
       },
       error: () => {
@@ -456,6 +469,7 @@ export class DashboardComponent implements OnInit {
     ).subscribe(adminStats => {
       if (!adminStats) return;
       this.recentContacts = adminStats.recentContacts;
+      this.unreadCount = adminStats.unreadContacts ?? 0;
       this.stats = this.stats.map(stat =>
         stat.labelKey === 'admin.contacts'
           ? { ...stat, value: adminStats.contacts }

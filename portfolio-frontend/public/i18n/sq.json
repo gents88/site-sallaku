@@ -299,6 +299,8 @@
     "quick_actions": "Veprime të shpejta",
     "mark_read": "Shëno si të lexuar",
     "mark_unread": "Shëno si të palexuar",
+    "status_read": "I lexuar",
+    "status_unread": "I palexuar",
     "open_email": "Hap emailin",
     "message_deleted": "Mesazhi u fshi.",
     "messages_deleted": "Mesazhet e selektuara u fshin.",

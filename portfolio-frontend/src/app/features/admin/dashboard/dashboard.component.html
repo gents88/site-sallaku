@@ -276,7 +276,12 @@
 
     <!-- Recent contacts -->
     @if (recentContacts.length) {
-      <h2 class="section-label">{{ 'admin.recent_activity' | translate }}</h2>
+      <h2 class="section-label">
+        {{ 'admin.recent_activity' | translate }}
+        @if (unreadCount > 0) {
+          <span class="section-unread-badge" [attr.aria-label]="unreadCount + ' unread'">{{ unreadCount }}</span>
+        }
+      </h2>
       <div class="contacts-list card">
 
         <!-- Bulk action toolbar -->
@@ -375,12 +380,12 @@
 
       <div class="contact-modal__status">
         @if (selectedContact.read) {
-          <span class="contact-modal__pill contact-modal__pill--read">Letto</span>
+          <span class="contact-modal__pill contact-modal__pill--read">{{ 'admin.status_read' | translate }}</span>
         } @else {
-          <span class="contact-modal__pill">Da leggere</span>
+          <span class="contact-modal__pill">{{ 'admin.status_unread' | translate }}</span>
         }
         @if (markingRead) {
-          <span class="text-muted">Aggiornamento...</span>
+          <span class="text-muted">{{ 'common.loading' | translate }}</span>
         }
       </div>
 
@@ -391,7 +396,7 @@
       <div class="contact-modal__actions">
         <button type="button" class="modal-btn modal-btn--plain" (click)="closeContact()">
           <mat-icon>close</mat-icon>
-          Chiudi
+          {{ 'common.close' | translate }}
         </button>
         @if (selectedContact.read) {
           <button type="button" class="modal-btn modal-btn--outline" [disabled]="markingRead" (click)="setSelectedContactReadState(false)">

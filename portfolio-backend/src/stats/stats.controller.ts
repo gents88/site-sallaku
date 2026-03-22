@@ -20,6 +20,7 @@ interface StatsContentSummary {
 interface AdminDashboardStatsResponse {
   users: number;
   contacts: number;
+  unreadContacts: number;
   recentContacts: Awaited<ReturnType<ContactService['findAll']>>;
   contactsByDay: StatsContactPoint[];
   content: StatsContentSummary;
@@ -45,10 +46,11 @@ export class StatsController {
   @Get()
   @ApiOperation({ summary: 'Get aggregate admin dashboard stats' })
   async getStats(): Promise<AdminDashboardStatsResponse> {
-    const [userCount, contactCount, recentContacts, contactsByDay, content, visits] = await Promise.all([
+    const [userCount, contactCount, unreadContactCount, recentContacts, contactsByDay, content, visits] = await Promise.all([
       this.users.count(),
       this.contacts.count(),
-      this.contacts.findAll(5),
+      this.contacts.countUnread(),
+      this.contacts.findAll(10),
       this.contacts.countByDay(7),
       this.blog.getContentSummary(),
       this.analytics.getVisitSummary(7),
@@ -57,6 +59,7 @@ export class StatsController {
     return {
       users: userCount,
       contacts: contactCount,
+      unreadContacts: unreadContactCount,
       recentContacts,
       contactsByDay,
       content,
