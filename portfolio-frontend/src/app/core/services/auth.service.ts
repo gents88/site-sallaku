@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginPayload, RegisterPayload, User } from '../models/user.model';
+import { AuthResponse, LoginPayload, OtpRequestResponse, RegisterPayload, User } from '../models/user.model';
 
 const TOKEN_KEY = 'portfolio_token';
 const USER_KEY = 'portfolio_user';
@@ -35,6 +35,18 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, payload).pipe(
       tap(res => this.saveSession(res)),
     );
+  }
+
+  /** Request an OTP sent via SMS to the given E.164 phone number. */
+  requestOtp(phone: string): Observable<OtpRequestResponse> {
+    return this.http.post<OtpRequestResponse>(`${this.apiUrl}/otp/request`, { phone });
+  }
+
+  /** Verify OTP and save session on success. */
+  verifyOtp(phone: string, otp: string): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/otp/verify`, { phone, otp })
+      .pipe(tap(res => this.saveSession(res)));
   }
 
   logout(redirectUrl = '/admin/login'): void {

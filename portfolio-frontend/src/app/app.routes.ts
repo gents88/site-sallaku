@@ -40,6 +40,11 @@ export const routes: Routes = [
       import('./features/admin/auth/login/login.component').then(m => m.LoginComponent),
   },
   {
+    path: 'admin/login/otp',
+    loadComponent: () =>
+      import('./features/admin/auth/otp-login/otp-login.component').then(m => m.OtpLoginComponent),
+  },
+  {
     path: 'admin/register',
     loadComponent: () =>
       import('./features/admin/auth/register/register.component').then(m => m.RegisterComponent),

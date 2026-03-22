@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
+import { OtpService } from './otp.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -16,6 +17,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private otpService: OtpService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -46,11 +48,29 @@ export class AuthService {
     return this.signToken(user);
   }
 
+  async requestOtp(phone: string): Promise<{ message: string }> {
+    return this.otpService.requestOtp(phone);
+  }
+
+  async verifyOtp(phone: string, otp: string) {
+    const user = await this.otpService.verifyOtp(phone, otp);
+    return this.signToken(user);
+  }
+
   private signToken(user: any) {
-    const payload = { sub: user._id.toString(), email: user.email, role: user.role };
+    const payload = {
+      sub: user._id.toString(),
+      email: user.email ?? null,
+      role: user.role,
+    };
     return {
       access_token: this.jwtService.sign(payload),
-      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email ?? null,
+        role: user.role,
+      },
     };
   }
 }

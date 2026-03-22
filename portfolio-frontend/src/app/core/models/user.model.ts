@@ -1,7 +1,7 @@
 export interface User {
   _id: string;
   name: string;
-  email: string;
+  email: string | null;
   role: 'admin' | 'user';
 }
 
@@ -19,4 +19,8 @@ export interface RegisterPayload {
   name: string;
   email: string;
   password: string;
+}
+
+export interface OtpRequestResponse {
+  message: string;
 }

@@ -15,6 +15,22 @@ export class UsersService {
     return this.userModel.findOne({ email: email.toLowerCase() }).select('+passwordHash').exec();
   }
 
+  async findByPhone(phone: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ phone }).exec();
+  }
+
+  /** Finds an existing user by phone or creates a new one with role 'user'. */
+  async findOrCreateByPhone(phone: string): Promise<UserDocument> {
+    const existing = await this.userModel.findOne({ phone }).exec();
+    if (existing) return existing;
+
+    return this.userModel.create({
+      name: `User ${phone.slice(-4)}`,
+      phone,
+      role: 'user',
+    });
+  }
+
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
   }
@@ -38,3 +54,4 @@ export class UsersService {
     return this.userModel.countDocuments().exec();
   }
 }
+
