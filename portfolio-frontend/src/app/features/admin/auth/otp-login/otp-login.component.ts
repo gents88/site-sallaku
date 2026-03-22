@@ -229,21 +229,3 @@ export class OtpLoginComponent implements OnDestroy {
   }
 }
 
-        this.otpExpired = true;
-        this.countdownSub?.unsubscribe();
-      }
-    });
-  }
-
-  private startResendCooldown(): void {
-    this.resendSub?.unsubscribe();
-    this.resendCooldownSeconds = RESEND_COOLDOWN_SECONDS;
-    this.resendSub = interval(1000).subscribe(() => {
-      this.resendCooldownSeconds--;
-      if (this.resendCooldownSeconds <= 0) {
-        this.resendCooldownSeconds = 0;
-        this.resendSub?.unsubscribe();
-      }
-    });
-  }
-}
