@@ -145,7 +145,10 @@ export class ChatbotService {
 
       const data = (await response.json()) as {
         choices: { message: { content: string } }[];
+        model: string;
+        usage: { prompt_tokens: number; completion_tokens: number };
       };
+      this.logger.log(`OpenAI [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`);
       return data.choices?.[0]?.message?.content?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
