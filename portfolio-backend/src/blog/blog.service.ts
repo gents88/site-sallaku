@@ -91,6 +91,14 @@ export class BlogService {
     if (!result) throw new NotFoundException(`Post #${id} not found`);
   }
 
+  /** Public: increment view count atomically. Fire-and-forget safe. */
+  incrementViewCount(slug: string): Promise<void> {
+    return this.postModel
+      .updateOne({ slug, published: true }, { $inc: { viewCount: 1 } })
+      .exec()
+      .then(() => undefined);
+  }
+
   async getContentSummary(): Promise<ContentSummary> {
     const [total, published] = await Promise.all([
       this.postModel.countDocuments().exec(),

@@ -50,6 +50,10 @@ export class BlogService {
     return this.http.delete<void>(`${this.adminUrl}/${id}`);
   }
 
+  trackView(slug: string): Observable<void> {
+    return this.http.post<void>(`${this.publicUrl}/${slug}/view`, {});
+  }
+
   generateFromPdf(file: File, language: BlogLanguage, context = ''): Observable<HttpEvent<BlogPdfDraft>> {
     const formData = new FormData();
     formData.append('file', file);

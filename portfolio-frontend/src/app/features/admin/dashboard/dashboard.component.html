@@ -130,6 +130,32 @@
           </div>
         </div>
       </section>
+
+      <!-- Top posts by views -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>Articoli più visti</h2>
+            <p class="text-muted">Top post per visualizzazioni</p>
+          </div>
+          <mat-icon>trending_up</mat-icon>
+        </div>
+
+        @if (topPosts.length) {
+          <ul class="top-posts-list">
+            @for (post of topPosts; track post._id) {
+              <li class="top-posts-list__item">
+                <a [routerLink]="['/blog', post.slug]" target="_blank" rel="noopener" class="top-posts-list__title">{{ post.title }}</a>
+                <span class="top-posts-list__views">
+                  <mat-icon style="font-size:14px;height:14px;width:14px;vertical-align:middle">visibility</mat-icon>&nbsp;{{ post.viewCount ?? 0 }}
+                </span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="text-muted" style="margin-top:1rem;">Nessuna visualizzazione ancora.</p>
+        }
+      </section>
     </div>
 
     <!-- ── Advanced Visitor Analytics ─────────────────────────────────── -->

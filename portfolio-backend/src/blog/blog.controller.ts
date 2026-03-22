@@ -41,6 +41,13 @@ export class BlogController {
     return this.blogService.findBySlug(slug);
   }
 
+  @Post('posts/:slug/view')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Increment view count for a published post (public, fire-and-forget)' })
+  async trackView(@Param('slug') slug: string) {
+    await this.blogService.incrementViewCount(slug);
+  }
+
   // ── Admin ───────────────────────────────────────────
   @Get('admin/posts')
   @UseGuards(JwtAuthGuard, RolesGuard)

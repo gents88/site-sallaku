@@ -33,6 +33,8 @@ export class BlogDetailComponent implements OnInit {
       next: post => {
         this.post = post;
         this.cdr.markForCheck();
+        // Fire-and-forget: increment view count without blocking rendering
+        this.blogService.trackView(this.slug).subscribe({ error: () => {} });
         this.seo.update({
           title: post.metaTitle || post.title,
           description: post.metaDescription || post.excerpt,

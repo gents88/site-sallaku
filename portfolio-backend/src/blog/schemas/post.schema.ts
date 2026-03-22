@@ -42,6 +42,10 @@ export class Post {
 
   @Prop({ default: '' })
   metaDescription: string;
+
+  // Analytics
+  @Prop({ default: 0 })
+  viewCount: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

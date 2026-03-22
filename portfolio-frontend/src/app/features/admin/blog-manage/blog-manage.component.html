@@ -225,6 +225,10 @@
                 {{ post.published ? 'Published' : 'Draft' }}
               </span>
               <span class="badge badge--language">{{ post.language.toUpperCase() }}</span>
+              <span class="badge badge--views">
+                <mat-icon style="font-size:13px;height:13px;width:13px;vertical-align:middle">visibility</mat-icon>
+                {{ post.viewCount ?? 0 }}
+              </span>
             </div>
           </div>
           <div class="list-item__actions">

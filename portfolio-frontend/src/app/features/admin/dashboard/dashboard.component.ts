@@ -10,6 +10,8 @@ import { combineLatest, catchError, of, startWith } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { ExperiencesService } from '../../../core/services/experiences.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { BlogService } from '../../../core/services/blog.service';
+import { Post } from '../../../core/models/post.model';
 import { DonutChartComponent, DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
 import { environment } from '../../../../environments/environment';
 
@@ -91,6 +93,8 @@ export class DashboardComponent implements OnInit {
   actionMessageKey: string | null = null;
   private actionMessageTimeoutId: number | null = null;
 
+  topPosts: Post[] = [];
+
   // Multi-select state
   selectedIds = new Set<string>();
   bulkDeleting = false;
@@ -127,6 +131,7 @@ export class DashboardComponent implements OnInit {
     public auth: AuthService,
     private projectsService: ProjectsService,
     private experiencesService: ExperiencesService,
+    private blogService: BlogService,
     private http: HttpClient,
   ) {}
 
@@ -162,8 +167,9 @@ export class DashboardComponent implements OnInit {
         catchError(() => of(emptyAdvanced)),
         startWith(emptyAdvanced),
       ),
+      blogPosts: this.blogService.getAll().pipe(catchError(() => of([])), startWith([])),
     }).subscribe({
-      next: ({ projects, experiences, adminStats, advanced }) => {
+      next: ({ projects, experiences, adminStats, advanced, blogPosts }) => {
         const totalPosts = adminStats.content.total;
         const publishedPosts = adminStats.content.published;
         const totalValues = [
@@ -196,6 +202,11 @@ export class DashboardComponent implements OnInit {
         this.draftPosts = adminStats.content.drafts;
         this.totalViews = adminStats.visits.totalViews;
         this.uniqueVisitors = adminStats.visits.uniqueVisitors;
+
+        // Top posts by view count
+        this.topPosts = [...blogPosts]
+          .sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0))
+          .slice(0, 5);
 
         // Advanced analytics
         this.todayVisitors = advanced.todayCount;
