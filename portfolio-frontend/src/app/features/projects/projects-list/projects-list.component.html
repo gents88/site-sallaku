@@ -1,0 +1,55 @@
+<div class="container section">
+  <h1 class="page-title">Projects</h1>
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else {
+    <!-- Tag filter -->
+    @if (allTags.length) {
+      <div class="tag-filter">
+        <button class="badge" [class.active]="!activeTag" (click)="filterByTag(null)">All</button>
+        @for (tag of allTags; track tag) {
+          <button class="badge" [class.active]="activeTag === tag" (click)="filterByTag(tag)">{{ tag }}</button>
+        }
+      </div>
+    }
+
+    <div class="projects-grid">
+      @for (project of filtered; track project._id) {
+        <article class="card project-card fade-in-up">
+          @if (project.images[0]) {
+            <img [src]="project.images[0]" [alt]="project.title" class="project-card__img" loading="lazy" />
+          }
+          @if (project.featured) {
+            <span class="featured-badge">Featured</span>
+          }
+          <div class="project-card__body">
+            <h2>{{ project.title }}</h2>
+            <p class="text-muted">{{ project.description }}</p>
+            <div class="tech-tags">
+              @for (tech of project.technologies; track tech) {
+                <span class="badge">{{ tech }}</span>
+              }
+            </div>
+            <div class="project-card__links">
+              @if (project.liveUrl) {
+                <a [href]="project.liveUrl" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+                  <mat-icon>open_in_new</mat-icon> Live Demo
+                </a>
+              }
+              @if (project.repoUrl) {
+                <a [href]="project.repoUrl" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
+                  <mat-icon>code</mat-icon> Source
+                </a>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    @if (!filtered.length) {
+      <p class="empty-state">No projects match the selected filter.</p>
+    }
+  }
+</div>
