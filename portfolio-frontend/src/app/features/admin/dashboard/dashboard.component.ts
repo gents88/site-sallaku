@@ -352,6 +352,7 @@ export class DashboardComponent implements OnInit {
           );
           this.closeContact();
           this.showActionMessage('admin.message_deleted');
+          this.refreshContacts();
         },
         error: () => {
           this.deletingContact = false;
@@ -414,6 +415,7 @@ export class DashboardComponent implements OnInit {
                 : stat,
             );
             this.showActionMessage('admin.messages_deleted');
+            this.refreshContacts();
           },
           error: () => {
             this.bulkDeleting = false;
@@ -445,6 +447,20 @@ export class DashboardComponent implements OnInit {
       const offset = ((seed + index) % 3) * 4;
       const height = 16 + normalized * 42 + point * 30 + offset;
       return Math.max(18, Math.min(Math.round(height), 92));
+    });
+  }
+
+  private refreshContacts(): void {
+    this.http.get<AdminStatsResponse>(`${environment.apiUrl}/stats`).pipe(
+      catchError(() => of(null)),
+    ).subscribe(adminStats => {
+      if (!adminStats) return;
+      this.recentContacts = adminStats.recentContacts;
+      this.stats = this.stats.map(stat =>
+        stat.labelKey === 'admin.contacts'
+          ? { ...stat, value: adminStats.contacts }
+          : stat,
+      );
     });
   }
 
