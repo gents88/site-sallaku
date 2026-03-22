@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   imports: [CommonModule, RouterLink, MatIconModule, LoadingSpinnerComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogDetailComponent implements OnInit {
   @Input() slug!: string; // injected via withComponentInputBinding()
@@ -22,15 +23,16 @@ export class BlogDetailComponent implements OnInit {
   loading = true;
   notFound = false;
 
-  constructor(private blogService: BlogService, private seo: SeoService) {}
+  constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.blogService.getBySlug(this.slug).pipe(
       timeout(15000),
-      finalize(() => { this.loading = false; }),
+      finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: post => {
         this.post = post;
+        this.cdr.markForCheck();
         this.seo.update({
           title: post.metaTitle || post.title,
           description: post.metaDescription || post.excerpt,
@@ -47,7 +49,7 @@ export class BlogDetailComponent implements OnInit {
           dateModified: post.updatedAt,
         });
       },
-      error: () => { this.notFound = true; },
+      error: () => { this.notFound = true; this.cdr.markForCheck(); },
     });
   }
 }

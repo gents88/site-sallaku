@@ -14,6 +14,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { SystemModule } from './system/system.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { CronModule } from './cron/cron.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -28,6 +29,9 @@ import { CronModule } from './cron/cron.module';
       }),
       inject: [ConfigService],
     }),
+
+    // ── Shared utilities (global: CacheService etc.) ──
+    CommonModule,
 
     // ── Feature modules ───────────────────────────────
     AuthModule,

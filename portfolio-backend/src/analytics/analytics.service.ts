@@ -5,6 +5,7 @@ import { Request } from 'express';
 import * as geoip from 'geoip-lite';
 import { TrackPageViewDto } from './dto/track-page-view.dto';
 import { PageView, PageViewDocument } from './schemas/page-view.schema';
+import { CacheService } from '../common/services/cache.service';
 
 interface ViewsByDayPoint {
   date: string;
@@ -37,6 +38,7 @@ export class AnalyticsService {
   constructor(
     @InjectModel(PageView.name)
     private pageViewModel: Model<PageViewDocument>,
+    private readonly cache: CacheService,
   ) {}
 
   async trackPageView(dto: TrackPageViewDto, req?: Request): Promise<{ success: boolean }> {
@@ -63,34 +65,40 @@ export class AnalyticsService {
       trafficSource,
     });
 
+    // Bust summary caches so the next dashboard load sees fresh counts
+    this.cache.invalidatePrefix('analytics:');
     return { success: true };
   }
 
   async getVisitSummary(days = 7): Promise<VisitSummary> {
-    const [totalViews, uniqueVisitors, viewsByDay] = await Promise.all([
-      this.pageViewModel.countDocuments().exec(),
-      this.pageViewModel.distinct('visitorId').then(ids => ids.length),
-      this.countViewsByDay(days),
-    ]);
-    return { totalViews, uniqueVisitors, viewsByDay };
+    return this.cache.getOrSet(`analytics:visit-summary:${days}`, async () => {
+      const [totalViews, uniqueVisitors, viewsByDay] = await Promise.all([
+        this.pageViewModel.countDocuments().exec(),
+        this.pageViewModel.distinct('visitorId').then(ids => ids.length),
+        this.countViewsByDay(days),
+      ]);
+      return { totalViews, uniqueVisitors, viewsByDay };
+    }, 60_000); // 1 minute TTL
   }
 
   async getAdvancedAnalytics(): Promise<AdvancedAnalytics> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    return this.cache.getOrSet('analytics:advanced', async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    const [todayCount, topLocations, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources] =
-      await Promise.all([
-        this.pageViewModel.countDocuments({ createdAt: { $gte: today } }).exec(),
-        this.aggregateTopLocations(10),
-        this.aggregateByField('country', 10),
-        this.aggregateByField('deviceType', 5),
-        this.aggregateByField('browser', 8),
-        this.aggregateByField('os', 6),
-        this.aggregateByField('trafficSource', 4),
-      ]);
+      const [todayCount, topLocations, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources] =
+        await Promise.all([
+          this.pageViewModel.countDocuments({ createdAt: { $gte: today } }).exec(),
+          this.aggregateTopLocations(10),
+          this.aggregateByField('country', 10),
+          this.aggregateByField('deviceType', 5),
+          this.aggregateByField('browser', 8),
+          this.aggregateByField('os', 6),
+          this.aggregateByField('trafficSource', 4),
+        ]);
 
-    return { todayCount, topLocations, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources };
+      return { todayCount, topLocations, topCountries, deviceBreakdown, browserBreakdown, osBreakdown, trafficSources };
+    }, 2 * 60_000); // 2 minute TTL
   }
 
   private async aggregateByField(field: string, limit: number): Promise<BreakdownItem[]> {

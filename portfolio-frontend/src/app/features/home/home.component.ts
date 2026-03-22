@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize, forkJoin } from 'rxjs';
@@ -24,6 +24,7 @@ interface FaqItem { qKey: string; aKey: string; }
   imports: [CommonModule, FormsModule, TranslateModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   about: About | null = null;
@@ -169,6 +170,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private experiencesService: ExperiencesService,
     private seo: SeoService,
     private snackbar: SnackbarService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -195,8 +197,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         if (projects.length) this.featuredProjects = projects.filter(p => p.featured).slice(0, 5);
         if (experiences.length) this.experiences = experiences.slice(0, 5);
         this.loading = false;
+        this.cdr.markForCheck();
       },
-      error: () => { this.loading = false; },
+      error: () => { this.loading = false; this.cdr.markForCheck(); },
     });
   }
 
@@ -210,6 +213,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             // Trigger tech bars when tech section becomes visible
             if ((entry.target as HTMLElement).closest('#tech-stack')) {
               this.barsFilled = true;
+              this.cdr.markForCheck();
             }
             this.observer?.unobserve(entry.target);
           }
@@ -239,6 +243,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!normalizedName || !hasValidEmail || !normalizedMessage || normalizedMessage.length < 10) {
       this.contactInvalid = true;
+      this.cdr.markForCheck();
       return;
     }
 
@@ -255,17 +260,20 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }).pipe(
       finalize(() => {
         this.contactSending = false;
+        this.cdr.markForCheck();
       }),
     ).subscribe({
       next: () => {
         this.contactForm = { name: '', email: '', message: '' };
         this.contactInvalid = false;
+        this.cdr.markForCheck();
         this.snackbar.show('Messaggio inviato — grazie!', 'success');
       },
       error: () => {
         // rollback optimistic state
         this.contactSent = false;
         this.contactError = true;
+        this.cdr.markForCheck();
         this.snackbar.show('Invio non riuscito — riprova più tardi', 'error');
       },
     });

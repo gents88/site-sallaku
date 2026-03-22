@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { ProjectsService } from '../../../core/services/projects.service';
@@ -12,6 +12,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   imports: [CommonModule, MatIconModule, LoadingSpinnerComponent],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsListComponent implements OnInit {
   projects: Project[] = [];
@@ -23,6 +24,7 @@ export class ProjectsListComponent implements OnInit {
   constructor(
     private projectsService: ProjectsService,
     private seo: SeoService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -34,8 +36,9 @@ export class ProjectsListComponent implements OnInit {
         const tagsSet = new Set(projects.flatMap(p => p.technologies));
         this.allTags = Array.from(tagsSet).sort();
         this.loading = false;
+        this.cdr.markForCheck();
       },
-      error: () => { this.loading = false; },
+      error: () => { this.loading = false; this.cdr.markForCheck(); },
     });
   }
 

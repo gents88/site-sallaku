@@ -34,7 +34,7 @@ export class BlogService {
   findPublished(tag?: string): Promise<PostDocument[]> {
     const filter: any = { published: true };
     if (tag) filter.tags = tag;
-    return this.postModel.find(filter).sort({ publishedAt: -1 }).select('-content').exec();
+    return this.postModel.find(filter).sort({ publishedAt: -1 }).select('-content').lean().exec() as unknown as Promise<PostDocument[]>;
   }
 
   /** Public: single post by slug */

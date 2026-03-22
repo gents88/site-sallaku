@@ -15,6 +15,7 @@ import { Roles, Role } from '../auth/decorators/roles.decorator';
 import { GenerateBlogFromPdfDto } from './dto/generate-blog-from-pdf.dto';
 import { BlogGenerationService } from './services/blog-generation.service';
 import { BLOG_LANGUAGES, MAX_PDF_UPLOAD_SIZE } from './blog.constants';
+import { CacheControlInterceptor } from '../common/interceptors/cache-control.interceptor';
 
 @ApiTags('Blog')
 @Controller('blog')
@@ -26,6 +27,7 @@ export class BlogController {
 
   // ── Public ──────────────────────────────────────────
   @Get('posts')
+  @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get published posts (public, optional tag filter)' })
   @ApiQuery({ name: 'tag', required: false })
   findPublished(@Query('tag') tag?: string) {
@@ -33,6 +35,7 @@ export class BlogController {
   }
 
   @Get('posts/:slug')
+  @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get published post by slug (public)' })
   findBySlug(@Param('slug') slug: string) {
     return this.blogService.findBySlug(slug);
