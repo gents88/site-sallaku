@@ -24,7 +24,20 @@ export class MailService {
   private readonly isConfigured: boolean;
   private readonly smtpUser?: string;
 
+  /** When set, all emails are sent via Resend HTTP API instead of SMTP */
+  private readonly resendApiKey?: string;
+
   constructor(private config: ConfigService) {
+    this.resendApiKey = this.config.get<string>('RESEND_API_KEY');
+
+    if (this.resendApiKey) {
+      this.isConfigured = true;
+      this.logger.log('MailService: using Resend HTTP API for delivery.');
+      // Create a no-op transporter — will never be used when resendApiKey is set
+      this.transporter = nodemailer.createTransport({ jsonTransport: true });
+      return;
+    }
+
     const smtpUser = this.config.get<string>('SMTP_USER');
     const smtpPass = this.config.get<string>('SMTP_PASS');
     this.smtpUser = smtpUser;
@@ -36,14 +49,13 @@ export class MailService {
       host:   this.config.get<string>('SMTP_HOST', 'smtp.gmail.com'),
       port:   this.config.get<number>('SMTP_PORT', 587),
       secure: this.config.get<boolean>('SMTP_SECURE', false),
-      auth: {
-        user: smtpUser,
-        pass: smtpPass,
-      },
+      auth: { user: smtpUser, pass: smtpPass },
     });
 
     if (!this.isConfigured) {
-      this.logger.warn('SMTP_USER / SMTP_PASS not configured with real values. Email delivery is disabled.');
+      this.logger.warn('Neither RESEND_API_KEY nor SMTP credentials are configured. Email delivery is disabled.');
+    } else {
+      this.logger.log('MailService: using SMTP for delivery.');
     }
   }
 
@@ -55,34 +67,77 @@ export class MailService {
 
   async send(opts: MailOptions): Promise<MailDeliveryResult> {
     if (!this.isConfigured) {
-      this.logger.error(`Failed to send email → ${opts.to}. SMTP is not configured.`);
+      this.logger.error(`Cannot send email → ${opts.to}. No mail provider configured.`);
       return { success: false, accepted: [], rejected: [opts.to] };
     }
 
+    if (this.resendApiKey) {
+      return this.sendViaResend(opts);
+    }
+    return this.sendViaSmtp(opts);
+  }
+
+  // ── Resend HTTP API (bypasses SMTP port blocking on Railway) ──────────────
+
+  private async sendViaResend(opts: MailOptions): Promise<MailDeliveryResult> {
+    const from = this.config.get<string>('EMAIL_FROM', 'Gent Sallaku <onboarding@resend.dev>');
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.resendApiKey}`,
+        },
+        body: JSON.stringify({
+          from,
+          to: [opts.to],
+          subject: opts.subject,
+          html: opts.html,
+          ...(opts.text   ? { text: opts.text }       : {}),
+          ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
+        }),
+      });
+
+      const body = await response.json() as { id?: string; message?: string };
+
+      if (response.ok && body.id) {
+        this.logger.log(`Email accepted by Resend → ${opts.to} [${opts.subject}] (id=${body.id})`);
+        return { success: true, messageId: body.id, accepted: [opts.to], rejected: [] };
+      }
+
+      this.logger.error(
+        `Resend rejected email → ${opts.to} [${opts.subject}] status=${response.status} message=${body.message ?? JSON.stringify(body)}`,
+      );
+      return { success: false, accepted: [], rejected: [opts.to] };
+    } catch (err) {
+      this.logger.error(`Failed to call Resend API → ${opts.to}`, err);
+      return { success: false, accepted: [], rejected: [opts.to] };
+    }
+  }
+
+  // ── Nodemailer / SMTP fallback ────────────────────────────────────────────
+
+  private async sendViaSmtp(opts: MailOptions): Promise<MailDeliveryResult> {
     const from = this.config.get<string>(
       'EMAIL_FROM',
       this.smtpUser ? `"Gent Sallaku" <${this.smtpUser}>` : '"Gent Sallaku" <noreply@gentsallaku.it>',
     );
     try {
       const info = await this.transporter.sendMail({ from, ...opts });
-      const accepted = (info.accepted ?? []).map(item => String(item));
-      const rejected = (info.rejected ?? []).map(item => String(item));
+      const accepted = (info.accepted ?? []).map((item: any) => String(item));
+      const rejected = (info.rejected ?? []).map((item: any) => String(item));
       const success = accepted.length > 0 && rejected.length === 0;
 
       if (success) {
         this.logger.log(`Email accepted by SMTP → ${opts.to} [${opts.subject}] (${info.messageId})`);
       } else {
-        this.logger.error(`Email not fully accepted by SMTP → ${opts.to} [${opts.subject}] accepted=${accepted.join(',')} rejected=${rejected.join(',')}`);
+        this.logger.error(
+          `Email not fully accepted by SMTP → ${opts.to} accepted=${accepted.join(',')} rejected=${rejected.join(',')}`,
+        );
       }
-
-      return {
-        success,
-        messageId: info.messageId,
-        accepted,
-        rejected,
-      };
+      return { success, messageId: info.messageId, accepted, rejected };
     } catch (err) {
-      this.logger.error(`Failed to send email → ${opts.to}`, err);
+      this.logger.error(`Failed to send email via SMTP → ${opts.to}`, err);
       return { success: false, accepted: [], rejected: [opts.to] };
     }
   }
