@@ -187,6 +187,84 @@ Important:
 - Remove old frontend files from the Apache document root before uploading the new build, otherwise stale hashed assets can break the app.
 - No Apache reverse proxy is required for `/api`; the production frontend already uses the absolute Railway backend URL.
 
+
+## 🛡️ Sicurezza & Best Practice
+
+### Backend
+- **Hashing password**: bcrypt (12 rounds), password mai salvate in chiaro.
+- **Validazione input**: class-validator su tutti i DTO (es. password forte, email valida).
+- **Autenticazione JWT**: access token breve durata, refresh token separato, secret in variabile d’ambiente.
+- **Refresh token**: archiviato hashato nel DB, mai in chiaro, endpoint dedicato per rinnovo.
+- **OTP (One-Time Password)**: login/registrazione via email/SMS, rate limiting (max 3 richieste/10min), scadenza 5 minuti, tentativi limitati.
+- **Ruoli**: Admin/User, protezione endpoints con @Roles e guardie custom.
+- **Rate limiting**: throttler globale (default 60 req/min/IP), personalizzabile per endpoint.
+- **CORS**: configurabile via variabile d’ambiente.
+- **Logging**: errori e accessi critici loggati (NestJS Logger).
+- **Filtri errori**: custom HttpExceptionFilter per risposte uniformi e logging stack trace.
+- **Cache-Control**: interceptor per cache pubblica su GET pubblici.
+
+### Frontend
+- **Token storage**: access/refresh token solo in localStorage, mai in URL o query.
+- **Logout automatico**: dopo 30 minuti di inattività (eventi mouse/tastiera/scroll).
+- **Intercettori HTTP**: retry automatico su 401 con refresh token, logout forzato se refresh fallisce.
+- **Protezione route**: AuthGuard su tutte le route admin.
+- **Sync multi-tab**: logout sincronizzato tra tab/browser.
+
+## 🏛️ Architettura & Flussi
+
+### Diagramma architetturale (testuale)
+
+```
+┌─────────────┐      ┌──────────────┐      ┌──────────────┐
+│  Frontend   │ <──> │   Backend    │ <──> │   MongoDB    │
+│ (Angular)   │      │  (NestJS)    │      │              │
+└─────────────┘      └──────────────┘      └──────────────┘
+     │                    │
+     │ REST API (JWT, OTP, CRUD, Blog, ecc)
+     ▼
+   Admin Panel (CRUD, Blog, Progetti, Esperienze)
+```
+
+### Flusso autenticazione
+1. **Login**: email+password (bcrypt) → JWT access+refresh token
+2. **OTP**: richiesta via email/SMS, rate limit, verifica codice (5 min)
+3. **Refresh**: access token scaduto → refresh token (hashato) → nuovo access+refresh
+4. **Ruoli**: endpoints protetti da JwtAuthGuard + RolesGuard (admin/user)
+5. **Logout**: revoca refresh token lato server, pulizia storage lato client
+
+### Motivazioni scelte tecnologiche
+- **Angular**: robustezza, reactive programming, signals, ecosistema maturo, sicurezza XSS.
+- **NestJS**: architettura modulare, dependency injection, validazione, sicurezza integrata.
+- **MongoDB**: flessibilità schema, rapid prototyping, scalabilità.
+- **Docker**: isolamento ambienti, deploy semplificato, compatibilità cloud.
+- **Throttler/Guards**: protezione API da abusi e accessi non autorizzati.
+
+## 📚 Dettagli API & Validazione
+
+### Autenticazione
+- `POST /api/v1/auth/register` — validazione password forte, email unica
+- `POST /api/v1/auth/login` — JWT access+refresh token
+- `POST /api/v1/auth/otp/request` — invio OTP, rate limit, canale email/SMS
+- `POST /api/v1/auth/otp/verify` — verifica OTP, login/registrazione
+- `POST /api/v1/auth/refresh` — rinnovo access token tramite refresh token hashato
+- `POST /api/v1/auth/logout` — revoca refresh token
+
+### Protezione endpoints
+- Tutte le rotte CRUD admin protette da JwtAuthGuard + RolesGuard
+- Validazione DTO su ogni input (class-validator)
+- Errori gestiti da HttpExceptionFilter (risposta uniforme, logging stack)
+
+### Esempio validazione RegisterDto
+```ts
+@IsString() @MaxLength(60) name: string;
+@IsEmail() @MaxLength(254) email: string;
+@IsString() @MinLength(8) @MaxLength(72)
+@Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/, { message: 'Password must contenere almeno una maiuscola, una minuscola, un numero e un carattere speciale' })
+password: string;
+```
+
+---
+
 ### Environment Variables (`portfolio-backend/.env`)
 
 | Variable | Example | Description |
