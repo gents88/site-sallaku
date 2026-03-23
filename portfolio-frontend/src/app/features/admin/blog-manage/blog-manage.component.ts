@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
@@ -7,13 +7,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { finalize, timeout } from 'rxjs';
+import { Subject } from 'rxjs';
+import { debounceTime, filter, finalize, takeUntil, timeout } from 'rxjs/operators';
 import { BlogService } from '../../../core/services/blog.service';
 import { BlogPdfDraft, BlogLanguage, CreatePostPayload, Post } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -29,19 +29,24 @@ import {
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
-    MatCheckboxModule, MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent,
-    MatSelectModule, BlogPdfUploadComponent,
+    MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent,
+    MatSelectModule, BlogPdfUploadComponent, MatTooltipModule,
   ],
   templateUrl: './blog-manage.component.html',
   styleUrls: ['./blog-manage.component.scss'],
 })
-export class BlogManageComponent implements OnInit {
+export class BlogManageComponent implements OnInit, OnDestroy {
   readonly pdfGenerationEnabled = environment.blogPdfUploadEnabled;
+
   posts: Post[] = [];
   loading = true;
   showForm = false;
   editingId: string | null = null;
   saving = false;
+  autoSaving = false;
+  autosaveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
+  autosaveTime: Date | null = null;
+  showPreview = false;
   generatingDraft = false;
   uploadProgress = 0;
   processingDraft = false;
@@ -50,18 +55,23 @@ export class BlogManageComponent implements OnInit {
   generationWarnings: string[] = [];
   sourceSummary: BlogPdfDraft['source'] | null = null;
   featuredImagePrompt = '';
+  slugManuallyEdited = false;
+
+  private destroy$ = new Subject<void>();
+
+  @ViewChild('contentTextarea', { read: ElementRef })
+  contentTextareaRef!: ElementRef<HTMLTextAreaElement>;
 
   form = this.fb.group({
-    title:           ['', Validators.required],
+    title:           ['', [Validators.required, Validators.minLength(3)]],
     subtitle:        [''],
     slug:            [''],
-    language:        ['en' as BlogLanguage, Validators.required],
-    content:         ['', Validators.required],
+    language:        ['en' as BlogLanguage],
+    content:         ['', [Validators.required, Validators.minLength(10)]],
     excerpt:         [''],
     coverImage:      [''],
     metaTitle:       [''],
     metaDescription: [''],
-    published:       [false],
   });
 
   constructor(
@@ -71,6 +81,11 @@ export class BlogManageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void { this.load(); }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   load(): void {
     this.loading = true;
@@ -86,71 +101,113 @@ export class BlogManageComponent implements OnInit {
   openCreate(): void {
     this.editingId = null;
     this.tags = [];
+    this.slugManuallyEdited = false;
+    this.autosaveStatus = 'idle';
+    this.autosaveTime = null;
+    this.showPreview = false;
     this.resetGenerationState();
-    this.form.reset({ language: 'en', published: false });
+    this.form.reset({ language: 'en' });
     this.showForm = true;
+    this.setupAutoSave();
+    this.setupSlugFromTitle();
   }
 
   openEdit(post: Post): void {
     this.editingId = post._id;
     this.tags = [...post.tags];
+    this.slugManuallyEdited = true;
+    this.autosaveStatus = 'idle';
+    this.autosaveTime = null;
+    this.showPreview = false;
     this.resetGenerationState();
     this.form.patchValue({
       title: post.title, subtitle: post.subtitle, slug: post.slug, language: post.language,
       content: post.content, excerpt: post.excerpt,
       coverImage: post.coverImage, metaTitle: post.metaTitle,
-      metaDescription: post.metaDescription, published: post.published,
+      metaDescription: post.metaDescription,
     });
     this.showForm = true;
+    this.setupAutoSave();
+    this.setupSlugFromTitle();
   }
 
   closeForm(): void {
     this.showForm = false;
+    this.showPreview = false;
     this.resetGenerationState();
+    this.destroy$.next();
   }
 
-  generateDraft(request: BlogPdfUploadRequest): void {
-    this.generatingDraft = true;
-    this.processingDraft = false;
-    this.uploadProgress = 0;
-    this.generationWarnings = [];
-    this.sourceSummary = null;
+  togglePreview(): void {
+    this.showPreview = !this.showPreview;
+  }
 
-    this.blogService.generateFromPdf(request.file, request.language, request.context).subscribe({
-      next: event => {
-        if (event.type === HttpEventType.UploadProgress) {
-          const total = event.total || request.file.size || 1;
-          this.uploadProgress = Math.min(100, Math.round((event.loaded / total) * 100));
-          this.processingDraft = this.uploadProgress >= 100;
-          return;
-        }
+  private setupAutoSave(): void {
+    this.form.valueChanges.pipe(
+      debounceTime(7000),
+      filter(() => !this.saving && !this.autoSaving),
+      filter(() => {
+        const title = (this.form.get('title')?.value || '').trim();
+        const content = (this.form.get('content')?.value || '').trim();
+        return title.length >= 3 && content.length >= 10;
+      }),
+      takeUntil(this.destroy$),
+    ).subscribe(() => this.performAutoSave());
+  }
 
-        if (event.type === HttpEventType.Response && event.body) {
-          this.uploadProgress = 100;
-          this.processingDraft = false;
-          this.generatingDraft = false;
-          this.applyGeneratedDraft(event.body);
-          this.snackBar.open('Draft generated from PDF.', 'Close', { duration: 3500 });
+  private setupSlugFromTitle(): void {
+    this.form.get('title')?.valueChanges.pipe(
+      debounceTime(400),
+      takeUntil(this.destroy$),
+    ).subscribe(value => {
+      if (!this.slugManuallyEdited) {
+        this.form.get('slug')?.setValue(this.slugifyStr(value || ''), { emitEvent: false });
+      }
+    });
+  }
+
+  onSlugManualEdit(): void {
+    const slug = this.form.get('slug')?.value || '';
+    this.slugManuallyEdited = slug.trim().length > 0;
+  }
+
+  private performAutoSave(): void {
+    if (this.saving || this.autoSaving) return;
+    const payload = this.buildPayload(false);
+    this.autoSaving = true;
+    this.autosaveStatus = 'saving';
+
+    const req$ = this.editingId
+      ? this.blogService.update(this.editingId, payload)
+      : this.blogService.create(payload);
+
+    req$.subscribe({
+      next: (post) => {
+        this.autoSaving = false;
+        this.autosaveStatus = 'saved';
+        this.autosaveTime = new Date();
+        if (!this.editingId) {
+          this.editingId = post._id;
         }
       },
-      error: error => {
-        this.generatingDraft = false;
-        this.processingDraft = false;
-        this.uploadProgress = 0;
-        const message = error?.error?.message || 'Failed to process the PDF.';
-        this.snackBar.open(Array.isArray(message) ? message.join(', ') : message, 'Close', { duration: 4000 });
+      error: () => {
+        this.autoSaving = false;
+        this.autosaveStatus = 'error';
       },
     });
   }
 
-  save(): void {
+  saveDraft(): void { this.save(false); }
+  publish(): void { this.save(true); }
+
+  save(published: boolean): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snackBar.open('Serve almeno titolo e contenuto.', 'Close', { duration: 3000 });
+      this.snackBar.open('Title and content are required.', 'Close', { duration: 3000 });
       return;
     }
 
-    const payload = this.buildPayload();
+    const payload = this.buildPayload(published);
     this.saving = true;
     const req$ = this.editingId
       ? this.blogService.update(this.editingId, payload)
@@ -158,9 +215,12 @@ export class BlogManageComponent implements OnInit {
 
     req$.subscribe({
       next: () => {
-        this.saving = false; this.showForm = false;
-        this.snackBar.open('Post saved!', 'Close', { duration: 3000 });
+        this.saving = false;
+        this.showForm = false;
+        this.autosaveStatus = 'idle';
+        this.snackBar.open(published ? 'Article published!' : 'Draft saved!', 'Close', { duration: 3000 });
         this.load();
+        this.destroy$.next();
       },
       error: error => {
         this.saving = false;
@@ -190,21 +250,88 @@ export class BlogManageComponent implements OnInit {
     if (idx >= 0) this.tags.splice(idx, 1);
   }
 
+  /** Insert HTML formatting around the selected text (or a placeholder) in the content textarea. */
+  insertFormat(format: string): void {
+    const ta = this.contentTextareaRef?.nativeElement;
+    if (!ta) return;
+
+    const start = ta.selectionStart ?? 0;
+    const end = ta.selectionEnd ?? 0;
+    const selected = ta.value.slice(start, end);
+
+    let before = '';
+    let after = '';
+    let placeholder = 'text';
+
+    switch (format) {
+      case 'bold':      before = '<strong>'; after = '</strong>'; placeholder = 'bold text'; break;
+      case 'italic':    before = '<em>'; after = '</em>'; placeholder = 'italic text'; break;
+      case 'h2':        before = '\n<h2>'; after = '</h2>\n'; placeholder = 'Heading'; break;
+      case 'h3':        before = '\n<h3>'; after = '</h3>\n'; placeholder = 'Subheading'; break;
+      case 'code':      before = '<code>'; after = '</code>'; placeholder = 'code'; break;
+      case 'pre':       before = '\n<pre><code>\n'; after = '\n</code></pre>\n'; placeholder = '// code block'; break;
+      case 'ul':        before = '\n<ul>\n  <li>'; after = '</li>\n</ul>\n'; placeholder = 'list item'; break;
+      case 'ol':        before = '\n<ol>\n  <li>'; after = '</li>\n</ol>\n'; placeholder = 'list item'; break;
+      case 'blockquote':before = '\n<blockquote>'; after = '</blockquote>\n'; placeholder = 'quote'; break;
+      case 'link':      before = '<a href="url">'; after = '</a>'; placeholder = selected || 'link text'; break;
+      case 'hr':        before = '\n<hr>\n'; after = ''; placeholder = ''; break;
+      case 'p':         before = '\n<p>'; after = '</p>\n'; placeholder = 'paragraph'; break;
+    }
+
+    const insertText = selected || placeholder;
+    const newValue = ta.value.slice(0, start) + before + insertText + after + ta.value.slice(end);
+    this.form.get('content')?.setValue(newValue, { emitEvent: true });
+
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = start + before.length;
+      ta.selectionEnd = start + before.length + insertText.length;
+    });
+  }
+
+  generateDraft(request: BlogPdfUploadRequest): void {
+    this.generatingDraft = true;
+    this.processingDraft = false;
+    this.uploadProgress = 0;
+    this.generationWarnings = [];
+    this.sourceSummary = null;
+
+    this.blogService.generateFromPdf(request.file, request.language, request.context).subscribe({
+      next: event => {
+        if (event.type === HttpEventType.UploadProgress) {
+          const total = event.total || request.file.size || 1;
+          this.uploadProgress = Math.min(100, Math.round((event.loaded / total) * 100));
+          this.processingDraft = this.uploadProgress >= 100;
+          return;
+        }
+        if (event.type === HttpEventType.Response && event.body) {
+          this.uploadProgress = 100;
+          this.processingDraft = false;
+          this.generatingDraft = false;
+          this.applyGeneratedDraft(event.body);
+          this.snackBar.open('Draft generated from PDF.', 'Close', { duration: 3500 });
+        }
+      },
+      error: error => {
+        this.generatingDraft = false;
+        this.processingDraft = false;
+        this.uploadProgress = 0;
+        const message = error?.error?.message || 'Failed to process the PDF.';
+        this.snackBar.open(Array.isArray(message) ? message.join(', ') : message, 'Close', { duration: 4000 });
+      },
+    });
+  }
+
   private applyGeneratedDraft(draft: BlogPdfDraft): void {
     this.tags = [...draft.tags];
     this.generationWarnings = draft.warnings;
     this.sourceSummary = draft.source;
     this.featuredImagePrompt = draft.imageHandling.featuredImageSuggestion.prompt;
+    this.slugManuallyEdited = true;
     this.form.patchValue({
-      title: draft.title,
-      subtitle: draft.subtitle,
-      slug: draft.slug,
-      language: draft.language,
-      content: draft.content,
-      excerpt: draft.excerpt,
-      coverImage: draft.coverImage,
-      metaTitle: draft.metaTitle,
-      metaDescription: draft.metaDescription,
+      title: draft.title, subtitle: draft.subtitle, slug: draft.slug,
+      language: draft.language, content: draft.content, excerpt: draft.excerpt,
+      coverImage: draft.coverImage, metaTitle: draft.metaTitle, metaDescription: draft.metaDescription,
     });
   }
 
@@ -217,7 +344,7 @@ export class BlogManageComponent implements OnInit {
     this.featuredImagePrompt = '';
   }
 
-  private buildPayload(): CreatePostPayload {
+  private buildPayload(published: boolean): CreatePostPayload {
     const raw = this.form.getRawValue();
     const title = (raw.title ?? '').trim();
     const content = (raw.content ?? '').trim();
@@ -236,16 +363,16 @@ export class BlogManageComponent implements OnInit {
       title,
       content,
       language: raw.language || 'en',
-      published: !!raw.published,
+      published,
     };
 
-    if (subtitle) payload.subtitle = subtitle;
-    if (slug) payload.slug = slug;
-    if (excerpt) payload.excerpt = excerpt;
-    if (coverImage) payload.coverImage = coverImage;
-    if (tags.length) payload.tags = tags;
-    if (metaTitle) payload.metaTitle = metaTitle;
-    if (metaDescription) payload.metaDescription = metaDescription;
+    if (subtitle)         payload.subtitle = subtitle;
+    if (slug)             payload.slug = slug;
+    if (excerpt)          payload.excerpt = excerpt;
+    if (coverImage)       payload.coverImage = coverImage;
+    if (tags.length)      payload.tags = tags;
+    if (metaTitle)        payload.metaTitle = metaTitle;
+    if (metaDescription)  payload.metaDescription = metaDescription;
 
     return payload;
   }
@@ -255,51 +382,35 @@ export class BlogManageComponent implements OnInit {
     return cleaned || undefined;
   }
 
-  private slugifyValue(value: string | null | undefined): string | undefined {
-    const normalized = (value ?? '')
-      .trim()
-      .toLowerCase()
+  private slugifyStr(value: string): string {
+    return value.trim().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
+  }
 
-    return normalized || undefined;
+  private slugifyValue(value: string | null | undefined): string | undefined {
+    const slug = this.slugifyStr(value || '');
+    return slug || undefined;
   }
 
   private normalizeCoverImage(value: string | null | undefined): string | undefined {
     const cleaned = this.cleanOptional(value);
-    if (!cleaned) {
-      return undefined;
-    }
-
-    // Avoid oversized JSON payloads from base64 images; backend currently accepts URL strings only reliably.
+    if (!cleaned) return undefined;
     if (cleaned.startsWith('data:')) {
-      this.snackBar.open('Per la cover usa un URL immagine. L\'upload file diretto non e supportato in questo form.', 'Close', { duration: 5000 });
+      this.snackBar.open('Use an image URL for cover. Direct file upload is not supported.', 'Close', { duration: 5000 });
       return undefined;
     }
-
     return cleaned;
   }
 
   private resolveSaveError(error: any): string {
     const status = error?.status;
     const message = error?.error?.message;
-
-    if (Array.isArray(message) && message.length) {
-      return message.join(', ');
-    }
-
-    if (typeof message === 'string' && message.trim()) {
-      return message;
-    }
-
-    if (status === 413) {
-      return 'Payload troppo grande. Rimuovi immagini inline/base64 e salva solo testo o URL immagine.';
-    }
-
-    if (status === 401 || status === 403) {
-      return 'Sessione admin non valida. Riesegui il login.';
-    }
-
-    return 'Salvataggio non riuscito. Controlla titolo, contenuto e slug.';
+    if (Array.isArray(message) && message.length) return message.join(', ');
+    if (typeof message === 'string' && message.trim()) return message;
+    if (status === 413) return 'Payload too large. Remove inline images and use image URLs instead.';
+    if (status === 401 || status === 403) return 'Session expired. Please log in again.';
+    return 'Save failed. Check title, content and slug.';
   }
 }

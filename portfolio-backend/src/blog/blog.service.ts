@@ -30,6 +30,17 @@ export class BlogService {
     return candidate;
   }
 
+  /** Auto-generate a short excerpt from HTML/plain content. */
+  private autoExcerpt(content: string, maxLen = 200): string {
+    const stripped = content
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (stripped.length <= maxLen) return stripped;
+    const cut = stripped.lastIndexOf(' ', maxLen);
+    return stripped.slice(0, cut > 0 ? cut : maxLen) + '…';
+  }
+
   /** Public: published posts only, paginated */
   async findPublished(tag?: string, page = 1, limit = 10): Promise<{
     data: PostDocument[];
@@ -79,9 +90,11 @@ export class BlogService {
   async create(dto: CreatePostDto): Promise<PostDocument> {
     const slug = await this.ensureUniqueSlug(dto.slug || dto.title);
     const publishedAt = dto.published ? new Date() : null;
+    const excerpt = dto.excerpt || this.autoExcerpt(dto.content);
     return this.postModel.create({
       ...dto,
       slug,
+      excerpt,
       language: dto.language || DEFAULT_BLOG_LANGUAGE,
       publishedAt,
     });
