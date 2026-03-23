@@ -76,6 +76,16 @@ export class ContactService {
       .exec();
   }
 
+  /** Fetch all messages received today (since midnight UTC of the current server date). */
+  async findToday() {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    return this.contactModel
+      .find({ createdAt: { $gte: start } })
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
   async markAsRead(id: string, read = true) {
     const message = await this.contactModel.findByIdAndUpdate(
       id,

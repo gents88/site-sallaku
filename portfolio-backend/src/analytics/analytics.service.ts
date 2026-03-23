@@ -81,6 +81,24 @@ export class AnalyticsService {
     }, 60_000); // 1 minute TTL
   }
 
+  /** Fresh (un-cached) per-day stats used by the daily summary cron job. */
+  async getTodayPageViewStats(): Promise<{ todayPageViews: number; uniqueVisitorsToday: number; todayBlogViews: number }> {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const [todayPageViews, uniqueVisitorIds, todayBlogViews] = await Promise.all([
+      this.pageViewModel.countDocuments({ createdAt: { $gte: start } }).exec(),
+      this.pageViewModel.distinct('visitorId', { createdAt: { $gte: start } }).exec(),
+      this.pageViewModel.countDocuments({ createdAt: { $gte: start }, path: { $regex: '^/blog', $options: 'i' } }).exec(),
+    ]);
+
+    return {
+      todayPageViews,
+      uniqueVisitorsToday: uniqueVisitorIds.length,
+      todayBlogViews,
+    };
+  }
+
   async getAdvancedAnalytics(): Promise<AdvancedAnalytics> {
     return this.cache.getOrSet('analytics:advanced', async () => {
       const today = new Date();

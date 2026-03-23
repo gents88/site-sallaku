@@ -10,6 +10,9 @@ import { MailService } from '../mail/mail.service';
 export class DailySummaryService implements OnModuleInit {
   private readonly logger = new Logger(DailySummaryService.name);
 
+  /** In-memory guard: stores the last YYYY-MM-DD that a summary was successfully sent. */
+  private lastSentDate = '';
+
   constructor(
     private cfg: ConfigService,
     private contacts: ContactService,
@@ -20,74 +23,146 @@ export class DailySummaryService implements OnModuleInit {
 
   onModuleInit() {
     const cronExpr = this.cfg.get<string>('DAILY_SUMMARY_CRON', '0 22 * * *');
-    this.logger.log(`Scheduling daily summary with cron expression: ${cronExpr}`);
+    const tz = this.cfg.get<string>('CRON_TIMEZONE', 'Europe/Rome');
+    this.logger.log(`Scheduling daily summary: "${cronExpr}" timezone=${tz}`);
 
-    cron.schedule(cronExpr, async () => {
-      try {
-        this.logger.log('Running daily summary job');
-        const now = new Date();
-        const start = new Date(now);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(now);
-        end.setHours(23, 59, 59, 999);
-        const dateLabel = now.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-
-        // ── Gather data in parallel ──────────────────────────────────────────
-        const [allContacts, visitSummary, advanced, chatInteractions] = await Promise.all([
-          this.contacts.findAll(1000),
-          this.analytics.getVisitSummary(1),
-          this.analytics.getAdvancedAnalytics(),
-          this.chatbot.getTodayInteractionCount(),
-        ]);
-
-        const todaysContacts = allContacts.filter(c => {
-          const d = new Date((c as any).createdAt);
-          return d >= start && d <= end;
-        });
-
-        const admin = this.cfg.get<string>('EMAIL_TO')
-          || this.cfg.get<string>('ADMIN_EMAIL')
-          || 'gentsallaku@gmail.com';
-
-        const html = this.buildDailySummaryHtml({
-          date: dateLabel,
-          todaysContacts,
-          visitSummary,
-          advanced,
-          chatInteractions,
-        });
-
-        await this.mail.send({
-          to: admin,
-          subject: `📊 Daily Summary — ${now.toISOString().slice(0, 10)}`,
-          html,
-          text: [
-            `Daily Summary — ${dateLabel}`,
-            ``,
-            `Visitors today:      ${visitSummary.totalViews}`,
-            `Unique visitors:     ${visitSummary.uniqueVisitors}`,
-            `Chatbot interactions: ${chatInteractions}`,
-            `Contact messages:    ${todaysContacts.length}`,
-            ``,
-            `Top locations: ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
-          ].join('\n'),
-        });
-
-        this.logger.log(`Daily summary sent: ${visitSummary.totalViews} visits, ${chatInteractions} chat msgs, ${todaysContacts.length} contact msgs`);
-      } catch (err) {
-        this.logger.error('Daily summary job failed', err as any);
-      }
-    });
+    cron.schedule(cronExpr, () => this.executeSummary(), { timezone: tz } as any);
   }
+
+  // ── Public API (used by the manual trigger endpoint) ──────────────────────
+
+  async runNow(): Promise<{ success: boolean; message: string }> {
+    this.logger.log('[DailySummary] Manual trigger requested');
+    return this.executeSummary(true /* force */);
+  }
+
+  // ── Core execution ────────────────────────────────────────────────────────
+
+  private async executeSummary(force = false): Promise<{ success: boolean; message: string }> {
+    const now = new Date();
+    const todayKey = now.toISOString().slice(0, 10); // YYYY-MM-DD
+
+    // Deduplication: skip if already sent today (unless this is a forced/manual run)
+    if (!force && this.lastSentDate === todayKey) {
+      this.logger.warn(`[DailySummary] Already sent for ${todayKey} — skipping duplicate execution`);
+      return { success: true, message: `Already sent for ${todayKey} — skipped.` };
+    }
+
+    this.logger.log(`[DailySummary] Starting — date=${todayKey} force=${force}`);
+
+    try {
+      const sent = await this.sendWithRetry(now, 3);
+      if (sent) {
+        this.lastSentDate = todayKey;
+        this.logger.log(`[DailySummary] Completed successfully for ${todayKey}`);
+        return { success: true, message: `Daily summary sent for ${todayKey}.` };
+      }
+      return { success: false, message: 'All send attempts failed — check error logs for details.' };
+    } catch (err) {
+      this.logger.error('[DailySummary] Unexpected error during execution', err as any);
+      return { success: false, message: String((err as any)?.message ?? err) };
+    }
+  }
+
+  // ── Retry wrapper ─────────────────────────────────────────────────────────
+
+  private async sendWithRetry(now: Date, maxAttempts: number): Promise<boolean> {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        this.logger.log(`[DailySummary] Attempt ${attempt}/${maxAttempts}`);
+        const success = await this.gatherAndSend(now);
+        if (success) return true;
+        this.logger.warn(`[DailySummary] Attempt ${attempt}/${maxAttempts} — email not accepted by SMTP`);
+      } catch (err) {
+        this.logger.error(`[DailySummary] Attempt ${attempt}/${maxAttempts} threw an error`, err as any);
+      }
+
+      if (attempt < maxAttempts) {
+        const delayMs = attempt * 60_000; // 1 min after 1st fail, 2 min after 2nd
+        this.logger.log(`[DailySummary] Waiting ${delayMs / 1000}s before retry ${attempt + 1}/${maxAttempts}…`);
+        await new Promise(r => setTimeout(r, delayMs));
+      }
+    }
+    this.logger.error(`[DailySummary] All ${maxAttempts} attempts exhausted — daily summary NOT sent`);
+    return false;
+  }
+
+  // ── Data gathering + email sending ───────────────────────────────────────
+
+  private async gatherAndSend(now: Date): Promise<boolean> {
+    const dateLabel = now.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // ── Gather data in parallel ──────────────────────────────────────────
+    this.logger.log('[DailySummary] Gathering analytics data…');
+    const [todaysContacts, todayStats, advanced, chatInteractions] = await Promise.all([
+      this.contacts.findToday(),
+      this.analytics.getTodayPageViewStats(),
+      this.analytics.getAdvancedAnalytics(),
+      this.chatbot.getTodayInteractionCount(),
+    ]);
+
+    this.logger.log(
+      `[DailySummary] Data ready — pageViews=${todayStats.todayPageViews}, ` +
+      `uniqueVisitors=${todayStats.uniqueVisitorsToday}, blogViews=${todayStats.todayBlogViews}, ` +
+      `chat=${chatInteractions}, contacts=${todaysContacts.length}`,
+    );
+
+    const admin = this.cfg.get<string>('EMAIL_TO')
+      || this.cfg.get<string>('ADMIN_EMAIL')
+      || 'gentsallaku@gmail.com';
+
+    const html = this.buildDailySummaryHtml({
+      date: dateLabel,
+      todaysContacts,
+      todayStats,
+      advanced,
+      chatInteractions,
+    });
+
+    const subject = `📊 Daily Summary — ${now.toISOString().slice(0, 10)}`;
+    this.logger.log(`[DailySummary] Sending email → ${admin} subject="${subject}"`);
+
+    const result = await this.mail.send({
+      to: admin,
+      subject,
+      html,
+      text: [
+        `Daily Summary — ${dateLabel}`,
+        ``,
+        `Page views today:    ${todayStats.todayPageViews}`,
+        `Unique visitors:     ${todayStats.uniqueVisitorsToday}`,
+        `Blog article views:  ${todayStats.todayBlogViews}`,
+        `Chatbot messages:    ${chatInteractions}`,
+        `Contact messages:    ${todaysContacts.length}`,
+        ``,
+        `Top locations: ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
+      ].join('\n'),
+    });
+
+    if (result.success) {
+      this.logger.log(
+        `[DailySummary] ✅ Email accepted by SMTP → ${admin} (messageId=${result.messageId})`,
+      );
+    } else {
+      this.logger.error(
+        `[DailySummary] ❌ SMTP rejected email → ${admin} ` +
+        `accepted=[${result.accepted.join(',')}] rejected=[${result.rejected.join(',')}]`,
+      );
+    }
+
+    return result.success;
+  }
+
+  // ── HTML builder ──────────────────────────────────────────────────────────
 
   private buildDailySummaryHtml(data: {
     date: string;
     todaysContacts: any[];
-    visitSummary: Awaited<ReturnType<AnalyticsService['getVisitSummary']>>;
+    todayStats: { todayPageViews: number; uniqueVisitorsToday: number; todayBlogViews: number };
     advanced: Awaited<ReturnType<AnalyticsService['getAdvancedAnalytics']>>;
     chatInteractions: number;
   }): string {
-    const { date, todaysContacts, visitSummary, advanced, chatInteractions } = data;
+    const { date, todaysContacts, todayStats, advanced, chatInteractions } = data;
 
     const statCard = (icon: string, label: string, value: string | number, color: string) => `
       <td style="padding:8px;">
@@ -143,10 +218,13 @@ export class DailySummaryService implements OnModuleInit {
           <!-- KPI Stats Row -->
           <table style="width:100%;border-collapse:collapse;margin-bottom:28px;">
             <tr>
-              ${statCard('👁️', 'Page Views', visitSummary.totalViews, '#818cf8')}
-              ${statCard('👤', 'Unique Visitors', visitSummary.uniqueVisitors, '#38bdf8')}
+              ${statCard('👁️', 'Page Views', todayStats.todayPageViews, '#818cf8')}
+              ${statCard('👤', 'Unique Visitors', todayStats.uniqueVisitorsToday, '#38bdf8')}
               ${statCard('🤖', 'Chat Messages', chatInteractions, '#34d399')}
               ${statCard('✉️', 'Contact Forms', todaysContacts.length, '#f59e0b')}
+            </tr>
+            <tr>
+              ${statCard('📰', 'Blog Views', todayStats.todayBlogViews, '#a78bfa')}
             </tr>
           </table>
 
