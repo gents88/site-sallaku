@@ -104,13 +104,13 @@ translations: {
 
 ---
 
-## 🏗️ Full-Stack Portfolio App (Angular 17 + NestJS)
+## 🏗️ Full-Stack Portfolio App (Angular 21 + NestJS)
 
 A complete rewrite of the portfolio as a full-stack web application with admin panel lives in the subdirectories:
 
 ```
 portfolio-backend/    → NestJS 10 REST API
-portfolio-frontend/   → Angular 17 SPA
+portfolio-frontend/   → Angular 21 SPA
 docker-compose.yml    → One-command startup
 ```
 
@@ -131,7 +131,7 @@ docker-compose.yml    → One-command startup
 
 | Layer | Technology |
 |---|---|
-| Frontend | Angular 17 (standalone), Angular Material 17, SCSS, Signals, RxJS 7 |
+| Frontend | Angular 21 (standalone), Angular Material 17, SCSS, Signals, RxJS 7 |
 | Backend | NestJS 10, Mongoose, Passport JWT, bcrypt, Nodemailer, Swagger |
 | Database | MongoDB 7 |
 | Infrastructure | Docker Compose, Nginx (SPA + API reverse proxy) |
