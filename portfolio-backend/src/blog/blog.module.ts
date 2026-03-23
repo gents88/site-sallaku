@@ -6,6 +6,7 @@ import { Post, PostSchema } from './schemas/post.schema';
 import { PdfExtractionService } from './services/pdf-extraction.service';
 import { BlogAiService } from './services/blog-ai.service';
 import { BlogGenerationService } from './services/blog-generation.service';
+import { TranslationService } from './services/translation.service';
 import { AuditModule } from '../audit/audit.module';
 
 @Module({
@@ -14,7 +15,7 @@ import { AuditModule } from '../audit/audit.module';
     AuditModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService, PdfExtractionService, BlogAiService, BlogGenerationService],
+  providers: [BlogService, PdfExtractionService, BlogAiService, BlogGenerationService, TranslationService],
   exports: [BlogService],
 })
 export class BlogModule {}

@@ -376,11 +376,123 @@
 .text-muted   { color: var(--color-text-muted); font-size: 0.875rem; }
 .empty-state  { text-align: center; color: var(--color-text-muted); margin-top: 3rem; }
 
+// ── Language tabs ─────────────────────────────────────────────────────────────
+
+.lang-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg-alt, rgba(248, 250, 252, 0.8));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+
+  &__buttons { display: flex; gap: 0.25rem; flex: 1; }
+}
+
+.lang-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover { background: rgba(37, 99, 235, 0.06); border-color: rgba(37, 99, 235, 0.3); color: var(--color-primary); }
+
+  &.active {
+    background: var(--color-primary, #2563eb);
+    border-color: var(--color-primary, #2563eb);
+    color: #fff;
+    .lang-dot { background: rgba(255, 255, 255, 0.7); }
+  }
+}
+
+.lang-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary, #2563eb);
+}
+
+.translate-btn { margin-left: auto; white-space: nowrap; }
+
+// ── PDF section ───────────────────────────────────────────────────────────────
+
+.pdf-section {
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed rgba(148, 163, 184, 0.4);
+  border-radius: 10px;
+  background: var(--color-bg-alt, rgba(248, 250, 252, 0.5));
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; color: var(--color-primary); }
+  }
+
+  &__hint { font-size: 0.82rem; color: var(--color-text-muted); }
+  &__upload { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+}
+
+.pdf-progress { max-width: 200px; }
+
+.pdf-preview {
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    mat-icon { color: #dc2626; font-size: 1.1rem; width: 1.1rem; height: 1.1rem; }
+  }
+
+  &__title { margin: 0 0 0.75rem; font-size: 1.05rem; font-weight: 600; }
+
+  &__body {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    p { margin: 0 0 0.5rem; &:last-child { margin: 0; } }
+  }
+}
+
 // ── Responsive ────────────────────────────────────────────────────────────────
 
 @media (max-width: 900px) {
   .form-panel__header { flex-direction: column; }
-  .generation-summary { flex-direction: column; }
+}
+
+@media (max-width: 700px) {
+  .lang-tabs { flex-direction: column; align-items: flex-start; }
+  .translate-btn { margin-left: 0; }
 }
 
 @media (max-width: 600px) {
@@ -388,4 +500,5 @@
   .form-actions__right { justify-content: flex-end; }
   .form-row--slim { max-width: 100%; }
 }
+
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { PostSummary } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-blog-list',
@@ -24,6 +25,9 @@ export class BlogListComponent implements OnInit {
   activeTag: string | null = null;
   searchQuery = '';
   loading = true;
+
+  private readonly langService = inject(LanguageService);
+  readonly currentLang = this.langService.current;
 
   constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {}
 
@@ -44,11 +48,28 @@ export class BlogListComponent implements OnInit {
     });
   }
 
+  getLocalizedTitle(post: PostSummary): string {
+    const lang = this.currentLang();
+    if (lang === 'en' && post.title_en) return post.title_en;
+    if (lang === 'sq' && post.title_sq) return post.title_sq;
+    return post.title;
+  }
+
+  getLocalizedExcerpt(post: PostSummary): string {
+    const lang = this.currentLang();
+    if (lang === 'en' && post.excerpt_en) return post.excerpt_en;
+    if (lang === 'sq' && post.excerpt_sq) return post.excerpt_sq;
+    return post.excerpt;
+  }
+
   filter(): void {
+    const q = this.searchQuery.toLowerCase();
     this.filteredPosts = this.posts.filter(p => {
       const matchesTag = !this.activeTag || p.tags.includes(this.activeTag);
-      const matchesSearch = !this.searchQuery ||
-        p.title.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchesSearch = !q ||
+        p.title.toLowerCase().includes(q) ||
+        (p.title_en ?? '').toLowerCase().includes(q) ||
+        (p.title_sq ?? '').toLowerCase().includes(q);
       return matchesTag && matchesSearch;
     });
   }

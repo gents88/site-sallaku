@@ -66,4 +66,39 @@ export class CreatePostDto {
   @IsOptional()
   @MaxLength(300)
   metaDescription?: string;
+
+  // ── Multilanguage translations ─────────────────────────────
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  title_en?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  title_sq?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_en?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_sq?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(300)
+  excerpt_en?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(300)
+  excerpt_sq?: string;
 }

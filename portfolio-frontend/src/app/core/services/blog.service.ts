@@ -9,6 +9,7 @@ import {
   UpdatePostPayload,
   BlogLanguage,
   BlogPdfDraft,
+  PdfExtractResult,
 } from '../models/post.model';
 import { ApiCacheService } from './api-cache.service';
 
@@ -79,5 +80,17 @@ export class BlogService {
       observe: 'events',
       reportProgress: true,
     });
+  }
+
+  extractPdf(file: File): Observable<PdfExtractResult> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<PdfExtractResult>(`${this.adminUrl}/extract-pdf`, formData);
+  }
+
+  translateText(text: string, from: string, to: string): Observable<string> {
+    return this.http
+      .post<{ translatedText: string }>(`${environment.apiUrl}/blog/admin/translate`, { text, from, to })
+      .pipe(map(r => r.translatedText));
   }
 }

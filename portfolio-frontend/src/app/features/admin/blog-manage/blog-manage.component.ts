@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,17 +11,28 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Subject } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { debounceTime, filter, finalize, takeUntil, timeout } from 'rxjs/operators';
 import { BlogService } from '../../../core/services/blog.service';
-import { BlogPdfDraft, BlogLanguage, CreatePostPayload, Post } from '../../../core/models/post.model';
+import { BlogPdfDraft, BlogLanguage, CreatePostPayload, Post, PdfExtractResult } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { environment } from '../../../../environments/environment';
 import {
   BlogPdfUploadComponent,
   BlogPdfUploadRequest,
 } from './components/blog-pdf-upload/blog-pdf-upload.component';
+
+interface PdfPreview {
+  fileName: string;
+  pageCount: number;
+  wordCount: number;
+  inferredTitle: string;
+  paragraphs: string[];
+  rawText: string;
+}
 
 @Component({
   selector: 'app-blog-manage',
@@ -30,7 +41,7 @@ import {
     CommonModule, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
     MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent,
-    MatSelectModule, BlogPdfUploadComponent, MatTooltipModule,
+    MatSelectModule, BlogPdfUploadComponent, MatTooltipModule, MatProgressBarModule,
   ],
   templateUrl: './blog-manage.component.html',
   styleUrls: ['./blog-manage.component.scss'],
@@ -57,6 +68,14 @@ export class BlogManageComponent implements OnInit, OnDestroy {
   featuredImagePrompt = '';
   slugManuallyEdited = false;
 
+  // Language tab state
+  activeTab: BlogLanguage = 'it';
+  translating = false;
+
+  // PDF extract state
+  extractingPdf = false;
+  pdfPreview: PdfPreview | null = null;
+
   private destroy$ = new Subject<void>();
 
   @ViewChild('contentTextarea', { read: ElementRef })
@@ -66,13 +85,54 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     title:           ['', [Validators.required, Validators.minLength(3)]],
     subtitle:        [''],
     slug:            [''],
-    language:        ['en' as BlogLanguage],
+    language:        ['it' as BlogLanguage],
     content:         ['', [Validators.required, Validators.minLength(10)]],
     excerpt:         [''],
     coverImage:      [''],
     metaTitle:       [''],
     metaDescription: [''],
+    // Translations
+    title_en:        [''],
+    title_sq:        [''],
+    content_en:      [''],
+    content_sq:      [''],
+    excerpt_en:      [''],
+    excerpt_sq:      [''],
   });
+
+  // ── Active-language control getters ────────────────────────────────────────
+
+  get activeTitleControl(): FormControl {
+    switch (this.activeTab) {
+      case 'en': return this.form.get('title_en') as FormControl;
+      case 'sq': return this.form.get('title_sq') as FormControl;
+      default:   return this.form.get('title') as FormControl;
+    }
+  }
+
+  get activeContentControl(): FormControl {
+    switch (this.activeTab) {
+      case 'en': return this.form.get('content_en') as FormControl;
+      case 'sq': return this.form.get('content_sq') as FormControl;
+      default:   return this.form.get('content') as FormControl;
+    }
+  }
+
+  get activeExcerptControl(): FormControl {
+    switch (this.activeTab) {
+      case 'en': return this.form.get('excerpt_en') as FormControl;
+      case 'sq': return this.form.get('excerpt_sq') as FormControl;
+      default:   return this.form.get('excerpt') as FormControl;
+    }
+  }
+
+  get hasEnTranslation(): boolean {
+    return !!(this.form.get('title_en')?.value || this.form.get('content_en')?.value);
+  }
+
+  get hasSqTranslation(): boolean {
+    return !!(this.form.get('title_sq')?.value || this.form.get('content_sq')?.value);
+  }
 
   constructor(
     private blogService: BlogService,
@@ -98,6 +158,10 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     });
   }
 
+  switchTab(lang: BlogLanguage): void {
+    this.activeTab = lang;
+  }
+
   openCreate(): void {
     this.editingId = null;
     this.tags = [];
@@ -105,8 +169,10 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     this.autosaveStatus = 'idle';
     this.autosaveTime = null;
     this.showPreview = false;
+    this.activeTab = 'it';
+    this.pdfPreview = null;
     this.resetGenerationState();
-    this.form.reset({ language: 'en' });
+    this.form.reset({ language: 'it' });
     this.showForm = true;
     this.setupAutoSave();
     this.setupSlugFromTitle();
@@ -119,12 +185,17 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     this.autosaveStatus = 'idle';
     this.autosaveTime = null;
     this.showPreview = false;
+    this.activeTab = 'it';
+    this.pdfPreview = null;
     this.resetGenerationState();
     this.form.patchValue({
       title: post.title, subtitle: post.subtitle, slug: post.slug, language: post.language,
       content: post.content, excerpt: post.excerpt,
       coverImage: post.coverImage, metaTitle: post.metaTitle,
       metaDescription: post.metaDescription,
+      title_en: post.title_en || '', title_sq: post.title_sq || '',
+      content_en: post.content_en || '', content_sq: post.content_sq || '',
+      excerpt_en: post.excerpt_en || '', excerpt_sq: post.excerpt_sq || '',
     });
     this.showForm = true;
     this.setupAutoSave();
@@ -134,6 +205,7 @@ export class BlogManageComponent implements OnInit, OnDestroy {
   closeForm(): void {
     this.showForm = false;
     this.showPreview = false;
+    this.pdfPreview = null;
     this.resetGenerationState();
     this.destroy$.next();
   }
@@ -201,9 +273,11 @@ export class BlogManageComponent implements OnInit, OnDestroy {
   publish(): void { this.save(true); }
 
   save(published: boolean): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      this.snackBar.open('Title and content are required.', 'Close', { duration: 3000 });
+    if (this.form.get('title')?.invalid || this.form.get('content')?.invalid) {
+      this.form.get('title')?.markAsTouched();
+      this.form.get('content')?.markAsTouched();
+      this.activeTab = 'it';
+      this.snackBar.open('Italian title and content are required.', 'Close', { duration: 3000 });
       return;
     }
 
@@ -280,7 +354,7 @@ export class BlogManageComponent implements OnInit, OnDestroy {
 
     const insertText = selected || placeholder;
     const newValue = ta.value.slice(0, start) + before + insertText + after + ta.value.slice(end);
-    this.form.get('content')?.setValue(newValue, { emitEvent: true });
+    this.activeContentControl.setValue(newValue, { emitEvent: true });
 
     setTimeout(() => {
       ta.focus();
@@ -362,17 +436,31 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     const payload: CreatePostPayload = {
       title,
       content,
-      language: raw.language || 'en',
+      language: raw.language || 'it',
       published,
     };
 
-    if (subtitle)         payload.subtitle = subtitle;
-    if (slug)             payload.slug = slug;
-    if (excerpt)          payload.excerpt = excerpt;
-    if (coverImage)       payload.coverImage = coverImage;
-    if (tags.length)      payload.tags = tags;
-    if (metaTitle)        payload.metaTitle = metaTitle;
-    if (metaDescription)  payload.metaDescription = metaDescription;
+    if (subtitle)        payload.subtitle = subtitle;
+    if (slug)            payload.slug = slug;
+    if (excerpt)         payload.excerpt = excerpt;
+    if (coverImage)      payload.coverImage = coverImage;
+    if (tags.length)     payload.tags = tags;
+    if (metaTitle)       payload.metaTitle = metaTitle;
+    if (metaDescription) payload.metaDescription = metaDescription;
+
+    const title_en   = this.cleanOptional(raw.title_en);
+    const title_sq   = this.cleanOptional(raw.title_sq);
+    const content_en = this.cleanOptional(raw.content_en);
+    const content_sq = this.cleanOptional(raw.content_sq);
+    const excerpt_en = this.cleanOptional(raw.excerpt_en);
+    const excerpt_sq = this.cleanOptional(raw.excerpt_sq);
+
+    if (title_en)   payload.title_en   = title_en;
+    if (title_sq)   payload.title_sq   = title_sq;
+    if (content_en) payload.content_en = content_en;
+    if (content_sq) payload.content_sq = content_sq;
+    if (excerpt_en) payload.excerpt_en = excerpt_en;
+    if (excerpt_sq) payload.excerpt_sq = excerpt_sq;
 
     return payload;
   }
@@ -412,5 +500,120 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     if (status === 413) return 'Payload too large. Remove inline images and use image URLs instead.';
     if (status === 401 || status === 403) return 'Session expired. Please log in again.';
     return 'Save failed. Check title, content and slug.';
+  }
+
+  // ── PDF extract (simple, no AI) ─────────────────────────────────────
+
+  onPdfFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      this.snackBar.open('Only PDF files are allowed.', 'Close', { duration: 3000 });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      this.snackBar.open('PDF must be smaller than 10 MB.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.extractingPdf = true;
+    this.pdfPreview = null;
+
+    this.blogService.extractPdf(file).subscribe({
+      next: (result: PdfExtractResult) => {
+        this.extractingPdf = false;
+        this.pdfPreview = this.buildPdfPreview(result);
+      },
+      error: err => {
+        this.extractingPdf = false;
+        const msg = err?.error?.message || 'Could not extract text from this PDF.';
+        this.snackBar.open(Array.isArray(msg) ? msg.join(', ') : msg, 'Close', { duration: 4000 });
+      },
+    });
+  }
+
+  private buildPdfPreview(result: PdfExtractResult): PdfPreview {
+    const lines = result.rawText.split('\n\n').map((l: string) => l.trim()).filter(Boolean);
+    const inferredTitle = lines[0]?.slice(0, 120) ?? result.fileName.replace(/\.pdf$/i, '');
+    const paragraphs = lines.slice(1, 12);
+    return { fileName: result.fileName, pageCount: result.pageCount, wordCount: result.wordCount, inferredTitle, paragraphs, rawText: result.rawText };
+  }
+
+  applyPdfContent(): void {
+    if (!this.pdfPreview) return;
+    const html = this.pdfPreview.paragraphs.map(p => `<p>${p}</p>`).join('\n');
+    this.form.patchValue({
+      title: this.pdfPreview.inferredTitle,
+      content: html || `<p>${this.pdfPreview.rawText.slice(0, 5000)}</p>`,
+    });
+    this.slugManuallyEdited = false;
+    this.activeTab = 'it';
+    this.snackBar.open('Content applied. Review and translate when ready.', 'Close', { duration: 3500 });
+  }
+
+  clearPdfPreview(): void {
+    this.pdfPreview = null;
+  }
+
+  // ── Translation ───────────────────────────────────────────
+
+  async translateAll(): Promise<void> {
+    const title   = (this.form.get('title')?.value || '').trim();
+    const content = (this.form.get('content')?.value || '').trim();
+    const excerpt = (this.form.get('excerpt')?.value || '').trim();
+
+    if (!title) {
+      this.snackBar.open('Add Italian title first.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.translating = true;
+    const plainContent = this.stripHtml(content);
+
+    try {
+      const [titleEn, contentEn, excerptEn] = await Promise.all([
+        title        ? firstValueFrom(this.blogService.translateText(title, 'it', 'en'))        : Promise.resolve(''),
+        plainContent ? firstValueFrom(this.blogService.translateText(plainContent, 'it', 'en')) : Promise.resolve(''),
+        excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'en'))      : Promise.resolve(''),
+      ]);
+      this.form.patchValue({
+        title_en:   titleEn,
+        content_en: contentEn ? this.textToHtml(contentEn) : '',
+        excerpt_en: excerptEn,
+      });
+
+      const [titleSq, contentSq, excerptSq] = await Promise.all([
+        title        ? firstValueFrom(this.blogService.translateText(title, 'it', 'sq'))        : Promise.resolve(''),
+        plainContent ? firstValueFrom(this.blogService.translateText(plainContent, 'it', 'sq')) : Promise.resolve(''),
+        excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'sq'))      : Promise.resolve(''),
+      ]);
+      this.form.patchValue({
+        title_sq:   titleSq,
+        content_sq: contentSq ? this.textToHtml(contentSq) : '',
+        excerpt_sq: excerptSq,
+      });
+
+      this.snackBar.open('Translated to English and Albanian. Review before publishing.', 'Close', { duration: 4000 });
+    } catch {
+      this.snackBar.open('Translation failed. Check your connection and try again.', 'Close', { duration: 4000 });
+    } finally {
+      this.translating = false;
+    }
+  }
+
+  private stripHtml(html: string): string {
+    return html
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/\s+/g, ' ').trim();
+  }
+
+  private textToHtml(text: string): string {
+    return text.split('\n\n').filter(Boolean).map(p => `<p>${p.trim()}</p>`).join('\n');
   }
 }

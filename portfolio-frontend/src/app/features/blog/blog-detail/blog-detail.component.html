@@ -20,12 +20,12 @@
           <span class="badge">#{{ tag }}</span>
         }
       </div>
-      <h1>{{ post.title }}</h1>
+      <h1>{{ localizedTitle }}</h1>
       <p class="text-muted">
         <time [dateTime]="post.publishedAt ?? ''">{{ post.publishedAt | date:'longDate' }}</time>
       </p>
     </header>
 
-    <div class="post-article__content prose" [innerHTML]="post.content"></div>
+    <div class="post-article__content prose" [innerHTML]="localizedContent"></div>
   </article>
 }

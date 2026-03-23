@@ -36,6 +36,25 @@ export class Post {
   @Prop({ default: null })
   publishedAt: Date;
 
+  // Multilanguage translations (title/content/excerpt default to Italian)
+  @Prop({ default: '' })
+  title_en: string;
+
+  @Prop({ default: '' })
+  title_sq: string;
+
+  @Prop({ default: '' })
+  content_en: string;
+
+  @Prop({ default: '' })
+  content_sq: string;
+
+  @Prop({ default: '' })
+  excerpt_en: string;
+
+  @Prop({ default: '' })
+  excerpt_sq: string;
+
   // SEO
   @Prop({ default: '' })
   metaTitle: string;

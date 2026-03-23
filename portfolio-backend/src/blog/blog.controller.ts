@@ -13,7 +13,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
 import { GenerateBlogFromPdfDto } from './dto/generate-blog-from-pdf.dto';
+import { TranslateTextDto } from './dto/translate-text.dto';
 import { BlogGenerationService } from './services/blog-generation.service';
+import { PdfExtractionService } from './services/pdf-extraction.service';
+import { TranslationService } from './services/translation.service';
 import { BLOG_LANGUAGES, MAX_PDF_UPLOAD_SIZE } from './blog.constants';
 import { CacheControlInterceptor } from '../common/interceptors/cache-control.interceptor';
 import { AuditInterceptor } from '../audit/interceptors/audit.interceptor';
@@ -24,6 +27,8 @@ export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly blogGenerationService: BlogGenerationService,
+    private readonly pdfExtractionService: PdfExtractionService,
+    private readonly translationService: TranslationService,
   ) {}
 
   // ── Public ──────────────────────────────────────────
@@ -109,6 +114,46 @@ export class BlogController {
     }
 
     return this.blogGenerationService.generateFromPdf(file, dto);
+  }
+
+  @Post('admin/posts/extract-pdf')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Extract plain text from a PDF (no AI — admin)' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file'],
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  extractPdf(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: MAX_PDF_UPLOAD_SIZE })
+        .addFileTypeValidator({ fileType: /(pdf)$/i })
+        .build({ fileIsRequired: true }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const fileName = file.originalname.toLowerCase();
+    if (!file.mimetype.includes('pdf') && !fileName.endsWith('.pdf')) {
+      throw new BadRequestException('Only PDF files are allowed.');
+    }
+    return this.pdfExtractionService.extract(file);
+  }
+
+  @Post('admin/translate')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Translate text via MyMemory (admin)' })
+  async translateText(@Body() dto: TranslateTextDto): Promise<{ translatedText: string }> {
+    const translatedText = await this.translationService.translate(dto.text, dto.from, dto.to);
+    return { translatedText };
   }
 
   @Put('admin/posts/:id')
