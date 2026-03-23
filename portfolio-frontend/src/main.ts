@@ -5,7 +5,8 @@ import * as Prism from 'prismjs';
 // Make Prism a true global BEFORE any lazy chunk loads.
 // Plugin IIFEs (prism-toolbar etc.) reference `Prism` as a free global variable;
 // setting it here in the initial bundle guarantees it exists for every chunk.
-(self as any).Prism = (Prism as any).default ?? Prism;
+// globalThis works in both browser and Node.js (SSR) contexts.
+(globalThis as any).Prism = (Prism as any).default ?? Prism;
 
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

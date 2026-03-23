@@ -1,4 +1,5 @@
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -46,6 +47,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private sectionObserver: IntersectionObserver | null = null;
+  private readonly platformId = inject(PLATFORM_ID);
 
   constructor(
     public auth: AuthService,
@@ -59,6 +61,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     const sectionIds = this.navLinks.map(l => l.fragment).filter((f): f is string => !!f);
     this.sectionObserver = new IntersectionObserver(
       (entries) => {

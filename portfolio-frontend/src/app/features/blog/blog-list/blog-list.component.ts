@@ -33,7 +33,11 @@ export class BlogListComponent implements OnInit {
   constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    this.seo.update({ title: 'Blog', description: 'Articles, tutorials and insights from a developer perspective.' });
+    this.seo.update({
+      title: 'Blog',
+      description: 'Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern IT development.',
+      url: 'https://gentsallaku.it/blog',
+    });
     this.blogService.getPublishedAll().pipe(
       timeout(15000),
       finalize(() => { this.loading = false; this.cdr.markForCheck(); }),

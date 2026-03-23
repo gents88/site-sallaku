@@ -57,6 +57,10 @@
           },
           "configurations": {
             "production": {
+              "server": "src/main.server.ts",
+              "ssr": {
+                "entry": "src/server.ts"
+              },
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

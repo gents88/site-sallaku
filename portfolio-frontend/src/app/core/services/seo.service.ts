@@ -1,16 +1,23 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
+const SITE_ORIGIN = 'https://gentsallaku.it';
+
 export interface SeoData {
   title?: string;
   description?: string;
   image?: string;
+  /** Canonical URL override. If omitted, derived from current router path. */
   url?: string;
   type?: string;
+  /** BCP-47 locale for og:locale, e.g. 'it_IT', 'en_US', 'sq_AL'. Defaults to 'it_IT'. */
+  locale?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -26,10 +33,14 @@ export class SeoService {
     private meta: Meta,
     private router: Router,
     private http: HttpClient,
+    @Inject(DOCUMENT) private document: Document,
+    @Inject(PLATFORM_ID) private platformId: object,
   ) {}
 
   /** Call once in AppComponent — loads GA script and fires page_view on each navigation */
   trackPageViews(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     if (environment.googleAnalyticsId) {
       this.loadGtag(environment.googleAnalyticsId);
     }
@@ -49,20 +60,24 @@ export class SeoService {
       : `${this.siteName} | Senior Front-End & API Developer`;
     const description = data.description ?? this.defaultDescription;
     const image       = data.image ?? this.defaultImage;
-    const url         = data.url ?? (typeof window !== 'undefined' ? window.location.href : '');
+    const canonicalUrl = data.url ?? `${SITE_ORIGIN}${this.router.url.split('?')[0]}`;
+    const locale      = data.locale ?? 'it_IT';
 
     // Basic
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
 
+    // Canonical link tag
+    this.updateCanonical(canonicalUrl);
+
     // Open Graph
     this.meta.updateTag({ property: 'og:title',       content: pageTitle });
     this.meta.updateTag({ property: 'og:description',  content: description });
     this.meta.updateTag({ property: 'og:image',        content: image });
-    this.meta.updateTag({ property: 'og:url',          content: url });
+    this.meta.updateTag({ property: 'og:url',          content: canonicalUrl });
     this.meta.updateTag({ property: 'og:type',         content: data.type ?? 'website' });
     this.meta.updateTag({ property: 'og:site_name',    content: this.siteName });
-    this.meta.updateTag({ property: 'og:locale',       content: 'it_IT' });
+    this.meta.updateTag({ property: 'og:locale',       content: locale });
 
     // Twitter Card
     this.meta.updateTag({ name: 'twitter:card',        content: 'summary_large_image' });
@@ -72,41 +87,59 @@ export class SeoService {
     this.meta.updateTag({ name: 'twitter:creator',     content: '@gentsallaku' });
   }
 
-  /** Inject JSON-LD structured data safely */
-  injectJsonLd(schema: object): void {
-    const id = '__json-ld__';
-    let el = document.getElementById(id) as HTMLScriptElement | null;
-    if (!el) {
-      el = document.createElement('script');
-      el.id = id;
+  /**
+   * Inject JSON-LD structured data.
+   * Pass a single schema object or an array — each item becomes its own <script> tag.
+   */
+  injectJsonLd(schema: object | object[]): void {
+    const schemas = Array.isArray(schema) ? schema : [schema];
+
+    // Remove any previously injected JSON-LD tags
+    this.document.querySelectorAll('script[data-json-ld]').forEach(el => el.remove());
+
+    schemas.forEach((s, i) => {
+      const el = this.document.createElement('script');
+      el.setAttribute('data-json-ld', String(i));
       el.type = 'application/ld+json';
-      document.head.appendChild(el);
-    }
-    el.textContent = JSON.stringify(schema);
+      el.textContent = JSON.stringify(s);
+      this.document.head.appendChild(el);
+    });
   }
 
-  /** Track a custom event in Google Analytics 4 */
+  /** Track a custom event in Google Analytics 4 (browser only) */
   trackEvent(action: string, params?: Record<string, unknown>): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     if (typeof gtag !== 'undefined') {
       (window as any)['gtag']('event', action, params ?? {});
     }
   }
 
+  private updateCanonical(url: string): void {
+    let el = this.document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (el) {
+      el.setAttribute('href', url);
+    } else {
+      el = this.document.createElement('link');
+      el.setAttribute('rel', 'canonical');
+      el.setAttribute('href', url);
+      this.document.head.appendChild(el);
+    }
+  }
+
   private loadGtag(id: string): void {
-    if (document.getElementById('ga-script')) return; // already loaded
-    const script = document.createElement('script');
+    if (this.document.getElementById('ga-script')) return;
+    const script = this.document.createElement('script');
     script.id = 'ga-script';
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
-    document.head.appendChild(script);
+    this.document.head.appendChild(script);
     (window as any)['gtag']('config', id);
   }
 
   private trackCurrentPageView(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     const currentPath = this.router.url;
-    if (this.lastTrackedPath === currentPath) {
-      return;
-    }
+    if (this.lastTrackedPath === currentPath) return;
 
     this.lastTrackedPath = currentPath;
     this.trackBackendPageView(currentPath);
@@ -119,16 +152,14 @@ export class SeoService {
   }
 
   private trackBackendPageView(path: string): void {
-    if (typeof window === 'undefined' || path.startsWith('/dashboard')) {
-      return;
-    }
+    if (!isPlatformBrowser(this.platformId) || path.startsWith('/dashboard')) return;
 
     const visitorId = this.getVisitorId();
     const payload = {
       visitorId,
       path,
-      referrer: document.referrer || '',
-      language: document.documentElement.lang || navigator.language || '',
+      referrer: this.document.referrer || '',
+      language: this.document.documentElement.lang || navigator.language || '',
       userAgent: navigator.userAgent || '',
     };
 
@@ -142,9 +173,10 @@ export class SeoService {
     const existing = localStorage.getItem(storageKey);
     if (existing) return existing;
 
-    const visitorId = typeof crypto !== 'undefined' && 'randomUUID' in crypto
-      ? crypto.randomUUID()
-      : `visitor-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const visitorId =
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `visitor-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
     localStorage.setItem(storageKey, visitorId);
     return visitorId;
@@ -153,3 +185,4 @@ export class SeoService {
 
 // Type augment for gtag
 declare function gtag(...args: any[]): void;
+

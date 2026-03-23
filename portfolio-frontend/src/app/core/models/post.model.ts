@@ -21,7 +21,7 @@ export interface Post {
   publishedAt: string | null;
   metaTitle: string;
   metaDescription: string;
-  viewCount: number;
+  viewCount?: number;
   createdAt: string;
   updatedAt: string;
 }

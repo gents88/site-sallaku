@@ -28,7 +28,11 @@ export class ProjectsListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.seo.update({ title: 'Projects', description: 'Browse all portfolio projects.' });
+    this.seo.update({
+      title: 'Projects',
+      description: 'Browse all portfolio projects by Gent Sallaku — Angular apps, 3D visualizations, data dashboards and full-stack solutions.',
+      url: 'https://gentsallaku.it/projects',
+    });
     this.projectsService.getAll().subscribe({
       next: projects => {
         this.projects = projects;

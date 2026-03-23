@@ -34,7 +34,7 @@ export class ChatbotService {
   readonly isLoading$: Observable<boolean> = this._isLoading.asObservable();
   readonly isOpen$: Observable<boolean> = this._isOpen.asObservable();
 
-  private sessionId: string | null = sessionStorage.getItem(SESSION_STORAGE_KEY);
+  private sessionId: string | null = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_STORAGE_KEY) : null;
 
   constructor(private readonly http: HttpClient) {}
 

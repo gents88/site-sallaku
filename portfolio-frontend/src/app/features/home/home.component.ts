@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize, forkJoin } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
@@ -40,6 +40,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   contactForm = { name: '', email: '', message: '' };
 
   private observer: IntersectionObserver | null = null;
+  private readonly platformId = inject(PLATFORM_ID);
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
   readonly frontendTechs: TechItem[] = [
@@ -177,15 +178,42 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.seo.update({
       title: 'Gent Sallaku | Senior Front-End & API Developer',
       description: 'Senior Front-End Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
+      url: 'https://gentsallaku.it/',
     });
 
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'Person',
-      name: 'Gent Sallaku',
-      url: 'https://gentsallaku.it',
-      jobTitle: 'Senior Front-End & API Developer',
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        '@id': 'https://gentsallaku.it/#person',
+        name: 'Gent Sallaku',
+        url: 'https://gentsallaku.it',
+        jobTitle: 'Senior Front-End & API Developer',
+        description: 'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
+        knowsAbout: ['Angular', 'TypeScript', 'JavaScript', 'NestJS', 'Django', 'Cesium.js', 'Data Visualization', 'REST API', 'Docker'],
+        sameAs: [
+          'https://github.com/gentsallaku',
+          'https://linkedin.com/in/gentsallaku',
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': 'https://gentsallaku.it/#website',
+        url: 'https://gentsallaku.it',
+        name: 'Gent Sallaku',
+        description: 'Portfolio and blog of Gent Sallaku, Senior Front-End & API Developer',
+        author: { '@id': 'https://gentsallaku.it/#person' },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://gentsallaku.it/blog?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ]);
 
     forkJoin({
       about: this.aboutService.get(),
@@ -204,6 +232,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     // IntersectionObserver for .reveal elements
     this.observer = new IntersectionObserver(
       (entries) => {
