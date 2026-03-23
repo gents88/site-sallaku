@@ -19,6 +19,12 @@ export class ContactMessage {
 
   @Prop({ default: false })
   read: boolean;
+
+  @Prop({ type: Date, default: null })
+  repliedAt: Date | null;
+
+  @Prop({ default: '' })
+  replyText: string;
 }
 
 export const ContactMessageSchema = SchemaFactory.createForClass(ContactMessage);

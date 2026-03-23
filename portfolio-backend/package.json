@@ -23,6 +23,7 @@
     "@nestjs/mongoose": "^10.0.4",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.0",
+    "@nestjs/schedule": "^6.1.1",
     "@nestjs/swagger": "^7.3.0",
     "@nestjs/throttler": "^6.5.0",
     "bcrypt": "^5.1.1",

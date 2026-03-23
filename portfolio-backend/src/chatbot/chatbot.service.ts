@@ -122,30 +122,48 @@ export class ChatbotService {
     }, 0);
   }
 
-  async getTodaySessions(limit = 30): Promise<Array<{
-    sessionId: string;
-    messages: ChatMessage[];
-    lastActivity: Date;
-    createdAt: Date;
-    messageCount: number;
-  }>> {
+  async getTodaySessions(page = 1, limit = 15): Promise<{
+    data: Array<{
+      sessionId: string;
+      messages: ChatMessage[];
+      lastActivity: Date;
+      createdAt: Date;
+      messageCount: number;
+    }>;
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
+    const safePage  = Math.max(page, 1);
+    const safeLimit = Math.min(Math.max(limit, 1), 50);
+    const skip = (safePage - 1) * safeLimit;
 
-    const sessions = await this.chatSessionModel
-      .find({ lastActivity: { $gte: start } })
-      .sort({ lastActivity: -1 })
-      .limit(limit)
-      .lean()
-      .exec();
+    const filter = { lastActivity: { $gte: start } };
+    const [sessions, total] = await Promise.all([
+      this.chatSessionModel
+        .find(filter)
+        .sort({ lastActivity: -1 })
+        .skip(skip)
+        .limit(safeLimit)
+        .lean()
+        .exec(),
+      this.chatSessionModel.countDocuments(filter).exec(),
+    ]);
 
-    return (sessions as Array<any>).map(s => ({
-      sessionId: s.sessionId,
-      messages: s.messages ?? [],
-      lastActivity: s.lastActivity,
-      createdAt: s.createdAt,
-      messageCount: s.messages?.length ?? 0,
-    }));
+    return {
+      data: (sessions as Array<any>).map(s => ({
+        sessionId: s.sessionId,
+        messages: s.messages ?? [],
+        lastActivity: s.lastActivity,
+        createdAt: s.createdAt,
+        messageCount: s.messages?.length ?? 0,
+      })),
+      total,
+      page: safePage,
+      totalPages: Math.ceil(total / safeLimit),
+    };
   }
 
   async getChatbotStats(): Promise<{

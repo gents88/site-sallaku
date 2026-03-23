@@ -1,9 +1,4 @@
 <div class="admin-page container">
-  <header class="admin-header">
-    <div>
-   
-    </div>
-  </header>
 
   @if (actionMessageKey) {
     <div class="dashboard-feedback" aria-live="polite">
@@ -678,6 +673,19 @@
               </div>
             }
           </div>
+
+          <!-- Pagination -->
+          @if (todaySessionsTotalPages > 1) {
+            <div class="chat-pagination">
+              <button type="button" class="chat-load-btn" [disabled]="todaySessionsPage <= 1 || loadingTodaySessions" (click)="loadTodaySessions(todaySessionsPage - 1)">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <span class="text-muted" style="font-size:0.82rem;">{{ todaySessionsPage }} / {{ todaySessionsTotalPages }}</span>
+              <button type="button" class="chat-load-btn" [disabled]="todaySessionsPage >= todaySessionsTotalPages || loadingTodaySessions" (click)="loadTodaySessions(todaySessionsPage + 1)">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+          }
         }
       </section>
     </div>
@@ -835,9 +843,42 @@
         </button>
         <button type="button" class="modal-btn modal-btn--primary" (click)="replyToSelectedContact()">
           <mat-icon>reply</mat-icon>
-          {{ 'admin.open_email' | translate }}
+          {{ 'admin.reply' | translate }}
         </button>
       </div>
+
+      @if (showReplyForm) {
+        <div class="contact-reply-form">
+          <textarea
+            class="reply-textarea"
+            [placeholder]="'admin.reply_placeholder' | translate"
+            [(ngModel)]="replyText"
+            rows="5"
+            maxlength="2000">
+          </textarea>
+          @if (replyResult === 'success') {
+            <p class="reply-feedback reply-feedback--ok">
+              <mat-icon>check_circle</mat-icon>
+              {{ 'admin.reply_sent' | translate }}
+            </p>
+          }
+          @if (replyResult === 'error') {
+            <p class="reply-feedback reply-feedback--err">
+              <mat-icon>error</mat-icon>
+              {{ 'admin.reply_error' | translate }}
+            </p>
+          }
+          <div class="reply-actions">
+            <button type="button" class="modal-btn modal-btn--plain" (click)="cancelReply()">
+              {{ 'common.cancel' | translate }}
+            </button>
+            <button type="button" class="modal-btn modal-btn--primary" [disabled]="!replyText.trim() || sendingReply" (click)="sendReply()">
+              <mat-icon [class.spin]="sendingReply">{{ sendingReply ? 'sync' : 'send' }}</mat-icon>
+              {{ sendingReply ? ('common.loading' | translate) : ('admin.reply_send' | translate) }}
+            </button>
+          </div>
+        </div>
+      }
     </section>
   }
 

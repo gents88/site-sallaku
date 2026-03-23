@@ -75,8 +75,18 @@ export class BlogService {
     return post;
   }
 
-  /** Admin: all posts */
-  findAll(): Promise<PostDocument[]> {
+  /** Admin: all posts — with optional pagination (omit page/limit to get all) */
+  async findAll(page?: number, limit?: number): Promise<PostDocument[] | { data: PostDocument[]; total: number; page: number; totalPages: number }> {
+    if (page !== undefined || limit !== undefined) {
+      const safeLimit = Math.min(Math.max(limit ?? 50, 1), 200);
+      const safePage  = Math.max(page ?? 1, 1);
+      const skip = (safePage - 1) * safeLimit;
+      const [data, total] = await Promise.all([
+        this.postModel.find().sort({ createdAt: -1 }).skip(skip).limit(safeLimit).exec() as unknown as Promise<PostDocument[]>,
+        this.postModel.countDocuments().exec(),
+      ]);
+      return { data, total, page: safePage, totalPages: Math.ceil(total / safeLimit) };
+    }
     return this.postModel.find().sort({ createdAt: -1 }).exec();
   }
 

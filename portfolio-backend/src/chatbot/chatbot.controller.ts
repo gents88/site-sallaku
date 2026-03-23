@@ -4,13 +4,17 @@ import {
   Get,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
   Req,
-  HttpException,
   UseGuards,
+  ParseUUIDPipe,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { ChatbotService } from './chatbot.service';
 import { SendMessageDto, SendTranscriptDto } from './dto/chat.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -22,42 +26,11 @@ import { Role, Roles } from '../auth/decorators/roles.decorator';
 export class ChatbotController {
   constructor(private readonly chatbotService: ChatbotService) {}
 
-  /** In-memory rate limiter: max 30 messages per minute per IP */
-  private readonly rateMap = new Map<string, number[]>();
-
-  private checkRateLimit(req: any, limit = 30, windowMs = 60_000): void {
-    const ip: string =
-      req.ip ||
-      req.headers['x-forwarded-for'] ||
-      req.connection?.remoteAddress ||
-      'unknown';
-
-    const now = Date.now();
-    const cutoff = now - windowMs;
-    const times = (this.rateMap.get(ip) ?? []).filter((t) => t >= cutoff);
-
-    if (times.length >= limit) {
-      throw new HttpException('Too many requests', HttpStatus.TOO_MANY_REQUESTS);
-    }
-
-    times.push(now);
-    this.rateMap.set(ip, times);
-
-    // Periodic cleanup to avoid unbounded memory growth
-    if (Math.random() < 0.05) {
-      for (const [key, ts] of this.rateMap.entries()) {
-        const cleaned = ts.filter((t) => t >= cutoff);
-        if (cleaned.length === 0) this.rateMap.delete(key);
-        else this.rateMap.set(key, cleaned);
-      }
-    }
-  }
-
   @Post('message')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @ApiOperation({ summary: 'Send a chat message and receive an AI response' })
   sendMessage(@Req() req: any, @Body() dto: SendMessageDto) {
-    this.checkRateLimit(req);
     const ip: string = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
     const userAgent: string = req.headers?.['user-agent'] ?? '';
     return this.chatbotService.sendMessage(dto.message, dto.sessionId, { ip, userAgent });
@@ -65,15 +38,15 @@ export class ChatbotController {
 
   @Get('session/:sessionId')
   @ApiOperation({ summary: 'Retrieve conversation history for a session' })
-  getSession(@Param('sessionId') sessionId: string) {
+  getSession(@Param('sessionId', ParseUUIDPipe) sessionId: string) {
     return this.chatbotService.getSession(sessionId);
   }
 
   @Post('send-transcript')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiOperation({ summary: 'Send the chat transcript via email' })
   sendTranscript(@Req() req: any, @Body() dto: SendTranscriptDto) {
-    this.checkRateLimit(req, 5, 60_000); // stricter limit for email sending
     return this.chatbotService.sendTranscript(dto.sessionId, dto.email);
   }
 
@@ -90,8 +63,13 @@ export class ChatbotController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'List all chatbot sessions active today (admin only)' })
-  getTodaySessions() {
-    return this.chatbotService.getTodaySessions();
+  @ApiOperation({ summary: 'List all chatbot sessions active today (admin only), paginated' })
+  @ApiQuery({ name: 'page',  required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  getTodaySessions(
+    @Query('page',  new DefaultValuePipe(1),  ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit: number,
+  ) {
+    return this.chatbotService.getTodaySessions(page, Math.min(limit, 50));
   }
 }

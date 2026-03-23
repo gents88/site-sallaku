@@ -65,8 +65,13 @@ export class BlogController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Get all posts including drafts (admin)' })
-  findAll() { return this.blogService.findAll(); }
+  @ApiOperation({ summary: 'Get all posts including drafts (admin), optionally paginated' })
+  @ApiQuery({ name: 'page',  required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findAll(
+    @Query('page')  page?:  number,
+    @Query('limit') limit?: number,
+  ) { return this.blogService.findAll(page ? +page : undefined, limit ? +limit : undefined); }
 
   @Get('admin/posts/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)

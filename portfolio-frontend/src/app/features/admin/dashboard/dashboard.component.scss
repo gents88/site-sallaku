@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 3.5rem; /* increased space between header and page */
+  margin-bottom: 3.5rem;
 
   > div {
     width: 100%;
@@ -1325,4 +1325,59 @@
 .chat-bubble__time {
   font-size: 0.68rem;
   align-self: flex-end;
+}
+
+.chat-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border, rgba(255,255,255,0.06));
+}
+
+.contact-reply-form {
+  padding: 1rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--color-border, rgba(255,255,255,0.06));
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reply-textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: inherit;
+  font-size: 0.88rem;
+  font-family: inherit;
+  line-height: 1.55;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.18s;
+
+  &:focus { border-color: rgba(99,102,241,0.5); }
+}
+
+.reply-feedback {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.83rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+
+  &--ok { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+  &--err { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+}
+
+.reply-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }

@@ -1,12 +1,13 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
-import { combineLatest, catchError, of, startWith } from 'rxjs';
+import { combineLatest, catchError, of, startWith, Subscription } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { ExperiencesService } from '../../../core/services/experiences.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -121,15 +122,22 @@ interface ChatbotSession {
   messageCount: number;
 }
 
+interface ChatbotSessionsPage {
+  data: ChatbotSession[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule, MatIconModule, MatButtonModule, TranslateModule, DonutChartComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, TranslateModule, DonutChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   stats: StatCard[] = [];
   recentContacts: RecentContact[] = [];
   contactBars: ChartBar[] = [];
@@ -189,8 +197,19 @@ export class DashboardComponent implements OnInit {
 
   // Chat session viewer
   todaySessions: ChatbotSession[] = [];
+  todaySessionsTotal = 0;
+  todaySessionsTotalPages = 1;
+  todaySessionsPage = 1;
   expandedSessionId: string | null = null;
   loadingTodaySessions = false;
+
+  private dataSubscription: Subscription | null = null;
+
+  // Reply form
+  showReplyForm = false;
+  replyText = '';
+  sendingReply = false;
+  replyResult: 'success' | 'error' | null = null;
 
   readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
   readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
@@ -214,6 +233,16 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadData();
+  }
+
+  ngOnDestroy(): void {
+    this.dataSubscription?.unsubscribe();
+  }
+
+  private loadData(): void {
+    this.dataSubscription?.unsubscribe();
+
     const emptyStats: AdminStatsResponse = {
       users: 0,
       contacts: 0,
@@ -244,7 +273,7 @@ export class DashboardComponent implements OnInit {
       lastResetAt: null,
     };
 
-    combineLatest({
+    this.dataSubscription = combineLatest({
       projects: this.projectsService.getAll().pipe(catchError(() => of([])), startWith([])),
       experiences: this.experiencesService.getAll().pipe(catchError(() => of([])), startWith([])),
       adminStats: this.http.get<AdminStatsResponse>(`${environment.apiUrl}/stats`).pipe(
@@ -428,12 +457,15 @@ export class DashboardComponent implements OnInit {
     return map[method?.toUpperCase()] ?? '#8b5cf6';
   }
 
-  loadTodaySessions(): void {
+  loadTodaySessions(page = 1): void {
     if (this.loadingTodaySessions) return;
     this.loadingTodaySessions = true;
-    this.http.get<ChatbotSession[]>(`${environment.apiUrl}/chatbot/sessions/today`).subscribe({
-      next: (sessions) => {
-        this.todaySessions = sessions;
+    this.http.get<ChatbotSessionsPage>(`${environment.apiUrl}/chatbot/sessions/today?page=${page}&limit=10`).subscribe({
+      next: ({ data, total, page: p, totalPages }) => {
+        this.todaySessions = data;
+        this.todaySessionsTotal = total;
+        this.todaySessionsPage = p;
+        this.todaySessionsTotalPages = totalPages;
         this.loadingTodaySessions = false;
         this.cdr.markForCheck();
       },
@@ -600,12 +632,47 @@ export class DashboardComponent implements OnInit {
   }
 
   replyToSelectedContact(): void {
-    if (!this.selectedContact || typeof window === 'undefined') {
-      return;
-    }
+    this.showReplyForm = !this.showReplyForm;
+    this.replyText = '';
+    this.replyResult = null;
+  }
 
-    const subject = encodeURIComponent(`Re: ${this.selectedContact.subject}`);
-    window.location.href = `mailto:${this.selectedContact.email}?subject=${subject}`;
+  cancelReply(): void {
+    this.showReplyForm = false;
+    this.replyText = '';
+    this.replyResult = null;
+  }
+
+  sendReply(): void {
+    if (!this.selectedContact?._id || !this.replyText.trim() || this.sendingReply) return;
+    this.sendingReply = true;
+    this.replyResult = null;
+    this.http.post<{ repliedAt: string }>(
+      `${environment.apiUrl}/contact/${this.selectedContact._id}/reply`,
+      { replyText: this.replyText.trim() },
+    ).subscribe({
+      next: () => {
+        this.replyResult = 'success';
+        this.sendingReply = false;
+        // Update contact as replied
+        this.selectedContact = { ...this.selectedContact!, read: true };
+        this.recentContacts = this.recentContacts.map(c =>
+          c._id === this.selectedContact!._id ? { ...c, read: true } : c,
+        );
+        this.replyText = '';
+        setTimeout(() => {
+          this.showReplyForm = false;
+          this.replyResult = null;
+          this.cdr.markForCheck();
+        }, 2500);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.replyResult = 'error';
+        this.sendingReply = false;
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   toggleSelectContact(id: string): void {

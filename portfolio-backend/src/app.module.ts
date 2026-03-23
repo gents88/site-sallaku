@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -36,7 +37,8 @@ import { AuditModule } from './audit/audit.module';
       ],
       inject: [ConfigService],
     }),
-
+    // ── Scheduled tasks ───────────────────────────────────────────
+    ScheduleModule.forRoot(),
     // ── MongoDB ───────────────────────────────────────
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

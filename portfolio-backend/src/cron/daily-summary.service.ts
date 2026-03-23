@@ -1,13 +1,13 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as cron from 'node-cron';
+import { Cron } from '@nestjs/schedule';
 import { ContactService } from '../contact/contact.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
 import { MailService } from '../mail/mail.service';
 
 @Injectable()
-export class DailySummaryService implements OnModuleInit {
+export class DailySummaryService {
   private readonly logger = new Logger(DailySummaryService.name);
 
   /** In-memory guard: stores the last YYYY-MM-DD that a summary was successfully sent. */
@@ -21,20 +21,22 @@ export class DailySummaryService implements OnModuleInit {
     private mail: MailService,
   ) {}
 
-  onModuleInit() {
-    const cronExpr = this.cfg.get<string>('DAILY_SUMMARY_CRON', '0 22 * * *');
-    const tz = this.cfg.get<string>('CRON_TIMEZONE', 'Europe/Rome');
-    this.logger.log(`Scheduling daily summary: "${cronExpr}" timezone=${tz}`);
+  // ── Scheduled jobs ────────────────────────────────────────────────────────
 
-    cron.schedule(cronExpr, () => this.executeSummary(), { timezone: tz } as any);
+  /** Daily summary email at 22:00 Europe/Rome */
+  @Cron('0 22 * * *', { name: 'daily-summary', timeZone: 'Europe/Rome' })
+  async scheduledDailySummary(): Promise<void> {
+    this.logger.log('[DailySummary] Scheduled trigger fired');
+    await this.executeSummary();
+  }
 
-    // Monthly analytics reset: runs at 00:00 on the 1st of every month
-    cron.schedule('0 0 1 * *', () => {
-      this.logger.log('[AnalyticsReset] Monthly reset cron triggered');
-      this.analytics.resetMonthlyStats().catch(err =>
-        this.logger.error('[AnalyticsReset] Monthly reset failed', err as any),
-      );
-    }, { timezone: tz } as any);
+  /** Monthly analytics reset at 00:00 on the 1st of every month */
+  @Cron('0 0 1 * *', { name: 'monthly-analytics-reset', timeZone: 'Europe/Rome' })
+  async scheduledMonthlyReset(): Promise<void> {
+    this.logger.log('[AnalyticsReset] Monthly reset cron triggered');
+    this.analytics.resetMonthlyStats().catch(err =>
+      this.logger.error('[AnalyticsReset] Monthly reset failed', err as any),
+    );
   }
 
   // ── Public API (used by the manual trigger endpoint) ──────────────────────

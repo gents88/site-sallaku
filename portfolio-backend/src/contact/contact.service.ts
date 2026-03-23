@@ -115,6 +115,32 @@ export class ContactService {
     return { success: true, deleted: result.deletedCount };
   }
 
+  /** Send a reply email to a contact and record it on the document. */
+  async replyToContact(id: string, replyText: string): Promise<ContactMessageDocument> {
+    const contact = await this.contactModel.findById(id).exec();
+    if (!contact) throw new NotFoundException('Contact message not found');
+
+    const html = `
+      <p>Hi <strong>${contact.name}</strong>,</p>
+      <p>${replyText.replace(/\n/g, '<br>')}</p>
+      <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0"/>
+      <p style="color:#64748b;font-size:0.85rem;">
+        This is a reply to your message: <em>"${contact.subject}"</em>
+      </p>`;
+
+    await this.mailService.send({
+      to: contact.email,
+      subject: `Re: ${contact.subject}`,
+      html,
+      text: replyText,
+    });
+
+    contact.repliedAt = new Date();
+    contact.replyText = replyText;
+    contact.read = true;
+    return contact.save();
+  }
+
   /** Paginated list for the admin dashboard — avoids returning unbounded collections. */
   async findPaginated(opts: { page: number; limit: number; unreadOnly?: boolean }): Promise<{
     data: ContactMessageDocument[];

@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpCode, HttpStatus, Patch, Param, UseGuards, 
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Request } from 'express';
 import { ContactService } from './contact.service';
-import { ContactDto, BulkDeleteDto } from './dto/contact.dto';
+import { ContactDto, BulkDeleteDto, ReplyContactDto } from './dto/contact.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
@@ -42,6 +42,16 @@ export class ContactController {
   @ApiOperation({ summary: 'Mark contact message as read (admin)' })
   markAsRead(@Param('id') id: string, @Body() body?: { read?: boolean }) {
     return this.contactService.markAsRead(id, body?.read ?? true);
+  }
+
+  @Post(':id/reply')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Send a reply email to a contact (admin)' })
+  replyToContact(@Param('id') id: string, @Body() body: ReplyContactDto) {
+    return this.contactService.replyToContact(id, body.replyText);
   }
 
   @Get()
