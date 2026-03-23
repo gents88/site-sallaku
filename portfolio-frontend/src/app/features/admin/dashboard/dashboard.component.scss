@@ -1099,3 +1099,65 @@
     line-height: 1.25;
   }
 }
+
+// ── Audit log ────────────────────────────────────────────────────────────
+.audit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.audit-row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto auto auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  font-size: 0.82rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 56px 1fr auto;
+
+    .audit-actor,
+    .audit-status { display: none; }
+  }
+}
+
+.audit-method {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  color: #fff;
+}
+
+.audit-path {
+  font-family: monospace;
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audit-status {
+  font-weight: 600;
+  color: #ef4444;
+
+  &--ok { color: #10b981; }
+}
+
+.audit-date { white-space: nowrap; }
+
+.audit-actor {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+}

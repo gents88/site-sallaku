@@ -371,7 +371,34 @@
     "monthly_locations": "Posizioni (questo mese)",
     "monthly_locations_desc": "Distribuzione per paese del mese corrente",
     "total_locations": "Posizioni (totale)",
-    "total_locations_desc": "Distribuzione per paese cumulativa"
+    "total_locations_desc": "Distribuzione per paese cumulativa",
+    "kpi_section": "KPI di Performance",
+    "conversion_rate": "Tasso di Conversione",
+    "conversion_rate_desc": "Contatti generati per visualizzazione totale",
+    "conversion_rate_label": "Conversione",
+    "growth_velocity": "Crescita Mensile",
+    "growth_velocity_desc": "Mese corrente vs mese precedente",
+    "growth_vs_prev_month": "vs mese prec.",
+    "growth_no_history": "Nessuno storico disponibile",
+    "system_health": "Salute del Sistema",
+    "system_health_desc": "Stato e versione del backend",
+    "system_status": "Stato",
+    "system_version": "Versione",
+    "system_env": "Ambiente",
+    "monthly_trend": "Trend Visite Mensili",
+    "monthly_trend_desc": "Visualizzazioni storiche per mese",
+    "chatbot_stats": "Chatbot",
+    "chatbot_stats_desc": "Conversazioni con l'assistente AI",
+    "chatbot_total_sessions": "Sessioni totali",
+    "chatbot_total_messages": "Messaggi totali",
+    "chatbot_today": "Oggi",
+    "chatbot_this_month": "Questo mese",
+    "top_pages": "Pagine più visitate",
+    "top_pages_desc": "Pagine con più visualizzazioni totali",
+    "audit_log_section": "Attività Admin",
+    "audit_log": "Registro Attività",
+    "audit_log_desc": "Ultime 10 operazioni di scrittura admin",
+    "audit_log_empty": "Nessuna azione admin registrata."
   },
   "session": {
     "warning_title": "La sessione sta per scadere",
@@ -433,5 +460,8 @@
       "desc": "Collaboro con aziende e team che vogliono costruire qualcosa di significativo. Parliamo della tua prossima sfida.",
       "btn": "Contattami"
     }
+  },
+  "blog": {
+    "readMore": "Leggi di più"
   }
 }

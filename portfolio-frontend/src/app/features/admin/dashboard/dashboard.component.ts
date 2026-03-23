@@ -77,6 +77,36 @@ interface AnalyticsStats {
   lastResetAt: string | null;
 }
 
+interface TopPage { label: string; count: number; }
+
+interface MonthlyHistoryEntry { month: string; views: number; }
+
+interface AuditLogEntry {
+  _id?: string;
+  actorEmail: string;
+  method: string;
+  path: string;
+  resource: string;
+  description: string;
+  statusCode: number;
+  createdAt: string;
+}
+
+interface ChatbotStats {
+  totalSessions: number;
+  totalMessages: number;
+  interactionsToday: number;
+  sessionsThisMonth: number;
+}
+
+interface SystemHealth {
+  ok: boolean;
+  service: string;
+  version: string;
+  startedAt: string;
+  environment: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -134,6 +164,14 @@ export class DashboardComponent implements OnInit {
   statsMonthlyDevices: DonutItem[] = [];
   lastResetAt: string | null = null;
   resettingStats = false;
+
+  // Additional dashboard sections
+  topPages: TopPage[] = [];
+  monthlyHistory: MonthlyHistoryEntry[] = [];
+  auditLogs: AuditLogEntry[] = [];
+  chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 };
+  systemHealth: SystemHealth | null = null;
+  totalContacts = 0;
 
   readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
   readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
@@ -202,9 +240,27 @@ export class DashboardComponent implements OnInit {
         catchError(() => of(emptyAnalyticsStats)),
         startWith(emptyAnalyticsStats),
       ),
+      topPages: this.http.get<TopPage[]>(`${environment.apiUrl}/analytics/top-pages`).pipe(
+        catchError(() => of([])), startWith([]),
+      ),
+      monthlyHistory: this.http.get<MonthlyHistoryEntry[]>(`${environment.apiUrl}/analytics/monthly-history`).pipe(
+        catchError(() => of([])), startWith([]),
+      ),
+      auditLogs: this.http.get<AuditLogEntry[]>(`${environment.apiUrl}/audit?limit=10`).pipe(
+        catchError(() => of([])), startWith([]),
+      ),
+      chatbotStats: this.http.get<ChatbotStats>(`${environment.apiUrl}/chatbot/stats`).pipe(
+        catchError(() => of({ totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 })),
+        startWith({ totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 }),
+      ),
+      systemHealth: this.http.get<SystemHealth>(`${environment.apiUrl}/system/health`).pipe(
+        catchError(() => of(null as SystemHealth | null)),
+        startWith(null as SystemHealth | null),
+      ),
       blogPosts: this.blogService.getAll().pipe(catchError(() => of([])), startWith([])),
     }).subscribe({
-      next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts }) => {
+      next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts,
+               topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth }) => {
         const totalPosts = adminStats.content.total;
         const publishedPosts = adminStats.content.published;
         const totalValues = [
@@ -260,6 +316,13 @@ export class DashboardComponent implements OnInit {
         this.statsMonthlyDevices = analyticsStats.monthlyDevices;
         this.lastResetAt = analyticsStats.lastResetAt;
 
+        this.topPages = topPages;
+        this.monthlyHistory = monthlyHistory;
+        this.auditLogs = Array.isArray(auditLogs) ? auditLogs : [];
+        this.chatbotStats = chatbotStats;
+        this.systemHealth = systemHealth;
+        this.totalContacts = adminStats.contacts;
+
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -298,6 +361,52 @@ export class DashboardComponent implements OnInit {
 
   statsMonthlyLocationBarWidth(count: number): number {
     return Math.max((count / this.maxStatsMonthlyLocationCount) * 100, count > 0 ? 6 : 0);
+  }
+
+  get conversionRate(): number {
+    return this.totalViews ? (this.totalContacts / this.totalViews) * 100 : 0;
+  }
+
+  private get currentMonthKey(): string {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  get trendData(): MonthlyHistoryEntry[] {
+    return [
+      ...this.monthlyHistory,
+      { month: this.currentMonthKey, views: this.monthlyViews },
+    ];
+  }
+
+  get monthlyGrowth(): number | null {
+    if (this.monthlyHistory.length < 1) return null;
+    const prev = this.monthlyHistory[this.monthlyHistory.length - 1].views;
+    if (!prev) return null;
+    return ((this.monthlyViews - prev) / prev) * 100;
+  }
+
+  get maxTrendViews(): number {
+    return Math.max(...this.trendData.map(h => h.views), 1);
+  }
+
+  trendBarWidth(views: number): number {
+    return Math.max((views / this.maxTrendViews) * 100, views > 0 ? 4 : 0);
+  }
+
+  get maxTopPageCount(): number {
+    return Math.max(...this.topPages.map(p => p.count), 1);
+  }
+
+  topPageBarWidth(count: number): number {
+    return Math.max((count / this.maxTopPageCount) * 100, count > 0 ? 4 : 0);
+  }
+
+  methodBadgeColor(method: string): string {
+    const map: Record<string, string> = {
+      POST: '#10b981', PUT: '#f59e0b', PATCH: '#6366f1', DELETE: '#ef4444',
+    };
+    return map[method?.toUpperCase()] ?? '#8b5cf6';
   }
 
   get maxCountryCount(): number {

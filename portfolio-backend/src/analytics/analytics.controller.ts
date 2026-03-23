@@ -39,6 +39,26 @@ export class AnalyticsController {
     return this.analyticsService.resetMonthlyStats(true /* force */);
   }
 
+  @Get('top-pages')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get top visited pages (admin only)' })
+  @ApiQuery({ name: 'limit', required: false })
+  getTopPages(@Query('limit') limit?: string) {
+    return this.analyticsService.getTopPages(limit ? parseInt(limit, 10) : 10);
+  }
+
+  @Get('monthly-history')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get monthly history snapshots (admin only)' })
+  @ApiQuery({ name: 'months', required: false })
+  getMonthlyHistory(@Query('months') months?: string) {
+    return this.analyticsService.getMonthlyHistory(months ? parseInt(months, 10) : 6);
+  }
+
   @Get('advanced')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)

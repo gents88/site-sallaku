@@ -371,7 +371,34 @@
     "monthly_locations": "Locations (this month)",
     "monthly_locations_desc": "Country breakdown for the current month",
     "total_locations": "Locations (all time)",
-    "total_locations_desc": "All-time country breakdown"
+    "total_locations_desc": "All-time country breakdown",
+    "kpi_section": "Performance KPIs",
+    "conversion_rate": "Conversion Rate",
+    "conversion_rate_desc": "Contacts generated per total page view",
+    "conversion_rate_label": "Conversion",
+    "growth_velocity": "Monthly Growth",
+    "growth_velocity_desc": "Current month vs previous month",
+    "growth_vs_prev_month": "vs prev month",
+    "growth_no_history": "No history yet",
+    "system_health": "System Health",
+    "system_health_desc": "Backend status and version",
+    "system_status": "Status",
+    "system_version": "Version",
+    "system_env": "Environment",
+    "monthly_trend": "Monthly Views Trend",
+    "monthly_trend_desc": "Historical views per month",
+    "chatbot_stats": "Chatbot",
+    "chatbot_stats_desc": "AI assistant conversations",
+    "chatbot_total_sessions": "Total sessions",
+    "chatbot_total_messages": "Total messages",
+    "chatbot_today": "Today",
+    "chatbot_this_month": "This month",
+    "top_pages": "Top Pages",
+    "top_pages_desc": "Most visited pages by all-time views",
+    "audit_log_section": "Admin Activity",
+    "audit_log": "Audit Log",
+    "audit_log_desc": "Last 10 admin write operations",
+    "audit_log_empty": "No admin actions recorded yet."
   },
   "session": {
     "warning_title": "Session is about to expire",
@@ -433,5 +460,8 @@
       "desc": "I collaborate with companies and teams that want to build something meaningful. Let's talk about your next challenge.",
       "btn": "Get in Touch"
     }
+  },
+  "blog": {
+    "readMore": "Read more"
   }
 }

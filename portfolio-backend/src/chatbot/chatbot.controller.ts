@@ -8,10 +8,14 @@ import {
   HttpStatus,
   Req,
   HttpException,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ChatbotService } from './chatbot.service';
 import { SendMessageDto, SendTranscriptDto } from './dto/chat.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role, Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Chatbot')
 @Controller('chatbot')
@@ -71,5 +75,14 @@ export class ChatbotController {
   sendTranscript(@Req() req: any, @Body() dto: SendTranscriptDto) {
     this.checkRateLimit(req, 5, 60_000); // stricter limit for email sending
     return this.chatbotService.sendTranscript(dto.sessionId, dto.email);
+  }
+
+  @Get('stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get chatbot statistics (admin only)' })
+  getChatbotStats() {
+    return this.chatbotService.getChatbotStats();
   }
 }

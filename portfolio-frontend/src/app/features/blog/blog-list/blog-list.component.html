@@ -35,13 +35,13 @@
             <h2 class="post-card__title">
               <a [routerLink]="['/blog', post.slug]">{{ getLocalizedTitle(post) }}</a>
             </h2>
-            <p class="text-muted">{{ getLocalizedExcerpt(post) }}</p>
+            <p class="text-muted post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
             <div class="post-card__footer">
               <time [dateTime]="post.publishedAt ?? ''" class="text-muted post-card__date">
                 {{ post.publishedAt | date:'mediumDate' }}
               </time>
               <a [routerLink]="['/blog', post.slug]" class="btn btn-ghost btn-sm">
-                Read more <mat-icon>arrow_forward</mat-icon>
+                {{ 'blog.readMore' | translate }} <mat-icon>arrow_forward</mat-icon>
               </a>
             </div>
           </div>

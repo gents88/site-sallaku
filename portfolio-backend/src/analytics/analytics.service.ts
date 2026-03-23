@@ -213,6 +213,23 @@ export class AnalyticsService {
     return { success: true, message: `Monthly stats reset. History saved for ${prevMonth}.` };
   }
 
+  async getTopPages(limit = 10): Promise<BreakdownItem[]> {
+    return this.cache.getOrSet(`analytics:top-pages:${limit}`, () =>
+      this.aggregateByField('path', limit), 60_000);
+  }
+
+  async getMonthlyHistory(months = 6): Promise<Array<{ month: string; views: number }>> {
+    return this.cache.getOrSet(`analytics:monthly-history:${months}`, async () => {
+      const docs = await this.monthlyHistoryModel
+        .find()
+        .sort({ month: -1 })
+        .limit(months)
+        .lean()
+        .exec();
+      return (docs as Array<{ month: string; views: number }>).reverse();
+    }, 60_000);
+  }
+
   private async incrementStats(country: string, deviceType: string): Promise<void> {
     // Country names from Intl.DisplayNames (e.g. "Italy", "United States") are valid
     // MongoDB field name components — only dots and $ signs need escaping.

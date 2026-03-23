@@ -371,7 +371,34 @@
     "monthly_locations": "Vendndodhjet (këtë muaj)",
     "monthly_locations_desc": "Shpërndarja sipas vendit për muajin aktual",
     "total_locations": "Vendndodhjet (gjithsej)",
-    "total_locations_desc": "Shpërndarja kumulative sipas vendit"
+    "total_locations_desc": "Shpërndarja kumulative sipas vendit",
+    "kpi_section": "KPI të Performancës",
+    "conversion_rate": "Norma e Konvertimit",
+    "conversion_rate_desc": "Kontakte të gjeneruara për vizitë totale",
+    "conversion_rate_label": "Konvertim",
+    "growth_velocity": "Rritje Mujore",
+    "growth_velocity_desc": "Muaji aktual vs muaji i mëparshëm",
+    "growth_vs_prev_month": "vs muajin e kaluar",
+    "growth_no_history": "Nuk ka histori ende",
+    "system_health": "Shëndeti i Sistemit",
+    "system_health_desc": "Statusi dhe versioni i backend-it",
+    "system_status": "Statusi",
+    "system_version": "Versioni",
+    "system_env": "Mjedisi",
+    "monthly_trend": "Trend i Vizitave Mujore",
+    "monthly_trend_desc": "Vizitat historike për muaj",
+    "chatbot_stats": "Chatbot",
+    "chatbot_stats_desc": "Bisedat me asistentin AI",
+    "chatbot_total_sessions": "Sjeancë totale",
+    "chatbot_total_messages": "Mesazhe totale",
+    "chatbot_today": "Sot",
+    "chatbot_this_month": "Këtë muaj",
+    "top_pages": "Faqet kryesore",
+    "top_pages_desc": "Faqet me më shumë vizita",
+    "audit_log_section": "Aktiviteti Admin",
+    "audit_log": "Regjistri i Aktivitetit",
+    "audit_log_desc": "10 operacionet e fundit të shkrimit admin",
+    "audit_log_empty": "Nuk ka veprime admin të regjistruara."
   },
   "session": {
     "warning_title": "Sesioni po skadon",
@@ -433,5 +460,8 @@
       "desc": "Bashkëpunoj me kompani dhe ekipe që duan të ndërtojnë diçka kuptimplote. Le të flasim për sfidën tuaj tjetër.",
       "btn": "Na Kontaktoni"
     }
+  },
+  "blog": {
+    "readMore": "Lexo më shumë"
   }
 }

@@ -122,6 +122,29 @@ export class ChatbotService {
     }, 0);
   }
 
+  async getChatbotStats(): Promise<{
+    totalSessions: number;
+    totalMessages: number;
+    interactionsToday: number;
+    sessionsThisMonth: number;
+  }> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [totalSessions, allSessions, sessionsThisMonth, interactionsToday] = await Promise.all([
+      this.chatSessionModel.countDocuments().exec(),
+      this.chatSessionModel.find({}, 'messages').lean().exec(),
+      this.chatSessionModel.countDocuments({ createdAt: { $gte: startOfMonth } }).exec(),
+      this.getTodayInteractionCount(),
+    ]);
+
+    const totalMessages = (allSessions as Array<{ messages: unknown[] }>).reduce(
+      (sum, s) => sum + (s.messages?.length ?? 0), 0,
+    );
+
+    return { totalSessions, totalMessages, interactionsToday, sessionsThisMonth };
+  }
+
   async sendTranscript(sessionId: string, email: string): Promise<{ success: boolean }> {
     const session = await this.chatSessionModel.findOne({ sessionId }).exec();
     if (!session || session.messages.length === 0) {
