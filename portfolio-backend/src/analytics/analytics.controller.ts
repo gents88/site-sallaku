@@ -20,6 +20,25 @@ export class AnalyticsController {
     return this.analyticsService.trackPageView(dto, req);
   }
 
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get combined monthly + total analytics stats (admin only)' })
+  getAnalyticsStats() {
+    return this.analyticsService.getAnalyticsStats();
+  }
+
+  @Post('reset')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Manually trigger monthly analytics reset (admin only)' })
+  resetMonthlyStats() {
+    return this.analyticsService.resetMonthlyStats(true /* force */);
+  }
+
   @Get('advanced')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)

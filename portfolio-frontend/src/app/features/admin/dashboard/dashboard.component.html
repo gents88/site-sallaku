@@ -161,6 +161,120 @@
     <!-- ── Advanced Visitor Analytics ─────────────────────────────────── -->
     <h2 class="section-label">{{ 'admin.visitor_analytics' | translate }}</h2>
 
+    <!-- ── Monthly vs Total Stats ──────────────────────────────────────── -->
+    <div class="analytics-grid monthly-stats-grid">
+
+      <!-- Monthly vs Total Views -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.monthly_vs_total_views' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.monthly_views_desc' | translate }}</p>
+          </div>
+          <mat-icon>calendar_month</mat-icon>
+        </div>
+        <div class="visitor-overview">
+          <div class="visitor-overview__item">
+            <strong>{{ totalViews }}</strong>
+            <span class="text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
+          </div>
+          <div class="visitor-overview__item visitor-overview__item--accent">
+            <strong>{{ monthlyViews }}</strong>
+            <span class="text-muted">{{ 'admin.monthly_views_this_month' | translate }}</span>
+          </div>
+          @if (lastResetAt) {
+            <div class="visitor-overview__item">
+              <strong class="visitor-overview__small">{{ lastResetAt | date:'dd/MM/yy' }}</strong>
+              <span class="text-muted">{{ 'admin.last_reset' | translate }}</span>
+            </div>
+          }
+        </div>
+        <button
+          type="button"
+          class="reset-stats-btn"
+          [disabled]="resettingStats"
+          (click)="resetMonthlyStats()">
+          <mat-icon [class.spin]="resettingStats">{{ resettingStats ? 'sync' : 'restart_alt' }}</mat-icon>
+          {{ resettingStats ? ('common.loading' | translate) : ('admin.reset_monthly_stats' | translate) }}
+        </button>
+      </section>
+
+      <!-- Monthly Device Breakdown -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.monthly_devices' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.monthly_devices_desc' | translate }}</p>
+          </div>
+          <mat-icon>devices</mat-icon>
+        </div>
+        <app-donut-chart [items]="statsMonthlyDevices" [colors]="deviceColors" />
+      </section>
+
+      <!-- Total Device Breakdown -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.total_devices' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.total_devices_desc' | translate }}</p>
+          </div>
+          <mat-icon>devices_other</mat-icon>
+        </div>
+        <app-donut-chart [items]="statsDevices" [colors]="deviceColors" />
+      </section>
+    </div>
+
+    <!-- Monthly vs Total Locations -->
+    <div class="analytics-grid adv-bottom-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.monthly_locations' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.monthly_locations_desc' | translate }}</p>
+          </div>
+          <mat-icon>location_on</mat-icon>
+        </div>
+        <div class="h-bars">
+          @for (item of statsMonthlyLocations; track item.label; let i = $index) {
+            <div class="h-bar-row">
+              <span class="h-bar-label text-muted">{{ item.label }}</span>
+              <div class="h-bar-track">
+                <div class="h-bar-fill h-bar-fill--month" [style.width.%]="statsMonthlyLocationBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
+              </div>
+              <span class="h-bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (!statsMonthlyLocations.length) {
+            <p class="text-muted h-bars__empty">—</p>
+          }
+        </div>
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.total_locations' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.total_locations_desc' | translate }}</p>
+          </div>
+          <mat-icon>public</mat-icon>
+        </div>
+        <div class="h-bars">
+          @for (item of statsLocations; track item.label; let i = $index) {
+            <div class="h-bar-row">
+              <span class="h-bar-label text-muted">{{ item.label }}</span>
+              <div class="h-bar-track">
+                <div class="h-bar-fill" [style.width.%]="statsLocationBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
+              </div>
+              <span class="h-bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (!statsLocations.length) {
+            <p class="text-muted h-bars__empty">—</p>
+          }
+        </div>
+      </section>
+    </div>
+
     <div class="analytics-grid adv-top-grid">
       <!-- Visitor overview card -->
       <section class="analytics-card card">

@@ -653,6 +653,60 @@
   &--browser {
     background: linear-gradient(90deg, #14b8a6, #06b6d4);
   }
+
+  &--month {
+    background: linear-gradient(90deg, #f59e0b, #ec4899);
+  }
+}
+
+// Monthly stats grid (3-column similar to adv-top-grid)
+.monthly-stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-bottom: 0;
+}
+
+.visitor-overview__item--accent {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.08);
+
+  strong { color: #a5b4fc; }
+}
+
+.visitor-overview__small {
+  font-size: 1rem !important;
+}
+
+// Reset monthly stats button
+.reset-stats-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+  color: #fca5a5;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.45);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
 }
 
 .h-bar-count {

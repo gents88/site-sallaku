@@ -27,6 +27,14 @@ export class DailySummaryService implements OnModuleInit {
     this.logger.log(`Scheduling daily summary: "${cronExpr}" timezone=${tz}`);
 
     cron.schedule(cronExpr, () => this.executeSummary(), { timezone: tz } as any);
+
+    // Monthly analytics reset: runs at 00:00 on the 1st of every month
+    cron.schedule('0 0 1 * *', () => {
+      this.logger.log('[AnalyticsReset] Monthly reset cron triggered');
+      this.analytics.resetMonthlyStats().catch(err =>
+        this.logger.error('[AnalyticsReset] Monthly reset failed', err as any),
+      );
+    }, { timezone: tz } as any);
   }
 
   // ── Public API (used by the manual trigger endpoint) ──────────────────────

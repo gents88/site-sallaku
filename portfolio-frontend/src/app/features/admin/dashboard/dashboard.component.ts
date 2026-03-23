@@ -67,6 +67,16 @@ interface AdvancedAnalytics {
   trafficSources: DonutItem[];
 }
 
+interface AnalyticsStats {
+  totalViews: number;
+  monthlyViews: number;
+  locations: DonutItem[];
+  monthlyLocations: DonutItem[];
+  devices: DonutItem[];
+  monthlyDevices: DonutItem[];
+  lastResetAt: string | null;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -116,6 +126,15 @@ export class DashboardComponent implements OnInit {
   osBreakdown: DonutItem[] = [];
   trafficSources: DonutItem[] = [];
 
+  // Pre-aggregated monthly + total stats
+  monthlyViews = 0;
+  statsLocations: DonutItem[] = [];
+  statsMonthlyLocations: DonutItem[] = [];
+  statsDevices: DonutItem[] = [];
+  statsMonthlyDevices: DonutItem[] = [];
+  lastResetAt: string | null = null;
+  resettingStats = false;
+
   readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
   readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
   readonly browserColors = ['#f59e0b', '#6366f1', '#ef4444', '#14b8a6', '#8b5cf6', '#06b6d4', '#10b981', '#ec4899'];
@@ -158,6 +177,16 @@ export class DashboardComponent implements OnInit {
       trafficSources: [],
     };
 
+    const emptyAnalyticsStats: AnalyticsStats = {
+      totalViews: 0,
+      monthlyViews: 0,
+      locations: [],
+      monthlyLocations: [],
+      devices: [],
+      monthlyDevices: [],
+      lastResetAt: null,
+    };
+
     combineLatest({
       projects: this.projectsService.getAll().pipe(catchError(() => of([])), startWith([])),
       experiences: this.experiencesService.getAll().pipe(catchError(() => of([])), startWith([])),
@@ -169,9 +198,13 @@ export class DashboardComponent implements OnInit {
         catchError(() => of(emptyAdvanced)),
         startWith(emptyAdvanced),
       ),
+      analyticsStats: this.http.get<AnalyticsStats>(`${environment.apiUrl}/analytics`).pipe(
+        catchError(() => of(emptyAnalyticsStats)),
+        startWith(emptyAnalyticsStats),
+      ),
       blogPosts: this.blogService.getAll().pipe(catchError(() => of([])), startWith([])),
     }).subscribe({
-      next: ({ projects, experiences, adminStats, advanced, blogPosts }) => {
+      next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts }) => {
         const totalPosts = adminStats.content.total;
         const publishedPosts = adminStats.content.published;
         const totalValues = [
@@ -219,6 +252,14 @@ export class DashboardComponent implements OnInit {
         this.osBreakdown = advanced.osBreakdown;
         this.trafficSources = advanced.trafficSources;
 
+        // Pre-aggregated monthly + total stats
+        this.monthlyViews = analyticsStats.monthlyViews;
+        this.statsLocations = analyticsStats.locations;
+        this.statsMonthlyLocations = analyticsStats.monthlyLocations;
+        this.statsDevices = analyticsStats.devices;
+        this.statsMonthlyDevices = analyticsStats.monthlyDevices;
+        this.lastResetAt = analyticsStats.lastResetAt;
+
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -241,6 +282,22 @@ export class DashboardComponent implements OnInit {
 
   get maxVisitBarValue(): number {
     return Math.max(...this.visitBars.map(bar => bar.value), 1);
+  }
+
+  get maxStatsLocationCount(): number {
+    return Math.max(...this.statsLocations.map(l => l.count), 1);
+  }
+
+  get maxStatsMonthlyLocationCount(): number {
+    return Math.max(...this.statsMonthlyLocations.map(l => l.count), 1);
+  }
+
+  statsLocationBarWidth(count: number): number {
+    return Math.max((count / this.maxStatsLocationCount) * 100, count > 0 ? 6 : 0);
+  }
+
+  statsMonthlyLocationBarWidth(count: number): number {
+    return Math.max((count / this.maxStatsMonthlyLocationCount) * 100, count > 0 ? 6 : 0);
   }
 
   get maxCountryCount(): number {
@@ -474,6 +531,28 @@ export class DashboardComponent implements OnInit {
       const offset = ((seed + index) % 3) * 4;
       const height = 16 + normalized * 42 + point * 30 + offset;
       return Math.max(18, Math.min(Math.round(height), 92));
+    });
+  }
+
+  resetMonthlyStats(): void {
+    if (this.resettingStats) return;
+    this.openConfirmDialog('admin.confirm_reset_monthly_stats', {}, () => {
+      this.resettingStats = true;
+      this.http.post<{ success: boolean; message: string }>(`${environment.apiUrl}/analytics/reset`, {}).subscribe({
+        next: () => {
+          this.resettingStats = false;
+          this.monthlyViews = 0;
+          this.statsMonthlyLocations = [];
+          this.statsMonthlyDevices = [];
+          this.lastResetAt = new Date().toISOString();
+          this.showActionMessage('admin.monthly_stats_reset');
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.resettingStats = false;
+          this.cdr.markForCheck();
+        },
+      });
     });
   }
 
