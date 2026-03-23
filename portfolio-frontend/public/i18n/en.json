@@ -354,6 +354,8 @@
     "top_countries_desc": "Visitors by country (IP geolocation)",
     "browser_breakdown": "Browsers",
     "browser_breakdown_desc": "Browser distribution",
+    "os_breakdown": "Operating System",
+    "os_breakdown_desc": "OS distribution",
     "monthly_vs_total_views": "Monthly vs Total Views",
     "monthly_views_desc": "Current month compared to all-time total",
     "total_views_all_time": "Total (all time)",

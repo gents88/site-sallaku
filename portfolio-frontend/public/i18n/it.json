@@ -354,6 +354,8 @@
     "top_countries_desc": "Visitatori per paese (geolocalizzazione IP)",
     "browser_breakdown": "Browser",
     "browser_breakdown_desc": "Distribuzione per browser",
+    "os_breakdown": "Sistema Operativo",
+    "os_breakdown_desc": "Distribuzione per sistema operativo",
     "monthly_vs_total_views": "Viste mensili vs totali",
     "monthly_views_desc": "Mese corrente rispetto al totale cumulativo",
     "total_views_all_time": "Totale (sempre)",

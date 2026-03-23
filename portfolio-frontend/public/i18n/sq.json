@@ -354,6 +354,8 @@
     "top_countries_desc": "Vizitorë sipas vendit (gjeolokalizim IP)",
     "browser_breakdown": "Shfletuesit",
     "browser_breakdown_desc": "Shpërndarja sipas shfletuesit",
+    "os_breakdown": "Sistemi Operativ",
+    "os_breakdown_desc": "Shpërndarja sipas sistemit operativ",
     "monthly_vs_total_views": "Pamjet mujore vs totale",
     "monthly_views_desc": "Muaji aktual krahasuar me totalin e gjithëpërdorimit",
     "total_views_all_time": "Totali (gjithmonë)",

@@ -162,7 +162,7 @@
     <h2 class="section-label">{{ 'admin.visitor_analytics' | translate }}</h2>
 
     <!-- ── Monthly vs Total Stats ──────────────────────────────────────── -->
-    <div class="analytics-grid monthly-stats-grid">
+    <div class="analytics-grid adv-top-grid">
 
       <!-- Monthly vs Total Views -->
       <section class="analytics-card card">
@@ -199,41 +199,45 @@
         </button>
       </section>
 
-      <!-- Monthly Device Breakdown -->
+      <!-- Devices: monthly donut + total as plain numbers -->
       <section class="analytics-card card">
         <div class="analytics-card__header">
           <div>
-            <h2>{{ 'admin.monthly_devices' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.monthly_devices_desc' | translate }}</p>
+            <h2>{{ 'admin.device_breakdown' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.device_breakdown_desc' | translate }}</p>
           </div>
           <mat-icon>devices</mat-icon>
         </div>
+        <p class="stats-sublabel text-muted">{{ 'admin.monthly_views_this_month' | translate }}</p>
         <app-donut-chart [items]="statsMonthlyDevices" [colors]="deviceColors" />
-      </section>
-
-      <!-- Total Device Breakdown -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.total_devices' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.total_devices_desc' | translate }}</p>
+        <div class="stats-totals">
+          <span class="stats-totals__label text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
+          <div class="stats-totals__row">
+            @for (item of statsDevices; track item.label) {
+              <span class="stats-totals__item">
+                <strong>{{ item.count }}</strong>
+                <span class="text-muted">{{ item.label }}</span>
+              </span>
+            }
+            @if (!statsDevices.length) {
+              <span class="text-muted">—</span>
+            }
           </div>
-          <mat-icon>devices_other</mat-icon>
         </div>
-        <app-donut-chart [items]="statsDevices" [colors]="deviceColors" />
       </section>
     </div>
 
-    <!-- Monthly vs Total Locations -->
+    <!-- Locations: monthly bars + total as plain numbers -->
     <div class="analytics-grid adv-bottom-grid">
       <section class="analytics-card card">
         <div class="analytics-card__header">
           <div>
-            <h2>{{ 'admin.monthly_locations' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.monthly_locations_desc' | translate }}</p>
+            <h2>{{ 'admin.top_locations' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.top_locations_desc' | translate }}</p>
           </div>
           <mat-icon>location_on</mat-icon>
         </div>
+        <p class="stats-sublabel text-muted">{{ 'admin.monthly_views_this_month' | translate }}</p>
         <div class="h-bars">
           @for (item of statsMonthlyLocations; track item.label; let i = $index) {
             <div class="h-bar-row">
@@ -248,30 +252,31 @@
             <p class="text-muted h-bars__empty">—</p>
           }
         </div>
-      </section>
-
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.total_locations' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.total_locations_desc' | translate }}</p>
-          </div>
-          <mat-icon>public</mat-icon>
-        </div>
-        <div class="h-bars">
+        <div class="stats-totals stats-totals--locations">
+          <span class="stats-totals__label text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
           @for (item of statsLocations; track item.label; let i = $index) {
-            <div class="h-bar-row">
-              <span class="h-bar-label text-muted">{{ item.label }}</span>
-              <div class="h-bar-track">
-                <div class="h-bar-fill" [style.width.%]="statsLocationBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
-              </div>
-              <span class="h-bar-count">{{ item.count }}</span>
+            <div class="stats-totals__loc-row">
+              <span class="stats-totals__loc-dot" [style.background]="countryColors[i % countryColors.length]"></span>
+              <span class="text-muted">{{ item.label }}</span>
+              <strong class="stats-totals__loc-count">{{ item.count }}</strong>
             </div>
           }
           @if (!statsLocations.length) {
-            <p class="text-muted h-bars__empty">—</p>
+            <span class="text-muted">—</span>
           }
         </div>
+      </section>
+
+      <!-- OS breakdown: donut chart -->
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.os_breakdown' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.os_breakdown_desc' | translate }}</p>
+          </div>
+          <mat-icon>computer</mat-icon>
+        </div>
+        <app-donut-chart [items]="osBreakdown" [colors]="browserColors" />
       </section>
     </div>
 
