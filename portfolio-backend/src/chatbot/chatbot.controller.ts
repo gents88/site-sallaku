@@ -85,4 +85,13 @@ export class ChatbotController {
   getChatbotStats() {
     return this.chatbotService.getChatbotStats();
   }
+
+  @Get('sessions/today')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'List all chatbot sessions active today (admin only)' })
+  getTodaySessions() {
+    return this.chatbotService.getTodaySessions();
+  }
 }

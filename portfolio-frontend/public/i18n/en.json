@@ -398,7 +398,13 @@
     "audit_log_section": "Admin Activity",
     "audit_log": "Audit Log",
     "audit_log_desc": "Last 10 admin write operations",
-    "audit_log_empty": "No admin actions recorded yet."
+    "audit_log_empty": "No admin actions recorded yet.",
+    "chat_sessions_section": "Live Chat",
+    "chat_sessions_today": "Today's Chat Sessions",
+    "chat_sessions_today_desc": "Conversations started today (24 h TTL)",
+    "chat_sessions_load": "Load sessions",
+    "chat_sessions_empty": "No chat sessions today, or not loaded yet.",
+    "chat_messages_count": "messages"
   },
   "session": {
     "warning_title": "Session is about to expire",

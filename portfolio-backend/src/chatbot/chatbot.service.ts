@@ -122,6 +122,32 @@ export class ChatbotService {
     }, 0);
   }
 
+  async getTodaySessions(limit = 30): Promise<Array<{
+    sessionId: string;
+    messages: ChatMessage[];
+    lastActivity: Date;
+    createdAt: Date;
+    messageCount: number;
+  }>> {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const sessions = await this.chatSessionModel
+      .find({ lastActivity: { $gte: start } })
+      .sort({ lastActivity: -1 })
+      .limit(limit)
+      .lean()
+      .exec();
+
+    return (sessions as Array<any>).map(s => ({
+      sessionId: s.sessionId,
+      messages: s.messages ?? [],
+      lastActivity: s.lastActivity,
+      createdAt: s.createdAt,
+      messageCount: s.messages?.length ?? 0,
+    }));
+  }
+
   async getChatbotStats(): Promise<{
     totalSessions: number;
     totalMessages: number;

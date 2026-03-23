@@ -398,7 +398,13 @@
     "audit_log_section": "Attività Admin",
     "audit_log": "Registro Attività",
     "audit_log_desc": "Ultime 10 operazioni di scrittura admin",
-    "audit_log_empty": "Nessuna azione admin registrata."
+    "audit_log_empty": "Nessuna azione admin registrata.",
+    "chat_sessions_section": "Chat in Diretta",
+    "chat_sessions_today": "Sessioni Chat di Oggi",
+    "chat_sessions_today_desc": "Conversazioni avviate oggi (TTL 24 h)",
+    "chat_sessions_load": "Carica sessioni",
+    "chat_sessions_empty": "Nessuna sessione chat oggi, o non ancora caricata.",
+    "chat_messages_count": "messaggi"
   },
   "session": {
     "warning_title": "La sessione sta per scadere",

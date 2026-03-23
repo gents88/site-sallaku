@@ -107,6 +107,20 @@ interface SystemHealth {
   environment: string;
 }
 
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
+interface ChatbotSession {
+  sessionId: string;
+  messages: ChatMessage[];
+  lastActivity: string;
+  createdAt: string;
+  messageCount: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -172,6 +186,11 @@ export class DashboardComponent implements OnInit {
   chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 };
   systemHealth: SystemHealth | null = null;
   totalContacts = 0;
+
+  // Chat session viewer
+  todaySessions: ChatbotSession[] = [];
+  expandedSessionId: string | null = null;
+  loadingTodaySessions = false;
 
   readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
   readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
@@ -407,6 +426,32 @@ export class DashboardComponent implements OnInit {
       POST: '#10b981', PUT: '#f59e0b', PATCH: '#6366f1', DELETE: '#ef4444',
     };
     return map[method?.toUpperCase()] ?? '#8b5cf6';
+  }
+
+  loadTodaySessions(): void {
+    if (this.loadingTodaySessions) return;
+    this.loadingTodaySessions = true;
+    this.http.get<ChatbotSession[]>(`${environment.apiUrl}/chatbot/sessions/today`).subscribe({
+      next: (sessions) => {
+        this.todaySessions = sessions;
+        this.loadingTodaySessions = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loadingTodaySessions = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  toggleSession(sessionId: string): void {
+    this.expandedSessionId = this.expandedSessionId === sessionId ? null : sessionId;
+  }
+
+  sessionPreview(session: ChatbotSession): string {
+    const first = session.messages.find(m => m.role === 'user');
+    if (!first) return '—';
+    return first.content.length > 60 ? first.content.slice(0, 60) + '…' : first.content;
   }
 
   get maxCountryCount(): number {

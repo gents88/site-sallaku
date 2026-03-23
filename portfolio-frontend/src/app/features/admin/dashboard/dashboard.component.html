@@ -615,6 +615,73 @@
       </section>
     </div>
 
+    <!-- ── Chat Sessions Today ───────────────────────────────────────────── -->
+    <h2 class="section-label">{{ 'admin.chat_sessions_section' | translate }}</h2>
+    <div class="analytics-grid adv-bottom-grid">
+      <section class="analytics-card card" style="grid-column: 1 / -1;">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.chat_sessions_today' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.chat_sessions_today_desc' | translate }}</p>
+          </div>
+          <button
+            type="button"
+            class="chat-load-btn"
+            [disabled]="loadingTodaySessions"
+            (click)="loadTodaySessions()">
+            <mat-icon [class.spin]="loadingTodaySessions">{{ loadingTodaySessions ? 'sync' : 'refresh' }}</mat-icon>
+            {{ loadingTodaySessions ? ('common.loading' | translate) : ('admin.chat_sessions_load' | translate) }}
+          </button>
+        </div>
+
+        @if (!todaySessions.length && !loadingTodaySessions) {
+          <p class="text-muted" style="margin-top:0.5rem;">{{ 'admin.chat_sessions_empty' | translate }}</p>
+        }
+
+        @if (todaySessions.length) {
+          <div class="chat-session-list">
+            @for (session of todaySessions; track session.sessionId) {
+              <div class="chat-session-row" [class.chat-session-row--open]="expandedSessionId === session.sessionId">
+
+                <!-- Session header row -->
+                <button type="button" class="chat-session-header" (click)="toggleSession(session.sessionId)">
+                  <div class="chat-session-meta">
+                    <mat-icon class="chat-session-icon">chat_bubble_outline</mat-icon>
+                    <div class="chat-session-info">
+                      <span class="chat-session-preview">{{ sessionPreview(session) }}</span>
+                      <span class="text-muted chat-session-time">
+                        {{ session.lastActivity | date:'HH:mm' }} &nbsp;·&nbsp;
+                        {{ session.messageCount }} {{ 'admin.chat_messages_count' | translate }}
+                      </span>
+                    </div>
+                  </div>
+                  <mat-icon class="chat-session-chevron">
+                    {{ expandedSessionId === session.sessionId ? 'expand_less' : 'expand_more' }}
+                  </mat-icon>
+                </button>
+
+                <!-- Expanded conversation thread -->
+                @if (expandedSessionId === session.sessionId) {
+                  <div class="chat-thread">
+                    @for (msg of session.messages; track $index) {
+                      <div class="chat-bubble-row" [class.chat-bubble-row--user]="msg.role === 'user'">
+                        <div class="chat-bubble" [class.chat-bubble--user]="msg.role === 'user'" [class.chat-bubble--bot]="msg.role === 'assistant'">
+                          <span class="chat-bubble__role text-muted">{{ msg.role === 'user' ? '👤' : '🤖' }}</span>
+                          <span class="chat-bubble__text">{{ msg.content }}</span>
+                          <span class="chat-bubble__time text-muted">{{ msg.timestamp | date:'HH:mm:ss' }}</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
     <!-- Quick links -->
     <h2 class="section-label">{{ 'admin.quick_actions' | translate }}</h2>
     <div class="quick-links">

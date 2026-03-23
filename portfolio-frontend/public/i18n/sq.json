@@ -398,7 +398,13 @@
     "audit_log_section": "Aktiviteti Admin",
     "audit_log": "Regjistri i Aktivitetit",
     "audit_log_desc": "10 operacionet e fundit të shkrimit admin",
-    "audit_log_empty": "Nuk ka veprime admin të regjistruara."
+    "audit_log_empty": "Nuk ka veprime admin të regjistruara.",
+    "chat_sessions_section": "Chat Live",
+    "chat_sessions_today": "Seancat e Sotme të Chat",
+    "chat_sessions_today_desc": "Bisedat e fillura sot (TTL 24 h)",
+    "chat_sessions_load": "Ngarko seancat",
+    "chat_sessions_empty": "Asnjë seancë chat sot, ose nuk është ngarkuar ende.",
+    "chat_messages_count": "mesazhe"
   },
   "session": {
     "warning_title": "Sesioni po skadon",
