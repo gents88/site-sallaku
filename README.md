@@ -112,29 +112,35 @@ A complete rewrite of the portfolio as a full-stack web application with admin p
 portfolio-backend/    → NestJS 10 REST API
 portfolio-frontend/   → Angular 21 SPA
 docker-compose.yml    → One-command startup
+.github/workflows/    → CI/CD GitHub Actions
 ```
 
 ### Features
 
 | Feature | Details |
 |---|---|
-| JWT Authentication | Register / Login with bcrypt, role-based guards |
-| Admin Dashboard | Full CRUD — Projects, Experiences, About, Blog |
-| Blog System | Slug-based posts, publish toggle, tag filtering, SEO |
-| Contact Form | Sends email via Nodemailer (SMTP) |
+| JWT Authentication | Register / Login with bcrypt, refresh token rotation + reuse detection |
+| Admin Dashboard | Full CRUD — Projects, Experiences, About, Blog (OnPush, signal-based loading) |
+| Blog System | Slug-based posts, publish toggle, tag filtering, **server-side pagination**, SEO |
+| Contact Form | Sends email via Resend/SMTP, **paginated inbox** in admin |
 | SEO | Dynamic title/meta, Open Graph, Twitter Cards, JSON-LD |
 | Dark / Light Theme | Angular Signals + localStorage persistence |
-| Responsive UI | Angular Material 17, mobile-first SCSS |
-| Analytics | Google Analytics 4 via `gtag()` on every route change |
+| Responsive UI | Angular Material, mobile-first SCSS |
+| Analytics | Page-view tracking + **CSV export** (admin, date range filter) |
+| Audit Trail | MongoDB-persisted log of all admin write actions (90-day TTL) |
+| Request Logging | Global `LoggingInterceptor` — method, URL, status, duration |
+| Error Handling | Global `HttpExceptionFilter` (backend) + `ErrorInterceptor` (frontend) |
+| CI/CD | GitHub Actions: lint → build → test → Docker image build |
 
 ### Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | Angular 21 (standalone), Angular Material 17, SCSS, Signals, RxJS 7 |
-| Backend | NestJS 10, Mongoose, Passport JWT, bcrypt, Nodemailer, Swagger |
+| Frontend | Angular 21 (standalone), Angular Material, SCSS, Signals, RxJS 7, OnPush CD |
+| Backend | NestJS 10, Mongoose 8, Passport JWT, bcrypt, Resend/Nodemailer, Swagger |
 | Database | MongoDB 7 |
-| Infrastructure | Docker Compose, Nginx (SPA + API reverse proxy) |
+| Infrastructure | Docker Compose (dev + prod), Nginx SPA host, Traefik reverse proxy, Let's Encrypt SSL |
+| CI/CD | GitHub Actions (node 20, npm ci, lint, build, test, docker buildx) |
 
 ### Quick Start — Docker (recommended)
 
@@ -193,22 +199,25 @@ Important:
 ### Backend
 - **Hashing password**: bcrypt (12 rounds), password mai salvate in chiaro.
 - **Validazione input**: class-validator su tutti i DTO (es. password forte, email valida).
-- **Autenticazione JWT**: access token breve durata, refresh token separato, secret in variabile d’ambiente.
-- **Refresh token**: archiviato hashato nel DB, mai in chiaro, endpoint dedicato per rinnovo.
+- **Autenticazione JWT**: access token 15 min, refresh token 7 giorni, secret in variabile d’ambiente.
+- **Refresh token**: archiviato hashato nel DB, mai in chiaro, rotazione ad ogni uso + rilevamento riuso (revoca totale al riuso).
 - **OTP (One-Time Password)**: login/registrazione via email/SMS, rate limiting (max 3 richieste/10min), scadenza 5 minuti, tentativi limitati.
-- **Ruoli**: Admin/User, protezione endpoints con @Roles e guardie custom.
-- **Rate limiting**: throttler globale (default 60 req/min/IP), personalizzabile per endpoint.
+- **Ruoli**: Admin/User, protezione endpoints con `@Roles` e guardie custom.
+- **Rate limiting**: throttler globale (default 60 req/min/IP); map in-memory precedenti rimossi (prevenzione memory leak).
+- **Audit trail**: ogni scrittura admin (POST/PUT/PATCH/DELETE) tracciata in MongoDB con TTL 90 giorni.
 - **CORS**: configurabile via variabile d’ambiente.
-- **Logging**: errori e accessi critici loggati (NestJS Logger).
-- **Filtri errori**: custom HttpExceptionFilter per risposte uniformi e logging stack trace.
+- **Request logging**: `LoggingInterceptor` globale — metodo, URL, status, durata; warn su 4xx, error su 5xx.
+- **Filtri errori**: custom `HttpExceptionFilter` per risposte uniformi e logging stack trace.
 - **Cache-Control**: interceptor per cache pubblica su GET pubblici.
+- **Helmet + HSTS**: header di sicurezza HTTP abilitati in produzione.
 
 ### Frontend
-- **Token storage**: access/refresh token solo in localStorage, mai in URL o query.
+- **Token storage**: access/refresh token in localStorage (valuta httpOnly cookies per ambienti ad alto rischio).
 - **Logout automatico**: dopo 30 minuti di inattività (eventi mouse/tastiera/scroll).
-- **Intercettori HTTP**: retry automatico su 401 con refresh token, logout forzato se refresh fallisce.
-- **Protezione route**: AuthGuard su tutte le route admin.
+- **Intercettori HTTP**: `authInterceptor` (retry 401 + refresh), `errorInterceptor` globale (status 0/400/403/429/500+).
+- **Protezione route**: `AuthGuard` su tutte le route admin.
 - **Sync multi-tab**: logout sincronizzato tra tab/browser.
+- **Change Detection**: `OnPush` sul `DashboardComponent` per ridurre cicli di rendering non necessari.
 
 ## 🏛️ Architettura & Flussi
 
@@ -299,14 +308,33 @@ All routes are prefixed `/api/v1`. Routes marked 🔒 require `Authorization: Be
 - `GET /` (public) · `PUT /` 🔒
 
 **Blog** — `/blog`
-- `GET /posts` · `GET /posts/:slug` (public, supports `?tag=`)
-- `GET /admin/posts` · `POST /admin/posts` · `PUT /admin/posts/:id` · `DELETE /admin/posts/:id` 🔒
+- `GET /posts?page=1&limit=10&tag=` · `GET /posts/:slug` (public, paginato)
+- `GET /admin/posts` · `POST /admin/posts` 🔒 (audit) · `PUT /admin/posts/:id` · `DELETE /admin/posts/:id` 🔒
 
-**Contact** — `POST /contact` (public)
+**Contact** — `/contact`
+- `POST /` (public) · `GET /?page=1&limit=20&unreadOnly=true` 🔒
+
+**Analytics** — `/analytics`
+- `POST /track` (public) · `GET /` 🔒 · `GET /export/csv?from=&to=` 🔒
+
+**Audit** — `/audit`
+- `GET /?limit=50&resource=&actorId=` 🔒 (admin only)
 
 ### Admin Panel
 
 Navigate to **http://localhost:4200/admin/login**. Create your account with `POST /api/v1/auth/register` or visit `/admin/register` in the browser.
+
+## ⚙️ CI/CD
+
+Il file `.github/workflows/ci.yml` esegue automaticamente ad ogni push:
+
+| Job | Passi |
+|---|---|
+| `backend` | `npm ci` → `lint` → `build` → `test` (unit tests) |
+| `frontend` | `npm ci` → `build:prod` |
+| `docker-build` | build immagini backend + frontend con cache GHA (solo su `main`) |
+
+I segreti Railway/Docker Hub devono essere configurati in **Settings → Secrets** del repository GitHub.
 
 ## 📐 Design System
 
