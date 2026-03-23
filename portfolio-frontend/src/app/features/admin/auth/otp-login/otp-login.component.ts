@@ -140,7 +140,7 @@ export class OtpLoginComponent implements OnDestroy {
         this.loading = false;
         if (this.auth.isAdmin()) {
           this.redirectTimeout = setTimeout(() => {
-            this.router.navigate(['/admin']);
+            this.router.navigate(['/dashboard']);
           }, 80);
         } else {
           this.auth.logout();

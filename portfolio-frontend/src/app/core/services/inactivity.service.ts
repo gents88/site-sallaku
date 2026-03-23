@@ -66,7 +66,7 @@ export class InactivityService {
 
     this.authModal.closeAll();
     this.stopTracking({ clearSharedState: true });
-    this.auth.logout('/admin/login');
+    this.auth.logout('/dashboard/login');
   }
 
   private bindActivityEvents(): void {

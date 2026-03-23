@@ -122,10 +122,10 @@ export class DashboardComponent implements OnInit {
   readonly countryColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444', '#06b6d4', '#10b981', '#ec4899', '#8b5cf6', '#0ea5e9', '#a78bfa'];
 
   readonly quickLinks = [
-    { labelKey: 'admin.manage_projects',    icon: 'work',       route: '/admin/projects' },
-    { labelKey: 'admin.manage_experiences', icon: 'history_edu',route: '/admin/experiences' },
-    { labelKey: 'admin.manage_blog',        icon: 'article',    route: '/admin/blog' },
-    { labelKey: 'admin.edit_about',         icon: 'person',     route: '/admin/about' },
+    { labelKey: 'admin.manage_projects',    icon: 'work',       route: '/dashboard/projects' },
+    { labelKey: 'admin.manage_experiences', icon: 'history_edu',route: '/dashboard/experiences' },
+    { labelKey: 'admin.manage_blog',        icon: 'article',    route: '/dashboard/blog' },
+    { labelKey: 'admin.edit_about',         icon: 'person',     route: '/dashboard/about' },
   ];
 
   constructor(
@@ -187,14 +187,14 @@ export class DashboardComponent implements OnInit {
         const maxValue = Math.max(...totalValues, 1);
 
         this.stats = [
-          { labelKey: 'admin.projects',    value: projects.length,                  icon: 'work',                   route: '/admin/projects',    color: '#6366f1', miniBars: this.buildMiniBars(projects.length, maxValue, 0) },
-          { labelKey: 'admin.experiences', value: experiences.length,               icon: 'history_edu',            route: '/admin/experiences', color: '#06b6d4', miniBars: this.buildMiniBars(experiences.length, maxValue, 1) },
-          { labelKey: 'admin.blog_posts',  value: totalPosts,                       icon: 'article',                route: '/admin/blog',        color: '#10b981', miniBars: this.buildMiniBars(totalPosts, maxValue, 2) },
-          { labelKey: 'admin.published',   value: publishedPosts,                   icon: 'published_with_changes', route: '/admin/blog',        color: '#f59e0b', miniBars: this.buildMiniBars(publishedPosts, maxValue, 3) },
-          { labelKey: 'admin.contacts',    value: adminStats.contacts,              icon: 'mail',                   route: '/admin',             color: '#ec4899', miniBars: this.buildMiniBars(adminStats.contacts, maxValue, 4) },
-          { labelKey: 'admin.users',       value: adminStats.users,                 icon: 'group',                  route: '/admin',             color: '#8b5cf6', miniBars: this.buildMiniBars(adminStats.users, maxValue, 5) },
-          { labelKey: 'admin.visits',      value: adminStats.visits.totalViews,     icon: 'visibility',             route: '/admin',             color: '#14b8a6', miniBars: this.buildMiniBars(adminStats.visits.totalViews, maxValue, 6) },
-          { labelKey: 'admin.visitors',    value: adminStats.visits.uniqueVisitors, icon: 'monitoring',             route: '/admin',             color: '#ef4444', miniBars: this.buildMiniBars(adminStats.visits.uniqueVisitors, maxValue, 7) },
+          { labelKey: 'admin.projects',    value: projects.length,                  icon: 'work',                   route: '/dashboard/projects',    color: '#6366f1', miniBars: this.buildMiniBars(projects.length, maxValue, 0) },
+          { labelKey: 'admin.experiences', value: experiences.length,               icon: 'history_edu',            route: '/dashboard/experiences', color: '#06b6d4', miniBars: this.buildMiniBars(experiences.length, maxValue, 1) },
+          { labelKey: 'admin.blog_posts',  value: totalPosts,                       icon: 'article',                route: '/dashboard/blog',        color: '#10b981', miniBars: this.buildMiniBars(totalPosts, maxValue, 2) },
+          { labelKey: 'admin.published',   value: publishedPosts,                   icon: 'published_with_changes', route: '/dashboard/blog',        color: '#f59e0b', miniBars: this.buildMiniBars(publishedPosts, maxValue, 3) },
+          { labelKey: 'admin.contacts',    value: adminStats.contacts,              icon: 'mail',                   route: '/dashboard',             color: '#ec4899', miniBars: this.buildMiniBars(adminStats.contacts, maxValue, 4) },
+          { labelKey: 'admin.users',       value: adminStats.users,                 icon: 'group',                  route: '/dashboard',             color: '#8b5cf6', miniBars: this.buildMiniBars(adminStats.users, maxValue, 5) },
+          { labelKey: 'admin.visits',      value: adminStats.visits.totalViews,     icon: 'visibility',             route: '/dashboard',             color: '#14b8a6', miniBars: this.buildMiniBars(adminStats.visits.totalViews, maxValue, 6) },
+          { labelKey: 'admin.visitors',    value: adminStats.visits.uniqueVisitors, icon: 'monitoring',             route: '/dashboard',             color: '#ef4444', miniBars: this.buildMiniBars(adminStats.visits.uniqueVisitors, maxValue, 7) },
         ];
         this.recentContacts = adminStats.recentContacts;
         this.unreadCount = adminStats.unreadContacts ?? 0;

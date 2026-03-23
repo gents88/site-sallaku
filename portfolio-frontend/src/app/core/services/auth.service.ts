@@ -105,13 +105,13 @@ export class AuthService implements OnDestroy {
         catchError(err => {
           this._isRefreshing = false;
           this.clearSession();
-          void this.router.navigateByUrl('/admin/login', { replaceUrl: true });
+          void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });
           return throwError(() => err);
         }),
       );
   }
 
-  logout(redirectUrl = '/admin/login'): void {
+  logout(redirectUrl = '/dashboard/login'): void {
     const token = this._token();
     if (token) {
       // Best-effort server-side revocation — don't block the UI on this
@@ -208,8 +208,8 @@ export class AuthService implements OnDestroy {
       this.stopInactivityTimer();
     }
 
-    if (wasLoggedIn && !token && this.router.url.startsWith('/admin')) {
-      void this.router.navigateByUrl('/admin/login', { replaceUrl: true });
+    if (wasLoggedIn && !token && this.router.url.startsWith('/dashboard')) {
+      void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });
     }
   };
 }

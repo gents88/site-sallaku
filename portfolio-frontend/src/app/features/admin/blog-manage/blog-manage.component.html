@@ -1,7 +1,7 @@
 <div class="admin-page container">
   <header class="admin-header">
     <div>
-      <a routerLink="/admin" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
       <h1>Blog Posts</h1>
     </div>
     <button mat-raised-button color="primary" (click)="openCreate()">
@@ -177,9 +177,14 @@
 
         <!-- Preview panel -->
         @if (showPreview) {
-          <div class="preview-panel">
+          <div class="preview-panel" [class.preview-panel--sq]="activeTab === 'sq'">
             <div class="preview-panel__header">
-              <h3>Preview ({{ activeTab.toUpperCase() }})</h3>
+              <h3>
+                <span class="preview-lang-badge preview-lang-badge--{{ activeTab }}">
+                  {{ previewLangInfo.flag }} {{ previewLangInfo.name }}
+                </span>
+                Preview
+              </h3>
               <button mat-icon-button type="button" (click)="togglePreview()" matTooltip="Close preview">
                 <mat-icon>close</mat-icon>
               </button>
@@ -190,7 +195,7 @@
                    [alt]="activeTitleControl.value || 'Cover image'" />
             }
             <h1 class="preview-panel__title">{{ activeTitleControl.value }}</h1>
-            <div class="preview-panel__content" [innerHTML]="activeContentControl.value"></div>
+            <div class="preview-panel__content" #previewContent [innerHTML]="activeContentControl.value"></div>
           </div>
         }
 

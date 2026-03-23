@@ -35,24 +35,24 @@ export const routes: Routes = [
 
   // ── Admin: auth pages (public) ───────────────────
   {
-    path: 'admin/login',
+    path: 'dashboard/login',
     loadComponent: () =>
       import('./features/admin/auth/login/login.component').then(m => m.LoginComponent),
   },
   {
-    path: 'admin/login/otp',
+    path: 'dashboard/login/otp',
     loadComponent: () =>
       import('./features/admin/auth/otp-login/otp-login.component').then(m => m.OtpLoginComponent),
   },
   {
-    path: 'admin/register',
+    path: 'dashboard/register',
     loadComponent: () =>
       import('./features/admin/auth/register/register.component').then(m => m.RegisterComponent),
   },
 
   // ── Admin: protected dashboard ────────────────────
   {
-    path: 'admin',
+    path: 'dashboard',
     canActivate: [authGuard],
     loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes),
   },

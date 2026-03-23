@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Input, computed, inject } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { PrismService } from '../../../shared/services/prism.service';
 
 @Component({
   selector: 'app-blog-detail',
@@ -17,14 +18,17 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlogDetailComponent implements OnInit {
+export class BlogDetailComponent implements OnInit, AfterViewChecked {
   @Input() slug!: string; // injected via withComponentInputBinding()
 
   post: Post | null = null;
   loading = true;
   notFound = false;
+  private needsHighlight = false;
 
   private readonly langService = inject(LanguageService);
+  private readonly el = inject(ElementRef);
+  private readonly prismService = inject(PrismService);
   readonly currentLang = this.langService.current;
 
   /** Returns the title in the current portal language, falling back to Italian. */
@@ -47,6 +51,19 @@ export class BlogDetailComponent implements OnInit {
 
   constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {}
 
+  ngAfterViewChecked(): void {
+    if (this.needsHighlight) {
+      this.needsHighlight = false;
+      this.highlightCode();
+    }
+  }
+
+  private highlightCode(): void {
+    const article = this.el.nativeElement.querySelector('.post-article__content');
+    if (!article) return;
+    this.prismService.highlightAllUnder(article);
+  }
+
   ngOnInit(): void {
     this.blogService.getBySlug(this.slug).pipe(
       timeout(15000),
@@ -54,6 +71,7 @@ export class BlogDetailComponent implements OnInit {
     ).subscribe({
       next: post => {
         this.post = post;
+        this.needsHighlight = true;
         this.cdr.markForCheck();
         // Fire-and-forget: increment view count without blocking rendering
         this.blogService.trackView(this.slug).subscribe({ error: () => {} });

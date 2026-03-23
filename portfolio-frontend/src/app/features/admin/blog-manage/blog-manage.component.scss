@@ -149,9 +149,19 @@
   margin: 1rem 0 1.5rem;
   padding: 1.5rem;
   border-radius: 10px;
-  background: #fff;
-  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #0f172a);
+  border: 1px solid var(--color-border, rgba(148, 163, 184, 0.22));
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+
+  [data-theme='dark'] & {
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+  }
+
+  // Albanian language accent — left border in Albanian red
+  &--sq {
+    border-left: 3px solid var(--albanian-red, #cd212a);
+  }
 
   &__header {
     display: flex;
@@ -160,6 +170,9 @@
     margin-bottom: 1.25rem;
     h3 {
       margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -183,44 +196,50 @@
     margin-bottom: 1.25rem;
   }
 
-  // VS Code–style content rendering
+  // Content — matches published post-article__content exactly
   &__content {
-    line-height: 1.8;
-    font-size: 1rem;
+    line-height: 1.85;
+    font-size: 1.05rem;
 
-    h2, h3 { margin: 1.75rem 0 0.75rem; }
-    p { margin-bottom: 1rem; }
+    h2, h3 { margin: 2rem 0 0.75rem; }
+    p { margin-bottom: 1.25rem; }
 
-    // Inline code — dark theme
+    // Inline code
     code {
-      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-      font-size: 0.85em;
-      background: #1e1e1e;
-      color: #ce9178;
-      padding: 0.15em 0.45em;
-      border-radius: 3px;
+      background: var(--color-bg-alt);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      font-size: 0.88em;
     }
 
-    // Code block — VS Code dark theme
+    // Code block — VS Code dark (Prism tomorrow theme)
     pre {
-      background: #1e1e1e;
-      color: #d4d4d4;
-      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-      font-size: 0.875rem;
-      line-height: 1.65;
-      padding: 1.25rem 1.5rem;
-      border-radius: 6px;
+      background: #1e1e1e !important;
+      border: 1px solid #3e3e42 !important;
+      border-radius: 6px !important;
+      padding: 0 !important;
       overflow-x: auto;
-      margin: 1.25rem 0;
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      position: relative;
+      margin-bottom: 1.5rem;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace !important;
+      font-size: 0.875rem !important;
+      line-height: 1.6 !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 
-      code {
-        background: none;
-        color: inherit;
-        padding: 0;
-        font-size: inherit;
-        border-radius: 0;
+      code[class*='language-'] {
+        background: transparent !important;
+        padding: 1.25rem 1.5rem !important;
+        font-family: inherit !important;
+        font-size: inherit !important;
+        display: block;
+      }
+
+      &.line-numbers {
+        padding-left: 3.8em !important;
+        .line-numbers-rows {
+          border-right: 1px solid #3e3e42;
+          top: 1.25rem;
+          > span::before { color: #495162; }
+        }
       }
     }
 
@@ -231,22 +250,93 @@
     }
 
     blockquote {
-      border-left: 3px solid var(--color-primary);
-      padding: 0.5rem 1rem;
+      border-left: 4px solid var(--color-primary);
+      padding-left: 1rem;
       color: var(--color-text-muted);
-      margin: 1.25rem 0;
-      font-style: italic;
-      background: rgba(37, 99, 235, 0.04);
-      border-radius: 0 4px 4px 0;
+      margin: 1.5rem 0;
     }
 
     a { color: var(--color-primary); text-decoration: underline; }
     hr { border: none; border-top: 1px solid rgba(148, 163, 184, 0.25); margin: 1.5rem 0; }
     img { max-width: 100%; border-radius: 6px; margin: 1rem 0; }
   }
+
+  // Prism toolbar (copy button + language label) inside preview
+  :host ::ng-deep & {
+    div.code-toolbar {
+      position: relative;
+      margin-bottom: 1.5rem;
+      > pre { margin-bottom: 0 !important; }
+      .toolbar {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        gap: 0.4rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 2;
+      }
+      &:hover .toolbar { opacity: 1; }
+      .toolbar-item button,
+      .toolbar-item a,
+      .toolbar-item span {
+        background: #2d2d30;
+        color: #9cdcfe;
+        border: 1px solid #3e3e42;
+        border-radius: 4px;
+        padding: 2px 10px;
+        font-size: 0.72rem;
+        font-family: 'JetBrains Mono', monospace;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        text-decoration: none;
+        &:hover { background: #3e3e42; color: #fff; }
+      }
+      .toolbar-item:first-child span { color: #569cd6; cursor: default; &:hover { background: #2d2d30; color: #569cd6; } }
+    }
+  }
 }
 
-// ── Advanced options ──────────────────────────────────────────────────────────
+// ── Preview language badge ────────────────────────────────────────────────────
+
+.preview-lang-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1em 0.55em;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border, rgba(148, 163, 184, 0.3));
+
+  &--it {
+    background: rgba(0, 146, 70, 0.1);
+    color: #009246;
+    border-color: rgba(0, 146, 70, 0.25);
+  }
+
+  &--en {
+    background: rgba(0, 36, 125, 0.1);
+    color: #00247d;
+    border-color: rgba(0, 36, 125, 0.2);
+
+    [data-theme='dark'] & {
+      color: #6fa8ff;
+      background: rgba(111, 168, 255, 0.1);
+      border-color: rgba(111, 168, 255, 0.2);
+    }
+  }
+
+  &--sq {
+    background: rgba(205, 33, 42, 0.1);
+    color: #cd212a;
+    border-color: rgba(205, 33, 42, 0.25);
+  }
+}
 
 .form-advanced {
   margin-top: 1.25rem;

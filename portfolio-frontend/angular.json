@@ -23,6 +23,19 @@
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": [
+              "prismjs",
+              "prismjs/components/prism-typescript",
+              "prismjs/components/prism-javascript",
+              "prismjs/components/prism-markup",
+              "prismjs/components/prism-css",
+              "prismjs/components/prism-bash",
+              "prismjs/components/prism-json",
+              "prismjs/components/prism-scss",
+              "prismjs/plugins/line-numbers/prism-line-numbers",
+              "prismjs/plugins/toolbar/prism-toolbar",
+              "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets",
@@ -32,7 +45,13 @@
                 "output": "/"
               }
             ],
-            "styles": ["src/styles.scss", "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"],
+            "styles": [
+              "src/styles.scss",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "node_modules/prismjs/themes/prism-tomorrow.css",
+              "node_modules/prismjs/plugins/line-numbers/prism-line-numbers.css",
+              "node_modules/prismjs/plugins/toolbar/prism-toolbar.css"
+            ],
             "scripts": []
           },
           "configurations": {

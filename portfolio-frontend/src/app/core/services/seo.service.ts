@@ -119,7 +119,7 @@ export class SeoService {
   }
 
   private trackBackendPageView(path: string): void {
-    if (typeof window === 'undefined' || path.startsWith('/admin')) {
+    if (typeof window === 'undefined' || path.startsWith('/dashboard')) {
       return;
     }
 

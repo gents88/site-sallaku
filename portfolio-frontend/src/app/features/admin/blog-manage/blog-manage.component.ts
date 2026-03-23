@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { PrismService } from '../../../shared/services/prism.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
@@ -46,7 +47,7 @@ interface PdfPreview {
   templateUrl: './blog-manage.component.html',
   styleUrls: ['./blog-manage.component.scss'],
 })
-export class BlogManageComponent implements OnInit, OnDestroy {
+export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked {
   readonly pdfGenerationEnabled = environment.blogPdfUploadEnabled;
 
   posts: Post[] = [];
@@ -80,6 +81,11 @@ export class BlogManageComponent implements OnInit, OnDestroy {
 
   @ViewChild('contentTextarea', { read: ElementRef })
   contentTextareaRef!: ElementRef<HTMLTextAreaElement>;
+
+  @ViewChild('previewContent')
+  previewContentRef!: ElementRef<HTMLElement>;
+
+  private needsPreviewHighlight = false;
 
   form = this.fb.group({
     title:           ['', [Validators.required, Validators.minLength(3)]],
@@ -134,13 +140,30 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     return !!(this.form.get('title_sq')?.value || this.form.get('content_sq')?.value);
   }
 
+  get previewLangInfo(): { flag: string; name: string } {
+    switch (this.activeTab) {
+      case 'en': return { flag: '🇬🇧', name: 'English' };
+      case 'sq': return { flag: '🇦🇱', name: 'Shqip' };
+      default:   return { flag: '🇮🇹', name: 'Italiano' };
+    }
+  }
+
   constructor(
     private blogService: BlogService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
+    private prismService: PrismService,
   ) {}
 
   ngOnInit(): void { this.load(); }
+
+  ngAfterViewChecked(): void {
+    if (this.needsPreviewHighlight && this.previewContentRef) {
+      this.needsPreviewHighlight = false;
+      this.prismService.highlightAllUnder(this.previewContentRef.nativeElement);
+    }
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -151,15 +174,18 @@ export class BlogManageComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.blogService.getAll().pipe(
       timeout(15000),
-      finalize(() => { this.loading = false; }),
+      finalize(() => { this.loading = false; this.cdr.detectChanges(); }),
     ).subscribe({
-      next: posts => { this.posts = posts; this.loading = false; },
-      error: () => { this.loading = false; },
+      next: posts => { this.posts = posts; },
+      error: () => {},
     });
   }
 
   switchTab(lang: BlogLanguage): void {
     this.activeTab = lang;
+    if (this.showPreview) {
+      this.needsPreviewHighlight = true;
+    }
   }
 
   openCreate(): void {
@@ -212,6 +238,9 @@ export class BlogManageComponent implements OnInit, OnDestroy {
 
   togglePreview(): void {
     this.showPreview = !this.showPreview;
+    if (this.showPreview) {
+      this.needsPreviewHighlight = true;
+    }
   }
 
   private setupAutoSave(): void {
@@ -527,11 +556,13 @@ export class BlogManageComponent implements OnInit, OnDestroy {
       next: (result: PdfExtractResult) => {
         this.extractingPdf = false;
         this.pdfPreview = this.buildPdfPreview(result);
+        this.cdr.detectChanges();
       },
       error: err => {
         this.extractingPdf = false;
         const msg = err?.error?.message || 'Could not extract text from this PDF.';
         this.snackBar.open(Array.isArray(msg) ? msg.join(', ') : msg, 'Close', { duration: 4000 });
+        this.cdr.detectChanges();
       },
     });
   }
@@ -602,6 +633,7 @@ export class BlogManageComponent implements OnInit, OnDestroy {
       this.snackBar.open('Translation failed. Check your connection and try again.', 'Close', { duration: 4000 });
     } finally {
       this.translating = false;
+      this.cdr.detectChanges();
     }
   }
 

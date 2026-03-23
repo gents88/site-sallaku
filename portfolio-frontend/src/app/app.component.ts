@@ -321,7 +321,7 @@ export class AppComponent implements OnInit {
 
   goToDashboard(): void {
     this.authModal.closeAccount();
-    void this.router.navigate(['/admin']);
+    void this.router.navigate(['/dashboard']);
   }
 
   logoutFromModal(): void {

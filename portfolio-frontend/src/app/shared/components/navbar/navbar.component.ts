@@ -41,7 +41,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   get desktopNavLinks() {
     return this.auth.isLoggedIn()
-      ? [...this.navLinks, { labelKey: 'nav.dashboard', fragment: '', route: '/admin' }]
+      ? [...this.navLinks, { labelKey: 'nav.dashboard', fragment: '', route: '/dashboard' }]
       : this.navLinks;
   }
 
