@@ -119,6 +119,47 @@ export class AnalyticsService {
     }, 2 * 60_000); // 2 minute TTL
   }
 
+  /**
+   * Export page-view records for a given date range as CSV.
+   * Returns the raw CSV string — the controller sets the response headers.
+   */
+  async exportCsv(from: Date, to: Date): Promise<string> {
+    const records = await this.pageViewModel
+      .find({
+        createdAt: { $gte: from, $lte: to },
+      })
+      .select('path visitorId country city deviceType browser os trafficSource createdAt')
+      .sort({ createdAt: -1 })
+      .limit(50_000) // safety cap to prevent gigantic exports
+      .lean()
+      .exec();
+
+    const header = 'date,path,visitorId,country,city,deviceType,browser,os,trafficSource';
+    const rows = (records as Array<Record<string, unknown>>).map(r => [
+      r['createdAt'] instanceof Date
+        ? (r['createdAt'] as Date).toISOString()
+        : String(r['createdAt'] ?? ''),
+      this.csvCell(String(r['path'] ?? '')),
+      this.csvCell(String(r['visitorId'] ?? '')),
+      this.csvCell(String(r['country'] ?? '')),
+      this.csvCell(String(r['city'] ?? '')),
+      this.csvCell(String(r['deviceType'] ?? '')),
+      this.csvCell(String(r['browser'] ?? '')),
+      this.csvCell(String(r['os'] ?? '')),
+      this.csvCell(String(r['trafficSource'] ?? '')),
+    ].join(','));
+
+    return [header, ...rows].join('\n');
+  }
+
+  /** Wrap a CSV field value in quotes and escape internal quotes. */
+  private csvCell(value: string): string {
+    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+      return `"${value.replace(/"/g, '""')}"`;
+    }
+    return value;
+  }
+
   private async aggregateByField(field: string, limit: number): Promise<BreakdownItem[]> {
     const results = await this.pageViewModel
       .aggregate<{ _id: string; count: number }>([

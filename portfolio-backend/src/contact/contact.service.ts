@@ -115,6 +115,26 @@ export class ContactService {
     return { success: true, deleted: result.deletedCount };
   }
 
+  /** Paginated list for the admin dashboard — avoids returning unbounded collections. */
+  async findPaginated(opts: { page: number; limit: number; unreadOnly?: boolean }): Promise<{
+    data: ContactMessageDocument[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    const { page = 1, limit = 20, unreadOnly } = opts;
+    const safeLimit = Math.min(Math.max(limit, 1), 100);
+    const skip = (Math.max(page, 1) - 1) * safeLimit;
+    const filter = unreadOnly ? { read: false } : {};
+
+    const [data, total] = await Promise.all([
+      this.contactModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).exec(),
+      this.contactModel.countDocuments(filter).exec(),
+    ]);
+
+    return { data, total, page: Math.max(page, 1), totalPages: Math.ceil(total / safeLimit) };
+  }
+
   async countByDay(days = 7): Promise<ContactCountByDay[]> {
     const end = new Date();
     end.setHours(23, 59, 59, 999);

@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 function parseCorsOrigins(rawOrigins?: string): string[] {
   return (rawOrigins ?? '')
@@ -100,6 +101,9 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
+
+  // ── Global interceptors ──────────────────────────────
+  app.useGlobalInterceptors(new LoggingInterceptor());
 
   // ── Global filters ───────────────────────────────────
   app.useGlobalFilters(new HttpExceptionFilter());

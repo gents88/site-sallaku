@@ -29,7 +29,7 @@ export class BlogListComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.update({ title: 'Blog', description: 'Articles, tutorials and insights from a developer perspective.' });
-    this.blogService.getPublished().pipe(
+    this.blogService.getPublishedAll().pipe(
       timeout(15000),
       finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({

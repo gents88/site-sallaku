@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
 import { CacheControlInterceptor } from '../common/interceptors/cache-control.interceptor';
+import { AuditInterceptor } from '../audit/interceptors/audit.interceptor';
 
 @ApiTags('Projects')
 @Controller('projects')
@@ -35,6 +36,7 @@ export class ProjectsController {
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create project (admin)' })
   create(@Body() dto: CreateProjectDto) {
@@ -44,6 +46,7 @@ export class ProjectsController {
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update project (admin)' })
   update(@Param('id') id: string, @Body() dto: UpdateProjectDto) {
@@ -53,6 +56,7 @@ export class ProjectsController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
   @ApiBearerAuth('access-token')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete project (admin)' })

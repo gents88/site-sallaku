@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   Post,
@@ -15,19 +15,32 @@ import { ApiCacheService } from './api-cache.service';
 const CACHE_PREFIX = 'blog:published';
 const TTL = 2 * 60_000; // 2 minutes
 
+export interface PaginatedPosts {
+  data: PostSummary[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BlogService {
   private readonly publicUrl = `${environment.apiUrl}/blog/posts`;
   private readonly adminUrl = `${environment.apiUrl}/blog/admin/posts`;
   constructor(private http: HttpClient, private cache: ApiCacheService) {}
 
-  // Public (cached)
-  getPublished(tag?: string): Observable<PostSummary[]> {
-    const key = tag ? `${CACHE_PREFIX}:tag:${tag}` : CACHE_PREFIX;
-    let params = new HttpParams();
+  // Public (cached, paginated)
+  getPublished(tag?: string, page = 1, limit = 10): Observable<PaginatedPosts> {
+    const key = `${CACHE_PREFIX}:p${page}:l${limit}${tag ? ':tag:' + tag : ''}`;
+    let params = new HttpParams().set('page', page).set('limit', limit);
     if (tag) params = params.set('tag', tag);
-    return this.cache.get(key, () => this.http.get<PostSummary[]>(this.publicUrl, { params }), TTL);
+    return this.cache.get(key, () => this.http.get<PaginatedPosts>(this.publicUrl, { params }), TTL);
   }
+
+  /** Convenience: get just the first page of posts (backwards compatibility). */
+  getPublishedAll(tag?: string): Observable<PostSummary[]> {
+    return this.getPublished(tag, 1, 50).pipe(map(r => r.data));
+  }
+
   getBySlug(slug: string): Observable<Post> {
     return this.cache.get(`blog:slug:${slug}`, () => this.http.get<Post>(`${this.publicUrl}/${slug}`), TTL);
   }

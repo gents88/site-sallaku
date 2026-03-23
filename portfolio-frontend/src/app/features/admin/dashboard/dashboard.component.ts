@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -73,6 +73,7 @@ interface AdvancedAnalytics {
   imports: [CommonModule, RouterLink, MatCardModule, MatIconModule, MatButtonModule, TranslateModule, DonutChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   stats: StatCard[] = [];
@@ -133,6 +134,7 @@ export class DashboardComponent implements OnInit {
     private experiencesService: ExperiencesService,
     private blogService: BlogService,
     private http: HttpClient,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -218,8 +220,9 @@ export class DashboardComponent implements OnInit {
         this.trafficSources = advanced.trafficSources;
 
         this.loading = false;
+        this.cdr.markForCheck();
       },
-      error: () => { this.loading = false; },
+      error: () => { this.loading = false; this.cdr.markForCheck(); },
     });
   }
 

@@ -16,6 +16,7 @@ import { GenerateBlogFromPdfDto } from './dto/generate-blog-from-pdf.dto';
 import { BlogGenerationService } from './services/blog-generation.service';
 import { BLOG_LANGUAGES, MAX_PDF_UPLOAD_SIZE } from './blog.constants';
 import { CacheControlInterceptor } from '../common/interceptors/cache-control.interceptor';
+import { AuditInterceptor } from '../audit/interceptors/audit.interceptor';
 
 @ApiTags('Blog')
 @Controller('blog')
@@ -28,10 +29,16 @@ export class BlogController {
   // ── Public ──────────────────────────────────────────
   @Get('posts')
   @UseInterceptors(new CacheControlInterceptor(120, 60))
-  @ApiOperation({ summary: 'Get published posts (public, optional tag filter)' })
+  @ApiOperation({ summary: 'Get published posts (public, optional tag filter, paginated)' })
   @ApiQuery({ name: 'tag', required: false })
-  findPublished(@Query('tag') tag?: string) {
-    return this.blogService.findPublished(tag);
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findPublished(
+    @Query('tag') tag?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.blogService.findPublished(tag, +page, +limit);
   }
 
   @Get('posts/:slug')
@@ -65,6 +72,7 @@ export class BlogController {
   @Post('admin/posts')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
   @ApiBearerAuth('access-token')
   create(@Body() dto: CreatePostDto) { return this.blogService.create(dto); }
 

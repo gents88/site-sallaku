@@ -17,6 +17,7 @@ import { SystemModule } from './system/system.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { CronModule } from './cron/cron.module';
 import { CommonModule } from './common/common.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { CommonModule } from './common/common.module';
     SystemModule,
     ChatbotModule,
     CronModule,
+    AuditModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default

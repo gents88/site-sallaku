@@ -6,9 +6,13 @@ import { Post, PostSchema } from './schemas/post.schema';
 import { PdfExtractionService } from './services/pdf-extraction.service';
 import { BlogAiService } from './services/blog-ai.service';
 import { BlogGenerationService } from './services/blog-generation.service';
+import { AuditModule } from '../audit/audit.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+    AuditModule,
+  ],
   controllers: [BlogController],
   providers: [BlogService, PdfExtractionService, BlogAiService, BlogGenerationService],
   exports: [BlogService],

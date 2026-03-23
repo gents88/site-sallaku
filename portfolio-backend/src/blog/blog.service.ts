@@ -30,11 +30,31 @@ export class BlogService {
     return candidate;
   }
 
-  /** Public: published posts only */
-  findPublished(tag?: string): Promise<PostDocument[]> {
-    const filter: any = { published: true };
+  /** Public: published posts only, paginated */
+  async findPublished(tag?: string, page = 1, limit = 10): Promise<{
+    data: PostDocument[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    const safeLimit = Math.min(Math.max(limit, 1), 50);
+    const skip = (Math.max(page, 1) - 1) * safeLimit;
+    const filter: Record<string, unknown> = { published: true };
     if (tag) filter.tags = tag;
-    return this.postModel.find(filter).sort({ publishedAt: -1 }).select('-content').lean().exec() as unknown as Promise<PostDocument[]>;
+
+    const [data, total] = await Promise.all([
+      this.postModel
+        .find(filter)
+        .sort({ publishedAt: -1 })
+        .skip(skip)
+        .limit(safeLimit)
+        .select('-content')
+        .lean()
+        .exec() as unknown as Promise<PostDocument[]>,
+      this.postModel.countDocuments(filter).exec(),
+    ]);
+
+    return { data, total, page: Math.max(page, 1), totalPages: Math.ceil(total / safeLimit) };
   }
 
   /** Public: single post by slug */
