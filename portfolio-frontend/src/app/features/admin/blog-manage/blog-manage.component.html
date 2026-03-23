@@ -316,7 +316,7 @@
                     [class.status-badge--draft]="!post.published">
                 {{ post.published ? 'Published' : 'Draft' }}
               </span>
-              <span class="badge badge--language">{{ post.language.toUpperCase() }}</span>
+              <span class="badge badge--language">{{ (post.language || 'it').toUpperCase() }}</span>
               <span class="badge badge--views">
                 <mat-icon>visibility</mat-icon> {{ post.viewCount ?? 0 }}
               </span>

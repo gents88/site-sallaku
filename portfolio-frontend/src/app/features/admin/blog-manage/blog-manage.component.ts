@@ -154,7 +154,7 @@ export class BlogManageComponent implements OnInit, OnDestroy {
       finalize(() => { this.loading = false; }),
     ).subscribe({
       next: posts => { this.posts = posts; this.loading = false; },
-      error: () => {},
+      error: () => { this.loading = false; },
     });
   }
 
