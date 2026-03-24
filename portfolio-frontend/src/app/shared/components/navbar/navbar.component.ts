@@ -27,17 +27,16 @@ interface NavLink {
 export class NavbarComponent implements OnInit, OnDestroy {
   mobileMenuOpen = false;
   scrolled = false;
-  activeSection = '';
 
   readonly navLinks: NavLink[] = [
-    { labelKey: 'nav.about',      fragment: 'about' },
-    { labelKey: 'nav.tech',       fragment: 'tech-stack' },
-    { labelKey: 'nav.projects',   fragment: 'projects' },
-    { labelKey: 'nav.services',   fragment: '', route: '/services' },
-    { labelKey: 'nav.experience', fragment: 'experience' },
-    { labelKey: 'nav.skills',     fragment: 'skills' },
-    { labelKey: 'nav.contact',    fragment: 'contact' },
-    { labelKey: 'nav.blog',       fragment: '',  route: '/blog' },
+    { labelKey: 'nav.about',      route: '/about' },
+    { labelKey: 'nav.tech',       route: '/tech-stack' },
+    { labelKey: 'nav.projects',   route: '/projects' },
+    { labelKey: 'nav.services',   route: '/services' },
+    { labelKey: 'nav.experience', route: '/experience' },
+    { labelKey: 'nav.skills',     route: '/skills' },
+    { labelKey: 'nav.contact',    route: '/contact' },
+    { labelKey: 'nav.blog',       route: '/blog' },
   ];
 
   get desktopNavLinks() {
@@ -46,7 +45,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       : this.navLinks;
   }
 
-  private sectionObserver: IntersectionObserver | null = null;
   private readonly platformId = inject(PLATFORM_ID);
 
   constructor(
@@ -60,26 +58,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.scrolled = window.scrollY > 50;
   }
 
-  ngOnInit(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const sectionIds = this.navLinks.map(l => l.fragment).filter((f): f is string => !!f);
-    this.sectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) this.activeSection = entry.target.id;
-        });
-      },
-      { threshold: 0.3 },
-    );
-    sectionIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) this.sectionObserver?.observe(el);
-    });
-  }
+  ngOnInit(): void {}
 
-  ngOnDestroy(): void {
-    this.sectionObserver?.disconnect();
-  }
+  ngOnDestroy(): void {}
 
   toggleMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
   closeMenu(): void { this.mobileMenuOpen = false; }

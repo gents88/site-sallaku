@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
@@ -172,6 +173,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private seo: SeoService,
     private snackbar: SnackbarService,
     private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -252,6 +254,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
+
+    // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
+    const urlPath = this.router.url.split('?')[0].replace(/^\//,'');
+    const sectionMap: Record<string, string> = {
+      'about': 'about',
+      'tech-stack': 'tech-stack',
+      'experience': 'experience',
+      'skills': 'skills',
+    };
+    const sectionId = sectionMap[urlPath];
+    if (sectionId) {
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
   }
 
   ngOnDestroy(): void {

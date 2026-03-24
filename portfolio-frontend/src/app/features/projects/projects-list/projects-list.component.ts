@@ -1,53 +1,85 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { ProjectsService } from '../../../core/services/projects.service';
-import { SeoService } from '../../../core/services/seo.service';
-import { Project } from '../../../core/models/project.model';
-import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { TranslateModule } from '@ngx-translate/core';
+
+interface ProjectItem {
+  icon: string;
+  tags: string[];
+  titleKey: string;
+  descKey: string;
+  featureKeys: string[];
+}
 
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule, LoadingSpinnerComponent],
+  imports: [CommonModule, MatIconModule, TranslateModule],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProjectsListComponent implements OnInit {
-  projects: Project[] = [];
-  filtered: Project[] = [];
-  allTags: string[] = [];
-  activeTag: string | null = null;
-  loading = true;
+export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
+  private observer: IntersectionObserver | null = null;
+  private readonly platformId = inject(PLATFORM_ID);
 
-  constructor(
-    private projectsService: ProjectsService,
-    private seo: SeoService,
-    private cdr: ChangeDetectorRef,
-  ) {}
+  readonly staticProjects: ProjectItem[] = [
+    {
+      icon: 'earth-europe',
+      tags: ['Cesium.js', 'Angular', 'TypeScript'],
+      titleKey: 'projects.geo.title',
+      descKey: 'projects.geo.desc',
+      featureKeys: ['projects.geo.f1', 'projects.geo.f2', 'projects.geo.f3', 'projects.geo.f4'],
+    },
+    {
+      icon: 'vr-cardboard',
+      tags: ['Photo Sphere', 'Angular', 'WebGL'],
+      titleKey: 'projects.vr.title',
+      descKey: 'projects.vr.desc',
+      featureKeys: ['projects.vr.f1', 'projects.vr.f2', 'projects.vr.f3', 'projects.vr.f4'],
+    },
+    {
+      icon: 'chart-pie',
+      tags: ['Looker', 'Angular', 'Chart.js'],
+      titleKey: 'projects.dash.title',
+      descKey: 'projects.dash.desc',
+      featureKeys: ['projects.dash.f1', 'projects.dash.f2', 'projects.dash.f3', 'projects.dash.f4'],
+    },
+    {
+      icon: 'book-open',
+      tags: ['Angular', 'Node.js', 'PostgreSQL'],
+      titleKey: 'projects.lib.title',
+      descKey: 'projects.lib.desc',
+      featureKeys: ['projects.lib.f1', 'projects.lib.f2', 'projects.lib.f3', 'projects.lib.f4'],
+    },
+    {
+      icon: 'shield-halved',
+      tags: ['Angular', '.NET', 'API'],
+      titleKey: 'projects.ins.title',
+      descKey: 'projects.ins.desc',
+      featureKeys: ['projects.ins.f1', 'projects.ins.f2', 'projects.ins.f3', 'projects.ins.f4'],
+    },
+  ];
 
-  ngOnInit(): void {
-    this.seo.update({
-      title: 'Projects',
-      description: 'Browse all portfolio projects by Gent Sallaku — Angular apps, 3D visualizations, data dashboards and full-stack solutions.',
-      url: 'https://gentsallaku.it/projects',
-    });
-    this.projectsService.getAll().subscribe({
-      next: projects => {
-        this.projects = projects;
-        this.filtered = projects;
-        const tagsSet = new Set(projects.flatMap(p => p.technologies));
-        this.allTags = Array.from(tagsSet).sort();
-        this.loading = false;
-        this.cdr.markForCheck();
+  ngOnInit(): void {}
+
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            this.observer?.unobserve(entry.target);
+          }
+        });
       },
-      error: () => { this.loading = false; this.cdr.markForCheck(); },
-    });
+      { threshold: 0.12 },
+    );
+    document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
   }
 
-  filterByTag(tag: string | null): void {
-    this.activeTag = tag;
-    this.filtered = tag ? this.projects.filter(p => p.technologies.includes(tag)) : this.projects;
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
   }
 }

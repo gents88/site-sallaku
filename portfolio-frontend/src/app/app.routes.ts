@@ -13,6 +13,22 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
   },
   {
+    path: 'about',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+  },
+  {
+    path: 'tech-stack',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+  },
+  {
+    path: 'experience',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+  },
+  {
+    path: 'skills',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+  },
+  {
     path: 'projects',
     loadComponent: () =>
       import('./features/projects/projects-list/projects-list.component').then(m => m.ProjectsListComponent),
