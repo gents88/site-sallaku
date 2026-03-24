@@ -31,16 +31,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   activeSection = '';
   isHomepage = false;
 
-  // section id → route corrispondente nella navbar
-  private readonly sectionRouteMap: Record<string, string> = {
-    'homepage':   '/homepage',
-    'about':      '/about',
-    'tech-stack': '/tech-stack',
-    'projects':   '/projects',
-    'experience': '/experience',
-    'skills':     '/skills',
-    'contact':    '/contact',
-  };
+  // route che caricano HomeComponent e devono avere il focus attivo
+  private readonly homepageRoutes = new Set(['/', '/homepage', '/about', '/tech-stack', '/experience', '/skills']);
+
+  // sezioni presenti nella homepage, nell'ordine in cui appaiono nel DOM
+  private readonly sectionIds = ['homepage', 'about', 'tech-stack', 'projects', 'experience', 'skills', 'contact'];
 
   readonly navLinks: NavLink[] = [
     { labelKey: 'nav.about',      route: '/about' },
@@ -59,7 +54,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       : this.navLinks;
   }
 
-  private sectionObserver: IntersectionObserver | null = null;
   private routerSub: Subscription | null = null;
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -74,19 +68,40 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll')
   onScroll(): void {
     this.scrolled = window.scrollY > 50;
+    if (this.isHomepage) this.updateActiveSectionFromScroll();
+  }
+
+  private updateActiveSectionFromScroll(): void {
+    const OFFSET = 120; // altezza navbar + buffer
+    let active = 'homepage';
+    for (const id of this.sectionIds) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      if (el.getBoundingClientRect().top <= OFFSET) {
+        active = id;
+      }
+    }
+    if (active !== this.activeSection) {
+      this.activeSection = active;
+      this.cdr.markForCheck();
+    }
   }
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const handleRoute = (url: string) => {
-      const path = url.split('?')[0];
-      this.isHomepage = path === '/homepage' || path === '/';
+      const path = url.split('?')[0].split('#')[0];
+      const wasHomepage = this.isHomepage;
+      this.isHomepage = this.homepageRoutes.has(path);
+
       if (this.isHomepage) {
-        this.activeSection = 'homepage';
-        setTimeout(() => this.setupObserver(), 200);
+        // pre-setta subito il focus basandosi sul path
+        const sectionId = (path === '/' || path === '/homepage') ? 'homepage' : path.slice(1);
+        this.activeSection = sectionId;
+        // dopo che il DOM è aggiornato, ricalcola dalla posizione reale di scroll
+        setTimeout(() => this.updateActiveSectionFromScroll(), 400);
       } else {
-        this.teardownObserver();
         this.activeSection = '';
       }
       this.cdr.markForCheck();
@@ -99,33 +114,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .subscribe((e: any) => handleRoute(e.urlAfterRedirects));
   }
 
-  private setupObserver(): void {
-    this.teardownObserver();
-    const ids = Object.keys(this.sectionRouteMap);
-    this.sectionObserver = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter(e => e.isIntersecting);
-        if (visible.length) {
-          visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-          this.activeSection = visible[0].target.id;
-          this.cdr.markForCheck();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) this.sectionObserver?.observe(el);
-    });
-  }
-
-  private teardownObserver(): void {
-    this.sectionObserver?.disconnect();
-    this.sectionObserver = null;
-  }
-
   ngOnDestroy(): void {
-    this.teardownObserver();
     this.routerSub?.unsubscribe();
   }
 
