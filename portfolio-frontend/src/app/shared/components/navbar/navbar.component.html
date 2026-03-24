@@ -6,7 +6,7 @@
     </a>
 
     <!-- Desktop nav links -->
-    <ul class="nav-menu" [class.open]="mobileMenuOpen">
+    <ul class="nav-menu" [class.open]="mobileMenuOpen" id="nav-menu" role="navigation">
       @for (link of desktopNavLinks; track link.labelKey) {
         <li>
           <a [routerLink]="link.route"
@@ -48,8 +48,11 @@
 
       <!-- Hamburger -->
       <button class="nav-toggle" [class.active]="mobileMenuOpen"
-              (click)="toggleMenu()" aria-label="Toggle menu">
-        <span class="hamburger-bar"></span>
+              (click)="toggleMenu()" 
+              [attr.aria-expanded]="mobileMenuOpen"
+              aria-label="Toggle navigation menu"
+              aria-controls="nav-menu">
+        <span class="hamburger-bar" aria-hidden="true"></span>
       </button>
     </div>
   </div>
