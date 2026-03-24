@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { finalize, forkJoin } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
@@ -18,11 +19,12 @@ interface TechItem { name: string; icon: string; level: number; isFab?: boolean;
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
 interface ExpItem { date?: string; dateKey?: string; titleKey: string; roleKey: string; descKey: string; tags: string[]; }
 interface FaqItem { qKey: string; aKey: string; }
+interface ServiceItem { key: string; icon: string; colorClass: string; }
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -150,6 +152,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
 
+  readonly services: ServiceItem[] = [
+    { key: 'frontend', icon: 'web',            colorClass: 'color-blue'   },
+    { key: 'web3d',    icon: 'public',          colorClass: 'color-cyan'   },
+    { key: 'dataviz',  icon: 'bar_chart',       colorClass: 'color-violet' },
+    { key: 'uiux',     icon: 'design_services', colorClass: 'color-pink'   },
+    { key: 'perf',     icon: 'speed',           colorClass: 'color-orange' },
+    { key: 'api',      icon: 'api',             colorClass: 'color-green'  },
+  ];
+
   readonly faqItems: FaqItem[] = [
     { qKey: 'faq.q1', aKey: 'faq.a1' },
     { qKey: 'faq.q2', aKey: 'faq.a2' },
@@ -262,6 +273,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       'tech-stack': 'tech-stack',
       'experience': 'experience',
       'skills': 'skills',
+      'services': 'services',
     };
     const sectionId = sectionMap[urlPath];
     if (sectionId) {

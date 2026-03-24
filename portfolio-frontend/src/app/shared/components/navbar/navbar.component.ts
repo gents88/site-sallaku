@@ -32,10 +32,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isHomepage = false;
 
   // route che caricano HomeComponent e devono avere il focus attivo
-  private readonly homepageRoutes = new Set(['/', '/homepage', '/about', '/tech-stack', '/experience', '/skills']);
+  private readonly homepageRoutes = new Set(['/', '/homepage', '/about', '/tech-stack', '/projects', '/services', '/experience', '/skills', '/contact']);
 
   // sezioni presenti nella homepage, nell'ordine in cui appaiono nel DOM
-  private readonly sectionIds = ['homepage', 'about', 'tech-stack', 'projects', 'experience', 'skills', 'contact'];
+  private readonly sectionIds = ['homepage', 'about', 'tech-stack', 'projects', 'services', 'experience', 'skills', 'contact'];
 
   readonly navLinks: NavLink[] = [
     { labelKey: 'nav.about',      route: '/about' },

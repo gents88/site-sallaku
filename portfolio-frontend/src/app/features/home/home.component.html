@@ -245,6 +245,33 @@
   </div>
 </section>
 
+<!-- ══ SERVICES ════════════════════════════════════════ -->
+<section class="section section-alt" id="services">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">&lt;{{ 'services.tag' | translate }}&gt;</span>
+      <h2 class="section-title">{{ 'services.title' | translate }}</h2>
+      <div class="section-line"></div>
+      <p class="section-subtitle reveal">{{ 'services.subtitle' | translate }}</p>
+    </div>
+    <div class="services-grid">
+      @for (svc of services; track svc.key) {
+        <article class="service-card glass-card reveal" [ngClass]="svc.colorClass">
+          <div class="service-card__icon-wrap" aria-hidden="true">
+            <mat-icon class="service-card__icon">{{ svc.icon }}</mat-icon>
+          </div>
+          <h3 class="service-card__title">{{ 'services.' + svc.key + '.title' | translate }}</h3>
+          <p class="service-card__desc">{{ 'services.' + svc.key + '.desc' | translate }}</p>
+          <a routerLink="/contact" class="service-card__cta btn btn-outline btn-sm">
+            {{ 'services.' + svc.key + '.cta' | translate }}
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
 <!-- ══ EXPERIENCE ════════════════════════════════════ -->
 <section class="section section-alt" id="experience">
   <div class="container">

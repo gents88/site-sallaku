@@ -45,8 +45,7 @@ export const routes: Routes = [
   },
   {
     path: 'services',
-    loadComponent: () =>
-      import('./features/services/services.component').then(m => m.ServicesComponent),
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
   },
   {
     path: 'contact',
