@@ -1,6 +1,6 @@
-import { Component, HostListener, OnInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { LangSwitcherComponent } from '../lang-switcher/lang-switcher.component'
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { filter, Subscription } from 'rxjs';
 
 interface NavLink {
   labelKey: string;
@@ -27,6 +28,19 @@ interface NavLink {
 export class NavbarComponent implements OnInit, OnDestroy {
   mobileMenuOpen = false;
   scrolled = false;
+  activeSection = '';
+  isHomepage = false;
+
+  // section id → route corrispondente nella navbar
+  private readonly sectionRouteMap: Record<string, string> = {
+    'homepage':   '/homepage',
+    'about':      '/about',
+    'tech-stack': '/tech-stack',
+    'projects':   '/projects',
+    'experience': '/experience',
+    'skills':     '/skills',
+    'contact':    '/contact',
+  };
 
   readonly navLinks: NavLink[] = [
     { labelKey: 'nav.about',      route: '/about' },
@@ -41,16 +55,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   get desktopNavLinks() {
     return this.auth.isLoggedIn()
-      ? [...this.navLinks, { labelKey: 'nav.dashboard', fragment: '', route: '/dashboard' }]
+      ? [...this.navLinks, { labelKey: 'nav.dashboard', route: '/dashboard' }]
       : this.navLinks;
   }
 
+  private sectionObserver: IntersectionObserver | null = null;
+  private routerSub: Subscription | null = null;
   private readonly platformId = inject(PLATFORM_ID);
 
   constructor(
     public auth: AuthService,
     public authModal: AuthModalService,
     public langSvc: LanguageService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   @HostListener('window:scroll')
@@ -58,9 +76,58 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.scrolled = window.scrollY > 50;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
 
-  ngOnDestroy(): void {}
+    const handleRoute = (url: string) => {
+      const path = url.split('?')[0];
+      this.isHomepage = path === '/homepage' || path === '/';
+      if (this.isHomepage) {
+        this.activeSection = 'homepage';
+        setTimeout(() => this.setupObserver(), 200);
+      } else {
+        this.teardownObserver();
+        this.activeSection = '';
+      }
+      this.cdr.markForCheck();
+    };
+
+    handleRoute(this.router.url);
+
+    this.routerSub = this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe((e: any) => handleRoute(e.urlAfterRedirects));
+  }
+
+  private setupObserver(): void {
+    this.teardownObserver();
+    const ids = Object.keys(this.sectionRouteMap);
+    this.sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter(e => e.isIntersecting);
+        if (visible.length) {
+          visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+          this.activeSection = visible[0].target.id;
+          this.cdr.markForCheck();
+        }
+      },
+      { threshold: 0.3 },
+    );
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) this.sectionObserver?.observe(el);
+    });
+  }
+
+  private teardownObserver(): void {
+    this.sectionObserver?.disconnect();
+    this.sectionObserver = null;
+  }
+
+  ngOnDestroy(): void {
+    this.teardownObserver();
+    this.routerSub?.unsubscribe();
+  }
 
   toggleMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
   closeMenu(): void { this.mobileMenuOpen = false; }
