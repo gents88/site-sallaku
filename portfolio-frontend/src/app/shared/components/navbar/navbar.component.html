@@ -1,7 +1,7 @@
 <nav class="navbar" [class.scrolled]="scrolled">
   <div class="nav-container">
     <!-- Logo -->
-    <a routerLink="/" fragment="hero" class="nav-logo" (click)="closeMenu()">
+    <a routerLink="/homepage" fragment="homepage" class="nav-logo" (click)="closeMenu()">
       <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
     </a>
 
@@ -20,7 +20,7 @@
           </li>
         } @else {
           <li>
-            <a routerLink="/" [fragment]="link.fragment" class="nav-link"
+            <a routerLink="/homepage" [fragment]="link.fragment" class="nav-link"
                [class.active]="activeSection === link.fragment"
                (click)="closeMenu()">{{ link.labelKey | translate }}</a>
           </li>

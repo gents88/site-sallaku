@@ -5,6 +5,11 @@ export const routes: Routes = [
   // ── Public pages ──────────────────────────────────
   {
     path: '',
+    redirectTo: 'homepage',
+    pathMatch: 'full',
+  },
+  {
+    path: 'homepage',
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
   },
   {

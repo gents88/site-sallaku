@@ -16,7 +16,7 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
   standalone: true,
   imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent],
   template: `
-    <a class="skip-link" href="#hero">{{ 'skip.link' | translate }}</a>
+    <a class="skip-link" href="#homepage">{{ 'skip.link' | translate }}</a>
     <div class="wip-banner" role="status">{{ 'banner.wip' | translate }}</div>
     <app-navbar />
     <main>
