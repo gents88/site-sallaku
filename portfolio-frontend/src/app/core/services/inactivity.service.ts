@@ -4,7 +4,7 @@ import { fromEvent, merge, Subscription, timer } from 'rxjs';
 import { AuthModalService } from './auth-modal.service';
 import { AuthService } from './auth.service';
 
-const LAST_ACTIVITY_KEY = 'portfolio_last_activity';
+export const LAST_ACTIVITY_KEY = 'portfolio_last_activity';
 
 @Injectable({ providedIn: 'root' })
 export class InactivityService {

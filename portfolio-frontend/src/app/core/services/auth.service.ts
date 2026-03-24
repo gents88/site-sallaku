@@ -5,6 +5,7 @@ import { tap, catchError, map } from 'rxjs/operators';
 import { Observable, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginPayload, OtpRequestResponse, RegisterPayload, User } from '../models/user.model';
+import { LAST_ACTIVITY_KEY } from './inactivity.service';
 
 const TOKEN_KEY = 'portfolio_token';
 const REFRESH_TOKEN_KEY = 'portfolio_refresh_token';
@@ -177,6 +178,7 @@ export class AuthService implements OnDestroy {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
     this._token.set(null);
     this._user.set(null);
     this.stopInactivityTimer();
