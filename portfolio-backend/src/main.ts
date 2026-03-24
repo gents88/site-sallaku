@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as compression from 'compression';
+import * as express from 'express';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
@@ -36,6 +37,10 @@ async function bootstrap() {
 
   // Trust only the first proxy hop — prevents IP spoofing via X-Forwarded-For
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
+  // ── Body parser limit (allow large payloads for rich content) ──
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
   // ── Security middleware ──────────────────────────────
   app.use(
