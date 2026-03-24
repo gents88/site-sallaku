@@ -75,6 +75,8 @@ export class InactivityService {
       fromEvent(this.document, 'click', { passive: true }),
       fromEvent(this.document, 'keydown'),
       fromEvent(window, 'scroll', { passive: true }),
+      fromEvent(this.document, 'touchstart', { passive: true }),
+      fromEvent(this.document, 'touchmove', { passive: true }),
     );
 
     this.subscriptions.add(
@@ -126,6 +128,14 @@ export class InactivityService {
     const sharedActivityAt = this.readSharedActivity();
 
     if (sharedActivityAt === null) {
+      this.refreshSession(Date.now(), true);
+      return;
+    }
+
+    const remainingMs = sharedActivityAt + this.timeoutMs - Date.now();
+    if (remainingMs <= 0) {
+      // Stale activity key from a previous session — start fresh rather than
+      // immediately logging the user out right after login.
       this.refreshSession(Date.now(), true);
       return;
     }
