@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, AfterViewInit, OnDestroy, i
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
+import { SeoService } from '../../../core/services/seo.service';
 
 interface ProjectItem {
   icon: string;
@@ -22,6 +23,7 @@ interface ProjectItem {
 export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer: IntersectionObserver | null = null;
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly seo = inject(SeoService);
 
   readonly staticProjects: ProjectItem[] = [
     {
@@ -61,7 +63,13 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.seo.update({
+      title: 'Portfolio Projects | Gent Sallaku',
+      description: 'Scopri i miei progetti principali: Cesium.js geospatial, Photo Sphere VR, data visualization, library management e security applications. Angular, TypeScript, 3D visualization.',
+      url: 'https://gentsallaku.it/#/projects',
+    });
+  }
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
