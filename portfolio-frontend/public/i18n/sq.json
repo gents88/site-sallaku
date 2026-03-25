@@ -23,7 +23,7 @@
     "tagline1": "Angular",
     "tagline2": "Aplikacione Web",
     "tagline3": "UI/UX & Vizualizim 3D Web",
-    "description": "Projektojß dhe zhvilloj aplikacione dhe ndërfaqe të shkallëzueshme me Angular, JavaScript dhe bibliotekat kryesore frontend. Unë optimizoj performancën duke ulur vonesën dhe përmirësuar reagimin e sistemeve. Siguroj zgjidhje të besueshme, të qëndrueshme dhe të gatshme për mjedise enterprise me kërkesa kritike ndaj misionit.",
+    "description": "Projektoj dhe zhvilloj aplikacione dhe ndërfaqe të shkallëzueshme me Angular, JavaScript dhe bibliotekat kryesore frontend. Unë optimizoj performancën duke ulur vonesën dhe përmirësuar reagimin e sistemeve. Siguroj zgjidhje të besueshme, të qëndrueshme dhe të gatshme për mjedise enterprise me kërkesa kritike ndaj misionit.",
     "kpi_years": "Vite eksperiencë",
     "kpi_projects": "Projekte të realizuara",
     "kpi_companies": "Kompani enterprise",
@@ -409,7 +409,15 @@
     "chat_sessions_today_desc": "Bisedat e fillura sot (TTL 24 h)",
     "chat_sessions_load": "Ngarko seancat",
     "chat_sessions_empty": "Asnjë seancë chat sot, ose nuk është ngarkuar ende.",
-    "chat_messages_count": "mesazhe"
+    "chat_messages_count": "mesazhe",
+    "top_posts_title": "Artikujt kryesorë sipas shikimeve",
+    "top_posts_desc_card": "Postimet e renditura sipas numrit të shikimeve",
+    "top_posts_empty": "Nuk ka shikime të regjistruara ende.",
+    "logout_desc": "Mbyll sesionin admin dhe kthehu te faqja e hyrjes.",
+    "export_csv": "Eksporto CSV",
+    "no_chart_data": "Nuk ka të dhëna për këtë periudhë.",
+    "refresh_data": "Rifresko",
+    "last_updated": "Përditësuar"
   },
   "session": {
     "warning_title": "Sesioni po skadon",

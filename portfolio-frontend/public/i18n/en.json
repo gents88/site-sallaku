@@ -409,7 +409,15 @@
     "chat_sessions_today_desc": "Conversations started today (24 h TTL)",
     "chat_sessions_load": "Load sessions",
     "chat_sessions_empty": "No chat sessions today, or not loaded yet.",
-    "chat_messages_count": "messages"
+    "chat_messages_count": "messages",
+    "top_posts_title": "Top Articles by Views",
+    "top_posts_desc_card": "Posts ranked by total view count",
+    "top_posts_empty": "No views recorded yet.",
+    "logout_desc": "Close this admin session and return to the login page.",
+    "export_csv": "Export CSV",
+    "no_chart_data": "No data for this period.",
+    "refresh_data": "Refresh",
+    "last_updated": "Updated"
   },
   "session": {
     "warning_title": "Session is about to expire",

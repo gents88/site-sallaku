@@ -203,7 +203,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   expandedSessionId: string | null = null;
   loadingTodaySessions = false;
 
+  lastLoadedAt: Date | null = null;
   private dataSubscription: Subscription | null = null;
+  private refreshInterval: ReturnType<typeof setInterval> | null = null;
 
   // Reply form
   showReplyForm = false;
@@ -234,13 +236,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadData();
+    this.refreshInterval = setInterval(() => this.loadData(), 60_000);
   }
 
   ngOnDestroy(): void {
     this.dataSubscription?.unsubscribe();
+    if (this.refreshInterval !== null) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
   }
 
-  private loadData(): void {
+  loadData(): void {
+    this.loading = true;
     this.dataSubscription?.unsubscribe();
 
     const emptyStats: AdminStatsResponse = {
@@ -371,6 +379,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.systemHealth = systemHealth;
         this.totalContacts = adminStats.contacts;
 
+        this.lastLoadedAt = new Date();
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -789,6 +798,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
           ? { ...stat, value: adminStats.contacts }
           : stat,
       );
+    });
+  }
+
+  downloadCsv(): void {
+    this.http.get(`${environment.apiUrl}/analytics/export/csv`, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob as Blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
     });
   }
 

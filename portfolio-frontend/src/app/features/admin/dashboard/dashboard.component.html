@@ -16,6 +16,20 @@
       <p class="text-muted">{{ 'common.loading' | translate }}</p>
     </section>
   } @else {
+    <!-- Dashboard toolbar: last updated + manual refresh -->
+    <div class="dashboard-toolbar">
+      @if (lastLoadedAt) {
+        <span class="dashboard-toolbar__updated text-muted">
+          <mat-icon>update</mat-icon>
+          {{ 'admin.last_updated' | translate }}: {{ lastLoadedAt | date:'HH:mm:ss' }}
+        </span>
+      }
+      <button type="button" class="chat-load-btn" (click)="loadData()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'admin.refresh_data' | translate }}
+      </button>
+    </div>
+
     <!-- Stats grid -->
     <div class="stats-grid">
       @for (stat of stats; track stat.labelKey) {
@@ -55,6 +69,8 @@
               </div>
               <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
             </div>
+          } @empty {
+            <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
           }
         </div>
       </section>
@@ -88,6 +104,8 @@
               </div>
               <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
             </div>
+          } @empty {
+            <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
           }
         </div>
       </section>
@@ -130,8 +148,8 @@
       <section class="analytics-card card">
         <div class="analytics-card__header">
           <div>
-            <h2>Articoli più visti</h2>
-            <p class="text-muted">Top post per visualizzazioni</p>
+            <h2>{{ 'admin.top_posts_title' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.top_posts_desc_card' | translate }}</p>
           </div>
           <mat-icon>trending_up</mat-icon>
         </div>
@@ -148,7 +166,7 @@
             }
           </ul>
         } @else {
-          <p class="text-muted" style="margin-top:1rem;">Nessuna visualizzazione ancora.</p>
+          <p class="text-muted" style="margin-top:1rem;">{{ 'admin.top_posts_empty' | translate }}</p>
         }
       </section>
     </div>
@@ -191,6 +209,13 @@
           (click)="resetMonthlyStats()">
           <mat-icon [class.spin]="resettingStats">{{ resettingStats ? 'sync' : 'restart_alt' }}</mat-icon>
           {{ resettingStats ? ('common.loading' | translate) : ('admin.reset_monthly_stats' | translate) }}
+        </button>
+        <button
+          type="button"
+          class="reset-stats-btn reset-stats-btn--csv"
+          (click)="downloadCsv()">
+          <mat-icon>download</mat-icon>
+          {{ 'admin.export_csv' | translate }}
         </button>
       </section>
 
@@ -312,18 +337,6 @@
         </div>
         <app-donut-chart [items]="trafficSources" [colors]="trafficColors" />
       </section>
-
-      <!-- Device breakdown: donut chart -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.device_breakdown' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.device_breakdown_desc' | translate }}</p>
-          </div>
-          <mat-icon>devices</mat-icon>
-        </div>
-        <app-donut-chart [items]="deviceBreakdown" [colors]="deviceColors" />
-      </section>
     </div>
 
     <div class="analytics-grid adv-bottom-grid">
@@ -399,93 +412,6 @@
             <p class="text-muted h-bars__empty">—</p>
           }
         </div>
-      </section>
-    </div>
-
-    <!-- ── KPIs: Conversion Rate · Growth · System Health ──────────────── -->
-    <h2 class="section-label">{{ 'admin.kpi_section' | translate }}</h2>
-    <div class="analytics-grid adv-top-grid">
-
-      <!-- Conversion rate -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.conversion_rate' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.conversion_rate_desc' | translate }}</p>
-          </div>
-          <mat-icon>trending_up</mat-icon>
-        </div>
-        <div class="visitor-overview">
-          <div class="visitor-overview__item visitor-overview__item--accent">
-            <strong>{{ conversionRate | number:'1.2-2' }}%</strong>
-            <span class="text-muted">{{ 'admin.conversion_rate_label' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item">
-            <strong>{{ totalContacts }}</strong>
-            <span class="text-muted">{{ 'admin.contacts' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item">
-            <strong>{{ totalViews }}</strong>
-            <span class="text-muted">{{ 'admin.visits' | translate }}</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Monthly growth velocity -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.growth_velocity' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.growth_velocity_desc' | translate }}</p>
-          </div>
-          <mat-icon>speed</mat-icon>
-        </div>
-        <div class="visitor-overview">
-          @if (monthlyGrowth !== null) {
-            <div class="visitor-overview__item" [class.visitor-overview__item--accent]="monthlyGrowth >= 0">
-              <strong>{{ monthlyGrowth >= 0 ? '+' : '' }}{{ monthlyGrowth | number:'1.1-1' }}%</strong>
-              <span class="text-muted">{{ 'admin.growth_vs_prev_month' | translate }}</span>
-            </div>
-          } @else {
-            <div class="visitor-overview__item">
-              <strong>—</strong>
-              <span class="text-muted">{{ 'admin.growth_no_history' | translate }}</span>
-            </div>
-          }
-          <div class="visitor-overview__item">
-            <strong>{{ monthlyViews }}</strong>
-            <span class="text-muted">{{ 'admin.monthly_views_this_month' | translate }}</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- System health -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.system_health' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.system_health_desc' | translate }}</p>
-          </div>
-          <mat-icon>monitor_heart</mat-icon>
-        </div>
-        @if (systemHealth) {
-          <div class="visitor-overview">
-            <div class="visitor-overview__item" [class.visitor-overview__item--accent]="systemHealth.ok">
-              <strong>{{ systemHealth.ok ? '✓ Online' : '✗ Offline' }}</strong>
-              <span class="text-muted">{{ 'admin.system_status' | translate }}</span>
-            </div>
-            <div class="visitor-overview__item">
-              <strong class="visitor-overview__small">v{{ systemHealth.version }}</strong>
-              <span class="text-muted">{{ 'admin.system_version' | translate }}</span>
-            </div>
-            <div class="visitor-overview__item">
-              <strong class="visitor-overview__small">{{ systemHealth.environment }}</strong>
-              <span class="text-muted">{{ 'admin.system_env' | translate }}</span>
-            </div>
-          </div>
-        } @else {
-          <p class="text-muted" style="margin-top:1rem;">{{ 'common.loading' | translate }}</p>
-        }
       </section>
     </div>
 
@@ -581,35 +507,6 @@
       </section>
     </div>
 
-    <!-- ── Audit Log ────────────────────────────────────────────────────── -->
-    <h2 class="section-label">{{ 'admin.audit_log_section' | translate }}</h2>
-    <div class="analytics-grid adv-bottom-grid">
-      <section class="analytics-card card" style="grid-column: 1 / -1;">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.audit_log' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.audit_log_desc' | translate }}</p>
-          </div>
-          <mat-icon>history</mat-icon>
-        </div>
-        @if (auditLogs.length) {
-          <div class="audit-list">
-            @for (log of auditLogs; track log._id ?? log.createdAt) {
-              <div class="audit-row">
-                <span class="audit-method" [style.background]="methodBadgeColor(log.method)">{{ log.method }}</span>
-                <span class="audit-path text-muted">{{ log.path }}</span>
-                <span class="audit-actor text-muted">{{ log.actorEmail }}</span>
-                <span class="audit-status" [class.audit-status--ok]="log.statusCode < 400">{{ log.statusCode }}</span>
-                <span class="audit-date text-muted">{{ log.createdAt | date:'dd/MM/yy HH:mm' }}</span>
-              </div>
-            }
-          </div>
-        } @else {
-          <p class="text-muted" style="margin-top:1rem;">{{ 'admin.audit_log_empty' | translate }}</p>
-        }
-      </section>
-    </div>
-
     <!-- ── Chat Sessions Today ───────────────────────────────────────────── -->
     <h2 class="section-label">{{ 'admin.chat_sessions_section' | translate }}</h2>
     <div class="analytics-grid adv-bottom-grid">
@@ -626,6 +523,9 @@
             (click)="loadTodaySessions()">
             <mat-icon [class.spin]="loadingTodaySessions">{{ loadingTodaySessions ? 'sync' : 'refresh' }}</mat-icon>
             {{ loadingTodaySessions ? ('common.loading' | translate) : ('admin.chat_sessions_load' | translate) }}
+            @if (!loadingTodaySessions && chatbotStats.interactionsToday > 0) {
+              <span class="chat-count-badge">{{ chatbotStats.interactionsToday }}</span>
+            }
           </button>
         </div>
 
@@ -778,7 +678,7 @@
     <section class="admin-actions card">
       <div>
         <h2>{{ 'admin.logout' | translate }}</h2>
-        <p class="text-muted">Chiudi la sessione admin e torna alla pagina di accesso.</p>
+        <p class="text-muted">{{ 'admin.logout_desc' | translate }}</p>
       </div>
 
       <button mat-stroked-button color="warn" class="logout-btn" [disabled]="logoutLoading" (click)="logout()">
