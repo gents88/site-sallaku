@@ -2,19 +2,44 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
+import { MailService } from '../mail/mail.service';
 
 interface VersionInfo {
   name: string;
   version: string;
 }
 
+interface CronJobStatus {
+  name: string;
+  nextRun: string | null;
+  running: boolean;
+}
+
+interface OperationsInfo {
+  uptimeSeconds: number;
+  memoryRssMb: number;
+  nodeVersion: string;
+  mail: {
+    configured: boolean;
+    provider: 'resend' | 'smtp' | 'none';
+    smtpUser: string | null;
+  };
+  cronJobs: CronJobStatus[];
+}
+
 @Controller('system')
 export class SystemController {
   private readonly startedAt = new Date().toISOString();
   private readonly packageInfo = this.readPackageInfo();
+
+  constructor(
+    private readonly schedulerRegistry: SchedulerRegistry,
+    private readonly mailService: MailService,
+  ) {}
 
   @Get('health')
   @ApiOperation({ summary: 'Liveness check (public)' })
@@ -58,6 +83,42 @@ export class SystemController {
         blogAdminPosts: true,
         blogGenerateFromPdf: true,
       },
+    };
+  }
+
+  @Get('ops')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Operational health snapshot (admin only)' })
+  ops(): OperationsInfo {
+    const cronJobNames = ['daily-summary', 'monthly-analytics-reset'];
+
+    const cronJobs = cronJobNames.map((name): CronJobStatus => {
+      try {
+        const job = this.schedulerRegistry.getCronJob(name);
+        return {
+          name,
+          nextRun: job.nextDate()?.toJSDate?.().toISOString?.() ?? null,
+          running: job.isActive,
+        };
+      } catch {
+        return {
+          name,
+          nextRun: null,
+          running: false,
+        };
+      }
+    });
+
+    const memoryRssMb = Math.round(process.memoryUsage().rss / 1024 / 1024);
+
+    return {
+      uptimeSeconds: Math.floor(process.uptime()),
+      memoryRssMb,
+      nodeVersion: process.version,
+      mail: this.mailService.getStatus(),
+      cronJobs,
     };
   }
 

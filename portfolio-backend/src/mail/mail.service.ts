@@ -17,6 +17,12 @@ export interface MailDeliveryResult {
   rejected: string[];
 }
 
+export interface MailServiceStatus {
+  configured: boolean;
+  provider: 'resend' | 'smtp' | 'none';
+  smtpUser: string | null;
+}
+
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
@@ -63,6 +69,14 @@ export class MailService {
     return this.config.get<string>('EMAIL_TO')
       || this.config.get<string>('ADMIN_EMAIL')
       || 'gentsallaku@gmail.com';
+  }
+
+  getStatus(): MailServiceStatus {
+    return {
+      configured: this.isConfigured,
+      provider: this.resendApiKey ? 'resend' : (this.isConfigured ? 'smtp' : 'none'),
+      smtpUser: this.smtpUser ?? null,
+    };
   }
 
   async send(opts: MailOptions): Promise<MailDeliveryResult> {

@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslateModule } from '@ngx-translate/core';
 import { combineLatest, catchError, of, startWith, Subscription } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
@@ -93,6 +94,23 @@ interface AuditLogEntry {
   createdAt: string;
 }
 
+interface GscQuery {
+  query: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+interface SearchConsoleSummary {
+  configured: boolean;
+  clicks: number;
+  impressions: number;
+  avgCtr: number;
+  avgPosition: number;
+  topQueries: GscQuery[];
+}
+
 interface ChatbotStats {
   totalSessions: number;
   totalMessages: number;
@@ -106,6 +124,38 @@ interface SystemHealth {
   version: string;
   startedAt: string;
   environment: string;
+}
+
+interface SystemDetails {
+  service: string;
+  version: string;
+  startedAt: string;
+  environment: string;
+  commitSha: string | null;
+  branch: string | null;
+  railway: {
+    serviceId: string | null;
+    serviceName: string | null;
+    environmentId: string | null;
+    projectId: string | null;
+  };
+  features: Record<string, boolean>;
+}
+
+interface OperationsInfo {
+  uptimeSeconds: number;
+  memoryRssMb: number;
+  nodeVersion: string;
+  mail: {
+    configured: boolean;
+    provider: 'resend' | 'smtp' | 'none';
+    smtpUser: string | null;
+  };
+  cronJobs: Array<{
+    name: string;
+    nextRun: string | null;
+    running: boolean;
+  }>;
 }
 
 interface ChatMessage {
@@ -132,7 +182,7 @@ interface ChatbotSessionsPage {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, TranslateModule, DonutChartComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -193,7 +243,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   auditLogs: AuditLogEntry[] = [];
   chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 };
   systemHealth: SystemHealth | null = null;
+  systemDetails: SystemDetails | null = null;
+  systemOps: OperationsInfo | null = null;
   totalContacts = 0;
+
+  // Google Search Console
+  gscSummary: SearchConsoleSummary = {
+    configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
+  };
 
   // Chat session viewer
   todaySessions: ChatbotSession[] = [];
@@ -212,6 +269,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   replyText = '';
   sendingReply = false;
   replyResult: 'success' | 'error' | null = null;
+
+  readonly featureEntries = (f: Record<string, boolean>) => Object.entries(f);
 
   readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
   readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
@@ -313,10 +372,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
         catchError(() => of(null as SystemHealth | null)),
         startWith(null as SystemHealth | null),
       ),
+      systemDetails: this.http.get<SystemDetails>(`${environment.apiUrl}/system/version`).pipe(
+        catchError(() => of(null as SystemDetails | null)),
+        startWith(null as SystemDetails | null),
+      ),
+      systemOps: this.http.get<OperationsInfo>(`${environment.apiUrl}/system/ops`).pipe(
+        catchError(() => of(null as OperationsInfo | null)),
+        startWith(null as OperationsInfo | null),
+      ),
       blogPosts: this.blogService.getAll().pipe(catchError(() => of([])), startWith([])),
+      gsc: this.http.get<SearchConsoleSummary>(`${environment.apiUrl}/analytics/search-console`).pipe(
+        catchError(() => of({ configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [] } as SearchConsoleSummary)),
+        startWith({ configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [] } as SearchConsoleSummary),
+      ),
     }).subscribe({
       next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts,
-               topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth }) => {
+               topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth, systemDetails, systemOps, gsc }) => {
         const totalPosts = adminStats.content.total;
         const publishedPosts = adminStats.content.published;
         const totalValues = [
@@ -377,7 +448,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.auditLogs = Array.isArray(auditLogs) ? auditLogs : [];
         this.chatbotStats = chatbotStats;
         this.systemHealth = systemHealth;
+        this.systemDetails = systemDetails;
+        this.systemOps = systemOps;
         this.totalContacts = adminStats.contacts;
+        this.gscSummary = gsc;
 
         this.lastLoadedAt = new Date();
         this.loading = false;
@@ -449,6 +523,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   trendBarWidth(views: number): number {
     return Math.max((views / this.maxTrendViews) * 100, views > 0 ? 4 : 0);
+  }
+
+  get gscMaxClicks(): number {
+    return Math.max(...this.gscSummary.topQueries.map(q => q.clicks), 1);
   }
 
   get maxTopPageCount(): number {
@@ -539,6 +617,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   browserBarWidth(count: number): number {
     return Math.max((count / this.maxBrowserCount) * 100, count > 0 ? 6 : 0);
+  }
+
+  formatUptimeHours(seconds: number | null | undefined): string {
+    if (seconds === null || seconds === undefined) return '—';
+    return `${Math.max(0, Math.round(seconds / 3600))}h`;
+  }
+
+  formatMemoryMb(memoryMb: number | null | undefined): string {
+    if (memoryMb === null || memoryMb === undefined) return '—';
+    return `${memoryMb} MB`;
+  }
+
+  cronNextRunLabel(nextRun: string | null): string {
+    if (!nextRun) return '—';
+    return new Date(nextRun).toLocaleString();
   }
 
   async logout(): Promise<void> {

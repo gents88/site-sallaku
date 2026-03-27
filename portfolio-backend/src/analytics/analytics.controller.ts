@@ -5,12 +5,16 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { AnalyticsService } from './analytics.service';
+import { SearchConsoleService } from './search-console.service';
 import { TrackPageViewDto } from './dto/track-page-view.dto';
 
 @ApiTags('Analytics')
 @Controller('analytics')
 export class AnalyticsController {
-  constructor(private readonly analyticsService: AnalyticsService) {}
+  constructor(
+    private readonly analyticsService: AnalyticsService,
+    private readonly searchConsoleService: SearchConsoleService,
+  ) {}
 
   @Post('page-view')
   @HttpCode(HttpStatus.OK)
@@ -66,6 +70,15 @@ export class AnalyticsController {
   @ApiOperation({ summary: 'Get advanced analytics breakdown (admin only)' })
   getAdvancedAnalytics() {
     return this.analyticsService.getAdvancedAnalytics();
+  }
+
+  @Get('search-console')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Google Search Console summary – last 28 days (admin only)' })
+  getSearchConsoleSummary() {
+    return this.searchConsoleService.getSummary();
   }
 
   @Get('export/csv')

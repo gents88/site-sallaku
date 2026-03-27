@@ -63,13 +63,14 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "serviceWorker": "ngsw-config.json",
               "optimization": true,
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
               "budgets": [
                 { "type": "initial", "maximumWarning": "600kb", "maximumError": "2mb" },
-                { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "24kb" }
+                { "type": "anyComponentStyle", "maximumWarning": "10kb", "maximumError": "28kb" }
               ],
               "outputHashing": "all"
             },

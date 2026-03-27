@@ -8,6 +8,8 @@
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "deploy:prep": "ng build --configuration production",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "watch": "ng build --watch --configuration development",
     "lint": "ng lint"
   },
@@ -36,6 +38,7 @@
     "@angular/build": "^21.0.0",
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
+    "@playwright/test": "^1.52.0",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
     "@types/prismjs": "^1.26.6",

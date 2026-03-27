@@ -2,11 +2,13 @@ import { ApplicationConfig } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling, withPreloading, PreloadAllModules, withHashLocation } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideServiceWorker } from '@angular/service-worker';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { environment } from '../environments/environment';
 import { resolveInitialLanguage } from './core/services/language.service';
 
 const initialLanguage = resolveInitialLanguage();
@@ -23,6 +25,10 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor]), withFetch()),
     provideAnimationsAsync(),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: environment.production,
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
     provideTranslateService({
       lang: initialLanguage,
       fallbackLang: 'it',

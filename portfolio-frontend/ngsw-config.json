@@ -1,0 +1,47 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app-shell",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/favicon.svg",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "static-assets",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/i18n/**"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "blog-api",
+      "urls": [
+        "https://portfolio-backend-production-e76d.up.railway.app/api/v1/blog/posts*",
+        "https://portfolio-backend-production-e76d.up.railway.app/api/v1/blog/posts/*"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 20,
+        "maxAge": "10m",
+        "timeout": "5s"
+      }
+    }
+  ]
+}

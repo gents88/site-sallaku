@@ -220,6 +220,14 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+}
+
 /* Apply Albanian background to html element for dark theme */
 [data-theme='dark'][data-accent='albanian'] html {
   background: 
