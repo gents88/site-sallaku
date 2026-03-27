@@ -70,7 +70,9 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
         (stayLoggedIn)="extendSession()"
         (logoutNow)="logoutFromTimeout()" />
     }
-    <app-chatbot />
+    @defer (on idle) {
+      <app-chatbot />
+    }
   `,
   styles: [`
     .skip-link {

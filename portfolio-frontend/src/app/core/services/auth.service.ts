@@ -1,4 +1,5 @@
-import { Injectable, signal, computed, OnDestroy } from '@angular/core';
+import { Injectable, signal, computed, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap, catchError, map } from 'rxjs/operators';
@@ -17,9 +18,11 @@ const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 export class AuthService implements OnDestroy {
   private readonly apiUrl = `${environment.apiUrl}/auth`;
 
+  private readonly isBrowser: boolean;
+
   // Signals for reactive state
-  private _token = signal<string | null>(localStorage.getItem(TOKEN_KEY));
-  private _user = signal<User | null>(this.parseStoredUser());
+  private _token = signal<string | null>(null);
+  private _user = signal<User | null>(null);
 
   readonly isLoggedIn = computed(() => !!this._token());
   readonly currentUser = computed(() => this._user());
@@ -33,16 +36,32 @@ export class AuthService implements OnDestroy {
   private readonly _activityEvents = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
   private readonly _boundResetTimer = () => this.resetInactivityTimer();
 
-  constructor(private http: HttpClient, private router: Router) {
-    window.addEventListener('storage', this.handleStorageSync);
-    if (this.isLoggedIn()) {
-      this.startInactivityTimer();
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    @Inject(PLATFORM_ID) platformId: object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+    if (this.isBrowser) {
+      this._token.set(this.storage.getItem(TOKEN_KEY));
+      this._user.set(this.parseStoredUser());
+      window.addEventListener('storage', this.handleStorageSync);
+      if (this.isLoggedIn()) {
+        this.startInactivityTimer();
+      }
     }
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('storage', this.handleStorageSync);
+    if (this.isBrowser) {
+      window.removeEventListener('storage', this.handleStorageSync);
+    }
     this.stopInactivityTimer();
+  }
+
+  /** Safe localStorage accessor — returns a no-op stub on the server. */
+  private get storage(): Storage {
+    return this.isBrowser ? localStorage : ({ getItem: () => null, setItem: () => {}, removeItem: () => {} } as unknown as Storage);
   }
 
   login(payload: LoginPayload): Observable<AuthResponse> {
@@ -78,7 +97,7 @@ export class AuthService implements OnDestroy {
    * Multiple callers share a single in-flight request via BehaviorSubject.
    */
   doRefresh(): Observable<string> {
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    const refreshToken = this.storage.getItem(REFRESH_TOKEN_KEY);
     if (!refreshToken) {
       return throwError(() => new Error('No refresh token available'));
     }
@@ -129,6 +148,7 @@ export class AuthService implements OnDestroy {
   // ── Inactivity timer ─────────────────────────────────────────────────────────
 
   private startInactivityTimer(): void {
+    if (!this.isBrowser) return;
     this.stopInactivityTimer();
     this._activityEvents.forEach(event =>
       document.addEventListener(event, this._boundResetTimer, { passive: true }),
@@ -137,9 +157,11 @@ export class AuthService implements OnDestroy {
   }
 
   private stopInactivityTimer(): void {
-    this._activityEvents.forEach(event =>
-      document.removeEventListener(event, this._boundResetTimer),
-    );
+    if (this.isBrowser) {
+      this._activityEvents.forEach(event =>
+        document.removeEventListener(event, this._boundResetTimer),
+      );
+    }
     if (this._inactivityTimer !== null) {
       clearTimeout(this._inactivityTimer);
       this._inactivityTimer = null;
@@ -164,21 +186,21 @@ export class AuthService implements OnDestroy {
   // ── Session persistence ───────────────────────────────────────────────────────
 
   private saveSession(res: AuthResponse): void {
-    localStorage.setItem(TOKEN_KEY, res.access_token);
+    this.storage.setItem(TOKEN_KEY, res.access_token);
     if (res.refresh_token) {
-      localStorage.setItem(REFRESH_TOKEN_KEY, res.refresh_token);
+      this.storage.setItem(REFRESH_TOKEN_KEY, res.refresh_token);
     }
-    localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+    this.storage.setItem(USER_KEY, JSON.stringify(res.user));
     this._token.set(res.access_token);
     this._user.set(res.user);
     this.startInactivityTimer();
   }
 
   private clearSession(): void {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(LAST_ACTIVITY_KEY);
+    this.storage.removeItem(TOKEN_KEY);
+    this.storage.removeItem(REFRESH_TOKEN_KEY);
+    this.storage.removeItem(USER_KEY);
+    this.storage.removeItem(LAST_ACTIVITY_KEY);
     this._token.set(null);
     this._user.set(null);
     this.stopInactivityTimer();
@@ -186,7 +208,7 @@ export class AuthService implements OnDestroy {
 
   private parseStoredUser(): User | null {
     try {
-      const raw = localStorage.getItem(USER_KEY);
+      const raw = this.storage.getItem(USER_KEY);
       return raw ? (JSON.parse(raw) as User) : null;
     } catch {
       return null;
@@ -198,7 +220,7 @@ export class AuthService implements OnDestroy {
     if (event.key !== TOKEN_KEY && event.key !== USER_KEY) return;
 
     const wasLoggedIn = this.isLoggedIn();
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = this.storage.getItem(TOKEN_KEY);
     const user = this.parseStoredUser();
 
     this._token.set(token);

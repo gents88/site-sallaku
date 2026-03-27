@@ -70,6 +70,9 @@ export class SeoService {
     // Canonical link tag
     this.updateCanonical(canonicalUrl);
 
+    // hreflang alternate links (it / en / sq)
+    this.updateHreflang(this.router.url.split('?')[0]);
+
     // Open Graph
     this.meta.updateTag({ property: 'og:title',       content: pageTitle });
     this.meta.updateTag({ property: 'og:description',  content: description });
@@ -124,6 +127,34 @@ export class SeoService {
       el.setAttribute('href', url);
       this.document.head.appendChild(el);
     }
+  }
+
+  /**
+   * Inject/update <link rel="alternate" hreflang="..."> tags for the three
+   * supported languages (it, en, sq) plus x-default.
+   */
+  private updateHreflang(path: string): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    // Remove previously injected hreflang tags
+    this.document.querySelectorAll('link[data-hreflang]').forEach(el => el.remove());
+
+    const langs: { hreflang: string; lang: string }[] = [
+      { hreflang: 'x-default', lang: 'it' },
+      { hreflang: 'it', lang: 'it' },
+      { hreflang: 'en', lang: 'en' },
+      { hreflang: 'sq', lang: 'sq' },
+    ];
+
+    langs.forEach(({ hreflang, lang }) => {
+      const href = `${SITE_ORIGIN}${path}${path.includes('?') ? '&' : '?'}lang=${lang}`;
+      const el = this.document.createElement('link');
+      el.setAttribute('data-hreflang', hreflang);
+      el.setAttribute('rel', 'alternate');
+      el.setAttribute('hreflang', hreflang);
+      el.setAttribute('href', hreflang === 'x-default' ? `${SITE_ORIGIN}${path}` : href);
+      this.document.head.appendChild(el);
+    });
   }
 
   private loadGtag(id: string): void {
