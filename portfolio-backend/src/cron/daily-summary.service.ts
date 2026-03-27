@@ -1,17 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Cron } from '@nestjs/schedule';
 import { ContactService } from '../contact/contact.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
 import { MailService } from '../mail/mail.service';
+import { CronState, CronStateDocument } from './schemas/cron-state.schema';
+
+const DAILY_SUMMARY_JOB = 'daily-summary';
 
 @Injectable()
 export class DailySummaryService {
   private readonly logger = new Logger(DailySummaryService.name);
-
-  /** In-memory guard: stores the last YYYY-MM-DD that a summary was successfully sent. */
-  private lastSentDate = '';
 
   constructor(
     private cfg: ConfigService,
@@ -19,6 +21,7 @@ export class DailySummaryService {
     private analytics: AnalyticsService,
     private chatbot: ChatbotService,
     private mail: MailService,
+    @InjectModel(CronState.name) private cronStateModel: Model<CronStateDocument>,
   ) {}
 
   // ── Scheduled jobs ────────────────────────────────────────────────────────
@@ -52,10 +55,16 @@ export class DailySummaryService {
     const now = new Date();
     const todayKey = now.toISOString().slice(0, 10); // YYYY-MM-DD
 
-    // Deduplication: skip if already sent today (unless this is a forced/manual run)
-    if (!force && this.lastSentDate === todayKey) {
-      this.logger.warn(`[DailySummary] Already sent for ${todayKey} — skipping duplicate execution`);
-      return { success: true, message: `Already sent for ${todayKey} — skipped.` };
+    // Deduplication: check MongoDB so restarts don't re-send
+    if (!force) {
+      const state = await this.cronStateModel
+        .findOne({ jobName: DAILY_SUMMARY_JOB })
+        .lean()
+        .exec();
+      if (state?.lastSentDate === todayKey) {
+        this.logger.warn(`[DailySummary] Already sent for ${todayKey} — skipping duplicate execution`);
+        return { success: true, message: `Already sent for ${todayKey} — skipped.` };
+      }
     }
 
     this.logger.log(`[DailySummary] Starting — date=${todayKey} force=${force}`);
@@ -63,7 +72,13 @@ export class DailySummaryService {
     try {
       const sent = await this.sendWithRetry(now, 3);
       if (sent) {
-        this.lastSentDate = todayKey;
+        await this.cronStateModel
+          .findOneAndUpdate(
+            { jobName: DAILY_SUMMARY_JOB },
+            { lastSentDate: todayKey },
+            { upsert: true, new: true },
+          )
+          .exec();
         this.logger.log(`[DailySummary] Completed successfully for ${todayKey}`);
         return { success: true, message: `Daily summary sent for ${todayKey}.` };
       }
