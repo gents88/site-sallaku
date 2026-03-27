@@ -5,10 +5,10 @@ export type AboutDocument = About & Document;
 
 @Schema({ timestamps: true, collection: 'about' })
 export class About {
-  @Prop({ required: true })
+  @Prop({ default: '' })
   headline: string;
 
-  @Prop({ required: true })
+  @Prop({ default: '' })
   bio: string;
 
   @Prop({ default: '' })

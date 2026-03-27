@@ -1,4 +1,6 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService, type LanguageAccent } from './theme.service';
 
@@ -34,13 +36,17 @@ export function resolveInitialLanguage(): Lang {
 export class LanguageService {
   private readonly _current = signal<Lang>(resolveInitialLanguage());
   private readonly themeService = inject(ThemeService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly doc = inject(DOCUMENT);
 
   readonly current = this._current.asReadonly();
   readonly supported = SUPPORTED_LANGS;
 
   constructor(private translate: TranslateService) {
     this.translate.addLangs(['it', 'en', 'sq']);
-    document.documentElement.lang = this._current();
+    if (isPlatformBrowser(this.platformId)) {
+      this.doc.documentElement.lang = this._current();
+    }
     this.applyLanguageAccent(this._current());
   }
 
@@ -51,8 +57,10 @@ export class LanguageService {
       next: () => this.translate.use(lang).subscribe(),
       error: () => this.translate.use(lang).subscribe(),
     });
-    localStorage.setItem(STORAGE_KEY, lang);
-    document.documentElement.lang = lang;
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(STORAGE_KEY, lang);
+      this.doc.documentElement.lang = lang;
+    }
     this.applyLanguageAccent(lang);
   }
 

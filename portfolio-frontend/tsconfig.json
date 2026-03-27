@@ -20,6 +20,7 @@
     "module": "ES2022",
     "useDefineForClassFields": false,
     "lib": ["ES2022", "dom"],
+    "typeRoots": ["node_modules/@types"],
     "baseUrl": ".",
     "paths": {
       "@core/*": ["src/app/core/*"],
