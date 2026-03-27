@@ -23,6 +23,14 @@ export class ContactDto {
   message: string;
 }
 
+export class ReplyContactDto {
+  @ApiProperty({ example: 'Thank you for reaching out! I will get back to you soon.' })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(2000)
+  replyText: string;
+}
+
 export class BulkDeleteDto {
   @ApiProperty({ example: ['64abc123', '64abc456'], type: [String] })
   @IsArray()

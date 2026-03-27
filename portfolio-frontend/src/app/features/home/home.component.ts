@@ -1,6 +1,8 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { finalize, forkJoin } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
@@ -17,13 +19,15 @@ interface TechItem { name: string; icon: string; level: number; isFab?: boolean;
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
 interface ExpItem { date?: string; dateKey?: string; titleKey: string; roleKey: string; descKey: string; tags: string[]; }
 interface FaqItem { qKey: string; aKey: string; }
+interface ServiceItem { key: string; icon: string; colorClass: string; }
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   about: About | null = null;
@@ -39,6 +43,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   contactForm = { name: '', email: '', message: '' };
 
   private observer: IntersectionObserver | null = null;
+  private readonly platformId = inject(PLATFORM_ID);
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
   readonly frontendTechs: TechItem[] = [
@@ -147,6 +152,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     },
   ];
 
+  readonly services: ServiceItem[] = [
+    { key: 'frontend', icon: 'web',            colorClass: 'color-blue'   },
+    { key: 'web3d',    icon: 'public',          colorClass: 'color-cyan'   },
+    { key: 'dataviz',  icon: 'bar_chart',       colorClass: 'color-violet' },
+    { key: 'uiux',     icon: 'design_services', colorClass: 'color-pink'   },
+    { key: 'perf',     icon: 'speed',           colorClass: 'color-orange' },
+    { key: 'api',      icon: 'api',             colorClass: 'color-green'  },
+  ];
+
   readonly faqItems: FaqItem[] = [
     { qKey: 'faq.q1', aKey: 'faq.a1' },
     { qKey: 'faq.q2', aKey: 'faq.a2' },
@@ -169,21 +183,50 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private experiencesService: ExperiencesService,
     private seo: SeoService,
     private snackbar: SnackbarService,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.seo.update({
       title: 'Gent Sallaku | Senior Front-End & API Developer',
       description: 'Senior Front-End Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
+      url: 'https://gentsallaku.it/',
     });
 
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'Person',
-      name: 'Gent Sallaku',
-      url: 'https://gentsallaku.it',
-      jobTitle: 'Senior Front-End & API Developer',
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        '@id': 'https://gentsallaku.it/#person',
+        name: 'Gent Sallaku',
+        url: 'https://gentsallaku.it',
+        jobTitle: 'Senior Front-End & API Developer',
+        description: 'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
+        knowsAbout: ['Angular', 'TypeScript', 'JavaScript', 'NestJS', 'Django', 'Cesium.js', 'Data Visualization', 'REST API', 'Docker'],
+        sameAs: [
+          'https://github.com/gentsallaku',
+          'https://linkedin.com/in/gentsallaku',
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': 'https://gentsallaku.it/#website',
+        url: 'https://gentsallaku.it',
+        name: 'Gent Sallaku',
+        description: 'Portfolio and blog of Gent Sallaku, Senior Front-End & API Developer',
+        author: { '@id': 'https://gentsallaku.it/#person' },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://gentsallaku.it/blog?q={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      },
+    ]);
 
     forkJoin({
       about: this.aboutService.get(),
@@ -195,12 +238,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         if (projects.length) this.featuredProjects = projects.filter(p => p.featured).slice(0, 5);
         if (experiences.length) this.experiences = experiences.slice(0, 5);
         this.loading = false;
+        this.cdr.markForCheck();
       },
-      error: () => { this.loading = false; },
+      error: () => { this.loading = false; this.cdr.markForCheck(); },
     });
   }
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     // IntersectionObserver for .reveal elements
     this.observer = new IntersectionObserver(
       (entries) => {
@@ -210,6 +255,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             // Trigger tech bars when tech section becomes visible
             if ((entry.target as HTMLElement).closest('#tech-stack')) {
               this.barsFilled = true;
+              this.cdr.markForCheck();
             }
             this.observer?.unobserve(entry.target);
           }
@@ -219,6 +265,23 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
+
+    // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
+    const urlPath = this.router.url.split('?')[0].replace(/^\//,'');
+    const sectionMap: Record<string, string> = {
+      'about': 'about',
+      'tech-stack': 'tech-stack',
+      'experience': 'experience',
+      'skills': 'skills',
+      'services': 'services',
+    };
+    const sectionId = sectionMap[urlPath];
+    if (sectionId) {
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
   }
 
   ngOnDestroy(): void {
@@ -239,6 +302,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!normalizedName || !hasValidEmail || !normalizedMessage || normalizedMessage.length < 10) {
       this.contactInvalid = true;
+      this.cdr.markForCheck();
       return;
     }
 
@@ -255,17 +319,20 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }).pipe(
       finalize(() => {
         this.contactSending = false;
+        this.cdr.markForCheck();
       }),
     ).subscribe({
       next: () => {
         this.contactForm = { name: '', email: '', message: '' };
         this.contactInvalid = false;
+        this.cdr.markForCheck();
         this.snackbar.show('Messaggio inviato — grazie!', 'success');
       },
       error: () => {
         // rollback optimistic state
         this.contactSent = false;
         this.contactError = true;
+        this.cdr.markForCheck();
         this.snackbar.show('Invio non riuscito — riprova più tardi', 'error');
       },
     });
