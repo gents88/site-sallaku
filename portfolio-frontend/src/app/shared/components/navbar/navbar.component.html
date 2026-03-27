@@ -1,9 +1,14 @@
-<nav class="navbar" [class.scrolled]="scrolled">
+<nav class="navbar" [class.scrolled]="scrolled" [class.menu-open]="mobileMenuOpen">
   <div class="nav-container">
     <!-- Logo -->
     <a routerLink="/homepage" class="nav-logo" (click)="closeMenu()">
       <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
     </a>
+
+    <!-- Mobile menu backdrop -->
+    @if (mobileMenuOpen) {
+      <div class="nav-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
+    }
 
     <!-- Desktop nav links -->
     <ul class="nav-menu" [class.open]="mobileMenuOpen" id="nav-menu" role="navigation">
