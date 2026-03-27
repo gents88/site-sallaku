@@ -13,8 +13,13 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
 import { GenerateBlogFromPdfDto } from './dto/generate-blog-from-pdf.dto';
+import { TranslateTextDto } from './dto/translate-text.dto';
 import { BlogGenerationService } from './services/blog-generation.service';
+import { PdfExtractionService } from './services/pdf-extraction.service';
+import { TranslationService } from './services/translation.service';
 import { BLOG_LANGUAGES, MAX_PDF_UPLOAD_SIZE } from './blog.constants';
+import { CacheControlInterceptor } from '../common/interceptors/cache-control.interceptor';
+import { AuditInterceptor } from '../audit/interceptors/audit.interceptor';
 
 @ApiTags('Blog')
 @Controller('blog')
@@ -22,20 +27,37 @@ export class BlogController {
   constructor(
     private readonly blogService: BlogService,
     private readonly blogGenerationService: BlogGenerationService,
+    private readonly pdfExtractionService: PdfExtractionService,
+    private readonly translationService: TranslationService,
   ) {}
 
   // ── Public ──────────────────────────────────────────
   @Get('posts')
-  @ApiOperation({ summary: 'Get published posts (public, optional tag filter)' })
+  @UseInterceptors(new CacheControlInterceptor(120, 60))
+  @ApiOperation({ summary: 'Get published posts (public, optional tag filter, paginated)' })
   @ApiQuery({ name: 'tag', required: false })
-  findPublished(@Query('tag') tag?: string) {
-    return this.blogService.findPublished(tag);
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findPublished(
+    @Query('tag') tag?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.blogService.findPublished(tag, +page, +limit);
   }
 
   @Get('posts/:slug')
+  @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get published post by slug (public)' })
   findBySlug(@Param('slug') slug: string) {
     return this.blogService.findBySlug(slug);
+  }
+
+  @Post('posts/:slug/view')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Increment view count for a published post (public, fire-and-forget)' })
+  async trackView(@Param('slug') slug: string) {
+    await this.blogService.incrementViewCount(slug);
   }
 
   // ── Admin ───────────────────────────────────────────
@@ -43,8 +65,13 @@ export class BlogController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'Get all posts including drafts (admin)' })
-  findAll() { return this.blogService.findAll(); }
+  @ApiOperation({ summary: 'Get all posts including drafts (admin), optionally paginated' })
+  @ApiQuery({ name: 'page',  required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findAll(
+    @Query('page')  page?:  number,
+    @Query('limit') limit?: number,
+  ) { return this.blogService.findAll(page ? +page : undefined, limit ? +limit : undefined); }
 
   @Get('admin/posts/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -55,6 +82,7 @@ export class BlogController {
   @Post('admin/posts')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
   @ApiBearerAuth('access-token')
   create(@Body() dto: CreatePostDto) { return this.blogService.create(dto); }
 
@@ -91,6 +119,46 @@ export class BlogController {
     }
 
     return this.blogGenerationService.generateFromPdf(file, dto);
+  }
+
+  @Post('admin/posts/extract-pdf')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Extract plain text from a PDF (no AI — admin)' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      required: ['file'],
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  extractPdf(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({ maxSize: MAX_PDF_UPLOAD_SIZE })
+        .addFileTypeValidator({ fileType: /(pdf)$/i })
+        .build({ fileIsRequired: true }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const fileName = file.originalname.toLowerCase();
+    if (!file.mimetype.includes('pdf') && !fileName.endsWith('.pdf')) {
+      throw new BadRequestException('Only PDF files are allowed.');
+    }
+    return this.pdfExtractionService.extract(file);
+  }
+
+  @Post('admin/translate')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Translate text via MyMemory (admin)' })
+  async translateText(@Body() dto: TranslateTextDto): Promise<{ translatedText: string }> {
+    const translatedText = await this.translationService.translate(dto.text, dto.from, dto.to);
+    return { translatedText };
   }
 
   @Put('admin/posts/:id')

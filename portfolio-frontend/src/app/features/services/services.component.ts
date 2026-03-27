@@ -1,5 +1,5 @@
-import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -29,6 +29,7 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   private revealObserver: IntersectionObserver | null = null;
+  private readonly platformId = inject(PLATFORM_ID);
 
   constructor(private seo: SeoService) {}
 
@@ -37,10 +38,26 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       title: 'Services',
       description:
         'Professional services by Gent Sallaku: Angular front-end development, 3D web applications with Cesium.js, data visualization, UI/UX design, performance optimization and API integration.',
+      url: 'https://gentsallaku.it/services',
+    });
+    this.seo.injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Services by Gent Sallaku',
+      url: 'https://gentsallaku.it/services',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Front-End Development (Angular, TypeScript)' },
+        { '@type': 'ListItem', position: 2, name: '3D Web Applications (Cesium.js, WebGL)' },
+        { '@type': 'ListItem', position: 3, name: 'Data Visualization (Chart.js, ApexCharts)' },
+        { '@type': 'ListItem', position: 4, name: 'UI/UX Design' },
+        { '@type': 'ListItem', position: 5, name: 'Performance Optimization' },
+        { '@type': 'ListItem', position: 6, name: 'API Integration & Backend (NestJS, Django)' },
+      ],
     });
   }
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     this.revealObserver = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {

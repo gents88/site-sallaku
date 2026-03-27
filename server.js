@@ -6,8 +6,9 @@ const path = require('path');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+
+// Trust only the first proxy hop for accurate IP detection
+app.set('trust proxy', 1);
 
 const {
   SMTP_HOST = 'smtp.gmail.com',
@@ -18,11 +19,50 @@ const {
   FROM_NAME = 'Sito - Contatto',
   FROM_EMAIL,
   PORT = 3000,
+  CORS_ORIGIN,
 } = process.env;
 
 if (!SMTP_USER || !SMTP_PASS) {
   console.warn('Warning: SMTP_USER or SMTP_PASS not set. Check .env file.');
 }
+
+// ── CORS — restrict to explicit allowed origins ──────────────────────────────
+const allowedOrigins = (CORS_ORIGIN || '')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow server-to-server requests (no Origin header)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
+    credentials: true,
+  }),
+);
+
+app.use(express.json({ limit: '16kb' })); // Limit request body size
+
+// ── Security headers ─────────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains; preload',
+  );
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self'; object-src 'none'; frame-src 'none';",
+  );
+  next();
+});
 
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST,
@@ -31,13 +71,25 @@ const transporter = nodemailer.createTransport({
   auth: SMTP_USER && SMTP_PASS ? { user: SMTP_USER, pass: SMTP_PASS } : undefined,
 });
 
-// Basic rate limiting for API endpoints
+// Rate limiting for the email endpoint — 5 submissions per 15 minutes per IP
+const emailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { ok: false, error: 'Too many requests, please try again later.' },
+});
+
+// General API rate limit — 100 requests per 15 minutes per IP
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// Apply general rate limit to all API routes
+app.use('/api/', apiLimiter);
 
 // Verify transporter (best-effort)
 transporter.verify().then(() => {
@@ -53,28 +105,43 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 // Endpoint to receive form data and send email
-app.post('/api/send-email', apiLimiter, async (req, res) => {
+app.post('/api/send-email', emailLimiter, async (req, res) => {
   try {
     const { name, email, message, hp } = req.body || {};
-    // Honeypot check: if filled, likely bot
+
+    // Honeypot check: if filled, likely bot — silent discard
     if (hp) {
       return res.status(400).json({ ok: false, error: 'Bot detected' });
     }
+
     if (!name || !email || !message) {
-      return res.status(400).json({ ok: false, error: 'Dati mancanti: name, email e message sono richiesti.' });
+      return res.status(400).json({ ok: false, error: 'Missing required fields: name, email, message.' });
+    }
+
+    // Input length limits — prevent oversized payloads reaching the SMTP server
+    if (typeof name !== 'string' || name.length > 80) {
+      return res.status(400).json({ ok: false, error: 'Name too long (max 80 characters).' });
+    }
+    if (typeof email !== 'string' || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ ok: false, error: 'Invalid email address.' });
+    }
+    if (typeof message !== 'string' || message.length > 2000) {
+      return res.status(400).json({ ok: false, error: 'Message too long (max 2000 characters).' });
     }
 
     const to = FROM_EMAIL || SMTP_USER;
     const mailOptions = {
-      from: `"${FROM_NAME || name}" <${FROM_EMAIL || SMTP_USER}>`,
+      from: `"${escapeHtml(FROM_NAME)}" <${FROM_EMAIL || SMTP_USER}>`,
       to,
-      subject: `Nuovo contatto dal sito: ${name}`,
+      subject: `Nuovo contatto dal sito: ${escapeHtml(name)}`,
       replyTo: email,
+      // Plain-text version (safe by definition)
       text: `Nome: ${name}\nEmail: ${email}\n\nMessaggio:\n${message}`,
+      // HTML version — all user values are HTML-escaped
       html: `<p><strong>Nome:</strong> ${escapeHtml(name)}</p>
              <p><strong>Email:</strong> ${escapeHtml(email)}</p>
              <p><strong>Messaggio:</strong></p>
-             <p>${escapeHtml(message).replace(/\n/g,'<br>')}</p>`,
+             <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
     };
 
     const info = await transporter.sendMail(mailOptions);

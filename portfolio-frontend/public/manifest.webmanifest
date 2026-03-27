@@ -1,0 +1,46 @@
+{
+  "name": "Gent Sallaku Portfolio",
+  "short_name": "Gent Sallaku",
+  "description": "Portfolio tecnico con progetti, blog, servizi e dashboard amministrativa.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "lang": "it",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48 32x32 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["portfolio", "productivity", "developer"],
+  "shortcuts": [
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "url": "/projects",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Blog",
+      "short_name": "Blog",
+      "url": "/blog",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "url": "/contact",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}
