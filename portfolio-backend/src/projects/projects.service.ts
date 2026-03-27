@@ -11,7 +11,7 @@ export class ProjectsService {
   constructor(@InjectModel(Project.name) private projectModel: Model<ProjectDocument>) {}
 
   async findAll(): Promise<ProjectDocument[]> {
-    return this.projectModel.find().sort({ order: 1, createdAt: -1 }).exec();
+    return this.projectModel.find().sort({ order: 1, createdAt: -1 }).lean().exec() as unknown as Promise<ProjectDocument[]>;
   }
 
   async findOne(id: string): Promise<ProjectDocument> {

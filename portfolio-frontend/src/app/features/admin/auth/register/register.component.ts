@@ -76,7 +76,7 @@ function passwordsMatch(ctrl: AbstractControl) {
 
         <p class="auth-card__footer text-muted">
           {{ 'auth.have_account' | translate }}
-          <a routerLink="/admin/login">{{ 'auth.sign_in' | translate }}</a>
+          <a routerLink="/dashboard/login">{{ 'auth.sign_in' | translate }}</a>
         </p>
       </div>
     </div>
@@ -119,7 +119,7 @@ export class RegisterComponent {
 
     const { name, email, password } = this.form.value as any;
     this.auth.register({ name, email, password }).subscribe({
-      next: () => this.router.navigate(['/admin']),
+      next: () => this.router.navigate(['/dashboard']),
       error: (err) => {
         this.loading = false;
         const msg = err?.error?.message || this.translate.instant('common.error');

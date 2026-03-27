@@ -19,6 +19,16 @@ export class ContactMessage {
 
   @Prop({ default: false })
   read: boolean;
+
+  @Prop({ type: Date, default: null })
+  repliedAt: Date | null;
+
+  @Prop({ default: '' })
+  replyText: string;
 }
 
 export const ContactMessageSchema = SchemaFactory.createForClass(ContactMessage);
+// Admin queries by read status; duplicate-detection by email+createdAt
+ContactMessageSchema.index({ createdAt: -1 });
+ContactMessageSchema.index({ read: 1, createdAt: -1 });
+ContactMessageSchema.index({ email: 1, createdAt: -1 });

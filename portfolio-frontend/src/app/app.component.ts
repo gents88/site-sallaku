@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
@@ -9,14 +9,20 @@ import { SeoService } from './core/services/seo.service';
 import { AuthModalService } from './core/services/auth-modal.service';
 import { InactivityService } from './core/services/inactivity.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
+import { ChatbotComponent } from './features/chatbot/chatbot.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent],
   template: `
-    <a class="skip-link" href="#hero">{{ 'skip.link' | translate }}</a>
-    <div class="wip-banner" role="status">{{ 'banner.wip' | translate }}</div>
+    <a class="skip-link" href="#homepage">{{ 'skip.link' | translate }}</a>
+    @if (wipVisible()) {
+      <div class="wip-banner" role="status">
+        {{ 'banner.wip' | translate }}
+        <button type="button" class="wip-close" (click)="dismissWip()" aria-label="Chiudi">&#x2715;</button>
+      </div>
+    }
     <app-navbar />
     <main>
       <router-outlet />
@@ -64,6 +70,7 @@ import { SessionTimeoutModalComponent } from './shared/components/session-timeou
         (stayLoggedIn)="extendSession()"
         (logoutNow)="logoutFromTimeout()" />
     }
+    <app-chatbot />
   `,
   styles: [`
     .skip-link {
@@ -91,11 +98,33 @@ import { SessionTimeoutModalComponent } from './shared/components/session-timeou
       transform: translateX(-50%);
       background: linear-gradient(90deg, #ffd54a, #ffb84d);
       color: #000;
-      padding: 6px 12px;
+      padding: 6px 36px 6px 16px;
       border-radius: 999px;
       font-weight: 600;
       z-index: 1100;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      white-space: nowrap;
+      isolation: isolate;
+    }
+
+    .wip-close {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.12);
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
     }
 
     main {
@@ -300,6 +329,8 @@ import { SessionTimeoutModalComponent } from './shared/components/session-timeou
   `],
 })
 export class AppComponent implements OnInit {
+  readonly wipVisible = signal(!sessionStorage.getItem('wipDismissed'));
+
   constructor(
     public authModal: AuthModalService,
     public auth: AuthService,
@@ -319,7 +350,7 @@ export class AppComponent implements OnInit {
 
   goToDashboard(): void {
     this.authModal.closeAccount();
-    void this.router.navigate(['/admin']);
+    void this.router.navigate(['/dashboard']);
   }
 
   logoutFromModal(): void {
@@ -333,5 +364,10 @@ export class AppComponent implements OnInit {
 
   logoutFromTimeout(): void {
     this.inactivity.logoutNow();
+  }
+
+  dismissWip(): void {
+    this.wipVisible.set(false);
+    sessionStorage.setItem('wipDismissed', '1');
   }
 }

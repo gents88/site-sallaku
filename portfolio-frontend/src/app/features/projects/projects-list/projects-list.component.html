@@ -1,55 +1,34 @@
-<div class="container section">
-  <h1 class="page-title">Projects</h1>
-
-  @if (loading) {
-    <app-loading-spinner />
-  } @else {
-    <!-- Tag filter -->
-    @if (allTags.length) {
-      <div class="tag-filter">
-        <button class="badge" [class.active]="!activeTag" (click)="filterByTag(null)">All</button>
-        @for (tag of allTags; track tag) {
-          <button class="badge" [class.active]="activeTag === tag" (click)="filterByTag(tag)">{{ tag }}</button>
-        }
-      </div>
-    }
-
-    <div class="projects-grid">
-      @for (project of filtered; track project._id) {
-        <article class="card project-card fade-in-up">
-          @if (project.images[0]) {
-            <img [src]="project.images[0]" [alt]="project.title" class="project-card__img" loading="lazy" />
-          }
-          @if (project.featured) {
-            <span class="featured-badge">Featured</span>
-          }
-          <div class="project-card__body">
-            <h2>{{ project.title }}</h2>
-            <p class="text-muted">{{ project.description }}</p>
-            <div class="tech-tags">
-              @for (tech of project.technologies; track tech) {
-                <span class="badge">{{ tech }}</span>
-              }
-            </div>
-            <div class="project-card__links">
-              @if (project.liveUrl) {
-                <a [href]="project.liveUrl" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
-                  <mat-icon>open_in_new</mat-icon> Live Demo
-                </a>
-              }
-              @if (project.repoUrl) {
-                <a [href]="project.repoUrl" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
-                  <mat-icon>code</mat-icon> Source
-                </a>
-              }
-            </div>
-          </div>
-        </article>
-      }
+<section class="section" id="projects">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">&lt;{{ 'projects.tag' | translate }}&gt;</span>
+      <h2 class="section-title">{{ 'projects.title' | translate }}</h2>
+      <div class="section-line"></div>
     </div>
 
-    @if (!filtered.length) {
-      <p class="empty-state">No projects match the selected filter.</p>
+    <div class="projects-grid">
+    @for (p of staticProjects; track p.titleKey) {
+      <div class="project-card reveal glass-card">
+        <div class="project-visual">
+          <div class="project-icon-3d"><i [class]="'fas fa-' + p.icon"></i></div>
+          <div class="project-glow"></div>
+        </div>
+        <div class="project-content">
+          <div class="project-tags">
+            @for (tag of p.tags; track tag) {
+              <span class="project-tag">{{ tag }}</span>
+            }
+          </div>
+          <h3 class="project-title">{{ p.titleKey | translate }}</h3>
+          <p class="project-description">{{ p.descKey | translate }}</p>
+          <div class="project-features">
+            @for (feat of p.featureKeys; track feat) {
+              <span><i class="fas fa-check"></i> {{ feat | translate }}</span>
+            }
+          </div>
+        </div>
+      </div>
     }
-  }
-</div>
+    </div>
+  </div>
+</section>

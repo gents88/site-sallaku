@@ -1,6 +1,6 @@
 import {
   Controller, Get, Post, Put, Delete,
-  Param, Body, UseGuards, HttpCode, HttpStatus,
+  Param, Body, UseGuards, HttpCode, HttpStatus, UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ExperiencesService } from './experiences.service';
@@ -9,6 +9,7 @@ import { UpdateExperienceDto } from './dto/update-experience.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
+import { CacheControlInterceptor } from '../common/interceptors/cache-control.interceptor';
 
 @ApiTags('Experiences')
 @Controller('experiences')
@@ -16,10 +17,12 @@ export class ExperiencesController {
   constructor(private readonly experiencesService: ExperiencesService) {}
 
   @Get()
+  @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get all experiences (public)' })
   findAll() { return this.experiencesService.findAll(); }
 
   @Get(':id')
+  @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get a single experience (public)' })
   findOne(@Param('id') id: string) { return this.experiencesService.findOne(id); }
 

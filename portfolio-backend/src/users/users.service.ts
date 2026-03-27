@@ -15,8 +15,50 @@ export class UsersService {
     return this.userModel.findOne({ email: email.toLowerCase() }).select('+passwordHash').exec();
   }
 
+  async findByPhone(phone: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ phone }).exec();
+  }
+
+  /** Finds an existing user by phone or creates a new one with role 'user'. */
+  async findOrCreateByPhone(phone: string): Promise<UserDocument> {
+    const existing = await this.userModel.findOne({ phone }).exec();
+    if (existing) return existing;
+
+    return this.userModel.create({
+      name: `User ${phone.slice(-4)}`,
+      phone,
+      role: 'user',
+    });
+  }
+
+  /**
+   * Finds an existing user by email (OTP path — no password required)
+   * or creates a new one. Does NOT select passwordHash.
+   */
+  async findOrCreateByEmailOtp(email: string): Promise<UserDocument> {
+    const normalized = email.toLowerCase();
+    const existing = await this.userModel.findOne({ email: normalized }).exec();
+    if (existing) return existing;
+
+    return this.userModel.create({
+      name: normalized.split('@')[0],
+      email: normalized,
+      role: 'user',
+    });
+  }
+
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
+  }
+
+  /** Returns the user with refreshTokenHash included (for verification). */
+  async findByIdWithRefreshToken(id: string): Promise<UserDocument | null> {
+    return this.userModel.findById(id).select('+refreshTokenHash').exec();
+  }
+
+  /** Persist the hashed refresh token for a given user. Pass null to revoke. */
+  async saveRefreshToken(userId: string, hash: string | null): Promise<void> {
+    await this.userModel.findByIdAndUpdate(userId, { refreshTokenHash: hash }).exec();
   }
 
   async upsertAdmin(data: Partial<User> & { email: string; passwordHash: string }): Promise<UserDocument> {
@@ -38,3 +80,4 @@ export class UsersService {
     return this.userModel.countDocuments().exec();
   }
 }
+
