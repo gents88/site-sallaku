@@ -37,7 +37,10 @@ export class ChatbotController {
   }
 
   @Get('session/:sessionId')
-  @ApiOperation({ summary: 'Retrieve conversation history for a session' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Retrieve conversation history for a session (admin only)' })
   getSession(@Param('sessionId', ParseUUIDPipe) sessionId: string) {
     return this.chatbotService.getSession(sessionId);
   }

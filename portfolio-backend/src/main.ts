@@ -38,9 +38,11 @@ async function bootstrap() {
   // Trust only the first proxy hop — prevents IP spoofing via X-Forwarded-For
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
-  // ── Body parser limit (allow large payloads for rich content) ──
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ limit: '50mb', extended: true }));
+  // ── Body parser limit ─────────────────────────────────────────
+  // Global limit kept small to reduce DoS exposure.
+  // The blog PDF-upload route registers its own 50 MB limit via FileInterceptor/multer.
+  app.use(express.json({ limit: '1mb' }));
+  app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
   // ── Security middleware ──────────────────────────────
   app.use(
@@ -75,14 +77,28 @@ async function bootstrap() {
   app.use(compression());
 
   // ── CORS ─────────────────────────────────────────────
+  // In production CORS_ORIGIN must be set — an empty allowlist blocks all
+  // cross-origin requests rather than open them up.
+  const isProduction = process.env.NODE_ENV === 'production';
+  if (isProduction && allowedOrigins.length === 0) {
+    throw new Error('CORS_ORIGIN must be set in production. Server cannot start.');
+  }
+
   app.enableCors({
     origin: (origin, callback) => {
+      // Allow server-to-server / curl requests (no Origin header)
       if (!origin) {
         callback(null, true);
         return;
       }
 
-      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      // Dev/staging with no explicit allowlist → allow all origins
+      if (!isProduction && allowedOrigins.length === 0) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins.includes(origin)) {
         callback(null, true);
         return;
       }

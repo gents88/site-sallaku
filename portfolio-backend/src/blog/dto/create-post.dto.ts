@@ -1,5 +1,5 @@
 import {
-  IsString, IsArray, IsOptional, IsBoolean, MaxLength, MinLength, Matches, IsIn,
+  IsString, IsArray, IsOptional, IsBoolean, MaxLength, MinLength, Matches, IsIn, IsUrl,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BLOG_LANGUAGES, BlogLanguage } from '../blog.constants';
@@ -40,7 +40,8 @@ export class CreatePostDto {
   language?: BlogLanguage;
 
   @ApiPropertyOptional({ example: 'https://cdn.example.com/cover.jpg' })
-  @IsString()
+  @IsUrl({ protocols: ['https', 'http'], require_tld: true }, { message: 'coverImage must be a valid URL' })
+  @MaxLength(500)
   @IsOptional()
   coverImage?: string;
 

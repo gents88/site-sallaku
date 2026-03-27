@@ -1,6 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { UsersService } from '../users/users.service';
 import { ContactService } from '../contact/contact.service';
 import { BlogService } from '../blog/blog.service';
@@ -33,7 +35,8 @@ interface AdminDashboardStatsResponse {
 
 @ApiTags('Stats')
 @ApiBearerAuth('access-token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.Admin)
 @Controller('stats')
 export class StatsController {
   constructor(

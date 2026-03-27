@@ -1,6 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role, Roles } from '../auth/decorators/roles.decorator';
 
 interface VersionInfo {
   name: string;
@@ -13,17 +17,21 @@ export class SystemController {
   private readonly packageInfo = this.readPackageInfo();
 
   @Get('health')
+  @ApiOperation({ summary: 'Liveness check (public)' })
   health() {
     return {
       ok: true,
       service: this.packageInfo.name,
       version: this.packageInfo.version,
       startedAt: this.startedAt,
-      environment: process.env.NODE_ENV || 'development',
     };
   }
 
   @Get('version')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Detailed version + infrastructure info (admin only)' })
   version() {
     return {
       service: this.packageInfo.name,
