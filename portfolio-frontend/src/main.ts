@@ -9,6 +9,6 @@ import * as Prism from 'prismjs';
 (globalThis as any).Prism = (Prism as any).default ?? Prism;
 import { version } from '../package.json';
 const buildDate = new Date().toISOString();
-console.log(`%c[APP] Build: ${buildDate} version: 13`, 'color: #4CAF50; font-weight: bold');
+console.log(`%c[APP] Build: ${buildDate} version: 14`, 'color: #4CAF50; font-weight: bold');
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

@@ -118,8 +118,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.routerSub?.unsubscribe();
   }
 
-  toggleMenu(): void { this.mobileMenuOpen = !this.mobileMenuOpen; }
-  closeMenu(): void { this.mobileMenuOpen = false; }
+  toggleMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+    const html = document.documentElement;
+    if (this.mobileMenuOpen) {
+      html.classList.add('menu-open');
+      document.body.classList.add('menu-open');
+    } else {
+      html.classList.remove('menu-open');
+      document.body.classList.remove('menu-open');
+    }
+  }
+  closeMenu(): void {
+    this.mobileMenuOpen = false;
+    document.documentElement.classList.remove('menu-open');
+    document.body.classList.remove('menu-open');
+  }
 
   openLoginModal(): void {
     this.closeMenu();

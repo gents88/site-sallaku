@@ -218,6 +218,15 @@ html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Lock scroll when mobile menu is open */
+html.menu-open,
+body.menu-open {
+  overflow: hidden;
+  /* prevent iOS rubber-band horizontal scroll */
+  overscroll-behavior: none;
 }
 
 html[data-theme='dark'] {
