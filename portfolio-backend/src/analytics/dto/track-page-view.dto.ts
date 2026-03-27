@@ -1,11 +1,12 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 
 export class TrackPageViewDto {
-  @IsString()
-  @MaxLength(120)
+  @IsUUID(4, { message: 'visitorId must be a valid UUID v4' })
+  @IsNotEmpty()
   visitorId: string;
 
   @IsString()
+  @IsNotEmpty()
   @MaxLength(300)
   path: string;
 

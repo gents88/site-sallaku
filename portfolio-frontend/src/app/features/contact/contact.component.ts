@@ -1,6 +1,6 @@
-import { Component, OnInit, AfterViewInit, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, inject, PLATFORM_ID } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -36,11 +36,30 @@ export class ContactComponent implements OnInit, AfterViewInit {
     private seo: SeoService,
   ) {}
 
+  private readonly platformId = inject(PLATFORM_ID);
+
   ngOnInit(): void {
-    this.seo.update({ title: 'Contact', description: 'Get in touch with me.' });
+    this.seo.update({
+      title: 'Contact',
+      description: 'Get in touch with Gent Sallaku for web development projects, collaborations or freelance work.',
+      url: 'https://gentsallaku.it/contact',
+    });
+    this.seo.injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'ContactPage',
+      url: 'https://gentsallaku.it/contact',
+      name: 'Contact Gent Sallaku',
+      description: 'Get in touch with Gent Sallaku for web development projects.',
+      author: {
+        '@type': 'Person',
+        '@id': 'https://gentsallaku.it/#person',
+        name: 'Gent Sallaku',
+      },
+    });
   }
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     const observer = new IntersectionObserver(
       (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
       { threshold: 0.12 }

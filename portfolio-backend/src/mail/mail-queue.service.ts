@@ -8,6 +8,8 @@ interface ContactJobPayload {
   subject: string;
   message: string;
   contactId?: string;
+  ip?: string;
+  location?: string;
 }
 
 @Injectable()
@@ -53,7 +55,14 @@ export class MailQueueService implements OnModuleInit {
       if (!job) break;
       try {
         this.logger.log(`Processing contact job for ${job.email}`);
-        const delivery = await this.mail.sendContactNotification(job);
+        const delivery = await this.mail.sendContactNotification({
+          name: job.name,
+          email: job.email,
+          subject: job.subject,
+          message: job.message,
+          ip: job.ip,
+          location: job.location,
+        });
         if (!delivery.success) {
           this.logger.error(`Contact notification failed for ${job.email} — will retry later`);
           // naive retry: push back to queue tail for retry

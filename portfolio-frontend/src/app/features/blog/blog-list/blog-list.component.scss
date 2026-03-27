@@ -52,6 +52,12 @@
   &__body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
   &__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
   &__title { font-size: 1.2rem; a { color: var(--color-text); &:hover { color: var(--color-primary); } } }
+  &__excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
   &__footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
   &__date { font-size: 0.8rem; }
 }

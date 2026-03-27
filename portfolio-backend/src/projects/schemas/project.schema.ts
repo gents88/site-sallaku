@@ -34,3 +34,6 @@ export class Project {
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
+// Featured projects sorted by order is the most common public query
+ProjectSchema.index({ featured: 1, order: 1 });
+ProjectSchema.index({ order: 1 });

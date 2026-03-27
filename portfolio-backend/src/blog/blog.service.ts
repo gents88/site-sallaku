@@ -30,11 +30,42 @@ export class BlogService {
     return candidate;
   }
 
-  /** Public: published posts only */
-  findPublished(tag?: string): Promise<PostDocument[]> {
-    const filter: any = { published: true };
+  /** Auto-generate a short excerpt from HTML/plain content. */
+  private autoExcerpt(content: string, maxLen = 200): string {
+    const stripped = content
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (stripped.length <= maxLen) return stripped;
+    const cut = stripped.lastIndexOf(' ', maxLen);
+    return stripped.slice(0, cut > 0 ? cut : maxLen) + '…';
+  }
+
+  /** Public: published posts only, paginated */
+  async findPublished(tag?: string, page = 1, limit = 10): Promise<{
+    data: PostDocument[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    const safeLimit = Math.min(Math.max(limit, 1), 50);
+    const skip = (Math.max(page, 1) - 1) * safeLimit;
+    const filter: Record<string, unknown> = { published: true };
     if (tag) filter.tags = tag;
-    return this.postModel.find(filter).sort({ publishedAt: -1 }).select('-content').exec();
+
+    const [data, total] = await Promise.all([
+      this.postModel
+        .find(filter)
+        .sort({ publishedAt: -1 })
+        .skip(skip)
+        .limit(safeLimit)
+        .select('-content')
+        .lean()
+        .exec() as unknown as Promise<PostDocument[]>,
+      this.postModel.countDocuments(filter).exec(),
+    ]);
+
+    return { data, total, page: Math.max(page, 1), totalPages: Math.ceil(total / safeLimit) };
   }
 
   /** Public: single post by slug */
@@ -44,8 +75,18 @@ export class BlogService {
     return post;
   }
 
-  /** Admin: all posts */
-  findAll(): Promise<PostDocument[]> {
+  /** Admin: all posts — with optional pagination (omit page/limit to get all) */
+  async findAll(page?: number, limit?: number): Promise<PostDocument[] | { data: PostDocument[]; total: number; page: number; totalPages: number }> {
+    if (page !== undefined || limit !== undefined) {
+      const safeLimit = Math.min(Math.max(limit ?? 50, 1), 200);
+      const safePage  = Math.max(page ?? 1, 1);
+      const skip = (safePage - 1) * safeLimit;
+      const [data, total] = await Promise.all([
+        this.postModel.find().sort({ createdAt: -1 }).skip(skip).limit(safeLimit).exec() as unknown as Promise<PostDocument[]>,
+        this.postModel.countDocuments().exec(),
+      ]);
+      return { data, total, page: safePage, totalPages: Math.ceil(total / safeLimit) };
+    }
     return this.postModel.find().sort({ createdAt: -1 }).exec();
   }
 
@@ -59,9 +100,11 @@ export class BlogService {
   async create(dto: CreatePostDto): Promise<PostDocument> {
     const slug = await this.ensureUniqueSlug(dto.slug || dto.title);
     const publishedAt = dto.published ? new Date() : null;
+    const excerpt = dto.excerpt || this.autoExcerpt(dto.content);
     return this.postModel.create({
       ...dto,
       slug,
+      excerpt,
       language: dto.language || DEFAULT_BLOG_LANGUAGE,
       publishedAt,
     });
@@ -89,6 +132,14 @@ export class BlogService {
   async remove(id: string): Promise<void> {
     const result = await this.postModel.findByIdAndDelete(id).exec();
     if (!result) throw new NotFoundException(`Post #${id} not found`);
+  }
+
+  /** Public: increment view count atomically. Fire-and-forget safe. */
+  incrementViewCount(slug: string): Promise<void> {
+    return this.postModel
+      .updateOne({ slug, published: true }, { $inc: { viewCount: 1 } })
+      .exec()
+      .then(() => undefined);
   }
 
   async getContentSummary(): Promise<ContentSummary> {

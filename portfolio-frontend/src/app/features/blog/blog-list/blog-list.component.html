@@ -24,7 +24,7 @@
       @for (post of filteredPosts; track post._id) {
         <article class="card post-card fade-in-up">
           @if (post.coverImage) {
-            <img [src]="post.coverImage" [alt]="post.title" class="post-card__cover" loading="lazy" />
+            <img [src]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" loading="lazy" />
           }
           <div class="post-card__body">
             <div class="post-card__tags">
@@ -33,15 +33,15 @@
               }
             </div>
             <h2 class="post-card__title">
-              <a [routerLink]="['/blog', post.slug]">{{ post.title }}</a>
+              <a [routerLink]="['/blog', post.slug]">{{ getLocalizedTitle(post) }}</a>
             </h2>
-            <p class="text-muted">{{ post.excerpt }}</p>
+            <p class="text-muted post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
             <div class="post-card__footer">
               <time [dateTime]="post.publishedAt ?? ''" class="text-muted post-card__date">
                 {{ post.publishedAt | date:'mediumDate' }}
               </time>
               <a [routerLink]="['/blog', post.slug]" class="btn btn-ghost btn-sm">
-                Read more <mat-icon>arrow_forward</mat-icon>
+                {{ 'blog.readMore' | translate }} <mat-icon>arrow_forward</mat-icon>
               </a>
             </div>
           </div>

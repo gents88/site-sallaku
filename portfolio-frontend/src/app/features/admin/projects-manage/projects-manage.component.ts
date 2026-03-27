@@ -12,6 +12,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { finalize, timeout } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { Project } from '../../../core/models/project.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -60,9 +61,12 @@ export class ProjectsManageComponent implements OnInit {
 
   loadProjects(): void {
     this.loading = true;
-    this.projectsService.getAll().subscribe({
+    this.projectsService.getAll().pipe(
+      timeout(15000),
+      finalize(() => { this.loading = false; }),
+    ).subscribe({
       next: p => { this.projects = p; this.loading = false; },
-      error: () => { this.loading = false; },
+      error: () => {},
     });
   }
 

@@ -1,6 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { UsersService } from '../users/users.service';
 import { ContactService } from '../contact/contact.service';
 import { BlogService } from '../blog/blog.service';
@@ -20,6 +22,7 @@ interface StatsContentSummary {
 interface AdminDashboardStatsResponse {
   users: number;
   contacts: number;
+  unreadContacts: number;
   recentContacts: Awaited<ReturnType<ContactService['findAll']>>;
   contactsByDay: StatsContactPoint[];
   content: StatsContentSummary;
@@ -32,7 +35,8 @@ interface AdminDashboardStatsResponse {
 
 @ApiTags('Stats')
 @ApiBearerAuth('access-token')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.Admin)
 @Controller('stats')
 export class StatsController {
   constructor(
@@ -45,10 +49,11 @@ export class StatsController {
   @Get()
   @ApiOperation({ summary: 'Get aggregate admin dashboard stats' })
   async getStats(): Promise<AdminDashboardStatsResponse> {
-    const [userCount, contactCount, recentContacts, contactsByDay, content, visits] = await Promise.all([
+    const [userCount, contactCount, unreadContactCount, recentContacts, contactsByDay, content, visits] = await Promise.all([
       this.users.count(),
       this.contacts.count(),
-      this.contacts.findAll(5),
+      this.contacts.countUnread(),
+      this.contacts.findAll(10),
       this.contacts.countByDay(7),
       this.blog.getContentSummary(),
       this.analytics.getVisitSummary(7),
@@ -57,6 +62,7 @@ export class StatsController {
     return {
       users: userCount,
       contacts: contactCount,
+      unreadContacts: unreadContactCount,
       recentContacts,
       contactsByDay,
       content,

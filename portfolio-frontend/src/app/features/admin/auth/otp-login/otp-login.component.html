@@ -1,0 +1,147 @@
+<div class="auth-page">
+  <div class="auth-card card fade-in-up">
+    <div class="auth-card__accent" aria-hidden="true"></div>
+
+    <div class="auth-card__header">
+      <div class="auth-avatar" aria-hidden="true">GS</div>
+      <span class="auth-chip">Admin Access</span>
+      <h1 class="logo">
+        <span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span>
+      </h1>
+      <p class="text-muted">{{ 'auth.otp_subtitle' | translate }}</p>
+    </div>
+
+    <!-- ── Step 1: Phone or Email ── -->
+    @if (step === 'identifier') {
+      <form [formGroup]="identifierForm" (ngSubmit)="requestOtp()" novalidate>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>{{ 'auth.phone_or_email' | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="identifier"
+            type="text"
+            autocomplete="username"
+            placeholder="+12025551234 or admin@email.com"
+          />
+          <mat-icon matSuffix>{{ identifierIcon }}</mat-icon>
+          @if (identifierForm.get('identifier')?.invalid && identifierForm.get('identifier')?.touched) {
+            <mat-error>{{ 'auth.phone_or_email_required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+          class="submit-btn"
+        >
+          @if (loading) {
+            <mat-icon class="spin">sync</mat-icon>
+          } @else {
+            <mat-icon>send</mat-icon>
+          }
+          {{ (loading ? 'auth.sending' : 'auth.send_otp') | translate }}
+        </button>
+      </form>
+    }
+
+    <!-- ── Step 2: OTP verification ── -->
+    @if (step === 'otp') {
+      <div class="otp-info">
+        <mat-icon class="otp-info__icon">{{ isEmail ? 'mark_email_read' : 'sms' }}</mat-icon>
+        <p>
+          {{ (isEmail ? 'auth.otp_sent_to_email' : 'auth.otp_sent_to') | translate }}
+          <strong>{{ identifier }}</strong>
+        </p>
+      </div>
+
+      <!-- Countdown / expired indicator -->
+      @if (!otpExpired) {
+        <div
+          class="countdown"
+          [class.countdown--warning]="countdownSeconds <= 60"
+          role="timer"
+          [attr.aria-label]="'auth.otp_expires_in' | translate"
+        >
+          <mat-icon>timer</mat-icon>
+          <span>
+            {{ 'auth.otp_expires_in' | translate }}: <strong>{{ formattedCountdown }}</strong>
+          </span>
+        </div>
+      } @else {
+        <div class="otp-expired" role="alert">
+          <mat-icon>timer_off</mat-icon>
+          <span>{{ 'auth.otp_expired' | translate }}</span>
+        </div>
+      }
+
+      <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()" novalidate>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>{{ 'auth.otp_code' | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="otp"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            placeholder="000000"
+            maxlength="6"
+            [attr.disabled]="otpExpired ? true : null"
+          />
+          <mat-icon matSuffix>lock</mat-icon>
+          @if (otpForm.get('otp')?.invalid && otpForm.get('otp')?.touched) {
+            <mat-error>{{ 'auth.otp_required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading || otpExpired"
+          class="submit-btn"
+        >
+          @if (loading) {
+            <mat-icon class="spin">sync</mat-icon>
+          } @else {
+            <mat-icon>verified_user</mat-icon>
+          }
+          {{ (loading ? 'auth.verifying' : 'auth.verify_otp') | translate }}
+        </button>
+      </form>
+
+      <div class="otp-actions">
+        <button
+          mat-button
+          type="button"
+          class="resend-btn"
+          [disabled]="resendCooldownSeconds > 0 || loading"
+          (click)="resendOtp()"
+        >
+          <mat-icon>refresh</mat-icon>
+          @if (resendCooldownSeconds > 0) {
+            {{ 'auth.resend_in' | translate }} {{ resendCooldownSeconds }}s
+          } @else {
+            {{ 'auth.resend_code' | translate }}
+          }
+        </button>
+
+        <button
+          mat-button
+          type="button"
+          class="back-btn"
+          (click)="backToIdentifier()"
+        >
+          <mat-icon>arrow_back</mat-icon>
+          {{ 'auth.change_identifier' | translate }}
+        </button>
+      </div>
+    }
+
+    <p class="auth-card__footer text-muted">
+      {{ 'auth.or' | translate }}
+      <a routerLink="/dashboard/login">{{ 'auth.login_with_email_password' | translate }}</a>
+    </p>
+  </div>
+</div>

@@ -22,7 +22,7 @@ export class ContactService {
     private mailQueue: MailQueueService,
   ) {}
 
-  async sendMessage(dto: ContactDto): Promise<{ success: boolean }> {
+  async sendMessage(dto: ContactDto, meta?: { ip?: string; location?: string }): Promise<{ success: boolean }> {
     // Prevent obvious duplicates: same email+message within last 60s
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
     const duplicate = await this.contactModel.findOne({
@@ -49,6 +49,8 @@ export class ContactService {
         subject: dto.subject,
         message: dto.message,
         contactId: String(created._id),
+        ip: meta?.ip,
+        location: meta?.location,
       });
     } catch (err) {
       this.logger.error('Failed to enqueue mail job', err as any);
@@ -62,11 +64,25 @@ export class ContactService {
     return this.contactModel.countDocuments().exec();
   }
 
+  async countUnread(): Promise<number> {
+    return this.contactModel.countDocuments({ read: false }).exec();
+  }
+
   async findAll(limit = 20) {
     return this.contactModel
       .find()
       .sort({ createdAt: -1 })
       .limit(limit)
+      .exec();
+  }
+
+  /** Fetch all messages received today (since midnight UTC of the current server date). */
+  async findToday() {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    return this.contactModel
+      .find({ createdAt: { $gte: start } })
+      .sort({ createdAt: -1 })
       .exec();
   }
 
@@ -97,6 +113,52 @@ export class ContactService {
   async deleteMany(ids: string[]): Promise<{ success: boolean; deleted: number }> {
     const result = await this.contactModel.deleteMany({ _id: { $in: ids } }).exec();
     return { success: true, deleted: result.deletedCount };
+  }
+
+  /** Send a reply email to a contact and record it on the document. */
+  async replyToContact(id: string, replyText: string): Promise<ContactMessageDocument> {
+    const contact = await this.contactModel.findById(id).exec();
+    if (!contact) throw new NotFoundException('Contact message not found');
+
+    const html = `
+      <p>Hi <strong>${contact.name}</strong>,</p>
+      <p>${replyText.replace(/\n/g, '<br>')}</p>
+      <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0"/>
+      <p style="color:#64748b;font-size:0.85rem;">
+        This is a reply to your message: <em>"${contact.subject}"</em>
+      </p>`;
+
+    await this.mailService.send({
+      to: contact.email,
+      subject: `Re: ${contact.subject}`,
+      html,
+      text: replyText,
+    });
+
+    contact.repliedAt = new Date();
+    contact.replyText = replyText;
+    contact.read = true;
+    return contact.save();
+  }
+
+  /** Paginated list for the admin dashboard — avoids returning unbounded collections. */
+  async findPaginated(opts: { page: number; limit: number; unreadOnly?: boolean }): Promise<{
+    data: ContactMessageDocument[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    const { page = 1, limit = 20, unreadOnly } = opts;
+    const safeLimit = Math.min(Math.max(limit, 1), 100);
+    const skip = (Math.max(page, 1) - 1) * safeLimit;
+    const filter = unreadOnly ? { read: false } : {};
+
+    const [data, total] = await Promise.all([
+      this.contactModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).exec(),
+      this.contactModel.countDocuments(filter).exec(),
+    ]);
+
+    return { data, total, page: Math.max(page, 1), totalPages: Math.ceil(total / safeLimit) };
   }
 
   async countByDay(days = 7): Promise<ContactCountByDay[]> {
