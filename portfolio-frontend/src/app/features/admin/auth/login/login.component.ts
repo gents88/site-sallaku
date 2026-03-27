@@ -115,7 +115,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.loading = false;
       this.authModal.closeLogin();
       this.authModal.closeAccount();
-      this.router.navigate(['/admin']);
+      this.router.navigate(['/dashboard']);
     }, 80);
   }
 

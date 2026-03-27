@@ -11,6 +11,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
+import { finalize, timeout } from 'rxjs';
 import { ExperiencesService } from '../../../core/services/experiences.service';
 import { Experience } from '../../../core/models/experience.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -56,9 +57,12 @@ export class ExperiencesManageComponent implements OnInit {
 
   load(): void {
     this.loading = true;
-    this.experiencesService.getAll().subscribe({
+    this.experiencesService.getAll().pipe(
+      timeout(15000),
+      finalize(() => { this.loading = false; }),
+    ).subscribe({
       next: e => { this.experiences = e; this.loading = false; },
-      error: () => { this.loading = false; },
+      error: () => {},
     });
   }
 

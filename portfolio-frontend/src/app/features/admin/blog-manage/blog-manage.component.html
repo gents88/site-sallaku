@@ -1,7 +1,7 @@
 <div class="admin-page container">
   <header class="admin-header">
     <div>
-      <a routerLink="/admin" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
       <h1>Blog Posts</h1>
     </div>
     <button mat-raised-button color="primary" (click)="openCreate()">
@@ -11,165 +11,292 @@
 
   @if (showForm) {
     <div class="card form-panel">
+
+      <!-- Form header -->
       <div class="form-panel__header">
         <div>
           <h2>{{ editingId ? 'Edit' : 'New' }} Post</h2>
-          <p>Follow the guided flow: upload a PDF, review the generated content, then publish or save as draft.</p>
+          <p class="helper-copy">Italian content is required. Translations are optional — use the Translate button to fill them automatically.</p>
         </div>
-        <div class="stepper">
-          <span class="stepper__item stepper__item--active">1. Upload</span>
-          <span class="stepper__item" [class.stepper__item--active]="generatingDraft || !!sourceSummary">2. Process</span>
-          <span class="stepper__item" [class.stepper__item--active]="!!form.get('title')?.value">3. Review</span>
-          <span class="stepper__item" [class.stepper__item--active]="!saving">4. Publish</span>
+        <div class="form-panel__header-actions">
+          @if (autosaveStatus === 'saving') {
+            <span class="autosave-indicator autosave-indicator--saving">
+              <mat-icon>sync</mat-icon> Saving draft…
+            </span>
+          } @else if (autosaveStatus === 'saved') {
+            <span class="autosave-indicator autosave-indicator--saved">
+              <mat-icon>check_circle</mat-icon> Saved {{ autosaveTime | date:'HH:mm' }}
+            </span>
+          } @else if (autosaveStatus === 'error') {
+            <span class="autosave-indicator autosave-indicator--error">
+              <mat-icon>error</mat-icon> Auto-save failed
+            </span>
+          }
+          <button mat-icon-button type="button"
+                  (click)="togglePreview()"
+                  [matTooltip]="showPreview ? 'Hide preview' : 'Show preview'">
+            <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
         </div>
       </div>
 
-      <app-blog-pdf-upload
-        [loading]="generatingDraft"
-        [progress]="uploadProgress"
-        [processing]="processingDraft"
-        (generateRequested)="generateDraft($event)"
-      />
-
-      @if (sourceSummary || generationWarnings.length) {
-        <div class="generation-summary">
-          @if (sourceSummary) {
-            <div class="generation-summary__meta">
-              <span class="generation-summary__label">Step 2</span>
-              <h3>Generated from {{ sourceSummary.fileName }}</h3>
-              <p>
-                {{ sourceSummary.pageCount }} pages •
-                {{ sourceSummary.wordCount }} words •
-                {{ (sourceSummary.sizeBytes / 1024 / 1024).toFixed(2) }} MB
-              </p>
-            </div>
-          }
-
-          @if (generationWarnings.length) {
-            <ul class="generation-summary__warnings">
-              @for (warning of generationWarnings; track warning) {
-                <li>{{ warning }}</li>
-              }
-            </ul>
-          }
+      <!-- PDF import (simple extract — no AI required) -->
+      <div class="pdf-section">
+        <div class="pdf-section__header">
+          <span class="pdf-section__label"><mat-icon>picture_as_pdf</mat-icon> Import from PDF</span>
+          <span class="pdf-section__hint">Extract text, review, then translate</span>
         </div>
+
+        @if (!pdfPreview) {
+          <div class="pdf-section__upload">
+            <input type="file" accept=".pdf,application/pdf" hidden #pdfFileInput (change)="onPdfFileSelected($event)" />
+            <button mat-stroked-button type="button" (click)="pdfFileInput.click()" [disabled]="extractingPdf">
+              <mat-icon>upload_file</mat-icon>
+              {{ extractingPdf ? 'Extracting text…' : 'Upload PDF' }}
+            </button>
+            @if (extractingPdf) {
+              <mat-progress-bar mode="indeterminate" class="pdf-progress"></mat-progress-bar>
+            }
+          </div>
+        } @else {
+          <div class="pdf-preview">
+            <div class="pdf-preview__meta">
+              <mat-icon>description</mat-icon>
+              <strong>{{ pdfPreview.fileName }}</strong>
+              <span class="text-muted">{{ pdfPreview.pageCount }} pages · {{ pdfPreview.wordCount }} words</span>
+              <button mat-icon-button type="button" (click)="clearPdfPreview()" matTooltip="Remove PDF preview">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            <h4 class="pdf-preview__title">{{ pdfPreview.inferredTitle }}</h4>
+            <div class="pdf-preview__body">
+              @for (para of pdfPreview.paragraphs; track $index) {
+                <p>{{ para }}</p>
+              }
+            </div>
+            <button mat-stroked-button type="button" color="primary" (click)="applyPdfContent()">
+              <mat-icon>text_snippet</mat-icon> Use as Italian content
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- AI generation (optional, behind feature flag) -->
+      @if (pdfGenerationEnabled) {
+        <app-blog-pdf-upload
+          [loading]="generatingDraft"
+          [progress]="uploadProgress"
+          [processing]="processingDraft"
+          (generateRequested)="generateDraft($event)"
+        />
       }
 
-      <form [formGroup]="form" (ngSubmit)="save()" novalidate>
-        <div class="form-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Title</mat-label>
-            <input matInput formControlName="title" />
-            @if (form.get('title')?.invalid && form.get('title')?.touched) {
-              <mat-error>Required</mat-error>
-            }
-          </mat-form-field>
+      <form [formGroup]="form" novalidate>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Language</mat-label>
-            <mat-select formControlName="language">
-              <mat-option value="it">Italiano</mat-option>
-              <mat-option value="en">English</mat-option>
-              <mat-option value="sq">Shqip</mat-option>
-            </mat-select>
+        <!-- ── Language tabs + Translate ──────────────────────────────── -->
+        <div class="lang-tabs">
+          <div class="lang-tabs__buttons">
+            <button type="button" class="lang-tab" [class.active]="activeTab === 'it'" (click)="switchTab('it')">
+              🇮🇹 IT
+            </button>
+            <button type="button" class="lang-tab" [class.active]="activeTab === 'en'" (click)="switchTab('en')">
+              🇬🇧 EN
+              @if (hasEnTranslation) { <span class="lang-dot"></span> }
+            </button>
+            <button type="button" class="lang-tab" [class.active]="activeTab === 'sq'" (click)="switchTab('sq')">
+              🇦🇱 SQ
+              @if (hasSqTranslation) { <span class="lang-dot"></span> }
+            </button>
+          </div>
+          <button mat-stroked-button type="button" class="translate-btn"
+                  (click)="translateAll()" [disabled]="translating">
+            <mat-icon>translate</mat-icon>
+            {{ translating ? 'Translating…' : 'Translate IT → EN, SQ' }}
+          </button>
+        </div>
+
+        <!-- ── Title for active language ──────────────────────────────── -->
+        <mat-form-field appearance="outline" class="full-width title-field">
+          <mat-label>Title {{ activeTab === 'it' ? '(IT) *' : '(' + activeTab.toUpperCase() + ')' }}</mat-label>
+          <input matInput [formControl]="activeTitleControl" placeholder="Article title…" />
+          @if (activeTab === 'it' && form.get('title')?.invalid && form.get('title')?.touched) {
+            <mat-error>Title is required (min 3 characters)</mat-error>
+          }
+        </mat-form-field>
+
+        <!-- ── Editor toolbar + Content for active language ───────────── -->
+        <div class="editor-wrapper">
+          <div class="editor-toolbar" role="toolbar" aria-label="Formatting options">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('bold')" matTooltip="Bold">
+              <mat-icon>format_bold</mat-icon>
+            </button>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('italic')" matTooltip="Italic">
+              <mat-icon>format_italic</mat-icon>
+            </button>
+            <span class="toolbar-sep"></span>
+            <button type="button" class="toolbar-btn toolbar-btn--text" (click)="insertFormat('h2')" matTooltip="Heading 2">H2</button>
+            <button type="button" class="toolbar-btn toolbar-btn--text" (click)="insertFormat('h3')" matTooltip="Heading 3">H3</button>
+            <span class="toolbar-sep"></span>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('ul')" matTooltip="Bullet list">
+              <mat-icon>format_list_bulleted</mat-icon>
+            </button>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('ol')" matTooltip="Numbered list">
+              <mat-icon>format_list_numbered</mat-icon>
+            </button>
+            <span class="toolbar-sep"></span>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('code')" matTooltip="Inline code">
+              <mat-icon>code</mat-icon>
+            </button>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('pre')" matTooltip="Code block">
+              <mat-icon>terminal</mat-icon>
+            </button>
+            <span class="toolbar-sep"></span>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('blockquote')" matTooltip="Blockquote">
+              <mat-icon>format_quote</mat-icon>
+            </button>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('link')" matTooltip="Link">
+              <mat-icon>link</mat-icon>
+            </button>
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('hr')" matTooltip="Divider">
+              <mat-icon>horizontal_rule</mat-icon>
+            </button>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width editor-field">
+            <mat-label>Content {{ activeTab === 'it' ? '(IT) *' : '(' + activeTab.toUpperCase() + ')' }}</mat-label>
+            <textarea matInput [formControl]="activeContentControl" rows="18"
+                      #contentTextarea
+                      placeholder="<p>Start writing…</p>">
+            </textarea>
+            @if (activeTab === 'it' && form.get('content')?.invalid && form.get('content')?.touched) {
+              <mat-error>Content is required (min 10 characters)</mat-error>
+            }
+            <mat-hint>HTML content — use the toolbar above for formatting</mat-hint>
           </mat-form-field>
         </div>
 
+        <!-- Preview panel -->
+        @if (showPreview) {
+          <div class="preview-panel" [class.preview-panel--sq]="activeTab === 'sq'">
+            <div class="preview-panel__header">
+              <h3>
+                <span class="preview-lang-badge preview-lang-badge--{{ activeTab }}">
+                  {{ previewLangInfo.flag }} {{ previewLangInfo.name }}
+                </span>
+                Preview
+              </h3>
+              <button mat-icon-button type="button" (click)="togglePreview()" matTooltip="Close preview">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            @if (form.get('coverImage')?.value) {
+              <img class="preview-panel__image"
+                   [src]="form.get('coverImage')?.value"
+                   [alt]="activeTitleControl.value || 'Cover image'" />
+            }
+            <h1 class="preview-panel__title">{{ activeTitleControl.value }}</h1>
+            <div class="preview-panel__content" #previewContent [innerHTML]="activeContentControl.value"></div>
+          </div>
+        }
+
+        <!-- Excerpt for active language -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Subtitle / Description</mat-label>
-          <textarea matInput formControlName="subtitle" rows="2"></textarea>
+          <mat-label>Excerpt ({{ activeTab.toUpperCase() }})</mat-label>
+          <textarea matInput [formControl]="activeExcerptControl" rows="2"
+                    placeholder="Auto-generated from content if left empty"></textarea>
         </mat-form-field>
 
-        <div class="form-row">
-          <mat-form-field appearance="outline">
-            <mat-label>SEO Slug</mat-label>
-            <input matInput formControlName="slug" placeholder="seo-friendly-url" />
+        <!-- ── Advanced options ──────────────────────────────────────── -->
+        <details class="form-advanced">
+          <summary>
+            <mat-icon class="summary-icon">tune</mat-icon>
+            Advanced options
+            <span class="hint">— optional, auto-filled if empty</span>
+          </summary>
+
+          <!-- Tags -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tags</mat-label>
+            <mat-chip-grid #tagGrid>
+              @for (tag of tags; track tag) {
+                <mat-chip [removable]="true" (removed)="removeTag(tag)">
+                  #{{ tag }}<button matChipRemove><mat-icon>cancel</mat-icon></button>
+                </mat-chip>
+              }
+            </mat-chip-grid>
+            <input [matChipInputFor]="tagGrid"
+                   [matChipInputSeparatorKeyCodes]="separatorKeys"
+                   (matChipInputTokenEnd)="addTag($event)"
+                   placeholder="e.g. typescript, nestjs… (Enter or comma)" />
+            <mat-hint>Press Enter or comma to add a tag</mat-hint>
           </mat-form-field>
 
-          <div class="image-upload">
-            <label class="image-upload__label">Optional manual cover image</label>
-            <label class="image-upload__picker">
-              <mat-icon>image</mat-icon>
-              <span>Upload image</span>
-              <input type="file" accept="image/*" (change)="onCoverImageSelected($event)" />
-            </label>
-            <small>Supported: image files up to {{ coverImageMaxSizeMb }} MB.</small>
+          <!-- Cover Image -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Cover Image URL</mat-label>
+            <input matInput formControlName="coverImage" placeholder="https://example.com/cover.jpg" />
+          </mat-form-field>
+
+          <!-- Subtitle + Slug -->
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Subtitle</mat-label>
+              <textarea matInput formControlName="subtitle" rows="2" placeholder="Optional subtitle"></textarea>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>URL Slug</mat-label>
+              <input matInput formControlName="slug"
+                     (input)="onSlugManualEdit()"
+                     placeholder="auto-generated-from-title" />
+              <mat-hint>Auto-generated from title</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- SEO -->
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Meta Title (SEO)</mat-label>
+              <input matInput formControlName="metaTitle" placeholder="Defaults to post title" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Meta Description (SEO)</mat-label>
+              <input matInput formControlName="metaDescription" placeholder="Defaults to excerpt" />
+            </mat-form-field>
+          </div>
+
+          @if (featuredImagePrompt) {
+            <p class="helper-copy">
+              <mat-icon style="font-size:1rem;vertical-align:middle;margin-right:0.25rem">auto_awesome</mat-icon>
+              Image suggestion: {{ featuredImagePrompt }}
+            </p>
+          }
+        </details>
+
+        <!-- ── Actions ─────────────────────────────────────────────── -->
+        <div class="form-actions">
+          <button mat-button type="button" (click)="closeForm()">Cancel</button>
+          <div class="form-actions__right">
+            <button mat-icon-button type="button"
+                    (click)="togglePreview()"
+                    [matTooltip]="showPreview ? 'Hide preview' : 'Show preview'">
+              <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <button mat-stroked-button type="button" (click)="saveDraft()" [disabled]="saving">
+              <mat-icon>save</mat-icon>
+              {{ (saving && !form.get('published')?.value) ? 'Saving…' : 'Save Draft' }}
+            </button>
+            <button mat-raised-button color="primary" type="button" (click)="publish()" [disabled]="saving">
+              <mat-icon>publish</mat-icon>
+              {{ saving ? 'Publishing…' : 'Publish' }}
+            </button>
           </div>
         </div>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Content (Markdown / HTML)</mat-label>
-          <textarea matInput formControlName="content" rows="12"></textarea>
-          @if (form.get('content')?.invalid && form.get('content')?.touched) {
-            <mat-error>Required</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Excerpt</mat-label>
-          <textarea matInput formControlName="excerpt" rows="2"></textarea>
-        </mat-form-field>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline">
-            <mat-label>Cover Image URL</mat-label>
-            <input matInput formControlName="coverImage" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Meta Title (SEO)</mat-label>
-            <input matInput formControlName="metaTitle" />
-          </mat-form-field>
-        </div>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Meta Description (SEO)</mat-label>
-          <input matInput formControlName="metaDescription" />
-        </mat-form-field>
-
-        @if (featuredImagePrompt) {
-          <p class="helper-copy">Featured image suggestion: {{ featuredImagePrompt }}</p>
-        }
-
-        <!-- Tags -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Tags (press Enter)</mat-label>
-          <mat-chip-grid #tagGrid>
-            @for (tag of tags; track tag) {
-              <mat-chip [removable]="true" (removed)="removeTag(tag)">
-                #{{ tag }}<button matChipRemove><mat-icon>cancel</mat-icon></button>
-              </mat-chip>
-            }
-          </mat-chip-grid>
-          <input [matChipInputFor]="tagGrid" [matChipInputSeparatorKeyCodes]="separatorKeys"
-                 (matChipInputTokenEnd)="addTag($event)" />
-        </mat-form-field>
-
-        <mat-checkbox formControlName="published">Publish immediately</mat-checkbox>
-
-        @if (form.get('content')?.value) {
-          <section class="preview-panel">
-            <div class="preview-panel__header">
-              <div>
-                <span class="generation-summary__label">Step 3</span>
-                <h3>Preview</h3>
-              </div>
-            </div>
-            @if (form.get('coverImage')?.value) {
-              <img class="preview-panel__image" [src]="form.get('coverImage')?.value" [alt]="form.get('title')?.value || 'Cover image preview'" />
-            }
-            <div class="preview-panel__content" [innerHTML]="form.get('content')?.value"></div>
-          </section>
-        }
-
-        <div class="form-actions">
-          <button mat-button type="button" (click)="closeForm()">Cancel</button>
-          <button mat-raised-button color="primary" type="submit" [disabled]="saving">
-            {{ saving ? 'Saving…' : 'Save Post' }}
-          </button>
-        </div>
       </form>
     </div>
   }
+
+  <!-- ── Posts list ──────────────────────────────────────────────── -->
 
   @if (loading) {
     <app-loading-spinner />
@@ -187,17 +314,22 @@
             @if (post.subtitle) {
               <p class="text-muted">{{ post.subtitle }}</p>
             }
-            <p class="text-muted">{{ post.excerpt | slice:0:100 }}</p>
-            <div style="margin-top:0.5rem">
-              <span class="badge" [style.color]="post.published ? 'var(--color-success)' : 'var(--color-warning)'">
+            <p class="text-muted">{{ post.excerpt | slice:0:120 }}</p>
+            <div class="list-item__badges">
+              <span class="status-badge"
+                    [class.status-badge--published]="post.published"
+                    [class.status-badge--draft]="!post.published">
                 {{ post.published ? 'Published' : 'Draft' }}
               </span>
-              <span class="badge badge--language">{{ post.language.toUpperCase() }}</span>
+              <span class="badge badge--language">{{ (post.language || 'it').toUpperCase() }}</span>
+              <span class="badge badge--views">
+                <mat-icon>visibility</mat-icon> {{ post.viewCount ?? 0 }}
+              </span>
             </div>
           </div>
           <div class="list-item__actions">
-            <button mat-icon-button (click)="openEdit(post)"><mat-icon>edit</mat-icon></button>
-            <button mat-icon-button color="warn" (click)="delete(post._id)"><mat-icon>delete</mat-icon></button>
+            <button mat-icon-button (click)="openEdit(post)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(post._id)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
           </div>
         </div>
       }

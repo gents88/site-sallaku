@@ -4,7 +4,7 @@ import { fromEvent, merge, Subscription, timer } from 'rxjs';
 import { AuthModalService } from './auth-modal.service';
 import { AuthService } from './auth.service';
 
-const LAST_ACTIVITY_KEY = 'portfolio_last_activity';
+export const LAST_ACTIVITY_KEY = 'portfolio_last_activity';
 
 @Injectable({ providedIn: 'root' })
 export class InactivityService {
@@ -66,7 +66,7 @@ export class InactivityService {
 
     this.authModal.closeAll();
     this.stopTracking({ clearSharedState: true });
-    this.auth.logout('/admin/login');
+    this.auth.logout('/dashboard/login');
   }
 
   private bindActivityEvents(): void {
@@ -75,6 +75,8 @@ export class InactivityService {
       fromEvent(this.document, 'click', { passive: true }),
       fromEvent(this.document, 'keydown'),
       fromEvent(window, 'scroll', { passive: true }),
+      fromEvent(this.document, 'touchstart', { passive: true }),
+      fromEvent(this.document, 'touchmove', { passive: true }),
     );
 
     this.subscriptions.add(
@@ -126,6 +128,14 @@ export class InactivityService {
     const sharedActivityAt = this.readSharedActivity();
 
     if (sharedActivityAt === null) {
+      this.refreshSession(Date.now(), true);
+      return;
+    }
+
+    const remainingMs = sharedActivityAt + this.timeoutMs - Date.now();
+    if (remainingMs <= 0) {
+      // Stale activity key from a previous session — start fresh rather than
+      // immediately logging the user out right after login.
       this.refreshSession(Date.now(), true);
       return;
     }
