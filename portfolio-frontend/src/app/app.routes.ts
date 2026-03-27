@@ -30,11 +30,13 @@ export const routes: Routes = [
   },
   {
     path: 'projects',
+    data: { preload: true },
     loadComponent: () =>
       import('./features/projects/projects-list/projects-list.component').then(m => m.ProjectsListComponent),
   },
   {
     path: 'blog',
+    data: { preload: true },
     loadComponent: () =>
       import('./features/blog/blog-list/blog-list.component').then(m => m.BlogListComponent),
   },

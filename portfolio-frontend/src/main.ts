@@ -7,6 +7,8 @@ import * as Prism from 'prismjs';
 // setting it here in the initial bundle guarantees it exists for every chunk.
 // globalThis works in both browser and Node.js (SSR) contexts.
 (globalThis as any).Prism = (Prism as any).default ?? Prism;
-console.log('%c[APP] Build: 2026-03-24 v6', 'color: #4CAF50; font-weight: bold');
+import { version } from '../package.json';
+const buildDate = new Date().toISOString();
+console.log(`%c[APP] Build: ${buildDate} version: 13`, 'color: #4CAF50; font-weight: bold');
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));

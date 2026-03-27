@@ -511,5 +511,33 @@
   },
   "blog": {
     "readMore": "Lexo më shumë"
+  },
+  "chatbot_ui": {
+    "title": "AI Assistant",
+    "online": "Online",
+    "typing": "Duke shkruar…",
+    "placeholder": "Shkruaj një mesazh…",
+    "welcome_title": "Përshëndetje! 👋",
+    "welcome_text": "Jam asistenti AI në portfolion e <strong>Gent Sallaku</strong>. Pyetëni për projektet, aftësitë ose shërbimet e tij!",
+    "info_banner": "Gent i lexon mesazhet e dërguara përmes chatbot-it. Nëse dëshironi një përgjigje, ju lutemi përdorni seksionin 'Dërgo Email'.",
+    "info_cta": "Shko te seksioni Email →",
+    "close": "Mbyll bisedën",
+    "open": "Hap asistentin",
+    "clear": "Fshi bisedën",
+    "send": "Dërgo mesazh",
+    "back": "Kthehu te biseda",
+    "transcript_title": "Merr transkriptin",
+    "transcript_desc": "Fut emailin tënd dhe do të dërgojmë bisedën e plotë.",
+    "transcript_email_label": "Adresa juaj e emailit",
+    "transcript_send": "Dërgo transkriptin",
+    "transcript_sending": "Duke dërguar…",
+    "transcript_success": "Transkripti u dërgua me sukses!",
+    "transcript_error": "Dërgimi dështoi. Ju lutemi provoni përsëri.",
+    "email_error": "Ju lutemi vendosni një adresë emaili të vlefshme.",
+    "server_error": "Nuk mund të arrij serverin tani. Ju lutemi provoni përsëri.",
+    "chip_who": "👋 Kush është Gent?",
+    "chip_skills": "🛠 Cilat janë aftësitë e tij?",
+    "chip_projects": "📁 Trego projektet e tij",
+    "chip_contact": "📬 Si mund ta kontaktoj?"
   }
 }

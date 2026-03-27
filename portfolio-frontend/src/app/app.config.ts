@@ -1,5 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling, withPreloading, PreloadAllModules, withHashLocation } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling, withPreloading, withHashLocation } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -7,7 +7,9 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { cacheInterceptor } from './core/interceptors/cache.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { SelectivePreloadStrategy } from './core/strategies/selective-preload.strategy';
 import { environment } from '../environments/environment';
 import { resolveInitialLanguage } from './core/services/language.service';
 
@@ -21,9 +23,9 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
       withViewTransitions({ skipInitialTransition: true }),
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
-      withPreloading(PreloadAllModules),
+      withPreloading(SelectivePreloadStrategy),
     ),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor]), withFetch()),
+    provideHttpClient(withInterceptors([authInterceptor, cacheInterceptor, errorInterceptor]), withFetch()),
     provideAnimationsAsync(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: environment.production,

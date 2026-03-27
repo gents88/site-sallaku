@@ -511,5 +511,33 @@
   },
   "blog": {
     "readMore": "Read more"
+  },
+  "chatbot_ui": {
+    "title": "AI Assistant",
+    "online": "Online",
+    "typing": "Typing…",
+    "placeholder": "Type a message…",
+    "welcome_title": "Hi there! 👋",
+    "welcome_text": "I'm the AI assistant on <strong>Gent Sallaku's</strong> portfolio. Ask me anything about his projects, skills, or services!",
+    "info_banner": "Gent reads messages sent through the chatbot. If you would like a response, please use the 'Send Email' section.",
+    "info_cta": "Go to the Email section →",
+    "close": "Close chat",
+    "open": "Open AI assistant",
+    "clear": "Clear conversation",
+    "send": "Send message",
+    "back": "Back to chat",
+    "transcript_title": "Receive transcript",
+    "transcript_desc": "Enter your email and we'll send you the full conversation.",
+    "transcript_email_label": "Your email address",
+    "transcript_send": "Send transcript",
+    "transcript_sending": "Sending…",
+    "transcript_success": "Transcript sent successfully!",
+    "transcript_error": "Failed to send. Please try again later.",
+    "email_error": "Please enter a valid email address.",
+    "server_error": "I couldn't reach the server right now. Please try again in a moment.",
+    "chip_who": "👋 Who is Gent?",
+    "chip_skills": "🛠 What are his skills?",
+    "chip_projects": "📁 Show me his projects",
+    "chip_contact": "📬 How can I contact him?"
   }
 }

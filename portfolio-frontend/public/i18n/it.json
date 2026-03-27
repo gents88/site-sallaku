@@ -511,5 +511,33 @@
   },
   "blog": {
     "readMore": "Leggi di più"
+  },
+  "chatbot_ui": {
+    "title": "AI Assistant",
+    "online": "Online",
+    "typing": "Digitando…",
+    "placeholder": "Scrivi un messaggio…",
+    "welcome_title": "Ciao! 👋",
+    "welcome_text": "Sono l'assistente AI nel portfolio di <strong>Gent Sallaku</strong>. Chiedimi dei suoi progetti, competenze o servizi!",
+    "info_banner": "Gent legge i messaggi inviati tramite chatbot. Se desideri ricevere una risposta, ti invitiamo a utilizzare la sezione 'Invia Email'.",
+    "info_cta": "Vai alla sezione Email →",
+    "close": "Chiudi chat",
+    "open": "Apri assistente",
+    "clear": "Cancella conversazione",
+    "send": "Invia messaggio",
+    "back": "Torna alla chat",
+    "transcript_title": "Ricevi trascrizione",
+    "transcript_desc": "Inserisci la tua email e ti invieremo la conversazione completa.",
+    "transcript_email_label": "Indirizzo email",
+    "transcript_send": "Invia trascrizione",
+    "transcript_sending": "Invio in corso…",
+    "transcript_success": "Trascrizione inviata con successo!",
+    "transcript_error": "Impossibile inviare. Riprova più tardi.",
+    "email_error": "Inserisci un indirizzo email valido.",
+    "server_error": "Impossibile raggiungere il server. Riprova tra un momento.",
+    "chip_who": "👋 Chi è Gent?",
+    "chip_skills": "🛠 Quali sono le sue competenze?",
+    "chip_projects": "📁 Mostrami i suoi progetti",
+    "chip_contact": "📬 Come posso contattarlo?"
   }
 }

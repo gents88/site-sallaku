@@ -88,9 +88,20 @@
 </head>
 <body>
     <a class="skip-link" href="#homepage" data-i18n="skip.link">Vai al contenuto principale</a>
-    <div class="wip-banner" role="status" style="background:#ffdd57;color:#000;padding:8px;text-align:center;font-weight:600;">
+    <div class="wip-banner" id="wipBanner" role="status" style="background:#ffdd57;color:#000;padding:8px 40px 8px 8px;text-align:center;font-weight:600;position:relative;">
         <span data-i18n="banner.wip">Sito in costruzione — Work in progress</span>
+        <button
+            onclick="document.getElementById('wipBanner').style.display='none';sessionStorage.setItem('wipDismissed','1');"
+            aria-label="Chiudi"
+            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px;color:#000;">
+            &times;
+        </button>
     </div>
+    <script>
+      if (sessionStorage.getItem('wipDismissed')) {
+        document.getElementById('wipBanner').style.display = 'none';
+      }
+    </script>
 
     <!-- ═══════════ NAVBAR ═══════════ -->
     <nav class="navbar" id="navbar">

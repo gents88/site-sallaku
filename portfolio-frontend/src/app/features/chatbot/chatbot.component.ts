@@ -8,25 +8,29 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   inject,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotService, ChatMessage } from '../../core/services/chatbot.service';
+import { LanguageService } from '../../core/services/language.service';
 
 type PanelView = 'chat' | 'transcript';
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <!-- ── Floating toggle button ──────────────────────── -->
     <button
       class="cb-fab"
       (click)="chatbot.toggleOpen()"
-      [attr.aria-label]="isOpen ? 'Close chat' : 'Open AI assistant'"
+      [attr.aria-label]="isOpen ? ('chatbot_ui.close' | translate) : ('chatbot_ui.open' | translate)"
       [attr.aria-expanded]="isOpen"
       aria-haspopup="dialog"
     >
@@ -50,7 +54,7 @@ type PanelView = 'chat' | 'transcript';
         class="cb-panel"
         role="dialog"
         aria-modal="true"
-        aria-label="AI Assistant"
+        [attr.aria-label]="'chatbot_ui.title' | translate"
       >
         <!-- Header -->
         <div class="cb-header">
@@ -61,15 +65,15 @@ type PanelView = 'chat' | 'transcript';
               </svg>
             </span>
             <div>
-              <span class="cb-header__title">AI Assistant</span>
+              <span class="cb-header__title">{{ 'chatbot_ui.title' | translate }}</span>
               <span class="cb-header__subtitle">
-                @if (isLoading) { Typing… } @else { Online }
+                @if (isLoading) { {{ 'chatbot_ui.typing' | translate }} } @else { {{ 'chatbot_ui.online' | translate }} }
               </span>
             </div>
           </div>
           <div class="cb-header__actions">
             @if (panelView === 'chat' && chatbot.hasMessages) {
-              <button class="cb-icon-btn" (click)="showTranscriptPanel()" title="Send transcript via email" aria-label="Send transcript via email">
+              <button class="cb-icon-btn" (click)="showTranscriptPanel()" [title]="'chatbot_ui.transcript_title' | translate" [attr.aria-label]="'chatbot_ui.transcript_title' | translate">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="17" height="17" aria-hidden="true">
                   <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"/>
                   <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"/>
@@ -77,13 +81,13 @@ type PanelView = 'chat' | 'transcript';
               </button>
             }
             @if (chatbot.hasMessages) {
-              <button class="cb-icon-btn" (click)="clearChat()" title="Clear conversation" aria-label="Clear conversation">
+              <button class="cb-icon-btn" (click)="clearChat()" [title]="'chatbot_ui.clear' | translate" [attr.aria-label]="'chatbot_ui.clear' | translate">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="17" height="17" aria-hidden="true">
                   <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/>
                 </svg>
               </button>
             }
-            <button class="cb-icon-btn" (click)="chatbot.close()" aria-label="Close chat">
+            <button class="cb-icon-btn" (click)="chatbot.close()" [attr.aria-label]="'chatbot_ui.close' | translate">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd"/>
               </svg>
@@ -91,9 +95,24 @@ type PanelView = 'chat' | 'transcript';
           </div>
         </div>
 
+        <!-- ── Info banner (always visible, between header and messages) ── -->
+        @if (panelView === 'chat') {
+          <div class="cb-info-banner" role="note" [attr.aria-label]="'chatbot_ui.info_banner' | translate">
+            <svg class="cb-info-banner__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd"/>
+            </svg>
+            <div class="cb-info-banner__body">
+              <p class="cb-info-banner__text">{{ 'chatbot_ui.info_banner' | translate }}</p>
+              <a class="cb-info-banner__cta" routerLink="/contact" (click)="chatbot.close()">
+                {{ 'chatbot_ui.info_cta' | translate }}
+              </a>
+            </div>
+          </div>
+        }
+
         <!-- ── Chat View ───────────────────────────────── -->
         @if (panelView === 'chat') {
-          <div class="cb-messages" #messagesContainer role="log" aria-live="polite" aria-label="Chat messages">
+          <div class="cb-messages" #messagesContainer role="log" aria-live="polite" [attr.aria-label]="'chatbot_ui.title' | translate">
             @if (messages.length === 0 && !isLoading) {
               <div class="cb-welcome">
                 <div class="cb-welcome__icon" aria-hidden="true">
@@ -101,12 +120,10 @@ type PanelView = 'chat' | 'transcript';
                     <path d="M12 2C6.477 2 2 6.115 2 11.188c0 2.756 1.274 5.226 3.294 6.934L4 22l4.832-2.118A11.08 11.08 0 0 0 12 20.375c5.523 0 10-4.115 10-9.187S17.523 2 12 2Z"/>
                   </svg>
                 </div>
-                <h3 class="cb-welcome__title">Hi there! 👋</h3>
-                <p class="cb-welcome__text">
-                  I'm the AI assistant on <strong>Gent Sallaku's</strong> portfolio. Ask me anything about his projects, skills, or services!
-                </p>
-                <div class="cb-chips" role="list" aria-label="Suggested questions">
-                  @for (chip of suggestedQuestions; track chip) {
+                <h3 class="cb-welcome__title">{{ 'chatbot_ui.welcome_title' | translate }}</h3>
+                <p class="cb-welcome__text" [innerHTML]="'chatbot_ui.welcome_text' | translate"></p>
+                <div class="cb-chips" role="list" [attr.aria-label]="'chatbot_ui.title' | translate">
+                  @for (chip of suggestedQuestions(); track chip) {
                     <button class="cb-chip" role="listitem" (click)="sendChip(chip)">{{ chip }}</button>
                   }
                 </div>
@@ -126,7 +143,7 @@ type PanelView = 'chat' | 'transcript';
             }
 
             @if (isLoading) {
-              <div class="cb-msg cb-msg--assistant" aria-label="AI is typing">
+              <div class="cb-msg cb-msg--assistant" [attr.aria-label]="'chatbot_ui.typing' | translate">
                 <span class="cb-msg__avatar" aria-hidden="true">AI</span>
                 <div class="cb-msg__bubble cb-typing-bubble">
                   <span class="cb-dot" aria-hidden="true"></span>
@@ -138,24 +155,24 @@ type PanelView = 'chat' | 'transcript';
           </div>
 
           <!-- Input area -->
-          <form class="cb-input-area" (ngSubmit)="send()" aria-label="Send a message">
+          <form class="cb-input-area" (ngSubmit)="send()" [attr.aria-label]="'chatbot_ui.send' | translate">
             <textarea
               class="cb-input"
-              placeholder="Type a message…"
+              [placeholder]="'chatbot_ui.placeholder' | translate"
               [(ngModel)]="inputText"
               name="chatInput"
               rows="1"
               [disabled]="isLoading"
               (keydown.enter)="handleEnter($event)"
               (input)="autoResize($event)"
-              aria-label="Message"
+              [attr.aria-label]="'chatbot_ui.placeholder' | translate"
               maxlength="1000"
             ></textarea>
             <button
               type="submit"
               class="cb-send-btn"
               [disabled]="!inputText.trim() || isLoading"
-              aria-label="Send message"
+              [attr.aria-label]="'chatbot_ui.send' | translate"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
                 <path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.154.75.75 0 0 0 0-1.115A28.897 28.897 0 0 0 3.105 2.288Z"/>
@@ -167,21 +184,21 @@ type PanelView = 'chat' | 'transcript';
         <!-- ── Transcript View ─────────────────────────── -->
         @if (panelView === 'transcript') {
           <div class="cb-transcript-panel">
-            <button class="cb-back-btn" (click)="panelView = 'chat'" aria-label="Back to chat">
+            <button class="cb-back-btn" (click)="panelView = 'chat'" [attr.aria-label]="'chatbot_ui.back' | translate">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
                 <path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd"/>
               </svg>
-              Back to chat
+              {{ 'chatbot_ui.back' | translate }}
             </button>
-            <h3 class="cb-transcript-panel__title">Receive transcript</h3>
-            <p class="cb-transcript-panel__desc">Enter your email and we'll send you the full conversation.</p>
+            <h3 class="cb-transcript-panel__title">{{ 'chatbot_ui.transcript_title' | translate }}</h3>
+            <p class="cb-transcript-panel__desc">{{ 'chatbot_ui.transcript_desc' | translate }}</p>
 
             @if (transcriptSuccess) {
               <div class="cb-alert cb-alert--success" role="status">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
                 </svg>
-                Transcript sent successfully!
+                {{ 'chatbot_ui.transcript_success' | translate }}
               </div>
             }
 
@@ -195,7 +212,7 @@ type PanelView = 'chat' | 'transcript';
             }
 
             <form class="cb-transcript-form" (ngSubmit)="submitTranscript()" #transcriptForm="ngForm" novalidate>
-              <label class="cb-label" for="transcriptEmail">Your email address</label>
+              <label class="cb-label" for="transcriptEmail">{{ 'chatbot_ui.transcript_email_label' | translate }}</label>
               <input
                 id="transcriptEmail"
                 type="email"
@@ -210,14 +227,14 @@ type PanelView = 'chat' | 'transcript';
                 aria-describedby="emailHint"
               />
               @if (emailField.invalid && emailField.touched) {
-                <span class="cb-field-error" id="emailHint" role="alert">Please enter a valid email address.</span>
+                <span class="cb-field-error" id="emailHint" role="alert">{{ 'chatbot_ui.email_error' | translate }}</span>
               }
               <button
                 type="submit"
                 class="cb-send-transcript-btn"
                 [disabled]="transcriptForm.invalid || transcriptSending || transcriptSuccess"
               >
-                @if (transcriptSending) { Sending… } @else { Send transcript }
+                @if (transcriptSending) { {{ 'chatbot_ui.transcript_sending' | translate }} } @else { {{ 'chatbot_ui.transcript_send' | translate }} }
               </button>
             </form>
           </div>
@@ -711,6 +728,48 @@ type PanelView = 'chat' | 'transcript';
       .cb-fab { bottom: 18px; right: 18px; }
       .cb-panel { bottom: 88px; right: 18px; left: 18px; width: auto; }
     }
+
+    /* ── Info banner ─────────────────────────────────── */
+    .cb-info-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, rgba(79,106,245,0.12), rgba(139,92,246,0.08));
+      border-bottom: 1px solid rgba(79,106,245,0.2);
+      flex-shrink: 0;
+    }
+
+    .cb-info-banner__icon {
+      color: #a5b4fc;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .cb-info-banner__body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cb-info-banner__text {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #c7d2fe;
+      line-height: 1.5;
+    }
+
+    .cb-info-banner__cta {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .cb-info-banner__cta:hover { color: #e0e7ff; text-decoration: underline; }
   `],
 })
 export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
@@ -718,6 +777,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   readonly chatbot: ChatbotService = inject(ChatbotService);
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private readonly langService: LanguageService = inject(LanguageService);
+  private readonly translate: TranslateService = inject(TranslateService);
 
   messages: ChatMessage[] = [];
   isLoading = false;
@@ -730,12 +791,31 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   transcriptSuccess = false;
   transcriptError = '';
 
-  readonly suggestedQuestions = [
-    '👋 Who is Gent?',
-    '🛠 What are his skills?',
-    '📁 Show me his projects',
-    '📬 How can I contact him?',
-  ];
+  readonly suggestedQuestions = computed(() => {
+    switch (this.langService.current()) {
+      case 'en':
+        return [
+          '👋 Who is Gent?',
+          '🛠 What are his skills?',
+          '📁 Show me his projects',
+          '📬 How can I contact him?',
+        ];
+      case 'sq':
+        return [
+          '👋 Kush është Gent?',
+          '🛠 Cilat janë aftësitë e tij?',
+          '📁 Trego projektet e tij',
+          '📬 Si mund ta kontaktoj?',
+        ];
+      default:
+        return [
+          '👋 Chi è Gent?',
+          '🛠 Quali sono le sue competenze?',
+          '📁 Mostrami i suoi progetti',
+          '📬 Come posso contattarlo?',
+        ];
+    }
+  });
 
   private readonly subs = new Subscription();
   private shouldScroll = false;
@@ -823,13 +903,13 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
         if (res.success) {
           this.transcriptSuccess = true;
         } else {
-          this.transcriptError = 'Failed to send the transcript. Please try again.';
+          this.transcriptError = this.translate.instant('chatbot_ui.transcript_error');
         }
         this.cdr.markForCheck();
       },
       error: () => {
         this.transcriptSending = false;
-        this.transcriptError = 'An error occurred. Please try again later.';
+        this.transcriptError = this.translate.instant('chatbot_ui.transcript_error');
         this.cdr.markForCheck();
       },
     });
