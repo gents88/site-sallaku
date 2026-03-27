@@ -355,6 +355,7 @@
     "device_breakdown_desc": "Desktop, Mobile, Tablet distribution",
     "top_locations": "Cities and Regions",
     "top_locations_desc": "Visitor locations resolved from public IP and proxy headers",
+    "geo_ip_note": "Derived from public IP and proxy headers",
     "top_countries": "Top Countries",
     "top_countries_desc": "Visitors by country (IP geolocation)",
     "browser_breakdown": "Browsers",

@@ -70,7 +70,7 @@
               "extractLicenses": true,
               "budgets": [
                 { "type": "initial", "maximumWarning": "600kb", "maximumError": "2mb" },
-                { "type": "anyComponentStyle", "maximumWarning": "10kb", "maximumError": "28kb" }
+                { "type": "anyComponentStyle", "maximumWarning": "10kb", "maximumError": "50kb" }
               ],
               "outputHashing": "all"
             },

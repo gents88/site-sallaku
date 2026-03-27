@@ -3,7 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, catchError } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
 import { ContactService } from '../../core/services/contact.service';
@@ -14,6 +14,7 @@ import { SnackbarService } from '../../core/services/snackbar.service';
 import { About } from '../../core/models/about.model';
 import { Project } from '../../core/models/project.model';
 import { Experience } from '../../core/models/experience.model';
+import { of } from 'rxjs';
 
 interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
@@ -43,6 +44,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   contactForm = { name: '', email: '', message: '' };
 
   private observer: IntersectionObserver | null = null;
+  private scrollTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly platformId = inject(PLATFORM_ID);
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
@@ -229,13 +231,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     ]);
 
     forkJoin({
-      about: this.aboutService.get(),
-      projects: this.projectsService.getAll(),
-      experiences: this.experiencesService.getAll(),
+      about: this.aboutService.get().pipe(catchError(() => of(null))),
+      projects: this.projectsService.getAll().pipe(catchError(() => of([]))),
+      experiences: this.experiencesService.getAll().pipe(catchError(() => of([]))),
     }).subscribe({
       next: ({ about, projects, experiences }) => {
         this.about = about;
-        if (projects.length) this.featuredProjects = projects.filter(p => p.featured).slice(0, 5);
+        if (projects.length) this.featuredProjects = projects.filter((p: Project) => p.featured).slice(0, 5);
         if (experiences.length) this.experiences = experiences.slice(0, 5);
         this.loading = false;
         this.cdr.markForCheck();
@@ -277,7 +279,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     const sectionId = sectionMap[urlPath];
     if (sectionId) {
-      setTimeout(() => {
+      this.scrollTimer = setTimeout(() => {
         const el = document.getElementById(sectionId);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
@@ -286,6 +288,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
+    if (this.scrollTimer !== null) {
+      clearTimeout(this.scrollTimer);
+      this.scrollTimer = null;
+    }
   }
 
   submitContact(): void {

@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MailService } from '../mail/mail.service';
@@ -23,6 +23,12 @@ export class ContactService {
   ) {}
 
   async sendMessage(dto: ContactDto, meta?: { ip?: string; location?: string }): Promise<{ success: boolean }> {
+    // Server-side honeypot check — bots that fill all fields are rejected
+    if (dto.website) {
+      this.logger.warn(`[Contact] Honeypot triggered for ${dto.email} — request rejected`);
+      throw new BadRequestException('Bot detected');
+    }
+
     // Prevent obvious duplicates: same email+message within last 60s
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
     const duplicate = await this.contactModel.findOne({

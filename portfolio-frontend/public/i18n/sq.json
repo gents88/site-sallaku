@@ -355,6 +355,7 @@
     "device_breakdown_desc": "Shpërndarja Desktop, Celular, Tabletë",
     "top_locations": "Qytetet dhe Rajonet",
     "top_locations_desc": "Vendndodhja e vizitorëve nga IP publike dhe header-at e proxy",
+    "geo_ip_note": "Nga IP publike dhe header-at e proxy",
     "top_countries": "Vendet Kryesore",
     "top_countries_desc": "Vizitorë sipas vendit (gjeolokalizim IP)",
     "browser_breakdown": "Shfletuesit",

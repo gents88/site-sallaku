@@ -12,9 +12,19 @@ import { MailService } from '../mail/mail.service';
 import { OtpService } from './otp.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Types } from 'mongoose';
 
 const REFRESH_TOKEN_EXPIRY = '7d';
 const BCRYPT_REFRESH_ROUNDS = 10;
+
+/** Minimum shape required to issue a JWT pair. */
+interface AuthUser {
+  _id: Types.ObjectId;
+  name?: string;
+  email?: string | null;
+  role: string;
+  refreshTokenHash?: string | null;
+}
 
 @Injectable()
 export class AuthService {
@@ -106,7 +116,7 @@ export class AuthService {
 
   // ── Internal helpers ───────────────────────────────────────
 
-  private async issueTokenPair(user: any) {
+  private async issueTokenPair(user: AuthUser) {
     const accessPayload = {
       sub: user._id.toString(),
       email: user.email ?? null,

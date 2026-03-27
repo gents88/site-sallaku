@@ -1,4 +1,4 @@
-import { AfterViewChecked, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, Input, inject } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,17 +18,17 @@ import { PrismService } from '../../../shared/services/prism.service';
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlogDetailComponent implements OnInit, AfterViewChecked {
+export class BlogDetailComponent implements OnInit {
   @Input() slug!: string; // injected via withComponentInputBinding()
 
   post: Post | null = null;
   loading = true;
   notFound = false;
-  private needsHighlight = false;
 
   private readonly langService = inject(LanguageService);
   private readonly el = inject(ElementRef);
   private readonly prismService = inject(PrismService);
+  private readonly injector = inject(Injector);
   readonly currentLang = this.langService.current;
 
   /** Returns the title in the current portal language, falling back to Italian. */
@@ -51,13 +51,6 @@ export class BlogDetailComponent implements OnInit, AfterViewChecked {
 
   constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {}
 
-  ngAfterViewChecked(): void {
-    if (this.needsHighlight) {
-      this.needsHighlight = false;
-      this.highlightCode();
-    }
-  }
-
   private highlightCode(): void {
     const article = this.el.nativeElement.querySelector('.post-article__content');
     if (!article) return;
@@ -71,7 +64,7 @@ export class BlogDetailComponent implements OnInit, AfterViewChecked {
     ).subscribe({
       next: post => {
         this.post = post;
-        this.needsHighlight = true;
+        afterNextRender(() => this.highlightCode(), { injector: this.injector });
         this.cdr.markForCheck();
         // Fire-and-forget: increment view count without blocking rendering
         this.blogService.trackView(this.slug).subscribe({ error: () => {} });
@@ -91,7 +84,7 @@ export class BlogDetailComponent implements OnInit, AfterViewChecked {
           image: post.coverImage ? [post.coverImage] : undefined,
           url: `https://gentsallaku.it/blog/${this.slug}`,
           datePublished: post.publishedAt,
-          dateModified: (post as any).updatedAt ?? post.publishedAt,
+          dateModified: post.updatedAt ?? post.publishedAt,
           mainEntityOfPage: {
             '@type': 'WebPage',
             '@id': `https://gentsallaku.it/blog/${this.slug}`,

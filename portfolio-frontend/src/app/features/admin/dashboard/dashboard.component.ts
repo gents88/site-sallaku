@@ -1,21 +1,32 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslateModule } from '@ngx-translate/core';
-import { combineLatest, catchError, of, startWith, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { ExperiencesService } from '../../../core/services/experiences.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { BlogService } from '../../../core/services/blog.service';
 import { Post } from '../../../core/models/post.model';
 import { DonutChartComponent, DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
-import { environment } from '../../../../environments/environment';
+import {
+  AdminDashboardService,
+  TopPage,
+  MonthlyHistoryEntry,
+  AuditLogEntry,
+  SearchConsoleSummary,
+  ChatbotStats,
+  SystemHealth,
+  SystemDetails,
+  OperationsInfo,
+  ChatbotSession,
+  RecentContact,
+} from './admin-dashboard.service';
 
 interface StatCard {
   labelKey: string;
@@ -26,157 +37,9 @@ interface StatCard {
   miniBars: number[];
 }
 
-interface RecentContact {
-  _id?: string;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  createdAt: string;
-  read?: boolean;
-}
-
 interface ChartBar {
   date: string;
   value: number;
-}
-
-interface AdminStatsResponse {
-  users: number;
-  contacts: number;
-  unreadContacts: number;
-  recentContacts: RecentContact[];
-  contactsByDay: Array<{ date: string; count: number }>;
-  content: {
-    total: number;
-    published: number;
-    drafts: number;
-  };
-  visits: {
-    totalViews: number;
-    uniqueVisitors: number;
-    viewsByDay: Array<{ date: string; count: number }>;
-  };
-}
-
-interface AdvancedAnalytics {
-  todayCount: number;
-  topLocations: DonutItem[];
-  topCountries: DonutItem[];
-  deviceBreakdown: DonutItem[];
-  browserBreakdown: DonutItem[];
-  osBreakdown: DonutItem[];
-  trafficSources: DonutItem[];
-}
-
-interface AnalyticsStats {
-  totalViews: number;
-  monthlyViews: number;
-  locations: DonutItem[];
-  monthlyLocations: DonutItem[];
-  devices: DonutItem[];
-  monthlyDevices: DonutItem[];
-  lastResetAt: string | null;
-}
-
-interface TopPage { label: string; count: number; }
-
-interface MonthlyHistoryEntry { month: string; views: number; }
-
-interface AuditLogEntry {
-  _id?: string;
-  actorEmail: string;
-  method: string;
-  path: string;
-  resource: string;
-  description: string;
-  statusCode: number;
-  createdAt: string;
-}
-
-interface GscQuery {
-  query: string;
-  clicks: number;
-  impressions: number;
-  ctr: number;
-  position: number;
-}
-
-interface SearchConsoleSummary {
-  configured: boolean;
-  clicks: number;
-  impressions: number;
-  avgCtr: number;
-  avgPosition: number;
-  topQueries: GscQuery[];
-}
-
-interface ChatbotStats {
-  totalSessions: number;
-  totalMessages: number;
-  interactionsToday: number;
-  sessionsThisMonth: number;
-}
-
-interface SystemHealth {
-  ok: boolean;
-  service: string;
-  version: string;
-  startedAt: string;
-  environment: string;
-}
-
-interface SystemDetails {
-  service: string;
-  version: string;
-  startedAt: string;
-  environment: string;
-  commitSha: string | null;
-  branch: string | null;
-  railway: {
-    serviceId: string | null;
-    serviceName: string | null;
-    environmentId: string | null;
-    projectId: string | null;
-  };
-  features: Record<string, boolean>;
-}
-
-interface OperationsInfo {
-  uptimeSeconds: number;
-  memoryRssMb: number;
-  nodeVersion: string;
-  mail: {
-    configured: boolean;
-    provider: 'resend' | 'smtp' | 'none';
-    smtpUser: string | null;
-  };
-  cronJobs: Array<{
-    name: string;
-    nextRun: string | null;
-    running: boolean;
-  }>;
-}
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: string;
-}
-
-interface ChatbotSession {
-  sessionId: string;
-  messages: ChatMessage[];
-  lastActivity: string;
-  createdAt: string;
-  messageCount: number;
-}
-
-interface ChatbotSessionsPage {
-  data: ChatbotSession[];
-  total: number;
-  page: number;
-  totalPages: number;
 }
 
 @Component({
@@ -289,7 +152,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private projectsService: ProjectsService,
     private experiencesService: ExperiencesService,
     private blogService: BlogService,
-    private http: HttpClient,
+    private adminDashboard: AdminDashboardService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -310,82 +173,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.dataSubscription?.unsubscribe();
 
-    const emptyStats: AdminStatsResponse = {
-      users: 0,
-      contacts: 0,
-      unreadContacts: 0,
-      recentContacts: [],
-      contactsByDay: [],
-      content: { total: 0, published: 0, drafts: 0 },
-      visits: { totalViews: 0, uniqueVisitors: 0, viewsByDay: [] },
-    };
-
-    const emptyAdvanced: AdvancedAnalytics = {
-      todayCount: 0,
-      topLocations: [],
-      topCountries: [],
-      deviceBreakdown: [],
-      browserBreakdown: [],
-      osBreakdown: [],
-      trafficSources: [],
-    };
-
-    const emptyAnalyticsStats: AnalyticsStats = {
-      totalViews: 0,
-      monthlyViews: 0,
-      locations: [],
-      monthlyLocations: [],
-      devices: [],
-      monthlyDevices: [],
-      lastResetAt: null,
-    };
-
-    this.dataSubscription = combineLatest({
-      projects: this.projectsService.getAll().pipe(catchError(() => of([])), startWith([])),
-      experiences: this.experiencesService.getAll().pipe(catchError(() => of([])), startWith([])),
-      adminStats: this.http.get<AdminStatsResponse>(`${environment.apiUrl}/stats`).pipe(
-        catchError(() => of(emptyStats)),
-        startWith(emptyStats),
-      ),
-      advanced: this.http.get<AdvancedAnalytics>(`${environment.apiUrl}/analytics/advanced`).pipe(
-        catchError(() => of(emptyAdvanced)),
-        startWith(emptyAdvanced),
-      ),
-      analyticsStats: this.http.get<AnalyticsStats>(`${environment.apiUrl}/analytics`).pipe(
-        catchError(() => of(emptyAnalyticsStats)),
-        startWith(emptyAnalyticsStats),
-      ),
-      topPages: this.http.get<TopPage[]>(`${environment.apiUrl}/analytics/top-pages`).pipe(
-        catchError(() => of([])), startWith([]),
-      ),
-      monthlyHistory: this.http.get<MonthlyHistoryEntry[]>(`${environment.apiUrl}/analytics/monthly-history`).pipe(
-        catchError(() => of([])), startWith([]),
-      ),
-      auditLogs: this.http.get<AuditLogEntry[]>(`${environment.apiUrl}/audit?limit=10`).pipe(
-        catchError(() => of([])), startWith([]),
-      ),
-      chatbotStats: this.http.get<ChatbotStats>(`${environment.apiUrl}/chatbot/stats`).pipe(
-        catchError(() => of({ totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 })),
-        startWith({ totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 }),
-      ),
-      systemHealth: this.http.get<SystemHealth>(`${environment.apiUrl}/system/health`).pipe(
-        catchError(() => of(null as SystemHealth | null)),
-        startWith(null as SystemHealth | null),
-      ),
-      systemDetails: this.http.get<SystemDetails>(`${environment.apiUrl}/system/version`).pipe(
-        catchError(() => of(null as SystemDetails | null)),
-        startWith(null as SystemDetails | null),
-      ),
-      systemOps: this.http.get<OperationsInfo>(`${environment.apiUrl}/system/ops`).pipe(
-        catchError(() => of(null as OperationsInfo | null)),
-        startWith(null as OperationsInfo | null),
-      ),
-      blogPosts: this.blogService.getAll().pipe(catchError(() => of([])), startWith([])),
-      gsc: this.http.get<SearchConsoleSummary>(`${environment.apiUrl}/analytics/search-console`).pipe(
-        catchError(() => of({ configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [] } as SearchConsoleSummary)),
-        startWith({ configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [] } as SearchConsoleSummary),
-      ),
-    }).subscribe({
+    this.dataSubscription = this.adminDashboard.loadAll(
+      this.projectsService.getAll(),
+      this.experiencesService.getAll(),
+      this.blogService.getAll(),
+    ).subscribe({
       next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts,
                topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth, systemDetails, systemOps, gsc }) => {
         const totalPosts = adminStats.content.total;
@@ -529,6 +321,30 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return Math.max(...this.gscSummary.topQueries.map(q => q.clicks), 1);
   }
 
+  get maxCountryCount(): number {
+    return Math.max(...this.topCountries.map(c => c.count), 1);
+  }
+
+  get maxLocationCount(): number {
+    return Math.max(...this.topLocations.map(location => location.count), 1);
+  }
+
+  get maxBrowserCount(): number {
+    return Math.max(...this.browserBreakdown.map(b => b.count), 1);
+  }
+
+  countryBarWidth(count: number): number {
+    return Math.max((count / this.maxCountryCount) * 100, count > 0 ? 6 : 0);
+  }
+
+  locationBarWidth(count: number): number {
+    return Math.max((count / this.maxLocationCount) * 100, count > 0 ? 6 : 0);
+  }
+
+  browserBarWidth(count: number): number {
+    return Math.max((count / this.maxBrowserCount) * 100, count > 0 ? 6 : 0);
+  }
+
   get maxTopPageCount(): number {
     return Math.max(...this.topPages.map(p => p.count), 1);
   }
@@ -547,7 +363,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadTodaySessions(page = 1): void {
     if (this.loadingTodaySessions) return;
     this.loadingTodaySessions = true;
-    this.http.get<ChatbotSessionsPage>(`${environment.apiUrl}/chatbot/sessions/today?page=${page}&limit=10`).subscribe({
+    this.adminDashboard.getTodaySessions(page).subscribe({
       next: ({ data, total, page: p, totalPages }) => {
         this.todaySessions = data;
         this.todaySessionsTotal = total;
@@ -573,18 +389,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return first.content.length > 60 ? first.content.slice(0, 60) + '…' : first.content;
   }
 
-  get maxCountryCount(): number {
-    return Math.max(...this.topCountries.map(c => c.count), 1);
-  }
-
-  get maxLocationCount(): number {
-    return Math.max(...this.topLocations.map(location => location.count), 1);
-  }
-
-  get maxBrowserCount(): number {
-    return Math.max(...this.browserBreakdown.map(b => b.count), 1);
-  }
-
   get totalContent(): number {
     return this.publishedPosts + this.draftPosts;
   }
@@ -605,18 +409,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   visitBarHeight(value: number): string {
     const percent = (value / this.maxVisitBarValue) * 100;
     return `${Math.max(percent, value > 0 ? 18 : 8)}%`;
-  }
-
-  countryBarWidth(count: number): number {
-    return Math.max((count / this.maxCountryCount) * 100, count > 0 ? 6 : 0);
-  }
-
-  locationBarWidth(count: number): number {
-    return Math.max((count / this.maxLocationCount) * 100, count > 0 ? 6 : 0);
-  }
-
-  browserBarWidth(count: number): number {
-    return Math.max((count / this.maxBrowserCount) * 100, count > 0 ? 6 : 0);
   }
 
   formatUptimeHours(seconds: number | null | undefined): string {
@@ -663,7 +455,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Fire-and-forget mark-read request; don't toggle `markingRead` here so the
     // spinner appears only when the user explicitly clicks the "mark read" button.
-    this.http.patch<RecentContact>(`${environment.apiUrl}/contact/${contact._id}/read`, {}).subscribe({
+    this.adminDashboard.markContactRead(contact._id).subscribe({
       next: (updatedContact) => {
         this.recentContacts = this.recentContacts.map(item => item._id === updatedContact._id ? updatedContact : item);
         this.selectedContact = updatedContact;
@@ -690,7 +482,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     const wasRead = this.selectedContact.read;
     this.markingRead = true;
-    this.http.patch<RecentContact>(`${environment.apiUrl}/contact/${this.selectedContact._id}/read`, { read }).subscribe({
+    this.adminDashboard.markContactRead(this.selectedContact._id, read).subscribe({
       next: (updatedContact) => {
         this.recentContacts = this.recentContacts.map(item => item._id === updatedContact._id ? updatedContact : item);
         this.selectedContact = updatedContact;
@@ -715,7 +507,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const contactId = this.selectedContact._id;
     this.openConfirmDialog('admin.confirm_delete_message', {}, () => {
       this.deletingContact = true;
-      this.http.delete<{ success: boolean }>(`${environment.apiUrl}/contact/${contactId}`).subscribe({
+      this.adminDashboard.deleteContact(contactId).subscribe({
         next: () => {
           this.recentContacts = this.recentContacts.filter(item => item._id !== contactId);
           this.stats = this.stats.map(stat => stat.labelKey === 'admin.contacts'
@@ -749,10 +541,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (!this.selectedContact?._id || !this.replyText.trim() || this.sendingReply) return;
     this.sendingReply = true;
     this.replyResult = null;
-    this.http.post<{ repliedAt: string }>(
-      `${environment.apiUrl}/contact/${this.selectedContact._id}/reply`,
-      { replyText: this.replyText.trim() },
-    ).subscribe({
+    this.adminDashboard.replyToContact(this.selectedContact._id, this.replyText.trim()).subscribe({
       next: () => {
         this.replyResult = 'success';
         this.sendingReply = false;
@@ -806,10 +595,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { count: ids.length },
       () => {
         this.bulkDeleting = true;
-        this.http.post<{ success: boolean; deleted: number }>(
-          `${environment.apiUrl}/contact/bulk-delete`,
-          { ids },
-        ).subscribe({
+        this.adminDashboard.bulkDeleteContacts(ids).subscribe({
           next: ({ deleted }) => {
             this.recentContacts = this.recentContacts.filter(
               c => !c._id || !ids.includes(c._id),
@@ -861,7 +647,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.resettingStats) return;
     this.openConfirmDialog('admin.confirm_reset_monthly_stats', {}, () => {
       this.resettingStats = true;
-      this.http.post<{ success: boolean; message: string }>(`${environment.apiUrl}/analytics/reset`, {}).subscribe({
+      this.adminDashboard.resetMonthlyStats().subscribe({
         next: () => {
           this.resettingStats = false;
           this.monthlyViews = 0;
@@ -880,10 +666,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private refreshContacts(): void {
-    this.http.get<AdminStatsResponse>(`${environment.apiUrl}/stats`).pipe(
-      catchError(() => of(null)),
-    ).subscribe(adminStats => {
-      if (!adminStats) return;
+    this.adminDashboard.getStats().subscribe(adminStats => {
       this.recentContacts = adminStats.recentContacts;
       this.unreadCount = adminStats.unreadContacts ?? 0;
       this.stats = this.stats.map(stat =>
@@ -895,7 +678,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   downloadCsv(): void {
-    this.http.get(`${environment.apiUrl}/analytics/export/csv`, { responseType: 'blob' }).subscribe({
+    this.adminDashboard.exportAnalyticsCsv().subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob as Blob);
         const a = document.createElement('a');

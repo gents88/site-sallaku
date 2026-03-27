@@ -1,5 +1,5 @@
-import { IsString, IsEmail, MaxLength, MinLength, IsArray, ArrayNotEmpty, ArrayMaxSize } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsEmail, MaxLength, MinLength, IsArray, ArrayNotEmpty, ArrayMaxSize, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ContactDto {
   @ApiProperty({ example: 'Jane Smith' })
@@ -21,6 +21,16 @@ export class ContactDto {
   @MinLength(10)
   @MaxLength(2000)
   message: string;
+
+  /**
+   * Honeypot field — must be empty. Bots that auto-fill all inputs are rejected.
+   * Not shown in the UI but validated server-side as a second line of defense.
+   */
+  @ApiPropertyOptional({ description: 'Leave empty (anti-bot honeypot)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(0, { message: 'Bot detected' })
+  website?: string;
 }
 
 export class ReplyContactDto {

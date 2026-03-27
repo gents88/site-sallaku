@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { PreloadingStrategy, Route } from '@angular/router';
 import { Observable, of, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -11,7 +12,11 @@ import { switchMap } from 'rxjs/operators';
  */
 @Injectable({ providedIn: 'root' })
 export class SelectivePreloadStrategy implements PreloadingStrategy {
+  private readonly platformId = inject(PLATFORM_ID);
+
   preload(route: Route, load: () => Observable<unknown>): Observable<unknown> {
+    if (!isPlatformBrowser(this.platformId)) return of(null);
+
     const conn = (navigator as any).connection;
     const isSlow =
       conn?.saveData === true ||
