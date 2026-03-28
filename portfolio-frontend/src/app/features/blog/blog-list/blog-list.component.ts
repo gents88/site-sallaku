@@ -27,6 +27,18 @@ export class BlogListComponent implements OnInit {
   searchQuery = '';
   loading = true;
 
+  readonly skeletonItems = Array.from({ length: 6 }, (_, i) => i);
+  private pageSize = 6;
+  private visibleCount = this.pageSize;
+
+  get visiblePosts(): PostSummary[] {
+    return this.filteredPosts.slice(0, this.visibleCount);
+  }
+
+  get hasMore(): boolean {
+    return this.visibleCount < this.filteredPosts.length;
+  }
+
   private readonly langService = inject(LanguageService);
   readonly currentLang = this.langService.current;
 
@@ -77,10 +89,25 @@ export class BlogListComponent implements OnInit {
         (p.title_sq ?? '').toLowerCase().includes(q);
       return matchesTag && matchesSearch;
     });
+    this.visibleCount = this.pageSize;
+    this.cdr.markForCheck();
   }
 
   setTag(tag: string | null): void {
     this.activeTag = tag;
+    this.visibleCount = this.pageSize;
+    this.filter();
+  }
+
+  loadMore(): void {
+    this.visibleCount += this.pageSize;
+    this.cdr.markForCheck();
+  }
+
+  clearFilters(): void {
+    this.searchQuery = '';
+    this.activeTag = null;
+    this.visibleCount = this.pageSize;
     this.filter();
   }
 }

@@ -153,7 +153,7 @@
                 <ng-template #faIcon><i [class]="'fas fa-' + tech.icon"></i></ng-template>
               </div>
               <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}</span>
+                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
                 <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
               </div>
             </div>
@@ -168,7 +168,7 @@
             <div class="tech-item">
               <div class="tech-item-icon"><i [class]="'fas fa-' + tech.icon"></i></div>
               <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}</span>
+                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
                 <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
               </div>
             </div>
@@ -183,7 +183,7 @@
             <div class="tech-item">
               <div class="tech-item-icon"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></div>
               <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}</span>
+                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
                 <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
               </div>
             </div>
@@ -198,7 +198,7 @@
             <div class="tech-item">
               <div class="tech-item-icon"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></div>
               <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}</span>
+                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
                 <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
               </div>
             </div>

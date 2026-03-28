@@ -382,7 +382,33 @@
 }
 
 .tech-item-info { flex: 1; }
-.tech-name { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 6px; }
+.tech-name {
+  position: relative;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.tech-tooltip {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(79, 106, 245, 0.85);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.tech-item:hover .tech-tooltip { opacity: 1; }
 
 .tech-bar {
   width: 100%;

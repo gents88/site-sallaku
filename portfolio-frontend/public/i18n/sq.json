@@ -109,7 +109,8 @@
       "f2": "Workflow i dixhitalizuar i dëmeve",
       "f3": "Integrim me shërbime të jashtme",
       "f4": "Audit trail dhe siguri"
-    }
+    },
+    "discover": "Zbulo më shumë"
   },
   "experience": {
     "tag": "experience",
@@ -511,7 +512,13 @@
     }
   },
   "blog": {
-    "readMore": "Lexo më shumë"
+    "readMore": "Lexo më shumë",
+    "loadMore": "Ngarko më shumë",
+    "empty": {
+      "title": "Nuk u gëtën artikuj",
+      "message": "Provo fjalë kyfe të ndryshme ose shfleto të gjithë artikujt.",
+      "reset": "Pastro filtrat"
+    }
   },
   "chatbot_ui": {
     "title": "AI Assistant",

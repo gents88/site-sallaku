@@ -110,3 +110,26 @@
   i { color: var(--cyan-400); font-size: 0.65rem; }
 }
 
+.project-cta {
+  margin-top: 18px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  span {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--primary-400);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  i { font-size: 0.75rem; }
+}
+
+.project-card:hover .project-cta {
+  opacity: 1;
+  transform: translateY(0);
+}

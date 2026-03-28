@@ -2,7 +2,23 @@
   <h1 class="page-title">Blog</h1>
 
   @if (loading) {
-    <app-loading-spinner />
+    <div class="posts-grid">
+      @for (s of skeletonItems; track s) {
+        <div class="skeleton-card card">
+          <div class="skeleton-cover shimmer"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-tag shimmer"></div>
+            <div class="skeleton-line shimmer" style="width:80%"></div>
+            <div class="skeleton-line shimmer" style="width:60%"></div>
+            <div class="skeleton-line shimmer" style="width:90%"></div>
+            <div class="skeleton-footer">
+              <div class="skeleton-line shimmer" style="width:30%"></div>
+              <div class="skeleton-line shimmer" style="width:20%"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
   } @else {
     <!-- Search -->
     <div class="blog-search">
@@ -21,10 +37,14 @@
     }
 
     <div class="posts-grid">
-      @for (post of filteredPosts; track post._id) {
+      @for (post of visiblePosts; track post._id) {
         <article class="card post-card fade-in-up">
           @if (post.coverImage) {
             <img [src]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" loading="lazy" />
+          } @else {
+            <div class="post-card__cover-placeholder" aria-hidden="true">
+              <mat-icon>article</mat-icon>
+            </div>
           }
           <div class="post-card__body">
             <div class="post-card__tags">
@@ -50,7 +70,23 @@
     </div>
 
     @if (!filteredPosts.length) {
-      <p class="empty-state">No articles found.</p>
+      <div class="empty-state-illustrated">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <h3 class="empty-title">{{ 'blog.empty.title' | translate }}</h3>
+        <p class="empty-message">{{ 'blog.empty.message' | translate }}</p>
+        <button class="btn btn-ghost" (click)="clearFilters()">
+          <mat-icon>refresh</mat-icon> {{ 'blog.empty.reset' | translate }}
+        </button>
+      </div>
+    }
+
+    @if (hasMore) {
+      <div class="load-more-wrap">
+        <button class="btn btn-outline load-more-btn" (click)="loadMore()">
+          {{ 'blog.loadMore' | translate | default:'Load more' }}
+          <mat-icon>expand_more</mat-icon>
+        </button>
+      </div>
     }
   }
 </div>

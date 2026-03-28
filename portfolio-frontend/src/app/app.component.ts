@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, HostListener, OnInit, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
@@ -72,6 +72,11 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
     }
     @defer (on idle) {
       <app-chatbot />
+    }
+    @if (showBackToTop()) {
+      <button class="back-to-top" (click)="scrollToTop()" aria-label="Torna su">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
     }
   `,
   styles: [`
@@ -328,10 +333,47 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
         grid-template-columns: 1fr;
       }
     }
-  `],
+    .back-to-top {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 1200;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(79, 106, 245, 0.3);
+      background: linear-gradient(135deg, rgba(79, 106, 245, 0.9), rgba(139, 92, 246, 0.9));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(79, 106, 245, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: bttFadeIn 0.25s ease-out;
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 28px rgba(79, 106, 245, 0.5);
+      }
+    }
+
+    @keyframes bttFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }  `],
 })
 export class AppComponent implements OnInit {
   readonly wipVisible = signal(!sessionStorage.getItem('wipDismissed'));
+  readonly showBackToTop = signal(false);
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    this.showBackToTop.set(window.scrollY > 300);
+  }
+
+  scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   constructor(
     public authModal: AuthModalService,

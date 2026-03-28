@@ -109,7 +109,8 @@
       "f2": "Workflow sinistri digitalizzato",
       "f3": "Integrazione servizi esterni",
       "f4": "Audit trail e sicurezza"
-    }
+    },
+    "discover": "Scopri di più"
   },
   "experience": {
     "tag": "experience",
@@ -201,18 +202,18 @@
       "title": "Invia un messaggio",
       "name": "Nome e cognome",
       "name_ph": "Mario Rossi",
-      "name_err": "Il nome \u00e8 obbligatorio",
+      "name_err": "Il nome è obbligatorio",
       "email": "Email",
       "email_ph": "mario@esempio.it",
       "email_err": "Inserisci un'email valida",
       "subject": "Oggetto",
       "subject_ph": "Richiesta progetto",
-      "subject_err": "L'oggetto \u00e8 obbligatorio",
+      "subject_err": "L'oggetto è obbligatorio",
       "message": "Messaggio",
-      "message_ph": "Ciao, vorrei discutere di\u2026",
+      "message_ph": "Ciao, vorrei discutere di…",
       "message_err": "Il messaggio deve essere di almeno 10 caratteri",
       "send": "Invia messaggio",
-      "sending": "Invio in corso\u2026",
+      "sending": "Invio in corso…",
       "sent": "Messaggio inviato!",
       "name_placeholder": "Scrivi il tuo nome",
       "email_placeholder": "Scrivi la tua email",
@@ -221,7 +222,7 @@
     },
     "info": {
       "title": "Connettiamoci",
-      "desc": "Sono disponibile per progetti freelance, collaborazioni e opportunit\u00e0 a tempo pieno."
+      "desc": "Sono disponibile per progetti freelance, collaborazioni e opportunità a tempo pieno."
     },
     "form_name": "Il tuo nome",
     "form_email": "La tua email",
@@ -511,7 +512,13 @@
     }
   },
   "blog": {
-    "readMore": "Leggi di più"
+    "readMore": "Leggi di più",
+    "loadMore": "Carica altri",
+    "empty": {
+      "title": "Nessun articolo trovato",
+      "message": "Prova con parole chiave diverse o sfoglia tutti gli articoli.",
+      "reset": "Azzera filtri"
+    }
   },
   "chatbot_ui": {
     "title": "AI Assistant",

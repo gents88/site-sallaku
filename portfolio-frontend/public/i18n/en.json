@@ -109,7 +109,8 @@
       "f2": "Digitized claims workflow",
       "f3": "External service integration",
       "f4": "Audit trail and security"
-    }
+    },
+    "discover": "Discover more"
   },
   "experience": {
     "tag": "experience",
@@ -209,10 +210,10 @@
       "subject_ph": "Project inquiry",
       "subject_err": "Subject is required",
       "message": "Message",
-      "message_ph": "Hi, I\u2019d like to discuss\u2026",
+      "message_ph": "Hi, I’d like to discuss…",
       "message_err": "Message must be at least 10 characters",
       "send": "Send Message",
-      "sending": "Sending\u2026",
+      "sending": "Sending…",
       "sent": "Message sent!",
       "name_placeholder": "Write your name",
       "email_placeholder": "Write your email so I can contact you",
@@ -220,8 +221,8 @@
       "note": "The message is sent directly from the website, without opening external apps."
     },
     "info": {
-      "title": "Let\u2019s connect",
-      "desc": "I\u2019m open to freelance projects, collaborations and full-time opportunities."
+      "title": "Let’s connect",
+      "desc": "I’m open to freelance projects, collaborations and full-time opportunities."
     },
     "form_name": "Your name",
     "form_email": "Your email",
@@ -511,7 +512,13 @@
     }
   },
   "blog": {
-    "readMore": "Read more"
+    "readMore": "Read more",
+    "loadMore": "Load more",
+    "empty": {
+      "title": "No articles found",
+      "message": "Try a different keyword or browse all articles.",
+      "reset": "Clear filters"
+    }
   },
   "chatbot_ui": {
     "title": "AI Assistant",
