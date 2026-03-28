@@ -7,14 +7,13 @@ import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { PostSummary } from '../../../core/models/post.model';
-import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { LanguageService } from '../../../core/services/language.service';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatIconModule, LoadingSpinnerComponent, TranslateModule],
+  imports: [CommonModule, RouterLink, FormsModule, MatIconModule, TranslateModule],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
