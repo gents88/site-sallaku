@@ -10,6 +10,8 @@ const app = express();
 // Trust only the first proxy hop for accurate IP detection
 app.set('trust proxy', 1);
 
+const fs = require('fs');
+
 const {
   SMTP_HOST = 'smtp.gmail.com',
   SMTP_PORT = '465',
@@ -45,6 +47,17 @@ app.use(
     credentials: true,
   }),
 );
+
+// Redirect HTTP to HTTPS in production (respecting proxy headers)
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    const proto = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    if (proto && proto.split(',')[0].trim() === 'http') {
+      return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
+    }
+  }
+  next();
+});
 
 app.use(express.json({ limit: '16kb' })); // Limit request body size
 
@@ -117,9 +130,35 @@ transporter.verify().then(() => {
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve sitemap.xml from project root so the file is available at /sitemap.xml
+// Dynamic sitemap endpoint: serve static file if present, otherwise generate minimal sitemap
 app.get('/sitemap.xml', (req, res) => {
-  res.sendFile(path.join(__dirname, 'sitemap.xml'));
+  const sitemapStatic = path.join(__dirname, 'public', 'sitemap.xml');
+  if (fs.existsSync(sitemapStatic)) {
+    return res.sendFile(sitemapStatic);
+  }
+
+  // Fallback minimal sitemap (keeps site discoverable until static sitemap is available)
+  const routes = [
+    { loc: '/', changefreq: 'weekly', priority: '1.0' },
+    { loc: '/projects', changefreq: 'monthly', priority: '0.95' },
+    { loc: '/blog', changefreq: 'weekly', priority: '0.9' },
+    { loc: '/services', changefreq: 'monthly', priority: '0.8' },
+    { loc: '/contact', changefreq: 'yearly', priority: '0.7' },
+  ];
+
+  const today = new Date().toISOString().split('T')[0];
+  const xmlLines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', ''];
+  for (const e of routes) {
+    xmlLines.push('  <url>');
+    xmlLines.push(`    <loc>https://gentsallaku.it${e.loc}</loc>`);
+    xmlLines.push(`    <lastmod>${today}</lastmod>`);
+    if (e.changefreq) xmlLines.push(`    <changefreq>${e.changefreq}</changefreq>`);
+    if (e.priority) xmlLines.push(`    <priority>${e.priority}</priority>`);
+    xmlLines.push('  </url>');
+    xmlLines.push('');
+  }
+  xmlLines.push('</urlset>');
+  res.type('application/xml').send(xmlLines.join('\n'));
 });
 
 // Health
