@@ -1,0 +1,39 @@
+name: Generate sitemap
+
+on:
+  push:
+    branches: ["develop", "main"]
+  schedule:
+    - cron: '0 3 * * *' # daily at 03:00 UTC
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Run sitemap generator
+        run: |
+          node scripts/generate-sitemap.js
+
+      - name: Commit sitemap if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/sitemap.xml portfolio-frontend/public/sitemap.xml || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: regenerate sitemap [skip ci]" || true
+            git push
+          else
+            echo "No changes to commit"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

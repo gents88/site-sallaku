@@ -49,3 +49,38 @@ for (const t of targets) {
 }
 
 console.log('Sitemap generation complete.');
+
+// Optionally ping search engines to notify of updated sitemap
+function ping(url) {
+  return new Promise((resolve) => {
+    try {
+      const https = require('https');
+      https
+        .get(url, (res) => {
+          res.on('data', () => {});
+          res.on('end', () => resolve({ url, status: res.statusCode }));
+        })
+        .on('error', (err) => resolve({ url, error: err.message }));
+    } catch (err) {
+      resolve({ url, error: err && err.message ? err.message : err });
+    }
+  });
+}
+
+async function notifySearchEngines() {
+  const sitemapUrl = 'https://gentsallaku.it/sitemap.xml';
+  const endpoints = [
+    `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+    `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+  ];
+
+  for (const e of endpoints) {
+    const r = await ping(e);
+    if (r.error) console.warn('Ping failed:', r);
+    else console.log('Ping result:', r);
+  }
+}
+
+if (process.env.PING_SITEMAP === 'true') {
+  notifySearchEngines().catch((err) => console.warn('Notify failed', err && err.message ? err.message : err));
+}
