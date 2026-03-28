@@ -184,11 +184,67 @@
 .about-photo { flex: 0 0 240px; }
 .about-body { flex: 1 1 auto; }
 
+// Profile photo with brand ring
+.profile-photo {
+  width: 220px;
+  height: auto;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  box-shadow: 0 0 0 3px var(--primary-500), var(--shadow-glow);
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+
+  &:hover {
+    box-shadow: 0 0 0 3px var(--accent-500), var(--shadow-glow-accent);
+    transform: scale(1.02);
+  }
+
+  @media (max-width: 900px) {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+}
+
+// About body typography
+.about-summary { margin-bottom: 10px; }
+
+.profile-heading {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.about-birth {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.about-bio {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  font-size: 0.95rem;
+
+  & + & { margin-top: 12px; }
+}
+
+.bio-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
   align-items: start;
+  margin-top: 32px;
 
   @media (max-width: 900px) { grid-template-columns: 1fr; }
 }

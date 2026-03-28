@@ -1,13 +1,42 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-content">
-      <div class="footer-logo">
-        <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
+
+      <!-- Brand -->
+      <div class="footer-brand">
+        <a routerLink="/" class="footer-logo">
+          <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
+        </a>
+        <p class="footer-text">
+          Progettato &amp; Sviluppato da <span class="text-gradient">Gent Sallaku</span>
+        </p>
       </div>
-      <p class="footer-text">
-        Progettato &amp; Sviluppato da <span class="text-gradient">Gent Sallaku</span>
-      </p>
+
+      <!-- Navigation -->
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a routerLink="/about">About</a>
+        <a routerLink="/projects">Projects</a>
+        <a routerLink="/services">Services</a>
+        <a routerLink="/blog">Blog</a>
+        <a routerLink="/contact">Contact</a>
+      </nav>
+
+      <!-- Social links -->
+      <div class="footer-social">
+        <a href="https://linkedin.com/in/gentsallaku" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-link">
+          <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+        </a>
+        <a href="https://github.com/gentsallaku" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
+          <i class="fab fa-github" aria-hidden="true"></i>
+        </a>
+        <a href="mailto:gent.sallaku@email.com" aria-label="Email" class="social-link">
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+        </a>
+      </div>
+
+      <!-- Copyright -->
       <p class="footer-copy">&copy; {{ year }} Gent Sallaku. All rights reserved.</p>
+
     </div>
   </div>
 </footer>

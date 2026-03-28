@@ -44,8 +44,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   contactForm = { name: '', email: '', message: '' };
 
   private observer: IntersectionObserver | null = null;
+  private kpiObserver: IntersectionObserver | null = null;
   private scrollTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly platformId = inject(PLATFORM_ID);
+
+  kpiValues = [0, 0, 0, 0];
+  private kpiAnimated = false;
+  private readonly kpiTargets = [8, 20, 4, 70];
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
   readonly frontendTechs: TechItem[] = [
@@ -268,6 +273,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
 
+    // Count-up animation for KPI numbers
+    const kpiEl = document.querySelector('.hero-kpis');
+    if (kpiEl) {
+      this.kpiObserver = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && !this.kpiAnimated) {
+            this.kpiAnimated = true;
+            this.animateCountUp();
+            this.kpiObserver?.disconnect();
+          }
+        },
+        { threshold: 0.5 },
+      );
+      this.kpiObserver.observe(kpiEl);
+    }
+
     // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
     const urlPath = this.router.url.split('?')[0].replace(/^\//,'');
     const sectionMap: Record<string, string> = {
@@ -286,8 +307,27 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private animateCountUp(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      this.kpiValues = [...this.kpiTargets];
+      return;
+    }
+    const duration = 1500;
+    const start = performance.now();
+    const update = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      this.kpiValues = this.kpiTargets.map(t => Math.floor(t * ease));
+      this.cdr.markForCheck();
+      if (progress < 1) requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+  }
+
   ngOnDestroy(): void {
     this.observer?.disconnect();
+    this.kpiObserver?.disconnect();
     if (this.scrollTimer !== null) {
       clearTimeout(this.scrollTimer);
       this.scrollTimer = null;

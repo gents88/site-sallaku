@@ -8,6 +8,20 @@
   transition: background 0.3s ease, padding 0.3s ease, border-bottom 0.3s ease;
   background: transparent;
 
+  // Scroll progress bar
+  .scroll-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    max-width: 100%;
+    background: var(--gradient-primary);
+    transition: width 0.1s linear;
+    z-index: 10;
+    pointer-events: none;
+    border-radius: 0 2px 2px 0;
+  }
+
   &.scrolled {
     background: var(--surface-overlay);
     backdrop-filter: blur(20px);

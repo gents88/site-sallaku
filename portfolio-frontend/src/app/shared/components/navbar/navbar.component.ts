@@ -28,6 +28,7 @@ interface NavLink {
 export class NavbarComponent implements OnInit, OnDestroy {
   mobileMenuOpen = false;
   scrolled = false;
+  scrollProgress = 0;
   activeSection = '';
   isHomepage = false;
 
@@ -68,6 +69,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll')
   onScroll(): void {
     this.scrolled = window.scrollY > 50;
+    const doc = document.documentElement;
+    const scrollTop = window.scrollY || doc.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    this.scrollProgress = scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0;
     if (this.isHomepage) this.updateActiveSectionFromScroll();
   }
 

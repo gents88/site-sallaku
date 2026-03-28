@@ -1,4 +1,6 @@
 <nav class="navbar" [class.scrolled]="scrolled" [class.menu-open]="mobileMenuOpen">
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" [style.width.%]="scrollProgress" aria-hidden="true"></div>
   <div class="nav-container">
     <!-- Logo -->
     <a routerLink="/homepage" class="nav-logo" (click)="closeMenu()">
