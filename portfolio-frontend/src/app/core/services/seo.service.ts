@@ -25,7 +25,7 @@ export class SeoService {
   private readonly siteName = 'Gent Sallaku';
   private readonly defaultDescription =
     'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.';
-  private readonly defaultImage = 'https://gentsallaku.it/assets/og-image.jpg';
+  private readonly defaultImage = 'https://gentsallaku.it/assets/profil.jpeg';
   private lastTrackedPath: string | null = null;
 
   constructor(

@@ -59,7 +59,23 @@ app.use((req, res, next) => {
   );
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self'; object-src 'none'; frame-src 'none';",
+    [
+      "default-src 'self'",
+      // Angular + inline gtag init in index.html + JSON-LD injected via DOM
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+      // Angular Material inline styles + Google Fonts + Font Awesome CDN
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
+      // Web fonts
+      "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+      // Images: self, data URIs, and any HTTPS (covers CDN images in blog posts)
+      "img-src 'self' data: https:",
+      // GA4 analytics endpoints
+      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com",
+      "object-src 'none'",
+      "frame-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; '),
   );
   next();
 });
@@ -100,6 +116,11 @@ transporter.verify().then(() => {
 
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve sitemap.xml from project root so the file is available at /sitemap.xml
+app.get('/sitemap.xml', (req, res) => {
+  res.sendFile(path.join(__dirname, 'sitemap.xml'));
+});
 
 // Health
 app.get('/health', (req, res) => res.json({ ok: true }));
