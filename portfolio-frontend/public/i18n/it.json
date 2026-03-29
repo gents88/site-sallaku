@@ -245,6 +245,22 @@
   "skip": {
     "link": "Vai al contenuto principale"
   },
+    "consent": {
+      "title": "Preferenze cookie",
+      "desc": "Utilizziamo cookie per funzioni necessarie e per analytics e marketing opzionali. Gestisci le tue preferenze.",
+      "accept_all": "Accetta tutto",
+      "reject_all": "Rifiuta tutto",
+      "manage_preferences": "Gestisci preferenze",
+      "necessary": "Necessari",
+      "analytics": "Analytics",
+      "marketing": "Marketing",
+      "preferences": "Preferenze",
+      "save": "Salva preferenze",
+      "settings_title": "Impostazioni cookie",
+      "settings_desc": "Abilita o disabilita le categorie. I cookie necessari sono sempre attivi.",
+      "consent_saved": "Preferenze salvate",
+      "default_denied_note": "Predefinito: solo cookie funzionali (consenso richiesto per analytics e marketing)."
+    },
   "footer": {
     "designed": "Progettato & Sviluppato da",
     "rights": "All rights reserved."
@@ -398,6 +414,11 @@
     "chatbot_stats_desc": "Conversazioni con l'assistente AI",
     "chatbot_total_sessions": "Sessioni totali",
     "chatbot_total_messages": "Messaggi totali",
+    "consent": {
+      "title": "Panoramica consensi",
+      "desc": "Riepilogo dei consensi cookie raccolti dai visitatori",
+      "total": "Consensi totali"
+    },
     "chatbot_today": "Oggi",
     "chatbot_this_month": "Questo mese",
     "top_pages": "Pagine più visitate",

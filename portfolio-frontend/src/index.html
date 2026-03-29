@@ -48,7 +48,18 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+      // Default Consent Mode v2: denied until user grants consent
+      try {
+        gtag('consent', 'default', {
+          ad_storage: 'denied',
+          analytics_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied'
+        });
+      } catch (e) { /* ignore if gtag not available */ }
     </script>
+    <!-- GTM ID placeholder: set to your container ID in production -->
+    <script>window.__GTM_ID__ = 'GTM-XXXX';</script>
   </head>
   <body class="mat-typography">
     <app-root></app-root>

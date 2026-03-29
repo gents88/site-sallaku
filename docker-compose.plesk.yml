@@ -1,0 +1,102 @@
+# ─────────────────────────────────────────────────────────
+#  DEPLOY SU PLESK
+#
+#  Il backend gira su porta 3000; Plesk nginx fa da reverse proxy.
+#  MongoDB e Redis restano interni (non esposti all'esterno).
+#
+#  REQUISITI:
+#   1. Copia il file .env.plesk → .env nella root:
+#        cp .env.plesk .env.plesk.local  # modifica i valori reali
+#   2. Build + push immagine (dalla tua macchina o sul server):
+#        docker build -t portfolio-backend:latest ./portfolio-backend
+#   3. Avvia:
+#        docker compose -f docker-compose.plesk.yml up -d
+#   4. In Plesk: aggiungi reverse proxy per il dominio →
+#        http://localhost:3000
+#
+#  Per aggiornare il backend dopo una modifica:
+#    docker compose -f docker-compose.plesk.yml build backend && \
+#    docker compose -f docker-compose.plesk.yml up -d --no-deps backend
+# ─────────────────────────────────────────────────────────
+
+version: '3.9'
+
+services:
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    # NON esporre la porta: accessibile solo nella rete Docker interna
+    networks:
+      - portfolio_net
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    networks:
+      - portfolio_net
+
+  backend:
+    build:
+      context: ./portfolio-backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./.env.plesk
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      MONGODB_URI: mongodb://mongo:27017/portfolio
+      REDIS_URL: redis://redis:6379
+    ports:
+      # Esposta solo localmente; Plesk nginx fa da proxy verso questo
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/v1/system/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - portfolio_net
+
+volumes:
+  mongo_data:
+  redis_data:
+
+networks:
+  portfolio_net:
+    driver: bridge

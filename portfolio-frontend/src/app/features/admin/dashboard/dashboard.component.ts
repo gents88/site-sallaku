@@ -93,6 +93,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Pre-aggregated monthly + total stats
   monthlyViews = 0;
+  // Consent stats
+  consentTotal = 0;
+  consentAnalytics = 0;
+  consentMarketing = 0;
+  consentPreferences = 0;
+  consentAnalyticsRate = 0;
+  consentMarketingRate = 0;
+  consentPreferencesRate = 0;
   statsLocations: DonutItem[] = [];
   statsMonthlyLocations: DonutItem[] = [];
   statsDevices: DonutItem[] = [];
@@ -179,7 +187,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.blogService.getAll(),
     ).subscribe({
       next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts,
-               topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth, systemDetails, systemOps, gsc }) => {
+              topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth, systemDetails, systemOps, gsc, consentStats }) => {
         const totalPosts = adminStats.content.total;
         const publishedPosts = adminStats.content.published;
         const totalValues = [
@@ -244,6 +252,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.systemOps = systemOps;
         this.totalContacts = adminStats.contacts;
         this.gscSummary = gsc;
+        // Consent stats
+        this.consentTotal = consentStats?.total ?? 0;
+        this.consentAnalytics = consentStats?.analytics ?? 0;
+        this.consentMarketing = consentStats?.marketing ?? 0;
+        this.consentPreferences = consentStats?.preferences ?? 0;
+        this.consentAnalyticsRate = consentStats?.analyticsRate ?? 0;
+        this.consentMarketingRate = consentStats?.marketingRate ?? 0;
+        this.consentPreferencesRate = consentStats?.preferencesRate ?? 0;
 
         this.lastLoadedAt = new Date();
         this.loading = false;

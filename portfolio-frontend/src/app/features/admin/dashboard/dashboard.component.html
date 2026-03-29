@@ -171,6 +171,39 @@
       </section>
     </div>
 
+    <!-- Consent Stats -->
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'admin.consent.title' | translate }}</h2>
+            <p class="text-muted">{{ 'admin.consent.desc' | translate }}</p>
+          </div>
+          <mat-icon>gavel</mat-icon>
+        </div>
+
+        <div class="consent-summary">
+          <div class="consent-item">
+            <strong>{{ consentTotal }}</strong>
+            <span class="text-muted">{{ 'admin.consent.total' | translate }}</span>
+          </div>
+          <div class="consent-item">
+            <strong>{{ (consentAnalyticsRate * 100) | number:'1.0-0' }}%</strong>
+            <span class="text-muted">{{ 'consent.analytics' | translate }}</span>
+          </div>
+          <div class="consent-item">
+            <strong>{{ (consentMarketingRate * 100) | number:'1.0-0' }}%</strong>
+            <span class="text-muted">{{ 'consent.marketing' | translate }}</span>
+          </div>
+          <div class="consent-item">
+            <strong>{{ (consentPreferencesRate * 100) | number:'1.0-0' }}%</strong>
+            <span class="text-muted">{{ 'consent.preferences' | translate }}</span>
+          </div>
+        </div>
+        <button type="button" class="btn" (click)="loadData()">{{ 'admin.refresh_data' | translate }}</button>
+      </section>
+    </div>
+
     <!-- ── Advanced Visitor Analytics ─────────────────────────────────── -->
     <h2 class="section-label">{{ 'admin.visitor_analytics' | translate }}</h2>
 
