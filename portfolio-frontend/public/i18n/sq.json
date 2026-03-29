@@ -242,6 +242,22 @@
   "banner": {
     "wip": "Faqja është në ndërtim — Work in progress"
   },
+  "consent": {
+    "title": "Preferencat e cookies",
+    "desc": "Ne përdorim cookies për funksionalitetet e nevojshme dhe për analytics dhe marketing opsional. Menaxhoni preferencat tuaja.",
+    "accept_all": "Prano të gjitha",
+    "reject_all": "Refuzo të gjitha",
+    "manage_preferences": "Menaxho preferencat",
+    "necessary": "Të nevojshme",
+    "analytics": "Analitikë",
+    "marketing": "Marketing",
+    "preferences": "Preferenca",
+    "save": "Ruaj preferencat",
+    "settings_title": "Cilësimet e cookies",
+    "settings_desc": "Aktivizo ose çaktivizo kategoritë. Cookies e nevojshme janë gjithmonë aktive.",
+    "consent_saved": "Preferencat u ruajtën",
+    "default_denied_note": "Parazgjedhje: vetëm cookies funksionale (nevojitet pëlqimi për analytics dhe marketing)."
+  },
   "skip": {
     "link": "Kalo te përmbajtja kryesore"
   },
@@ -398,6 +414,11 @@
     "chatbot_stats_desc": "Bisedat me asistentin AI",
     "chatbot_total_sessions": "Sjeancë totale",
     "chatbot_total_messages": "Mesazhe totale",
+    "consent": {
+      "title": "Përmbledhje konsensesh",
+      "desc": "Përmbledhje e konsenseve të cookies të mbledhura nga vizitorët",
+      "total": "Totali i konsenseve"
+    },
     "chatbot_today": "Sot",
     "chatbot_this_month": "Këtë muaj",
     "top_pages": "Faqet kryesore",

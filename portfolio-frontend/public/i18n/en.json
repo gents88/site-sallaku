@@ -242,6 +242,22 @@
   "banner": {
     "wip": "Website under construction — Work in progress"
   },
+  "consent": {
+    "title": "Cookie preferences",
+    "desc": "We use cookies for necessary site functionality and optional analytics and marketing. Manage your preferences.",
+    "accept_all": "Accept all",
+    "reject_all": "Reject all",
+    "manage_preferences": "Manage preferences",
+    "necessary": "Necessary",
+    "analytics": "Analytics",
+    "marketing": "Marketing",
+    "preferences": "Preferences",
+    "save": "Save preferences",
+    "settings_title": "Cookie settings",
+    "settings_desc": "Enable or disable categories. Necessary cookies are always active.",
+    "consent_saved": "Preferences saved",
+    "default_denied_note": "Default: functional cookies only (consent required for analytics and marketing)."
+  },
   "skip": {
     "link": "Skip to main content"
   },
@@ -398,6 +414,11 @@
     "chatbot_stats_desc": "AI assistant conversations",
     "chatbot_total_sessions": "Total sessions",
     "chatbot_total_messages": "Total messages",
+    "consent": {
+      "title": "Consent Overview",
+      "desc": "Summary of cookie consent collected from visitors",
+      "total": "Total consents"
+    },
     "chatbot_today": "Today",
     "chatbot_this_month": "This month",
     "top_pages": "Top Pages",

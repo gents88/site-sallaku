@@ -144,6 +144,16 @@ export interface ChatbotSessionsPage {
   totalPages: number;
 }
 
+export interface ConsentStats {
+  total: number;
+  analytics: number;
+  marketing: number;
+  preferences: number;
+  analyticsRate: number;
+  marketingRate: number;
+  preferencesRate: number;
+}
+
 // ── Default / empty values ─────────────────────────────────────────────────────
 
 const EMPTY_STATS: AdminStatsResponse = {
@@ -222,7 +232,18 @@ export class AdminDashboardService {
       gsc: this.http.get<SearchConsoleSummary>(`${this.api}/analytics/search-console`).pipe(
         catchError(() => of(EMPTY_GSC)), startWith(EMPTY_GSC),
       ),
+      consentStats: this.http.get<ConsentStats>(`${this.api}/consent/stats`).pipe(
+        catchError(() => of({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats)), startWith({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats),
+      ),
     });
+  }
+
+  getConsentStats() {
+    return this.http.get<ConsentStats>(`${this.api}/consent/stats`).pipe(catchError(() => of({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats)));
+  }
+
+  getConsentHistory(limit = 100, skip = 0) {
+    return this.http.get<any[]>(`${this.api}/consent/history?limit=${limit}&skip=${skip}`).pipe(catchError(() => of([])));
   }
 
   getStats(): Observable<AdminStatsResponse> {

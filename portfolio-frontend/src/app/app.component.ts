@@ -1,8 +1,9 @@
 import { Component, HostListener, OnInit, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
+import { ConsentBannerComponent } from './shared/components/consent-banner/consent-banner.component';
 import { LoginComponent } from './features/admin/auth/login/login.component';
 import { AuthService } from './core/services/auth.service';
 import { SeoService } from './core/services/seo.service';
@@ -14,7 +15,7 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent],
   template: `
     <a class="skip-link" href="#homepage">{{ 'skip.link' | translate }}</a>
     @if (wipVisible()) {
@@ -24,6 +25,7 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
       </div>
     }
     <app-navbar />
+    <app-consent-banner />
     <main>
       <router-outlet />
     </main>
@@ -381,11 +383,24 @@ export class AppComponent implements OnInit {
     public inactivity: InactivityService,
     private seoService: SeoService,
     private router: Router,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {
     this.inactivity.init();
     this.seoService.trackPageViews();
+  }
+
+  ngAfterViewInit(): void {
+    try {
+      const keys = ['desc','accept_all','reject_all','manage_preferences','necessary','analytics','marketing','preferences','save','settings_title','settings_desc'];
+      const i18nObj: Record<string,string> = {};
+      keys.forEach(k => {
+        const val = this.translate.instant(`consent.${k}`);
+        i18nObj[k] = val || '';
+      });
+      (window as any).__CONSENT_I18N__ = i18nObj;
+    } catch (e) { /* ignore */ }
   }
 
   closeAccountModal(): void {
