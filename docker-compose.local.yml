@@ -67,11 +67,11 @@ services:
 
   backend:
     build:
-      context: ./portfolio-backend
+      context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./portfolio-backend/.env
+      - ./backend/.env
     environment:
       PORT: 3000
       NODE_ENV: development

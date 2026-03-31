@@ -8,7 +8,7 @@
 #   1. Copia il file .env.plesk → .env nella root:
 #        cp .env.plesk .env.plesk.local  # modifica i valori reali
 #   2. Build + push immagine (dalla tua macchina o sul server):
-#        docker build -t portfolio-backend:latest ./portfolio-backend
+#        docker build -t backend:latest ./backend
 #   3. Avvia:
 #        docker compose -f docker-compose.plesk.yml up -d
 #   4. In Plesk: aggiungi reverse proxy per il dominio →
@@ -62,7 +62,7 @@ services:
 
   backend:
     build:
-      context: ./portfolio-backend
+      context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:

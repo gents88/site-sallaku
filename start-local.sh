@@ -7,8 +7,8 @@
 set -eo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-BACKEND="$ROOT/portfolio-backend"
-FRONTEND="$ROOT/portfolio-frontend"
+BACKEND="$ROOT/backend"
+FRONTEND="$ROOT/frontend"
 
 # ── Colori ────────────────────────────────────────────────────────
 RED='\033[0;31m'

@@ -325,6 +325,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     requestAnimationFrame(update);
   }
 
+  /**
+   * Scroll programmato a una sezione con offset per navbar fissa.
+   * Usare (click) invece di href="#id" puro evita:
+   *  - l'intercettazione di Angular Router che triggera scrollPositionRestoration
+   *  - il comportamento non uniforme di scroll-padding-top su iOS Safari
+   */
+  scrollToSection(id: string, event: Event): void {
+    event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    const NAVBAR_H = 80;
+    const top = el.getBoundingClientRect().top + window.scrollY - NAVBAR_H;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+
   ngOnDestroy(): void {
     this.observer?.disconnect();
     this.kpiObserver?.disconnect();

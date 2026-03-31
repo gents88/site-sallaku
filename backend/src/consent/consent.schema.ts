@@ -8,8 +8,8 @@ export class Consent {
   @Prop({ required: false })
   userId?: string;
 
-  @Prop({ required: true })
-  country: string;
+  @Prop({ required: false })
+  country?: string;
 
   @Prop({ default: false })
   analytics: boolean;

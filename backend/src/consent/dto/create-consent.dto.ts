@@ -5,8 +5,9 @@ export class CreateConsentDto {
   @IsString()
   userId?: string;
 
+  @IsOptional()
   @IsString()
-  country: string;
+  country?: string;
 
   @IsBoolean()
   analytics: boolean;
