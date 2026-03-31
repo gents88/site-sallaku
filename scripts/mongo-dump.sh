@@ -25,7 +25,7 @@ mkdir -p "$BACKUP_DIR"
 # ── Legge MONGO_URI da ambiente o chiede interattivamente ──
 if [[ -z "${MONGO_URI:-}" ]]; then
   # Prova a leggerlo dal file .env del backend
-  ENV_FILE="$(cd "$(dirname "$0")/.." && pwd)/portfolio-backend/.env"
+  ENV_FILE="$(cd "$(dirname "$0")/.." && pwd)/backend/.env"
   if [[ -f "$ENV_FILE" ]]; then
     MONGO_URI=$(grep -E '^MONGODB_URI=' "$ENV_FILE" | cut -d'=' -f2- | tr -d '"' | tr -d "'")
   fi

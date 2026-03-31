@@ -40,11 +40,11 @@ services:
 
   backend:
     build:
-      context: ./portfolio-backend
+      context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./portfolio-backend/.env
+      - ./backend/.env
     environment:
       PORT: 3000
       REDIS_URL: redis://redis:6379
@@ -71,7 +71,7 @@ services:
 
   frontend:
     build:
-      context: ./portfolio-frontend
+      context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:

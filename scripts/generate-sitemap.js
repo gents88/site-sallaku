@@ -34,7 +34,7 @@ const xml = buildXml(routes);
 
 const targets = [
   path.join(__dirname, '..', 'public', 'sitemap.xml'),
-  path.join(__dirname, '..', 'portfolio-frontend', 'public', 'sitemap.xml'),
+  path.join(__dirname, '..', 'frontend', 'public', 'sitemap.xml'),
 ];
 
 for (const t of targets) {
