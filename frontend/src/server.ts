@@ -7,7 +7,7 @@ import bootstrap from './main.server';
 
 const SITE_URL = 'https://gentsallaku.it';
 const API_URL =
-  process.env['API_URL'] ?? 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
+  process.env['API_URL'] ?? 'http://localhost:3000/api/v1';
 
 export function app(): ReturnType<typeof express> {
   const server = express();
