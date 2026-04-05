@@ -62,6 +62,8 @@ docker run --rm \
     --archive="/backup/${ARCHIVE_FILE}" \
     --gzip \
     --drop \
+    --nsFrom="test.*" \
+    --nsTo="portfolio.*" \
     --quiet
 
 echo ""
