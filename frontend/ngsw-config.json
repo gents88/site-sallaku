@@ -33,7 +33,7 @@
     {
       "name": "blog-list-api",
       "urls": [
-        "https://portfolio-backend-production-e76d.up.railway.app/api/v1/blog/posts*"
+        "/api/v1/blog/posts*"
       ],
       "cacheConfig": {
         "strategy": "performance",
@@ -45,7 +45,7 @@
     {
       "name": "blog-detail-api",
       "urls": [
-        "https://portfolio-backend-production-e76d.up.railway.app/api/v1/blog/posts/*"
+        "/api/v1/blog/posts/*"
       ],
       "cacheConfig": {
         "strategy": "performance",
@@ -57,9 +57,9 @@
     {
       "name": "static-api",
       "urls": [
-        "https://portfolio-backend-production-e76d.up.railway.app/api/v1/projects*",
-        "https://portfolio-backend-production-e76d.up.railway.app/api/v1/about*",
-        "https://portfolio-backend-production-e76d.up.railway.app/api/v1/experiences*"
+        "/api/v1/projects*",
+        "/api/v1/about*",
+        "/api/v1/experiences*"
       ],
       "cacheConfig": {
         "strategy": "performance",
