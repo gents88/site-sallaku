@@ -7,6 +7,7 @@ import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { AnalyticsService } from './analytics.service';
 import { SearchConsoleService } from './search-console.service';
 import { TrackPageViewDto } from './dto/track-page-view.dto';
+import { TrackClickEventDto } from './dto/track-click-event.dto';
 
 @ApiTags('Analytics')
 @Controller('analytics')
@@ -107,5 +108,24 @@ export class AnalyticsController {
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.send(csv);
+  }
+
+  // ─── Click event tracking ────────────────────────────────────────────────
+
+  @Post('click-event')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Track a click / interaction event (public)' })
+  trackClickEvent(@Body() dto: TrackClickEventDto, @Req() req: Request) {
+    return this.analyticsService.trackClickEvent(dto, req);
+  }
+
+  @Get('click-stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get aggregated click stats: top labels, event types, destinations (admin only)' })
+  @ApiQuery({ name: 'limit', required: false })
+  getClickStats(@Query('limit') limit?: string) {
+    return this.analyticsService.getClickStats(limit ? parseInt(limit, 10) : 20);
   }
 }

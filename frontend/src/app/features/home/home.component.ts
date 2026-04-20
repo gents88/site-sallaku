@@ -15,6 +15,7 @@ import { About } from '../../core/models/about.model';
 import { Project } from '../../core/models/project.model';
 import { Experience } from '../../core/models/experience.model';
 import { of } from 'rxjs';
+import { TrackClickDirective } from '../../shared/directives/track-click.directive';
 
 interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
@@ -25,7 +26,7 @@ interface ServiceItem { key: string; icon: string; colorClass: string; }
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

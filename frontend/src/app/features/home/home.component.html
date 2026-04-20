@@ -72,8 +72,8 @@
         <p class="about-bio" [innerHTML]="'about.bio1' | translate"></p>
         <p class="about-bio" [innerHTML]="'about.bio2' | translate"></p>
         <div class="bio-actions">
-          <a href="javascript:void(0)" class="btn btn-outline" (click)="scrollToSection('projects', $event)">{{ 'nav.projects' | translate }}</a>
-          <a href="javascript:void(0)" class="btn btn-primary" (click)="scrollToSection('contact', $event)">{{ 'nav.contact' | translate }}</a>
+          <a href="javascript:void(0)" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="about_projects_btn">{{ 'nav.projects' | translate }}</a>
+          <a href="javascript:void(0)" class="btn btn-primary" (click)="scrollToSection('contact', $event)" appTrackClick eventType="cta" label="about_contact_btn">{{ 'nav.contact' | translate }}</a>
         </div>
       </div>
     </div>
@@ -396,13 +396,13 @@
         <p>{{ 'contact.card.pec.desc' | translate }}</p>
         <span class="contact-arrow"><i class="fas fa-arrow-right"></i></span>
       </a>
-      <a href="https://linkedin.com/in/gent-sallaku" target="_blank" rel="noopener" class="contact-card reveal glass-card">
+      <a href="https://linkedin.com/in/gent-sallaku" target="_blank" rel="noopener" class="contact-card reveal glass-card" appTrackClick eventType="social" label="linkedin" destination="https://linkedin.com/in/gent-sallaku">
         <div class="contact-icon"><i class="fab fa-linkedin-in"></i></div>
         <h3>{{ 'contact.card.linkedin.title' | translate }}</h3>
         <p>{{ 'contact.card.linkedin.desc' | translate }}</p>
         <span class="contact-arrow"><i class="fas fa-arrow-right"></i></span>
       </a>
-      <a href="https://github.com/gentsallaku" target="_blank" rel="noopener" class="contact-card reveal glass-card">
+      <a href="https://github.com/gentsallaku" target="_blank" rel="noopener" class="contact-card reveal glass-card" appTrackClick eventType="social" label="github" destination="https://github.com/gentsallaku">
         <div class="contact-icon"><i class="fab fa-github"></i></div>
         <h3>{{ 'contact.card.github.title' | translate }}</h3>
         <p>{{ 'contact.card.github.desc' | translate }}</p>

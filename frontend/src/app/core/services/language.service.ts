@@ -4,12 +4,16 @@ import { DOCUMENT } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService, type LanguageAccent } from './theme.service';
 
-export type Lang = 'it' | 'en' | 'sq';
+export type Lang = 'it' | 'en' | 'sq' | 'es' | 'pt' | 'fr' | 'de';
 
 export const SUPPORTED_LANGS: { code: Lang; label: string; flag: string }[] = [
-  { code: 'it', label: 'Italiano', flag: '🇮🇹' },
-  { code: 'en', label: 'English',  flag: '🇬🇧' },
-  { code: 'sq', label: 'Shqip',    flag: '🇦🇱' },
+  { code: 'it', label: 'Italiano',   flag: '🇮🇹' },
+  { code: 'en', label: 'English',    flag: '🇬🇧' },
+  { code: 'sq', label: 'Shqip',      flag: '🇦🇱' },
+  { code: 'es', label: 'Español',    flag: '🇪🇸' },
+  { code: 'pt', label: 'Português',  flag: '🇧🇷' },
+  { code: 'fr', label: 'Français',   flag: '🇫🇷' },
+  { code: 'de', label: 'Deutsch',    flag: '🇩🇪' },
 ];
 
 const STORAGE_KEY = 'gs-portfolio-lang';
@@ -19,19 +23,32 @@ const COUNTRY_LANG_MAP: Record<string, Lang> = {
   AL: 'sq', // Albania
   XK: 'sq', // Kosovo
   IT: 'it', // Italy
+  ES: 'es', // Spain
+  MX: 'es', // Mexico
+  AR: 'es', // Argentina
+  CO: 'es', // Colombia
+  PT: 'pt', // Portugal
+  BR: 'pt', // Brazil
+  FR: 'fr', // France
+  BE: 'fr', // Belgium
+  CH: 'fr', // Switzerland (default to French)
+  DE: 'de', // Germany
+  AT: 'de', // Austria
 };
+
+const ALL_LANGS: Lang[] = ['it', 'en', 'sq', 'es', 'pt', 'fr', 'de'];
 
 export function resolveInitialLanguage(): Lang {
   if (typeof localStorage !== 'undefined') {
     const stored = localStorage.getItem(STORAGE_KEY) as Lang | null;
-    if (stored && ['it', 'en', 'sq'].includes(stored)) {
+    if (stored && ALL_LANGS.includes(stored)) {
       return stored;
     }
   }
 
   if (typeof navigator !== 'undefined') {
     const browser = navigator.language.slice(0, 2) as Lang;
-    if (['it', 'en', 'sq'].includes(browser)) {
+    if (ALL_LANGS.includes(browser)) {
       return browser;
     }
   }
@@ -50,7 +67,7 @@ export class LanguageService {
   readonly supported = SUPPORTED_LANGS;
 
   constructor(private translate: TranslateService) {
-    this.translate.addLangs(['it', 'en', 'sq']);
+    this.translate.addLangs(ALL_LANGS);
     if (isPlatformBrowser(this.platformId)) {
       this.doc.documentElement.lang = this._current();
       this.detectLanguageFromIP();

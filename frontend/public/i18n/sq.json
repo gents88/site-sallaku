@@ -16,7 +16,11 @@
     "label": "Gjuha",
     "it": "Italiano",
     "en": "English",
-    "sq": "Shqip"
+    "sq": "Shqip",
+    "es": "Spanjisht",
+    "pt": "Portugalisht",
+    "fr": "Frëngjisht",
+    "de": "Gjermanisht"
   },
   "hero": {
     "role": "Zhvillues Senior Front-End & API",

@@ -10,9 +10,18 @@ interface PageViewPayload {
   userAgent: string;
 }
 
+interface ClickEventPayload {
+  visitorId: string;
+  eventType: string;
+  label: string;
+  path: string;
+  destination?: string;
+  language?: string;
+}
+
 /**
- * Lightweight page-view tracking service.
- * Sends a non-blocking POST to /analytics/page-view on each navigation.
+ * Lightweight page-view and click-event tracking service.
+ * Sends non-blocking POSTs to /analytics/page-view and /analytics/click-event.
  * Visitor ID is persisted in localStorage (no PII stored).
  */
 @Injectable({ providedIn: 'root' })
@@ -32,6 +41,27 @@ export class AnalyticsTrackingService {
     // Fire-and-forget — never block the user or surface errors
     this.http
       .post(`${environment.apiUrl}/analytics/page-view`, payload)
+      .subscribe({ error: () => {} });
+  }
+
+  /**
+   * Track a click or interaction event.
+   * @param eventType  Semantic category: 'cta' | 'affiliate' | 'social' | 'contact' | 'cv_download' | 'blog' | 'project'
+   * @param label      Unique element identifier, e.g. 'hero_contact_btn'
+   * @param destination Optional URL the user is navigating to (useful for affiliate links)
+   */
+  trackClick(eventType: string, label: string, destination?: string): void {
+    const payload: ClickEventPayload = {
+      visitorId: this.visitorId,
+      eventType,
+      label,
+      path: typeof window !== 'undefined' ? window.location.pathname : '/',
+      destination,
+      language: typeof navigator !== 'undefined' ? (navigator.language ?? '') : '',
+    };
+
+    this.http
+      .post(`${environment.apiUrl}/analytics/click-event`, payload)
       .subscribe({ error: () => {} });
   }
 
