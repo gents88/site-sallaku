@@ -16,7 +16,11 @@
     "label": "Language",
     "it": "Italiano",
     "en": "English",
-    "sq": "Shqip"
+    "sq": "Shqip",
+    "es": "Spanish",
+    "pt": "Portuguese",
+    "fr": "French",
+    "de": "German"
   },
   "hero": {
     "role": "Senior Front‑End & API Developer",
