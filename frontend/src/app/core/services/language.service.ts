@@ -11,7 +11,7 @@ export const SUPPORTED_LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: 'en', label: 'English',    flag: '🇬🇧' },
   { code: 'sq', label: 'Shqip',      flag: '🇦🇱' },
   { code: 'es', label: 'Español',    flag: '🇪🇸' },
-  { code: 'pt', label: 'Português',  flag: '�🇹' },
+  { code: 'pt', label: 'Português',  flag: '🇵🇹' },
   { code: 'fr', label: 'Français',   flag: '🇫🇷' },
   { code: 'de', label: 'Deutsch',    flag: '🇩🇪' },
 ];
