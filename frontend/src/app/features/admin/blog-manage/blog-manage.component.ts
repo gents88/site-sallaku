@@ -100,10 +100,13 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     // Translations
     title_en:        [''],
     title_sq:        [''],
+    title_pt:        [''],
     content_en:      [''],
     content_sq:      [''],
+    content_pt:      [''],
     excerpt_en:      [''],
     excerpt_sq:      [''],
+    excerpt_pt:      [''],
   });
 
   // ── Active-language control getters ────────────────────────────────────────
@@ -112,6 +115,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     switch (this.activeTab) {
       case 'en': return this.form.get('title_en') as FormControl;
       case 'sq': return this.form.get('title_sq') as FormControl;
+      case 'pt': return this.form.get('title_pt') as FormControl;
       default:   return this.form.get('title') as FormControl;
     }
   }
@@ -120,6 +124,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     switch (this.activeTab) {
       case 'en': return this.form.get('content_en') as FormControl;
       case 'sq': return this.form.get('content_sq') as FormControl;
+      case 'pt': return this.form.get('content_pt') as FormControl;
       default:   return this.form.get('content') as FormControl;
     }
   }
@@ -128,6 +133,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     switch (this.activeTab) {
       case 'en': return this.form.get('excerpt_en') as FormControl;
       case 'sq': return this.form.get('excerpt_sq') as FormControl;
+      case 'pt': return this.form.get('excerpt_pt') as FormControl;
       default:   return this.form.get('excerpt') as FormControl;
     }
   }
@@ -140,10 +146,15 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     return !!(this.form.get('title_sq')?.value || this.form.get('content_sq')?.value);
   }
 
+  get hasPtTranslation(): boolean {
+    return !!(this.form.get('title_pt')?.value || this.form.get('content_pt')?.value);
+  }
+
   get previewLangInfo(): { flag: string; name: string } {
     switch (this.activeTab) {
       case 'en': return { flag: '🇬🇧', name: 'English' };
       case 'sq': return { flag: '🇦🇱', name: 'Shqip' };
+      case 'pt': return { flag: '🇵🇹', name: 'Português' };
       default:   return { flag: '🇮🇹', name: 'Italiano' };
     }
   }
@@ -219,9 +230,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       content: post.content, excerpt: post.excerpt,
       coverImage: post.coverImage, metaTitle: post.metaTitle,
       metaDescription: post.metaDescription,
-      title_en: post.title_en || '', title_sq: post.title_sq || '',
-      content_en: post.content_en || '', content_sq: post.content_sq || '',
-      excerpt_en: post.excerpt_en || '', excerpt_sq: post.excerpt_sq || '',
+      title_en: post.title_en || '', title_sq: post.title_sq || '', title_pt: post.title_pt || '',
+      content_en: post.content_en || '', content_sq: post.content_sq || '', content_pt: post.content_pt || '',
+      excerpt_en: post.excerpt_en || '', excerpt_sq: post.excerpt_sq || '', excerpt_pt: post.excerpt_pt || '',
     });
     this.showForm = true;
     this.setupAutoSave();
@@ -479,17 +490,23 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
 
     const title_en   = this.cleanOptional(raw.title_en);
     const title_sq   = this.cleanOptional(raw.title_sq);
+    const title_pt   = this.cleanOptional(raw.title_pt);
     const content_en = this.cleanOptional(raw.content_en);
     const content_sq = this.cleanOptional(raw.content_sq);
+    const content_pt = this.cleanOptional(raw.content_pt);
     const excerpt_en = this.cleanOptional(raw.excerpt_en);
     const excerpt_sq = this.cleanOptional(raw.excerpt_sq);
+    const excerpt_pt = this.cleanOptional(raw.excerpt_pt);
 
     if (title_en)   payload.title_en   = title_en;
     if (title_sq)   payload.title_sq   = title_sq;
+    if (title_pt)   payload.title_pt   = title_pt;
     if (content_en) payload.content_en = content_en;
     if (content_sq) payload.content_sq = content_sq;
+    if (content_pt) payload.content_pt = content_pt;
     if (excerpt_en) payload.excerpt_en = excerpt_en;
     if (excerpt_sq) payload.excerpt_sq = excerpt_sq;
+    if (excerpt_pt) payload.excerpt_pt = excerpt_pt;
 
     return payload;
   }
@@ -628,7 +645,18 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt_sq: excerptSq,
       });
 
-      this.snackBar.open('Translated to English and Albanian. Review before publishing.', 'Close', { duration: 4000 });
+      const [titlePt, contentPt, excerptPt] = await Promise.all([
+        title        ? firstValueFrom(this.blogService.translateText(title, 'it', 'pt'))        : Promise.resolve(''),
+        plainContent ? firstValueFrom(this.blogService.translateText(plainContent, 'it', 'pt')) : Promise.resolve(''),
+        excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'pt'))      : Promise.resolve(''),
+      ]);
+      this.form.patchValue({
+        title_pt:   titlePt,
+        content_pt: contentPt ? this.textToHtml(contentPt) : '',
+        excerpt_pt: excerptPt,
+      });
+
+      this.snackBar.open('Translated to English, Albanian and Portuguese. Review before publishing.', 'Close', { duration: 4000 });
     } catch {
       this.snackBar.open('Translation failed. Check your connection and try again.', 'Close', { duration: 4000 });
     } finally {

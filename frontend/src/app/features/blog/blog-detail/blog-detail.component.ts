@@ -39,6 +39,7 @@ export class BlogDetailComponent implements OnInit {
     const lang = this.currentLang();
     if (lang === 'en' && this.post.title_en) return this.post.title_en;
     if (lang === 'sq' && this.post.title_sq) return this.post.title_sq;
+    if (lang === 'pt' && this.post.title_pt) return this.post.title_pt;
     return this.post.title;
   }
 
@@ -48,6 +49,7 @@ export class BlogDetailComponent implements OnInit {
     const lang = this.currentLang();
     if (lang === 'en' && this.post.content_en) return this.post.content_en;
     if (lang === 'sq' && this.post.content_sq) return this.post.content_sq;
+    if (lang === 'pt' && this.post.content_pt) return this.post.content_pt;
     return this.post.content;
   }
 
