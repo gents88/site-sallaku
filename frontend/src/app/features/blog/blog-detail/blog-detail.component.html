@@ -8,7 +8,7 @@
   </div>
 } @else if (post) {
   <article class="container section post-article">
-    <a routerLink="/blog" class="back-link"><mat-icon>arrow_back</mat-icon> All posts</a>
+    <a routerLink="/blog" class="back-link" appTrackClick eventType="blog" label="blog_back_link"><mat-icon>arrow_back</mat-icon> All posts</a>
 
     @if (post.coverImage) {
       <img [src]="post.coverImage" [alt]="post.title" class="post-article__cover" loading="eager" width="1200" height="630" />
@@ -27,5 +27,8 @@
     </header>
 
     <div class="post-article__content prose" [innerHTML]="localizedContent"></div>
+
+    <!-- AdSense unit — shown below article content. Replace publisher/slot IDs. -->
+    <app-ad-unit adClient="ca-pub-XXXXXXXXXXXXXXXX" adSlot="XXXXXXXXXX" />
   </article>
 }

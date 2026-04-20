@@ -4,9 +4,11 @@ import { Model } from 'mongoose';
 import { Request } from 'express';
 import * as geoip from 'geoip-lite';
 import { TrackPageViewDto } from './dto/track-page-view.dto';
+import { TrackClickEventDto } from './dto/track-click-event.dto';
 import { PageView, PageViewDocument } from './schemas/page-view.schema';
 import { AnalyticsStats, AnalyticsStatsDocument } from './schemas/analytics-stats.schema';
 import { MonthlyHistory, MonthlyHistoryDocument } from './schemas/monthly-history.schema';
+import { ClickEvent, ClickEventDocument } from './schemas/click-event.schema';
 import { CacheService } from '../common/services/cache.service';
 
 interface ViewsByDayPoint {
@@ -56,6 +58,8 @@ export class AnalyticsService {
     private analyticsStatsModel: Model<AnalyticsStatsDocument>,
     @InjectModel(MonthlyHistory.name)
     private monthlyHistoryModel: Model<MonthlyHistoryDocument>,
+    @InjectModel(ClickEvent.name)
+    private clickEventModel: Model<ClickEventDocument>,
     private readonly cache: CacheService,
   ) {}
 
@@ -540,5 +544,57 @@ export class AnalyticsService {
     if (search.some(s => r.includes(s))) return 'search';
     if (social.some(s => r.includes(s))) return 'social';
     return 'referral';
+  }
+
+  // ─── Click event tracking ────────────────────────────────────────────────
+
+  async trackClickEvent(dto: TrackClickEventDto, req?: Request): Promise<{ success: boolean }> {
+    const userAgent = (req?.headers['user-agent'] as string) ?? '';
+    const { deviceType } = this.parseUserAgent(userAgent);
+
+    await this.clickEventModel.create({
+      visitorId: dto.visitorId,
+      eventType: dto.eventType,
+      label: dto.label,
+      path: dto.path,
+      destination: dto.destination ?? '',
+      language: dto.language ?? '',
+      deviceType,
+    });
+
+    this.cache.invalidatePrefix('analytics:clicks:');
+    return { success: true };
+  }
+
+  async getClickStats(limit = 20): Promise<{
+    topLabels: BreakdownItem[];
+    topEventTypes: BreakdownItem[];
+    topDestinations: BreakdownItem[];
+    totalClicks: number;
+  }> {
+    return this.cache.getOrSet('analytics:clicks:stats', async () => {
+      const [topLabels, topEventTypes, topDestinations, totalClicks] = await Promise.all([
+        this.clickEventModel
+          .aggregate([{ $group: { _id: '$label', count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: limit }])
+          .exec()
+          .then(r => r.map(i => ({ label: i._id as string, count: i.count as number }))),
+        this.clickEventModel
+          .aggregate([{ $group: { _id: '$eventType', count: { $sum: 1 } } }, { $sort: { count: -1 } }])
+          .exec()
+          .then(r => r.map(i => ({ label: i._id as string, count: i.count as number }))),
+        this.clickEventModel
+          .aggregate([
+            { $match: { destination: { $ne: '' } } },
+            { $group: { _id: '$destination', count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: limit },
+          ])
+          .exec()
+          .then(r => r.map(i => ({ label: i._id as string, count: i.count as number }))),
+        this.clickEventModel.countDocuments().exec(),
+      ]);
+
+      return { topLabels, topEventTypes, topDestinations, totalClicks };
+    }, 60_000);
   }
 }

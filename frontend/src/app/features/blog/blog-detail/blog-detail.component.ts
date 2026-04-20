@@ -9,11 +9,13 @@ import { LanguageService } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { PrismService } from '../../../shared/services/prism.service';
+import { TrackClickDirective } from '../../../shared/directives/track-click.directive';
+import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.component';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, LoadingSpinnerComponent],
+  imports: [CommonModule, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
