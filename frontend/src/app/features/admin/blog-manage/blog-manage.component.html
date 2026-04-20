@@ -111,11 +111,23 @@
               🇵🇹 PT
               @if (hasPtTranslation) { <span class="lang-dot"></span> }
             </button>
+            <button type="button" class="lang-tab" [class.active]="activeTab === 'es'" (click)="switchTab('es')">
+              🇪🇸 ES
+              @if (hasEsTranslation) { <span class="lang-dot"></span> }
+            </button>
+            <button type="button" class="lang-tab" [class.active]="activeTab === 'fr'" (click)="switchTab('fr')">
+              🇫🇷 FR
+              @if (hasFrTranslation) { <span class="lang-dot"></span> }
+            </button>
+            <button type="button" class="lang-tab" [class.active]="activeTab === 'de'" (click)="switchTab('de')">
+              🇩🇪 DE
+              @if (hasDeTranslation) { <span class="lang-dot"></span> }
+            </button>
           </div>
           <button mat-stroked-button type="button" class="translate-btn"
                   (click)="translateAll()" [disabled]="translating">
             <mat-icon>translate</mat-icon>
-            {{ translating ? 'Translating…' : 'Translate IT → EN, SQ, PT' }}
+            {{ translating ? 'Translating…' : 'Translate IT → ALL' }}
           </button>
         </div>
 

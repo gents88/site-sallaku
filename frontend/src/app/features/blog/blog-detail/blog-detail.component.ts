@@ -1,4 +1,4 @@
-import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -40,6 +40,9 @@ export class BlogDetailComponent implements OnInit {
     if (lang === 'en' && this.post.title_en) return this.post.title_en;
     if (lang === 'sq' && this.post.title_sq) return this.post.title_sq;
     if (lang === 'pt' && this.post.title_pt) return this.post.title_pt;
+    if (lang === 'es' && this.post.title_es) return this.post.title_es;
+    if (lang === 'fr' && this.post.title_fr) return this.post.title_fr;
+    if (lang === 'de' && this.post.title_de) return this.post.title_de;
     return this.post.title;
   }
 
@@ -50,10 +53,16 @@ export class BlogDetailComponent implements OnInit {
     if (lang === 'en' && this.post.content_en) return this.post.content_en;
     if (lang === 'sq' && this.post.content_sq) return this.post.content_sq;
     if (lang === 'pt' && this.post.content_pt) return this.post.content_pt;
+    if (lang === 'es' && this.post.content_es) return this.post.content_es;
+    if (lang === 'fr' && this.post.content_fr) return this.post.content_fr;
+    if (lang === 'de' && this.post.content_de) return this.post.content_de;
     return this.post.content;
   }
 
-  constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {}
+  constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {
+    // Re-render when UI language changes (OnPush requires explicit trigger)
+    effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+  }
 
   private highlightCode(): void {
     const article = this.el.nativeElement.querySelector('.post-article__content');

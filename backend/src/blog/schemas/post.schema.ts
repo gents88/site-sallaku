@@ -64,6 +64,33 @@ export class Post {
   @Prop({ default: '' })
   excerpt_pt: string;
 
+  @Prop({ default: '' })
+  title_es: string;
+
+  @Prop({ default: '' })
+  content_es: string;
+
+  @Prop({ default: '' })
+  excerpt_es: string;
+
+  @Prop({ default: '' })
+  title_fr: string;
+
+  @Prop({ default: '' })
+  content_fr: string;
+
+  @Prop({ default: '' })
+  excerpt_fr: string;
+
+  @Prop({ default: '' })
+  title_de: string;
+
+  @Prop({ default: '' })
+  content_de: string;
+
+  @Prop({ default: '' })
+  excerpt_de: string;
+
   // SEO
   @Prop({ default: '' })
   metaTitle: string;

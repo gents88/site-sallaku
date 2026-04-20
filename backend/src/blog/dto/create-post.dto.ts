@@ -119,4 +119,55 @@ export class CreatePostDto {
   @IsOptional()
   @MaxLength(300)
   excerpt_pt?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  title_es?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_es?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(300)
+  excerpt_es?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  title_fr?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_fr?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(300)
+  excerpt_fr?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  title_de?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_de?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(300)
+  excerpt_de?: string;
 }

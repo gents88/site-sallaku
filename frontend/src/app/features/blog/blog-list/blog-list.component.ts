@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -41,7 +41,10 @@ export class BlogListComponent implements OnInit {
   private readonly langService = inject(LanguageService);
   readonly currentLang = this.langService.current;
 
-  constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {}
+  constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {
+    // Re-render when UI language changes (OnPush requires explicit trigger)
+    effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+  }
 
   ngOnInit(): void {
     this.seo.update({
@@ -69,6 +72,9 @@ export class BlogListComponent implements OnInit {
     if (lang === 'en' && post.title_en) return post.title_en;
     if (lang === 'sq' && post.title_sq) return post.title_sq;
     if (lang === 'pt' && post.title_pt) return post.title_pt;
+    if (lang === 'es' && post.title_es) return post.title_es;
+    if (lang === 'fr' && post.title_fr) return post.title_fr;
+    if (lang === 'de' && post.title_de) return post.title_de;
     return post.title;
   }
 
@@ -77,6 +83,9 @@ export class BlogListComponent implements OnInit {
     if (lang === 'en' && post.excerpt_en) return post.excerpt_en;
     if (lang === 'sq' && post.excerpt_sq) return post.excerpt_sq;
     if (lang === 'pt' && post.excerpt_pt) return post.excerpt_pt;
+    if (lang === 'es' && post.excerpt_es) return post.excerpt_es;
+    if (lang === 'fr' && post.excerpt_fr) return post.excerpt_fr;
+    if (lang === 'de' && post.excerpt_de) return post.excerpt_de;
     return post.excerpt;
   }
 
@@ -88,7 +97,10 @@ export class BlogListComponent implements OnInit {
         p.title.toLowerCase().includes(q) ||
         (p.title_en ?? '').toLowerCase().includes(q) ||
         (p.title_sq ?? '').toLowerCase().includes(q) ||
-        (p.title_pt ?? '').toLowerCase().includes(q);
+        (p.title_pt ?? '').toLowerCase().includes(q) ||
+        (p.title_es ?? '').toLowerCase().includes(q) ||
+        (p.title_fr ?? '').toLowerCase().includes(q) ||
+        (p.title_de ?? '').toLowerCase().includes(q);
       return matchesTag && matchesSearch;
     });
     this.visibleCount = this.pageSize;
