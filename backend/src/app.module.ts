@@ -24,7 +24,12 @@ import { ConsentModule } from './consent/consent.module';
 @Module({
   imports: [
     // ── Config (global) ───────────────────────────────
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    // Priority: .env.<NODE_ENV> → .env (fallback / test)
+    // NODE_ENV: dev | uat | prod | undefined → .env
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+    }),
 
     // ── Rate limiting (global default: 60 req / 60 s per IP) ─────────────
     // Individual endpoints may override with @Throttle({ default: { limit, ttl } })
