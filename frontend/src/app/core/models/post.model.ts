@@ -1,4 +1,4 @@
-export type BlogLanguage = 'it' | 'en' | 'sq';
+export type BlogLanguage = 'it' | 'en' | 'sq' | 'pt';
 
 export interface Post {
   _id: string;
@@ -11,10 +11,13 @@ export interface Post {
   // Multilanguage translations
   title_en: string;
   title_sq: string;
+  title_pt: string;
   content_en: string;
   content_sq: string;
+  content_pt: string;
   excerpt_en: string;
   excerpt_sq: string;
+  excerpt_pt: string;
   coverImage: string;
   tags: string[];
   published: boolean;
@@ -26,7 +29,7 @@ export interface Post {
   updatedAt: string;
 }
 
-export interface PostSummary extends Omit<Post, 'content' | 'content_en' | 'content_sq'> {}
+export interface PostSummary extends Omit<Post, 'content' | 'content_en' | 'content_sq' | 'content_pt'> {}
 
 export interface CreatePostPayload {
   title: string;
@@ -43,10 +46,13 @@ export interface CreatePostPayload {
   // Multilanguage translations
   title_en?: string;
   title_sq?: string;
+  title_pt?: string;
   content_en?: string;
   content_sq?: string;
+  content_pt?: string;
   excerpt_en?: string;
   excerpt_sq?: string;
+  excerpt_pt?: string;
 }
 
 export type UpdatePostPayload = Partial<CreatePostPayload>;

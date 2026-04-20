@@ -68,6 +68,7 @@ export class BlogListComponent implements OnInit {
     const lang = this.currentLang();
     if (lang === 'en' && post.title_en) return post.title_en;
     if (lang === 'sq' && post.title_sq) return post.title_sq;
+    if (lang === 'pt' && post.title_pt) return post.title_pt;
     return post.title;
   }
 
@@ -75,6 +76,7 @@ export class BlogListComponent implements OnInit {
     const lang = this.currentLang();
     if (lang === 'en' && post.excerpt_en) return post.excerpt_en;
     if (lang === 'sq' && post.excerpt_sq) return post.excerpt_sq;
+    if (lang === 'pt' && post.excerpt_pt) return post.excerpt_pt;
     return post.excerpt;
   }
 
@@ -85,7 +87,8 @@ export class BlogListComponent implements OnInit {
       const matchesSearch = !q ||
         p.title.toLowerCase().includes(q) ||
         (p.title_en ?? '').toLowerCase().includes(q) ||
-        (p.title_sq ?? '').toLowerCase().includes(q);
+        (p.title_sq ?? '').toLowerCase().includes(q) ||
+        (p.title_pt ?? '').toLowerCase().includes(q);
       return matchesTag && matchesSearch;
     });
     this.visibleCount = this.pageSize;

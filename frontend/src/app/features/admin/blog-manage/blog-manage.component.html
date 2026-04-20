@@ -107,11 +107,15 @@
               🇦🇱 SQ
               @if (hasSqTranslation) { <span class="lang-dot"></span> }
             </button>
+            <button type="button" class="lang-tab" [class.active]="activeTab === 'pt'" (click)="switchTab('pt')">
+              🇵🇹 PT
+              @if (hasPtTranslation) { <span class="lang-dot"></span> }
+            </button>
           </div>
           <button mat-stroked-button type="button" class="translate-btn"
                   (click)="translateAll()" [disabled]="translating">
             <mat-icon>translate</mat-icon>
-            {{ translating ? 'Translating…' : 'Translate IT → EN, SQ' }}
+            {{ translating ? 'Translating…' : 'Translate IT → EN, SQ, PT' }}
           </button>
         </div>
 

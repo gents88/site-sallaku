@@ -55,6 +55,15 @@ export class Post {
   @Prop({ default: '' })
   excerpt_sq: string;
 
+  @Prop({ default: '' })
+  title_pt: string;
+
+  @Prop({ default: '' })
+  content_pt: string;
+
+  @Prop({ default: '' })
+  excerpt_pt: string;
+
   // SEO
   @Prop({ default: '' })
   metaTitle: string;

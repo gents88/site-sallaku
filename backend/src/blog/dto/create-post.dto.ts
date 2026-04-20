@@ -102,4 +102,21 @@ export class CreatePostDto {
   @IsOptional()
   @MaxLength(300)
   excerpt_sq?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(200)
+  title_pt?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_pt?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  @MaxLength(300)
+  excerpt_pt?: string;
 }
