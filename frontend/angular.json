@@ -74,6 +74,19 @@
               ],
               "outputHashing": "all"
             },
+            "uat": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.uat.ts"
+                }
+              ],
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "outputHashing": "all"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -86,6 +99,7 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": { "buildTarget": "portfolio-frontend:build:production" },
+            "uat": { "buildTarget": "portfolio-frontend:build:uat" },
             "development": { "buildTarget": "portfolio-frontend:build:development" }
           },
           "defaultConfiguration": "development",
