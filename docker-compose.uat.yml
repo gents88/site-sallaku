@@ -1,16 +1,16 @@
 # ─────────────────────────────────────────────────────────
-#  SVILUPPO LOCALE
+#  AMBIENTE UAT (User Acceptance Testing)
 #  Avvia tutto con:
-#    docker compose -f docker-compose.local.yml up -d
+#    docker compose -f docker-compose.uat.yml up -d --build
 #  Ferma e rimuovi i volumi:
-#    docker compose -f docker-compose.local.yml down -v
+#    docker compose -f docker-compose.uat.yml down -v
 #
 #  Servizi disponibili dopo l'avvio:
-#   Backend      → http://localhost:3000
-#   Swagger docs → http://localhost:3000/api/docs
-#   Mongo-Express→ http://localhost:8081  (admin / admin123)
-#   Redis        → localhost:6379
-#   MongoDB      → localhost:27017
+#   Backend      → http://localhost:3001
+#   Swagger docs → http://localhost:3001/api/docs
+#   Mongo-Express→ http://localhost:8082  (admin / admin123)
+#   Redis        → localhost:6380
+#   MongoDB      → localhost:27018
 # ─────────────────────────────────────────────────────────
 
 version: '3.9'
@@ -21,9 +21,9 @@ services:
     image: mongo:7
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
-      - mongo_data_local:/data/db
+      - mongo_data_uat:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 20s
@@ -31,13 +31,13 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - portfolio_net
+      - portfolio_uat_net
 
   mongo-express:
     image: mongo-express:1.0
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "8082:8081"
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_BASICAUTH_USERNAME: admin
@@ -47,23 +47,23 @@ services:
       mongo:
         condition: service_healthy
     networks:
-      - portfolio_net
+      - portfolio_uat_net
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     command: redis-server --save 60 1 --loglevel warning
     volumes:
-      - redis_data_local:/data
+      - redis_data_uat:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 3
     networks:
-      - portfolio_net
+      - portfolio_uat_net
 
   backend:
     build:
@@ -71,14 +71,14 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ./backend/.env.uat
     environment:
       PORT: 3000
-      NODE_ENV: development
-      MONGODB_URI: mongodb://mongo:27017/portfolio_dev
+      NODE_ENV: staging
+      MONGODB_URI: mongodb://mongo:27017/portfolio_uat
       REDIS_URL: redis://redis:6379
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       mongo:
         condition: service_healthy
@@ -91,12 +91,25 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - portfolio_net
+      - portfolio_uat_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - portfolio_uat_net
 
 volumes:
-  mongo_data_local:
-  redis_data_local:
+  mongo_data_uat:
+  redis_data_uat:
 
 networks:
-  portfolio_net:
+  portfolio_uat_net:
     driver: bridge

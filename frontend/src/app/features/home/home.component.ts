@@ -336,9 +336,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
     const el = document.getElementById(id);
     if (!el) return;
-    const NAVBAR_H = 80;
-    const top = el.getBoundingClientRect().top + window.scrollY - NAVBAR_H;
-    window.scrollTo({ top, behavior: 'smooth' });
+    // Traverse offsetParent chain to get the absolute top position from the
+    // document origin. This is reliable on iOS Safari where getBoundingClientRect()
+    // can be relative to the visual viewport (affected by address-bar animation /
+    // momentum scroll), causing a mismatch with window.scrollY.
+    let offsetTop = 0;
+    let curr: HTMLElement | null = el;
+    while (curr) {
+      offsetTop += curr.offsetTop;
+      curr = curr.offsetParent as HTMLElement | null;
+    }
+    // Read the actual rendered navbar height instead of a hard-coded constant
+    // so the offset is correct on both desktop and mobile.
+    const navbar = document.querySelector('.navbar') as HTMLElement | null;
+    const NAVBAR_H = navbar ? navbar.offsetHeight : 80;
+    window.scrollTo({ top: offsetTop - NAVBAR_H, behavior: 'smooth' });
   }
 
   ngOnDestroy(): void {

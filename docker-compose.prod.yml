@@ -53,10 +53,11 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ./backend/.env.prod
     environment:
       PORT: 3000
       NODE_ENV: production
+      MONGODB_URI: mongodb://mongo:27017/portfolio_prod
     expose:
       - "3000"
     depends_on:
