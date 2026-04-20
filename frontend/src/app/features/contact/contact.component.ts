@@ -84,7 +84,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
         const v = this.form.value as any;
         const subject = encodeURIComponent(v.subject ?? '');
         const body = encodeURIComponent(`Name: ${v.name}\nEmail: ${v.email}\n\n${v.message}`);
-        window.open(`mailto:gentsallaku@email.com?subject=${subject}&body=${body}`, '_blank');
+        window.open(`mailto:gentsallaku@gmail.com?subject=${subject}&body=${body}`, '_blank');
         this.snackBar.open('Opening your email client as fallback…', 'OK', { duration: 5000 });
       },
     });
