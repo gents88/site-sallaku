@@ -8,6 +8,7 @@
     "prebuild": "node ../scripts/generate-sitemap.js",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
+    "build:filezilla": "ng build --configuration production",
     "deploy:prep": "ng build --configuration production",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",

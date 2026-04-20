@@ -179,7 +179,7 @@
     "card": {
       "email": {
         "title": "Email",
-        "desc": "gentsallaku@email.com"
+        "desc": "gentsallaku@gmail.com"
       },
       "phone": {
         "title": "Phone",
@@ -311,6 +311,7 @@
     "otp_send_failed": "Failed to send code. Please try again.",
     "otp_invalid": "Invalid or expired code.",
     "not_admin": "This account does not have admin access.",
+    "login_error": "Invalid email or password.",
     "login_with_email_password": "Sign in with email & password",
     "or": "or"
   },

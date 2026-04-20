@@ -179,7 +179,7 @@
     "card": {
       "email": {
         "title": "Email",
-        "desc": "gentsallaku@email.com"
+        "desc": "gentsallaku@gmail.com"
       },
       "phone": {
         "title": "Telefon",
@@ -311,6 +311,7 @@
     "otp_send_failed": "Dërgimi dështoi. Provoni sërish.",
     "otp_invalid": "Kod i pavlefshëm ose i skaduar.",
     "not_admin": "Ky llogari nuk ka akses admin.",
+    "login_error": "Email ose fjalëkalim i pavlefshëm.",
     "login_with_email_password": "Hyrje me email dhe fjalëkalim",
     "or": "ose"
   },

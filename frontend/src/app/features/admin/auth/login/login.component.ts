@@ -102,8 +102,8 @@ export class LoginComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loading = false;
-        const msg = err?.error?.message?.message
-          || this.translate.instant('auth.email_required');
+        const msg = err?.error?.message
+          || this.translate.instant('auth.login_error');
         this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 4000 });
       },
     });
