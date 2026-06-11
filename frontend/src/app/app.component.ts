@@ -18,12 +18,6 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
   imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent],
   template: `
     <a class="skip-link" href="#homepage">{{ 'skip.link' | translate }}</a>
-    @if (wipVisible()) {
-      <div class="wip-banner" role="status">
-        {{ 'banner.wip' | translate }}
-        <button type="button" class="wip-close" (click)="dismissWip()" aria-label="Chiudi">&#x2715;</button>
-      </div>
-    }
     <app-navbar />
     <app-consent-banner />
     <main>
@@ -98,42 +92,6 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
 
     .skip-link:focus {
       top: 16px;
-    }
-
-    .wip-banner {
-      position: fixed;
-      top: 72px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(90deg, #ffd54a, #ffb84d);
-      color: #000;
-      padding: 6px 36px 6px 16px;
-      border-radius: 999px;
-      font-weight: 600;
-      z-index: 1100;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-      white-space: nowrap;
-      isolation: isolate;
-    }
-
-    .wip-close {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.12);
-      border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 12px;
-      line-height: 1;
-      cursor: pointer;
-      color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
     }
 
     main {
@@ -319,12 +277,6 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
     }
 
     @media (max-width: 900px) {
-      .wip-banner {
-        top: 76px;
-        max-width: calc(100vw - 32px);
-        text-align: center;
-      }
-
       .account-modal {
         top: 88px;
         right: 12px;
@@ -365,7 +317,6 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
     }  `],
 })
 export class AppComponent implements OnInit {
-  readonly wipVisible = signal(!sessionStorage.getItem('wipDismissed'));
   readonly showBackToTop = signal(false);
 
   @HostListener('window:scroll')
