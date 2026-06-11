@@ -127,8 +127,6 @@
     "subtitle": "Percorso professionale in aziende tech italiane ed internazionali"
   },
   "exp": {
-    "current": "Attuale",
-    "previous": "Precedente",
     "1": {
       "title": "Architettura Angular & 3D Web Enterprise",
       "role": "Senior Front-End Developer",
@@ -153,7 +151,9 @@
       "title": "Fondamenta Software & Metodologie Agile",
       "role": "Junior Developer",
       "desc": "Inizio del percorso professionale. Prime esperienze con .NET e Angular, formazione su metodologie Agile e best practice di sviluppo software."
-    }
+    },
+    "current": "Attuale",
+    "previous": "Precedente"
   },
   "skills": {
     "tag": "skills",
@@ -248,28 +248,25 @@
     "form_email_req": "Email non valida",
     "form_msg_req": "Il messaggio è obbligatorio (min 10 caratteri)"
   },
-  "banner": {
-    "wip": "Sito in costruzione — Work in progress"
-  },
   "skip": {
     "link": "Vai al contenuto principale"
   },
-    "consent": {
-      "title": "Preferenze cookie",
-      "desc": "Utilizziamo cookie per funzioni necessarie e per analytics e marketing opzionali. Gestisci le tue preferenze.",
-      "accept_all": "Accetta tutto",
-      "reject_all": "Rifiuta tutto",
-      "manage_preferences": "Gestisci preferenze",
-      "necessary": "Necessari",
-      "analytics": "Analytics",
-      "marketing": "Marketing",
-      "preferences": "Preferenze",
-      "save": "Salva preferenze",
-      "settings_title": "Impostazioni cookie",
-      "settings_desc": "Abilita o disabilita le categorie. I cookie necessari sono sempre attivi.",
-      "consent_saved": "Preferenze salvate",
-      "default_denied_note": "Predefinito: solo cookie funzionali (consenso richiesto per analytics e marketing)."
-    },
+  "consent": {
+    "title": "Preferenze cookie",
+    "desc": "Utilizziamo cookie per funzioni necessarie e per analytics e marketing opzionali. Gestisci le tue preferenze.",
+    "accept_all": "Accetta tutto",
+    "reject_all": "Rifiuta tutto",
+    "manage_preferences": "Gestisci preferenze",
+    "necessary": "Necessari",
+    "analytics": "Analytics",
+    "marketing": "Marketing",
+    "preferences": "Preferenze",
+    "save": "Salva preferenze",
+    "settings_title": "Impostazioni cookie",
+    "settings_desc": "Abilita o disabilita le categorie. I cookie necessari sono sempre attivi.",
+    "consent_saved": "Preferenze salvate",
+    "default_denied_note": "Predefinito: solo cookie funzionali (consenso richiesto per analytics e marketing)."
+  },
   "footer": {
     "designed": "Progettato & Sviluppato da",
     "rights": "All rights reserved."

@@ -127,8 +127,6 @@
     "subtitle": "Trayectoria profesional en empresas tecnológicas italianas e internacionales"
   },
   "exp": {
-    "current": "Actual",
-    "previous": "Anterior",
     "1": {
       "title": "Arquitectura Angular & 3D Web Enterprise",
       "role": "Desarrollador Front-End Senior",
@@ -153,7 +151,9 @@
       "title": "Fundamentos de Software & Metodologías Ágiles",
       "role": "Desarrollador Junior",
       "desc": "Inicio de la carrera profesional. Primeras experiencias con .NET y Angular, formación en metodologías Ágiles y buenas prácticas de desarrollo de software."
-    }
+    },
+    "current": "Actual",
+    "previous": "Anterior"
   },
   "skills": {
     "tag": "skills",
@@ -247,9 +247,6 @@
     "form_name_req": "El nombre es obligatorio",
     "form_email_req": "Email no válido",
     "form_msg_req": "El mensaje es obligatorio (mín. 10 caracteres)"
-  },
-  "banner": {
-    "wip": "Sitio web en construcción — Trabajo en progreso"
   },
   "consent": {
     "title": "Preferencias de cookies",

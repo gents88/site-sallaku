@@ -375,9 +375,4 @@ export class AppComponent implements OnInit {
   logoutFromTimeout(): void {
     this.inactivity.logoutNow();
   }
-
-  dismissWip(): void {
-    this.wipVisible.set(false);
-    sessionStorage.setItem('wipDismissed', '1');
-  }
 }
