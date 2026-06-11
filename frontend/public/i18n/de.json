@@ -127,8 +127,6 @@
     "subtitle": "Berufliche Laufbahn in italienischen und internationalen Tech-Unternehmen"
   },
   "exp": {
-    "current": "Aktuell",
-    "previous": "Vorherig",
     "1": {
       "title": "Angular-Architektur & 3D-Web Enterprise",
       "role": "Senior Front-End Entwickler",
@@ -153,7 +151,9 @@
       "title": "Software-Grundlagen & Agile Methoden",
       "role": "Junior-Entwickler",
       "desc": "Beginn der beruflichen Laufbahn. Erste Erfahrungen mit .NET und Angular, Ausbildung in agilen Methoden und Best Practices der Softwareentwicklung."
-    }
+    },
+    "current": "Aktuell",
+    "previous": "Vorherig"
   },
   "skills": {
     "tag": "skills",
@@ -247,9 +247,6 @@
     "form_name_req": "Name ist erforderlich",
     "form_email_req": "Ungültige E-Mail",
     "form_msg_req": "Nachricht ist erforderlich (min. 10 Zeichen)"
-  },
-  "banner": {
-    "wip": "Website im Aufbau — In Arbeit"
   },
   "consent": {
     "title": "Cookie-Einstellungen",

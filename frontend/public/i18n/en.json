@@ -127,8 +127,6 @@
     "subtitle": "Professional journey in Italian and international tech companies"
   },
   "exp": {
-    "current": "Current",
-    "previous": "Previous",
     "1": {
       "title": "Angular Architecture & Enterprise 3D Web",
       "role": "Senior Front-End Developer",
@@ -153,7 +151,9 @@
       "title": "Software Foundations & Agile Methodologies",
       "role": "Junior Developer",
       "desc": "Beginning of the professional journey. First experiences with .NET and Angular, training on Agile methodologies and software development best practices."
-    }
+    },
+    "current": "Current",
+    "previous": "Previous"
   },
   "skills": {
     "tag": "skills",
@@ -247,9 +247,6 @@
     "form_name_req": "Name is required",
     "form_email_req": "Invalid email",
     "form_msg_req": "Message is required (min 10 characters)"
-  },
-  "banner": {
-    "wip": "Website under construction — Work in progress"
   },
   "consent": {
     "title": "Cookie preferences",

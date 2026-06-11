@@ -127,8 +127,6 @@
     "subtitle": "Rrugëtimi profesional në kompani teknologjike italiane dhe ndërkombëtare"
   },
   "exp": {
-    "current": "Aktuale",
-    "previous": "E mëparshme",
     "1": {
       "title": "Arkitekturë Angular & Enterprise 3D Web",
       "role": "Zhvillues Senior Front-End",
@@ -153,7 +151,9 @@
       "title": "Bazat e Softuerit & Metodologjitë Agile",
       "role": "Junior Developer",
       "desc": "Fillimi i rrugëtimit profesional. Eksperiencat e para me .NET dhe Angular, trajnim mbi metodologjitë Agile dhe best practice të zhvillimit softuerik."
-    }
+    },
+    "current": "Aktuale",
+    "previous": "E mëparshme"
   },
   "skills": {
     "tag": "skills",
@@ -247,9 +247,6 @@
     "form_name_req": "Emri është i detyrueshëm",
     "form_email_req": "Email jo i vlefshëm",
     "form_msg_req": "Mesazhi është i detyrueshëm (min 10 karaktere)"
-  },
-  "banner": {
-    "wip": "Faqja është në ndërtim — Work in progress"
   },
   "consent": {
     "title": "Preferencat e cookies",
