@@ -1,0 +1,225 @@
+<div class="page">
+
+  <!-- ── HERO ─────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>{{ 'ai_formatter.badge' | translate }}</span>
+      </div>
+
+      <h1 class="hero-title">
+        {{ 'ai_formatter.hero_title_1' | translate }}<br>
+        <span class="gradient-text">{{ 'ai_formatter.hero_title_2' | translate }}</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        {{ 'ai_formatter.hero_subtitle' | translate }}
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary hero-cta" (click)="scrollToFormatter()">
+          {{ 'ai_formatter.cta_primary' | translate }}
+        </button>
+        <button class="btn-ghost" (click)="useSampleText(); scrollToFormatter()">
+          {{ 'ai_formatter.cta_demo' | translate }}
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">10x</span>
+          <span class="stat-label">{{ 'ai_formatter.stat_faster' | translate }}</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat">
+          <span class="stat-value">6</span>
+          <span class="stat-label">{{ 'ai_formatter.stat_doc_types' | translate }}</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat">
+          <span class="stat-value">AI</span>
+          <span class="stat-label">{{ 'ai_formatter.stat_powered' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ──────────────────────────────────────── -->
+  <section class="features">
+    <div class="features-grid">
+      @for (f of features; track f.titleKey) {
+        <div class="feature-card">
+          <div class="feature-icon">{{ f.icon }}</div>
+          <h3>{{ f.titleKey | translate }}</h3>
+          <p>{{ f.descKey | translate }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ── MAIN FORMATTER ────────────────────────────────── -->
+  <section class="formatter" #formatterSection>
+    <div class="formatter-header">
+      <h2>{{ 'ai_formatter.section_title' | translate }}</h2>
+      <p>{{ 'ai_formatter.section_subtitle' | translate }}</p>
+    </div>
+
+    <!-- Doc type selector -->
+    <div class="doc-type-selector">
+      @for (type of docTypes; track type.value) {
+        <button
+          class="doc-type-btn"
+          [class.active]="selectedDocType() === type.value"
+          (click)="setDocType(type.value)"
+          [disabled]="loading()">
+          {{ type.icon }} {{ type.labelKey | translate }}
+        </button>
+      }
+    </div>
+
+    <!-- Two-panel layout -->
+    <div class="panels">
+
+      <!-- INPUT PANEL -->
+      <div class="panel panel-input">
+        <div class="panel-header">
+          <span class="panel-title">{{ 'ai_formatter.panel_input' | translate }}</span>
+          <div class="panel-meta">
+            <span class="meta-pill">{{ wordCount() }} words</span>
+            <span class="meta-pill">{{ charCount() }} chars</span>
+          </div>
+        </div>
+
+        <!-- Drop zone (shown only when textarea is empty) -->
+        @if (!text()) {
+          <div
+            class="dropzone"
+            [class.dragging]="isDragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave()"
+            (drop)="onDrop($event)"
+            (click)="fileInput.click()">
+            <input
+              #fileInput
+              type="file"
+              hidden
+              accept=".txt,.md"
+              (change)="onFileSelected($event)">
+            <div class="drop-content">
+              <span class="drop-icon">📂</span>
+              <p>{{ 'ai_formatter.drop_text' | translate }}</p>
+              <span class="drop-sub">{{ 'ai_formatter.drop_sub' | translate }}</span>
+            </div>
+          </div>
+        }
+
+        <textarea
+          class="text-input"
+          [class.has-content]="text().length > 0"
+          placeholder="Paste your unformatted text here...&#10;&#10;✦ Meeting notes, raw content, AI output, emails...&#10;✦ Or click 'Use Sample' to see a demo"
+          [ngModel]="text()"
+          (ngModelChange)="text.set($event)"
+          [disabled]="loading()">
+        </textarea>
+
+        @if (error()) {
+          <div class="error-msg">⚠️ {{ error() }}</div>
+        }
+
+        <div class="input-actions">
+          <button class="btn-sample" (click)="useSampleText()" [disabled]="loading()">
+            {{ 'ai_formatter.btn_sample' | translate }}
+          </button>
+          @if (text()) {
+            <button class="btn-clear" (click)="clearAll()" [disabled]="loading()">
+              {{ 'ai_formatter.btn_clear' | translate }}
+            </button>
+          }
+          <button
+            class="btn-format"
+            [class.is-loading]="loading()"
+            [disabled]="!text() || loading()"
+            (click)="format()">
+            @if (loading()) {
+              <span class="spinner"></span> {{ 'ai_formatter.btn_formatting' | translate }}
+            } @else {
+              {{ 'ai_formatter.btn_format' | translate }}
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- OUTPUT PANEL -->
+      <div class="panel panel-output" [class.has-result]="!!result()">
+        <div class="panel-header">
+          <span class="panel-title">{{ 'ai_formatter.panel_output' | translate }}</span>
+          @if (result()) {
+            <div class="output-controls">
+              <div class="view-toggle">
+                <button
+                  [class.active]="viewMode() === 'formatted'"
+                  (click)="setViewMode('formatted')">
+                  {{ 'ai_formatter.view_formatted' | translate }}
+                </button>
+                <button
+                  [class.active]="viewMode() === 'raw'"
+                  (click)="setViewMode('raw')">
+                  {{ 'ai_formatter.view_markdown' | translate }}
+                </button>
+              </div>
+              <button class="btn-copy" (click)="copyToClipboard()">
+                {{ copied() ? '✓ Copied' : '📋 Copy' }}
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Loading skeleton -->
+        @if (loading()) {
+          <div class="skeleton-wrapper">
+            <div class="skeleton sk-h1"></div>
+            <div class="skeleton sk-line w-90"></div>
+            <div class="skeleton sk-line w-75"></div>
+            <div class="skeleton sk-h2 mt-20"></div>
+            <div class="skeleton sk-line w-100"></div>
+            <div class="skeleton sk-line w-85"></div>
+            <div class="skeleton sk-line w-70"></div>
+            <div class="skeleton sk-h2 mt-20"></div>
+            <div class="skeleton sk-line w-60"></div>
+            <div class="skeleton sk-line w-90"></div>
+            <div class="skeleton sk-line w-80"></div>
+          </div>
+
+        <!-- Result -->
+        } @else if (result()) {
+          <div class="result-meta">
+            <span class="meta-pill meta-accent">📑 {{ result()!.sections }} sections</span>
+            <span class="meta-pill meta-accent">💬 {{ result()!.wordCount }} words</span>
+            <span class="meta-pill meta-accent">⚡ {{ result()!.processingTime }}ms</span>
+          </div>
+
+          @if (result()!.summary) {
+            <div class="result-summary">{{ result()!.summary }}</div>
+          }
+
+          @if (viewMode() === 'formatted') {
+            <div class="output-formatted" [innerHTML]="renderedHtml()"></div>
+          } @else {
+            <pre class="output-raw">{{ result()!.formatted }}</pre>
+          }
+
+        <!-- Empty state -->
+        } @else {
+          <div class="output-empty">
+            <div class="empty-icon">✨</div>
+            <p>{{ 'ai_formatter.empty_title' | translate }}</p>
+            <span>{{ 'ai_formatter.empty_sub' | translate }}</span>
+          </div>
+        }
+      </div>
+
+    </div>
+  </section>
+
+</div>

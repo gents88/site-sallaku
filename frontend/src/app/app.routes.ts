@@ -72,10 +72,34 @@ export const routes: Routes = [
       import('./features/admin/auth/register/register.component').then(m => m.RegisterComponent),
   },
 
+  // ── AI & Tools: public (no auth required) ─────────
+  {
+    path: 'dashboard/tools',
+    loadComponent: () => import('./features/admin/tools/tools.component').then(m => m.ToolsComponent),
+  },
+  {
+    path: 'dashboard/pdf-summary',
+    loadComponent: () => import('./features/admin/pdf-summary/pdf-summary.component').then(m => m.PdfSummaryComponent),
+  },
+  {
+    path: 'dashboard/ai-formatter',
+    loadComponent: () => import('./features/admin/ai-formatter/ai-formatter.component').then(m => m.AiFormatterComponent),
+  },
+  {
+    path: 'dashboard/pdf-translate',
+    loadComponent: () => import('./features/admin/pdf-translate/pdf-translate.component').then(m => m.PdfTranslateComponent),
+  },
+  {
+    path: 'dashboard/ai-ppt',
+    loadComponent: () => import('./features/admin/ai-ppt/ai-ppt.component').then(m => m.AiPptComponent),
+  },
+
   // ── Admin: protected dashboard ────────────────────
   {
     path: 'dashboard',
     canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/admin/admin-shell/admin-shell.component').then(m => m.AdminShellComponent),
     loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes),
   },
 
