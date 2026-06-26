@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminRoutes } from './features/admin/admin.routes';
 
 export const routes: Routes = [
   // ── Public pages ──────────────────────────────────
@@ -100,7 +101,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/admin/admin-shell/admin-shell.component').then(m => m.AdminShellComponent),
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes),
+    children: adminRoutes,
   },
 
   // ── Fallback ──────────────────────────────────────
