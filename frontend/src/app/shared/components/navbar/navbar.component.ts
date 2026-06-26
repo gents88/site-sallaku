@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 import { LangSwitcherComponent } from '../lang-switcher/lang-switcher.component';
+import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService } from '../../../core/services/language.service';
@@ -21,7 +22,7 @@ interface NavLink {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent, NavDropdownComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
@@ -47,6 +48,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     { labelKey: 'nav.skills',     route: '/skills' },
     { labelKey: 'nav.contact',    route: '/contact' },
     { labelKey: 'nav.blog',       route: '/blog' },
+    { labelKey: 'nav.ai_tools',   route: '/dashboard/tools' },
   ];
 
   get desktopNavLinks() {
