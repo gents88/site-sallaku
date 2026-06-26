@@ -1,0 +1,287 @@
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge-pulse"></span>
+        <span>{{ 'pdf_translate.badge' | translate }}</span>
+      </div>
+
+      <h1 class="hero-title">
+        {{ 'pdf_translate.hero_title_1' | translate }}<br>
+        <span class="gradient-text">{{ 'pdf_translate.hero_title_2' | translate }}</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        {{ 'pdf_translate.hero_subtitle' | translate }}
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary hero-cta" (click)="scrollToUpload()">
+          {{ 'pdf_translate.cta_primary' | translate }}
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-value">12</span><span class="stat-label">{{ 'pdf_translate.stat_languages' | translate }}</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat"><span class="stat-value">OCR</span><span class="stat-label">{{ 'pdf_translate.stat_scanned' | translate }}</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat"><span class="stat-value">AI</span><span class="stat-label">{{ 'pdf_translate.stat_quality' | translate }}</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat"><span class="stat-value">50MB</span><span class="stat-label">{{ 'pdf_translate.stat_max_size' | translate }}</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ──────────────────────────────────────────────────────────── -->
+  <section class="features">
+    <div class="features-grid">
+      @for (f of features; track f.titleKey) {
+        <div class="feature-card">
+          <div class="feature-icon">{{ f.icon }}</div>
+          <h3>{{ f.titleKey | translate }}</h3>
+          <p>{{ f.descKey | translate }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ── TRANSLATOR CARD ───────────────────────────────────────────────────── -->
+  <section class="translator-section" #uploadSection>
+    <div class="translator-card">
+
+      <div class="translator-header">
+        <div class="translator-title">
+          <span class="translator-icon">🌐</span>
+          <div>
+            <h2>{{ 'pdf_translate.section_title' | translate }}</h2>
+            <p>{{ 'pdf_translate.section_subtitle' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode Selection -->
+      <div class="mode-section">
+        <label class="section-label">{{ 'pdf_translate.label_mode' | translate }}</label>
+        <div class="mode-group">
+          <button class="mode-btn" [class.active]="mode() === 'high_fidelity'" (click)="mode.set('high_fidelity')">
+            <span class="mode-icon">🎯</span>
+            <div class="mode-info">
+              <span class="mode-name">{{ 'pdf_translate.mode_high_fidelity' | translate }}</span>
+              <span class="mode-desc">{{ 'pdf_translate.mode_high_fidelity_desc' | translate }}</span>
+            </div>
+            @if (mode() === 'high_fidelity') { <span class="mode-check">✓</span> }
+          </button>
+          <button class="mode-btn" [class.active]="mode() === 'standard'" (click)="mode.set('standard')">
+            <span class="mode-icon">⚡</span>
+            <div class="mode-info">
+              <span class="mode-name">{{ 'pdf_translate.mode_standard' | translate }}</span>
+              <span class="mode-desc">{{ 'pdf_translate.mode_standard_desc' | translate }}</span>
+            </div>
+            @if (mode() === 'standard') { <span class="mode-check">✓</span> }
+          </button>
+        </div>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="lang-section">
+        <label class="section-label">{{ 'pdf_translate.label_language' | translate }}</label>
+        <div class="lang-grid">
+          @for (lang of languages; track lang.value) {
+            <button
+              class="lang-btn"
+              [class.active]="selectedLanguage() === lang.value"
+              (click)="selectedLanguage.set(lang.value)"
+            >
+              <span class="lang-flag">{{ lang.flag }}</span>
+              <span class="lang-name">{{ lang.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Drop Zone -->
+      @if (!file()) {
+        <div
+          class="drop-zone"
+          [class.dragging]="isDragging()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave()"
+          (drop)="onDrop($event)"
+          (click)="triggerFileInput()"
+          role="button"
+          tabindex="0"
+          (keydown.enter)="triggerFileInput()"
+          aria-label="Upload PDF file"
+        >
+          <div class="drop-icon-wrap">
+            <div class="drop-icon">📄</div>
+            <div class="drop-pulse"></div>
+          </div>
+          <p class="drop-title">{{ 'pdf_translate.drop_title' | translate }} <span class="drop-link">{{ 'pdf_translate.drop_browse' | translate }}</span></p>
+          <p class="drop-hint">{{ 'pdf_translate.drop_hint' | translate }}</p>
+        </div>
+      } @else {
+        <div class="file-preview">
+          <div class="file-preview-icon">{{ fileInfo()!.ext }}</div>
+          <div class="file-preview-info">
+            <span class="file-name">{{ fileInfo()!.name }}</span>
+            <span class="file-size">{{ fileInfo()!.size }}</span>
+          </div>
+          <button class="file-remove-btn" (click)="removeFile()" aria-label="Remove file">✕</button>
+        </div>
+      }
+
+      <input
+        #fileInput
+        type="file"
+        accept=".pdf,.docx,.txt"
+        class="hidden-input"
+        (change)="onFileSelected($event)"
+        aria-hidden="true"
+      />
+
+      @if (error()) {
+        <div class="error-banner" role="alert">
+          <span>⚠️</span> {{ error() }}
+        </div>
+      }
+
+      <button
+        class="btn-translate"
+        [disabled]="!file() || loading()"
+        (click)="translate()"
+      >
+        @if (loading()) {
+          <span class="spinner"></span>
+          <span>{{ 'pdf_translate.btn_translating' | translate }}</span>
+        } @else {
+          <span>🌍</span>
+          <span>
+            {{ 'pdf_translate.btn_translate_to' | translate }} {{ selectedLangLabel() }}
+            @if (mode() === 'high_fidelity') {
+              &nbsp;·&nbsp;<span class="btn-badge">{{ 'pdf_translate.badge_high_fidelity' | translate }}</span>
+            }
+          </span>
+        }
+      </button>
+
+    </div>
+  </section>
+
+  <!-- ── RESULT ─────────────────────────────────────────────────────────────── -->
+  @if (result(); as res) {
+    <section class="result-section">
+
+      <div class="result-meta">
+        <div class="meta-pill">📄 {{ res.pageCount }} {{ res.pageCount === 1 ? ('pdf_translate.page' | translate) : ('pdf_translate.pages' | translate) }}</div>
+        <div class="meta-pill">🔤 {{ res.wordCount.toLocaleString() }} words</div>
+        <div class="meta-pill">🧱 {{ res.blocksTranslated }} blocks</div>
+        <div class="meta-pill">⚡ {{ formatMs(res.processingTime) }}</div>
+        <div class="meta-pill lang-pill">🌍 {{ res.targetLanguage | titlecase }}</div>
+        @if (res.layoutPreserved) {
+          <div class="meta-pill pill-success">{{ 'pdf_translate.pill_layout_preserved' | translate }}</div>
+        } @else {
+          <div class="meta-pill pill-warn">{{ 'pdf_translate.pill_fallback' | translate }}</div>
+        }
+        @if (res.isScanned) {
+          <div class="meta-pill pill-info">🔍 {{ 'pdf_translate.pill_scanned' | translate }}</div>
+        }
+      </div>
+
+      <!-- Quick retranslate bar -->
+      <div class="retranslate-bar">
+        <span class="retranslate-label">{{ 'pdf_translate.switch_language' | translate }}</span>
+        <div class="retranslate-langs">
+          @for (lang of retranslateLangs(); track lang.value) {
+            <button
+              class="retranslate-lang-btn"
+              [disabled]="loading()"
+              (click)="retranslate(lang.value)"
+              [title]="('pdf_translate.btn_translate_to' | translate) + ' ' + lang.label"
+            >
+              <span class="rl-flag">{{ lang.flag }}</span>
+              <span class="rl-name">{{ lang.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Side-by-side PDF preview -->
+      <div class="preview-panel">
+        <div class="preview-pane pane-original">
+          <div class="pane-header">
+            <span class="pane-label">{{ 'pdf_translate.pane_original' | translate }}</span>
+          </div>
+          <div class="pane-body pane-body--pdf">
+            @if (originalPdfUrl(); as src) {
+              <iframe class="pdf-iframe" [src]="src" title="Original PDF"></iframe>
+            } @else {
+              <pre class="preview-text">{{ res.originalText }}</pre>
+            }
+          </div>
+        </div>
+
+        <div class="preview-divider">
+          <div class="divider-icon">→</div>
+        </div>
+
+        <div class="preview-pane pane-translated">
+          <div class="pane-header">
+            <span class="pane-label">{{ 'pdf_translate.pane_translated' | translate }}</span>
+            <span class="pane-lang-tag">{{ res.targetLanguage | titlecase }}</span>
+          </div>
+          <div class="pane-body pane-body--pdf">
+            @if (translatedPdfUrl(); as src) {
+              <iframe class="pdf-iframe" [src]="src" title="Translated PDF"></iframe>
+            } @else {
+              <pre class="preview-text">{{ res.translatedText }}</pre>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Download actions -->
+      <div class="download-section">
+        <p class="download-title">{{ 'pdf_translate.download_title' | translate }}</p>
+        <div class="download-grid">
+
+          @if (res.pdfBase64) {
+            <button class="download-btn primary-dl" (click)="downloadPdf()">
+              <span class="dl-icon">📥</span>
+              <div class="dl-info">
+                <span class="dl-name">{{ 'pdf_translate.dl_pdf_name' | translate }}</span>
+                <span class="dl-sub">{{ res.layoutPreserved ? ('pdf_translate.dl_pdf_sub_preserved' | translate) : ('pdf_translate.dl_pdf_sub_clean' | translate) }}</span>
+              </div>
+            </button>
+          }
+
+          <button class="download-btn secondary-dl" (click)="downloadText(res.translatedText)">
+            <span class="dl-icon">📝</span>
+            <div class="dl-info">
+              <span class="dl-name">{{ 'pdf_translate.dl_txt_name' | translate }}</span>
+              <span class="dl-sub">{{ 'pdf_translate.dl_txt_sub' | translate }}</span>
+            </div>
+          </button>
+
+          <button class="download-btn ghost-dl" (click)="copyText(res.translatedText)">
+            <span class="dl-icon">{{ copied() ? '✓' : '📋' }}</span>
+            <div class="dl-info">
+              <span class="dl-name">{{ copied() ? ('pdf_translate.dl_copied_name' | translate) : ('pdf_translate.dl_copy_name' | translate) }}</span>
+              <span class="dl-sub">{{ 'pdf_translate.dl_copy_sub' | translate }}</span>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <div class="result-footer">
+        <button class="btn-ghost-reset" (click)="reset()">{{ 'pdf_translate.btn_translate_another' | translate }}</button>
+      </div>
+
+    </section>
+  }
+
+</div>

@@ -1,11 +1,13 @@
 import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
 import { provideServerRendering } from '@angular/platform-server';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { appConfig } from './app.config';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { SwRegistrationOptions } from '@angular/service-worker';
 
 /**
  * Loads i18n JSON files from the built browser assets at server-render time.
@@ -33,7 +35,10 @@ class SsrTranslateLoader implements TranslateLoader {
 const serverConfig: ApplicationConfig = {
   providers: [
     provideServerRendering(),
+    provideNoopAnimations(),
     { provide: TranslateLoader, useClass: SsrTranslateLoader },
+    // Disable service worker in SSR context — it's browser-only
+    { provide: SwRegistrationOptions, useValue: { enabled: false } },
   ],
 };
 

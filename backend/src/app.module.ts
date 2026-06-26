@@ -20,6 +20,7 @@ import { CronModule } from './cron/cron.module';
 import { CommonModule } from './common/common.module';
 import { AuditModule } from './audit/audit.module';
 import { ConsentModule } from './consent/consent.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { ConsentModule } from './consent/consent.module';
     CronModule,
     AuditModule,
     ConsentModule,
+    AiModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default

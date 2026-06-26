@@ -1,7 +1,14 @@
 User-agent: *
 Allow: /
 
-# Block admin dashboard (frontend routes)
+# Allow public AI & PDF tool pages
+Allow: /dashboard/tools
+Allow: /dashboard/ai-ppt
+Allow: /dashboard/ai-formatter
+Allow: /dashboard/pdf-translate
+Allow: /dashboard/pdf-summary
+
+# Block the rest of the admin dashboard
 Disallow: /dashboard/
 
 # Block backend API endpoints
