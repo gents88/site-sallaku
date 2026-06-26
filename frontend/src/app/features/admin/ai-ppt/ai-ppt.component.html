@@ -1,0 +1,322 @@
+<div class="page" [class.fullscreen-active]="isFullscreen()">
+
+  <!-- ── HERO ──────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>{{ 'ai_ppt.badge' | translate }}</span>
+      </div>
+
+      <h1 class="hero-title">
+        {{ 'ai_ppt.hero_title_1' | translate }}<br>
+        <span class="gradient-text">{{ 'ai_ppt.hero_title_2' | translate }}</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        {{ 'ai_ppt.hero_subtitle' | translate }}
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary hero-cta" (click)="scrollToGenerator()">
+          🚀 {{ 'ai_ppt.cta_primary' | translate }}
+        </button>
+        <button class="btn-ghost" (click)="useSampleTopic(); scrollToGenerator()">
+          {{ 'ai_ppt.cta_demo' | translate }}
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">20</span>
+          <span class="stat-label">{{ 'ai_ppt.stat_max_slides' | translate }}</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat">
+          <span class="stat-value">5</span>
+          <span class="stat-label">{{ 'ai_ppt.stat_style_themes' | translate }}</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat">
+          <span class="stat-value">AI</span>
+          <span class="stat-label">{{ 'ai_ppt.stat_powered' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ─────────────────────────────────────────────────── -->
+  <section class="features">
+    <div class="features-grid">
+      @for (f of features; track f.titleKey) {
+        <div class="feature-card">
+          <div class="feature-icon">{{ f.icon }}</div>
+          <h3>{{ f.titleKey | translate }}</h3>
+          <p>{{ f.descKey | translate }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ── GENERATOR FORM ───────────────────────────────────────────── -->
+  <section class="generator-section" #generatorSection>
+    <div class="generator-card">
+      <div class="generator-header">
+        <span class="generator-icon">🎯</span>
+        <div>
+          <h2>{{ 'ai_ppt.section_title' | translate }}</h2>
+          <p>{{ 'ai_ppt.section_subtitle' | translate }}</p>
+        </div>
+      </div>
+
+      <!-- Topic Input -->
+      <div class="input-group">
+        <label class="input-label">{{ 'ai_ppt.label_topic' | translate }} <span class="required">*</span></label>
+        <div class="topic-input-wrap">
+          <textarea
+            class="topic-input"
+            placeholder="e.g.  The Future of Renewable Energy: Solar, Wind, and Hydrogen&#10;e.g.  Effective Remote Team Leadership Strategies&#10;e.g.  Building a Sustainable SaaS Business in 2026"
+            rows="3"
+            [ngModel]="topic()"
+            (ngModelChange)="topic.set($event)"
+            [disabled]="loading()"
+          ></textarea>
+          <button class="btn-sample-topic" (click)="useSampleTopic()" [disabled]="loading()">
+            {{ 'ai_ppt.btn_sample' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Style + Count Row -->
+      <div class="config-row">
+        <div class="config-group">
+          <label class="input-label">{{ 'ai_ppt.label_style' | translate }}</label>
+          <div class="style-grid">
+            @for (s of styles; track s.value) {
+              <button
+                class="style-btn"
+                [class.active]="selectedStyle() === s.value"
+                (click)="selectedStyle.set(s.value)"
+                [disabled]="loading()"
+              >
+                <span class="style-icon">{{ s.icon }}</span>
+                <span class="style-label">{{ ('ai_ppt.style_' + s.value + '_label') | translate }}</span>
+                <span class="style-desc">{{ ('ai_ppt.style_' + s.value + '_desc') | translate }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="config-group config-group-count">
+          <label class="input-label">{{ 'ai_ppt.label_slides_count' | translate }}</label>
+          <div class="count-options">
+            @for (n of slideCounts; track n) {
+              <button
+                class="count-btn"
+                [class.active]="selectedCount() === n"
+                (click)="selectedCount.set(n)"
+                [disabled]="loading()"
+              >{{ n }}</button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Context File Upload -->
+      <div class="context-section">
+        <label class="input-label">{{ 'ai_ppt.label_context' | translate }} <span class="optional">{{ 'ai_ppt.label_optional' | translate }}</span></label>
+        <p class="context-hint">{{ 'ai_ppt.context_hint' | translate }}</p>
+
+        @if (!contextFile()) {
+          <div
+            class="context-drop"
+            [class.dragging]="isDragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave()"
+            (drop)="onDrop($event)"
+            (click)="triggerFileInput()"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="triggerFileInput()"
+          >
+            <span class="context-drop-icon">📎</span>
+            <span>{{ 'ai_ppt.drop_text' | translate }} <span class="drop-link">{{ 'ai_ppt.drop_browse' | translate }}</span></span>
+          </div>
+        } @else {
+          <div class="context-file-preview">
+            <span class="context-file-icon">📄</span>
+            <div class="context-file-info">
+              <span class="context-file-name">{{ contextFileInfo()!.name }}</span>
+              <span class="context-file-size">{{ contextFileInfo()!.size }}</span>
+            </div>
+            <button class="context-file-remove" (click)="removeContextFile()" aria-label="Remove file">✕</button>
+          </div>
+        }
+
+        <input
+          #fileInput
+          type="file"
+          accept=".pdf,.txt,.docx"
+          class="hidden-input"
+          (change)="onFileSelected($event)"
+          aria-hidden="true"
+        />
+      </div>
+
+      @if (error()) {
+        <div class="error-banner" role="alert">
+          <span>⚠️</span> {{ error() }}
+        </div>
+      }
+
+      <button
+        class="btn-generate"
+        [class.is-loading]="loading()"
+        [disabled]="!topic().trim() || loading()"
+        (click)="generate()"
+      >
+        @if (loading()) {
+          <span class="spinner"></span>
+          <span>{{ 'ai_ppt.btn_generating' | translate }}</span>
+        } @else {
+          <span>✨</span>
+          <span>{{ 'ai_ppt.btn_generate' | translate: { count: selectedCount() } }}</span>
+        }
+      </button>
+    </div>
+  </section>
+
+  <!-- ── LOADING STATE ─────────────────────────────────────────────── -->
+  @if (loading()) {
+    <section class="loading-section">
+      <div class="loading-card">
+        <div class="loading-animation">
+          <div class="slide-skeleton sk-1"></div>
+          <div class="slide-skeleton sk-2"></div>
+          <div class="slide-skeleton sk-3"></div>
+        </div>
+        <div class="loading-text">
+          <span class="loading-icon spin">🤖</span>
+          <div>
+            <p class="loading-title">{{ 'ai_ppt.loading_title' | translate }}</p>
+            <p class="loading-sub">{{ 'ai_ppt.loading_sub' | translate }}</p>
+          </div>
+        </div>
+        <div class="loading-bar-track">
+          <div class="loading-bar-fill"></div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- ── RESULT ────────────────────────────────────────────────────── -->
+  @if (result(); as res) {
+    <section class="result-section">
+
+      <div class="result-header">
+        <div class="result-title-block">
+          <h2 class="result-presentation-title">{{ res.title }}</h2>
+          <div class="result-meta-badges">
+            <span class="meta-badge">📊 {{ res.slideCount }} slides</span>
+            <span class="meta-badge">🎨 {{ res.style }}</span>
+            <span class="meta-badge">⚡ {{ res.processingTime }}ms</span>
+          </div>
+        </div>
+        <div class="result-header-actions">
+          <div class="view-toggle">
+            <button [class.active]="viewMode() === 'carousel'" (click)="setViewMode('carousel')">🖥 {{ 'ai_ppt.btn_carousel' | translate }}</button>
+            <button [class.active]="viewMode() === 'grid'"     (click)="setViewMode('grid')"   >⊞ {{ 'ai_ppt.btn_grid' | translate }}</button>
+          </div>
+          <button class="action-btn" (click)="exportSlides()">⬇ {{ 'ai_ppt.btn_export' | translate }}</button>
+          <button class="action-btn action-btn-ghost" (click)="reset()">↩ {{ 'ai_ppt.btn_new' | translate }}</button>
+        </div>
+      </div>
+
+      @if (viewMode() === 'carousel') {
+        <div class="carousel-wrapper" [class.is-fullscreen]="isFullscreen()">
+
+          @if (isFullscreen()) {
+            <div class="fullscreen-backdrop" (click)="toggleFullscreen()"></div>
+          }
+
+          <div class="carousel-stage" [class.is-fullscreen]="isFullscreen()">
+
+            @if (activeSlide(); as slide) {
+              <div class="slide-card" [class]="slideStyleClass(activeSlideIdx())">
+                <div class="slide-number">{{ activeSlideIdx() + 1 }} / {{ totalSlides() }}</div>
+                <h3 class="slide-title">{{ slide.title }}</h3>
+                <div class="slide-content">
+                  @for (line of bulletLines(slide.content); track $index) {
+                    <div class="slide-bullet">
+                      <span class="bullet-dot"></span>
+                      <span>{{ line }}</span>
+                    </div>
+                  }
+                </div>
+                @if (slide.notes) {
+                  <div class="slide-notes">
+                    <span class="notes-label">🎙 {{ 'ai_ppt.notes_label' | translate }}</span>
+                    <p>{{ slide.notes }}</p>
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="carousel-nav">
+              <button class="nav-btn nav-prev" (click)="prevSlide()" [disabled]="activeSlideIdx() === 0" aria-label="Previous slide">‹</button>
+              <div class="nav-dots">
+                @for (s of res.slides; track $index) {
+                  <button class="nav-dot" [class.active]="activeSlideIdx() === $index" (click)="goToSlide($index)" [attr.aria-label]="'Slide ' + ($index + 1)"></button>
+                }
+              </div>
+              <button class="nav-btn nav-next" (click)="nextSlide()" [disabled]="activeSlideIdx() === totalSlides() - 1" aria-label="Next slide">›</button>
+            </div>
+
+            <div class="carousel-progress">
+              <div class="carousel-progress-fill" [style.width.%]="progressPct()"></div>
+            </div>
+
+            <div class="carousel-actions">
+              <button class="action-btn-sm" (click)="copySlideContent()">{{ copied() ? ('ai_ppt.btn_copied' | translate) : ('ai_ppt.btn_copy_slide' | translate) }}</button>
+              <button class="action-btn-sm" (click)="toggleFullscreen()">{{ isFullscreen() ? ('ai_ppt.btn_exit_fullscreen' | translate) : ('ai_ppt.btn_fullscreen' | translate) }}</button>
+            </div>
+          </div>
+
+          <div class="slide-thumbnails">
+            @for (s of res.slides; track $index) {
+              <button class="thumb" [class.active]="activeSlideIdx() === $index" (click)="goToSlide($index)">
+                <span class="thumb-num">{{ $index + 1 }}</span>
+                <span class="thumb-title">{{ s.title }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (viewMode() === 'grid') {
+        <div class="slides-grid">
+          @for (slide of res.slides; track $index) {
+            <div
+              class="grid-slide-card"
+              [class]="slideStyleClass($index)"
+              (click)="goToSlide($index); setViewMode('carousel')"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="goToSlide($index); setViewMode('carousel')"
+            >
+              <div class="grid-slide-num">{{ $index + 1 }}</div>
+              <h4 class="grid-slide-title">{{ slide.title }}</h4>
+              <p class="grid-slide-preview">{{ slide.content.substring(0, 100) }}…</p>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="result-footer">
+        <button class="btn-ghost" (click)="reset()">{{ 'ai_ppt.btn_generate_another' | translate }}</button>
+      </div>
+
+    </section>
+  }
+
+</div>
