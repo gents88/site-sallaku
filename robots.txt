@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-
-# Replace the placeholder domain below with the final production domain before publishing.
-Sitemap: https://gentsallaku.it/sitemap.xml
-Host: gentsallaku.it
-
-# Note: keep sensitive or admin paths (e.g., /stats.html) out of public sitemaps or protect them with auth.

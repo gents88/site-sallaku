@@ -7,8 +7,8 @@
 set -eo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-BACKEND="$ROOT/portfolio-backend"
-FRONTEND="$ROOT/portfolio-frontend"
+BACKEND="$ROOT/backend"
+FRONTEND="$ROOT/frontend"
 
 # ── Colori ────────────────────────────────────────────────────────
 RED='\033[0;31m'
@@ -117,12 +117,12 @@ fi
 # ─────────────────────────────────────────────────────────────────
 # 3. Installa dipendenze (se node_modules mancante)
 # ─────────────────────────────────────────────────────────────────
-if [[ ! -d "$BACKEND/node_modules" ]]; then
+if [[ ! -d "$BACKEND/node_modules" ]] || [[ ! -f "$BACKEND/node_modules/.bin/nest" ]]; then
   log "Installo dipendenze backend..."
   (cd "$BACKEND" && npm install)
 fi
 
-if [[ ! -d "$FRONTEND/node_modules" ]]; then
+if [[ ! -d "$FRONTEND/node_modules" ]] || [[ ! -f "$FRONTEND/node_modules/.bin/ng" ]]; then
   log "Installo dipendenze frontend..."
   (cd "$FRONTEND" && npm install)
 fi

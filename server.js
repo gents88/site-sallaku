@@ -10,6 +10,8 @@ const app = express();
 // Trust only the first proxy hop for accurate IP detection
 app.set('trust proxy', 1);
 
+const fs = require('fs');
+
 const {
   SMTP_HOST = 'smtp.gmail.com',
   SMTP_PORT = '465',
@@ -46,6 +48,17 @@ app.use(
   }),
 );
 
+// Redirect HTTP to HTTPS in production (respecting proxy headers)
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === 'production') {
+    const proto = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    if (proto && proto.split(',')[0].trim() === 'http') {
+      return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
+    }
+  }
+  next();
+});
+
 app.use(express.json({ limit: '16kb' })); // Limit request body size
 
 // ── Security headers ─────────────────────────────────────────────────────────
@@ -59,7 +72,23 @@ app.use((req, res, next) => {
   );
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self'; object-src 'none'; frame-src 'none';",
+    [
+      "default-src 'self'",
+      // Angular + inline gtag init in index.html + JSON-LD injected via DOM
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+      // Angular Material inline styles + Google Fonts + Font Awesome CDN
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
+      // Web fonts
+      "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+      // Images: self, data URIs, and any HTTPS (covers CDN images in blog posts)
+      "img-src 'self' data: https:",
+      // GA4 analytics endpoints
+      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com",
+      "object-src 'none'",
+      "frame-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; '),
   );
   next();
 });
@@ -100,6 +129,37 @@ transporter.verify().then(() => {
 
 // Serve static frontend
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Dynamic sitemap endpoint: serve static file if present, otherwise generate minimal sitemap
+app.get('/sitemap.xml', (req, res) => {
+  const sitemapStatic = path.join(__dirname, 'public', 'sitemap.xml');
+  if (fs.existsSync(sitemapStatic)) {
+    return res.sendFile(sitemapStatic);
+  }
+
+  // Fallback minimal sitemap (keeps site discoverable until static sitemap is available)
+  const routes = [
+    { loc: '/', changefreq: 'weekly', priority: '1.0' },
+    { loc: '/projects', changefreq: 'monthly', priority: '0.95' },
+    { loc: '/blog', changefreq: 'weekly', priority: '0.9' },
+    { loc: '/services', changefreq: 'monthly', priority: '0.8' },
+    { loc: '/contact', changefreq: 'yearly', priority: '0.7' },
+  ];
+
+  const today = new Date().toISOString().split('T')[0];
+  const xmlLines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', ''];
+  for (const e of routes) {
+    xmlLines.push('  <url>');
+    xmlLines.push(`    <loc>https://gentsallaku.it${e.loc}</loc>`);
+    xmlLines.push(`    <lastmod>${today}</lastmod>`);
+    if (e.changefreq) xmlLines.push(`    <changefreq>${e.changefreq}</changefreq>`);
+    if (e.priority) xmlLines.push(`    <priority>${e.priority}</priority>`);
+    xmlLines.push('  </url>');
+    xmlLines.push('');
+  }
+  xmlLines.push('</urlset>');
+  res.type('application/xml').send(xmlLines.join('\n'));
+});
 
 // Health
 app.get('/health', (req, res) => res.json({ ok: true }));
