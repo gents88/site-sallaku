@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+
+# Block admin dashboard (frontend routes)
+Disallow: /dashboard/
+
+# Block backend API endpoints
+Disallow: /api/
+Disallow: /auth/
+Disallow: /analytics/
+Disallow: /audit/
+Disallow: /stats/
+Disallow: /system/
+Disallow: /cron/
+
+# Block AI training crawlers
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+Sitemap: https://gentsallaku.it/sitemap.xml
+Host: gentsallaku.it

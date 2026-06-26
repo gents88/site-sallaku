@@ -20,20 +20,41 @@ services:
     networks:
       - portfolio_net
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+    networks:
+      - portfolio_net
+
   backend:
     build:
-      context: ./portfolio-backend
+      context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file:
-      - ./portfolio-backend/.env
+      - ./backend/.env
     environment:
       PORT: 3000
+      REDIS_URL: redis://redis:6379
     # porta non esposta all'esterno — nginx nel frontend fa da proxy
     expose:
       - '3000'
     depends_on:
       mongo:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/v1/system/health"]
@@ -50,7 +71,7 @@ services:
 
   frontend:
     build:
-      context: ./portfolio-frontend
+      context: ./frontend
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
@@ -72,6 +93,7 @@ services:
 
 volumes:
   mongo_data:
+  redis_data:
 
 networks:
   portfolio_net:

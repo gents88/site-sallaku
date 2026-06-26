@@ -109,8 +109,8 @@ translations: {
 A complete rewrite of the portfolio as a full-stack web application with admin panel lives in the subdirectories:
 
 ```
-portfolio-backend/    → NestJS 10 REST API
-portfolio-frontend/   → Angular 21 SPA
+backend/    → NestJS 10 REST API
+frontend/   → Angular 21 SPA
 docker-compose.yml    → One-command startup
 .github/workflows/    → CI/CD GitHub Actions
 ```
@@ -145,8 +145,8 @@ docker-compose.yml    → One-command startup
 ### Quick Start — Docker (recommended)
 
 ```bash
-cp portfolio-backend/.env.example portfolio-backend/.env
-# Fill in SMTP credentials and JWT_SECRET in portfolio-backend/.env
+cp backend/.env.example backend/.env
+# Fill in SMTP credentials and JWT_SECRET in backend/.env
 
 docker-compose up --build
 ```
@@ -161,13 +161,13 @@ docker-compose up --build
 
 ```bash
 # Terminal 1 – Backend
-cd portfolio-backend
+cd backend
 cp .env.example .env   # edit values
 npm install
 npm run start:dev
 
 # Terminal 2 – Frontend
-cd portfolio-frontend
+cd frontend
 npm install
 ng serve               # proxies /api → localhost:3000
 ```
@@ -181,12 +181,12 @@ The production Angular frontend is already configured to call the Railway API di
 This means Apache/Plesk only needs to serve the static Angular build.
 
 ```bash
-cd portfolio-frontend
+cd frontend
 npm install
 npm run build:prod
 ```
 
-Upload the contents of `portfolio-frontend/dist/portfolio-frontend/browser/` to the Plesk document root for the site.
+Upload the contents of `frontend/dist/portfolio-frontend/browser/` to the Plesk document root for the site.
 
 Important:
 - Keep the generated `.htaccess` file in the document root. It enables Angular SPA routing, so routes like `/admin/login` resolve to `index.html`.
@@ -274,7 +274,7 @@ password: string;
 
 ---
 
-### Environment Variables (`portfolio-backend/.env`)
+### Environment Variables (`backend/.env`)
 
 | Variable | Example | Description |
 |---|---|---|

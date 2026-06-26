@@ -1,0 +1,66 @@
+<nav class="navbar" [class.scrolled]="scrolled" [class.menu-open]="mobileMenuOpen">
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" [style.width.%]="scrollProgress" aria-hidden="true"></div>
+  <div class="nav-container">
+    <!-- Logo -->
+    <a routerLink="/homepage" class="nav-logo" (click)="closeMenu()">
+      <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
+    </a>
+
+    <!-- Mobile menu backdrop -->
+    @if (mobileMenuOpen) {
+      <div class="nav-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
+    }
+
+    <!-- Desktop nav links -->
+    <ul class="nav-menu" [class.open]="mobileMenuOpen" id="nav-menu" role="navigation">
+      @for (link of desktopNavLinks; track link.labelKey) {
+        <li>
+          <a [routerLink]="link.route"
+             class="nav-link"
+             [class.active]="isHomepage ? activeSection === (link.route ?? '').slice(1) : false"
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact: true}"
+             (click)="closeMenu()">{{ link.labelKey | translate }}</a>
+        </li>
+      }
+      <li class="nav-item-mobile-auth">
+        @if (!auth.isLoggedIn()) {
+          <button type="button" class="nav-link nav-link--button" (click)="openLoginModal()">{{ 'nav.login' | translate }}</button>
+        }
+        @if (auth.isLoggedIn()) {
+          <button type="button" class="nav-link nav-link--button" (click)="openAccountModal()">{{ auth.currentUser()?.name || 'Admin' }}</button>
+        }
+      </li>
+    </ul>
+
+    <!-- Right actions -->
+    <div class="nav-right">
+      <app-lang-switcher />
+      <app-theme-toggle />
+      @if (!auth.isLoggedIn()) {
+        <button type="button" class="nav-link nav-link--account nav-link--button" (click)="openLoginModal()">
+          <span class="nav-account__avatar nav-account__avatar--login">
+            <mat-icon>login</mat-icon>
+          </span>
+          <span class="nav-account__label">{{ 'nav.login' | translate }}</span>
+        </button>
+      }
+      @if (auth.isLoggedIn()) {
+        <button type="button" class="nav-link nav-link--account nav-link--button" (click)="openAccountModal()">
+          <span class="nav-account__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</span>
+          <span class="nav-account__label">{{ auth.currentUser()?.name || 'Admin' }}</span>
+        </button>
+      }
+
+      <!-- Hamburger -->
+      <button class="nav-toggle" [class.active]="mobileMenuOpen"
+              (click)="toggleMenu()" 
+              [attr.aria-expanded]="mobileMenuOpen"
+              aria-label="Toggle navigation menu"
+              aria-controls="nav-menu">
+        <span class="hamburger-bar" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</nav>
