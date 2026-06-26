@@ -1,0 +1,105 @@
+.footer {
+  border-top: 1px solid var(--glass-border);
+  padding: 48px 0 32px;
+  background: var(--bg-secondary, #0f1424);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-primary, linear-gradient(135deg, #4f6af5, #8b5cf6));
+    opacity: 0.4;
+  }
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+// Brand
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-logo {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #f0f4ff);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  transition: opacity var(--transition-fast);
+
+  &:hover { opacity: 0.8; }
+  .logo-bracket { color: var(--primary-500, #4f6af5); }
+}
+
+.footer-text {
+  color: var(--text-secondary, #8892b0);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+// Navigation
+.footer-nav {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.03em;
+    transition: color var(--transition-fast);
+
+    &:hover { color: var(--primary-400); }
+  }
+}
+
+// Social
+.footer-social {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.social-link {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+
+  &:hover {
+    color: var(--primary-400);
+    border-color: var(--primary-400);
+    box-shadow: 0 0 12px rgba(79,106,245,0.3);
+    transform: translateY(-2px);
+  }
+}
+
+// Copyright
+.footer-copy {
+  color: var(--text-tertiary, #4a5568);
+  font-size: 0.8rem;
+  margin: 0;
+}

@@ -1,0 +1,92 @@
+<div class="container section">
+  <h1 class="page-title">Blog</h1>
+
+  @if (loading) {
+    <div class="posts-grid">
+      @for (s of skeletonItems; track s) {
+        <div class="skeleton-card card">
+          <div class="skeleton-cover shimmer"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-tag shimmer"></div>
+            <div class="skeleton-line shimmer" style="width:80%"></div>
+            <div class="skeleton-line shimmer" style="width:60%"></div>
+            <div class="skeleton-line shimmer" style="width:90%"></div>
+            <div class="skeleton-footer">
+              <div class="skeleton-line shimmer" style="width:30%"></div>
+              <div class="skeleton-line shimmer" style="width:20%"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <!-- Search -->
+    <div class="blog-search">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Search articles…" [(ngModel)]="searchQuery" (input)="filter()" />
+    </div>
+
+    <!-- Tags -->
+    @if (allTags.length) {
+      <div class="tag-filter">
+        <button class="badge" [class.active]="!activeTag" (click)="setTag(null)">All</button>
+        @for (tag of allTags; track tag) {
+          <button class="badge" [class.active]="activeTag === tag" (click)="setTag(tag)">#{{ tag }}</button>
+        }
+      </div>
+    }
+
+    <div class="posts-grid">
+      @for (post of visiblePosts; track post._id) {
+        <article class="card post-card fade-in-up">
+          @if (post.coverImage) {
+            <img [src]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" loading="lazy" />
+          } @else {
+            <div class="post-card__cover-placeholder" aria-hidden="true">
+              <mat-icon>article</mat-icon>
+            </div>
+          }
+          <div class="post-card__body">
+            <div class="post-card__tags">
+              @for (tag of post.tags; track tag) {
+                <span class="badge">#{{ tag }}</span>
+              }
+            </div>
+            <h2 class="post-card__title">
+              <a [routerLink]="['/blog', post.slug]">{{ getLocalizedTitle(post) }}</a>
+            </h2>
+            <p class="text-muted post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
+            <div class="post-card__footer">
+              <time [dateTime]="post.publishedAt ?? ''" class="text-muted post-card__date">
+                {{ post.publishedAt | date:'mediumDate' }}
+              </time>
+              <a [routerLink]="['/blog', post.slug]" class="btn btn-ghost btn-sm">
+                {{ 'blog.readMore' | translate }} <mat-icon>arrow_forward</mat-icon>
+              </a>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+
+    @if (!filteredPosts.length) {
+      <div class="empty-state-illustrated">
+        <mat-icon class="empty-icon">search_off</mat-icon>
+        <h3 class="empty-title">{{ 'blog.empty.title' | translate }}</h3>
+        <p class="empty-message">{{ 'blog.empty.message' | translate }}</p>
+        <button class="btn btn-ghost" (click)="clearFilters()">
+          <mat-icon>refresh</mat-icon> {{ 'blog.empty.reset' | translate }}
+        </button>
+      </div>
+    }
+
+    @if (hasMore) {
+      <div class="load-more-wrap">
+        <button class="btn btn-outline load-more-btn" (click)="loadMore()">
+          {{ 'blog.loadMore' | translate }}
+          <mat-icon>expand_more</mat-icon>
+        </button>
+      </div>
+    }
+  }
+</div>
