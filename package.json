@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "generate-sitemap": "node scripts/generate-sitemap.js"
   },
   "author": "Gent Sallaku",
   "license": "MIT",
