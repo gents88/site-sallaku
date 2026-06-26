@@ -1,0 +1,41 @@
+import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
+import { provideServerRendering } from '@angular/platform-server';
+import { TranslateLoader } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
+import { appConfig } from './app.config';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+/**
+ * Loads i18n JSON files from the built browser assets at server-render time.
+ * This ensures SSR output contains actual translated text instead of raw keys,
+ * avoiding CLS when the browser hydrates with real translations.
+ */
+class SsrTranslateLoader implements TranslateLoader {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getTranslation(lang: string): Observable<any> {
+    try {
+      // In production, this file lives at dist/server/server.mjs and
+      // dist/browser/i18n/<lang>.json — resolve relative to this module.
+      const serverDir = dirname(fileURLToPath(import.meta.url));
+      const i18nPath = join(serverDir, '..', 'browser', 'i18n', `${lang}.json`);
+      const json = JSON.parse(readFileSync(i18nPath, 'utf-8'));
+      return of(json);
+    } catch {
+      // During `ng serve` or test builds the dist folder may not exist yet —
+      // fall back to empty translations so the build never fails.
+      return of({});
+    }
+  }
+}
+
+const serverConfig: ApplicationConfig = {
+  providers: [
+    provideServerRendering(),
+    { provide: TranslateLoader, useClass: SsrTranslateLoader },
+  ],
+};
+
+export const config = mergeApplicationConfig(appConfig, serverConfig);
+

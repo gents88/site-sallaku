@@ -1,0 +1,37 @@
+<section class="section" id="projects">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">&lt;{{ 'projects.tag' | translate }}&gt;</span>
+      <h2 class="section-title">{{ 'projects.title' | translate }}</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-grid">
+    @for (p of staticProjects; track p.titleKey) {
+      <div class="project-card reveal glass-card">
+        <div class="project-visual">
+          <div class="project-icon-3d"><i [class]="'fas fa-' + p.icon"></i></div>
+          <div class="project-glow"></div>
+        </div>
+        <div class="project-content">
+          <div class="project-tags">
+            @for (tag of p.tags; track tag) {
+              <span class="project-tag">{{ tag }}</span>
+            }
+          </div>
+          <h3 class="project-title">{{ p.titleKey | translate }}</h3>
+          <p class="project-description">{{ p.descKey | translate }}</p>
+          <div class="project-features">
+            @for (feat of p.featureKeys; track feat) {
+              <span><i class="fas fa-check"></i> {{ feat | translate }}</span>
+            }
+          </div>
+          <div class="project-cta">
+            <span>{{ 'projects.discover' | translate }} <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+    }
+    </div>
+  </div>
+</section>
