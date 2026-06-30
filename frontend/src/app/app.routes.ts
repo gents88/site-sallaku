@@ -94,6 +94,10 @@ export const routes: Routes = [
     path: 'dashboard/ai-ppt',
     loadComponent: () => import('./features/admin/ai-ppt/ai-ppt.component').then(m => m.AiPptComponent),
   },
+  {
+    path: 'dashboard/convert',
+    loadComponent: () => import('./features/admin/convert/convert.component').then(m => m.ConvertComponent),
+  },
 
   // ── Admin: protected dashboard ────────────────────
   {
