@@ -1,9 +1,7 @@
-import { APP_BASE_HREF } from '@angular/common';
-import { CommonEngine } from '@angular/ssr/node';
+import { AngularNodeAppEngine, createNodeRequestHandler, isMainModule, writeResponseToNodeResponse } from '@angular/ssr/node';
 import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
-import bootstrap from './main.server';
 
 const SITE_URL = 'https://gentsallaku.it';
 const API_URL =
@@ -13,8 +11,7 @@ export function app(): ReturnType<typeof express> {
   const server = express();
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
-  const indexHtml = join(serverDistFolder, 'index.server.html');
-  const commonEngine = new CommonEngine();
+  const angularApp = new AngularNodeAppEngine();
 
   // ── Security headers ─────────────────────────────────────────────────────────
   server.use((_req, res, next) => {
@@ -115,28 +112,27 @@ export function app(): ReturnType<typeof express> {
   });
 
   // ── Angular SSR for all public routes ────────────────────────────────────────
-  server.use((req, res, next) => {
-    const { protocol, originalUrl, baseUrl, headers } = req;
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${protocol}://${headers['host']}${originalUrl}`,
-        publicPath: browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+  server.use('/**', (req, res, next) => {
+    angularApp
+      .handle(req)
+      .then(response => {
+        if (response) {
+          writeResponseToNodeResponse(response, res);
+        } else {
+          next();
+        }
       })
-      .then(html => res.send(html))
-      .catch(err => next(err));
+      .catch(next);
   });
 
   return server;
 }
 
-function run(): void {
+if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] ?? 4000;
   app().listen(port, () =>
     console.log(`Angular SSR server listening on http://localhost:${port}`),
   );
 }
 
-run();
+export const reqHandler = createNodeRequestHandler(app);
