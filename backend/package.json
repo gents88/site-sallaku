@@ -58,6 +58,7 @@
     "@types/compression": "^1.7.5",
     "@types/geoip-lite": "^1.4.4",
     "@types/jest": "^30.0.0",
+    "@types/multer": "^2.1.0",
     "@types/node": "^20.11.0",
     "@types/nodemailer": "^6.4.23",
     "@types/passport-jwt": "^4.0.1",
