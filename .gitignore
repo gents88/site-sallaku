@@ -12,3 +12,6 @@ coverage/
 
 # Angular build cache
 .angular/
+
+# TypeScript incremental build info
+*.tsbuildinfo
