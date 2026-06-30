@@ -2,7 +2,7 @@ import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const mammoth = require('mammoth');
 
@@ -24,8 +24,10 @@ export class AiService {
     const ext = file.originalname.split('.').pop()?.toLowerCase() ?? '';
 
     if (file.mimetype === 'application/pdf' || ext === 'pdf') {
-      const data = await pdfParse(file.buffer) as { text: string; numpages: number };
-      return { text: data.text, pageCount: data.numpages };
+      const parser = new PDFParse({ data: file.buffer });
+      const data = await parser.getText() as { text: string; pageCount?: number };
+      await parser.destroy();
+      return { text: data.text ?? '', pageCount: data.pageCount ?? 1 };
     }
 
     if (file.mimetype === 'text/plain' || ext === 'txt') {
