@@ -6,40 +6,15 @@ export const adminRoutes: Routes = [
     loadComponent: () =>
       import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
   },
-  {
-    path: 'tools',
-    loadComponent: () =>
-      import('./tools/tools.component').then(m => m.ToolsComponent),
-  },
 
-  // ── AI Tools ──────────────────────────────────────────────────────────────
+  // ── AI Assistant (admin-only) ──────────────────────────────────────────────
   {
     path: 'ai',
     loadComponent: () =>
       import('./ai-assistant/ai-assistant.component').then(m => m.AiAssistantComponent),
   },
-  {
-    path: 'pdf-summary',
-    loadComponent: () =>
-      import('./pdf-summary/pdf-summary.component').then(m => m.PdfSummaryComponent),
-  },
-  {
-    path: 'ai-formatter',
-    loadComponent: () =>
-      import('./ai-formatter/ai-formatter.component').then(m => m.AiFormatterComponent),
-  },
-  {
-    path: 'pdf-translate',
-    loadComponent: () =>
-      import('./pdf-translate/pdf-translate.component').then(m => m.PdfTranslateComponent),
-  },
-  {
-    path: 'ai-ppt',
-    loadComponent: () =>
-      import('./ai-ppt/ai-ppt.component').then(m => m.AiPptComponent),
-  },
 
-  // ── PDF Tools ─────────────────────────────────────────────────────────────
+  // ── PDF Tools (public stubs) ───────────────────────────────────────────────
   {
     path: 'pdf-editor',
     loadComponent: () =>
