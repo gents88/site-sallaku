@@ -4,7 +4,7 @@ import {
   Logger,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 
 type ImageFormat = 'jpeg' | 'png' | 'webp';
 
