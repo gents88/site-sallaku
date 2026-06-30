@@ -21,6 +21,7 @@ import { CommonModule } from './common/common.module';
 import { AuditModule } from './audit/audit.module';
 import { ConsentModule } from './consent/consent.module';
 import { AiModule } from './ai/ai.module';
+import { ConversionModule } from './conversion/conversion.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { AiModule } from './ai/ai.module';
     AuditModule,
     ConsentModule,
     AiModule,
+    ConversionModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default
