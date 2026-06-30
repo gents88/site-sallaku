@@ -98,6 +98,26 @@ export const routes: Routes = [
     path: 'dashboard/convert',
     loadComponent: () => import('./features/admin/convert/convert.component').then(m => m.ConvertComponent),
   },
+  {
+    path: 'dashboard/pdf-editor',
+    loadComponent: () => import('./features/admin/pdf-editor/pdf-editor.component').then(m => m.PdfEditorComponent),
+  },
+  {
+    path: 'dashboard/viewer',
+    loadComponent: () => import('./features/admin/viewer/viewer.component').then(m => m.ViewerComponent),
+  },
+  {
+    path: 'dashboard/editor',
+    loadComponent: () => import('./features/admin/editor/editor.component').then(m => m.EditorComponent),
+  },
+  {
+    path: 'dashboard/ocr',
+    loadComponent: () => import('./features/admin/ocr/ocr.component').then(m => m.OcrComponent),
+  },
+  {
+    path: 'dashboard/scanner',
+    loadComponent: () => import('./features/admin/scanner/scanner.component').then(m => m.ScannerComponent),
+  },
 
   // ── Admin: protected dashboard ────────────────────
   {
