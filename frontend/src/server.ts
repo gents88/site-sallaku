@@ -1,11 +1,13 @@
 import { AngularNodeAppEngine, createNodeRequestHandler, isMainModule, writeResponseToNodeResponse } from '@angular/ssr/node';
 import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
 const SITE_URL = 'https://gentsallaku.it';
-const API_URL =
-  process.env['API_URL'] ?? 'http://localhost:3000/api/v1';
+const BACKEND_URL =
+  process.env['BACKEND_URL'] ?? 'http://localhost:3001';
+const API_URL = `${BACKEND_URL}/api/v1`;
 
 export function app(): ReturnType<typeof express> {
   const server = express();
@@ -89,6 +91,15 @@ export function app(): ReturnType<typeof express> {
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(xml);
   });
+
+  // ── API proxy → backend ──────────────────────────────────────────────────────
+  server.use(
+    '/api',
+    createProxyMiddleware({
+      target: BACKEND_URL,
+      changeOrigin: true,
+    }),
+  );
 
   // ── Static assets (hashed filenames → 1-year cache) ──────────────────────────
   server.use(
