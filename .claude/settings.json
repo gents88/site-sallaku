@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker pull *)",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); deps={**p.get\\('dependencies',{}\\),**p.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k,v in deps.items\\(\\) if 'angular' in k.lower\\(\\) or 'ssr' in k.lower\\(\\)]\")",
+      "Bash(node -e \"const m = require\\('/Users/gent/projects/site-sallaku/frontend/node_modules/@angular/ssr/node'\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(node -e \"const m = require\\('/Users/gent/projects/site-sallaku/frontend/node_modules/@angular/ssr/node/index.cjs'\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\(list\\(p.keys\\(\\)\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); ssr=p['projects']['portfolio-frontend']['architect']['build']['options']; print\\('ssr:', ssr.get\\('ssr'\\)\\); print\\('server:', ssr.get\\('server'\\)\\)\")",
+      "Bash(git -C /Users/gent/projects/site-sallaku add frontend/src/server.ts)",
+      "Bash(git -C /Users/gent/projects/site-sallaku commit -m ' *)",
+      "Bash(git -C /Users/gent/projects/site-sallaku checkout main)",
+      "Bash(git -C /Users/gent/projects/site-sallaku merge develop)",
+      "Bash(git -C /Users/gent/projects/site-sallaku push origin main)",
+      "Bash(curl -s -X POST https://portfolio-backend-production-e76d.up.railway.app/api/v1/ai/summarize-file -F 'file=@/etc/hostname;type=text/plain' -F lang=en -F mode=short)",
+      "Bash(echo \"test content for ai\")",
+      "Bash(curl -s -w '\\\\nSTATUS:%{http_code}' -X POST https://portfolio-backend-production-e76d.up.railway.app/api/v1/ai/summarize-file -F 'file=@/tmp/test.txt;type=text/plain' -F lang=en -F mode=short)",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); deps=p.get\\('dependencies',{}\\); print\\('pdf-parse:', deps.get\\('pdf-parse'\\)\\); print\\('mammoth:', deps.get\\('mammoth'\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const m = require\\('pdf-parse'\\); console.log\\(typeof m, Object.keys\\(m\\).slice\\(0,10\\)\\)\")",
+      "Bash(git -C /Users/gent/projects/site-sallaku add backend/src/ai/ai.controller.ts backend/src/ai/ai.service.ts)",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\('@angular/ssr:', p['version']\\)\")",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\('@angular/build:', p['version']\\)\")",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\('@angular/platform-server:', p['version']\\)\")",
+      "Bash(npm show *)",
+      "Bash(python3 -c \"import json,sys; v=json.load\\(sys.stdin\\); print\\([x for x in v if x.startswith\\('21.2'\\)][-3:]\\)\")",
+      "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)['version']\\)\")"
+    ]
+  }
+}
