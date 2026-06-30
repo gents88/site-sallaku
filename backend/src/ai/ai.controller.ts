@@ -4,17 +4,37 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
-  ParseFilePipe,
-  FileTypeValidator,
-  MaxFileSizeValidator,
   HttpCode,
   HttpStatus,
   BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { ApiTags, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AiService } from './ai.service';
+
+const ALLOWED_MIMES = new Set([
+  'application/pdf',
+  'text/plain',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/octet-stream',
+]);
+
+function validateFile(file: Express.Multer.File | undefined, maxMb: number): Express.Multer.File {
+  if (!file) throw new BadRequestException('No file uploaded.');
+  if (file.size > maxMb * 1024 * 1024) throw new BadRequestException(`File exceeds ${maxMb} MB limit.`);
+  const ext = file.originalname.split('.').pop()?.toLowerCase();
+  if (!ALLOWED_MIMES.has(file.mimetype) && !['pdf', 'docx', 'txt'].includes(ext ?? '')) {
+    throw new BadRequestException(`File type not allowed: ${file.mimetype}. Supported: PDF, DOCX, TXT.`);
+  }
+  return file;
+}
+
+const upload = (maxMb: number) => FileInterceptor('file', {
+  storage: memoryStorage(),
+  limits: { fileSize: maxMb * 1024 * 1024 },
+});
 
 @ApiTags('AI')
 @Controller('ai')
@@ -27,22 +47,13 @@ export class AiController {
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({ summary: 'Summarise a PDF, DOCX, or TXT file using AI' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(upload(20))
   async summarizeFile(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 20 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /^(application\/pdf|text\/plain|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document)$/ }),
-        ],
-        fileIsRequired: true,
-      }),
-    )
-    file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
     @Body('lang') lang: string = 'en',
     @Body('mode') mode: string = 'short',
   ) {
-    return this.aiService.summarizeFile(file, lang || 'en', mode || 'short');
+    return this.aiService.summarizeFile(validateFile(file, 20), lang || 'en', mode || 'short');
   }
 
   // ── POST /ai/format-text ─────────────────────────────────────────────
@@ -65,7 +76,7 @@ export class AiController {
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiOperation({ summary: 'Generate a presentation from a topic using AI' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(upload(20))
   async generatePpt(
     @Body('topic') topic: string,
     @Body('slideCount') slideCount: string,
@@ -88,21 +99,12 @@ export class AiController {
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiOperation({ summary: 'Translate a PDF/DOCX/TXT document to another language' })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(upload(50))
   async translatePdf(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 50 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /^(application\/pdf|text\/plain|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document)$/ }),
-        ],
-        fileIsRequired: true,
-      }),
-    )
-    file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
     @Body('targetLanguage') targetLanguage: string = 'english',
     @Body('highFidelity') highFidelity: string = 'true',
   ) {
-    return this.aiService.translatePdf(file, targetLanguage || 'english', highFidelity !== 'false');
+    return this.aiService.translatePdf(validateFile(file, 50), targetLanguage || 'english', highFidelity !== 'false');
   }
 }
