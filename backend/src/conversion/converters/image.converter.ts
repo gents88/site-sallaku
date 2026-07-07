@@ -54,7 +54,7 @@ export class ImageConverter {
     return sharp(buffer).resize(width, height, { fit: 'inside' }).toFormat(format).toBuffer();
   }
 
-  async metadata(buffer: Buffer): Promise<sharp.Metadata> {
+  async metadata(buffer: Buffer): Promise<import('sharp').Metadata> {
     this.validate(buffer);
     return sharp(buffer).metadata();
   }
