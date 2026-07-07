@@ -14,6 +14,7 @@ export const SUPPORTED_CONVERSIONS = [
   'pdf-to-txt',
   'pdf-to-html',
   'html-to-pdf',
+  'html-to-docx',
   'docx-to-txt',
   'docx-to-html',
   'txt-to-pdf',

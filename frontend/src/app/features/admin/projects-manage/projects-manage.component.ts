@@ -13,6 +13,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { finalize, timeout } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { Project } from '../../../core/models/project.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -24,7 +25,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
     CommonModule, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
     MatCheckboxModule, MatDialogModule, MatSnackBarModule, MatChipsModule,
-    LoadingSpinnerComponent,
+    LoadingSpinnerComponent, TranslateModule,
   ],
   templateUrl: './projects-manage.component.html',
   styleUrls: ['./projects-manage.component.scss'],
@@ -53,6 +54,7 @@ export class ProjectsManageComponent implements OnInit {
     private projectsService: ProjectsService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private t: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -106,22 +108,22 @@ export class ProjectsManageComponent implements OnInit {
       next: () => {
         this.saving = false;
         this.showForm = false;
-        this.snackBar.open('Project saved!', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('projects_manage.saved'), this.t.instant('common.close'), { duration: 3000 });
         this.loadProjects();
       },
       error: () => {
         this.saving = false;
-        this.snackBar.open('Failed to save project.', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('projects_manage.save_error'), this.t.instant('common.close'), { duration: 3000 });
       },
     });
   }
 
   delete(id: string): void {
-    if (!confirm('Delete this project?')) return;
+    if (!confirm(this.t.instant('projects_manage.confirm_delete'))) return;
     this.projectsService.remove(id).subscribe({
       next: () => {
         this.projects = this.projects.filter(p => p._id !== id);
-        this.snackBar.open('Project deleted.', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('projects_manage.deleted'), this.t.instant('common.close'), { duration: 3000 });
       },
     });
   }

@@ -14,38 +14,6 @@ export const adminRoutes: Routes = [
       import('./ai-assistant/ai-assistant.component').then(m => m.AiAssistantComponent),
   },
 
-  // ── PDF Tools (public stubs) ───────────────────────────────────────────────
-  {
-    path: 'pdf-editor',
-    loadComponent: () =>
-      import('./pdf-editor/pdf-editor.component').then(m => m.PdfEditorComponent),
-  },
-  {
-    path: 'viewer',
-    loadComponent: () =>
-      import('./viewer/viewer.component').then(m => m.ViewerComponent),
-  },
-  {
-    path: 'editor',
-    loadComponent: () =>
-      import('./editor/editor.component').then(m => m.EditorComponent),
-  },
-  {
-    path: 'convert',
-    loadComponent: () =>
-      import('./convert/convert.component').then(m => m.ConvertComponent),
-  },
-  {
-    path: 'ocr',
-    loadComponent: () =>
-      import('./ocr/ocr.component').then(m => m.OcrComponent),
-  },
-  {
-    path: 'scanner',
-    loadComponent: () =>
-      import('./scanner/scanner.component').then(m => m.ScannerComponent),
-  },
-
   // ── Content Management ────────────────────────────────────────────────────
   {
     path: 'projects',

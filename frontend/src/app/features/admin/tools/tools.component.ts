@@ -1,12 +1,13 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
 
 interface ToolCard {
   icon: string;
-  title: string;
-  desc: string;
+  titleKey: string;
+  descKey: string;
   route: string;
   group: 'ai' | 'tools';
   badge?: string;
@@ -16,29 +17,29 @@ interface ToolCard {
   selector: 'app-tools',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslateModule],
   template: `
     <div class="page">
       <header class="page-header">
         <div class="header-badge">
           <span class="badge-dot"></span>
-          AI & PDF Tools
+          {{ 'tools.badge' | translate }}
         </div>
-        <h1>Your Productivity Suite</h1>
-        <p>AI-powered document tools and PDF utilities — all in one place.</p>
+        <h1>{{ 'tools.heading' | translate }}</h1>
+        <p>{{ 'tools.subtitle' | translate }}</p>
       </header>
 
       <section class="tools-section">
         <h2 class="section-title">
-          <span class="section-emoji">🧠</span> AI Tools
+          <span class="section-emoji">🧠</span> {{ 'tools.section_ai' | translate }}
         </h2>
         <div class="cards-grid">
           @for (card of aiCards; track card.route) {
             <a [routerLink]="card.route" class="tool-card">
               <div class="card-icon">{{ card.icon }}</div>
               <div class="card-body">
-                <h3>{{ card.title }}</h3>
-                <p>{{ card.desc }}</p>
+                <h3>{{ card.titleKey | translate }}</h3>
+                <p>{{ card.descKey | translate }}</p>
               </div>
               @if (card.badge) {
                 <span class="card-badge">{{ card.badge }}</span>
@@ -51,15 +52,15 @@ interface ToolCard {
 
       <section class="tools-section">
         <h2 class="section-title">
-          <span class="section-emoji">🧰</span> PDF Tools
+          <span class="section-emoji">🧰</span> {{ 'tools.section_tools' | translate }}
         </h2>
         <div class="cards-grid">
           @for (card of toolCards; track card.route) {
             <a [routerLink]="card.route" class="tool-card tool-card--secondary">
               <div class="card-icon">{{ card.icon }}</div>
               <div class="card-body">
-                <h3>{{ card.title }}</h3>
-                <p>{{ card.desc }}</p>
+                <h3>{{ card.titleKey | translate }}</h3>
+                <p>{{ card.descKey | translate }}</p>
               </div>
               @if (card.badge) {
                 <span class="card-badge card-badge--soon">{{ card.badge }}</span>
@@ -210,23 +211,29 @@ export class ToolsComponent implements OnInit {
         { '@type': 'WebApplication', name: 'AI Slides Generator', url: 'https://gentsallaku.it/dashboard/ai-ppt', applicationCategory: 'PresentationApplication' },
         { '@type': 'WebApplication', name: 'AI Document Formatter', url: 'https://gentsallaku.it/dashboard/ai-formatter', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'AI PDF Summarizer', url: 'https://gentsallaku.it/dashboard/pdf-summary', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'File Converter', url: 'https://gentsallaku.it/dashboard/convert', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'PDF Editor', url: 'https://gentsallaku.it/dashboard/pdf-editor', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'PDF Viewer', url: 'https://gentsallaku.it/dashboard/viewer', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Document Editor', url: 'https://gentsallaku.it/dashboard/editor', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'OCR — Text Recognition', url: 'https://gentsallaku.it/dashboard/ocr', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Document Scanner', url: 'https://gentsallaku.it/dashboard/scanner', applicationCategory: 'UtilitiesApplication' },
       ],
     });
   }
 
   readonly aiCards: ToolCard[] = [
-    { icon: '📋', title: 'PDF Summary',  desc: 'Upload a PDF, Word, or TXT file and get an AI-powered summary in seconds.', route: '/dashboard/pdf-summary',   group: 'ai' },
-    { icon: '✨', title: 'AI Formatter', desc: 'Transform raw notes and unformatted text into polished documents.', route: '/dashboard/ai-formatter',  group: 'ai' },
-    { icon: '🌐', title: 'PDF Translate',desc: 'Translate any PDF or document to 12 languages with AI quality.', route: '/dashboard/pdf-translate', group: 'ai' },
-    { icon: '🎞️', title: 'AI Slides',   desc: 'Turn any topic into a full presentation deck with speaker notes.', route: '/dashboard/ai-ppt',        group: 'ai' },
+    { icon: '📋', titleKey: 'tools.pdf_summary_title',  descKey: 'tools.pdf_summary_desc',  route: '/dashboard/pdf-summary',   group: 'ai' },
+    { icon: '✨', titleKey: 'tools.ai_formatter_title', descKey: 'tools.ai_formatter_desc', route: '/dashboard/ai-formatter',  group: 'ai' },
+    { icon: '🌐', titleKey: 'tools.pdf_translate_title',descKey: 'tools.pdf_translate_desc',route: '/dashboard/pdf-translate', group: 'ai' },
+    { icon: '🎞️', titleKey: 'tools.ai_slides_title',   descKey: 'tools.ai_slides_desc',    route: '/dashboard/ai-ppt',        group: 'ai' },
   ];
 
   readonly toolCards: ToolCard[] = [
-    { icon: '🖊️', title: 'PDF Editor',  desc: 'Edit text, images and annotations directly inside any PDF.', route: '/dashboard/pdf-editor', group: 'tools', badge: 'Soon' },
-    { icon: '👁',  title: 'Viewer',     desc: 'View, navigate and search PDF documents in the browser.', route: '/dashboard/viewer',     group: 'tools', badge: 'Soon' },
-    { icon: '✏️', title: 'Editor',      desc: 'Rich-text document editor with real-time collaboration.', route: '/dashboard/editor',     group: 'tools', badge: 'Soon' },
-    { icon: '🔄', title: 'Convert',     desc: 'Convert between PDF, Word, Excel, images and more.', route: '/dashboard/convert',    group: 'tools', badge: 'Soon' },
-    { icon: '🔤', title: 'OCR',         desc: 'Extract text from scanned PDFs and images with AI OCR.', route: '/dashboard/ocr',        group: 'tools', badge: 'Soon' },
-    { icon: '📷', title: 'Scanner',     desc: 'Scan physical documents with your camera and convert to PDF.', route: '/dashboard/scanner',    group: 'tools', badge: 'Soon' },
+    { icon: '🖊️', titleKey: 'tools.pdf_editor_title', descKey: 'tools.pdf_editor_desc', route: '/dashboard/pdf-editor', group: 'tools' },
+    { icon: '👁',  titleKey: 'tools.viewer_title',     descKey: 'tools.viewer_desc',     route: '/dashboard/viewer',     group: 'tools' },
+    { icon: '✏️', titleKey: 'tools.editor_title',      descKey: 'tools.editor_desc',     route: '/dashboard/editor',     group: 'tools' },
+    { icon: '🔄', titleKey: 'tools.convert_title',     descKey: 'tools.convert_desc',    route: '/dashboard/convert',    group: 'tools' },
+    { icon: '🔤', titleKey: 'tools.ocr_title',         descKey: 'tools.ocr_desc',        route: '/dashboard/ocr',        group: 'tools' },
+    { icon: '📷', titleKey: 'tools.scanner_title',     descKey: 'tools.scanner_desc',    route: '/dashboard/scanner',    group: 'tools' },
   ];
 }

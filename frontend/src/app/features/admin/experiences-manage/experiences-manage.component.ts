@@ -12,6 +12,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { finalize, timeout } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ExperiencesService } from '../../../core/services/experiences.service';
 import { Experience } from '../../../core/models/experience.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -22,7 +23,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
-    MatCheckboxModule, MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent,
+    MatCheckboxModule, MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent, TranslateModule,
   ],
   templateUrl: './experiences-manage.component.html',
   styleUrls: ['./experiences-manage.component.scss'],
@@ -51,6 +52,7 @@ export class ExperiencesManageComponent implements OnInit {
     private experiencesService: ExperiencesService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private t: TranslateService,
   ) {}
 
   ngOnInit(): void { this.load(); }
@@ -91,19 +93,19 @@ export class ExperiencesManageComponent implements OnInit {
     req$.subscribe({
       next: () => {
         this.saving = false; this.showForm = false;
-        this.snackBar.open('Experience saved!', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('experiences_manage.saved'), this.t.instant('common.close'), { duration: 3000 });
         this.load();
       },
-      error: () => { this.saving = false; this.snackBar.open('Failed to save.', 'Close', { duration: 3000 }); },
+      error: () => { this.saving = false; this.snackBar.open(this.t.instant('experiences_manage.save_error'), this.t.instant('common.close'), { duration: 3000 }); },
     });
   }
 
   delete(id: string): void {
-    if (!confirm('Delete this experience?')) return;
+    if (!confirm(this.t.instant('experiences_manage.confirm_delete'))) return;
     this.experiencesService.remove(id).subscribe({
       next: () => {
         this.experiences = this.experiences.filter(e => e._id !== id);
-        this.snackBar.open('Deleted.', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('experiences_manage.deleted'), this.t.instant('common.close'), { duration: 3000 });
       },
     });
   }
