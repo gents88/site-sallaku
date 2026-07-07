@@ -22,6 +22,7 @@ import { AuditModule } from './audit/audit.module';
 import { ConsentModule } from './consent/consent.module';
 import { AiModule } from './ai/ai.module';
 import { ConversionModule } from './conversion/conversion.module';
+import { OcrModule } from './ocr/ocr.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { ConversionModule } from './conversion/conversion.module';
     ConsentModule,
     AiModule,
     ConversionModule,
+    OcrModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default

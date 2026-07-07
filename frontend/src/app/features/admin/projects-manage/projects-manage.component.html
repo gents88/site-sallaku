@@ -1,52 +1,52 @@
 <div class="admin-page container">
   <header class="admin-header">
     <div>
-      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
-      <h1>Projects</h1>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'projects_manage.title' | translate }}</h1>
     </div>
     <button mat-raised-button color="primary" (click)="openCreate()">
-      <mat-icon>add</mat-icon> New Project
+      <mat-icon>add</mat-icon> {{ 'projects_manage.new' | translate }}
     </button>
   </header>
 
   <!-- Form panel -->
   @if (showForm) {
     <div class="card form-panel">
-      <h2>{{ editingId ? 'Edit' : 'New' }} Project</h2>
+      <h2>{{ (editingId ? 'common.edit' : 'common.create') | translate }} {{ 'projects_manage.entity' | translate }}</h2>
       <form [formGroup]="form" (ngSubmit)="save()" novalidate>
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Title</mat-label>
+            <mat-label>{{ 'projects_manage.title_label' | translate }}</mat-label>
             <input matInput formControlName="title" />
             @if (form.get('title')?.invalid && form.get('title')?.touched) {
-              <mat-error>Required</mat-error>
+              <mat-error>{{ 'projects_manage.required' | translate }}</mat-error>
             }
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Order</mat-label>
+            <mat-label>{{ 'projects_manage.order_label' | translate }}</mat-label>
             <input matInput formControlName="order" type="number" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Description</mat-label>
+          <mat-label>{{ 'projects_manage.description_label' | translate }}</mat-label>
           <textarea matInput formControlName="description" rows="4"></textarea>
         </mat-form-field>
 
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Live URL</mat-label>
+            <mat-label>{{ 'projects_manage.live_url_label' | translate }}</mat-label>
             <input matInput formControlName="liveUrl" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Repo URL</mat-label>
+            <mat-label>{{ 'projects_manage.repo_url_label' | translate }}</mat-label>
             <input matInput formControlName="repoUrl" />
           </mat-form-field>
         </div>
 
         <!-- Technologies chips -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Technologies (press Enter)</mat-label>
+          <mat-label>{{ 'projects_manage.tech_label' | translate }}</mat-label>
           <mat-chip-grid #techGrid>
             @for (tech of technologies; track tech) {
               <mat-chip [removable]="true" (removed)="removeChip('technologies', tech)">
@@ -61,7 +61,7 @@
 
         <!-- Image URLs chips -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Image URLs (press Enter)</mat-label>
+          <mat-label>{{ 'projects_manage.images_label' | translate }}</mat-label>
           <mat-chip-grid #imgGrid>
             @for (img of images; track img) {
               <mat-chip [removable]="true" (removed)="removeChip('images', img)">
@@ -74,12 +74,12 @@
                  (matChipInputTokenEnd)="addChip('images', $event)" />
         </mat-form-field>
 
-        <mat-checkbox formControlName="featured">Featured project</mat-checkbox>
+        <mat-checkbox formControlName="featured">{{ 'projects_manage.featured_label' | translate }}</mat-checkbox>
 
         <div class="form-actions">
-          <button mat-button type="button" (click)="showForm = false">Cancel</button>
+          <button mat-button type="button" (click)="showForm = false">{{ 'common.cancel' | translate }}</button>
           <button mat-raised-button color="primary" type="submit" [disabled]="saving">
-            {{ saving ? 'Saving…' : 'Save Project' }}
+            {{ (saving ? 'about_manage.saving' : 'projects_manage.save_project') | translate }}
           </button>
         </div>
       </form>
@@ -90,7 +90,7 @@
   @if (loading) {
     <app-loading-spinner />
   } @else if (!projects.length) {
-    <p class="empty-state">No projects yet. Create your first one!</p>
+    <p class="empty-state">{{ 'projects_manage.empty' | translate }}</p>
   } @else {
     <div class="list">
       @for (project of projects; track project._id) {
@@ -108,11 +108,11 @@
             </div>
           </div>
           <div class="list-item__actions">
-            @if (project.featured) { <span class="badge" style="color:#6366f1">Featured</span> }
-            <button mat-icon-button (click)="openEdit(project)" title="Edit">
+            @if (project.featured) { <span class="badge" style="color:#6366f1">{{ 'projects_manage.featured_badge' | translate }}</span> }
+            <button mat-icon-button (click)="openEdit(project)" [attr.title]="'common.edit' | translate">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="delete(project._id)" title="Delete">
+            <button mat-icon-button color="warn" (click)="delete(project._id)" [attr.title]="'common.delete' | translate">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

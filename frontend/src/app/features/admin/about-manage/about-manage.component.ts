@@ -11,6 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { finalize, timeout } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AboutService } from '../../../core/services/about.service';
 import { About } from '../../../core/models/about.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -21,7 +22,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
     MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
-    MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent,
+    MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent, TranslateModule,
   ],
   templateUrl: './about-manage.component.html',
   styleUrls: ['./about-manage.component.scss'],
@@ -49,6 +50,7 @@ export class AboutManageComponent implements OnInit {
     private aboutService: AboutService,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private t: TranslateService,
   ) {}
 
   ngOnInit(): void {
@@ -86,11 +88,11 @@ export class AboutManageComponent implements OnInit {
     this.aboutService.update(payload).subscribe({
       next: () => {
         this.saving = false;
-        this.snackBar.open('About section updated!', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('about_manage.update_success'), this.t.instant('common.close'), { duration: 3000 });
       },
       error: () => {
         this.saving = false;
-        this.snackBar.open('Failed to update.', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('about_manage.update_error'), this.t.instant('common.close'), { duration: 3000 });
       },
     });
   }

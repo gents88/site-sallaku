@@ -12,6 +12,7 @@ export const CONVERSION_TYPES = [
   { id: 'pdf-to-txt',    group: 'Documenti',    from: 'PDF',  to: 'TXT',   label: 'convert.type_pdf_to_txt',    accept: '.pdf',                    multi: false },
   { id: 'pdf-to-html',   group: 'Documenti',    from: 'PDF',  to: 'HTML',  label: 'convert.type_pdf_to_html',   accept: '.pdf',                    multi: false },
   { id: 'html-to-pdf',   group: 'Documenti',    from: 'HTML', to: 'PDF',   label: 'convert.type_html_to_pdf',   accept: '.html,.htm',              multi: false },
+  { id: 'html-to-docx',  group: 'Documenti',    from: 'HTML', to: 'DOCX',  label: 'convert.type_html_to_docx',  accept: '.html,.htm',              multi: false },
   { id: 'docx-to-txt',   group: 'Documenti',    from: 'DOCX', to: 'TXT',   label: 'convert.type_docx_to_txt',   accept: '.doc,.docx',              multi: false },
   { id: 'docx-to-html',  group: 'Documenti',    from: 'DOCX', to: 'HTML',  label: 'convert.type_docx_to_html',  accept: '.doc,.docx',              multi: false },
   { id: 'txt-to-pdf',    group: 'Documenti',    from: 'TXT',  to: 'PDF',   label: 'convert.type_txt_to_pdf',    accept: '.txt',                    multi: false },

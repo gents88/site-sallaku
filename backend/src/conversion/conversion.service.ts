@@ -40,6 +40,7 @@ const ALLOWED_MIME_BY_CONVERSION: Partial<Record<ConversionType, string[]>> = {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/msword',
   ],
+  'html-to-docx': ['text/html', 'text/plain', 'application/octet-stream'],
   'txt-to-pdf':  ['text/plain', 'application/octet-stream'],
   'txt-to-docx': ['text/plain', 'application/octet-stream'],
   'md-to-html':  ['text/plain', 'text/markdown', 'application/octet-stream'],
@@ -131,6 +132,8 @@ export class ConversionService {
         return this.docxToHtml(fileBuffers[0]);
       case 'html-to-pdf':
         return this.htmlToPdf(fileBuffers[0]);
+      case 'html-to-docx':
+        return this.htmlToDocx(fileBuffers[0]);
       case 'json-to-pdf':
         return this.jsonToPdf(rawData, fileBuffers[0]);
       case 'txt-to-pdf':
@@ -243,6 +246,21 @@ export class ConversionService {
   private async htmlToPdf(buf: Buffer): Promise<ConversionResult> {
     const pdfBuf = await this.data.htmlToPdf(buf.toString('utf-8'));
     return { buffer: pdfBuf, mimeType: 'application/pdf', filename: 'converted.pdf', isStructured: false };
+  }
+
+  private async htmlToDocx(buf: Buffer): Promise<ConversionResult> {
+    const htmlToDocxFn = (await import('html-to-docx')).default;
+    const out = await htmlToDocxFn(buf.toString('utf-8'), undefined, {
+      orientation: 'portrait',
+      title: 'document',
+    });
+    const docxBuf = Buffer.isBuffer(out) ? out : Buffer.from(out as ArrayBuffer);
+    return {
+      buffer: docxBuf,
+      mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      filename: 'converted.docx',
+      isStructured: false,
+    };
   }
 
   private async jsonToPdf(rawData?: string, buf?: Buffer): Promise<ConversionResult> {
