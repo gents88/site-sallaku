@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { adminRoutes } from './features/admin/admin.routes';
 
 export const routes: Routes = [
   // ── Public pages ──────────────────────────────────
@@ -72,11 +72,14 @@ export const routes: Routes = [
       import('./features/admin/auth/register/register.component').then(m => m.RegisterComponent),
   },
 
-  // ── Admin: protected dashboard ────────────────────
+  // ── Admin shell: hosts the sidebar. AI/Tools children below are public;
+  // Content-management children (projects/blog/experiences/about) are
+  // individually guarded inside adminRoutes ─────────────────────────
   {
     path: 'dashboard',
-    canActivate: [authGuard],
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.adminRoutes),
+    loadComponent: () =>
+      import('./features/admin/admin-shell/admin-shell.component').then(m => m.AdminShellComponent),
+    children: adminRoutes,
   },
 
   // ── Fallback ──────────────────────────────────────

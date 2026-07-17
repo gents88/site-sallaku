@@ -1,20 +1,19 @@
-import { APP_BASE_HREF } from '@angular/common';
-import { CommonEngine } from '@angular/ssr/node';
+import { AngularNodeAppEngine, createNodeRequestHandler, isMainModule, writeResponseToNodeResponse } from '@angular/ssr/node';
 import express from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
-import bootstrap from './main.server';
 
 const SITE_URL = 'https://gentsallaku.it';
-const API_URL =
-  process.env['API_URL'] ?? 'http://localhost:3000/api/v1';
+const BACKEND_URL =
+  process.env['BACKEND_URL'] ?? 'http://localhost:3001';
+const API_URL = `${BACKEND_URL}/api/v1`;
 
 export function app(): ReturnType<typeof express> {
   const server = express();
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
   const browserDistFolder = resolve(serverDistFolder, '../browser');
-  const indexHtml = join(serverDistFolder, 'index.server.html');
-  const commonEngine = new CommonEngine();
+  const angularApp = new AngularNodeAppEngine();
 
   // ── Security headers ─────────────────────────────────────────────────────────
   server.use((_req, res, next) => {
@@ -93,6 +92,15 @@ export function app(): ReturnType<typeof express> {
     res.send(xml);
   });
 
+  // ── API proxy → backend ──────────────────────────────────────────────────────
+  server.use(
+    '/api',
+    createProxyMiddleware({
+      target: BACKEND_URL,
+      changeOrigin: true,
+    }),
+  );
+
   // ── Static assets (hashed filenames → 1-year cache) ──────────────────────────
   server.use(
     express.static(browserDistFolder, {
@@ -108,35 +116,51 @@ export function app(): ReturnType<typeof express> {
     }),
   );
 
-  // ── Skip SSR for admin routes (auth-protected, not indexed) ──────────────────
-  server.use('/dashboard', (_req, res) => {
-    res.setHeader('Cache-Control', 'no-store');
-    res.sendFile(join(browserDistFolder, 'index.html'));
+  // ── Skip SSR only for auth-protected admin routes (not indexed) ──────────────
+  // Public tool pages (convert, ocr, viewer, editor, pdf-editor, scanner, tools,
+  // pdf-summary, ai-formatter, pdf-translate, ai-ppt) and /dashboard/login|register
+  // live under /dashboard too but must be SSR'd for SEO and fast first paint.
+  const PROTECTED_DASHBOARD_PREFIXES = [
+    '/dashboard/ai',
+    '/dashboard/projects',
+    '/dashboard/experiences',
+    '/dashboard/blog',
+    '/dashboard/about',
+  ];
+  server.use((req, res, next) => {
+    const isBareDashboard = req.path === '/dashboard' || req.path === '/dashboard/';
+    const isProtectedChild = PROTECTED_DASHBOARD_PREFIXES.some(
+      p => req.path === p || req.path.startsWith(`${p}/`),
+    );
+    if (isBareDashboard || isProtectedChild) {
+      res.setHeader('Cache-Control', 'no-store');
+      return res.sendFile(join(browserDistFolder, 'index.html'));
+    }
+    next();
   });
 
   // ── Angular SSR for all public routes ────────────────────────────────────────
-  server.use((req, res, next) => {
-    const { protocol, originalUrl, baseUrl, headers } = req;
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${protocol}://${headers['host']}${originalUrl}`,
-        publicPath: browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+  server.use('/**', (req, res, next) => {
+    angularApp
+      .handle(req)
+      .then(response => {
+        if (response) {
+          writeResponseToNodeResponse(response, res);
+        } else {
+          next();
+        }
       })
-      .then(html => res.send(html))
-      .catch(err => next(err));
+      .catch(next);
   });
 
   return server;
 }
 
-function run(): void {
+if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] ?? 4000;
   app().listen(port, () =>
     console.log(`Angular SSR server listening on http://localhost:${port}`),
   );
 }
 
-run();
+export const reqHandler = createNodeRequestHandler(app);
