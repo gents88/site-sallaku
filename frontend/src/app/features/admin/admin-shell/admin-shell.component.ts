@@ -1,6 +1,7 @@
 import { Component, HostListener, signal, computed } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface NavItem {
   icon: string;
@@ -78,7 +79,7 @@ const ADMIN_NAV: NavGroup[] = [
       >
         <span></span><span></span><span></span>
       </button>
-      <span class="admin-topbar-title">Admin</span>
+      <span class="admin-topbar-title">{{ isAdminUser() ? 'Admin' : 'AI & Tools' }}</span>
     </div>
 
     <div class="admin-shell">
@@ -96,12 +97,12 @@ const ADMIN_NAV: NavGroup[] = [
         aria-label="Admin navigation"
       >
         <div class="sidebar-header">
-          <span class="sidebar-brand">⚙️ Admin</span>
+          <span class="sidebar-brand">{{ isAdminUser() ? '⚙️ Admin' : '🧰 AI & Tools' }}</span>
           <button class="close-btn" type="button" aria-label="Close menu" (click)="closeDrawer()">✕</button>
         </div>
 
         <nav class="sidebar-nav">
-          @for (group of navGroups; track group.id) {
+          @for (group of navGroups(); track group.id) {
             <div class="nav-group">
               <div class="nav-group-label">{{ group.emoji }} {{ group.title }}</div>
               @for (item of group.items; track item.route) {
@@ -328,9 +329,12 @@ const ADMIN_NAV: NavGroup[] = [
 })
 export class AdminShellComponent {
   readonly drawerOpen = signal(false);
-  readonly navGroups = ADMIN_NAV;
+  readonly isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
+  readonly navGroups = computed(() =>
+    this.isAdminUser() ? ADMIN_NAV : ADMIN_NAV.filter(group => group.id !== 'overview' && group.id !== 'content'),
+  );
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private auth: AuthService) {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => this.drawerOpen.set(false));

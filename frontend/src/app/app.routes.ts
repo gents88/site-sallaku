@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
 import { adminRoutes } from './features/admin/admin.routes';
 
 export const routes: Routes = [
@@ -73,56 +72,11 @@ export const routes: Routes = [
       import('./features/admin/auth/register/register.component').then(m => m.RegisterComponent),
   },
 
-  // ── AI & Tools: public (no auth required) ─────────
-  {
-    path: 'dashboard/tools',
-    loadComponent: () => import('./features/admin/tools/tools.component').then(m => m.ToolsComponent),
-  },
-  {
-    path: 'dashboard/pdf-summary',
-    loadComponent: () => import('./features/admin/pdf-summary/pdf-summary.component').then(m => m.PdfSummaryComponent),
-  },
-  {
-    path: 'dashboard/ai-formatter',
-    loadComponent: () => import('./features/admin/ai-formatter/ai-formatter.component').then(m => m.AiFormatterComponent),
-  },
-  {
-    path: 'dashboard/pdf-translate',
-    loadComponent: () => import('./features/admin/pdf-translate/pdf-translate.component').then(m => m.PdfTranslateComponent),
-  },
-  {
-    path: 'dashboard/ai-ppt',
-    loadComponent: () => import('./features/admin/ai-ppt/ai-ppt.component').then(m => m.AiPptComponent),
-  },
-  {
-    path: 'dashboard/convert',
-    loadComponent: () => import('./features/admin/convert/convert.component').then(m => m.ConvertComponent),
-  },
-  {
-    path: 'dashboard/pdf-editor',
-    loadComponent: () => import('./features/admin/pdf-editor/pdf-editor.component').then(m => m.PdfEditorComponent),
-  },
-  {
-    path: 'dashboard/viewer',
-    loadComponent: () => import('./features/admin/viewer/viewer.component').then(m => m.ViewerComponent),
-  },
-  {
-    path: 'dashboard/editor',
-    loadComponent: () => import('./features/admin/editor/editor.component').then(m => m.EditorComponent),
-  },
-  {
-    path: 'dashboard/ocr',
-    loadComponent: () => import('./features/admin/ocr/ocr.component').then(m => m.OcrComponent),
-  },
-  {
-    path: 'dashboard/scanner',
-    loadComponent: () => import('./features/admin/scanner/scanner.component').then(m => m.ScannerComponent),
-  },
-
-  // ── Admin: protected dashboard ────────────────────
+  // ── Admin shell: hosts the sidebar. AI/Tools children below are public;
+  // Content-management children (projects/blog/experiences/about) are
+  // individually guarded inside adminRoutes ─────────────────────────
   {
     path: 'dashboard',
-    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/admin/admin-shell/admin-shell.component').then(m => m.AdminShellComponent),
     children: adminRoutes,
