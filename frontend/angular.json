@@ -98,7 +98,8 @@
                   "maximumError": "50kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "prerender": true
             },
             "uat": {
               "fileReplacements": [
