@@ -2,7 +2,10 @@ import { Injectable, Logger, OnModuleDestroy, BadRequestException } from '@nestj
 import { createWorker, Worker } from 'tesseract.js';
 import * as path from 'path';
 import * as fs from 'fs';
-import sharp from 'sharp';
+// sharp ships as a CommonJS default export (`module.exports = fn`); a default/namespace
+// TS import resolves inconsistently across module-resolution modes, so require it directly.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sharp: (input?: Buffer | string) => import('sharp').Sharp = require('sharp');
 
 export const OCR_LANGUAGES = ['eng', 'ita', 'spa', 'fra', 'deu', 'por', 'sqi'] as const;
 export type OcrLanguage = (typeof OCR_LANGUAGES)[number];

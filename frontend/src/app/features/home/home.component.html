@@ -266,7 +266,7 @@
           </div>
           <h3 class="service-card__title">{{ 'services.' + svc.key + '.title' | translate }}</h3>
           <p class="service-card__desc">{{ 'services.' + svc.key + '.desc' | translate }}</p>
-          <a routerLink="/contact" class="service-card__cta btn btn-outline btn-sm">
+          <a [routerLink]="svc.route ?? '/contact'" class="service-card__cta btn btn-outline btn-sm">
             {{ 'services.' + svc.key + '.cta' | translate }}
             <mat-icon>arrow_forward</mat-icon>
           </a>
