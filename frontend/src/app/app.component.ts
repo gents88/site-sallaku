@@ -1,4 +1,5 @@
-import { Component, HostListener, OnInit, signal } from '@angular/core';
+import { Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
@@ -335,10 +336,14 @@ export class AppComponent implements OnInit {
     private seoService: SeoService,
     private router: Router,
     private translate: TranslateService,
+    @Inject(PLATFORM_ID) private platformId: object,
   ) {}
 
   ngOnInit(): void {
-    this.inactivity.init();
+    // Activity tracking binds to `window`, which doesn't exist during SSR/prerender.
+    if (isPlatformBrowser(this.platformId)) {
+      this.inactivity.init();
+    }
     this.seoService.trackPageViews();
   }
 
