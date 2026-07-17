@@ -224,6 +224,18 @@ export class ScannerComponent implements OnInit, OnDestroy {
       description: 'Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup.',
       url: 'https://gentsallaku.it/dashboard/scanner',
     });
+    this.seo.injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Free Document Scanner',
+      description: 'Scan documents with a webcam or phone camera, crop and enhance them, and export as PDF.',
+      url: 'https://gentsallaku.it/dashboard/scanner',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      featureList: ['Camera capture', 'Auto crop & enhance', 'Multi-page scan', 'Export as PDF'],
+      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+    });
   }
 
   ngOnDestroy(): void { this.stopCamera(); }
