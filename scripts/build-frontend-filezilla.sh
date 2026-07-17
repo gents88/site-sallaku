@@ -50,6 +50,16 @@ npm run build:prod
 
 # ── 4. Verifica output ────────────────────────────────────────────
 [[ -d "$DIST" ]] || die "Cartella dist non trovata: $DIST"
+
+# Con SSR abilitato, l'application builder genera "index.csr.html"
+# (il fallback per hosting statico) invece di "index.html" nella
+# cartella browser. Per il deploy statico via FileZilla serve
+# "index.html", quindi lo rinominiamo qui.
+if [[ ! -f "$DIST/index.html" && -f "$DIST/index.csr.html" ]]; then
+  log "Rinomino index.csr.html in index.html (deploy statico, SSR non usato)..."
+  mv "$DIST/index.csr.html" "$DIST/index.html"
+fi
+
 [[ -f "$DIST/index.html" ]] || die "index.html non trovato nel dist."
 
 # ── 5. Crea archivio ZIP ──────────────────────────────────────────
