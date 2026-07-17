@@ -21,7 +21,7 @@ interface TechItem { name: string; icon: string; level: number; isFab?: boolean;
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
 interface ExpItem { date?: string; dateKey?: string; titleKey: string; roleKey: string; descKey: string; tags: string[]; }
 interface FaqItem { qKey: string; aKey: string; }
-interface ServiceItem { key: string; icon: string; colorClass: string; }
+interface ServiceItem { key: string; icon: string; colorClass: string; route?: string; }
 
 @Component({
   selector: 'app-home',
@@ -161,6 +161,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   readonly services: ServiceItem[] = [
+    { key: 'pdf',      icon: 'picture_as_pdf',  colorClass: 'color-red',    route: '/dashboard/tools' },
     { key: 'frontend', icon: 'web',            colorClass: 'color-blue'   },
     { key: 'web3d',    icon: 'public',          colorClass: 'color-cyan'   },
     { key: 'dataviz',  icon: 'bar_chart',       colorClass: 'color-violet' },

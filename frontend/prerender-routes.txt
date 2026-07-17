@@ -1,0 +1,10 @@
+/homepage
+/contact
+/services
+/projects
+/blog
+/dashboard/tools
+/dashboard/ai-ppt
+/dashboard/ai-formatter
+/dashboard/pdf-translate
+/dashboard/pdf-summary

@@ -12,3 +12,9 @@ coverage/
 
 # Angular build cache
 .angular/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Tesseract OCR language data cache (downloaded at runtime)
+backend/.tessdata/

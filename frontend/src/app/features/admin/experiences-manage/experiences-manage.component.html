@@ -1,66 +1,66 @@
 <div class="admin-page container">
   <header class="admin-header">
     <div>
-      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
-      <h1>Experiences</h1>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'experiences_manage.title' | translate }}</h1>
     </div>
     <button mat-raised-button color="primary" (click)="openCreate()">
-      <mat-icon>add</mat-icon> New Experience
+      <mat-icon>add</mat-icon> {{ 'experiences_manage.new' | translate }}
     </button>
   </header>
 
   @if (showForm) {
     <div class="card form-panel">
-      <h2>{{ editingId ? 'Edit' : 'New' }} Experience</h2>
+      <h2>{{ (editingId ? 'common.edit' : 'common.create') | translate }} {{ 'experiences_manage.entity' | translate }}</h2>
       <form [formGroup]="form" (ngSubmit)="save()" novalidate>
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Company</mat-label>
+            <mat-label>{{ 'experiences_manage.company_label' | translate }}</mat-label>
             <input matInput formControlName="company" />
             @if (form.get('company')?.invalid && form.get('company')?.touched) {
-              <mat-error>Required</mat-error>
+              <mat-error>{{ 'experiences_manage.required' | translate }}</mat-error>
             }
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Role</mat-label>
+            <mat-label>{{ 'experiences_manage.role_label' | translate }}</mat-label>
             <input matInput formControlName="role" />
             @if (form.get('role')?.invalid && form.get('role')?.touched) {
-              <mat-error>Required</mat-error>
+              <mat-error>{{ 'experiences_manage.required' | translate }}</mat-error>
             }
           </mat-form-field>
         </div>
 
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Start Date (e.g. 2022-01)</mat-label>
+            <mat-label>{{ 'experiences_manage.start_date_label' | translate }}</mat-label>
             <input matInput formControlName="startDate" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>End Date</mat-label>
+            <mat-label>{{ 'experiences_manage.end_date_label' | translate }}</mat-label>
             <input matInput formControlName="endDate" [disabled]="!!form.get('current')?.value" />
           </mat-form-field>
         </div>
 
-        <mat-checkbox formControlName="current" style="margin-bottom:1rem">Currently working here</mat-checkbox>
+        <mat-checkbox formControlName="current" style="margin-bottom:1rem">{{ 'experiences_manage.current_label' | translate }}</mat-checkbox>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Description</mat-label>
+          <mat-label>{{ 'experiences_manage.description_label' | translate }}</mat-label>
           <textarea matInput formControlName="description" rows="4"></textarea>
         </mat-form-field>
 
         <div class="form-row">
           <mat-form-field appearance="outline">
-            <mat-label>Location</mat-label>
-            <input matInput formControlName="location" placeholder="Remote" />
+            <mat-label>{{ 'experiences_manage.location_label' | translate }}</mat-label>
+            <input matInput formControlName="location" [placeholder]="'experiences_manage.location_placeholder' | translate" />
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Order</mat-label>
+            <mat-label>{{ 'experiences_manage.order_label' | translate }}</mat-label>
             <input matInput formControlName="order" type="number" />
           </mat-form-field>
         </div>
 
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Technologies (press Enter)</mat-label>
+          <mat-label>{{ 'experiences_manage.tech_label' | translate }}</mat-label>
           <mat-chip-grid #grid>
             @for (tech of technologies; track tech) {
               <mat-chip [removable]="true" (removed)="removeTech(tech)">
@@ -73,9 +73,9 @@
         </mat-form-field>
 
         <div class="form-actions">
-          <button mat-button type="button" (click)="showForm = false">Cancel</button>
+          <button mat-button type="button" (click)="showForm = false">{{ 'common.cancel' | translate }}</button>
           <button mat-raised-button color="primary" type="submit" [disabled]="saving">
-            {{ saving ? 'Saving…' : 'Save' }}
+            {{ (saving ? 'about_manage.saving' : 'common.save') | translate }}
           </button>
         </div>
       </form>
@@ -85,14 +85,14 @@
   @if (loading) {
     <app-loading-spinner />
   } @else if (!experiences.length) {
-    <p class="empty-state">No experiences yet.</p>
+    <p class="empty-state">{{ 'experiences_manage.empty' | translate }}</p>
   } @else {
     <div class="list">
       @for (exp of experiences; track exp._id) {
         <div class="card list-item">
           <div class="list-item__info">
             <h3>{{ exp.role }} – <span class="text-muted">{{ exp.company }}</span></h3>
-            <p class="text-muted">{{ exp.startDate }} → {{ exp.current ? 'Present' : exp.endDate }}</p>
+            <p class="text-muted">{{ exp.startDate }} → {{ exp.current ? ('experiences_manage.present' | translate) : exp.endDate }}</p>
             <p>{{ exp.description | slice:0:120 }}…</p>
           </div>
           <div class="list-item__actions">

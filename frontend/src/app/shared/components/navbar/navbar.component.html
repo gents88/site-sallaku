@@ -38,6 +38,7 @@
     <div class="nav-right">
       <app-lang-switcher />
       <app-theme-toggle />
+      <app-nav-dropdown />
       @if (!auth.isLoggedIn()) {
         <button type="button" class="nav-link nav-link--account nav-link--button" (click)="openLoginModal()">
           <span class="nav-account__avatar nav-account__avatar--login">
