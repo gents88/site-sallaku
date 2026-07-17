@@ -504,6 +504,11 @@
     "tag": "shërbime",
     "title": "Shërbimet e Mia",
     "subtitle": "Çfarë ndërtoj dhe ofroj — zgjidhje enterprise nga koncepti deri në prodhim",
+    "pdf": {
+      "title": "Mjete PDF & AI",
+      "desc": "Suitë falas mjetesh online: konvertim skedarësh, editor dhe shikues PDF, OCR, skaner dokumentesh, përkthim PDF me AI, gjenerues prezantimesh dhe përmbledhje automatike.",
+      "cta": "Provo falas"
+    },
     "frontend": {
       "title": "Zhvillim Front‑End",
       "desc": "Aplikacione Angular të shkallëzueshme me TypeScript, RxJS dhe arkitektura best-practice. Nga projektet greenfield tek migrimet legacy.",

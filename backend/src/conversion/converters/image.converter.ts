@@ -4,7 +4,10 @@ import {
   Logger,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
-import sharp from 'sharp';
+// sharp ships as a CommonJS default export (`module.exports = fn`); a default/namespace
+// TS import resolves inconsistently across module-resolution modes, so require it directly.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sharp: (input?: Buffer | string) => import('sharp').Sharp = require('sharp');
 
 type ImageFormat = 'jpeg' | 'png' | 'webp';
 

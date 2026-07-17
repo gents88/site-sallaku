@@ -504,6 +504,11 @@
     "tag": "services",
     "title": "Mes Services",
     "subtitle": "Ce que je construis et livre — des solutions enterprise du concept à la production",
+    "pdf": {
+      "title": "Outils PDF & IA",
+      "desc": "Suite d'outils en ligne gratuite : conversion de fichiers, éditeur et visionneuse PDF, OCR, scanner de documents, traduction PDF par IA, générateur de présentations et résumés automatiques.",
+      "cta": "Essayer gratuitement"
+    },
     "frontend": {
       "title": "Développement Front‑End",
       "desc": "Applications Angular scalables avec TypeScript, RxJS et une architecture aux bonnes pratiques. Des projets greenfield aux migrations legacy.",

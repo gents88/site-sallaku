@@ -11,6 +11,19 @@ const routes = [
   { loc: '/blog', changefreq: 'weekly', priority: '0.9' },
   { loc: '/services', changefreq: 'monthly', priority: '0.8' },
   { loc: '/contact', changefreq: 'yearly', priority: '0.7' },
+
+  // ── AI & PDF Tools — public tool pages (Allow-listed in robots.txt) ──
+  { loc: '/dashboard/tools', changefreq: 'monthly', priority: '0.9' },
+  { loc: '/dashboard/pdf-translate', changefreq: 'monthly', priority: '0.88' },
+  { loc: '/dashboard/ai-ppt', changefreq: 'monthly', priority: '0.87' },
+  { loc: '/dashboard/pdf-summary', changefreq: 'monthly', priority: '0.86' },
+  { loc: '/dashboard/ai-formatter', changefreq: 'monthly', priority: '0.85' },
+  { loc: '/dashboard/convert', changefreq: 'monthly', priority: '0.84' },
+  { loc: '/dashboard/ocr', changefreq: 'monthly', priority: '0.83' },
+  { loc: '/dashboard/pdf-editor', changefreq: 'monthly', priority: '0.82' },
+  { loc: '/dashboard/viewer', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/dashboard/editor', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/dashboard/scanner', changefreq: 'monthly', priority: '0.8' },
 ];
 
 const today = formatDate(new Date());

@@ -504,6 +504,11 @@
     "tag": "servizi",
     "title": "I Miei Servizi",
     "subtitle": "Cosa progetto e realizzo — soluzioni enterprise dal concept alla produzione",
+    "pdf": {
+      "title": "Strumenti PDF & AI",
+      "desc": "Suite gratuita di tool online: conversione file, editor e visualizzatore PDF, OCR, scanner documenti, traduzione PDF con AI, generatore di presentazioni e riassunti automatici.",
+      "cta": "Prova gratis"
+    },
     "frontend": {
       "title": "Sviluppo Front‑End",
       "desc": "Applicazioni Angular scalabili con TypeScript, RxJS e architetture best-practice. Da progetti greenfield a migrazioni legacy.",

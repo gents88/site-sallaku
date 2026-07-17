@@ -504,6 +504,11 @@
     "tag": "services",
     "title": "My Services",
     "subtitle": "What I build and deliver — enterprise-grade solutions from concept to production",
+    "pdf": {
+      "title": "PDF & AI Tools",
+      "desc": "Free online tool suite: file conversion, PDF editor & viewer, OCR, document scanner, AI-powered PDF translation, presentation generator and automatic summaries.",
+      "cta": "Try for free"
+    },
     "frontend": {
       "title": "Front‑End Development",
       "desc": "Scalable Angular applications with TypeScript, RxJS and best-practice architecture. From greenfield projects to legacy migrations.",

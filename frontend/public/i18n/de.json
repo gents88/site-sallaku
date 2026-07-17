@@ -504,6 +504,11 @@
     "tag": "services",
     "title": "Meine Leistungen",
     "subtitle": "Was ich entwickle und liefere — Enterprise-Lösungen vom Konzept bis zur Produktion",
+    "pdf": {
+      "title": "PDF- & KI-Tools",
+      "desc": "Kostenlose Online-Tool-Suite: Dateikonvertierung, PDF-Editor & -Viewer, OCR, Dokumentenscanner, KI-gestützte PDF-Übersetzung, Präsentationsgenerator und automatische Zusammenfassungen.",
+      "cta": "Kostenlos testen"
+    },
     "frontend": {
       "title": "Front‑End Entwicklung",
       "desc": "Skalierbare Angular-Anwendungen mit TypeScript, RxJS und Best-Practice-Architektur. Von Greenfield-Projekten bis zu Legacy-Migrationen.",

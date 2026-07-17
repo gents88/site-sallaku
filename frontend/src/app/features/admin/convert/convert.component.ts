@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, OnDestroy, computed, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SeoService } from '../../../core/services/seo.service';
 import {
   ConversionService, ConversionTypeId, CONVERSION_TYPES, ConversionDef,
 } from '../../../core/services/conversion.service';
@@ -433,14 +434,35 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
     }
   `],
 })
-export class ConvertComponent implements OnDestroy {
+export class ConvertComponent implements OnInit, OnDestroy {
   private readonly svc = inject(ConversionService);
   private readonly san = inject(DomSanitizer);
   private readonly t   = inject(TranslateService);
+  private readonly seo = inject(SeoService);
 
   readonly searchQuery = signal('');
   readonly favorites   = signal<Set<string>>(this.loadFavs());
   readonly totalCount  = CONVERSION_TYPES.length;
+
+  ngOnInit(): void {
+    this.seo.update({
+      title: 'Free File Converter — PDF, Word, Excel, Images & More',
+      description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
+      url: 'https://gentsallaku.it/dashboard/convert',
+    });
+    this.seo.injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Free File Converter',
+      description: `Convert files between PDF, Word, Excel, images and other formats — ${this.totalCount} conversion types, entirely in the browser.`,
+      url: 'https://gentsallaku.it/dashboard/convert',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      featureList: ['PDF to Word/Text/HTML', 'Word to PDF', 'Excel/CSV conversion', 'Image format conversion', 'Base64 encode/decode', 'Favorites & instant search'],
+      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+    });
+  }
 
   private readonly allGroups = (() => {
     const map = new Map<string, ConversionDef[]>();

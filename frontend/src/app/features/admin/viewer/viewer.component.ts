@@ -214,6 +214,18 @@ export class ViewerComponent implements OnInit, OnDestroy {
       description: 'View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload.',
       url: 'https://gentsallaku.it/dashboard/viewer',
     });
+    this.seo.injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Free PDF Viewer',
+      description: 'View PDF documents in the browser with page navigation, zoom, full-text search and thumbnail preview.',
+      url: 'https://gentsallaku.it/dashboard/viewer',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      featureList: ['Page navigation', 'Zoom', 'Full-text search', 'Thumbnail preview', 'Private, no upload'],
+      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+    });
   }
 
   ngOnDestroy(): void { this.close(); }

@@ -211,6 +211,18 @@ export class EditorComponent implements OnInit {
       description: 'Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup.',
       url: 'https://gentsallaku.it/dashboard/editor',
     });
+    this.seo.injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Free Online Document Editor',
+      description: 'Write and format documents in the browser, import Word files and export to PDF, DOCX or HTML.',
+      url: 'https://gentsallaku.it/dashboard/editor',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+      featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
+      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+    });
   }
 
   exec(cmd: string, arg?: string): void {
