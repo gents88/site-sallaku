@@ -116,10 +116,27 @@ export function app(): ReturnType<typeof express> {
     }),
   );
 
-  // ── Skip SSR for admin routes (auth-protected, not indexed) ──────────────────
-  server.use('/dashboard', (_req, res) => {
-    res.setHeader('Cache-Control', 'no-store');
-    res.sendFile(join(browserDistFolder, 'index.html'));
+  // ── Skip SSR only for auth-protected admin routes (not indexed) ──────────────
+  // Public tool pages (convert, ocr, viewer, editor, pdf-editor, scanner, tools,
+  // pdf-summary, ai-formatter, pdf-translate, ai-ppt) and /dashboard/login|register
+  // live under /dashboard too but must be SSR'd for SEO and fast first paint.
+  const PROTECTED_DASHBOARD_PREFIXES = [
+    '/dashboard/ai',
+    '/dashboard/projects',
+    '/dashboard/experiences',
+    '/dashboard/blog',
+    '/dashboard/about',
+  ];
+  server.use((req, res, next) => {
+    const isBareDashboard = req.path === '/dashboard' || req.path === '/dashboard/';
+    const isProtectedChild = PROTECTED_DASHBOARD_PREFIXES.some(
+      p => req.path === p || req.path.startsWith(`${p}/`),
+    );
+    if (isBareDashboard || isProtectedChild) {
+      res.setHeader('Cache-Control', 'no-store');
+      return res.sendFile(join(browserDistFolder, 'index.html'));
+    }
+    next();
   });
 
   // ── Angular SSR for all public routes ────────────────────────────────────────
