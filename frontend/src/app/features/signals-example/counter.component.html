@@ -1,0 +1,80 @@
+<div class="counter-container">
+  <div class="header">
+    <h1>{{ name() }}</h1>
+    <p class="subtitle">Componente di esempio con Angular Signals</p>
+  </div>
+
+  <!-- DISPLAY SECTION -->
+  <div class="display-section">
+    <div class="counter-display" [class]="statusClass()">
+      <div class="counter-value">{{ count() }}</div>
+      <div class="counter-status">{{ status() }}</div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric">
+        <span class="label">Doppio</span>
+        <span class="value">{{ doubleCount() }}</span>
+      </div>
+      <div class="metric">
+        <span class="label">Quadrato</span>
+        <span class="value">{{ squaredCount() }}</span>
+      </div>
+      <div class="metric">
+        <span class="label">Pari</span>
+        <span class="value">{{ isEven() ? '✓' : '✗' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS SECTION -->
+  <div class="controls-section">
+    <div class="button-group">
+      <button class="btn btn-primary" (click)="decrement()">
+        <span class="icon">−</span>
+        <span>Riduci ({{ step() }})</span>
+      </button>
+      <button class="btn btn-secondary" (click)="reset()">Reset</button>
+      <button class="btn btn-primary" (click)="increment()">
+        <span>Aumenta ({{ step() }})</span>
+        <span class="icon">+</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SETTINGS SECTION -->
+  <div class="settings-section">
+    <div class="setting">
+      <label for="step-input">Incremento:</label>
+      <input
+        id="step-input"
+        type="number"
+        min="1"
+        [value]="step()"
+        (change)="setStep($any($event.target).valueAsNumber)"
+        class="input"
+      />
+    </div>
+
+    <div class="setting">
+      <label for="name-input">Nome:</label>
+      <input
+        id="name-input"
+        type="text"
+        [value]="name()"
+        (change)="setName($any($event.target).value)"
+        class="input"
+      />
+    </div>
+
+    <button class="btn btn-danger" (click)="resetAll()">Ripristina Tutto</button>
+  </div>
+
+  <!-- INFO SECTION -->
+  <div class="info-section">
+    <details>
+      <summary>📊 Dati Completi (JSON)</summary>
+      <pre>{{ summary() | json }}</pre>
+    </details>
+  </div>
+</div>
