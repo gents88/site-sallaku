@@ -1,9 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ConsentService } from '../../../core/services/consent.service';
-import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-consent-banner',
@@ -58,22 +57,12 @@ export class ConsentBannerComponent implements OnInit {
   marketing = false;
   preferences = false;
 
-  constructor(private consent: ConsentService, private auth: AuthService, private translate: TranslateService) {}
+  constructor(private consent: ConsentService) {}
 
   ngOnInit(): void {
-    try {
-      const stored = localStorage.getItem('cookie_consent_v1');
-      if (stored) {
-        const obj = JSON.parse(stored);
-        this.consent.updateGtagConsent(obj);
-        if (obj.analytics || obj.marketing) {
-          // GTM may be loaded by service
-        }
-        this.visible.set(false);
-      } else {
-        this.visible.set(true);
-      }
-    } catch (e) { this.visible.set(true); }
+    // ConsentService re-applies a stored choice to gtag at construction time —
+    // this only decides whether the banner itself needs to be shown.
+    this.visible.set(!this.consent.hasDecided());
   }
 
   acceptAll(): void { this.save({ analytics: true, marketing: true, preferences: true }); }
@@ -83,13 +72,8 @@ export class ConsentBannerComponent implements OnInit {
 
   savePreferences(): void { this.save({ analytics: this.analytics, marketing: this.marketing, preferences: this.preferences }); this.closeModal(); }
 
-  private save(partial: { analytics: boolean; marketing: boolean; preferences: boolean }) {
-    const country = (window as any).__USER_COUNTRY__ || null;
-    const payload = { ...partial, country };
-    try { const raw = localStorage.getItem('portfolio_user'); if (raw) { const u = JSON.parse(raw); if (u && u._id) (payload as any).userId = u._id; } } catch(e){}
-    this.consent.saveConsent(payload as any).subscribe(()=>{});
-    localStorage.setItem('cookie_consent_v1', JSON.stringify(payload));
-    this.consent.updateGtagConsent(payload as any);
+  private save(partial: { analytics: boolean; marketing: boolean; preferences: boolean }): void {
+    this.consent.setConsent(partial);
     this.visible.set(false);
   }
 }
