@@ -39,8 +39,10 @@
     "tag": "about",
     "title": "Sobre mim",
     "subtitle": "Desenvolvedor sênior com mais de 8 anos em web enterprise",
-    "bio1": "Sou um <strong>Desenvolvedor Front-End Sênior</strong> que transita com naturalidade entre Angular, TypeScript e arquiteturas enterprise, colaborando com empresas líderes nos setores aeroespacial, defesa, telco e bancário, onde precisão e confiabilidade não são opcionais.",
-    "bio2": "Minha paixão vai além das interfaces e aplicações: gosto de tudo que envolve esse mundo, da arquitetura à lógica de aplicação, passando pela performance e experiência do usuário. Transformo dados complexos em soluções claras, eficientes e agradáveis de usar. Para mim, cada desafio é um sistema a entender, simplificar e melhorar.",
+    "bio1": "Sou um <strong>Desenvolvedor Front-End Sênior & API</strong> com experiência enterprise em Angular e TypeScript. Colaborei com importantes empresas nos setores aeroespacial, defesa, telecomunicações e banking, onde confiabilidade e qualidade são imprescindíveis.",
+    "bio2": "Interesso-me por todo o ecossistema de desenvolvimento de software: desde a arquitetura de aplicações até a otimização de performance. Transformo processos complexos e grandes volumes de dados em soluções simples, robustas e fáceis de usar.",
+    "bio3": "Meu crescimento foi moldado pela família, minhas origens em Blinisht e minha experiência com os Embaixadores da Paz (2000-2012). Esses ensinamentos me transmitiram o valor do diálogo, colaboração e sensibilidade às diferenças.",
+    "bio4": "Acredito que o verdadeiro valor de um profissional reside na união de competência técnica e sensibilidade humana. Esta abordagem orienta cada projeto que realizo, enfrentando problemas com responsabilidade, visão e espírito construtivo.",
     "birth": "Nascido em Blinisht-Lezhe (Albânia) em 25/04/1988",
     "vision": {
       "title": "Visão End-to-End",
