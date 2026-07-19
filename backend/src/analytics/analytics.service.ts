@@ -604,11 +604,23 @@ export class AnalyticsService {
     return '';
   }
 
+  /**
+   * Truncates the client IP before it is ever persisted (called with the raw
+   * IP only here; `trackPageView` stores nothing but the result). Matches the
+   * masking Google Analytics/Matomo use for "IP anonymization":
+   *  - IPv4 → zero the last octet (/24), e.g. 93.62.236.1 → 93.62.236.0
+   *  - IPv6 → keep only the first 3 hextets (/48), e.g. 2001:db8:85a3::… → 2001:db8:85a3::
+   *    A /64 (4 hextets) is commonly the prefix an ISP assigns to a single
+   *    subscriber, so truncating only that far would not be an anonymization
+   *    equivalent in strength to the IPv4 case — /48 is the accepted floor.
+   * `resolveGeo()` uses the raw IP in-memory for the lookup and is called
+   * separately; the raw value is never written to the database.
+   */
   private anonymizeIp(ip: string): string {
     if (!ip) return '';
     const ipv4Match = ip.match(/^(\d+\.\d+\.\d+)\.\d+$/);
     if (ipv4Match) return ipv4Match[1] + '.0';
-    if (ip.includes(':')) return ip.split(':').slice(0, 4).join(':') + '::';
+    if (ip.includes(':')) return ip.split(':').slice(0, 3).join(':') + '::';
     return ip;
   }
 

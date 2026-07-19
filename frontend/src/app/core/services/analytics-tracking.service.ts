@@ -1,10 +1,11 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, effect, inject } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
+import { ConsentService } from './consent.service';
 
 interface PageViewPayload {
   visitorId: string;
@@ -46,21 +47,28 @@ const SESSION_ID_KEY = 'gs-session-id';
  * Single owner of backend analytics: page views (with dwell time, UTM and
  * session correlation) and click events.
  *
- * Tracking is skipped entirely for the /dashboard area and for logged-in
- * admins. The frontend skip is a bandwidth optimization — the authoritative
- * filter is the AdminTrackingBypassInterceptor on the NestJS side, which reads
- * the JWT attached by the auth interceptor.
+ * Nothing here — not even the visitorId localStorage write — happens until
+ * ConsentService.analyticsAllowed() is true. An `effect()` re-evaluates on
+ * every consent change: accepting mid-session starts tracking from the
+ * current page, revoking drops any in-flight dwell-time window without
+ * sending a final beacon for time accumulated before consent was withdrawn.
+ *
+ * Admins and the /dashboard area are excluded regardless of consent. The
+ * frontend skip is a bandwidth optimization — the authoritative filter is
+ * AdminTrackingBypassInterceptor on the NestJS side, which reads the JWT
+ * attached by the auth interceptor.
  */
 @Injectable({ providedIn: 'root' })
 export class AnalyticsTrackingService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly consent = inject(ConsentService);
   private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
 
-  private readonly visitorId = this.resolveVisitorId();
-  private readonly sessionId = this.resolveSessionId();
+  private visitorId: string | null = null;
+  private sessionId: string | null = null;
 
   private activeView: ActiveView | null = null;
   private lastTrackedUrl: string | null = null;
@@ -68,12 +76,21 @@ export class AnalyticsTrackingService {
   /** False until the first tracked view — that one is the session's external entry */
   private entryTracked = false;
 
+  constructor() {
+    effect(() => {
+      if (this.consent.analyticsAllowed()) {
+        this.trackNavigation(this.router.url);
+      } else {
+        this.activeView = null;
+      }
+    });
+  }
+
   /** Call once from AppComponent — wires router navigation and page-leave events. */
   init(): void {
     if (!isPlatformBrowser(this.platformId) || this.initialized) return;
     this.initialized = true;
 
-    this.trackNavigation(this.router.url);
     this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
       .subscribe(e => this.trackNavigation(e.urlAfterRedirects));
@@ -97,10 +114,11 @@ export class AnalyticsTrackingService {
    * @param destination Optional URL the user is navigating to (useful for affiliate links)
    */
   trackClick(eventType: string, label: string, destination?: string): void {
-    if (!isPlatformBrowser(this.platformId) || this.auth.isAdmin()) return;
+    if (!this.canTrack()) return;
+    const { visitorId } = this.ensureIds();
 
     const payload: ClickEventPayload = {
-      visitorId: this.visitorId,
+      visitorId,
       eventType,
       label,
       path: this.router.url.split('?')[0],
@@ -114,30 +132,36 @@ export class AnalyticsTrackingService {
       .subscribe({ error: () => {} });
   }
 
+  /** True when tracking is technically possible (browser, not admin) and consented to. */
+  private canTrack(): boolean {
+    return isPlatformBrowser(this.platformId) && !this.auth.isAdmin() && this.consent.analyticsAllowed();
+  }
+
   // ── Page-view pipeline ─────────────────────────────────────────────────
 
   private trackNavigation(url: string): void {
-    if (url === this.lastTrackedUrl) return;
+    if (!this.canTrack() || url === this.lastTrackedUrl) return;
 
     // Close the previous page's dwell-time window before opening a new one
     this.flushActiveView(false, true);
     this.lastTrackedUrl = url;
 
-    // Admin sessions and the admin area itself are never tracked
+    // The admin area itself is never tracked, even for a non-admin peeking at it
     const path = url.split('?')[0];
-    if (path.startsWith('/dashboard') || this.auth.isAdmin()) return;
+    if (path.startsWith('/dashboard')) return;
 
+    const { visitorId, sessionId } = this.ensureIds();
     const viewId = this.uuid();
     const isFirstView = !this.entryTracked;
 
     const payload: PageViewPayload = {
-      visitorId: this.visitorId,
+      visitorId,
       path,
       referrer: isFirstView ? (this.document.referrer || '') : '',
       language: this.document.documentElement.lang || navigator.language || '',
       userAgent: navigator.userAgent ?? '',
       viewId,
-      sessionId: this.sessionId,
+      sessionId,
       navigationType: isFirstView ? 'entry' : 'internal',
       ...this.extractUtmParams(url),
     };
@@ -211,6 +235,17 @@ export class AnalyticsTrackingService {
   }
 
   // ── Identity helpers ───────────────────────────────────────────────────
+
+  /**
+   * Resolves (and, on first call, persists) the visitor/session ids. Only
+   * ever called from paths already gated by canTrack() — nothing analytics-
+   * related touches storage before consent is granted.
+   */
+  private ensureIds(): { visitorId: string; sessionId: string } {
+    if (!this.visitorId) this.visitorId = this.resolveVisitorId();
+    if (!this.sessionId) this.sessionId = this.resolveSessionId();
+    return { visitorId: this.visitorId, sessionId: this.sessionId };
+  }
 
   private resolveVisitorId(): string {
     if (typeof localStorage === 'undefined') return this.uuid();
