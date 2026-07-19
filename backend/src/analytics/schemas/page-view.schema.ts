@@ -44,9 +44,34 @@ export class PageView {
   @Prop({ default: '' })
   os: string;
 
-  /** direct | search | social | referral */
+  /** direct | search | social | referral | internal | campaign */
   @Prop({ default: 'direct', index: true })
   trafficSource: string;
+
+  /** Client-generated UUID for this specific view — used to attach dwell time later */
+  @Prop({ default: '', index: true })
+  viewId: string;
+
+  /** Per-tab session id (sessionStorage) — groups the pages of one visit */
+  @Prop({ default: '', index: true })
+  sessionId: string;
+
+  /** Active time spent on the page in ms (0 = never reported) */
+  @Prop({ default: 0 })
+  durationMs: number;
+
+  /** entry = first page of the session (external arrival) | internal = SPA navigation */
+  @Prop({ default: 'entry', enum: ['entry', 'internal'] })
+  navigationType: string;
+
+  @Prop({ default: '' })
+  utmSource: string;
+
+  @Prop({ default: '' })
+  utmMedium: string;
+
+  @Prop({ default: '' })
+  utmCampaign: string;
 }
 
 export const PageViewSchema = SchemaFactory.createForClass(PageView);

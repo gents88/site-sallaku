@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -7,7 +7,9 @@ import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { AnalyticsService } from './analytics.service';
 import { SearchConsoleService } from './search-console.service';
 import { TrackPageViewDto } from './dto/track-page-view.dto';
+import { TrackPageLeaveDto } from './dto/track-page-leave.dto';
 import { TrackClickEventDto } from './dto/track-click-event.dto';
+import { AdminTrackingBypassInterceptor } from './interceptors/admin-tracking-bypass.interceptor';
 
 @ApiTags('Analytics')
 @Controller('analytics')
@@ -19,10 +21,19 @@ export class AnalyticsController {
 
   @Post('page-view')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Track a public page view' })
+  @UseInterceptors(AdminTrackingBypassInterceptor)
+  @ApiOperation({ summary: 'Track a public page view (silently skipped for admins)' })
   trackPageView(@Body() dto: TrackPageViewDto, @Req() req: Request) {
     // Rate limiting is handled by the global ThrottlerGuard
     return this.analyticsService.trackPageView(dto, req);
+  }
+
+  @Post('page-leave')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(AdminTrackingBypassInterceptor)
+  @ApiOperation({ summary: 'Attach dwell time to a previously tracked page view' })
+  trackPageLeave(@Body() dto: TrackPageLeaveDto) {
+    return this.analyticsService.trackPageLeave(dto);
   }
 
   @Get()
@@ -114,7 +125,8 @@ export class AnalyticsController {
 
   @Post('click-event')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Track a click / interaction event (public)' })
+  @UseInterceptors(AdminTrackingBypassInterceptor)
+  @ApiOperation({ summary: 'Track a click / interaction event (public, silently skipped for admins)' })
   trackClickEvent(@Body() dto: TrackClickEventDto, @Req() req: Request) {
     return this.analyticsService.trackClickEvent(dto, req);
   }

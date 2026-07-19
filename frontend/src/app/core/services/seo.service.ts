@@ -2,7 +2,6 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -32,7 +31,6 @@ export class SeoService {
     private title: Title,
     private meta: Meta,
     private router: Router,
-    private http: HttpClient,
     @Inject(DOCUMENT) private document: Document,
     @Inject(PLATFORM_ID) private platformId: object,
   ) {}
@@ -167,50 +165,22 @@ export class SeoService {
     (window as any)['gtag']('config', id);
   }
 
+  /**
+   * Google Analytics page_view only — backend page-view tracking (with dwell
+   * time, UTM and admin exclusion) lives in AnalyticsTrackingService.
+   */
   private trackCurrentPageView(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     const currentPath = this.router.url;
     if (this.lastTrackedPath === currentPath) return;
 
     this.lastTrackedPath = currentPath;
-    this.trackBackendPageView(currentPath);
 
     if (environment.googleAnalyticsId && typeof gtag !== 'undefined') {
       (window as any)['gtag']('config', environment.googleAnalyticsId, {
         page_path: currentPath,
       });
     }
-  }
-
-  private trackBackendPageView(path: string): void {
-    if (!isPlatformBrowser(this.platformId) || path.startsWith('/dashboard')) return;
-
-    const visitorId = this.getVisitorId();
-    const payload = {
-      visitorId,
-      path,
-      referrer: this.document.referrer || '',
-      language: this.document.documentElement.lang || navigator.language || '',
-      userAgent: navigator.userAgent || '',
-    };
-
-    this.http.post(`${environment.apiUrl}/analytics/page-view`, payload).subscribe({
-      error: () => undefined,
-    });
-  }
-
-  private getVisitorId(): string {
-    const storageKey = 'gs-visitor-id';
-    const existing = localStorage.getItem(storageKey);
-    if (existing) return existing;
-
-    const visitorId =
-      typeof crypto !== 'undefined' && 'randomUUID' in crypto
-        ? crypto.randomUUID()
-        : `visitor-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-
-    localStorage.setItem(storageKey, visitorId);
-    return visitorId;
   }
 }
 
