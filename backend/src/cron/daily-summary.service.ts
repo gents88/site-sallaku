@@ -4,12 +4,39 @@ import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Cron } from '@nestjs/schedule';
 import { ContactService } from '../contact/contact.service';
-import { AnalyticsService } from '../analytics/analytics.service';
+import { AnalyticsService, BreakdownItem } from '../analytics/analytics.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
 import { MailService } from '../mail/mail.service';
+import { TemplateRendererService } from '../mail/template-renderer.service';
 import { CronState, CronStateDocument } from './schemas/cron-state.schema';
 
 const DAILY_SUMMARY_JOB = 'daily-summary';
+
+// ── View models consumed by templates/daily-summary.hbs (logic-less) ────────
+
+interface StatCardVM {
+  icon: string;
+  label: string;
+  value: number | string;
+  color: string;
+}
+
+interface BreakdownRowVM {
+  rank?: number;
+  label: string;
+  count: number;
+  /** Bar length as % of the table's max count (min 4 so tiny values stay visible) */
+  barWidth: number;
+  zebra: boolean;
+}
+
+interface BreakdownTableVM {
+  icon: string;
+  title: string;
+  accent: string;
+  emptyText: string;
+  rows: BreakdownRowVM[];
+}
 
 @Injectable()
 export class DailySummaryService {
@@ -21,6 +48,7 @@ export class DailySummaryService {
     private analytics: AnalyticsService,
     private chatbot: ChatbotService,
     private mail: MailService,
+    private templates: TemplateRendererService,
     @InjectModel(CronState.name) private cronStateModel: Model<CronStateDocument>,
   ) {}
 
@@ -137,14 +165,14 @@ export class DailySummaryService {
       || this.cfg.get<string>('ADMIN_EMAIL')
       || 'gentsallaku@gmail.com';
 
-    const html = this.buildDailySummaryHtml({
+    const html = this.templates.render('daily-summary', this.buildTemplateData({
       date: dateLabel,
       todaysContacts,
       todayStats,
       advanced,
       engagement,
       chatInteractions,
-    });
+    }));
 
     const subject = `📊 Daily Summary — ${now.toISOString().slice(0, 10)}`;
     this.logger.log(`[DailySummary] Sending email → ${admin} subject="${subject}"`);
@@ -172,7 +200,8 @@ export class DailySummaryService {
         `Sources today: ${engagement.sources.map(s => `${s.label} (${s.count})`).join(', ') || 'N/A'}`,
         `Top referrers: ${engagement.topReferrers.slice(0, 5).map(r => `${r.label} (${r.count})`).join(', ') || 'N/A'}`,
         `Campaigns:     ${engagement.campaigns.slice(0, 5).map(c => `${c.label} (${c.count})`).join(', ') || 'N/A'}`,
-        `Top locations: ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
+        `Locations today:    ${engagement.locations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
+        `Locations all time: ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
       ].join('\n'),
     });
 
@@ -190,222 +219,116 @@ export class DailySummaryService {
     return result.success;
   }
 
-  // ── HTML builder ──────────────────────────────────────────────────────────
+  // ── Template data builder ─────────────────────────────────────────────────
 
-  private buildDailySummaryHtml(data: {
+  /**
+   * Shapes the aggregated analytics into the logic-less view model consumed by
+   * templates/daily-summary.hbs. All presentation decisions (bar widths, zebra
+   * striping, duration formatting) happen here, not in the template.
+   */
+  private buildTemplateData(data: {
     date: string;
     todaysContacts: any[];
     todayStats: { todayPageViews: number; uniqueVisitorsToday: number; todayBlogViews: number };
     advanced: Awaited<ReturnType<AnalyticsService['getAdvancedAnalytics']>>;
     engagement: Awaited<ReturnType<AnalyticsService['getDailyEngagementReport']>>;
     chatInteractions: number;
-  }): string {
+  }): Record<string, unknown> {
     const { date, todaysContacts, todayStats, advanced, engagement, chatInteractions } = data;
 
-    const fmtDuration = (sec: number | null): string => {
-      if (sec == null) return '—';
-      return sec >= 60 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : `${sec}s`;
+    const kpiRows: StatCardVM[][] = [
+      [
+        { icon: '👁️', label: 'Page Views', value: todayStats.todayPageViews, color: '#818cf8' },
+        { icon: '👤', label: 'Unique Visitors', value: todayStats.uniqueVisitorsToday, color: '#38bdf8' },
+        { icon: '🤖', label: 'Chat Messages', value: chatInteractions, color: '#34d399' },
+        { icon: '✉️', label: 'Contact Forms', value: todaysContacts.length, color: '#f59e0b' },
+      ],
+      [
+        { icon: '📰', label: 'Blog Views', value: todayStats.todayBlogViews, color: '#a78bfa' },
+        { icon: '🆕', label: 'New Visitors', value: engagement.newVisitors, color: '#4ade80' },
+        { icon: '🔁', label: 'Returning', value: engagement.returningVisitors, color: '#fb7185' },
+      ],
+    ];
+
+    const maxPageViews = Math.max(1, ...engagement.pages.map(p => p.views));
+    const pages = engagement.pages.slice(0, 10).map((p, i) => ({
+      path: p.path,
+      views: p.views,
+      uniqueVisitors: p.uniqueVisitors,
+      viewsPerVisitor: p.viewsPerVisitor,
+      repeatVisitors: p.repeatVisitors,
+      avgTime: this.formatDuration(p.avgDurationSec),
+      barWidth: Math.max(4, Math.round((p.views / maxPageViews) * 100)),
+      zebra: i % 2 === 1,
+    }));
+
+    const tablePairs = [
+      {
+        left: this.toBreakdownTable(
+          { icon: '📡', title: 'Traffic Sources — Today', accent: '#34d399', emptyText: 'No data' },
+          engagement.sources, 6),
+        right: this.toBreakdownTable(
+          { icon: '📱', title: 'Devices', accent: '#38bdf8', emptyText: 'No data' },
+          advanced.deviceBreakdown, 5),
+      },
+      {
+        left: this.toBreakdownTable(
+          { icon: '🔗', title: 'External Referrers — Today', accent: '#fb7185', emptyText: 'No external referrers' },
+          engagement.topReferrers, 6),
+        right: this.toBreakdownTable(
+          { icon: '🎯', title: 'UTM Campaigns — Today', accent: '#4ade80', emptyText: 'No campaign traffic' },
+          engagement.campaigns, 6),
+      },
+      {
+        left: this.toBreakdownTable(
+          { icon: '🌍', title: 'Top Visitor Locations — Today', accent: '#818cf8', emptyText: 'No location data today' },
+          engagement.locations, 8),
+        right: this.toBreakdownTable(
+          { icon: '🌐', title: 'Top Visitor Locations — All Time', accent: '#f59e0b', emptyText: 'No location data' },
+          advanced.topLocations, 8),
+      },
+    ];
+
+    const contacts = todaysContacts.map((m, i) => ({
+      time: new Date(m.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      name: m.name,
+      email: m.email,
+      preview: `${(m.message ?? '').slice(0, 80)}${(m.message ?? '').length > 80 ? '…' : ''}`,
+      zebra: i % 2 === 1,
+    }));
+
+    return {
+      date,
+      year: new Date().getFullYear(),
+      kpiRows,
+      pages,
+      tablePairs,
+      contacts,
     };
+  }
 
-    const statCard = (icon: string, label: string, value: string | number, color: string) => `
-      <td style="padding:8px;">
-        <div style="background:#0f1831;border:1px solid ${color}33;border-radius:10px;padding:18px 20px;text-align:center;min-width:110px;">
-          <div style="font-size:1.6rem;margin-bottom:6px;">${icon}</div>
-          <div style="font-size:1.6rem;font-weight:700;color:${color};line-height:1;">${value}</div>
-          <div style="font-size:0.75rem;color:#64748b;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">${label}</div>
-        </div>
-      </td>`;
+  private toBreakdownTable(
+    header: Omit<BreakdownTableVM, 'rows'>,
+    items: BreakdownItem[],
+    limit: number,
+    ranked = false,
+  ): BreakdownTableVM {
+    const sliced = items.slice(0, limit);
+    const max = Math.max(1, ...sliced.map(i => i.count));
+    return {
+      ...header,
+      rows: sliced.map((item, i) => ({
+        ...(ranked ? { rank: i + 1 } : {}),
+        label: item.label,
+        count: item.count,
+        barWidth: Math.max(4, Math.round((item.count / max) * 100)),
+        zebra: i % 2 === 1,
+      })),
+    };
+  }
 
-    const pageRows = engagement.pages.slice(0, 10).map((p, i) => `
-      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
-        <td style="padding:8px 14px;color:#e2e8f0;font-size:0.85rem;word-break:break-all;">${p.path}</td>
-        <td style="padding:8px 10px;text-align:right;color:#818cf8;font-weight:600;">${p.views}</td>
-        <td style="padding:8px 10px;text-align:right;color:#94a3b8;">${p.uniqueVisitors}</td>
-        <td style="padding:8px 10px;text-align:right;color:#94a3b8;">${p.viewsPerVisitor}×</td>
-        <td style="padding:8px 10px;text-align:right;color:#94a3b8;">${p.repeatVisitors}</td>
-        <td style="padding:8px 14px;text-align:right;color:#94a3b8;">${fmtDuration(p.avgDurationSec)}</td>
-      </tr>`).join('') || `<tr><td colspan="6" style="padding:12px 16px;color:#475569;text-align:center;">No page views today</td></tr>`;
-
-    const referrerRows = engagement.topReferrers.slice(0, 6).map((r, i) => `
-      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
-        <td style="padding:7px 16px;color:#e2e8f0;word-break:break-all;">${r.label}</td>
-        <td style="padding:7px 16px;text-align:right;color:#94a3b8;">${r.count}</td>
-      </tr>`).join('') || `<tr><td colspan="2" style="padding:10px 16px;color:#475569;">No external referrers</td></tr>`;
-
-    const campaignRows = engagement.campaigns.slice(0, 6).map((c, i) => `
-      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
-        <td style="padding:7px 16px;color:#e2e8f0;word-break:break-all;">${c.label}</td>
-        <td style="padding:7px 16px;text-align:right;color:#94a3b8;">${c.count}</td>
-      </tr>`).join('');
-
-    const locationRows = advanced.topLocations.slice(0, 8).map((l, i) => `
-      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
-        <td style="padding:8px 16px;color:#94a3b8;">${i + 1}</td>
-        <td style="padding:8px 16px;color:#e2e8f0;">${l.label}</td>
-        <td style="padding:8px 16px;text-align:right;">
-          <span style="background:rgba(79,106,245,0.15);color:#818cf8;padding:2px 10px;border-radius:12px;font-size:0.82rem;">${l.count}</span>
-        </td>
-      </tr>`).join('') || `<tr><td colspan="3" style="padding:12px 16px;color:#475569;text-align:center;">No location data</td></tr>`;
-
-    const deviceRows = advanced.deviceBreakdown.map((d, i) => `
-      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
-        <td style="padding:7px 16px;color:#e2e8f0;">${d.label}</td>
-        <td style="padding:7px 16px;text-align:right;color:#94a3b8;">${d.count}</td>
-      </tr>`).join('') || `<tr><td colspan="2" style="padding:10px 16px;color:#475569;">No data</td></tr>`;
-
-    const contactRows = todaysContacts.length
-      ? todaysContacts.map((m, i) => `
-        <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.025);'}">
-          <td style="padding:8px 12px;color:#94a3b8;font-size:0.8rem;white-space:nowrap;">${new Date(m.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</td>
-          <td style="padding:8px 12px;color:#e2e8f0;font-weight:500;">${m.name}</td>
-          <td style="padding:8px 12px;color:#818cf8;font-size:0.85rem;">${m.email}</td>
-          <td style="padding:8px 12px;color:#94a3b8;font-size:0.85rem;">${(m.message ?? '').slice(0, 80)}${(m.message ?? '').length > 80 ? '…' : ''}</td>
-        </tr>`).join('')
-      : `<tr><td colspan="4" style="padding:14px;color:#475569;text-align:center;">No messages today</td></tr>`;
-
-    return `
-      <div style="font-family:Inter,sans-serif;max-width:680px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:14px;overflow:hidden;">
-
-        <!-- Header -->
-        <div style="background:linear-gradient(135deg,#1e3a5f,#1e1b4b);padding:32px 36px;border-bottom:1px solid rgba(79,106,245,0.3);">
-          <div style="display:flex;align-items:center;gap:14px;">
-            <span style="font-family:monospace;font-size:1.8rem;font-weight:700;color:#fff;">&lt;GS /&gt;</span>
-            <div>
-              <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;">Automated Analytics Report</div>
-              <h1 style="color:#fff;margin:4px 0 0;font-size:1.3rem;">📊 Daily Summary</h1>
-              <div style="color:#818cf8;font-size:0.88rem;margin-top:2px;">${date}</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="padding:28px 32px;">
-
-          <!-- KPI Stats Row -->
-          <table style="width:100%;border-collapse:collapse;margin-bottom:28px;">
-            <tr>
-              ${statCard('👁️', 'Page Views', todayStats.todayPageViews, '#818cf8')}
-              ${statCard('👤', 'Unique Visitors', todayStats.uniqueVisitorsToday, '#38bdf8')}
-              ${statCard('🤖', 'Chat Messages', chatInteractions, '#34d399')}
-              ${statCard('✉️', 'Contact Forms', todaysContacts.length, '#f59e0b')}
-            </tr>
-            <tr>
-              ${statCard('📰', 'Blog Views', todayStats.todayBlogViews, '#a78bfa')}
-              ${statCard('🆕', 'New Visitors', engagement.newVisitors, '#4ade80')}
-              ${statCard('🔁', 'Returning', engagement.returningVisitors, '#fb7185')}
-            </tr>
-          </table>
-
-          <!-- Page Engagement (today) -->
-          <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(129,140,248,0.25);overflow:hidden;margin-bottom:20px;">
-            <div style="background:rgba(129,140,248,0.12);padding:12px 16px;border-bottom:1px solid rgba(129,140,248,0.2);">
-              <span style="color:#818cf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">📄 Page Engagement — Today</span>
-            </div>
-            <table style="width:100%;border-collapse:collapse;">
-              <thead>
-                <tr style="background:rgba(255,255,255,0.03);">
-                  <th style="padding:8px 14px;text-align:left;color:#475569;font-size:0.72rem;font-weight:500;">Page</th>
-                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Views</th>
-                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Unique</th>
-                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Views/Visitor</th>
-                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Repeat</th>
-                  <th style="padding:8px 14px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Avg Time</th>
-                </tr>
-              </thead>
-              <tbody>${pageRows}</tbody>
-            </table>
-          </div>
-
-          <!-- Two-column: External Referrers + UTM Campaigns -->
-          <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-            <tr>
-              <td style="padding:0 10px 0 0;vertical-align:top;width:50%;">
-                <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(251,113,133,0.2);overflow:hidden;">
-                  <div style="background:rgba(251,113,133,0.1);padding:10px 16px;border-bottom:1px solid rgba(251,113,133,0.15);">
-                    <span style="color:#fb7185;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">🔗 External Referrers — Today</span>
-                  </div>
-                  <table style="width:100%;border-collapse:collapse;">${referrerRows}</table>
-                </div>
-              </td>
-              <td style="padding:0 0 0 10px;vertical-align:top;width:50%;">
-                <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(74,222,128,0.2);overflow:hidden;">
-                  <div style="background:rgba(74,222,128,0.09);padding:10px 16px;border-bottom:1px solid rgba(74,222,128,0.15);">
-                    <span style="color:#4ade80;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">🎯 UTM Campaigns — Today</span>
-                  </div>
-                  <table style="width:100%;border-collapse:collapse;">${campaignRows || '<tr><td style="padding:10px 16px;color:#475569;">No campaign traffic</td></tr>'}</table>
-                </div>
-              </td>
-            </tr>
-          </table>
-
-          <!-- Visitor Locations -->
-          <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(79,106,245,0.2);overflow:hidden;margin-bottom:20px;">
-            <div style="background:rgba(79,106,245,0.12);padding:12px 16px;border-bottom:1px solid rgba(79,106,245,0.2);">
-              <span style="color:#818cf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">🌍 Top Visitor Locations</span>
-            </div>
-            <table style="width:100%;border-collapse:collapse;">
-              <thead>
-                <tr style="background:rgba(255,255,255,0.03);">
-                  <th style="padding:8px 16px;text-align:left;color:#475569;font-size:0.75rem;font-weight:500;">#</th>
-                  <th style="padding:8px 16px;text-align:left;color:#475569;font-size:0.75rem;font-weight:500;">Location</th>
-                  <th style="padding:8px 16px;text-align:right;color:#475569;font-size:0.75rem;font-weight:500;">Visits</th>
-                </tr>
-              </thead>
-              <tbody>${locationRows}</tbody>
-            </table>
-          </div>
-
-          <!-- Two-column: Traffic Sources + Devices -->
-          <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-            <tr>
-              <td style="padding:0 10px 0 0;vertical-align:top;width:50%;">
-                <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(52,211,153,0.2);overflow:hidden;">
-                  <div style="background:rgba(52,211,153,0.1);padding:10px 16px;border-bottom:1px solid rgba(52,211,153,0.15);">
-                    <span style="color:#34d399;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">📡 Traffic Sources — Today</span>
-                  </div>
-                  <table style="width:100%;border-collapse:collapse;">
-                    ${engagement.sources.map((t, i) => `<tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}"><td style="padding:7px 16px;color:#e2e8f0;">${t.label}</td><td style="padding:7px 16px;text-align:right;color:#94a3b8;">${t.count}</td></tr>`).join('') || '<tr><td colspan="2" style="padding:10px 16px;color:#475569;">No data</td></tr>'}
-                  </table>
-                </div>
-              </td>
-              <td style="padding:0 0 0 10px;vertical-align:top;width:50%;">
-                <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(56,189,248,0.2);overflow:hidden;">
-                  <div style="background:rgba(56,189,248,0.09);padding:10px 16px;border-bottom:1px solid rgba(56,189,248,0.15);">
-                    <span style="color:#38bdf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">📱 Devices</span>
-                  </div>
-                  <table style="width:100%;border-collapse:collapse;">${deviceRows}</table>
-                </div>
-              </td>
-            </tr>
-          </table>
-
-          <!-- Contact Messages Today -->
-          <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(245,158,11,0.2);overflow:hidden;">
-            <div style="background:rgba(245,158,11,0.1);padding:12px 16px;border-bottom:1px solid rgba(245,158,11,0.2);">
-              <span style="color:#f59e0b;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">✉️ Contact Messages Today (${todaysContacts.length})</span>
-            </div>
-            <table style="width:100%;border-collapse:collapse;">
-              <thead>
-                <tr style="background:rgba(255,255,255,0.03);">
-                  <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Time</th>
-                  <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Name</th>
-                  <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Email</th>
-                  <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Preview</th>
-                </tr>
-              </thead>
-              <tbody>${contactRows}</tbody>
-            </table>
-          </div>
-
-        </div>
-
-        <!-- Footer -->
-        <div style="background:#070b15;padding:16px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
-          <p style="margin:0;font-size:0.78rem;color:#334155;">
-            Automated daily report · <a href="https://gentsallaku.it/admin" style="color:#818cf8;">View Dashboard</a>
-            &nbsp;·&nbsp; © ${new Date().getFullYear()} Gent Sallaku
-          </p>
-        </div>
-      </div>
-    `;
+  private formatDuration(sec: number | null): string {
+    if (sec == null) return '—';
+    return sec >= 60 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : `${sec}s`;
   }
 }

@@ -58,6 +58,8 @@ export interface DailyEngagementReport {
   topReferrers: BreakdownItem[];
   /** UTM campaigns seen today, labeled "source / campaign" */
   campaigns: BreakdownItem[];
+  /** "City, Country" breakdown of today's visits */
+  locations: BreakdownItem[];
   newVisitors: number;
   returningVisitors: number;
 }
@@ -174,9 +176,10 @@ export class AnalyticsService {
     start.setHours(0, 0, 0, 0);
     const todayMatch = { createdAt: { $gte: start } };
 
-    const [pages, sources, referrerRows, campaigns, todayVisitorIds] = await Promise.all([
+    const [pages, sources, locations, referrerRows, campaigns, todayVisitorIds] = await Promise.all([
       this.aggregatePageEngagement(start, 15),
       this.aggregateByField('trafficSource', 6, todayMatch),
+      this.aggregateTopLocations(8, todayMatch),
       this.pageViewModel
         .aggregate<{ _id: string; count: number }>([
           { $match: { ...todayMatch, referrer: { $nin: ['', null] }, trafficSource: { $ne: 'internal' } } },
@@ -216,6 +219,7 @@ export class AnalyticsService {
       sources,
       topReferrers: this.mergeReferrersByHost(referrerRows, 8),
       campaigns: campaigns.map(c => ({ label: c._id ?? 'Unknown', count: c.count })),
+      locations,
       newVisitors: todayVisitorIds.length - returningVisitors,
       returningVisitors,
     };
@@ -537,7 +541,10 @@ export class AnalyticsService {
     });
   }
 
-  private async aggregateTopLocations(limit: number): Promise<BreakdownItem[]> {
+  private async aggregateTopLocations(
+    limit: number,
+    extraMatch: Record<string, unknown> = {},
+  ): Promise<BreakdownItem[]> {
     const hasCity = { $and: [{ $ne: ['$city', ''] }, { $ne: ['$city', null] }] };
     const hasCountry = { $and: [{ $ne: ['$country', ''] }, { $ne: ['$country', null] }] };
 
@@ -545,6 +552,7 @@ export class AnalyticsService {
       .aggregate<{ _id: string; count: number }>([
         {
           $match: {
+            ...extraMatch,
             $or: [
               { city: { $nin: ['', null] } },
               { country: { $nin: ['', null] } },
