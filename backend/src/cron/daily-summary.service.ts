@@ -119,10 +119,11 @@ export class DailySummaryService {
 
     // ── Gather data in parallel ──────────────────────────────────────────
     this.logger.log('[DailySummary] Gathering analytics data…');
-    const [todaysContacts, todayStats, advanced, chatInteractions] = await Promise.all([
+    const [todaysContacts, todayStats, advanced, engagement, chatInteractions] = await Promise.all([
       this.contacts.findToday(),
       this.analytics.getTodayPageViewStats(),
       this.analytics.getAdvancedAnalytics(),
+      this.analytics.getDailyEngagementReport(),
       this.chatbot.getTodayInteractionCount(),
     ]);
 
@@ -141,6 +142,7 @@ export class DailySummaryService {
       todaysContacts,
       todayStats,
       advanced,
+      engagement,
       chatInteractions,
     });
 
@@ -156,10 +158,20 @@ export class DailySummaryService {
         ``,
         `Page views today:    ${todayStats.todayPageViews}`,
         `Unique visitors:     ${todayStats.uniqueVisitorsToday}`,
+        `New / returning:     ${engagement.newVisitors} / ${engagement.returningVisitors}`,
         `Blog article views:  ${todayStats.todayBlogViews}`,
         `Chatbot messages:    ${chatInteractions}`,
         `Contact messages:    ${todaysContacts.length}`,
         ``,
+        `Top pages today:`,
+        ...engagement.pages.slice(0, 8).map(p =>
+          `  ${p.path} — ${p.views} views / ${p.uniqueVisitors} unique (${p.viewsPerVisitor}x)` +
+          (p.avgDurationSec != null ? `, avg ${p.avgDurationSec}s` : ''),
+        ),
+        ``,
+        `Sources today: ${engagement.sources.map(s => `${s.label} (${s.count})`).join(', ') || 'N/A'}`,
+        `Top referrers: ${engagement.topReferrers.slice(0, 5).map(r => `${r.label} (${r.count})`).join(', ') || 'N/A'}`,
+        `Campaigns:     ${engagement.campaigns.slice(0, 5).map(c => `${c.label} (${c.count})`).join(', ') || 'N/A'}`,
         `Top locations: ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
       ].join('\n'),
     });
@@ -185,9 +197,15 @@ export class DailySummaryService {
     todaysContacts: any[];
     todayStats: { todayPageViews: number; uniqueVisitorsToday: number; todayBlogViews: number };
     advanced: Awaited<ReturnType<AnalyticsService['getAdvancedAnalytics']>>;
+    engagement: Awaited<ReturnType<AnalyticsService['getDailyEngagementReport']>>;
     chatInteractions: number;
   }): string {
-    const { date, todaysContacts, todayStats, advanced, chatInteractions } = data;
+    const { date, todaysContacts, todayStats, advanced, engagement, chatInteractions } = data;
+
+    const fmtDuration = (sec: number | null): string => {
+      if (sec == null) return '—';
+      return sec >= 60 ? `${Math.floor(sec / 60)}m ${sec % 60}s` : `${sec}s`;
+    };
 
     const statCard = (icon: string, label: string, value: string | number, color: string) => `
       <td style="padding:8px;">
@@ -197,6 +215,28 @@ export class DailySummaryService {
           <div style="font-size:0.75rem;color:#64748b;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">${label}</div>
         </div>
       </td>`;
+
+    const pageRows = engagement.pages.slice(0, 10).map((p, i) => `
+      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
+        <td style="padding:8px 14px;color:#e2e8f0;font-size:0.85rem;word-break:break-all;">${p.path}</td>
+        <td style="padding:8px 10px;text-align:right;color:#818cf8;font-weight:600;">${p.views}</td>
+        <td style="padding:8px 10px;text-align:right;color:#94a3b8;">${p.uniqueVisitors}</td>
+        <td style="padding:8px 10px;text-align:right;color:#94a3b8;">${p.viewsPerVisitor}×</td>
+        <td style="padding:8px 10px;text-align:right;color:#94a3b8;">${p.repeatVisitors}</td>
+        <td style="padding:8px 14px;text-align:right;color:#94a3b8;">${fmtDuration(p.avgDurationSec)}</td>
+      </tr>`).join('') || `<tr><td colspan="6" style="padding:12px 16px;color:#475569;text-align:center;">No page views today</td></tr>`;
+
+    const referrerRows = engagement.topReferrers.slice(0, 6).map((r, i) => `
+      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
+        <td style="padding:7px 16px;color:#e2e8f0;word-break:break-all;">${r.label}</td>
+        <td style="padding:7px 16px;text-align:right;color:#94a3b8;">${r.count}</td>
+      </tr>`).join('') || `<tr><td colspan="2" style="padding:10px 16px;color:#475569;">No external referrers</td></tr>`;
+
+    const campaignRows = engagement.campaigns.slice(0, 6).map((c, i) => `
+      <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
+        <td style="padding:7px 16px;color:#e2e8f0;word-break:break-all;">${c.label}</td>
+        <td style="padding:7px 16px;text-align:right;color:#94a3b8;">${c.count}</td>
+      </tr>`).join('');
 
     const locationRows = advanced.topLocations.slice(0, 8).map((l, i) => `
       <tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}">
@@ -250,6 +290,50 @@ export class DailySummaryService {
             </tr>
             <tr>
               ${statCard('📰', 'Blog Views', todayStats.todayBlogViews, '#a78bfa')}
+              ${statCard('🆕', 'New Visitors', engagement.newVisitors, '#4ade80')}
+              ${statCard('🔁', 'Returning', engagement.returningVisitors, '#fb7185')}
+            </tr>
+          </table>
+
+          <!-- Page Engagement (today) -->
+          <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(129,140,248,0.25);overflow:hidden;margin-bottom:20px;">
+            <div style="background:rgba(129,140,248,0.12);padding:12px 16px;border-bottom:1px solid rgba(129,140,248,0.2);">
+              <span style="color:#818cf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">📄 Page Engagement — Today</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;">
+              <thead>
+                <tr style="background:rgba(255,255,255,0.03);">
+                  <th style="padding:8px 14px;text-align:left;color:#475569;font-size:0.72rem;font-weight:500;">Page</th>
+                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Views</th>
+                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Unique</th>
+                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Views/Visitor</th>
+                  <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Repeat</th>
+                  <th style="padding:8px 14px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Avg Time</th>
+                </tr>
+              </thead>
+              <tbody>${pageRows}</tbody>
+            </table>
+          </div>
+
+          <!-- Two-column: External Referrers + UTM Campaigns -->
+          <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+            <tr>
+              <td style="padding:0 10px 0 0;vertical-align:top;width:50%;">
+                <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(251,113,133,0.2);overflow:hidden;">
+                  <div style="background:rgba(251,113,133,0.1);padding:10px 16px;border-bottom:1px solid rgba(251,113,133,0.15);">
+                    <span style="color:#fb7185;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">🔗 External Referrers — Today</span>
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;">${referrerRows}</table>
+                </div>
+              </td>
+              <td style="padding:0 0 0 10px;vertical-align:top;width:50%;">
+                <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(74,222,128,0.2);overflow:hidden;">
+                  <div style="background:rgba(74,222,128,0.09);padding:10px 16px;border-bottom:1px solid rgba(74,222,128,0.15);">
+                    <span style="color:#4ade80;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">🎯 UTM Campaigns — Today</span>
+                  </div>
+                  <table style="width:100%;border-collapse:collapse;">${campaignRows || '<tr><td style="padding:10px 16px;color:#475569;">No campaign traffic</td></tr>'}</table>
+                </div>
+              </td>
             </tr>
           </table>
 
@@ -276,10 +360,10 @@ export class DailySummaryService {
               <td style="padding:0 10px 0 0;vertical-align:top;width:50%;">
                 <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(52,211,153,0.2);overflow:hidden;">
                   <div style="background:rgba(52,211,153,0.1);padding:10px 16px;border-bottom:1px solid rgba(52,211,153,0.15);">
-                    <span style="color:#34d399;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">📡 Traffic Sources</span>
+                    <span style="color:#34d399;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">📡 Traffic Sources — Today</span>
                   </div>
                   <table style="width:100%;border-collapse:collapse;">
-                    ${advanced.trafficSources.map((t, i) => `<tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}"><td style="padding:7px 16px;color:#e2e8f0;">${t.label}</td><td style="padding:7px 16px;text-align:right;color:#94a3b8;">${t.count}</td></tr>`).join('') || '<tr><td colspan="2" style="padding:10px 16px;color:#475569;">No data</td></tr>'}
+                    ${engagement.sources.map((t, i) => `<tr style="${i % 2 === 0 ? '' : 'background:rgba(255,255,255,0.02);'}"><td style="padding:7px 16px;color:#e2e8f0;">${t.label}</td><td style="padding:7px 16px;text-align:right;color:#94a3b8;">${t.count}</td></tr>`).join('') || '<tr><td colspan="2" style="padding:10px 16px;color:#475569;">No data</td></tr>'}
                   </table>
                 </div>
               </td>
