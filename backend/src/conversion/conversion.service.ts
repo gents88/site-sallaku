@@ -12,7 +12,7 @@ import { ImageConverter } from './converters/image.converter';
 import { Base64Converter } from './converters/base64.converter';
 import { DataConverter } from './converters/data.converter';
 
-export interface ConversionResult {
+interface ConversionResult {
   buffer?: Buffer;
   text?: string;
   json?: unknown;
