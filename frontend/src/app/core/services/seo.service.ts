@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 
 const SITE_ORIGIN = 'https://gentsallaku.it';
 
-export interface SeoData {
+interface SeoData {
   title?: string;
   description?: string;
   image?: string;

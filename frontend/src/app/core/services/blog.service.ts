@@ -16,7 +16,7 @@ import { ApiCacheService } from './api-cache.service';
 const CACHE_PREFIX = 'blog:published';
 const TTL = 2 * 60_000; // 2 minutes
 
-export interface PaginatedPosts {
+interface PaginatedPosts {
   data: PostSummary[];
   total: number;
   page: number;

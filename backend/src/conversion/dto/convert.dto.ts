@@ -73,9 +73,3 @@ export class ConvertDto {
   @IsObject()
   options?: Record<string, unknown>;
 }
-
-export class BatchConvertDto {
-  @ApiProperty({ type: [ConvertDto] })
-  @IsArray()
-  jobs: ConvertDto[];
-}

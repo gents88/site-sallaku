@@ -3,7 +3,7 @@ import { HttpClient, HttpEvent, HttpRequest, HttpResponse } from '@angular/commo
 import { Observable } from 'rxjs';
 import { environment } from '@env/environment';
 
-export type InputType = 'file' | 'base64' | 'json';
+type InputType = 'file' | 'base64' | 'json';
 
 export const CONVERSION_TYPES = [
   // Documenti

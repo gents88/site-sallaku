@@ -22,7 +22,7 @@ import {
   TranslateOptions,
 } from '../../../core/services/pdf-translate.service';
 
-export type TranslationMode = 'high_fidelity' | 'standard';
+type TranslationMode = 'high_fidelity' | 'standard';
 
 @Component({
   selector: 'app-pdf-translate',

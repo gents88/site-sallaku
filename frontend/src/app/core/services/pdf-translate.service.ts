@@ -17,7 +17,7 @@ export type TranslationLanguage =
   | 'chinese'
   | 'japanese';
 
-export interface TranslationLanguageOption {
+interface TranslationLanguageOption {
   value: TranslationLanguage;
   label: string;
   flag: string;
