@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
-export type PdfjsModule = typeof import('pdfjs-dist');
+type PdfjsModule = typeof import('pdfjs-dist');
 export type PdfDocument = import('pdfjs-dist').PDFDocumentProxy;
-export type PdfPage = import('pdfjs-dist').PDFPageProxy;
+type PdfPage = import('pdfjs-dist').PDFPageProxy;
 
 /**
  * Carica pdfjs-dist in modo lazy (solo browser, SSR-safe) e configura il worker

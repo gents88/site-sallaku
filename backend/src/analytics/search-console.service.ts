@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
 import { CacheService } from '../common/services/cache.service';
 
-export interface GscQuery {
+interface GscQuery {
   query: string;
   clicks: number;
   impressions: number;

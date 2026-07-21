@@ -7,8 +7,8 @@ import * as fs from 'fs';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const sharp: (input?: Buffer | string) => import('sharp').Sharp = require('sharp');
 
-export const OCR_LANGUAGES = ['eng', 'ita', 'spa', 'fra', 'deu', 'por', 'sqi'] as const;
-export type OcrLanguage = (typeof OCR_LANGUAGES)[number];
+const OCR_LANGUAGES = ['eng', 'ita', 'spa', 'fra', 'deu', 'por', 'sqi'] as const;
+type OcrLanguage = (typeof OCR_LANGUAGES)[number];
 
 export interface OcrPageResult {
   index: number;

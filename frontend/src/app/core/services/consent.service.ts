@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-export interface ConsentPayload {
+interface ConsentPayload {
   userId?: string | null;
   country?: string | null;
   analytics: boolean;
