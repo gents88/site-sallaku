@@ -48,3 +48,7 @@ ClickEventSchema.index({ createdAt: -1 });
 ClickEventSchema.index({ eventType: 1, createdAt: -1 });
 ClickEventSchema.index({ label: 1, createdAt: -1 });
 ClickEventSchema.index({ visitorId: 1, createdAt: -1 });
+
+/** GDPR storage-limitation — see the matching index in page-view.schema.ts */
+const RETENTION_DAYS = Number(process.env.ANALYTICS_RETENTION_DAYS) || 400;
+ClickEventSchema.index({ createdAt: 1 }, { expireAfterSeconds: RETENTION_DAYS * 86400 });
