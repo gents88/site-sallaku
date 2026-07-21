@@ -101,7 +101,7 @@ export class AnalyticsService {
 
     await this.pageViewModel.create({
       visitorId: dto.visitorId,
-      path: dto.path,
+      path: this.normalizePath(dto.path),
       referrer: dto.referrer ?? '',
       language: dto.language ?? '',
       userAgent,
@@ -237,10 +237,13 @@ export class AnalyticsService {
         timedViews: number;
       }>([
         { $match: { createdAt: { $gte: start } } },
+        // Strip any leftover query string (utm_*, fbclid, …) so tracking-param
+        // variants of the same page collapse into one row instead of one each
+        { $addFields: { normalizedPath: { $arrayElemAt: [{ $split: ['$path', '?'] }, 0] } } },
         // First pass: one row per (path, visitor) so repeat visits are countable
         {
           $group: {
-            _id: { path: '$path', visitorId: '$visitorId' },
+            _id: { path: '$normalizedPath', visitorId: '$visitorId' },
             views: { $sum: 1 },
             totalDurationMs: { $sum: '$durationMs' },
             timedViews: { $sum: { $cond: [{ $gt: ['$durationMs', 0] }, 1, 0] } },
@@ -616,6 +619,15 @@ export class AnalyticsService {
    * `resolveGeo()` uses the raw IP in-memory for the lookup and is called
    * separately; the raw value is never written to the database.
    */
+  /**
+   * Strips query string/fragment (utm_*, fbclid, etc.) from a client-supplied path.
+   * The frontend already sends a bare pathname, but this field is used as a
+   * grouping key for analytics, so it can't rely on client behavior alone.
+   */
+  private normalizePath(path: string): string {
+    return path.split('?')[0].split('#')[0].trim() || '/';
+  }
+
   private anonymizeIp(ip: string): string {
     if (!ip) return '';
     const ipv4Match = ip.match(/^(\d+\.\d+\.\d+)\.\d+$/);
@@ -766,7 +778,7 @@ export class AnalyticsService {
       visitorId: dto.visitorId,
       eventType: dto.eventType,
       label: dto.label,
-      path: dto.path,
+      path: this.normalizePath(dto.path),
       destination: dto.destination ?? '',
       language: dto.language ?? '',
       deviceType,
