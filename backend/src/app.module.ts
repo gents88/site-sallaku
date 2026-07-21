@@ -3,7 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
-import { APP_GUARD } from '@nestjs/core';
+import { CacheModule } from '@nestjs/cache-manager';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheInterceptor } from './common/interceptors/cache.interceptor';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -48,6 +50,19 @@ import { OcrModule } from './ocr/ocr.module';
     }),
     // ── Scheduled tasks ───────────────────────────────────────────
     ScheduleModule.forRoot(),
+
+    // ── Caching (in-memory by default, upgradeable to Redis) ─────
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: (cfg: ConfigService) => ({
+        ttl: cfg.get<number>('CACHE_TTL', 60 * 1000), // default 60 seconds
+        max: cfg.get<number>('CACHE_MAX_ITEMS', 100),
+        isGlobal: true,
+      }),
+      inject: [ConfigService],
+    }),
+
     // ── MongoDB ───────────────────────────────────────
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -83,6 +98,8 @@ import { OcrModule } from './ocr/ocr.module';
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    // Apply CacheInterceptor globally — automatically caches GET responses
+    { provide: APP_INTERCEPTOR, useClass: CacheInterceptor },
   ],
 })
 export class AppModule {}

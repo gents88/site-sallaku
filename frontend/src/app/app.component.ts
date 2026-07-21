@@ -1,4 +1,5 @@
-import { Component, HostListener, OnInit, signal } from '@angular/core';
+import { Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
@@ -7,6 +8,7 @@ import { ConsentBannerComponent } from './shared/components/consent-banner/conse
 import { LoginComponent } from './features/admin/auth/login/login.component';
 import { AuthService } from './core/services/auth.service';
 import { SeoService } from './core/services/seo.service';
+import { AnalyticsTrackingService } from './core/services/analytics-tracking.service';
 import { AuthModalService } from './core/services/auth-modal.service';
 import { InactivityService } from './core/services/inactivity.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
@@ -333,13 +335,19 @@ export class AppComponent implements OnInit {
     public auth: AuthService,
     public inactivity: InactivityService,
     private seoService: SeoService,
+    private analyticsTracking: AnalyticsTrackingService,
     private router: Router,
     private translate: TranslateService,
+    @Inject(PLATFORM_ID) private platformId: object,
   ) {}
 
   ngOnInit(): void {
-    this.inactivity.init();
+    // Activity tracking binds to `window`, which doesn't exist during SSR/prerender.
+    if (isPlatformBrowser(this.platformId)) {
+      this.inactivity.init();
+    }
     this.seoService.trackPageViews();
+    this.analyticsTracking.init();
   }
 
   ngAfterViewInit(): void {

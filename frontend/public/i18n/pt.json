@@ -39,8 +39,11 @@
     "tag": "about",
     "title": "Sobre mim",
     "subtitle": "Desenvolvedor sênior com mais de 8 anos em web enterprise",
-    "bio1": "Sou um <strong>Desenvolvedor Front-End Sênior</strong> que transita com naturalidade entre Angular, TypeScript e arquiteturas enterprise, colaborando com empresas líderes nos setores aeroespacial, defesa, telco e bancário, onde precisão e confiabilidade não são opcionais.",
-    "bio2": "Minha paixão vai além das interfaces e aplicações: gosto de tudo que envolve esse mundo, da arquitetura à lógica de aplicação, passando pela performance e experiência do usuário. Transformo dados complexos em soluções claras, eficientes e agradáveis de usar. Para mim, cada desafio é um sistema a entender, simplificar e melhorar.",
+    "bio1": "Sou um <strong>Desenvolvedor Front-End Sênior & API</strong> com sólida experiência no desenvolvimento de aplicações enterprise baseadas em Angular, TypeScript e arquiteturas modernas. Ao longo de minha carreira colaborei com importantes organizações nos setores aeroespacial, defesa, telecomunicações e banking, contextos onde confiabilidade e qualidade são requisitos imprescindíveis.",
+    "bio2": "Interesso-me por todo o ecossistema de desenvolvimento de software: desde a arquitetura de aplicações até o design de APIs, desde a otimização de performance até a construção de experiências de usuário eficazes. Transformo processos complexos e grandes volumes de dados em soluções simples, robustas e fáceis de usar.",
+    "bio3": "Uma parte importante do meu crescimento está ligada à minha família e às minhas origens em Blinisht. Os anos passados lá, junto com minha experiência com os Embaixadores da Paz (2000-2012), me ensinaram o valor do diálogo, colaboração e sensibilidade às diferenças.",
+    "bio4": "Acredito que o verdadeiro valor de um profissional reside na união de competência técnica e sensibilidade humana. Esta abordagem orienta cada projeto que realizo, enfrentando problemas com responsabilidade, visão e espírito construtivo.",
+    "bio5": "Hoje carrego comigo tudo que aprendi: as raízes de minha terra, os valores da família, as experiências que me formaram e a contínua curiosidade pela tecnologia. Desta união de competência e sensibilidade nascem as soluções mais eficazes e duradouras.",
     "birth": "Nascido em Blinisht-Lezhe (Albânia) em 25/04/1988",
     "vision": {
       "title": "Visão End-to-End",

@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Request } from 'express';
 import * as geoip from 'geoip-lite';
 import { TrackPageViewDto } from './dto/track-page-view.dto';
+import { TrackPageLeaveDto } from './dto/track-page-leave.dto';
 import { TrackClickEventDto } from './dto/track-click-event.dto';
 import { PageView, PageViewDocument } from './schemas/page-view.schema';
 import { AnalyticsStats, AnalyticsStatsDocument } from './schemas/analytics-stats.schema';
@@ -35,6 +36,32 @@ export interface AnalyticsStatsResponse {
   devices: Array<{ label: string; count: number }>;
   monthlyDevices: Array<{ label: string; count: number }>;
   lastResetAt: Date | null;
+}
+
+export interface PageEngagement {
+  path: string;
+  views: number;
+  uniqueVisitors: number;
+  /** Average views per visitor for this page (views / uniqueVisitors) */
+  viewsPerVisitor: number;
+  /** Visitors who opened this page 2+ times today */
+  repeatVisitors: number;
+  /** Average dwell time in seconds, null when no view reported a duration */
+  avgDurationSec: number | null;
+}
+
+export interface DailyEngagementReport {
+  pages: PageEngagement[];
+  /** Today's traffic-source breakdown (direct/search/social/referral/internal/campaign) */
+  sources: BreakdownItem[];
+  /** External referrer hosts seen today */
+  topReferrers: BreakdownItem[];
+  /** UTM campaigns seen today, labeled "source / campaign" */
+  campaigns: BreakdownItem[];
+  /** "City, Country" breakdown of today's visits */
+  locations: BreakdownItem[];
+  newVisitors: number;
+  returningVisitors: number;
 }
 
 export interface AdvancedAnalytics {
@@ -69,11 +96,12 @@ export class AnalyticsService {
     const userAgent = (req?.headers['user-agent'] as string) ?? dto.userAgent ?? '';
     const { country, city, region } = this.resolveGeo(rawIp);
     const { deviceType, browser, os } = this.parseUserAgent(userAgent);
-    const trafficSource = this.detectTrafficSource(dto.referrer ?? '');
+    const navigationType = dto.navigationType === 'internal' ? 'internal' : 'entry';
+    const trafficSource = this.resolveTrafficSource(navigationType, dto.referrer ?? '', dto.utmSource);
 
     await this.pageViewModel.create({
       visitorId: dto.visitorId,
-      path: dto.path,
+      path: this.normalizePath(dto.path),
       referrer: dto.referrer ?? '',
       language: dto.language ?? '',
       userAgent,
@@ -85,6 +113,12 @@ export class AnalyticsService {
       browser,
       os,
       trafficSource,
+      viewId: dto.viewId ?? '',
+      sessionId: dto.sessionId ?? '',
+      navigationType,
+      utmSource: dto.utmSource ?? '',
+      utmMedium: dto.utmMedium ?? '',
+      utmCampaign: dto.utmCampaign ?? '',
     });
 
     // Update the pre-aggregated stats singleton
@@ -92,6 +126,15 @@ export class AnalyticsService {
 
     // Bust summary caches so the next dashboard load sees fresh counts
     this.cache.invalidatePrefix('analytics:');
+    return { success: true };
+  }
+
+  /** Attaches dwell time to an existing page view. $max lets late beacons only increase it. */
+  async trackPageLeave(dto: TrackPageLeaveDto): Promise<{ success: boolean }> {
+    if (!dto.viewId) return { success: true };
+    await this.pageViewModel
+      .updateOne({ viewId: dto.viewId }, { $max: { durationMs: dto.durationMs } })
+      .exec();
     return { success: true };
   }
 
@@ -122,6 +165,136 @@ export class AnalyticsService {
       uniqueVisitorsToday: uniqueVisitorIds.length,
       todayBlogViews,
     };
+  }
+
+  /**
+   * Fresh (un-cached) engagement report for the current day, used by the 22:00 cron.
+   * Answers: which pages, how often per visitor, from where, and for how long.
+   */
+  async getDailyEngagementReport(): Promise<DailyEngagementReport> {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const todayMatch = { createdAt: { $gte: start } };
+
+    const [pages, sources, locations, referrerRows, campaigns, todayVisitorIds] = await Promise.all([
+      this.aggregatePageEngagement(start, 15),
+      this.aggregateByField('trafficSource', 6, todayMatch),
+      this.aggregateTopLocations(8, todayMatch),
+      this.pageViewModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { ...todayMatch, referrer: { $nin: ['', null] }, trafficSource: { $ne: 'internal' } } },
+          { $group: { _id: '$referrer', count: { $sum: 1 } } },
+        ])
+        .exec(),
+      this.pageViewModel
+        .aggregate<{ _id: string; count: number }>([
+          { $match: { ...todayMatch, utmSource: { $nin: ['', null] } } },
+          {
+            $group: {
+              _id: {
+                $concat: [
+                  '$utmSource',
+                  { $cond: [{ $in: ['$utmCampaign', ['', null]] }, '', { $concat: [' / ', '$utmCampaign'] }] },
+                ],
+              },
+              count: { $sum: 1 },
+            },
+          },
+          { $sort: { count: -1 } },
+          { $limit: 10 },
+        ])
+        .exec(),
+      this.pageViewModel.distinct('visitorId', todayMatch).exec(),
+    ]);
+
+    // Visitors seen today that already had page views before today
+    const returningVisitors = todayVisitorIds.length
+      ? (await this.pageViewModel
+          .distinct('visitorId', { visitorId: { $in: todayVisitorIds }, createdAt: { $lt: start } })
+          .exec()).length
+      : 0;
+
+    return {
+      pages,
+      sources,
+      topReferrers: this.mergeReferrersByHost(referrerRows, 8),
+      campaigns: campaigns.map(c => ({ label: c._id ?? 'Unknown', count: c.count })),
+      locations,
+      newVisitors: todayVisitorIds.length - returningVisitors,
+      returningVisitors,
+    };
+  }
+
+  /** Per-page views, unique visitors, repeat-visit ratio and average dwell time since `start`. */
+  private async aggregatePageEngagement(start: Date, limit: number): Promise<PageEngagement[]> {
+    const rows = await this.pageViewModel
+      .aggregate<{
+        _id: string;
+        views: number;
+        uniqueVisitors: number;
+        repeatVisitors: number;
+        totalDurationMs: number;
+        timedViews: number;
+      }>([
+        { $match: { createdAt: { $gte: start } } },
+        // Strip any leftover query string (utm_*, fbclid, …) so tracking-param
+        // variants of the same page collapse into one row instead of one each
+        { $addFields: { normalizedPath: { $arrayElemAt: [{ $split: ['$path', '?'] }, 0] } } },
+        // First pass: one row per (path, visitor) so repeat visits are countable
+        {
+          $group: {
+            _id: { path: '$normalizedPath', visitorId: '$visitorId' },
+            views: { $sum: 1 },
+            totalDurationMs: { $sum: '$durationMs' },
+            timedViews: { $sum: { $cond: [{ $gt: ['$durationMs', 0] }, 1, 0] } },
+          },
+        },
+        // Second pass: roll up per path
+        {
+          $group: {
+            _id: '$_id.path',
+            views: { $sum: '$views' },
+            uniqueVisitors: { $sum: 1 },
+            repeatVisitors: { $sum: { $cond: [{ $gt: ['$views', 1] }, 1, 0] } },
+            totalDurationMs: { $sum: '$totalDurationMs' },
+            timedViews: { $sum: '$timedViews' },
+          },
+        },
+        { $sort: { views: -1 } },
+        { $limit: limit },
+      ])
+      .exec();
+
+    return rows.map(r => ({
+      path: r._id ?? 'Unknown',
+      views: r.views,
+      uniqueVisitors: r.uniqueVisitors,
+      viewsPerVisitor: r.uniqueVisitors ? Math.round((r.views / r.uniqueVisitors) * 10) / 10 : 0,
+      repeatVisitors: r.repeatVisitors,
+      avgDurationSec: r.timedViews ? Math.round(r.totalDurationMs / r.timedViews / 1000) : null,
+    }));
+  }
+
+  /** Collapses raw referrer URLs into external hostnames, dropping our own domains. */
+  private mergeReferrersByHost(rows: Array<{ _id: string; count: number }>, limit: number): BreakdownItem[] {
+    const ownHosts = ['gentsallaku.it', 'www.gentsallaku.it', 'localhost'];
+    const byHost = new Map<string, number>();
+
+    for (const row of rows) {
+      let host = row._id;
+      try {
+        host = new URL(row._id).hostname.replace(/^www\./, '');
+      } catch {
+        /* keep raw value for non-URL referrers */
+      }
+      if (ownHosts.includes(host)) continue;
+      byHost.set(host, (byHost.get(host) ?? 0) + row.count);
+    }
+
+    return [...byHost.entries()]
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit);
   }
 
   async getAdvancedAnalytics(): Promise<AdvancedAnalytics> {
@@ -324,10 +497,14 @@ export class AnalyticsService {
     return value;
   }
 
-  private async aggregateByField(field: string, limit: number): Promise<BreakdownItem[]> {
+  private async aggregateByField(
+    field: string,
+    limit: number,
+    extraMatch: Record<string, unknown> = {},
+  ): Promise<BreakdownItem[]> {
     const results = await this.pageViewModel
       .aggregate<{ _id: string; count: number }>([
-        { $match: { [field]: { $exists: true, $nin: ['', null] } } },
+        { $match: { ...extraMatch, [field]: { $exists: true, $nin: ['', null] } } },
         { $group: { _id: `$${field}`, count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: limit },
@@ -367,7 +544,10 @@ export class AnalyticsService {
     });
   }
 
-  private async aggregateTopLocations(limit: number): Promise<BreakdownItem[]> {
+  private async aggregateTopLocations(
+    limit: number,
+    extraMatch: Record<string, unknown> = {},
+  ): Promise<BreakdownItem[]> {
     const hasCity = { $and: [{ $ne: ['$city', ''] }, { $ne: ['$city', null] }] };
     const hasCountry = { $and: [{ $ne: ['$country', ''] }, { $ne: ['$country', null] }] };
 
@@ -375,6 +555,7 @@ export class AnalyticsService {
       .aggregate<{ _id: string; count: number }>([
         {
           $match: {
+            ...extraMatch,
             $or: [
               { city: { $nin: ['', null] } },
               { country: { $nin: ['', null] } },
@@ -426,11 +607,32 @@ export class AnalyticsService {
     return '';
   }
 
+  /**
+   * Truncates the client IP before it is ever persisted (called with the raw
+   * IP only here; `trackPageView` stores nothing but the result). Matches the
+   * masking Google Analytics/Matomo use for "IP anonymization":
+   *  - IPv4 → zero the last octet (/24), e.g. 93.62.236.1 → 93.62.236.0
+   *  - IPv6 → keep only the first 3 hextets (/48), e.g. 2001:db8:85a3::… → 2001:db8:85a3::
+   *    A /64 (4 hextets) is commonly the prefix an ISP assigns to a single
+   *    subscriber, so truncating only that far would not be an anonymization
+   *    equivalent in strength to the IPv4 case — /48 is the accepted floor.
+   * `resolveGeo()` uses the raw IP in-memory for the lookup and is called
+   * separately; the raw value is never written to the database.
+   */
+  /**
+   * Strips query string/fragment (utm_*, fbclid, etc.) from a client-supplied path.
+   * The frontend already sends a bare pathname, but this field is used as a
+   * grouping key for analytics, so it can't rely on client behavior alone.
+   */
+  private normalizePath(path: string): string {
+    return path.split('?')[0].split('#')[0].trim() || '/';
+  }
+
   private anonymizeIp(ip: string): string {
     if (!ip) return '';
     const ipv4Match = ip.match(/^(\d+\.\d+\.\d+)\.\d+$/);
     if (ipv4Match) return ipv4Match[1] + '.0';
-    if (ip.includes(':')) return ip.split(':').slice(0, 4).join(':') + '::';
+    if (ip.includes(':')) return ip.split(':').slice(0, 3).join(':') + '::';
     return ip;
   }
 
@@ -536,11 +738,31 @@ export class AnalyticsService {
     return { deviceType, browser, os };
   }
 
+  /**
+   * Priority: SPA-internal navigation > UTM parameters > referrer heuristics.
+   * UTM wins over referrer because it states intent explicitly (e.g. a newsletter
+   * link opened from Gmail would otherwise be classified as generic referral).
+   */
+  private resolveTrafficSource(navigationType: string, referrer: string, utmSource?: string): string {
+    if (navigationType === 'internal') return 'internal';
+    if (utmSource) {
+      const s = utmSource.toLowerCase();
+      const social = ['facebook', 'instagram', 'linkedin', 'twitter', 'x', 'tiktok', 'youtube', 'reddit', 'whatsapp', 'telegram'];
+      const search = ['google', 'bing', 'yahoo', 'duckduckgo'];
+      if (social.some(k => s.includes(k))) return 'social';
+      if (search.some(k => s.includes(k))) return 'search';
+      return 'campaign';
+    }
+    return this.detectTrafficSource(referrer);
+  }
+
   private detectTrafficSource(referrer: string): string {
     if (!referrer) return 'direct';
     const r = referrer.toLowerCase();
+    const internal = ['gentsallaku.it', 'localhost'];
     const search = ['google.', 'bing.', 'yahoo.', 'duckduckgo.', 'baidu.', 'yandex.', 'ecosia.', 'ask.com', 'startpage.'];
     const social = ['facebook.', 't.co/', 'twitter.', 'x.com', 'instagram.', 'linkedin.', 'youtube.', 'tiktok.', 'reddit.', 'pinterest.', 'whatsapp.', 'telegram.', 'discord.'];
+    if (internal.some(s => r.includes(s))) return 'internal';
     if (search.some(s => r.includes(s))) return 'search';
     if (social.some(s => r.includes(s))) return 'social';
     return 'referral';
@@ -556,7 +778,7 @@ export class AnalyticsService {
       visitorId: dto.visitorId,
       eventType: dto.eventType,
       label: dto.label,
-      path: dto.path,
+      path: this.normalizePath(dto.path),
       destination: dto.destination ?? '',
       language: dto.language ?? '',
       deviceType,

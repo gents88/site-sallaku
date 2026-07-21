@@ -49,23 +49,16 @@ export class AdUnitComponent implements AfterViewInit, OnDestroy {
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly el = inject(ElementRef);
+  private readonly consent = inject(ConsentService);
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    // Only push the ad if ad_storage consent was granted (Consent Mode v2).
-    // AdSense itself will also respect the consent signal, but we avoid
-    // calling push() entirely when the user has denied marketing consent.
-    try {
-      const consentStr = localStorage.getItem('cookieConsent');
-      if (consentStr) {
-        const consent = JSON.parse(consentStr);
-        if (!consent?.marketing) return; // user has not granted marketing consent
-      }
-    } catch {
-      // If no consent stored yet, do not show ads — let the consent banner handle it.
-      return;
-    }
+    // Only push the ad if the user has explicitly granted marketing consent
+    // (Consent Mode v2). AdSense itself also respects the consent signal,
+    // but we avoid calling push() entirely otherwise — including while no
+    // choice has been made yet, i.e. the banner is still showing.
+    if (!this.consent.marketingAllowed()) return;
 
     try {
       ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});

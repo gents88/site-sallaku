@@ -1,9 +1,10 @@
 import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
-import { provideServerRendering } from '@angular/platform-server';
+import { provideServerRendering, withRoutes } from '@angular/ssr';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { appConfig } from './app.config';
+import { serverRoutes } from './app.routes.server';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -34,7 +35,7 @@ class SsrTranslateLoader implements TranslateLoader {
 
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(),
+    provideServerRendering(withRoutes(serverRoutes)),
     provideNoopAnimations(),
     { provide: TranslateLoader, useClass: SsrTranslateLoader },
     // Disable service worker in SSR context — it's browser-only
