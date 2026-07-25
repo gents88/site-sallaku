@@ -236,6 +236,41 @@ export class OcrComponent implements OnInit {
       description: 'Extract text from photos, scanned documents and PDFs in 7 languages. Free online OCR, no signup required.',
       url: 'https://gentsallaku.it/dashboard/ocr',
     });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'Free Online OCR',
+        description: 'Extract text from photos, scanned documents and PDFs in 7 languages, directly in the browser.',
+        url: 'https://gentsallaku.it/dashboard/ocr',
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        featureList: ['7 languages', 'Images & scanned PDFs', 'PNG/JPG/WEBP/BMP/TIFF/PDF support', 'No signup required'],
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What file formats does the OCR tool support?',
+            acceptedAnswer: { '@type': 'Answer', text: 'PNG, JPG, WEBP, BMP, TIFF images and PDF documents, including scanned PDFs.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'How many languages does it recognize?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Text recognition is available in 7 languages, selectable before processing.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Do I need to sign up to use it?',
+            acceptedAnswer: { '@type': 'Answer', text: "No signup is required — it's free to use directly in the browser." },
+          },
+        ],
+      },
+    ]);
   }
 
   select(e: Event): void { this.setFile((e.target as HTMLInputElement).files?.[0] ?? null); }
