@@ -99,7 +99,7 @@
                 }
               ],
               "outputHashing": "all",
-              "prerender": true
+              "outputMode": "server"
             },
             "uat": {
               "fileReplacements": [

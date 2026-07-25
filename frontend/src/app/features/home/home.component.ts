@@ -198,7 +198,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Gent Sallaku | Senior Front-End & API Developer',
+      title: 'Senior Front-End & API Developer',
       description: 'Senior Front-End Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
       url: 'https://gentsallaku.it/',
     });

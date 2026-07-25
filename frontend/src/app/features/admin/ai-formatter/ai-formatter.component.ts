@@ -42,18 +42,41 @@ export class AiFormatterComponent implements OnInit {
       description: 'Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter.',
       url: 'https://gentsallaku.it/dashboard/ai-formatter',
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'AI Document Formatter',
-      description: 'Transform raw text and notes into structured professional documents with AI. Supports reports, proposals, résumés and more.',
-      url: 'https://gentsallaku.it/dashboard/ai-formatter',
-      applicationCategory: 'UtilitiesApplication',
-      operatingSystem: 'Web',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      featureList: ['Instant formatting', 'Smart structure detection', '6 document types', 'Markdown output', 'Live preview'],
-      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'AI Document Formatter',
+        description: 'Transform raw text and notes into structured professional documents with AI. Supports reports, proposals, résumés and more.',
+        url: 'https://gentsallaku.it/dashboard/ai-formatter',
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        featureList: ['Instant formatting', 'Smart structure detection', '6 document types', 'Markdown output', 'Live preview'],
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What types of documents can it format?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Business proposals, reports, meeting notes, résumés, articles, and general text — six document types with context-aware styling.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'How does it detect structure in raw text?',
+            acceptedAnswer: { '@type': 'Answer', text: 'The AI automatically detects headings, bullet points and paragraphs from unformatted, raw text.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I see the raw Markdown output?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes, toggle instantly between a polished formatted view and raw Markdown output.' },
+          },
+        ],
+      },
+    ]);
   }
 
   readonly loading = this.service.isLoading;
