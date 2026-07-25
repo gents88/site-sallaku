@@ -1,3 +1,11 @@
+<IfModule mod_dir.c>
+  # Prevent Apache's automatic trailing-slash redirect for directory
+  # requests (e.g. /projects -> /projects/) — it fires before mod_rewrite's
+  # own directory handling below and would 301 every prerendered route
+  # away from its own canonical (no-trailing-slash) URL.
+  DirectorySlash Off
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
@@ -5,6 +13,13 @@
   # Serve the build-time prerendered homepage for the exact root request,
   # keeping the URL as / (canonical) instead of redirecting to /homepage.
   RewriteRule ^$ homepage/index.html [L]
+
+  # Serve prerendered directory pages (projects/, blog/, blog/<slug>/,
+  # contact/, dashboard/*) directly on their no-trailing-slash URL instead
+  # of letting the request fall through as a directory listing/redirect.
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteCond %{REQUEST_FILENAME}/index.html -f
+  RewriteRule ^(.*[^/])$ $1/index.html [L]
 
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME}/index.html -f
