@@ -2,6 +2,18 @@
   <!-- Scroll progress bar -->
   <div class="scroll-progress" [style.width.%]="scrollProgress" aria-hidden="true"></div>
   <div class="nav-container">
+    <!-- Drawer toggle (hamburger) -->
+    <button class="nav-drawer-toggle"
+            type="button"
+            (click)="drawer.toggle()"
+            [attr.aria-expanded]="drawer.drawerOpen()"
+            aria-label="Toggle sidebar menu"
+            aria-controls="app-sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <!-- Logo -->
     <a routerLink="/homepage" class="nav-logo" (click)="closeMenu()">
       <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>

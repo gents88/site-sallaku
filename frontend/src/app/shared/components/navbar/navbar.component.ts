@@ -10,6 +10,7 @@ import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { DrawerService } from '../../../core/services/drawer.service';
 import { filter, Subscription } from 'rxjs';
 
 interface NavLink {
@@ -64,6 +65,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     public authModal: AuthModalService,
     public langSvc: LanguageService,
+    public drawer: DrawerService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}

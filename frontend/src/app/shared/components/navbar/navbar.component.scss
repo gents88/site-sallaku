@@ -253,6 +253,40 @@
   }
 }
 
+/* Sidebar drawer toggle (hamburger in navbar header) */
+.nav-drawer-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 12px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: rgba(79, 106, 245, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-500, #4f6af5);
+    outline-offset: 2px;
+  }
+
+  span {
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--text-primary, #f0f4ff);
+    display: block;
+    transition: all 0.3s ease;
+  }
+}
+
 /* Hamburger */
 .nav-toggle {
   display: none;

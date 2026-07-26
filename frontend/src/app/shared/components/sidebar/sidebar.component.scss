@@ -6,10 +6,11 @@
   top: var(--navbar-height, 72px);
   left: 0;
   height: calc(100dvh - var(--navbar-height, 72px));
-  z-index: 896;
+  z-index: 1501;
   width: min(85vw, 260px);
   background: var(--bg-secondary, #161b22);
   border-right: 1px solid var(--border-color, #30363d);
+  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.5));
   padding: 1rem 0.75rem;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -109,40 +110,3 @@
   flex-shrink: 0;
 }
 
-/* ─── Fixed toggle button — always visible, every breakpoint,
-   stays put while scrolling since it's position:fixed. ────────────── */
-.sidebar-fab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color, #30363d);
-  background: var(--bg-secondary, #161b22);
-  color: var(--text-primary, #e6edf3);
-  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.5));
-  cursor: pointer;
-  z-index: 890;
-
-  span {
-    width: 18px;
-    height: 2px;
-    border-radius: 2px;
-    background: currentColor;
-    display: block;
-  }
-}
-
-.sidebar-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 895;
-  background: rgba(2, 6, 23, 0.65);
-  backdrop-filter: blur(2px);
-}
