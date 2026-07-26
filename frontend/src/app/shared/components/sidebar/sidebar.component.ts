@@ -1,7 +1,7 @@
-import { Component, HostListener, signal, computed } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs';
+import { Component, HostListener, computed } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { DrawerService } from '../../../core/services/drawer.service';
 
 interface NavItem {
   icon: string;
@@ -70,28 +70,20 @@ const ADMIN_NAV: NavGroup[] = [
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  readonly drawerOpen = signal(false);
+  readonly drawerOpen = this.drawer.drawerOpen;
   readonly isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
   readonly navGroups = computed(() =>
     this.isAdminUser() ? ADMIN_NAV : ADMIN_NAV.filter(group => group.id !== 'overview' && group.id !== 'content'),
   );
 
-  constructor(private router: Router, private auth: AuthService) {
-    this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => this.drawerOpen.set(false));
-  }
-
-  toggleDrawer(): void {
-    this.drawerOpen.update(v => !v);
-  }
+  constructor(private auth: AuthService, private drawer: DrawerService) {}
 
   closeDrawer(): void {
-    this.drawerOpen.set(false);
+    this.drawer.close();
   }
 
   @HostListener('window:keydown.escape')
   onEscape(): void {
-    this.drawerOpen.set(false);
+    this.drawer.close();
   }
 }
