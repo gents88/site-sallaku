@@ -285,6 +285,18 @@
     display: block;
     transition: all 0.3s ease;
   }
+
+  /* Sotto i 900px l'accesso al drawer è integrato come voce nel menu mobile
+     esistente (.nav-item-mobile-drawer), quindi l'icona separata sparisce */
+  @media (max-width: 900px) { display: none; }
+}
+
+.nav-item-mobile-drawer {
+  display: none;
+
+  @media (max-width: 900px) {
+    display: list-item;
+  }
 }
 
 /* Hamburger */
