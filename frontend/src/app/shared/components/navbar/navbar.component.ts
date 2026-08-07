@@ -49,13 +49,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
     { labelKey: 'nav.skills',     route: '/skills' },
     { labelKey: 'nav.contact',    route: '/contact' },
     { labelKey: 'nav.blog',       route: '/blog' },
-    { labelKey: 'nav.ai_tools',   route: '/dashboard/tools' },
   ];
 
   get desktopNavLinks() {
     return this.auth.isLoggedIn()
       ? [...this.navLinks, { labelKey: 'nav.dashboard', route: '/dashboard' }]
       : this.navLinks;
+  }
+
+  // stessa label mostrata nell'header della sidebar (SidebarComponent)
+  get drawerToggleLabel(): string {
+    return this.auth.isLoggedIn() && this.auth.isAdmin() ? '⚙️ Admin' : '🧰 AI & Tools';
   }
 
   private routerSub: Subscription | null = null;
@@ -142,6 +146,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.mobileMenuOpen = false;
     document.documentElement.classList.remove('menu-open');
     document.body.classList.remove('menu-open');
+  }
+
+  openDrawerFromMenu(): void {
+    this.closeMenu();
+    this.drawer.open();
   }
 
   openLoginModal(): void {
