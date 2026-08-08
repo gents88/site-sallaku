@@ -23,7 +23,11 @@ const PUBLIC_TOOL_PAGES = [
 // `redirectTo` when outputMode isn't 'static' — '' just redirects to
 // 'homepage' in app.routes.ts. The root `/` is served from homepage/index.html
 // via an internal rewrite in .htaccess so the canonical URL stays `/`.
-const STATIC_PUBLIC_PAGES = ['homepage', 'projects', 'blog', 'contact'];
+// 'about'/'tech-stack'/'experience'/'skills'/'services' all render HomeComponent
+// (scroll-to-section deep links into the single homepage) — SeoService already
+// gives them the same canonical as '/', but without prerendering they served
+// the empty CSR shell to any crawler/link that hit them directly.
+const STATIC_PUBLIC_PAGES = ['homepage', 'projects', 'blog', 'contact', 'about', 'tech-stack', 'experience', 'skills', 'services'];
 
 // Same API base resolution + pagination + failure fallback as
 // scripts/generate-sitemap.js, so a backend outage at build time degrades
