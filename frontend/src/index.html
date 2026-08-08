@@ -36,11 +36,20 @@
     <!-- Google Fonts — async, non-render-blocking -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" /></noscript>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" /></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" /></noscript>
     <!-- Font Awesome 6 — async, non-render-blocking -->
     <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" /></noscript>
+    <!-- Font Awesome ships font-display:block (Lighthouse: ~2.5s combined FCP
+         cost on this page). Declared after FA's own <link> so it wins the
+         same-family/weight/style @font-face resolution (document order),
+         same font files, just swap instead of block. -->
+    <style>
+      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 900; font-display: swap; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-solid-900.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-regular-400.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Brands"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-brands-400.woff2") format("woff2"); }
+    </style>
     <!-- Google Analytics 4 (loaded conditionally by SeoService when ID is set) -->
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -67,15 +76,17 @@
     <!-- GTM ID placeholder: set to your container ID in production -->
     <script>window.__GTM_ID__ = 'GTM-XXXX';</script>
     <!--
-      Google AdSense — replace ca-pub-XXXXXXXXXXXXXXXX with your real publisher ID.
-      The script is loaded async and will only serve ads when the user has granted
-      'ad_storage' consent (Consent Mode v2 is already configured above).
+      Google AdSense — disabled. The placeholder client ID below was never
+      replaced with a real publisher ID, so this script downloaded ~220KB
+      (adsbygoogle.js + show_ads_impl_fy2021.js) on every single page load
+      for zero functional benefit (no ID = no ads ever served). Uncomment
+      and set a real 'ca-pub-...' ID if/when AdSense is actually set up.
       IMPORTANT: do NOT change 'crossorigin="anonymous"'.
-    -->
     <script async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
       crossorigin="anonymous">
     </script>
+    -->
   </head>
   <body class="mat-typography">
     <app-root></app-root>
