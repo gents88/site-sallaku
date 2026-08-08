@@ -4,7 +4,7 @@
 
       <!-- Brand -->
       <div class="footer-brand">
-        <a routerLink="/" class="footer-logo">
+        <a [routerLink]="'/' | langUrl" class="footer-logo">
           <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
         </a>
         <p class="footer-text">
@@ -14,11 +14,11 @@
 
       <!-- Navigation -->
       <nav class="footer-nav" aria-label="Footer navigation">
-        <a routerLink="/about">About</a>
-        <a routerLink="/projects">Projects</a>
-        <a routerLink="/services">Services</a>
-        <a routerLink="/blog">Blog</a>
-        <a routerLink="/contact">Contact</a>
+        <a [routerLink]="'/about' | langUrl">About</a>
+        <a [routerLink]="'/projects' | langUrl">Projects</a>
+        <a [routerLink]="'/services' | langUrl">Services</a>
+        <a [routerLink]="'/blog' | langUrl">Blog</a>
+        <a [routerLink]="'/contact' | langUrl">Contact</a>
       </nav>
 
       <!-- Social links -->

@@ -5,7 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ContactService } from '../../core/services/contact.service';
-import { SeoService } from '../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 
 @Component({
   selector: 'app-contact',
@@ -34,20 +35,22 @@ export class ContactComponent implements OnInit, AfterViewInit {
     private contactService: ContactService,
     private snackBar: MatSnackBar,
     private seo: SeoService,
+    private langService: LanguageService,
   ) {}
 
   private readonly platformId = inject(PLATFORM_ID);
 
   ngOnInit(): void {
+    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/contact', this.langService.current())}`;
     this.seo.update({
       title: 'Contact',
       description: 'Get in touch with Gent Sallaku for web development projects, collaborations or freelance work.',
-      url: 'https://gentsallaku.it/contact',
+      url: pageUrl,
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'ContactPage',
-      url: 'https://gentsallaku.it/contact',
+      url: pageUrl,
       name: 'Contact Gent Sallaku',
       description: 'Get in touch with Gent Sallaku for web development projects.',
       author: {

@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit, AfterViewInit, OnDestroy, i
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 
 interface ProjectItem {
   icon: string;
@@ -24,6 +25,7 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
   private observer: IntersectionObserver | null = null;
   private readonly platformId = inject(PLATFORM_ID);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
 
   readonly staticProjects: ProjectItem[] = [
     {
@@ -64,17 +66,18 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   ngOnInit(): void {
+    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/projects', this.langService.current())}`;
     this.seo.update({
       title: 'Portfolio Projects',
       description: 'Scopri i miei progetti principali: Cesium.js geospatial, Photo Sphere VR, data visualization, library management e security applications. Angular, TypeScript, 3D visualization.',
-      url: 'https://gentsallaku.it/projects',
+      url: pageUrl,
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: 'Portfolio Projects',
       description: 'Enterprise projects delivered in production: 3D geospatial visualization, 360° virtual tours, analytics dashboards, library management and insurance platforms.',
-      url: 'https://gentsallaku.it/projects',
+      url: pageUrl,
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       hasPart: [
         { '@type': 'CreativeWork', name: '3D Geospatial Visualization', description: 'Interactive platform for 3D geospatial visualization with real-time data on an interactive globe.', keywords: 'Cesium.js, Angular, TypeScript' },

@@ -1,4 +1,5 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
+import { NON_DEFAULT_LANGS } from './core/services/language.service';
 
 // Public AI/PDF tool pages under /dashboard — pre-rendered at build time so
 // the static FileZilla deploy ships real HTML (title/meta/JSON-LD) for
@@ -65,11 +66,34 @@ async function fetchBlogSlugs(): Promise<{ slug: string }[]> {
 export const serverRoutes: ServerRoute[] = [
   ...PUBLIC_TOOL_PAGES.map((path): ServerRoute => ({ path, renderMode: RenderMode.Prerender })),
   ...STATIC_PUBLIC_PAGES.map((path): ServerRoute => ({ path, renderMode: RenderMode.Prerender })),
+  // /en/homepage, /es/about, ... — one dynamic :lang route per static page
+  // (mirrors app.routes.ts's `:lang` + canMatch structure), each expanding
+  // to the 6 non-default languages via getPrerenderParams.
+  ...STATIC_PUBLIC_PAGES.map((page): ServerRoute => ({
+    path: `:lang/${page}`,
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return NON_DEFAULT_LANGS.map(lang => ({ lang }));
+    },
+  })),
   {
     path: 'blog/:slug',
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
       return fetchBlogSlugs();
+    },
+  },
+  // /en/blog/some-slug, /es/blog/some-slug, ... — cross-join of every
+  // published post × the 6 non-default languages. Each Post already has
+  // title_en/content_en/excerpt_en (etc.) fields populated and verified
+  // this session; this is what finally makes them reachable by crawlers
+  // instead of only by client-side language switching.
+  {
+    path: ':lang/blog/:slug',
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      const slugs = await fetchBlogSlugs();
+      return NON_DEFAULT_LANGS.flatMap(lang => slugs.map(s => ({ lang, slug: s.slug })));
     },
   },
   { path: '**', renderMode: RenderMode.Server },

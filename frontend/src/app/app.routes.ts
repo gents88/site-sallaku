@@ -1,8 +1,15 @@
-import { Routes } from '@angular/router';
+import { Route, Routes } from '@angular/router';
 import { adminRoutes } from './features/admin/admin.routes';
+import { langCanMatchGuard } from './core/routing/lang-can-match.guard';
+import { langResolver } from './core/routing/lang.resolver';
 
-export const routes: Routes = [
-  // ── Public pages ──────────────────────────────────
+// Shared by both the unprefixed (Italian default) and /:lang-prefixed route
+// trees below — same component references, listed once. langResolver on
+// each wrapper sets LanguageService/TranslateService to match BEFORE any of
+// these children activate, so the prefix actually changes rendered content
+// (both for real navigation and Angular's build-time prerenderer), not just
+// what SeoService's hreflang tags claim.
+const publicPages: Route[] = [
   {
     path: '',
     redirectTo: 'homepage',
@@ -53,6 +60,31 @@ export const routes: Routes = [
     path: 'contact',
     loadComponent: () =>
       import('./features/contact/contact.component').then(m => m.ContactComponent),
+  },
+];
+
+export const routes: Routes = [
+  // ── Public pages, Italian default (unprefixed) ────
+  // Pathless grouping route (no matcher, no extra segment consumed) purely
+  // to attach the shared resolver — SSR-safe, unlike a UrlMatcher.
+  {
+    path: '',
+    resolve: { lang: langResolver },
+    children: publicPages,
+  },
+
+  // ── Public pages, /en, /es, /sq, /pt, /fr, /de prefixed ───
+  // canMatch rejects any first segment that isn't a recognized non-default
+  // lang code (e.g. 'dashboard'), so the router falls through to the routes
+  // below untouched — same effect as the old matcher's "consume nothing",
+  // but expressed as a literal :lang path segment, which is what Angular's
+  // prerenderer actually knows how to cross-reference against
+  // app.routes.server.ts.
+  {
+    path: ':lang',
+    canMatch: [langCanMatchGuard],
+    resolve: { lang: langResolver },
+    children: publicPages,
   },
 
   // ── Admin: auth pages (public) ───────────────────

@@ -4,18 +4,19 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
-import { SeoService } from '../../../core/services/seo.service';
-import { LanguageService } from '../../../core/services/language.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { PrismService } from '../../../shared/services/prism.service';
 import { TrackClickDirective } from '../../../shared/directives/track-click.directive';
 import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.component';
+import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent],
+  imports: [CommonModule, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -112,26 +113,30 @@ export class BlogDetailComponent implements OnInit {
         this.cdr.markForCheck();
         // Fire-and-forget: increment view count without blocking rendering
         this.blogService.trackView(this.slug).subscribe({ error: () => {} });
+        // Self-referencing canonical: previously always pointed at the
+        // Italian URL regardless of currentLang(), which was wrong for
+        // every non-IT visitor/crawler once /en/, /es/... URLs became real.
+        const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog/' + this.slug, this.currentLang())}`;
         this.seo.update({
           title: this.localizedMetaTitle,
           description: this.localizedMetaDescription,
           image: post.coverImage,
           type: 'article',
-          url: `https://gentsallaku.it/blog/${this.slug}`,
+          url: pageUrl,
         });
         this.seo.injectJsonLd({
           '@context': 'https://schema.org',
           '@type': 'Article',
-          '@id': `https://gentsallaku.it/blog/${this.slug}#article`,
+          '@id': `${pageUrl}#article`,
           headline: this.localizedMetaTitle,
           description: this.localizedMetaDescription,
           image: post.coverImage ? [post.coverImage] : undefined,
-          url: `https://gentsallaku.it/blog/${this.slug}`,
+          url: pageUrl,
           datePublished: post.publishedAt,
           dateModified: post.updatedAt ?? post.publishedAt,
           mainEntityOfPage: {
             '@type': 'WebPage',
-            '@id': `https://gentsallaku.it/blog/${this.slug}`,
+            '@id': pageUrl,
           },
           author: {
             '@type': 'Person',
