@@ -46,6 +46,37 @@ export class BlogDetailComponent implements OnInit {
     return this.post.title;
   }
 
+  /**
+   * Title used for <title>/og:title/JSON-LD headline. In Italian, prefers the
+   * curated SEO metaTitle field (schema.org has no per-language metaTitle);
+   * every other language uses the real translated title instead of silently
+   * falling back to the Italian metaTitle, which previously happened for
+   * every non-IT visitor and for crawlers requesting the ?lang=xx variant.
+   */
+  get localizedMetaTitle(): string {
+    if (this.currentLang() === 'it' && this.post?.metaTitle) return this.post.metaTitle;
+    return this.localizedTitle;
+  }
+
+  /** Same reasoning as localizedMetaTitle, for the meta description. */
+  get localizedMetaDescription(): string {
+    if (this.currentLang() === 'it' && this.post?.metaDescription) return this.post.metaDescription;
+    return this.localizedExcerpt;
+  }
+
+  /** Returns the excerpt/meta description in the current portal language, falling back to Italian. */
+  get localizedExcerpt(): string {
+    if (!this.post) return '';
+    const lang = this.currentLang();
+    if (lang === 'en' && this.post.excerpt_en) return this.post.excerpt_en;
+    if (lang === 'sq' && this.post.excerpt_sq) return this.post.excerpt_sq;
+    if (lang === 'pt' && this.post.excerpt_pt) return this.post.excerpt_pt;
+    if (lang === 'es' && this.post.excerpt_es) return this.post.excerpt_es;
+    if (lang === 'fr' && this.post.excerpt_fr) return this.post.excerpt_fr;
+    if (lang === 'de' && this.post.excerpt_de) return this.post.excerpt_de;
+    return this.post.excerpt;
+  }
+
   /** Returns the content in the current portal language, falling back to Italian. */
   get localizedContent(): string {
     if (!this.post) return '';
@@ -82,8 +113,8 @@ export class BlogDetailComponent implements OnInit {
         // Fire-and-forget: increment view count without blocking rendering
         this.blogService.trackView(this.slug).subscribe({ error: () => {} });
         this.seo.update({
-          title: post.metaTitle || post.title,
-          description: post.metaDescription || post.excerpt,
+          title: this.localizedMetaTitle,
+          description: this.localizedMetaDescription,
           image: post.coverImage,
           type: 'article',
           url: `https://gentsallaku.it/blog/${this.slug}`,
@@ -92,8 +123,8 @@ export class BlogDetailComponent implements OnInit {
           '@context': 'https://schema.org',
           '@type': 'Article',
           '@id': `https://gentsallaku.it/blog/${this.slug}#article`,
-          headline: post.metaTitle || post.title,
-          description: post.metaDescription || post.excerpt,
+          headline: this.localizedMetaTitle,
+          description: this.localizedMetaDescription,
           image: post.coverImage ? [post.coverImage] : undefined,
           url: `https://gentsallaku.it/blog/${this.slug}`,
           datePublished: post.publishedAt,
@@ -114,7 +145,7 @@ export class BlogDetailComponent implements OnInit {
             name: 'Gent Sallaku',
           },
           keywords: post.tags?.join(', '),
-          inLanguage: 'it',
+          inLanguage: this.currentLang(),
         });
       },
       error: () => { this.notFound = true; this.cdr.markForCheck(); },
