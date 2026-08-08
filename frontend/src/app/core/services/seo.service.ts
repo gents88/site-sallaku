@@ -128,30 +128,45 @@ export class SeoService {
   }
 
   /**
-   * Inject/update <link rel="alternate" hreflang="..."> tags for the three
-   * supported languages (it, en, sq) plus x-default.
+   * Inject/update <link rel="alternate" hreflang="..."> tags for all 7 site
+   * languages plus x-default. Updates existing elements in place (same
+   * pattern as updateCanonical) rather than remove-then-recreate: the
+   * prerenderer can invoke update() more than once per route, and
+   * remove+recreate left stale duplicate tags behind in the static output.
    */
   private updateHreflang(path: string): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    // Remove previously injected hreflang tags
-    this.document.querySelectorAll('link[data-hreflang]').forEach(el => el.remove());
+    // Runs on both server (prerender) and browser: the prerendered HTML is
+    // what crawlers actually receive, so hreflang must be present there too,
+    // not just injected client-side after bootstrap.
 
     const langs: { hreflang: string; lang: string }[] = [
       { hreflang: 'x-default', lang: 'it' },
       { hreflang: 'it', lang: 'it' },
       { hreflang: 'en', lang: 'en' },
       { hreflang: 'sq', lang: 'sq' },
+      { hreflang: 'pt', lang: 'pt' },
+      { hreflang: 'es', lang: 'es' },
+      { hreflang: 'fr', lang: 'fr' },
+      { hreflang: 'de', lang: 'de' },
     ];
+
+    const validHreflangs = new Set(langs.map(l => l.hreflang));
+    // Drop any alternate-hreflang link that no longer matches our current
+    // language list (e.g. a stale one left from a previous route/build).
+    this.document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => {
+      if (!validHreflangs.has(el.getAttribute('hreflang') ?? '')) el.remove();
+    });
 
     langs.forEach(({ hreflang, lang }) => {
       const href = `${SITE_ORIGIN}${path}${path.includes('?') ? '&' : '?'}lang=${lang}`;
-      const el = this.document.createElement('link');
-      el.setAttribute('data-hreflang', hreflang);
-      el.setAttribute('rel', 'alternate');
-      el.setAttribute('hreflang', hreflang);
+      let el = this.document.querySelector(`link[rel="alternate"][hreflang="${hreflang}"]`) as HTMLLinkElement | null;
+      if (!el) {
+        el = this.document.createElement('link');
+        el.setAttribute('rel', 'alternate');
+        el.setAttribute('hreflang', hreflang);
+        this.document.head.appendChild(el);
+      }
       el.setAttribute('href', hreflang === 'x-default' ? `${SITE_ORIGIN}${path}` : href);
-      this.document.head.appendChild(el);
     });
   }
 

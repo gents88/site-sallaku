@@ -65,7 +65,7 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Portfolio Projects | Gent Sallaku',
+      title: 'Portfolio Projects',
       description: 'Scopri i miei progetti principali: Cesium.js geospatial, Photo Sphere VR, data visualization, library management e security applications. Angular, TypeScript, 3D visualization.',
       url: 'https://gentsallaku.it/projects',
     });
