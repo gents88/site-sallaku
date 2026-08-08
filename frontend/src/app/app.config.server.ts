@@ -11,25 +11,43 @@ import { fileURLToPath } from 'url';
 import { SwRegistrationOptions } from '@angular/service-worker';
 
 /**
- * Loads i18n JSON files from the built browser assets at server-render time.
- * This ensures SSR output contains actual translated text instead of raw keys,
- * avoiding CLS when the browser hydrates with real translations.
+ * Loads i18n JSON files at server-render time so SSR/prerender output
+ * contains actual translated text instead of raw keys.
+ *
+ * IMPORTANT: during `ng build`'s prerendering step, the server bundle does
+ * NOT execute from its final dist location — Angular runs it from a
+ * temporary directory (`.angular/prerender-root/<uuid>/main.server.mjs`)
+ * that has no sibling `browser/` folder. Resolving the i18n path relative to
+ * `import.meta.url` therefore silently fails during every prerender build
+ * (confirmed via debug logging: `exists=false` for every language, every
+ * route), which is why prerendered pages always showed raw translation keys
+ * ("hero.role", "about.bio3", ...) instead of real text. `process.cwd()` is
+ * stable across both prerendering and a real `node dist/server/server.mjs`
+ * run (Angular always invokes the server bundle with cwd = project root),
+ * so resolve from there first, falling back to the old module-relative path
+ * for any environment where cwd isn't the project root.
  */
 class SsrTranslateLoader implements TranslateLoader {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getTranslation(lang: string): Observable<any> {
-    try {
-      // In production, this file lives at dist/server/server.mjs and
-      // dist/browser/i18n/<lang>.json — resolve relative to this module.
-      const serverDir = dirname(fileURLToPath(import.meta.url));
-      const i18nPath = join(serverDir, '..', 'browser', 'i18n', `${lang}.json`);
-      const json = JSON.parse(readFileSync(i18nPath, 'utf-8'));
-      return of(json);
-    } catch {
-      // During `ng serve` or test builds the dist folder may not exist yet —
-      // fall back to empty translations so the build never fails.
-      return of({});
+    const candidates = [
+      join(process.cwd(), 'public', 'i18n', `${lang}.json`),
+      join(process.cwd(), 'dist', 'portfolio-frontend', 'browser', 'i18n', `${lang}.json`),
+      join(dirname(fileURLToPath(import.meta.url)), '..', 'browser', 'i18n', `${lang}.json`),
+    ];
+
+    for (const path of candidates) {
+      try {
+        const json = JSON.parse(readFileSync(path, 'utf-8'));
+        return of(json);
+      } catch {
+        // Try the next candidate path.
+      }
     }
+
+    // During `ng serve` or test builds none of the candidates may exist yet —
+    // fall back to empty translations so the build never fails.
+    return of({});
   }
 }
 
