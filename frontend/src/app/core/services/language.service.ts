@@ -1,17 +1,39 @@
 import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
 import { ThemeService, type LanguageAccent } from './theme.service';
 
 export type Lang = 'it' | 'en' | 'sq' | 'es' | 'pt' | 'fr' | 'de';
+
+/** Every language except the unprefixed default ('it'). Drives the URL prefix scheme. */
+export const NON_DEFAULT_LANGS: Lang[] = ['en', 'sq', 'es', 'pt', 'fr', 'de'];
+
+/** Language-neutral basePath (e.g. '/blog/foo') + target lang → prefixed path. 'it' never gets a prefix. */
+export function withLangPrefix(basePath: string, lang: Lang): string {
+  const clean = basePath.startsWith('/') ? basePath : `/${basePath}`;
+  return lang === 'it' ? clean : `/${lang}${clean === '/' ? '' : clean}`;
+}
+
+/** Possibly-prefixed path → { lang, basePath } (basePath always starts with '/', never lang-prefixed). */
+export function stripLangPrefix(path: string): { lang: Lang; basePath: string } {
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length > 0 && (NON_DEFAULT_LANGS as string[]).includes(segments[0])) {
+    const lang = segments[0] as Lang;
+    const rest = '/' + segments.slice(1).join('/');
+    return { lang, basePath: rest === '/' ? '/' : rest };
+  }
+  return { lang: 'it', basePath: path.startsWith('/') ? path : `/${path}` };
+}
 
 export const SUPPORTED_LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: 'it', label: 'Italiano',   flag: '🇮🇹' },
   { code: 'en', label: 'English',    flag: '🇬🇧' },
   { code: 'sq', label: 'Shqip',      flag: '🇦🇱' },
   { code: 'es', label: 'Español',    flag: '🇪🇸' },
-  { code: 'pt', label: 'Português',  flag: '🇧🇷' },
+  { code: 'pt', label: 'Português',  flag: '🇵🇹' },
   { code: 'fr', label: 'Français',   flag: '🇫🇷' },
   { code: 'de', label: 'Deutsch',    flag: '🇩🇪' },
 ];
@@ -36,7 +58,7 @@ const COUNTRY_LANG_MAP: Record<string, Lang> = {
   AT: 'de', // Austria
 };
 
-const ALL_LANGS: Lang[] = ['it', 'en', 'sq', 'es', 'pt', 'fr', 'de'];
+export const ALL_LANGS: Lang[] = ['it', 'en', 'sq', 'es', 'pt', 'fr', 'de'];
 
 export function resolveInitialLanguage(): Lang {
   if (typeof localStorage !== 'undefined') {
@@ -62,6 +84,10 @@ export class LanguageService {
   private readonly themeService = inject(ThemeService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly doc = inject(DOCUMENT);
+  private readonly router = inject(Router);
+
+  /** Set true once a route was reached via an explicit /en/, /es/... prefix — blocks IP-geo from overriding it. */
+  private urlLangExplicit = false;
 
   readonly current = this._current.asReadonly();
   readonly supported = SUPPORTED_LANGS;
@@ -84,6 +110,8 @@ export class LanguageService {
     if (typeof localStorage === 'undefined') return;
     // Respect an explicit user choice stored from a previous visit
     if (localStorage.getItem(STORAGE_KEY)) return;
+    // Respect an explicit /en/, /es/... URL — never override deliberate navigation
+    if (this.urlLangExplicit) return;
 
     fetch('https://ipwho.is/?fields=country_code', { signal: AbortSignal.timeout(4000) })
       .then(r => r.json())
@@ -110,6 +138,67 @@ export class LanguageService {
       this.doc.documentElement.lang = lang;
     }
     this.applyLanguageAccent(lang);
+  }
+
+  /**
+   * Called by the route resolver (lang.resolver.ts) on every navigation —
+   * this, not resolveInitialLanguage(), is the authoritative source of
+   * "what language is this page in" once path-prefix routing is active.
+   * Unlike setLang(), never persists to localStorage on its own: an
+   * unprefixed /blog/... visit must stay Italian for crawlers even if a
+   * returning visitor's stored preference differs (see
+   * maybeRedirectToStoredPreference, which handles that case by navigating
+   * instead of silently reskinning the page).
+   *
+   * @param explicit  true when the URL actually carried a /en/, /es/...
+   *   segment (as opposed to `lang` being the unprefixed 'it' default) —
+   *   used to stop the first-visit IP-geo detection from overriding a
+   *   deliberate language-prefixed link/bookmark.
+   */
+  setLangFromUrl(lang: Lang, explicit: boolean): Observable<Lang> {
+    this.urlLangExplicit = explicit;
+    if (this._current() !== lang) {
+      this._current.set(lang);
+      this.applyLanguageAccent(lang);
+    }
+    if (isPlatformBrowser(this.platformId)) {
+      this.doc.documentElement.lang = lang;
+      if (explicit) {
+        // Whatever prefixed URL the visitor is actually on (whether they
+        // clicked the switcher, a bookmark, or a search result) becomes
+        // their remembered preference — mirrors setLang()'s persist=true
+        // default. Never persisted for the unprefixed/default case: that
+        // would overwrite a stored preference right before
+        // maybeRedirectToStoredPreference below gets a chance to read it.
+        localStorage.setItem(STORAGE_KEY, lang);
+      } else {
+        this.maybeRedirectToStoredPreference(lang);
+      }
+    }
+    return new Observable<Lang>(subscriber => {
+      this.translate.use(lang).subscribe({
+        next: () => { subscriber.next(lang); subscriber.complete(); },
+        error: () => { subscriber.next(lang); subscriber.complete(); }, // never block navigation on a translation load failure
+      });
+    });
+  }
+
+  /**
+   * Returning visitor with a saved non-Italian preference who landed on an
+   * unprefixed (Italian-default) URL gets bounced client-side to their
+   * preferred /xx/... prefix. Deferred to a macrotask so it runs after the
+   * current navigation/resolve cycle finishes, not during it. Crawlers
+   * never see this (no localStorage), so the static/prerendered HTML for
+   * the unprefixed URL stays consistently Italian.
+   */
+  private maybeRedirectToStoredPreference(urlLang: Lang): void {
+    if (urlLang !== 'it') return;
+    const stored = localStorage.getItem(STORAGE_KEY) as Lang | null;
+    if (!stored || stored === 'it' || !ALL_LANGS.includes(stored)) return;
+    setTimeout(() => {
+      const { basePath } = stripLangPrefix(this.router.url.split('?')[0]);
+      this.router.navigateByUrl(withLangPrefix(basePath, stored), { replaceUrl: true });
+    }, 0);
   }
 
   private applyLanguageAccent(lang: Lang): void {

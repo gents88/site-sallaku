@@ -5,15 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { PostSummary } from '../../../core/models/post.model';
-import { LanguageService } from '../../../core/services/language.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +51,7 @@ export class BlogListComponent implements OnInit {
     this.seo.update({
       title: 'Blog',
       description: 'Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern IT development.',
-      url: 'https://gentsallaku.it/blog',
+      url: `${SITE_ORIGIN}${withLangPrefix('/blog', this.currentLang())}`,
     });
     this.blogService.getPublishedAll().pipe(
       timeout(15000),

@@ -9,8 +9,9 @@ import { LangSwitcherComponent } from '../lang-switcher/lang-switcher.component'
 import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
-import { LanguageService } from '../../../core/services/language.service';
+import { LanguageService, stripLangPrefix } from '../../../core/services/language.service';
 import { DrawerService } from '../../../core/services/drawer.service';
+import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { filter, Subscription } from 'rxjs';
 
 interface NavLink {
@@ -23,7 +24,7 @@ interface NavLink {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent, NavDropdownComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent, NavDropdownComponent, LangUrlPipe],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
@@ -104,7 +105,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const handleRoute = (url: string) => {
-      const path = url.split('?')[0].split('#')[0];
+      // Strip any /en, /es, ... prefix first — homepageRoutes/sectionId below
+      // are language-neutral logical paths, matching what withLangPrefix
+      // expects and what the (pipe-wrapped) nav links actually point at.
+      const { basePath: path } = stripLangPrefix(url.split('?')[0].split('#')[0]);
       const wasHomepage = this.isHomepage;
       this.isHomepage = this.homepageRoutes.has(path);
 
