@@ -15,7 +15,7 @@
     </button>
 
     <!-- Logo -->
-    <a routerLink="/homepage" class="nav-logo" (click)="closeMenu()">
+    <a [routerLink]="'/homepage' | langUrl" class="nav-logo" (click)="closeMenu()">
       <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
     </a>
 
@@ -28,7 +28,7 @@
     <ul class="nav-menu" [class.open]="mobileMenuOpen" id="nav-menu" role="navigation">
       @for (link of desktopNavLinks; track link.labelKey) {
         <li>
-          <a [routerLink]="link.route"
+          <a [routerLink]="link.route | langUrl"
              class="nav-link"
              [class.active]="isHomepage ? activeSection === (link.route ?? '').slice(1) : false"
              routerLinkActive="active"

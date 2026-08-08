@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID, effect } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -9,13 +9,15 @@ import { AboutService } from '../../core/services/about.service';
 import { ContactService } from '../../core/services/contact.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ExperiencesService } from '../../core/services/experiences.service';
-import { SeoService } from '../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { SnackbarService } from '../../core/services/snackbar.service';
+import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { About } from '../../core/models/about.model';
 import { Project } from '../../core/models/project.model';
 import { Experience } from '../../core/models/experience.model';
 import { of } from 'rxjs';
 import { TrackClickDirective } from '../../shared/directives/track-click.directive';
+import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 
 interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
@@ -26,7 +28,7 @@ interface ServiceItem { key: string; icon: string; colorClass: string; route?: s
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -185,6 +187,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.staticExperiences;
   }
 
+  private readonly langService = inject(LanguageService);
+
   constructor(
     private aboutService: AboutService,
     private contactService: ContactService,
@@ -194,13 +198,29 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private snackbar: SnackbarService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-  ) {}
+  ) {
+    // Re-render on language change (OnPush) so the langUrl-piped service CTA
+    // link picks up the new prefix, matching blog-detail/blog-list's pattern.
+    effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+  }
 
   ngOnInit(): void {
+    // homepage/about/tech-stack/experience/skills/services all render this
+    // same component (scroll-to-section deep links), so they've always
+    // intentionally collapsed to one canonical rather than 9 separate ones.
+    // For the Italian default that's the bare root ('/', rewritten to
+    // homepage/index.html by .htaccess); other languages have no such
+    // bare-root rewrite, so their canonical points at the actual
+    // prerendered /xx/homepage file — self-referencing correctly instead of
+    // (as before this fix) always pointing back at the Italian root, which
+    // contradicted hreflang's claim that e.g. /en/homepage is a real,
+    // independent language variant.
+    const lang = this.langService.current();
+    const canonicalUrl = lang === 'it' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${withLangPrefix('/homepage', lang)}`;
     this.seo.update({
       title: 'Senior Front-End & API Developer',
       description: 'Senior Front-End Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
-      url: 'https://gentsallaku.it/',
+      url: canonicalUrl,
     });
 
     this.seo.injectJsonLd([
