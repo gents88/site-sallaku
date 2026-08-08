@@ -56,6 +56,14 @@
         });
       } catch (e) { /* ignore if gtag not available */ }
     </script>
+    <!-- GA4 library itself: loaded statically (present in prerendered HTML, not
+         just injected client-side) so tools like Search Console's "verify via
+         Google Analytics" can find it. Consent Mode defaults above are already
+         set before this loads, so no tracking/cookies fire until the user
+         grants consent. Keep this ID in sync with environment.prod.ts's
+         googleAnalyticsId. -->
+    <script id="ga-script" async src="https://www.googletagmanager.com/gtag/js?id=G-ENE1XXREY6"></script>
+    <script>gtag('config', 'G-ENE1XXREY6');</script>
     <!-- GTM ID placeholder: set to your container ID in production -->
     <script>window.__GTM_ID__ = 'GTM-XXXX';</script>
     <!--
