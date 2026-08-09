@@ -44,4 +44,22 @@
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Force HTTPS for 1 year on this domain too (API already sets this via
+  # helmet, but that only covers API responses — the actual pages served
+  # statically here had no HSTS at all before this).
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+  # Disable browser features not used anywhere in the app.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+  # Scoped to the actual external origins this site loads: Google Fonts,
+  # Font Awesome (jsdelivr), GA4 (gtag.js + beacons), the Railway API.
+  # unsafe-inline on script/style is required for GA4's inline bootstrap
+  # snippet and Angular Material's runtime style injection — narrowing that
+  # further would need a nonce/hash pipeline this static deploy doesn't have.
+  # frame-src blob: is required for the PDF tools' <iframe [src]="blobUrl">
+  # previews (pdf-translate, convert). Verify in a browser (DevTools console
+  # shows CSP violations) after deploying, especially the PDF tool pages.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
 </IfModule>

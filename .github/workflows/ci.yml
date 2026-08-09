@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Security audit (visibility only — Dependabot opens the fix PRs)
+        run: npm audit --omit=dev --audit-level=high || true
+
       - name: Lint
         run: npm run lint || true   # non-blocking until lint baseline is clean
 
@@ -65,6 +68,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Security audit (visibility only — Dependabot opens the fix PRs)
+        run: npm audit --omit=dev --audit-level=high || true
 
       - name: Lint
         run: npm run lint
