@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import * as mammoth from 'mammoth';
 import { PDFDocument, PageSizes, rgb, StandardFonts } from 'pdf-lib';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 
 const MAX_DOC_BYTES = 30 * 1024 * 1024;
 
@@ -183,58 +183,113 @@ ${result.value}
     });
   }
 
-  csvToExcel(buffer: Buffer): Buffer {
+  async csvToExcel(buffer: Buffer): Promise<Buffer> {
     this.validateSize(buffer);
     const rows = this.parseCsv(buffer);
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    const out = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Sheet1');
+    ws.addRows(rows);
+    const out = await wb.xlsx.writeBuffer();
     return Buffer.from(out);
   }
 
-  excelToCsv(buffer: Buffer): string {
+  async excelToCsv(buffer: Buffer): Promise<string> {
     this.validateSize(buffer);
-    const wb = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = wb.SheetNames[0];
-    if (!sheetName) throw new BadRequestException('No sheets found in workbook');
-    return XLSX.utils.sheet_to_csv(wb.Sheets[sheetName]);
+    const ws = await this.firstWorksheet(buffer);
+    const rows = this.worksheetToRows(ws);
+    return rows.map((row) => row.map((cell) => this.escapeCsvField(cell)).join(',')).join('\n');
   }
 
-  excelToJson(buffer: Buffer): unknown {
+  async excelToJson(buffer: Buffer): Promise<unknown> {
     this.validateSize(buffer);
-    const wb = XLSX.read(buffer, { type: 'buffer' });
+    const wb = await this.loadWorkbook(buffer);
     const result: Record<string, unknown[]> = {};
-    for (const sheetName of wb.SheetNames) {
-      result[sheetName] = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
+    for (const ws of wb.worksheets) {
+      result[ws.name] = this.rowsToObjects(this.worksheetToRows(ws));
     }
     return result;
   }
 
-  excelToHtml(buffer: Buffer): string {
+  async excelToHtml(buffer: Buffer): Promise<string> {
     this.validateSize(buffer);
-    const wb = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = wb.SheetNames[0];
-    if (!sheetName) throw new BadRequestException('No sheets found in workbook');
-    const tableHtml = XLSX.utils.sheet_to_html(wb.Sheets[sheetName]);
+    const ws = await this.firstWorksheet(buffer);
+    const rows = this.worksheetToRows(ws);
+    const tableHtml = this.rowsToHtmlTable(rows);
     return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<title>${sheetName}</title>
+<title>${ws.name}</title>
 <style>
   body{font-family:Arial,sans-serif;padding:1.5rem}
   table{border-collapse:collapse;width:100%;font-size:13px}
   td,th{border:1px solid #ccc;padding:6px 10px;text-align:left}
   th{background:#f0f0f0;font-weight:600}
   tr:nth-child(even){background:#fafafa}
-</style></head><body><h2>${sheetName}</h2>${tableHtml}</body></html>`;
+</style></head><body><h2>${ws.name}</h2>${tableHtml}</body></html>`;
   }
 
   async excelToPdf(buffer: Buffer): Promise<Buffer> {
     this.validateSize(buffer);
-    const wb = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = wb.SheetNames[0];
-    if (!sheetName) throw new BadRequestException('No sheets found in workbook');
-    const rows: string[][] = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1 }) as string[][];
-    return this.tableToPdf(sheetName, rows);
+    const ws = await this.firstWorksheet(buffer);
+    const rows = this.worksheetToRows(ws);
+    return this.tableToPdf(ws.name, rows);
+  }
+
+  private async loadWorkbook(buffer: Buffer): Promise<ExcelJS.Workbook> {
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(buffer as unknown as ExcelJS.Buffer);
+    return wb;
+  }
+
+  private async firstWorksheet(buffer: Buffer): Promise<ExcelJS.Worksheet> {
+    const wb = await this.loadWorkbook(buffer);
+    const ws = wb.worksheets[0];
+    if (!ws) throw new BadRequestException('No sheets found in workbook');
+    return ws;
+  }
+
+  private worksheetToRows(ws: ExcelJS.Worksheet): string[][] {
+    const rows: string[][] = [];
+    ws.eachRow({ includeEmpty: true }, (row) => {
+      const values = row.values as unknown[]; // index 0 is unused by exceljs
+      rows.push(values.slice(1).map((v) => this.cellToString(v)));
+    });
+    return rows;
+  }
+
+  private cellToString(v: unknown): string {
+    if (v === null || v === undefined) return '';
+    if (v instanceof Date) return v.toISOString();
+    if (typeof v === 'object') {
+      const rich = v as { result?: unknown; richText?: { text: string }[]; text?: unknown };
+      if (rich.result !== undefined) return String(rich.result);
+      if (rich.richText) return rich.richText.map((rt) => rt.text).join('');
+      if (rich.text !== undefined) return String(rich.text);
+      return JSON.stringify(v);
+    }
+    return String(v);
+  }
+
+  private rowsToObjects(rows: string[][]): Record<string, string>[] {
+    if (rows.length === 0) return [];
+    const headers = rows[0];
+    return rows.slice(1).map((row) => {
+      const obj: Record<string, string> = {};
+      headers.forEach((h, i) => { obj[h || `col${i}`] = row[i] ?? ''; });
+      return obj;
+    });
+  }
+
+  private rowsToHtmlTable(rows: string[][]): string {
+    if (rows.length === 0) return '<table></table>';
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const [header, ...body] = rows;
+    const headHtml = `<tr>${header.map((h) => `<th>${esc(h)}</th>`).join('')}</tr>`;
+    const bodyHtml = body.map((r) => `<tr>${r.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('');
+    return `<table>${headHtml}${bodyHtml}</table>`;
+  }
+
+  private escapeCsvField(v: unknown): string {
+    const s = String(v ?? '').replace(/"/g, '""');
+    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
   }
 
   csvToJson(buffer: Buffer): unknown {
@@ -253,12 +308,8 @@ ${result.value}
     const arr = Array.isArray(jsonData) ? jsonData : [jsonData];
     if (arr.length === 0) return '';
     const headers = Object.keys(arr[0] as Record<string, unknown>);
-    const escape = (v: unknown) => {
-      const s = String(v ?? '').replace(/"/g, '""');
-      return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
-    };
     const rows = arr.map((row) =>
-      headers.map((h) => escape((row as Record<string, unknown>)[h])).join(','),
+      headers.map((h) => this.escapeCsvField((row as Record<string, unknown>)[h])).join(','),
     );
     return [headers.join(','), ...rows].join('\n');
   }
