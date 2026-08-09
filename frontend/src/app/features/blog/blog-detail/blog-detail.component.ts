@@ -2,7 +2,7 @@ import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component,
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { finalize, timeout } from 'rxjs';
+import { finalize, retry, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
@@ -12,11 +12,12 @@ import { PrismService } from '../../../shared/services/prism.service';
 import { TrackClickDirective } from '../../../shared/directives/track-click.directive';
 import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe],
+  imports: [CommonModule, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +28,8 @@ export class BlogDetailComponent implements OnInit {
   post: Post | null = null;
   loading = true;
   notFound = false;
+  /** Self-referencing canonical URL for the current language — also fed to app-social-share. */
+  pageUrl = '';
 
   private readonly langService = inject(LanguageService);
   private readonly el = inject(ElementRef);
@@ -104,7 +107,20 @@ export class BlogDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.blogService.getBySlug(this.slug).pipe(
+      // timeout must come before retry: it needs to bound each individual
+      // attempt, not the whole retried sequence (retry after timeout would
+      // otherwise let one 15s-timed-out attempt consume the entire budget).
       timeout(15000),
+      // Prerendering builds fetch ~200+ posts (every post × every language)
+      // from the live API in well under a minute, which trips the
+      // backend's default per-IP throttle (60 req/60s) for some requests —
+      // those surfaced as "Post not found" in the prerendered HTML instead
+      // of a transient error. 8s between attempts (not 2s) because a
+      // request rejected by the throttle stays rejected until its 60s
+      // window rolls over — a short delay just burns retries without ever
+      // landing outside the limited window. Not touching the backend's
+      // rate limit itself, a real anti-abuse setting.
+      retry({ count: 5, delay: 8000 }),
       finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: post => {
@@ -116,7 +132,10 @@ export class BlogDetailComponent implements OnInit {
         // Self-referencing canonical: previously always pointed at the
         // Italian URL regardless of currentLang(), which was wrong for
         // every non-IT visitor/crawler once /en/, /es/... URLs became real.
-        const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog/' + this.slug, this.currentLang())}`;
+        // Also fed to app-social-share so shared links point at the exact
+        // language variant the visitor was actually reading.
+        this.pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog/' + this.slug, this.currentLang())}`;
+        const pageUrl = this.pageUrl;
         this.seo.update({
           title: this.localizedMetaTitle,
           description: this.localizedMetaDescription,
