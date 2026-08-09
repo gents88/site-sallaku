@@ -7,7 +7,12 @@ import { TrackClickDirective } from '../../directives/track-click.directive';
 /**
  * Share row shown at the bottom of each blog post. Facebook, LinkedIn,
  * X/Twitter, WhatsApp and Telegram all support a pre-filled "share this URL"
- * web link, so those open a popup window with the article already attached.
+ * web link — plain `<a href target="_blank">` navigation, deliberately NOT
+ * a JS `window.open()` popup: in-app browsers (Facebook, Instagram, LinkedIn
+ * WebViews — exactly where most people tap a shared link from) routinely
+ * block or silently swallow JS-triggered popups as a phishing mitigation,
+ * which is why the Facebook button opened without ever showing the share
+ * dialog. Native anchor navigation isn't affected by that restriction.
  * Instagram has no equivalent web share URL (it's app-only, no public intent
  * for arbitrary links) — that button uses the native Web Share API instead
  * (opens the device's real share sheet, Instagram included, on phones/tablets
@@ -21,23 +26,23 @@ import { TrackClickDirective } from '../../directives/track-click.directive';
     <div class="social-share">
       <span class="social-share__label">{{ 'blog.share.title' | translate }}</span>
       <div class="social-share__buttons">
-        <a [href]="facebookUrl" (click)="openPopup(facebookUrl, $event)" class="social-share__btn social-share__btn--facebook"
+        <a [href]="facebookUrl" class="social-share__btn social-share__btn--facebook"
            appTrackClick eventType="share" label="share_facebook" [attr.aria-label]="'blog.share.facebook' | translate" target="_blank" rel="noopener noreferrer">
           <i class="fab fa-facebook-f" aria-hidden="true"></i>
         </a>
-        <a [href]="linkedinUrl" (click)="openPopup(linkedinUrl, $event)" class="social-share__btn social-share__btn--linkedin"
+        <a [href]="linkedinUrl" class="social-share__btn social-share__btn--linkedin"
            appTrackClick eventType="share" label="share_linkedin" [attr.aria-label]="'blog.share.linkedin' | translate" target="_blank" rel="noopener noreferrer">
           <i class="fab fa-linkedin-in" aria-hidden="true"></i>
         </a>
-        <a [href]="twitterUrl" (click)="openPopup(twitterUrl, $event)" class="social-share__btn social-share__btn--twitter"
+        <a [href]="twitterUrl" class="social-share__btn social-share__btn--twitter"
            appTrackClick eventType="share" label="share_twitter" [attr.aria-label]="'blog.share.twitter' | translate" target="_blank" rel="noopener noreferrer">
           <i class="fab fa-x-twitter" aria-hidden="true"></i>
         </a>
-        <a [href]="whatsappUrl" (click)="openPopup(whatsappUrl, $event)" class="social-share__btn social-share__btn--whatsapp"
+        <a [href]="whatsappUrl" class="social-share__btn social-share__btn--whatsapp"
            appTrackClick eventType="share" label="share_whatsapp" [attr.aria-label]="'blog.share.whatsapp' | translate" target="_blank" rel="noopener noreferrer">
           <i class="fab fa-whatsapp" aria-hidden="true"></i>
         </a>
-        <a [href]="telegramUrl" (click)="openPopup(telegramUrl, $event)" class="social-share__btn social-share__btn--telegram"
+        <a [href]="telegramUrl" class="social-share__btn social-share__btn--telegram"
            appTrackClick eventType="share" label="share_telegram" [attr.aria-label]="'blog.share.telegram' | translate" target="_blank" rel="noopener noreferrer">
           <i class="fab fa-telegram" aria-hidden="true"></i>
         </a>
@@ -109,12 +114,6 @@ export class SocialShareComponent {
   }
   get telegramUrl(): string {
     return `https://t.me/share/url?url=${encodeURIComponent(this.url)}&text=${encodeURIComponent(this.title)}`;
-  }
-
-  openPopup(shareUrl: string, event: Event): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-    event.preventDefault();
-    window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=520');
   }
 
   /**

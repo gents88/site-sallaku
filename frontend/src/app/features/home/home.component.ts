@@ -18,6 +18,7 @@ import { Experience } from '../../core/models/experience.model';
 import { of } from 'rxjs';
 import { TrackClickDirective } from '../../shared/directives/track-click.directive';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
+import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 
 interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
@@ -28,7 +29,7 @@ interface ServiceItem { key: string; icon: string; colorClass: string; route?: s
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -189,6 +190,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly langService = inject(LanguageService);
 
+  /** Self-referencing profile URL for the current language — fed to app-social-share in the about section. */
+  get profileUrl(): string {
+    const lang = this.langService.current();
+    return lang === 'it' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${withLangPrefix('/homepage', lang)}`;
+  }
+
   constructor(
     private aboutService: AboutService,
     private contactService: ContactService,
@@ -215,8 +222,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // (as before this fix) always pointing back at the Italian root, which
     // contradicted hreflang's claim that e.g. /en/homepage is a real,
     // independent language variant.
-    const lang = this.langService.current();
-    const canonicalUrl = lang === 'it' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${withLangPrefix('/homepage', lang)}`;
+    const canonicalUrl = this.profileUrl;
     this.seo.update({
       title: 'Senior Front-End & API Developer',
       description: 'Senior Front-End Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { finalize, retry, timeout } from 'rxjs';
+import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { PostSummary } from '../../../core/models/post.model';
@@ -54,13 +54,10 @@ export class BlogListComponent implements OnInit {
       url: `${SITE_ORIGIN}${withLangPrefix('/blog', this.currentLang())}`,
     });
     this.blogService.getPublishedAll().pipe(
-      // Order matters: timeout bounds each individual attempt, retry then
-      // re-runs (fetch + timeout) as a unit — see blog-detail.component.ts
-      // for the full reasoning (prerendering bursts trip the backend's
-      // per-IP throttle; retries need to wait long enough to land outside
-      // the throttled window, not just outlast a single slow request).
+      // No retry() — see blog-detail.component.ts for why: it trades a
+      // clean failure for a worse one (page stuck on the loading spinner)
+      // once Angular's prerenderer stops waiting on this route.
       timeout(15000),
-      retry({ count: 5, delay: 8000 }),
       finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: posts => {

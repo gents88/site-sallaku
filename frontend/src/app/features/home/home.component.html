@@ -78,6 +78,8 @@
           <a href="#projects" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="about_projects_btn">{{ 'nav.projects' | translate }}</a>
           <a href="#contact" class="btn btn-primary" (click)="scrollToSection('contact', $event)" appTrackClick eventType="cta" label="about_contact_btn">{{ 'nav.contact' | translate }}</a>
         </div>
+
+        <app-social-share [url]="profileUrl" [title]="'Gent Sallaku — ' + ('hero.role' | translate)" />
       </div>
     </div>
 
