@@ -140,6 +140,26 @@
   border-radius: 14px;
 }
 
+/* iOS/Android: pick up the platform shape scale (desktop keeps 14px above). */
+:host-context(html[data-os='ios']) .submit-btn,
+:host-context(html[data-os='android']) .submit-btn {
+  border-radius: var(--radius-md);
+}
+
+/* iOS: authentic frosted-glass material in place of the solid card above,
+   and a stronger backdrop blur — blur + saturate is the classic
+   Apple-material recipe (plain blur alone reads as "smudged", not "glass"). */
+:host-context(html[data-os='ios']) .auth-page {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+:host-context(html[data-os='ios']) .auth-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+}
+
 .text-muted { color: var(--color-text-muted); }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -155,5 +175,51 @@
   .auth-card {
     max-width: 100%;
     padding: 2.2rem 1.35rem 1.8rem;
+  }
+}
+
+/* iOS/Android: login modal becomes a bottom sheet on mobile widths.
+   Desktop and any other OS keep the centered card above untouched. */
+@keyframes authSheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+:host-context(html[data-os='ios']) .auth-page--embedded,
+:host-context(html[data-os='android']) .auth-page--embedded {
+  @media (max-width: 900px) {
+    align-items: flex-end;
+    padding: 0;
+    /* Above SnackbarService's toast layer (z-index 9999) so a background
+       error/status toast can never intercept taps on the sheet's actions. */
+    z-index: 10030;
+  }
+}
+
+:host-context(html[data-os='ios']) .auth-page--embedded .auth-card,
+:host-context(html[data-os='android']) .auth-page--embedded .auth-card {
+  @media (max-width: 900px) {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 0;
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    padding: 2.2rem 1.35rem calc(env(safe-area-inset-bottom, 0px) + 1.8rem);
+    animation: authSheetIn var(--transition-base, 0.3s ease) both;
+  }
+}
+
+:host-context(html[data-os='ios']) .auth-page--embedded .auth-card::before {
+  @media (max-width: 900px) {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 36px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--text-tertiary, #64748b);
+    opacity: 0.5;
+    transform: translateX(-50%);
   }
 }

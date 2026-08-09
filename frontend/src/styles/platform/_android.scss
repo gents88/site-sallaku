@@ -1,0 +1,43 @@
+/* ═══════════════════════════════════════════════
+   Android platform theme (Material 3 shape language)
+   Overrides shape, elevation and motion tokens only —
+   colors stay whatever [data-theme] set them to.
+   Scoped entirely under [data-os='android'], inert
+   everywhere else.
+   ═══════════════════════════════════════════════ */
+
+html[data-os='android'] {
+  /* M3 shape scale */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Material touch target */
+  --ui-control-height: 48px;
+
+  /* M3 elevation tokens: crisper key shadow than the default glow set */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.3), 0 8px 16px 4px rgba(0, 0, 0, 0.15);
+
+  /* M3 standard easing */
+  --transition-fast: 0.15s cubic-bezier(0.2, 0, 0, 1);
+  --transition-base: 0.3s cubic-bezier(0.2, 0, 0, 1);
+  --transition-slow: 0.4s cubic-bezier(0.2, 0, 0, 1);
+
+  /* Roboto ships on virtually every Android device — no webfont to load */
+  --font-main: Roboto, 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: Roboto, 'Inter', -apple-system, 'Segoe UI', sans-serif;
+}
+
+html[data-os='android'] .btn,
+html[data-os='android'] button {
+  border-radius: var(--radius-sm);
+}
+
+/* Tap feedback approximating Material ripple without JS/DOM churn */
+html[data-os='android'][data-input='touch'] .btn:active,
+html[data-os='android'][data-input='touch'] button:active {
+  filter: brightness(0.92);
+}

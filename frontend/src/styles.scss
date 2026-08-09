@@ -3,6 +3,13 @@
    Dark Theme | Blue-Violet Palette
    ═══════════════════════════════════════════════ */
 
+/* Platform-adaptive theme (shape/motion/elevation only, no color).
+   Orthogonal to [data-theme]: it never redefines a color token, so it
+   composes cleanly with dark and light mode alike. @use must lead the
+   file, so it's declared here rather than next to the theme blocks below. */
+@use './styles/platform/ios';
+@use './styles/platform/android';
+
 /* ── CSS custom properties ─────────────────────── */
 :root {
   /* Primary Palette */
@@ -55,6 +62,13 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
+
+  /* Platform-adaptive tokens (overridden per-OS in styles/platform/*) */
+  --ui-control-height: 40px;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
@@ -364,9 +378,11 @@ img { max-width: 100%; display: block; }
   transition: var(--transition-base);
   position: relative;
 
-  &:hover {
-    border-color: var(--glass-border-hover);
-    box-shadow: var(--shadow-glow);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      border-color: var(--glass-border-hover);
+      box-shadow: var(--shadow-glow);
+    }
   }
 
   &::after {
@@ -381,7 +397,16 @@ img { max-width: 100%; display: block; }
     filter: blur(20px);
   }
 
-  &:hover::after { opacity: 0.08; }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover::after { opacity: 0.08; }
+  }
+}
+
+/* iOS: authentic frosted-glass material (blur + saturate is the classic
+   Apple-material recipe — plain blur alone reads as "smudged", not "glass"). */
+html[data-os='ios'] .glass-card {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 /* ── Buttons ───────────────────────────────────────── */
@@ -405,23 +430,37 @@ img { max-width: 100%; display: block; }
     background: var(--gradient-primary);
     color: white;
     box-shadow: 0 4px 20px rgba(79,106,245,0.35);
-    &:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,106,245,0.5); color: white; }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,106,245,0.5); color: white; }
+    }
   }
 
   &.btn-outline, &-outline {
     background: transparent;
     color: var(--text-primary);
     border: 1px solid var(--glass-border);
-    &:hover { border-color: var(--primary-500); background: rgba(79,106,245,0.08); color: var(--primary-400); transform: translateY(-2px); }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover { border-color: var(--primary-500); background: rgba(79,106,245,0.08); color: var(--primary-400); transform: translateY(-2px); }
+    }
   }
 
   &.btn-ghost, &-ghost {
     background: transparent;
     color: var(--text-secondary);
-    &:hover { color: var(--text-primary); background: rgba(79,106,245,0.05); }
+    @media (hover: hover) and (pointer: fine) {
+      &:hover { color: var(--text-primary); background: rgba(79,106,245,0.05); }
+    }
   }
 
   &.btn-sm, &-sm { padding: 8px 18px; font-size: 0.8rem; }
+}
+
+/* Touch on iOS/Android: brief press feedback instead of a hover state that
+   would otherwise stay "stuck" on-screen after tap until the user taps
+   elsewhere. Desktop and any other OS are untouched (no :active override). */
+html[data-os='ios'][data-input='touch'] .btn:active,
+html[data-os='android'][data-input='touch'] .btn:active {
+  transform: scale(0.97);
 }
 
 /* ── Section Header ────────────────────────────────── */
