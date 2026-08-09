@@ -1,0 +1,33 @@
+name: MongoDB Backup
+
+on:
+  schedule:
+    - cron: '0 20 */3 * *' # ogni 3 giorni (giorni 1,4,7,10...) alle 22:00 ora italiana (20:00 UTC, CEST). In inverno (CET, UTC+1) scatta alle 21:00 locali
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump portfolio_prod
+        env:
+          MONGO_URI: ${{ secrets.MONGO_BACKUP_URI }}
+        run: |
+          mkdir -p backups
+          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          echo "ARCHIVE_NAME=mongo-backup-${TIMESTAMP}.archive.gz" >> "$GITHUB_ENV"
+          docker run --rm \
+            -v "${{ github.workspace }}/backups:/backup" \
+            mongo:7 \
+            mongodump \
+              --uri="${MONGO_URI}" \
+              --archive="/backup/mongo-backup-${TIMESTAMP}.archive.gz" \
+              --gzip \
+              --quiet
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARCHIVE_NAME }}
+          path: backups/${{ env.ARCHIVE_NAME }}
+          retention-days: 30
