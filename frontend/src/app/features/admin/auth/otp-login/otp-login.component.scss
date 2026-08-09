@@ -114,6 +114,11 @@
 
 // ── OTP-specific UI ──────────────────────────────────
 
+:host-context(html[data-os='ios']) .otp-info,
+:host-context(html[data-os='android']) .otp-info {
+  border-radius: var(--radius-md);
+}
+
 .otp-info {
   display: flex;
   align-items: center;
