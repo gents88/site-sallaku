@@ -28,6 +28,8 @@
 
     <div class="post-article__content prose" [innerHTML]="localizedContent"></div>
 
+    <app-social-share [url]="pageUrl" [title]="localizedTitle" />
+
     <!-- AdSense unit — shown below article content. Replace publisher/slot IDs. -->
     <app-ad-unit adClient="ca-pub-XXXXXXXXXXXXXXXX" adSlot="XXXXXXXXXX" />
   </article>

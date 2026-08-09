@@ -550,6 +550,17 @@
       "title": "No articles found",
       "message": "Try a different keyword or browse all articles.",
       "reset": "Clear filters"
+    },
+    "share": {
+      "title": "Share this article",
+      "facebook": "Share on Facebook",
+      "linkedin": "Share on LinkedIn",
+      "twitter": "Share on X",
+      "whatsapp": "Share on WhatsApp",
+      "telegram": "Share on Telegram",
+      "instagram": "Share on Instagram",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied!"
     }
   },
   "chatbot_ui": {
