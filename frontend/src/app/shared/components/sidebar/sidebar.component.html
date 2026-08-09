@@ -20,6 +20,7 @@
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
             class="nav-item"
+            (click)="closeDrawer()"
           >
             <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
             <span>{{ item.label }}</span>
