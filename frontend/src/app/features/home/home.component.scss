@@ -109,6 +109,18 @@
   margin-bottom: 6px;
 }
 
+/* iOS/Android: pick up the platform shape scale instead of the fixed
+   desktop radius above (which stays exactly as-is on other OSes). */
+:host-context(html[data-os='ios']) .kpi,
+:host-context(html[data-os='android']) .kpi {
+  border-radius: var(--radius-md);
+}
+
+:host-context(html[data-os='ios']) .kpi-icon,
+:host-context(html[data-os='android']) .kpi-icon {
+  border-radius: var(--radius-sm);
+}
+
 .kpi-number {
   font-size: 1.6rem;
   font-weight: 800;
