@@ -146,7 +146,7 @@
           "builder": "@angular/build:unit-test",
           "options": {
             "tsConfig": "tsconfig.spec.json",
-            "runner": "jest"
+            "runner": "vitest"
           }
         }
       }
