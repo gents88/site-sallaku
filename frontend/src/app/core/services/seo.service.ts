@@ -57,8 +57,8 @@ export class SeoService {
     const pageTitle = data.title
       ? `${data.title} | ${this.siteName}`
       : `${this.siteName} | Senior Front-End & API Developer`;
-    const description = data.description ?? this.defaultDescription;
-    const image       = data.image ?? this.defaultImage;
+    const description = data.description || this.defaultDescription;
+    const image       = data.image || this.defaultImage;
     const canonicalUrl = data.url ?? (() => {
       const { lang, basePath } = stripLangPrefix(this.router.url.split('?')[0]);
       return `${SITE_ORIGIN}${withLangPrefix(basePath, lang)}`;
