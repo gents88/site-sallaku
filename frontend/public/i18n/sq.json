@@ -550,6 +550,17 @@
       "title": "Nuk u gëtën artikuj",
       "message": "Provo fjalë kyfe të ndryshme ose shfleto të gjithë artikujt.",
       "reset": "Pastro filtrat"
+    },
+    "share": {
+      "title": "Shpërndaje këtë artikull",
+      "facebook": "Shpërndaje në Facebook",
+      "linkedin": "Shpërndaje në LinkedIn",
+      "twitter": "Shpërndaje në X",
+      "whatsapp": "Shpërndaje në WhatsApp",
+      "telegram": "Shpërndaje në Telegram",
+      "instagram": "Shpërndaje në Instagram",
+      "copyLink": "Kopjo lidhjen",
+      "linkCopied": "Lidhja u kopjua!"
     }
   },
   "chatbot_ui": {

@@ -4,6 +4,7 @@ import {
   UseInterceptors, ParseFilePipeBuilder, BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { BlogService } from './blog.service';
@@ -32,7 +33,14 @@ export class BlogController {
   ) {}
 
   // ── Public ──────────────────────────────────────────
+  // Higher throttle than the app-wide default (60/60s): read-only, no auth,
+  // already-published public content, no sensitive data involved. The
+  // frontend's multilingual prerender build fetches every post × every
+  // site language (~200+ requests) in well under a minute from a single
+  // IP, which was tripping the default limit and causing some blog pages
+  // to prerender as "not found" instead of their real content.
   @Get('posts')
+  @Throttle({ default: { limit: 300, ttl: 60000 } })
   @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get published posts (public, optional tag filter, paginated)' })
   @ApiQuery({ name: 'tag', required: false })
@@ -47,6 +55,7 @@ export class BlogController {
   }
 
   @Get('posts/:slug')
+  @Throttle({ default: { limit: 300, ttl: 60000 } })
   @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get published post by slug (public)' })
   findBySlug(@Param('slug') slug: string) {

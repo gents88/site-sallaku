@@ -550,6 +550,17 @@
       "title": "Keine Artikel gefunden",
       "message": "Versuchen Sie ein anderes Stichwort oder durchsuchen Sie alle Artikel.",
       "reset": "Filter zurücksetzen"
+    },
+    "share": {
+      "title": "Diesen Artikel teilen",
+      "facebook": "Auf Facebook teilen",
+      "linkedin": "Auf LinkedIn teilen",
+      "twitter": "Auf X teilen",
+      "whatsapp": "Auf WhatsApp teilen",
+      "telegram": "Auf Telegram teilen",
+      "instagram": "Auf Instagram teilen",
+      "copyLink": "Link kopieren",
+      "linkCopied": "Link kopiert!"
     }
   },
   "chatbot_ui": {

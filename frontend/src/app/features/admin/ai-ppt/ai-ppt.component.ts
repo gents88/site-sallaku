@@ -43,18 +43,46 @@ export class AiPptComponent implements OnInit {
       description: 'Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online.',
       url: 'https://gentsallaku.it/dashboard/ai-ppt',
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'AI Slides Generator',
-      description: 'Generate professional presentations from any topic using AI. Up to 20 slides, 5 style themes, speaker notes included.',
-      url: 'https://gentsallaku.it/dashboard/ai-ppt',
-      applicationCategory: 'PresentationApplication',
-      operatingSystem: 'Web',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      featureList: ['AI-generated slides', 'Up to 20 slides', '5 style themes', 'Speaker notes', 'Export ready'],
-      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'AI Slides Generator',
+        description: 'Generate professional presentations from any topic using AI. Up to 20 slides, 5 style themes, speaker notes included.',
+        url: 'https://gentsallaku.it/dashboard/ai-ppt',
+        applicationCategory: 'PresentationApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        featureList: ['AI-generated slides', 'Up to 20 slides', '5 style themes', 'Speaker notes', 'Export ready'],
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'How many slides can the AI generate?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Choose 5, 10, 15 or 20 slides per presentation.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'What presentation styles are available?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Five style themes: Business, Education, Minimal, Modern, and Pitch Deck.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Does it include speaker notes?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes, every generated deck includes speaker notes and a logical slide-to-slide flow.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I give the AI extra context for my presentation?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes, you can optionally upload a PDF or TXT file so the AI grounds the generated content in your own material.' },
+          },
+        ],
+      },
+    ]);
   }
 
   readonly loading         = this.service.isLoading;

@@ -11,7 +11,7 @@ export interface PptSlide {
   notes?: string;
 }
 
-export interface GeneratePptRequest {
+interface GeneratePptRequest {
   topic: string;
   slideCount?: number;
   style?: PptStyle;
@@ -27,7 +27,7 @@ export interface GeneratePptResult {
   slides: PptSlide[];
 }
 
-export interface PptStyleConfig {
+interface PptStyleConfig {
   value: PptStyle;
   label: string;
   icon: string;

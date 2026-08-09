@@ -1,0 +1,112 @@
+/* ─── Off-canvas drawer (same on every screen size) ─────────────────
+   The sidebar is always closed by default and toggled via the fixed
+   hamburger button — no permanent open column even on desktop. ──── */
+.app-sidebar {
+  position: fixed;
+  top: var(--navbar-height, 72px);
+  left: 0;
+  height: calc(100dvh - var(--navbar-height, 72px));
+  z-index: 1501;
+  width: min(85vw, 260px);
+  background: var(--bg-secondary, #161b22);
+  border-right: 1px solid var(--border-color, #30363d);
+  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.5));
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color, #30363d) transparent;
+  transform: translateX(-104%);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.open {
+    transform: translateX(0);
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding: 0 0.25rem;
+}
+
+.sidebar-brand {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, #e6edf3);
+}
+
+.close-btn {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color, #30363d);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-secondary, #8b949e);
+  font-size: 0.9rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(248, 81, 73, 0.1);
+    color: #f87171;
+    border-color: #f87171;
+  }
+}
+
+/* ─── Nav groups ─────────────────────────────────────────────────── */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.nav-group {
+  margin-bottom: 0.5rem;
+}
+
+.nav-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--text-muted, #6e7681);
+  padding: 0.6rem 0.5rem 0.25rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  color: var(--text-secondary, #8b949e);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    background: rgba(108, 99, 255, 0.1);
+    color: var(--text-primary, #e6edf3);
+  }
+
+  &.active {
+    background: rgba(108, 99, 255, 0.15);
+    color: #a78bfa;
+    font-weight: 600;
+  }
+}
+
+.nav-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+

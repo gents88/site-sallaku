@@ -19,7 +19,7 @@ export interface RecentContact {
   read?: boolean;
 }
 
-export interface AdminStatsResponse {
+interface AdminStatsResponse {
   users: number;
   contacts: number;
   unreadContacts: number;
@@ -29,7 +29,7 @@ export interface AdminStatsResponse {
   visits: { totalViews: number; uniqueVisitors: number; viewsByDay: Array<{ date: string; count: number }> };
 }
 
-export interface AdvancedAnalytics {
+interface AdvancedAnalytics {
   todayCount: number;
   topLocations: DonutItem[];
   topCountries: DonutItem[];
@@ -39,7 +39,7 @@ export interface AdvancedAnalytics {
   trafficSources: DonutItem[];
 }
 
-export interface AnalyticsStats {
+interface AnalyticsStats {
   totalViews: number;
   monthlyViews: number;
   locations: DonutItem[];
@@ -137,14 +137,14 @@ export interface ChatbotSession {
   messageCount: number;
 }
 
-export interface ChatbotSessionsPage {
+interface ChatbotSessionsPage {
   data: ChatbotSession[];
   total: number;
   page: number;
   totalPages: number;
 }
 
-export interface ConsentStats {
+interface ConsentStats {
   total: number;
   analytics: number;
   marketing: number;

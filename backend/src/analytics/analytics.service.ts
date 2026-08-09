@@ -38,7 +38,7 @@ export interface AnalyticsStatsResponse {
   lastResetAt: Date | null;
 }
 
-export interface PageEngagement {
+interface PageEngagement {
   path: string;
   views: number;
   uniqueVisitors: number;
@@ -50,7 +50,7 @@ export interface PageEngagement {
   avgDurationSec: number | null;
 }
 
-export interface DailyEngagementReport {
+interface DailyEngagementReport {
   pages: PageEngagement[];
   /** Today's traffic-source breakdown (direct/search/social/referral/internal/campaign) */
   sources: BreakdownItem[];

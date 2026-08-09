@@ -1,6 +1,7 @@
 import { Component, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LanguageService, Lang, SUPPORTED_LANGS } from '../../../core/services/language.service';
+import { Router } from '@angular/router';
+import { LanguageService, Lang, SUPPORTED_LANGS, stripLangPrefix, withLangPrefix } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-lang-switcher',
@@ -96,12 +97,24 @@ export class LangSwitcherComponent {
   private readonly _open = signal(false);
   readonly open = this._open.asReadonly();
 
-  constructor(public lang: LanguageService) {}
+  constructor(public lang: LanguageService, private router: Router) {}
 
   toggle(): void { this._open.update(v => !v); }
 
   select(code: Lang): void {
-    this.lang.setLang(code);
+    const currentUrl = this.router.url.split('?')[0];
+    if (currentUrl.startsWith('/dashboard')) {
+      // /dashboard/** has no lang-prefixed routes — keep the old
+      // client-state-only behavior there instead of navigating to a URL
+      // the router can't match.
+      this.lang.setLang(code);
+    } else {
+      const { basePath } = stripLangPrefix(currentUrl);
+      // langResolver (triggered by this navigation) calls setLangFromUrl,
+      // which persists the choice and updates TranslateService — no need
+      // to also call setLang() here, avoids a double-set race.
+      this.router.navigateByUrl(withLangPrefix(basePath, code));
+    }
     this._open.set(false);
   }
 

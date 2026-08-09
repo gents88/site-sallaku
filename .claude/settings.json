@@ -24,7 +24,14 @@
       "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\('@angular/platform-server:', p['version']\\)\")",
       "Bash(npm show *)",
       "Bash(python3 -c \"import json,sys; v=json.load\\(sys.stdin\\); print\\([x for x in v if x.startswith\\('21.2'\\)][-3:]\\)\")",
-      "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)['version']\\)\")"
+      "Bash(python3 -c \"import json,sys; print\\(json.load\\(sys.stdin\\)['version']\\)\")",
+      "Bash(NODE_PATH=\"$\\(pwd\\)/node_modules\" node /private/tmp/claude-502/-Users-gent-projects-site-sallaku/a7ef1f78-9df3-48a2-bafe-f84f6bfcaf30/scratchpad/inspect.js)",
+      "Bash(NODE_PATH=\"$\\(pwd\\)/node_modules\" node /private/tmp/claude-502/-Users-gent-projects-site-sallaku/a7ef1f78-9df3-48a2-bafe-f84f6bfcaf30/scratchpad/test-mobile.js)",
+      "Bash(NODE_PATH=\"$\\(pwd\\)/node_modules\" node /private/tmp/claude-502/-Users-gent-projects-site-sallaku/a7ef1f78-9df3-48a2-bafe-f84f6bfcaf30/scratchpad/check-default.js)",
+      "Bash(NODE_PATH=\"$\\(pwd\\)/node_modules\" node /private/tmp/claude-502/-Users-gent-projects-site-sallaku/a7ef1f78-9df3-48a2-bafe-f84f6bfcaf30/scratchpad/test-mobile2.js)",
+      "Bash(pkill -f \"ng serve\")",
+      "Bash(lsof -ti:4200)",
+      "Bash(xargs kill -9)"
     ]
   }
 }

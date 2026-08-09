@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
-export interface MailOptions {
+interface MailOptions {
   to: string;
   subject: string;
   html: string;
@@ -10,14 +10,14 @@ export interface MailOptions {
   replyTo?: string;
 }
 
-export interface MailDeliveryResult {
+interface MailDeliveryResult {
   success: boolean;
   messageId?: string;
   accepted: string[];
   rejected: string[];
 }
 
-export interface MailServiceStatus {
+interface MailServiceStatus {
   configured: boolean;
   provider: 'resend' | 'smtp' | 'none';
   smtpUser: string | null;
