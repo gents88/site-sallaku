@@ -241,7 +241,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         knowsAbout: ['Angular', 'TypeScript', 'JavaScript', 'NestJS', 'Django', 'Cesium.js', 'Data Visualization', 'REST API', 'Docker'],
         sameAs: [
           'https://github.com/gentsallaku',
-          'https://linkedin.com/in/gentsallaku',
+          'https://linkedin.com/in/gent-sallaku',
         ],
       },
       {
