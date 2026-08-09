@@ -550,6 +550,17 @@
       "title": "Nessun articolo trovato",
       "message": "Prova con parole chiave diverse o sfoglia tutti gli articoli.",
       "reset": "Azzera filtri"
+    },
+    "share": {
+      "title": "Condividi questo articolo",
+      "facebook": "Condividi su Facebook",
+      "linkedin": "Condividi su LinkedIn",
+      "twitter": "Condividi su X",
+      "whatsapp": "Condividi su WhatsApp",
+      "telegram": "Condividi su Telegram",
+      "instagram": "Condividi su Instagram",
+      "copyLink": "Copia link",
+      "linkCopied": "Link copiato!"
     }
   },
   "chatbot_ui": {

@@ -1,7 +1,7 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Inject, Injectable, PLATFORM_ID, signal, effect } from '@angular/core';
 
-export type Theme = 'light' | 'dark';
+type Theme = 'light' | 'dark';
 export type LanguageAccent = 'default' | 'albanian';
 
 const THEME_STORAGE_KEY = 'portfolio_theme';

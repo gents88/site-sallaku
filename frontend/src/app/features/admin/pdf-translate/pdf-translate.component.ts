@@ -22,7 +22,7 @@ import {
   TranslateOptions,
 } from '../../../core/services/pdf-translate.service';
 
-export type TranslationMode = 'high_fidelity' | 'standard';
+type TranslationMode = 'high_fidelity' | 'standard';
 
 @Component({
   selector: 'app-pdf-translate',
@@ -46,18 +46,46 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
       description: 'Translate any PDF to 12 languages while keeping fonts, images and layout intact. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
       url: 'https://gentsallaku.it/dashboard/pdf-translate',
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'AI PDF Translator',
-      description: 'Translate any PDF to 12 languages while preserving the original layout, fonts and images. Powered by GPT-4o.',
-      url: 'https://gentsallaku.it/dashboard/pdf-translate',
-      applicationCategory: 'UtilitiesApplication',
-      operatingSystem: 'Web',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      featureList: ['12 languages', 'Layout preserved', 'OCR for scanned PDFs', 'GPT-4o quality', '50 MB limit'],
-      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'AI PDF Translator',
+        description: 'Translate any PDF to 12 languages while preserving the original layout, fonts and images. Powered by GPT-4o.',
+        url: 'https://gentsallaku.it/dashboard/pdf-translate',
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        featureList: ['12 languages', 'Layout preserved', 'OCR for scanned PDFs', 'GPT-4o quality', '50 MB limit'],
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'How many languages can I translate a PDF into?',
+            acceptedAnswer: { '@type': 'Answer', text: 'You can translate PDFs into 12 languages, powered by GPT-4o for high-quality, natural translations.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Will the translated PDF keep the original layout?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes — High Fidelity mode preserves columns, fonts, images, headers, footers and exact block positions. A faster Standard mode is also available for clean text output.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can it translate scanned PDFs?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes, scanned (image-based) PDFs are automatically detected and processed through an OCR pipeline before translation.' },
+          },
+          {
+            '@type': 'Question',
+            name: "What's the maximum file size?",
+            acceptedAnswer: { '@type': 'Answer', text: 'Up to 50 MB per PDF.' },
+          },
+        ],
+      },
+    ]);
   }
 
   readonly loading = this.service.isLoading;

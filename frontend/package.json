@@ -8,7 +8,7 @@
     "prebuild": "node ../scripts/generate-sitemap.js",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
-    "build:filezilla": "ng build --configuration production",
+    "build:filezilla": "ng build --configuration production && node -e \"const fs=require('fs'),d='dist/portfolio-frontend/browser';if(!fs.existsSync(d+'/index.html')&&fs.existsSync(d+'/index.csr.html'))fs.renameSync(d+'/index.csr.html',d+'/index.html')\"",
     "deploy:prep": "ng build --configuration production",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
@@ -24,7 +24,6 @@
     "@angular/forms": "^21.0.0",
     "@angular/material": "^21.0.0",
     "@angular/platform-browser": "^21.0.0",
-    "@angular/platform-browser-dynamic": "^21.0.0",
     "@angular/platform-server": "^21.2.17",
     "@angular/router": "^21.0.0",
     "@angular/service-worker": "^21.2.6",
@@ -48,8 +47,6 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
     "@types/prismjs": "^1.26.6",
-    "@types/webidl-conversions": "^7.0.3",
-    "@types/whatwg-url": "^13.0.0",
     "typescript": "~5.9.0"
   }
 }

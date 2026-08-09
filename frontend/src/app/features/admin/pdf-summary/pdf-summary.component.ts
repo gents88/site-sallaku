@@ -319,18 +319,41 @@ export class PdfSummaryComponent implements OnInit {
       description: 'Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.',
       url: 'https://gentsallaku.it/dashboard/pdf-summary',
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'AI PDF Summarizer',
-      description: 'Upload any PDF, Word or TXT file and get an AI-powered summary, key points and insights instantly.',
-      url: 'https://gentsallaku.it/dashboard/pdf-summary',
-      applicationCategory: 'UtilitiesApplication',
-      operatingSystem: 'Web',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      featureList: ['Short summary', 'Detailed analysis', 'Bullet points', 'Key insights', 'Multiple languages', '20 MB limit'],
-      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'AI PDF Summarizer',
+        description: 'Upload any PDF, Word or TXT file and get an AI-powered summary, key points and insights instantly.',
+        url: 'https://gentsallaku.it/dashboard/pdf-summary',
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        featureList: ['Short summary', 'Detailed analysis', 'Bullet points', 'Key insights', 'Multiple languages', '20 MB limit'],
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'What file types can I summarize?',
+            acceptedAnswer: { '@type': 'Answer', text: 'PDF, Word (.docx) and plain text (.txt) files, up to 20 MB.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'What kind of summary do I get?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Choose between a short summary, a detailed analysis, or a bullet-point list of key insights.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Does it support multiple languages?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes, summaries can be generated in multiple languages.' },
+          },
+        ],
+      },
+    ]);
   }
 
   selectedFile   = signal<File | null>(null);

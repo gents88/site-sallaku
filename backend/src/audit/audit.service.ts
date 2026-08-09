@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditLog, AuditLogDocument } from './schemas/audit-log.schema';
 
-export interface CreateAuditLogDto {
+interface CreateAuditLogDto {
   actorId: string;
   actorEmail: string;
   method: string;

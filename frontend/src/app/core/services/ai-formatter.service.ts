@@ -5,7 +5,7 @@ import { environment } from '@env/environment';
 
 export type DocType = 'general' | 'business_proposal' | 'report' | 'meeting_notes' | 'resume' | 'article';
 
-export interface FormatTextRequest {
+interface FormatTextRequest {
   text: string;
   docType?: DocType;
 }

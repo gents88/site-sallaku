@@ -2,8 +2,20 @@
   <!-- Scroll progress bar -->
   <div class="scroll-progress" [style.width.%]="scrollProgress" aria-hidden="true"></div>
   <div class="nav-container">
+    <!-- Drawer toggle (hamburger) -->
+    <button class="nav-drawer-toggle"
+            type="button"
+            (click)="drawer.toggle()"
+            [attr.aria-expanded]="drawer.drawerOpen()"
+            aria-label="Toggle sidebar menu"
+            aria-controls="app-sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <!-- Logo -->
-    <a routerLink="/homepage" class="nav-logo" (click)="closeMenu()">
+    <a [routerLink]="'/homepage' | langUrl" class="nav-logo" (click)="closeMenu()">
       <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
     </a>
 
@@ -16,7 +28,7 @@
     <ul class="nav-menu" [class.open]="mobileMenuOpen" id="nav-menu" role="navigation">
       @for (link of desktopNavLinks; track link.labelKey) {
         <li>
-          <a [routerLink]="link.route"
+          <a [routerLink]="link.route | langUrl"
              class="nav-link"
              [class.active]="isHomepage ? activeSection === (link.route ?? '').slice(1) : false"
              routerLinkActive="active"
@@ -24,6 +36,10 @@
              (click)="closeMenu()">{{ link.labelKey | translate }}</a>
         </li>
       }
+      <li class="nav-item-mobile-drawer">
+        <button type="button" class="nav-link nav-link--button" (click)="openDrawerFromMenu()">{{ drawerToggleLabel }}</button>
+      </li>
+
       <li class="nav-item-mobile-auth">
         @if (!auth.isLoggedIn()) {
           <button type="button" class="nav-link nav-link--button" (click)="openLoginModal()">{{ 'nav.login' | translate }}</button>

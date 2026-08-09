@@ -219,18 +219,46 @@ export class PdfEditorComponent implements OnInit {
       description: 'Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.',
       url: 'https://gentsallaku.it/dashboard/pdf-editor',
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'Free PDF Editor',
-      description: 'Merge, split, extract, rotate, delete pages and add watermarks to PDF files entirely in the browser.',
-      url: 'https://gentsallaku.it/dashboard/pdf-editor',
-      applicationCategory: 'UtilitiesApplication',
-      operatingSystem: 'Web',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      featureList: ['Merge PDFs', 'Split & extract pages', 'Rotate & delete pages', 'Add watermark', 'Client-side, no upload'],
-      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'Free PDF Editor',
+        description: 'Merge, split, extract, rotate, delete pages and add watermarks to PDF files entirely in the browser.',
+        url: 'https://gentsallaku.it/dashboard/pdf-editor',
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        featureList: ['Merge PDFs', 'Split & extract pages', 'Rotate & delete pages', 'Add watermark', 'Client-side, no upload'],
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Can I merge multiple PDFs into one?',
+            acceptedAnswer: { '@type': 'Answer', text: "Yes, select multiple files and they'll be merged in the order you arrange them." },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I reorder, rotate or delete individual pages?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes, drag pages to reorder them, and rotate or delete any page individually before exporting.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Can I add a watermark to my PDF?',
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes, an optional text watermark can be applied across the document.' },
+          },
+          {
+            '@type': 'Question',
+            name: 'Is my PDF uploaded to a server?',
+            acceptedAnswer: { '@type': 'Answer', text: 'No — all editing happens client-side in your browser, so your file never leaves your device.' },
+          },
+        ],
+      },
+    ]);
   }
 
   select(e: Event): void {

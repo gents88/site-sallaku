@@ -5,6 +5,10 @@ function formatDate(d) {
   return d.toISOString().split('T')[0];
 }
 
+const API_BASE_URL = process.env.SITEMAP_API_URL
+  || process.env.API_BASE_URL
+  || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
+
 const routes = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
   { loc: '/projects', changefreq: 'monthly', priority: '0.95' },
@@ -33,7 +37,7 @@ function buildXml(entries) {
   for (const e of entries) {
     lines.push('  <url>');
     lines.push(`    <loc>https://gentsallaku.it${e.loc}</loc>`);
-    lines.push(`    <lastmod>${today}</lastmod>`);
+    lines.push(`    <lastmod>${e.lastmod || today}</lastmod>`);
     if (e.changefreq) lines.push(`    <changefreq>${e.changefreq}</changefreq>`);
     if (e.priority) lines.push(`    <priority>${e.priority}</priority>`);
     lines.push('  </url>');
@@ -43,25 +47,38 @@ function buildXml(entries) {
   return lines.join('\n');
 }
 
-const xml = buildXml(routes);
+/** Fetches every published post (paginated, 50/page server-side cap) and maps it to a sitemap entry. */
+async function fetchBlogRoutes() {
+  const posts = [];
+  let page = 1;
+  let totalPages = 1;
 
-const targets = [
-  path.join(__dirname, '..', 'public', 'sitemap.xml'),
-  path.join(__dirname, '..', 'frontend', 'public', 'sitemap.xml'),
-];
-
-for (const t of targets) {
   try {
-    const dir = path.dirname(t);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(t, xml, 'utf8');
-    console.log('Wrote', t);
-  } catch (err) {
-    console.error('Failed to write', t, err && err.message ? err.message : err);
-  }
-}
+    do {
+      const res = await fetch(`${API_BASE_URL}/blog/posts?page=${page}&limit=50`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
 
-console.log('Sitemap generation complete.');
+      for (const post of json.data ?? []) {
+        if (!post.slug) continue;
+        posts.push({
+          loc: `/blog/${post.slug}`,
+          changefreq: 'monthly',
+          priority: '0.75',
+          lastmod: post.publishedAt ? formatDate(new Date(post.publishedAt)) : today,
+        });
+      }
+
+      totalPages = json.totalPages ?? 1;
+      page += 1;
+    } while (page <= totalPages);
+  } catch (err) {
+    console.warn('Could not fetch blog posts for sitemap — falling back to /blog only:', err.message);
+    return [];
+  }
+
+  return posts;
+}
 
 // Optionally ping search engines to notify of updated sitemap
 function ping(url) {
@@ -94,6 +111,31 @@ async function notifySearchEngines() {
   }
 }
 
-if (process.env.PING_SITEMAP === 'true') {
-  notifySearchEngines().catch((err) => console.warn('Notify failed', err && err.message ? err.message : err));
+async function main() {
+  const blogRoutes = await fetchBlogRoutes();
+  const xml = buildXml([...routes, ...blogRoutes]);
+
+  const targets = [
+    path.join(__dirname, '..', 'public', 'sitemap.xml'),
+    path.join(__dirname, '..', 'frontend', 'public', 'sitemap.xml'),
+  ];
+
+  for (const t of targets) {
+    try {
+      const dir = path.dirname(t);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(t, xml, 'utf8');
+      console.log('Wrote', t);
+    } catch (err) {
+      console.error('Failed to write', t, err && err.message ? err.message : err);
+    }
+  }
+
+  console.log(`Sitemap generation complete. (${blogRoutes.length} blog post${blogRoutes.length === 1 ? '' : 's'} included)`);
+
+  if (process.env.PING_SITEMAP === 'true') {
+    await notifySearchEngines().catch((err) => console.warn('Notify failed', err && err.message ? err.message : err));
+  }
 }
+
+main();

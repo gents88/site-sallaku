@@ -4,6 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
+import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { ConsentBannerComponent } from './shared/components/consent-banner/consent-banner.component';
 import { LoginComponent } from './features/admin/auth/login/login.component';
 import { AuthService } from './core/services/auth.service';
@@ -17,11 +18,12 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent],
   template: `
     <a class="skip-link" href="#homepage">{{ 'skip.link' | translate }}</a>
     <app-navbar />
     <app-consent-banner />
+    <app-sidebar />
     <main>
       <router-outlet />
     </main>
