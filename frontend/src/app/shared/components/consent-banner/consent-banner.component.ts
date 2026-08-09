@@ -37,7 +37,11 @@ import { ConsentService } from '../../../core/services/consent.service';
     </div>
   `,
   styles: [`
-    .consent-banner { position:fixed; left:12px; right:12px; bottom:12px; background:var(--panel-surface,#081223); color:#fff; padding:14px; border-radius:12px; display:flex; gap:12px; align-items:center; z-index:99999; }
+    /* z-index below the mobile nav-menu (999) and navbar (1000/1001): with the
+       old 99999 the banner sat on top of the open mobile menu and silently
+       ate taps on nav links (e.g. "Blog") that fell in its bottom strip,
+       requiring several attempts before a tap landed outside the banner. */
+    .consent-banner { position:fixed; left:12px; right:12px; bottom:12px; background:var(--panel-surface,#081223); color:#fff; padding:14px; border-radius:12px; display:flex; gap:12px; align-items:center; z-index:900; }
     .consent-banner__text { flex:1 1 480px }
     .consent-banner__actions { display:flex; gap:8px }
     .consent-modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); z-index:100000 }

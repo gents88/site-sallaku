@@ -6,7 +6,6 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 import { LangSwitcherComponent } from '../lang-switcher/lang-switcher.component';
-import { NavDropdownComponent } from '../nav-dropdown/nav-dropdown.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService, stripLangPrefix } from '../../../core/services/language.service';
@@ -24,7 +23,7 @@ interface NavLink {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent, NavDropdownComponent, LangUrlPipe],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent, LangUrlPipe],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })

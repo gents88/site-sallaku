@@ -339,7 +339,7 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: 32px;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(8px);
   transition: var(--transition-base);
 
   &:hover { border-color: var(--glass-border-hover); box-shadow: var(--shadow-glow); }
