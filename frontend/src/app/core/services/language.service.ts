@@ -38,10 +38,10 @@ export const SUPPORTED_LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: 'de', label: 'Deutsch',    flag: '🇩🇪' },
 ];
 
-const STORAGE_KEY = 'gs-portfolio-lang';
+export const STORAGE_KEY = 'gs-portfolio-lang';
 
 /** Country codes (ISO 3166-1 alpha-2) mapped to supported languages */
-const COUNTRY_LANG_MAP: Record<string, Lang> = {
+export const COUNTRY_LANG_MAP: Record<string, Lang> = {
   AL: 'sq', // Albania
   XK: 'sq', // Kosovo
   IT: 'it', // Italy
@@ -138,6 +138,41 @@ export class LanguageService {
       this.doc.documentElement.lang = lang;
     }
     this.applyLanguageAccent(lang);
+  }
+
+  /**
+   * Explicit user override (e.g. a "force Albanian" action outside the
+   * lang-prefixed router flow): always persists, so it also blocks any
+   * future IP-geo detection on this device. Named to match the
+   * force/reset pair callers expect; behaviourally identical to
+   * `setLang(lang, true)`.
+   */
+  forceLanguage(lang: Lang): void {
+    this.setLang(lang, true);
+  }
+
+  /**
+   * Clears the stored preference and re-derives the language from
+   * navigator locale, then re-runs IP-geo detection as if this were a
+   * first visit. Useful for a "use my detected language" settings action.
+   */
+  resetLanguagePreference(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    this.setLang(resolveInitialLanguage(), false);
+    this.detectLanguageFromIP();
+  }
+
+  /**
+   * Dev/QA helper: applies the language for a given ISO country code
+   * without waiting on (or needing) the real IP lookup. Mirrors the
+   * `COUNTRY_LANG_MAP` resolution used by `detectLanguageFromIP`. Does not
+   * persist, matching that method's semantics.
+   */
+  simulateCountry(countryCode: string): void {
+    const lang: Lang = COUNTRY_LANG_MAP[countryCode.toUpperCase()] ?? 'en';
+    this.setLang(lang, false);
   }
 
   /**
