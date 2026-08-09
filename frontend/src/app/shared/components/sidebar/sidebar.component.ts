@@ -1,4 +1,4 @@
-import { Component, HostListener, computed } from '@angular/core';
+import { Component, HostListener, computed, ElementRef } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
@@ -76,7 +76,7 @@ export class SidebarComponent {
     this.isAdminUser() ? ADMIN_NAV : ADMIN_NAV.filter(group => group.id !== 'overview' && group.id !== 'content'),
   );
 
-  constructor(private auth: AuthService, private drawer: DrawerService) {}
+  constructor(private auth: AuthService, private drawer: DrawerService, private elementRef: ElementRef<HTMLElement>) {}
 
   closeDrawer(): void {
     this.drawer.close();
@@ -84,6 +84,27 @@ export class SidebarComponent {
 
   @HostListener('window:keydown.escape')
   onEscape(): void {
+    this.drawer.close();
+  }
+
+  // Chiude il drawer quando si clicca fuori (backdrop-less click-outside),
+  // ignorando il toggle della navbar che gestisce già l'apertura/chiusura.
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.drawerOpen()) return;
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    if (this.elementRef.nativeElement.contains(target)) return;
+    if (target.closest('.nav-drawer-toggle')) return;
+    this.drawer.close();
+  }
+
+  // Chiude il drawer quando il focus (tastiera) esce dal sidebar.
+  @HostListener('focusout', ['$event'])
+  onFocusOut(event: FocusEvent): void {
+    if (!this.drawerOpen()) return;
+    const nextFocus = event.relatedTarget as HTMLElement | null;
+    if (nextFocus && this.elementRef.nativeElement.contains(nextFocus)) return;
     this.drawer.close();
   }
 }
