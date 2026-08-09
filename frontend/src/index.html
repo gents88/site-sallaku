@@ -22,14 +22,14 @@
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <!-- Open Graph image (1200×630 JPG recommended — replace assets/og-image.jpg when ready) -->
-    <meta property="og:image" content="https://gentsallaku.it/assets/profil.jpeg" />
+    <!-- Open Graph image: dedicated 1200x630 social card (rendered from og-image.svg) -->
+    <meta property="og:image" content="https://gentsallaku.it/assets/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Gent Sallaku - Senior Front-End &amp; API Developer" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:creator" content="@gentsallaku" />
-    <meta name="twitter:image" content="https://gentsallaku.it/assets/profil.jpeg" />
+    <meta name="twitter:image" content="https://gentsallaku.it/assets/og-image.png" />
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,11 +44,16 @@
     <!-- Font Awesome ships font-display:block (Lighthouse: ~2.5s combined FCP
          cost on this page). Declared after FA's own <link> so it wins the
          same-family/weight/style @font-face resolution (document order),
-         same font files, just swap instead of block. -->
+         same font files. Using `optional` rather than `swap`: icons render
+         only if the font arrives within the ~100ms block window, otherwise
+         they're skipped for this page view instead of popping in late —
+         `swap`'s unbounded late swap was reflowing icon-heavy rows (footer,
+         cookie banner) well after first paint, the main source of this
+         page's CLS. -->
     <style>
-      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 900; font-display: swap; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-solid-900.woff2") format("woff2"); }
-      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-regular-400.woff2") format("woff2"); }
-      @font-face { font-family: "Font Awesome 6 Brands"; font-style: normal; font-weight: 400; font-display: swap; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-brands-400.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 900; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-solid-900.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 400; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-regular-400.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Brands"; font-style: normal; font-weight: 400; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-brands-400.woff2") format("woff2"); }
     </style>
     <!-- Google Analytics 4 (loaded conditionally by SeoService when ID is set) -->
     <script>
@@ -73,8 +78,13 @@
          googleAnalyticsId. -->
     <script id="ga-script" async src="https://www.googletagmanager.com/gtag/js?id=G-ENE1XXREY6"></script>
     <script>gtag('config', 'G-ENE1XXREY6');</script>
-    <!-- GTM ID placeholder: set to your container ID in production -->
+    <!-- Google Tag Manager — disabled. The placeholder ID below was never replaced
+         with a real container ID, so every time a user granted analytics/marketing
+         consent, consent.service.ts fired a real (failing) request to
+         googletagmanager.com/gtm.js?id=GTM-XXXX for zero functional benefit.
+         Uncomment and set a real 'GTM-...' ID if/when GTM is actually set up.
     <script>window.__GTM_ID__ = 'GTM-XXXX';</script>
+    -->
     <!--
       Google AdSense — disabled. The placeholder client ID below was never
       replaced with a real publisher ID, so this script downloaded ~220KB

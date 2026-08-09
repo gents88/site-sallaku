@@ -25,7 +25,7 @@ export class SeoService {
   private readonly siteName = 'Gent Sallaku';
   private readonly defaultDescription =
     'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.';
-  private readonly defaultImage = 'https://gentsallaku.it/assets/profil.jpeg';
+  private readonly defaultImage = 'https://gentsallaku.it/assets/og-image.png';
   private lastTrackedPath: string | null = null;
 
   constructor(
@@ -57,8 +57,8 @@ export class SeoService {
     const pageTitle = data.title
       ? `${data.title} | ${this.siteName}`
       : `${this.siteName} | Senior Front-End & API Developer`;
-    const description = data.description ?? this.defaultDescription;
-    const image       = data.image ?? this.defaultImage;
+    const description = data.description || this.defaultDescription;
+    const image       = data.image || this.defaultImage;
     const canonicalUrl = data.url ?? (() => {
       const { lang, basePath } = stripLangPrefix(this.router.url.split('?')[0]);
       return `${SITE_ORIGIN}${withLangPrefix(basePath, lang)}`;

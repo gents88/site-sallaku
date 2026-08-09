@@ -340,8 +340,8 @@ export class ConversionService {
     return { buffer: pdfBuf, mimeType: 'application/pdf', filename: 'converted.pdf', isStructured: false };
   }
 
-  private csvToExcel(buf: Buffer): ConversionResult {
-    const xlsxBuf = this.data.csvToExcel(buf);
+  private async csvToExcel(buf: Buffer): Promise<ConversionResult> {
+    const xlsxBuf = await this.data.csvToExcel(buf);
     return { buffer: xlsxBuf, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', filename: 'converted.xlsx', isStructured: false };
   }
 
@@ -355,18 +355,18 @@ export class ConversionService {
     return { buffer: pdfBuf, mimeType: 'application/pdf', filename: 'converted.pdf', isStructured: false };
   }
 
-  private excelToCsv(buf: Buffer): ConversionResult {
-    const csv = this.data.excelToCsv(buf);
+  private async excelToCsv(buf: Buffer): Promise<ConversionResult> {
+    const csv = await this.data.excelToCsv(buf);
     return { buffer: Buffer.from(csv, 'utf-8'), mimeType: 'text/csv', filename: 'converted.csv', isStructured: false };
   }
 
-  private excelToJson(buf: Buffer): ConversionResult {
-    const json = this.data.excelToJson(buf);
+  private async excelToJson(buf: Buffer): Promise<ConversionResult> {
+    const json = await this.data.excelToJson(buf);
     return { json, mimeType: 'application/json', filename: 'converted.json', isStructured: true };
   }
 
-  private excelToHtml(buf: Buffer): ConversionResult {
-    const html = this.data.excelToHtml(buf);
+  private async excelToHtml(buf: Buffer): Promise<ConversionResult> {
+    const html = await this.data.excelToHtml(buf);
     return { buffer: Buffer.from(html, 'utf-8'), mimeType: 'text/html', filename: 'converted.html', isStructured: false };
   }
 
