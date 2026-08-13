@@ -1,5 +1,7 @@
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
+import * as Sentry from '@sentry/angular';
 import { SnackbarService } from '../services/snackbar.service';
+import { environment } from '../../../environments/environment';
 
 /**
  * Global ErrorHandler che cattura eccezioni non gestite:
@@ -89,10 +91,10 @@ export class GlobalErrorHandler implements ErrorHandler {
   }
 
   private reportToLoggingService(info: ErrorInfo): void {
-    // Integrazione con Sentry
-    if (typeof window !== 'undefined' && (window as any).Sentry) {
-      (window as any).Sentry.captureException(new Error(info.message), {
-        contexts: { error: info },
+    // No-op when sentryDsn is unset (Sentry.init() was never called in main.ts).
+    if (environment.sentryDsn) {
+      Sentry.captureException(new Error(info.message), {
+        contexts: { error: { message: info.message, stack: info.stack, context: info.context } },
       });
     }
 
