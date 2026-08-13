@@ -137,6 +137,9 @@
       justify-content: center;
       gap: 4px;
       z-index: 999;
+      /* Lascia visibile la bottom tab bar sotto: lo sheet "Altro" galleggia
+         sopra di essa invece di coprirla. */
+      bottom: calc(var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
       padding: 80px 24px 40px;
       overflow-x: hidden;
       overflow-y: auto;
@@ -175,8 +178,9 @@
     /* Anchored to the navbar's bottom edge (not just intrinsic content
        height) so the sheet never leaves a dead gap between itself and the
        navbar — it fills the rest of the screen, any leftover space goes
-       to the bottom instead of floating above the sheet. */
-    inset: calc(var(--navbar-height, 72px) + 8px) 0 0 0;
+       to the bottom instead of floating above the sheet. Stops above the
+       bottom tab bar instead of covering it. */
+    inset: calc(var(--navbar-height, 72px) + 8px) 0 calc(var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)) 0;
     justify-content: flex-start;
     padding: 28px 24px calc(env(safe-area-inset-bottom, 0px) + 24px);
     border-top-left-radius: var(--radius-xl);
@@ -205,11 +209,12 @@
   }
 }
 
-.nav-item-mobile-auth {
-  display: none;
-
+/* Progetti/Servizi hanno una tab dedicata nella bottom tab bar sul mobile:
+   il loro <li> nello sheet "Altro" (stesso nav-menu) sparisce solo lì sotto,
+   la nav desktop orizzontale resta invariata. */
+.nav-item-mobile-hide {
   @media (max-width: 900px) {
-    display: list-item;
+    display: none;
   }
 }
 
@@ -337,10 +342,19 @@
     margin-left: auto;
   }
 
-  /* Always above the menu overlay so hamburger is always tappable */
+  /* Always above the menu overlay so lang/theme stay tappable */
   @media (max-width: 900px) {
     position: relative;
     z-index: 1001;
+  }
+}
+
+/* Sullo sheet "Altro" iOS/Android lo z-index sale a 10010 (per stare sopra
+   i toast, vedi .nav-menu.open più sotto) — senza questo, a quel valore
+   lingua/tema in nav-right (1001) finirebbero coperti dallo sheet stesso. */
+.navbar.menu-open .nav-right {
+  @media (max-width: 900px) {
+    z-index: 10020;
   }
 }
 
@@ -390,63 +404,87 @@
   }
 }
 
-/* Hamburger */
-.nav-toggle {
+/* ── Bottom tab bar (mobile only) ─────────────────────────────────
+   Persistente, stile Instagram: sostituisce l'hamburger in alto come
+   punto d'accesso principale alla navigazione sotto i 900px.
+   È fratello di <nav class="navbar">, non figlio (vedi commento nell'HTML):
+   z-index quindi non relativo allo stacking context della navbar, ma va
+   confrontato direttamente col suo valore massimo (10005 quando lo sheet
+   iOS/Android è aperto) — 10050 lo tiene sempre sopra backdrop e sheet. */
+.bottom-tabbar {
   display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 12px;
-  z-index: 1001;
+
+  @media (max-width: 900px) {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10050;
+    height: var(--bottom-tabbar-height, 60px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--surface-overlay);
+    border-top: 1px solid var(--glass-border);
+  }
+}
+
+/* iOS/Android: stesso trattamento vetro già applicato alla navbar in alto. */
+:host-context(html[data-os='ios']) .bottom-tabbar {
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+}
+
+:host-context(html[data-os='android']) .bottom-tabbar {
+  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  transition: background 0.3s ease;
+  gap: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 600;
+  color: var(--text-tertiary, #64748b);
   outline: 2px solid transparent;
-  outline-offset: 2px;
+  outline-offset: -2px;
+  transition: color 0.15s ease;
 
-  &:hover {
-    background: rgba(79, 106, 245, 0.1);
-  }
+  svg { width: 21px; height: 21px; }
 
   &:focus-visible {
     outline: 2px solid var(--primary-500, #4f6af5);
-    outline-offset: 2px;
   }
 
-  @media (max-width: 900px) { display: flex; }
+  &.active {
+    color: var(--primary-400, #6b8afc);
+  }
 }
 
-.hamburger-bar {
-  display: block;
-  width: 24px;
-  height: 2.5px;
-  background: var(--text-primary, #f0f4ff);
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    width: 24px;
-    height: 2.5px;
-    background: var(--text-primary, #f0f4ff);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &::before { top: -8px; }
-  &::after  { top: 8px; }
+.tab-avatar {
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #4f6af5, #8b5cf6);
+  text-transform: uppercase;
 }
 
-.nav-toggle.active .hamburger-bar {
-  background: transparent;
-  &::before {
-    top: 0;
-    transform: rotate(45deg);
-  }
-  &::after {
-    top: 0;
-    transform: rotate(-45deg);
-  }
+.tab-item.active .tab-avatar {
+  box-shadow: 0 0 0 2px var(--primary-400, #6b8afc);
 }
