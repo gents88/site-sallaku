@@ -6,9 +6,11 @@
     </button>
     <div class="auth-card__header">
       <div class="auth-avatar" aria-hidden="true">GS</div>
-      <span class="auth-chip">Admin Access</span>
-      <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
-      <p class="text-muted">{{ 'auth.login_subtitle' | translate }}</p>
+      <div class="auth-card__header-copy">
+        <span class="auth-chip">Admin Access</span>
+        <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
+        <p class="text-muted">{{ 'auth.login_subtitle' | translate }}</p>
+      </div>
     </div>
 
     <form [formGroup]="form" (ngSubmit)="login()" novalidate>
