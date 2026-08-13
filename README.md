@@ -6,6 +6,20 @@
 
 Portfolio professionale personal landing page per contesti enterprise (banking, telco, aerospace).
 
+---
+
+## 📚 Documentazione
+
+**➜ [Leggi la documentazione completa in `/docs`](./docs/README.md)**
+
+Troverai:
+- 🚀 [Quick Start](./docs/QUICK_START.md) – Setup iniziale e funzionalità
+- 📖 [Deployment Guides](./docs/guides/) – Deploy, email, testing
+- 🔍 [SEO Documentation](./docs/seo/) – Strategia e implementazione
+- 📋 [Checklists & Templates](./docs/checklists/) – Maintenance e article template
+
+---
+
 ## ✅ Funzionalità Completate
 
 ### 🌍 Multilingua (i18n)
