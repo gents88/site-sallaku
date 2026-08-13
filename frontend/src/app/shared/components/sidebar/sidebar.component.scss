@@ -45,6 +45,23 @@
   }
 }
 
+/* iOS/Android: radius & shadow already adapt via --radius-lg/--shadow-lg
+   token overrides (styles/platform/_ios.scss, _android.scss). Only the
+   safe-area inset and touch target sizing need a component-specific rule. */
+:host-context(html[data-os='ios']) .app-sidebar {
+  padding-left: calc(0.75rem + env(safe-area-inset-left, 0px));
+  /* Authentic frosted-glass material in place of the solid panel above —
+     blur + saturate is the classic Apple-material recipe. */
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+}
+
+:host-context(html[data-os='ios']) .nav-item,
+:host-context(html[data-os='android']) .nav-item {
+  min-height: var(--ui-control-height, 44px);
+}
+
 .app-sidebar::-webkit-scrollbar {
   width: 6px;
 }

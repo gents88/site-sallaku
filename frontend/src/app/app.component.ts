@@ -12,6 +12,7 @@ import { SeoService } from './core/services/seo.service';
 import { AnalyticsTrackingService } from './core/services/analytics-tracking.service';
 import { AuthModalService } from './core/services/auth-modal.service';
 import { InactivityService } from './core/services/inactivity.service';
+import { PlatformUiService } from './core/services/platform-ui.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
 
@@ -291,6 +292,60 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
         grid-template-columns: 1fr;
       }
     }
+
+    /* iOS/Android: account panel becomes a bottom sheet on mobile widths.
+       Desktop and any other OS keep the top-right panel above untouched. */
+    @keyframes accountSheetIn {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    :host-context(html[data-os='ios']) .account-modal,
+    :host-context(html[data-os='android']) .account-modal {
+      @media (max-width: 900px) {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        border-radius: 0;
+        border-top-left-radius: var(--radius-xl);
+        border-top-right-radius: var(--radius-xl);
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.1rem);
+        animation: accountSheetIn var(--transition-base, 0.3s ease) both;
+        /* Above SnackbarService's toast layer (z-index 9999) so a background
+           error/status toast can never intercept taps on the sheet's actions. */
+        z-index: 10020;
+      }
+    }
+
+    /* iOS: authentic frosted-glass material in place of the solid panel
+       above — blur + saturate is the classic Apple-material recipe. */
+    :host-context(html[data-os='ios']) .account-modal-backdrop {
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+    }
+
+    :host-context(html[data-os='ios']) .account-modal {
+      background: radial-gradient(circle at top right, rgba(79, 106, 245, 0.18), transparent 34%), var(--glass-bg);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+    }
+
+    :host-context(html[data-os='ios']) .account-modal::before {
+      @media (max-width: 900px) {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        width: 36px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--text-secondary, #8892b0);
+        opacity: 0.5;
+        transform: translateX(-50%);
+      }
+    }
     .back-to-top {
       position: fixed;
       bottom: 28px;
@@ -336,6 +391,7 @@ export class AppComponent implements OnInit {
     public authModal: AuthModalService,
     public auth: AuthService,
     public inactivity: InactivityService,
+    private platformUi: PlatformUiService,
     private seoService: SeoService,
     private analyticsTracking: AnalyticsTrackingService,
     private router: Router,
@@ -347,6 +403,7 @@ export class AppComponent implements OnInit {
     // Activity tracking binds to `window`, which doesn't exist during SSR/prerender.
     if (isPlatformBrowser(this.platformId)) {
       this.inactivity.init();
+      this.platformUi.init();
     }
     this.seoService.trackPageViews();
     this.analyticsTracking.init();

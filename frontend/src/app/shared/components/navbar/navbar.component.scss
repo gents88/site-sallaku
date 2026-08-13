@@ -39,6 +39,30 @@
   }
 }
 
+/* iOS: authentic frosted-glass material (blur + saturate is the classic
+   Apple-material recipe — plain blur alone reads as "smudged", not "glass"). */
+:host-context(html[data-os='ios']) .navbar.scrolled {
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+}
+
+:host-context(html[data-os='ios']) .nav-menu.open {
+  @media (max-width: 900px) {
+    backdrop-filter: blur(34px) saturate(180%);
+    -webkit-backdrop-filter: blur(34px) saturate(180%);
+  }
+}
+
+/* iOS/Android: .navbar's own z-index (1000) caps how high any descendant —
+   including the bottom-sheet .nav-menu below — can ever stack, since a
+   positioned z-indexed element creates its own stacking context. Raise it
+   past SnackbarService's toast layer (z-index 9999) only while the sheet
+   is actually open, so a background toast can't swallow taps on it. */
+:host-context(html[data-os='ios']) .navbar.menu-open,
+:host-context(html[data-os='android']) .navbar.menu-open {
+  z-index: 10005;
+}
+
 .nav-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -111,6 +135,54 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ── iOS / Android: mobile menu becomes a bottom sheet ─────────────
+   Desktop and any other OS keep the fullscreen centered overlay above
+   untouched — these rules only fire when data-os is set on <html>. ── */
+@keyframes slideInSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+:host-context(html[data-os='ios']) .nav-menu.open,
+:host-context(html[data-os='android']) .nav-menu.open {
+  @media (max-width: 900px) {
+    /* Anchored to the navbar's bottom edge (not just intrinsic content
+       height) so the sheet never leaves a dead gap between itself and the
+       navbar — it fills the rest of the screen, any leftover space goes
+       to the bottom instead of floating above the sheet. */
+    inset: calc(var(--navbar-height, 72px) + 8px) 0 0 0;
+    justify-content: flex-start;
+    padding: 28px 24px calc(env(safe-area-inset-bottom, 0px) + 24px);
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    animation: slideInSheet var(--transition-base, 0.3s ease) both;
+    /* Above SnackbarService's toast layer (z-index 9999) so a background
+       error/status toast can never intercept taps on the sheet's items. */
+    z-index: 10010;
+  }
+}
+
+/* Grabber handle — iOS convention, absent on Material bottom sheets */
+:host-context(html[data-os='ios']) .nav-menu.open::before {
+  @media (max-width: 900px) {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 36px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--text-tertiary, #64748b);
+    opacity: 0.5;
+    transform: translateX(-50%);
   }
 }
 

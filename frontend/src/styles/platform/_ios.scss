@@ -1,0 +1,38 @@
+/* ═══════════════════════════════════════════════
+   iOS / iPadOS platform theme
+   Overrides shape, motion and touch-target tokens
+   only — colors stay whatever [data-theme] set them
+   to. Scoped entirely under [data-os='ios'], so it
+   is inert everywhere else.
+   ═══════════════════════════════════════════════ */
+
+html[data-os='ios'] {
+  /* Continuous-corner-like shape scale (Apple HIG) */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Apple HIG minimum tap target */
+  --ui-control-height: 44px;
+
+  /* Softer, more diffuse shadows than the default glow-heavy set */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.16);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.2);
+
+  /* iOS-flavoured spring easing */
+  --transition-fast: 0.22s cubic-bezier(0.36, 0.66, 0.04, 1);
+  --transition-base: 0.32s cubic-bezier(0.36, 0.66, 0.04, 1);
+  --transition-slow: 0.45s cubic-bezier(0.36, 0.66, 0.04, 1);
+
+  /* SF Pro isn't distributable, but the system stack resolves to it on Apple devices */
+  --font-main: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Buttons: iOS rounded-rect controls */
+html[data-os='ios'] .btn,
+html[data-os='ios'] button {
+  border-radius: var(--radius-md);
+}
