@@ -43,6 +43,13 @@
   &.open {
     transform: translateX(0);
   }
+
+  /* Sotto i 900px la navbar aggiunge una bottom tab bar fissa (sempre sopra,
+     vedi navbar.component.scss): senza questo il drawer si estende fino a
+     fondo viewport e le ultime voci restano coperte dalla barra. */
+  @media (max-width: 900px) {
+    height: calc(100dvh - var(--navbar-height, 72px) - 20px - var(--bottom-tabbar-height, 60px) - env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* iOS/Android: radius & shadow already adapt via --radius-lg/--shadow-lg
