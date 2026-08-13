@@ -88,14 +88,17 @@ export class SidebarComponent {
   }
 
   // Chiude il drawer quando si clicca fuori (backdrop-less click-outside),
-  // ignorando il toggle della navbar che gestisce già l'apertura/chiusura.
+  // ignorando i toggle della navbar che gestiscono già l'apertura/chiusura:
+  // .nav-drawer-toggle (icona desktop) e .nav-item-mobile-drawer (voce nel
+  // menu mobile) — senza questo, lo stesso click che apre il drawer da mobile
+  // lo richiude subito in fase di bubbling su document.
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (!this.drawerOpen()) return;
     const target = event.target as HTMLElement | null;
     if (!target) return;
     if (this.elementRef.nativeElement.contains(target)) return;
-    if (target.closest('.nav-drawer-toggle')) return;
+    if (target.closest('.nav-drawer-toggle, .nav-item-mobile-drawer')) return;
     this.drawer.close();
   }
 
