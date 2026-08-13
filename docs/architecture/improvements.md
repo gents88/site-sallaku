@@ -1,8 +1,8 @@
 # ✅ Upgrade Architetturale - Implementazione Completa
 
-Data: 2026-07-19  
+Data: 2026-07-19 (stack aggiornato da allora — vedi versioni correnti nei `package.json`)  
 Implementato da: Claude  
-Stack: Angular 17 (Standalone) + NestJS + MongoDB
+Stack all'epoca: Angular 17 (Standalone) + NestJS + MongoDB
 
 ---
 
@@ -515,4 +515,4 @@ Il codice è:
 
 **Data Implementazione:** 2026-07-19  
 **Versione Documento:** 1.0  
-**Stack:** Angular 17 + NestJS 10 + MongoDB 6
+**Stack all'epoca:** Angular 17 + NestJS 10 + MongoDB 6 — vedi `frontend/package.json` / `backend/package.json` per le versioni correnti (alcune sezioni sotto, es. Cache Module, sono state da allora sostituite da `CacheService`, vedi `backend/src/common/services/cache.service.ts`)

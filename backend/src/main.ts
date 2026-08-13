@@ -1,3 +1,15 @@
+import * as Sentry from '@sentry/node';
+
+// No-op when SENTRY_DSN is unset. Must run before any other import that could
+// throw during module init, so errors from those are captured too.
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 0.1,
+  });
+}
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
