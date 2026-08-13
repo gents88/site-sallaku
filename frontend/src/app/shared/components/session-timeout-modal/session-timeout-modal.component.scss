@@ -201,6 +201,19 @@
   -webkit-backdrop-filter: blur(30px) saturate(180%);
 }
 
+/* Android: M3 tonal elevated surface — subtler blur and lower opacity
+   than iOS vibrancy, no saturate boost. */
+:host-context(html[data-os='android']) .session-timeout-backdrop {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:host-context(html[data-os='android']) .session-timeout {
+  background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.2), transparent 34%), color-mix(in srgb, var(--glass-bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 :host-context(html[data-os='ios']) .session-timeout::before {
   @media (max-width: 640px) {
     content: '';

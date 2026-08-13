@@ -57,6 +57,14 @@
   -webkit-backdrop-filter: blur(30px) saturate(180%);
 }
 
+/* Android: M3 tonal elevated surface — subtler blur and lower opacity
+   than iOS vibrancy, no saturate boost. */
+:host-context(html[data-os='android']) .app-sidebar {
+  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 :host-context(html[data-os='ios']) .nav-item,
 :host-context(html[data-os='android']) .nav-item {
   min-height: var(--ui-control-height, 44px);
