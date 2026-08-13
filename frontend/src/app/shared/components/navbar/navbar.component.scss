@@ -42,6 +42,10 @@
 /* iOS: authentic frosted-glass material (blur + saturate is the classic
    Apple-material recipe — plain blur alone reads as "smudged", not "glass"). */
 :host-context(html[data-os='ios']) .navbar.scrolled {
+  /* --surface-overlay is 92% opaque — too solid to read as glass even with
+     blur. Swap to --glass-bg (same token sidebar/modal already use) so the
+     translucency is actually visible. */
+  background: var(--glass-bg);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
 }
@@ -50,6 +54,21 @@
   @media (max-width: 900px) {
     backdrop-filter: blur(34px) saturate(180%);
     -webkit-backdrop-filter: blur(34px) saturate(180%);
+  }
+}
+
+/* Android: Material 3 tonal glass — lighter blur than iOS, no saturate
+   boost (M3 elevation doesn't use vibrancy). */
+:host-context(html[data-os='android']) .navbar.scrolled {
+  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:host-context(html[data-os='android']) .nav-menu.open {
+  @media (max-width: 900px) {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 }
 
