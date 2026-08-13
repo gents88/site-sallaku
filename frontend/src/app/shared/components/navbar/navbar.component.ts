@@ -57,6 +57,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
       : this.navLinks;
   }
 
+  // Sul mobile, Progetti e Servizi hanno una tab dedicata nella bottom bar:
+  // il loro <li> in nav-menu viene nascosto via CSS solo sotto i 900px, così
+  // lo sheet "Altro" non li ripete mentre la nav desktop resta invariata.
+  readonly bottomTabRoutes = new Set(['/projects', '/services']);
+
+  get activeBottomTab(): 'home' | 'projects' | 'services' | 'other' {
+    if (!this.isHomepage) return 'other';
+    if (this.activeSection === 'homepage') return 'home';
+    if (this.activeSection === 'projects') return 'projects';
+    if (this.activeSection === 'services') return 'services';
+    return 'other';
+  }
+
   // stessa label mostrata nell'header della sidebar (SidebarComponent)
   get drawerToggleLabel(): string {
     return this.auth.isLoggedIn() && this.auth.isAdmin() ? '⚙️ Admin' : '🧰 AI & Tools';

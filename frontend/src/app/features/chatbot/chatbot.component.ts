@@ -724,9 +724,17 @@ type PanelView = 'chat' | 'transcript';
     }
 
     /* ── Responsive ──────────────────────────────────── */
+    /* Sotto i 900px la navbar aggiunge una bottom tab bar fissa (vedi
+       navbar.component.scss): senza questo offset il FAB e il pannello
+       chat finirebbero sovrapposti/nascosti sotto di essa. */
+    @media (max-width: 900px) {
+      .cb-fab { bottom: calc(28px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); }
+      .cb-panel { bottom: calc(100px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); }
+    }
+
     @media (max-width: 480px) {
-      .cb-fab { bottom: 18px; right: 18px; }
-      .cb-panel { bottom: 88px; right: 18px; left: 18px; width: auto; }
+      .cb-fab { bottom: calc(18px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); right: 18px; }
+      .cb-panel { bottom: calc(88px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); right: 18px; left: 18px; width: auto; }
     }
 
     /* ── Info banner ─────────────────────────────────── */

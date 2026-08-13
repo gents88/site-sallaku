@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Accueil",
     "about": "À propos",
     "tech": "Stack Technique",
     "projects": "Projets",
@@ -8,6 +9,7 @@
     "skills": "Soft Skills",
     "contact": "Contact",
     "blog": "Blog",
+    "more": "Plus",
     "login": "Connexion",
     "admin": "Admin",
     "dashboard": "Dashboard",

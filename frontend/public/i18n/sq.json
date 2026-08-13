@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Kryefaqja",
     "about": "Rreth meje",
     "tech": "Teknologjitë",
     "projects": "Projektet",
@@ -8,6 +9,7 @@
     "skills": "Aftësitë",
     "contact": "Kontakt",
     "blog": "Blog",
+    "more": "Më shumë",
     "login": "Hyrje",
     "admin": "Admin",
     "dashboard": "Dashboard",
