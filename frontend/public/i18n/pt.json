@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Início",
     "about": "Sobre mim",
     "tech": "Stack Tecnológico",
     "projects": "Projetos",
@@ -8,6 +9,7 @@
     "skills": "Soft Skills",
     "contact": "Contato",
     "blog": "Blog",
+    "more": "Mais",
     "login": "Entrar",
     "admin": "Admin",
     "dashboard": "Dashboard",
