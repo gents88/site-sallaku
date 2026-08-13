@@ -17,6 +17,13 @@
     inset: 0;
     z-index: 1600;
     animation: backdropIn 0.22s ease-out both;
+
+    @media (max-width: 900px) {
+      /* Sopra la bottom tab bar della navbar (10050, sempre in primo piano):
+         il login è un overlay bloccante e non deve restare coperto/dietro
+         di essa sul bordo inferiore, dove sta anche il pulsante di invio. */
+      z-index: 10060;
+    }
   }
 }
 
@@ -174,7 +181,62 @@
 
   .auth-card {
     max-width: 100%;
-    padding: 2.2rem 1.35rem 1.8rem;
+    padding: 1.75rem 1.35rem 1.4rem;
+    /* Safety net: se anche da compatto il contenuto non entra (schermi molto
+       piccoli, tastiera aperta), scrolla dentro la card invece di tagliare
+       il pulsante fuori dalla viewport senza modo di raggiungerlo. */
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  /* Header più compatto e orizzontale: avatar piccolo a fianco di
+     titolo+chip invece di uno stack verticale alto, per stare comodamente
+     sopra la piega senza dover scrollare per vedere il pulsante di login. */
+  .auth-card__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    margin-bottom: 1.1rem;
+  }
+
+  .auth-card__header-copy {
+    min-width: 0;
+  }
+
+  .auth-card__accent {
+    display: none;
+  }
+
+  .auth-avatar {
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+  }
+
+  .auth-chip {
+    margin-bottom: 0.3rem;
+  }
+
+  .logo {
+    font-size: 1.4rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .auth-card__header .text-muted {
+    font-size: 0.85rem;
+  }
+
+  .form-field { margin-bottom: 0.3rem; }
+
+  .submit-btn { margin-top: 0.4rem; }
+
+  .auth-card__footer {
+    margin-top: 0.6rem;
+    font-size: 0.82rem;
   }
 }
 
@@ -190,9 +252,9 @@
   @media (max-width: 900px) {
     align-items: flex-end;
     padding: 0;
-    /* Above SnackbarService's toast layer (z-index 9999) so a background
-       error/status toast can never intercept taps on the sheet's actions. */
-    z-index: 10030;
+    /* Above SnackbarService's toast layer (9999) AND the bottom tab bar
+       (10050, sempre in primo piano) — il login è un overlay bloccante. */
+    z-index: 10060;
   }
 }
 
@@ -204,7 +266,10 @@
     border-radius: 0;
     border-top-left-radius: var(--radius-xl);
     border-top-right-radius: var(--radius-xl);
-    padding: 2.2rem 1.35rem calc(env(safe-area-inset-bottom, 0px) + 1.8rem);
+    padding: 1.75rem 1.35rem calc(env(safe-area-inset-bottom, 0px) + 1.4rem);
+    max-height: calc(100dvh - var(--navbar-height, 72px) - 24px);
+    overflow-y: auto;
+    scrollbar-width: thin;
     animation: authSheetIn var(--transition-base, 0.3s ease) both;
   }
 }
