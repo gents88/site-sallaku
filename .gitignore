@@ -21,3 +21,6 @@ backend/.tessdata/
 
 # MongoDB backup dumps — contain real prod data (PII, hashed passwords), never commit
 backups/
+
+# Frontend build artifacts — never commit
+frontend-deploy/
