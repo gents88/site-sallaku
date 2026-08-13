@@ -8,6 +8,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as Sentry from '@sentry/node';
 
 interface ApiErrorResponse {
   success: boolean;
@@ -61,6 +62,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
       `[${request.method}] ${request.url} → ${status} | ${message}`,
       exception instanceof Error ? exception.stack : JSON.stringify(exception),
     );
+
+    // Report solo i 5xx non gestiti — i 4xx sono errori applicativi attesi (validazione, auth, ecc.)
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR && process.env.SENTRY_DSN) {
+      Sentry.captureException(exception instanceof Error ? exception : new Error(message), {
+        contexts: {
+          request: { method: request.method, url: request.url, requestId: this.extractRequestId(request) },
+        },
+      });
+    }
 
     // Risposta standardizzata
     const errorResponse: ApiErrorResponse = {

@@ -3,4 +3,5 @@ export const environment = {
   apiUrl: 'https://portfolio-backend-uat.up.railway.app/api/v1',
   googleAnalyticsId: '',
   blogPdfUploadEnabled: true,
+  sentryDsn: '',
 };

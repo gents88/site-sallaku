@@ -11,7 +11,7 @@
     <a [routerLink]="'/blog' | langUrl" class="back-link" appTrackClick eventType="blog" label="blog_back_link"><mat-icon>arrow_back</mat-icon> All posts</a>
 
     @if (post.coverImage) {
-      <img [src]="post.coverImage" [alt]="post.title" class="post-article__cover" loading="eager" width="1200" height="630" />
+      <img [ngSrc]="post.coverImage" [alt]="post.title" class="post-article__cover" priority width="1200" height="630" />
     }
 
     <header class="post-article__header">

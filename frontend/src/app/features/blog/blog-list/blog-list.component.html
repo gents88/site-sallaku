@@ -40,7 +40,7 @@
       @for (post of visiblePosts; track post._id) {
         <article class="card post-card fade-in-up">
           @if (post.coverImage) {
-            <img [src]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" loading="lazy" />
+            <img [ngSrc]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" width="640" height="360" />
           } @else {
             <div class="post-card__cover-placeholder" aria-hidden="true">
               <mat-icon>article</mat-icon>
