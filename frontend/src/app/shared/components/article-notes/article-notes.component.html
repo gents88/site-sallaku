@@ -1,0 +1,165 @@
+<section class="article-notes" [attr.data-article-id]="articleId">
+  <div class="notes-container">
+    <!-- Header -->
+    <div class="notes-header">
+      <h2 class="notes-title">💬 Note dei lettori</h2>
+      <p class="notes-subtitle">{{ totalNotes }} {{ totalNotes === 1 ? 'nota' : 'note' }}</p>
+    </div>
+
+    <!-- Note Form -->
+    <div class="notes-form-wrapper">
+      <div class="form-section">
+        <h3 class="form-title">Scrivi una nota</h3>
+        <p class="form-description">Condividi la tua opinione, un suggerimento o un complimento</p>
+
+        <form [formGroup]="form" (ngSubmit)="submitNote()" class="notes-form">
+          <!-- Honeypot field (hidden from users) -->
+          <input
+            type="text"
+            formControlName="honeypot"
+            class="honeypot"
+            aria-hidden="true"
+            autocomplete="off"
+            tabindex="-1"
+          />
+
+          <!-- Name field (optional) -->
+          <div class="form-group">
+            <label for="name" class="form-label">
+              Nome
+              <span class="optional">(opzionale)</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              class="form-input"
+              placeholder="Il tuo nome"
+              maxlength="100"
+            />
+            <span *ngIf="getErrorMessage('name')" class="error-message">
+              {{ getErrorMessage('name') }}
+            </span>
+          </div>
+
+          <!-- Email field (optional) -->
+          <div class="form-group">
+            <label for="email" class="form-label">
+              Email
+              <span class="optional">(opzionale)</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              class="form-input"
+              placeholder="La tua email"
+              maxlength="255"
+            />
+            <span *ngIf="getErrorMessage('email')" class="error-message">
+              {{ getErrorMessage('email') }}
+            </span>
+          </div>
+
+          <!-- Website field (honeypot) -->
+          <div class="form-group hidden" aria-hidden="true">
+            <label for="website" class="form-label">Website</label>
+            <input
+              type="url"
+              id="website"
+              formControlName="website"
+              class="form-input"
+              placeholder="https://..."
+              maxlength="500"
+            />
+          </div>
+
+          <!-- Content field (required) -->
+          <div class="form-group">
+            <label for="content" class="form-label">
+              Nota
+              <span class="required">*</span>
+            </label>
+            <textarea
+              id="content"
+              formControlName="content"
+              class="form-textarea"
+              placeholder="Scrivi il tuo messaggio..."
+              rows="5"
+              maxlength="1000"
+            ></textarea>
+            <div class="textarea-footer">
+              <span *ngIf="getErrorMessage('content')" class="error-message">
+                {{ getErrorMessage('content') }}
+              </span>
+              <span class="char-count">
+                {{ form.get('content')?.value?.length || 0 }}/1000
+              </span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="isSubmittingNote || !form.valid"
+            >
+              <span *ngIf="!isSubmittingNote" class="btn-text">Pubblica nota</span>
+              <span *ngIf="isSubmittingNote" class="btn-text">Invio in corso...</span>
+            </button>
+          </div>
+
+          <!-- Success message -->
+          <div *ngIf="submitSuccess" class="alert alert-success">
+            ✓ La tua nota è stata pubblicata con successo!
+          </div>
+
+          <!-- Error message -->
+          <div *ngIf="submitError" class="alert alert-error">
+            ✗ {{ submitError }}
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Notes List -->
+    <div class="notes-list-wrapper">
+      <h3 class="list-title">Ultime note</h3>
+
+      <!-- Loading state -->
+      <div *ngIf="isLoadingNotes" class="loading-state">
+        <div class="spinner"></div>
+        <p>Caricamento note...</p>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!isLoadingNotes && notes.length === 0" class="empty-state">
+        <p>Nessuna nota ancora. Sii il primo a commentare!</p>
+      </div>
+
+      <!-- Notes -->
+      <div *ngIf="!isLoadingNotes && notes.length > 0" class="notes-list">
+        <article *ngFor="let note of notes" class="note-item" [attr.data-note-id]="note.id">
+          <div class="note-header">
+            <div class="note-author">
+              <strong class="author-name">
+                {{ note.name || 'Anonimo' }}
+              </strong>
+              <time class="note-date" [attr.datetime]="note.createdAt">
+                {{ formatDate(note.createdAt) }}
+              </time>
+            </div>
+            <div *ngIf="note.email" class="note-email">
+              {{ note.email }}
+            </div>
+          </div>
+
+          <div class="note-content">
+            {{ note.content }}
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
