@@ -38,6 +38,17 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" /></noscript>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" /></noscript>
+    <!-- mat-icon renders ligature text ("work", "history_edu", ...) until this
+         font loads, so `display=swap` above means real words flash inside icon
+         chips app-wide (dashboard stat cards, navbar, buttons) before the glyph
+         pops in — much more jarring than ordinary text FOUT. Same document-order
+         override trick as Font Awesome below, but `block` (not `optional`):
+         these icons are functional UI everywhere, not decorative/skippable, so
+         they must always render — briefly invisible is fine, permanently
+         missing is not. -->
+    <style>
+      @font-face { font-family: "Material Icons"; font-style: normal; font-weight: 400; font-display: block; src: url("https://fonts.gstatic.com/s/materialicons/v145/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2") format("woff2"); }
+    </style>
     <!-- Font Awesome 6 — async, non-render-blocking -->
     <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" /></noscript>
