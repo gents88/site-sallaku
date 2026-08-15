@@ -337,6 +337,7 @@
     "manage_projects": "Projekte verwalten",
     "manage_experiences": "Erfahrungen verwalten",
     "manage_blog": "Blog verwalten",
+    "manage_notes": "Notizen moderieren",
     "edit_about": "About bearbeiten",
     "logout": "Abmelden",
     "loading": "Wird geladen…",
@@ -597,6 +598,28 @@
       "empty": "Noch keine Notizen. Sei der Erste, der kommentiert!",
       "anonymous": "Anonym"
     }
+  },
+  "notes_manage": {
+    "title": "Leser-Notizen moderieren",
+    "status_pending": "Ausstehend",
+    "status_approved": "Genehmigt",
+    "status_spam": "Spam",
+    "status_all": "Alle",
+    "empty": "Keine Notizen in dieser Kategorie.",
+    "load_error": "Notizen konnten nicht geladen werden.",
+    "action_error": "Aktion fehlgeschlagen. Bitte erneut versuchen.",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "mark_spam": "Als Spam markieren",
+    "approved": "Notiz genehmigt.",
+    "rejected": "Notiz abgelehnt.",
+    "marked_spam": "Notiz als Spam markiert.",
+    "deleted": "Notiz gelöscht.",
+    "confirm_delete": "Diese Notiz endgültig löschen?",
+    "spam_score": "Spam-Bewertung",
+    "spam_score_tooltip": "Automatische Spam-Erkennungsbewertung (0-100, höher = verdächtiger)",
+    "prev_page": "Zurück",
+    "next_page": "Weiter"
   },
   "chatbot_ui": {
     "title": "KI-Assistent",

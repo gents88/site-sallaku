@@ -337,6 +337,7 @@
     "manage_projects": "Menaxho Projektet",
     "manage_experiences": "Menaxho Eksperiencën",
     "manage_blog": "Menaxho Blogun",
+    "manage_notes": "Modero Shënimet",
     "edit_about": "Modifiko About",
     "logout": "Dil",
     "loading": "Duke ngarkuar…",
@@ -549,7 +550,7 @@
     "readMore": "Lexo më shumë",
     "loadMore": "Ngarko më shumë",
     "empty": {
-      "title": "Nuk u gëtën artikuj",
+      "title": "Nuk u gjëtën artikuj",
       "message": "Provo fjalë kyfe të ndryshme ose shfleto të gjithë artikujt.",
       "reset": "Pastro filtrat"
     },
@@ -597,6 +598,28 @@
       "empty": "Ende asnjë shënim. Bëhu i pari që komenton!",
       "anonymous": "Anonim"
     }
+  },
+  "notes_manage": {
+    "title": "Modero shënimet e lexuesve",
+    "status_pending": "Në pritje",
+    "status_approved": "Të miratuara",
+    "status_spam": "Spam",
+    "status_all": "Të gjitha",
+    "empty": "Asnjë shënim në këtë kategori.",
+    "load_error": "Nuk u ngarkuan dot shënimet.",
+    "action_error": "Veprimi dështoi. Provo përsëri.",
+    "approve": "Mirato",
+    "reject": "Refuzo",
+    "mark_spam": "Shëno si spam",
+    "approved": "Shënimi u miratua.",
+    "rejected": "Shënimi u refuzua.",
+    "marked_spam": "Shënimi u shënua si spam.",
+    "deleted": "Shënimi u fshi.",
+    "confirm_delete": "Fshi përfundimisht këtë shënim?",
+    "spam_score": "Pikët e spam-it",
+    "spam_score_tooltip": "Pikë automatike zbulimi spam (0-100, sa më e lartë aq më e dyshimtë)",
+    "prev_page": "Mbrapa",
+    "next_page": "Përpara"
   },
   "chatbot_ui": {
     "title": "AI Assistant",

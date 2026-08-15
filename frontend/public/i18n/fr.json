@@ -337,6 +337,7 @@
     "manage_projects": "Gérer les Projets",
     "manage_experiences": "Gérer les Expériences",
     "manage_blog": "Gérer le Blog",
+    "manage_notes": "Modérer les notes",
     "edit_about": "Modifier About",
     "logout": "Déconnexion",
     "loading": "Chargement…",
@@ -597,6 +598,28 @@
       "empty": "Aucune note pour le moment. Soyez le premier à commenter !",
       "anonymous": "Anonyme"
     }
+  },
+  "notes_manage": {
+    "title": "Modérer les notes des lecteurs",
+    "status_pending": "En attente",
+    "status_approved": "Approuvées",
+    "status_spam": "Spam",
+    "status_all": "Toutes",
+    "empty": "Aucune note dans cette catégorie.",
+    "load_error": "Impossible de charger les notes.",
+    "action_error": "Échec de l'action. Veuillez réessayer.",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "mark_spam": "Marquer comme spam",
+    "approved": "Note approuvée.",
+    "rejected": "Note rejetée.",
+    "marked_spam": "Note marquée comme spam.",
+    "deleted": "Note supprimée.",
+    "confirm_delete": "Supprimer définitivement cette note ?",
+    "spam_score": "Score de spam",
+    "spam_score_tooltip": "Score automatique de détection de spam (0-100, plus élevé = plus suspect)",
+    "prev_page": "Précédent",
+    "next_page": "Suivant"
   },
   "chatbot_ui": {
     "title": "Assistant AI",
