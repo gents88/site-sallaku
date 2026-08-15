@@ -344,6 +344,7 @@
             </div>
           </div>
           <div class="list-item__actions">
+            <a mat-icon-button [routerLink]="['/dashboard/blog/preview', post._id]" target="_blank" matTooltip="Anteprima"><mat-icon>visibility</mat-icon></a>
             <button mat-icon-button (click)="openEdit(post)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
             <button mat-icon-button color="warn" (click)="delete(post._id)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
           </div>

@@ -7,8 +7,20 @@
     <a [routerLink]="'/blog' | langUrl" class="btn btn-primary">← Back to Blog</a>
   </div>
 } @else if (post) {
+  @if (isPreview) {
+    <div class="preview-banner">
+      <mat-icon>visibility</mat-icon>
+      <span>Anteprima — {{ post.published ? 'articolo pubblicato' : 'bozza non pubblicata' }}. Non visibile agli utenti a questo indirizzo.</span>
+      <a routerLink="/dashboard/blog" class="btn btn-sm">← Torna al dashboard</a>
+    </div>
+  }
+
   <article class="container section post-article">
-    <a [routerLink]="'/blog' | langUrl" class="back-link" appTrackClick eventType="blog" label="blog_back_link"><mat-icon>arrow_back</mat-icon> All posts</a>
+    @if (isPreview) {
+      <a routerLink="/dashboard/blog" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+    } @else {
+      <a [routerLink]="'/blog' | langUrl" class="back-link" appTrackClick eventType="blog" label="blog_back_link"><mat-icon>arrow_back</mat-icon> All posts</a>
+    }
 
     @if (post.coverImage) {
       <img [ngSrc]="post.coverImage" [alt]="post.title" class="post-article__cover" priority width="1200" height="630" />
@@ -22,20 +34,26 @@
       </div>
       <h1>{{ localizedTitle }}</h1>
       <p class="text-muted">
-        <time [dateTime]="post.publishedAt ?? ''">{{ post.publishedAt | date:'longDate' }}</time>
+        @if (post.publishedAt) {
+          <time [dateTime]="post.publishedAt">{{ post.publishedAt | date:'longDate' }}</time>
+        } @else {
+          <time [dateTime]="post.updatedAt">Bozza — ultimo salvataggio {{ post.updatedAt | date:'longDate' }}</time>
+        }
       </p>
     </header>
 
     <div class="post-article__content prose" [innerHTML]="localizedContent"></div>
 
-    <app-social-share [url]="pageUrl" [title]="localizedTitle" />
+    @if (!isPreview) {
+      <app-social-share [url]="pageUrl" [title]="localizedTitle" />
 
-    <!-- AdSense unit — shown below article content. Replace publisher/slot IDs. -->
-    <app-ad-unit adClient="ca-pub-XXXXXXXXXXXXXXXX" adSlot="XXXXXXXXXX" />
+      <!-- AdSense unit — shown below article content. Replace publisher/slot IDs. -->
+      <app-ad-unit adClient="ca-pub-XXXXXXXXXXXXXXXX" adSlot="XXXXXXXXXX" />
 
-    <!-- Blog comments/notes section -->
-    @if (post._id) {
-      <app-article-notes [articleId]="post._id" />
+      <!-- Blog comments/notes section -->
+      @if (post._id) {
+        <app-article-notes [articleId]="post._id" />
+      }
     }
   </article>
 }
