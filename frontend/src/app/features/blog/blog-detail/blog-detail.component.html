@@ -32,5 +32,10 @@
 
     <!-- AdSense unit — shown below article content. Replace publisher/slot IDs. -->
     <app-ad-unit adClient="ca-pub-XXXXXXXXXXXXXXXX" adSlot="XXXXXXXXXX" />
+
+    <!-- Blog comments/notes section -->
+    @if (post._id) {
+      <app-article-notes [articleId]="post._id" />
+    }
   </article>
 }

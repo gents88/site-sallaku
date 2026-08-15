@@ -565,6 +565,39 @@
       "linkCopied": "Link copied!"
     }
   },
+  "notes": {
+    "title": "Reader notes",
+    "count_singular": "{{count}} note",
+    "count_plural": "{{count}} notes",
+    "form": {
+      "title": "Write a note",
+      "description": "Share your opinion, a suggestion or a compliment",
+      "name": "Name",
+      "name_ph": "Your name",
+      "email": "Email",
+      "email_ph": "Your email",
+      "content": "Note",
+      "content_ph": "Write your message...",
+      "optional": "(optional)",
+      "submit": "Publish note",
+      "submitting": "Sending...",
+      "success": "Your note has been published successfully!",
+      "error_generic": "Something went wrong. Please try again later."
+    },
+    "errors": {
+      "required": "This field is required",
+      "minlength": "Minimum {{count}} characters",
+      "maxlength": "Maximum {{count}} characters",
+      "email": "Invalid email",
+      "invalid": "Invalid field"
+    },
+    "list": {
+      "title": "Latest notes",
+      "loading": "Loading notes...",
+      "empty": "No notes yet. Be the first to comment!",
+      "anonymous": "Anonymous"
+    }
+  },
   "chatbot_ui": {
     "title": "AI Assistant",
     "online": "Online",

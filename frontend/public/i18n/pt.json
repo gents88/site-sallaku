@@ -565,6 +565,39 @@
       "linkCopied": "Link copiado!"
     }
   },
+  "notes": {
+    "title": "Notas dos leitores",
+    "count_singular": "{{count}} nota",
+    "count_plural": "{{count}} notas",
+    "form": {
+      "title": "Escreva uma nota",
+      "description": "Partilhe a sua opinião, uma sugestão ou um elogio",
+      "name": "Nome",
+      "name_ph": "O seu nome",
+      "email": "Email",
+      "email_ph": "O seu email",
+      "content": "Nota",
+      "content_ph": "Escreva a sua mensagem...",
+      "optional": "(opcional)",
+      "submit": "Publicar nota",
+      "submitting": "A enviar...",
+      "success": "A sua nota foi publicada com sucesso!",
+      "error_generic": "Ocorreu um erro. Tente novamente mais tarde."
+    },
+    "errors": {
+      "required": "Este campo é obrigatório",
+      "minlength": "Mínimo {{count}} caracteres",
+      "maxlength": "Máximo {{count}} caracteres",
+      "email": "Email inválido",
+      "invalid": "Campo inválido"
+    },
+    "list": {
+      "title": "Notas recentes",
+      "loading": "A carregar notas...",
+      "empty": "Ainda não há notas. Seja o primeiro a comentar!",
+      "anonymous": "Anónimo"
+    }
+  },
   "chatbot_ui": {
     "title": "Assistente AI",
     "online": "Online",

@@ -4,20 +4,37 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  effect,
 } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotesService, Note } from '../../services/notes.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+const DATE_LOCALES: Record<string, string> = {
+  it: 'it-IT',
+  en: 'en-US',
+  sq: 'sq-AL',
+  pt: 'pt-PT',
+  es: 'es-ES',
+  fr: 'fr-FR',
+  de: 'de-DE',
+};
+
 @Component({
   selector: 'app-article-notes',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
   templateUrl: './article-notes.component.html',
   styleUrls: ['./article-notes.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArticleNotesComponent implements OnInit, OnDestroy {
-  @Input() articleId: string;
+  @Input() articleId: string = '';
 
   form: FormGroup;
   notes: Note[] = [];
@@ -32,8 +49,14 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private notesService: NotesService,
+    private cdr: ChangeDetectorRef,
+    private translate: TranslateService,
+    private langService: LanguageService,
   ) {
     this.form = this.createForm();
+    // Re-render on UI language change (OnPush requires explicit trigger) —
+    // note dates and error messages are locale-dependent.
+    effect(() => { this.langService.current(); this.cdr.markForCheck(); });
   }
 
   ngOnInit(): void {
@@ -62,6 +85,7 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
 
   loadNotes(): void {
     this.isLoadingNotes = true;
+    this.cdr.markForCheck();
     this.notesService
       .getNotes(this.articleId)
       .pipe(takeUntil(this.destroy$))
@@ -70,10 +94,12 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
           this.notes = response.data;
           this.totalNotes = response.total;
           this.isLoadingNotes = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error loading notes:', error);
           this.isLoadingNotes = false;
+          this.cdr.markForCheck();
         },
       });
   }
@@ -107,16 +133,19 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
           this.form.reset();
           this.submitSuccess = true;
           this.isSubmittingNote = false;
+          this.cdr.markForCheck();
 
           setTimeout(() => {
             this.submitSuccess = false;
+            this.cdr.markForCheck();
           }, 5000);
         },
         error: (error) => {
           this.submitError =
             error.error?.message ||
-            'Si è verificato un errore. Riprova più tardi.';
+            this.translate.instant('notes.form.error_generic');
           this.isSubmittingNote = false;
+          this.cdr.markForCheck();
         },
       });
   }
@@ -135,26 +164,27 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
     }
 
     if (control.errors['required']) {
-      return 'Questo campo è obbligatorio';
+      return this.translate.instant('notes.errors.required');
     }
     if (control.errors['minlength']) {
-      const minLength = control.errors['minlength'].requiredLength;
-      return `Minimo ${minLength} caratteri`;
+      const count = control.errors['minlength'].requiredLength;
+      return this.translate.instant('notes.errors.minlength', { count });
     }
     if (control.errors['maxlength']) {
-      const maxLength = control.errors['maxlength'].requiredLength;
-      return `Massimo ${maxLength} caratteri`;
+      const count = control.errors['maxlength'].requiredLength;
+      return this.translate.instant('notes.errors.maxlength', { count });
     }
     if (control.errors['email']) {
-      return 'Email non valida';
+      return this.translate.instant('notes.errors.email');
     }
 
-    return 'Campo non valido';
+    return this.translate.instant('notes.errors.invalid');
   }
 
   formatDate(date: Date | string): string {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('it-IT', {
+    const locale = DATE_LOCALES[this.langService.current()] ?? 'it-IT';
+    return dateObj.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
