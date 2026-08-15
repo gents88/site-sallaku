@@ -33,6 +33,14 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Font Awesome's CSS + woff2 files are served from jsdelivr, not the
+         Google Fonts origins above. Its @font-face below uses
+         font-display: optional, which gives the font only a ~100ms window
+         to arrive before permanently falling back for that page view — with
+         no preconnect here, the DNS/TLS handshake to jsdelivr only starts
+         once the browser parses the <link> below, which routinely blows
+         that window and left icons (e.g. the article share row) missing. -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <!-- Google Fonts — async, non-render-blocking -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" /></noscript>
