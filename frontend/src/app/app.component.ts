@@ -13,6 +13,7 @@ import { AnalyticsTrackingService } from './core/services/analytics-tracking.ser
 import { AuthModalService } from './core/services/auth-modal.service';
 import { InactivityService } from './core/services/inactivity.service';
 import { PlatformUiService } from './core/services/platform-ui.service';
+import { AppUpdateService } from './core/services/app-update.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
 
@@ -405,6 +406,7 @@ export class AppComponent implements OnInit {
     public auth: AuthService,
     public inactivity: InactivityService,
     private platformUi: PlatformUiService,
+    private appUpdate: AppUpdateService,
     private seoService: SeoService,
     private analyticsTracking: AnalyticsTrackingService,
     private router: Router,
@@ -417,6 +419,7 @@ export class AppComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.inactivity.init();
       this.platformUi.init();
+      this.appUpdate.init();
     }
     this.seoService.trackPageViews();
     this.analyticsTracking.init();
