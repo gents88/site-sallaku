@@ -348,7 +348,9 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
     }
     .back-to-top {
       position: fixed;
-      bottom: 28px;
+      /* Stacked above il fab della chat (58px + margine) per non finirci
+         sovrapposto: stessa ancora right, quota diversa. */
+      bottom: 100px;
       right: 28px;
       z-index: 1200;
       width: 44px;
@@ -368,6 +370,17 @@ import { ChatbotComponent } from './features/chatbot/chatbot.component';
         transform: translateY(-3px);
         box-shadow: 0 8px 28px rgba(79, 106, 245, 0.5);
       }
+    }
+
+    /* Sotto i 900px la navbar aggiunge una bottom tab bar fissa (vedi
+       navbar.component.scss): senza questo offset il pulsante finirebbe
+       parzialmente coperto/nascosto sotto di essa, come già successo per
+       drawer e modale login. */
+    @media (max-width: 900px) {
+      .back-to-top { bottom: calc(100px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); }
+    }
+    @media (max-width: 480px) {
+      .back-to-top { bottom: calc(90px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); right: 18px; }
     }
 
     @keyframes bttFadeIn {

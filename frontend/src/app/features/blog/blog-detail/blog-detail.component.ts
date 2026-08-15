@@ -13,11 +13,12 @@ import { TrackClickDirective } from '../../../shared/directives/track-click.dire
 import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
+import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
