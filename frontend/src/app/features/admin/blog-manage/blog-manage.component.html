@@ -134,7 +134,7 @@
         <!-- ── Title for active language ──────────────────────────────── -->
         <mat-form-field appearance="outline" class="full-width title-field">
           <mat-label>Title {{ activeTab === 'it' ? '(IT) *' : '(' + activeTab.toUpperCase() + ')' }}</mat-label>
-          <input matInput [formControl]="activeTitleControl" placeholder="Article title…" />
+          <input matInput [formControl]="activeTitleControl" [maxlength]="TITLE_MAX" placeholder="Article title…" />
           @if (activeTab === 'it' && form.get('title')?.invalid && form.get('title')?.touched) {
             <mat-error>Title is required (min 3 characters)</mat-error>
           }
@@ -218,8 +218,9 @@
         <!-- Excerpt for active language -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Excerpt ({{ activeTab.toUpperCase() }})</mat-label>
-          <textarea matInput [formControl]="activeExcerptControl" rows="2"
+          <textarea matInput [formControl]="activeExcerptControl" rows="2" [maxlength]="EXCERPT_MAX"
                     placeholder="Auto-generated from content if left empty"></textarea>
+          <mat-hint align="end">{{ activeExcerptControl.value?.length || 0 }}/{{ EXCERPT_MAX }}</mat-hint>
         </mat-form-field>
 
         <!-- ── Advanced options ──────────────────────────────────────── -->
@@ -257,7 +258,7 @@
           <div class="form-row">
             <mat-form-field appearance="outline">
               <mat-label>Subtitle</mat-label>
-              <textarea matInput formControlName="subtitle" rows="2" placeholder="Optional subtitle"></textarea>
+              <textarea matInput formControlName="subtitle" rows="2" [maxlength]="SUBTITLE_MAX" placeholder="Optional subtitle"></textarea>
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>URL Slug</mat-label>
@@ -272,11 +273,11 @@
           <div class="form-row">
             <mat-form-field appearance="outline">
               <mat-label>Meta Title (SEO)</mat-label>
-              <input matInput formControlName="metaTitle" placeholder="Defaults to post title" />
+              <input matInput formControlName="metaTitle" [maxlength]="META_TITLE_MAX" placeholder="Defaults to post title" />
             </mat-form-field>
             <mat-form-field appearance="outline">
               <mat-label>Meta Description (SEO)</mat-label>
-              <input matInput formControlName="metaDescription" placeholder="Defaults to excerpt" />
+              <input matInput formControlName="metaDescription" [maxlength]="META_DESCRIPTION_MAX" placeholder="Defaults to excerpt" />
             </mat-form-field>
           </div>
 
