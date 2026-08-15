@@ -565,6 +565,39 @@
       "linkCopied": "Link kopiert!"
     }
   },
+  "notes": {
+    "title": "Leser-Notizen",
+    "count_singular": "{{count}} Notiz",
+    "count_plural": "{{count}} Notizen",
+    "form": {
+      "title": "Notiz schreiben",
+      "description": "Teile deine Meinung, einen Vorschlag oder ein Kompliment",
+      "name": "Name",
+      "name_ph": "Dein Name",
+      "email": "E-Mail",
+      "email_ph": "Deine E-Mail",
+      "content": "Notiz",
+      "content_ph": "Schreibe deine Nachricht...",
+      "optional": "(optional)",
+      "submit": "Notiz veröffentlichen",
+      "submitting": "Wird gesendet...",
+      "success": "Deine Notiz wurde erfolgreich veröffentlicht!",
+      "error_generic": "Ein Fehler ist aufgetreten. Bitte versuche es später erneut."
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich",
+      "minlength": "Minimum {{count}} Zeichen",
+      "maxlength": "Maximum {{count}} Zeichen",
+      "email": "Ungültige E-Mail",
+      "invalid": "Ungültiges Feld"
+    },
+    "list": {
+      "title": "Neueste Notizen",
+      "loading": "Notizen werden geladen...",
+      "empty": "Noch keine Notizen. Sei der Erste, der kommentiert!",
+      "anonymous": "Anonym"
+    }
+  },
   "chatbot_ui": {
     "title": "KI-Assistent",
     "online": "Online",

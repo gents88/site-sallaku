@@ -565,6 +565,39 @@
       "linkCopied": "Lidhja u kopjua!"
     }
   },
+  "notes": {
+    "title": "Shënime nga lexuesit",
+    "count_singular": "{{count}} shënim",
+    "count_plural": "{{count}} shënime",
+    "form": {
+      "title": "Shkruaj një shënim",
+      "description": "Ndaj mendimin tënd, një sugjerim ose një kompliment",
+      "name": "Emri",
+      "name_ph": "Emri yt",
+      "email": "Email",
+      "email_ph": "Email-i yt",
+      "content": "Shënimi",
+      "content_ph": "Shkruaj mesazhin tënd...",
+      "optional": "(opsionale)",
+      "submit": "Publiko shënimin",
+      "submitting": "Duke u dërguar...",
+      "success": "Shënimi yt u publikua me sukses!",
+      "error_generic": "Ndodhi një gabim. Provo përsëri më vonë."
+    },
+    "errors": {
+      "required": "Kjo fushë është e detyrueshme",
+      "minlength": "Minimumi {{count}} karaktere",
+      "maxlength": "Maksimumi {{count}} karaktere",
+      "email": "Email jo i vlefshëm",
+      "invalid": "Fushë jo e vlefshme"
+    },
+    "list": {
+      "title": "Shënimet e fundit",
+      "loading": "Duke ngarkuar shënimet...",
+      "empty": "Ende asnjë shënim. Bëhu i pari që komenton!",
+      "anonymous": "Anonim"
+    }
+  },
   "chatbot_ui": {
     "title": "AI Assistant",
     "online": "Online",

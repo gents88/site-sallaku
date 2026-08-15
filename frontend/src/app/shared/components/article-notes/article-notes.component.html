@@ -1,40 +1,42 @@
 <section class="article-notes" [attr.data-article-id]="articleId">
-  <div class="notes-container">
+  <div class="container notes-container">
     <!-- Header -->
     <div class="notes-header">
-      <h2 class="notes-title">💬 Note dei lettori</h2>
-      <p class="notes-subtitle">{{ totalNotes }} {{ totalNotes === 1 ? 'nota' : 'note' }}</p>
+      <h2 class="notes-title">💬 {{ 'notes.title' | translate }}</h2>
+      <p class="notes-subtitle">
+        {{ (totalNotes === 1 ? 'notes.count_singular' : 'notes.count_plural') | translate: { count: totalNotes } }}
+      </p>
     </div>
 
-    <!-- Note Form -->
-    <div class="notes-form-wrapper">
+    <!-- Note Form (glass-card style) -->
+    <form [formGroup]="form" (ngSubmit)="submitNote()" class="notes-form-wrapper glass-card" novalidate aria-label="Note form">
       <div class="form-section">
-        <h3 class="form-title">Scrivi una nota</h3>
-        <p class="form-description">Condividi la tua opinione, un suggerimento o un complimento</p>
+        <h3 class="form-title">{{ 'notes.form.title' | translate }}</h3>
+        <p class="form-description">{{ 'notes.form.description' | translate }}</p>
 
-        <form [formGroup]="form" (ngSubmit)="submitNote()" class="notes-form">
-          <!-- Honeypot field (hidden from users) -->
-          <input
-            type="text"
-            formControlName="honeypot"
-            class="honeypot"
-            aria-hidden="true"
-            autocomplete="off"
-            tabindex="-1"
-          />
+        <!-- Honeypot field (hidden from users) -->
+        <input
+          type="text"
+          formControlName="honeypot"
+          class="honeypot"
+          aria-hidden="true"
+          autocomplete="off"
+          tabindex="-1"
+        />
 
+        <div class="notes-form">
           <!-- Name field (optional) -->
           <div class="form-group">
             <label for="name" class="form-label">
-              Nome
-              <span class="optional">(opzionale)</span>
+              {{ 'notes.form.name' | translate }}
+              <span class="optional">{{ 'notes.form.optional' | translate }}</span>
             </label>
             <input
               type="text"
               id="name"
               formControlName="name"
               class="form-input"
-              placeholder="Il tuo nome"
+              [placeholder]="'notes.form.name_ph' | translate"
               maxlength="100"
             />
             <span *ngIf="getErrorMessage('name')" class="error-message">
@@ -45,15 +47,15 @@
           <!-- Email field (optional) -->
           <div class="form-group">
             <label for="email" class="form-label">
-              Email
-              <span class="optional">(opzionale)</span>
+              {{ 'notes.form.email' | translate }}
+              <span class="optional">{{ 'notes.form.optional' | translate }}</span>
             </label>
             <input
               type="email"
               id="email"
               formControlName="email"
               class="form-input"
-              placeholder="La tua email"
+              [placeholder]="'notes.form.email_ph' | translate"
               maxlength="255"
             />
             <span *ngIf="getErrorMessage('email')" class="error-message">
@@ -77,14 +79,14 @@
           <!-- Content field (required) -->
           <div class="form-group">
             <label for="content" class="form-label">
-              Nota
+              {{ 'notes.form.content' | translate }}
               <span class="required">*</span>
             </label>
             <textarea
               id="content"
               formControlName="content"
               class="form-textarea"
-              placeholder="Scrivi il tuo messaggio..."
+              [placeholder]="'notes.form.content_ph' | translate"
               rows="5"
               maxlength="1000"
             ></textarea>
@@ -105,46 +107,46 @@
               class="btn btn-primary"
               [disabled]="isSubmittingNote || !form.valid"
             >
-              <span *ngIf="!isSubmittingNote" class="btn-text">Pubblica nota</span>
-              <span *ngIf="isSubmittingNote" class="btn-text">Invio in corso...</span>
+              <span *ngIf="!isSubmittingNote">{{ 'notes.form.submit' | translate }}</span>
+              <span *ngIf="isSubmittingNote">{{ 'notes.form.submitting' | translate }}</span>
             </button>
           </div>
 
           <!-- Success message -->
           <div *ngIf="submitSuccess" class="alert alert-success">
-            ✓ La tua nota è stata pubblicata con successo!
+            ✓ {{ 'notes.form.success' | translate }}
           </div>
 
           <!-- Error message -->
           <div *ngIf="submitError" class="alert alert-error">
             ✗ {{ submitError }}
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </form>
 
     <!-- Notes List -->
     <div class="notes-list-wrapper">
-      <h3 class="list-title">Ultime note</h3>
+      <h3 class="list-title">{{ 'notes.list.title' | translate }}</h3>
 
       <!-- Loading state -->
       <div *ngIf="isLoadingNotes" class="loading-state">
         <div class="spinner"></div>
-        <p>Caricamento note...</p>
+        <p>{{ 'notes.list.loading' | translate }}</p>
       </div>
 
       <!-- Empty state -->
       <div *ngIf="!isLoadingNotes && notes.length === 0" class="empty-state">
-        <p>Nessuna nota ancora. Sii il primo a commentare!</p>
+        <p>{{ 'notes.list.empty' | translate }}</p>
       </div>
 
       <!-- Notes -->
       <div *ngIf="!isLoadingNotes && notes.length > 0" class="notes-list">
-        <article *ngFor="let note of notes" class="note-item" [attr.data-note-id]="note.id">
+        <article *ngFor="let note of notes" class="note-item glass-card" [attr.data-note-id]="note.id">
           <div class="note-header">
             <div class="note-author">
               <strong class="author-name">
-                {{ note.name || 'Anonimo' }}
+                {{ note.name || ('notes.list.anonymous' | translate) }}
               </strong>
               <time class="note-date" [attr.datetime]="note.createdAt">
                 {{ formatDate(note.createdAt) }}
