@@ -34,6 +34,12 @@ export const adminRoutes: Routes = [
       import('./blog-manage/blog-manage.component').then(m => m.BlogManageComponent),
   },
   {
+    path: 'notes',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./notes-manage/notes-manage.component').then(m => m.NotesManageComponent),
+  },
+  {
     path: 'about',
     canActivate: [authGuard],
     loadComponent: () =>

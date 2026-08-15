@@ -16,9 +16,10 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { NotesService } from './services/notes.service';
+import { NotesService, NoteModerationStatus } from './services/notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NoteResponseDto } from './dto/note-response.dto';
+import { NoteAdminListItemDto } from './dto/note-admin-list-item.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
@@ -28,6 +29,25 @@ import { CacheControlInterceptor } from '../common/interceptors/cache-control.in
 @Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
+
+  // ── Admin: site-wide moderation list ────────────────────────────────
+  @Get('admin/list')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List notes across all articles for moderation (admin only)' })
+  @ApiQuery({ name: 'status', required: false, enum: ['pending', 'approved', 'spam', 'all'] })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'skip', required: false, type: Number })
+  async getAllForAdmin(
+    @Query('status') status?: NoteModerationStatus,
+    @Query('limit') limit?: string,
+    @Query('skip') skip?: string,
+  ): Promise<{ data: NoteAdminListItemDto[]; total: number }> {
+    const limitNum = Math.min(parseInt(limit) || 50, 100);
+    const skipNum = Math.max(parseInt(skip) || 0, 0);
+    return this.notesService.getAllForAdmin(status ?? 'pending', limitNum, skipNum);
+  }
 
   @Post(':articleId')
   @HttpCode(HttpStatus.CREATED)

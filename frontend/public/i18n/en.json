@@ -337,6 +337,7 @@
     "manage_projects": "Manage Projects",
     "manage_experiences": "Manage Experiences",
     "manage_blog": "Manage Blog",
+    "manage_notes": "Moderate Notes",
     "edit_about": "Edit About",
     "logout": "Logout",
     "loading": "Loading…",
@@ -597,6 +598,28 @@
       "empty": "No notes yet. Be the first to comment!",
       "anonymous": "Anonymous"
     }
+  },
+  "notes_manage": {
+    "title": "Moderate reader notes",
+    "status_pending": "Pending",
+    "status_approved": "Approved",
+    "status_spam": "Spam",
+    "status_all": "All",
+    "empty": "No notes in this category.",
+    "load_error": "Could not load notes.",
+    "action_error": "Action failed. Please try again.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "mark_spam": "Mark as spam",
+    "approved": "Note approved.",
+    "rejected": "Note rejected.",
+    "marked_spam": "Note marked as spam.",
+    "deleted": "Note deleted.",
+    "confirm_delete": "Permanently delete this note?",
+    "spam_score": "Spam score",
+    "spam_score_tooltip": "Automated spam detection score (0-100, higher = more suspicious)",
+    "prev_page": "Previous",
+    "next_page": "Next"
   },
   "chatbot_ui": {
     "title": "AI Assistant",
