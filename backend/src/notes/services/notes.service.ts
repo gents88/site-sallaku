@@ -2,15 +2,20 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Note, NoteDocument } from '../schemas/note.schema';
+import { Post, PostDocument } from '../../blog/schemas/post.schema';
 import { CreateNoteDto } from '../dto/create-note.dto';
 import { NoteResponseDto } from '../dto/note-response.dto';
+import { NoteAdminListItemDto } from '../dto/note-admin-list-item.dto';
 import { SpamDetectionService } from './spam-detection.service';
 import { plainToInstance } from 'class-transformer';
+
+export type NoteModerationStatus = 'pending' | 'approved' | 'spam' | 'all';
 
 @Injectable()
 export class NotesService {
   constructor(
     @InjectModel(Note.name) private noteModel: Model<NoteDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
     private spamDetectionService: SpamDetectionService,
   ) {}
 
@@ -163,6 +168,55 @@ export class NotesService {
     ]);
 
     return { total, approved, pending, spam };
+  }
+
+  /** Site-wide note listing for the moderation panel, filtered by status and joined with the article title/slug. */
+  async getAllForAdmin(
+    status: NoteModerationStatus = 'pending',
+    limit: number = 50,
+    skip: number = 0,
+  ): Promise<{ data: NoteAdminListItemDto[]; total: number }> {
+    const query: any = {};
+    if (status === 'pending') {
+      query.isApproved = false;
+      query.isSpam = false;
+    } else if (status === 'approved') {
+      query.isApproved = true;
+      query.isSpam = false;
+    } else if (status === 'spam') {
+      query.isSpam = true;
+    }
+    // 'all' → no filter
+
+    const [notes, total] = await Promise.all([
+      this.noteModel.find(query).sort({ createdAt: -1 }).limit(limit).skip(skip).exec(),
+      this.noteModel.countDocuments(query),
+    ]);
+
+    const articleIds = [...new Set(notes.map((n) => n.articleId.toString()))];
+    const posts = await this.postModel
+      .find({ _id: { $in: articleIds } }, { title: 1, slug: 1 })
+      .exec();
+    const postById = new Map(posts.map((p) => [p._id.toString(), p]));
+
+    const data: NoteAdminListItemDto[] = notes.map((note) => {
+      const post = postById.get(note.articleId.toString());
+      return {
+        id: note._id.toString(),
+        articleId: note.articleId.toString(),
+        articleTitle: post?.title ?? '(articolo eliminato)',
+        articleSlug: post?.slug ?? '',
+        name: note.name,
+        email: note.email,
+        content: note.content,
+        isApproved: note.isApproved,
+        isSpam: note.isSpam,
+        spamScore: note.spamScore,
+        createdAt: note.createdAt,
+      };
+    });
+
+    return { data, total };
   }
 
   private mapToResponseDto(note: NoteDocument): NoteResponseDto {

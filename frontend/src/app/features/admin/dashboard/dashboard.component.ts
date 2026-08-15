@@ -152,6 +152,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     { labelKey: 'admin.manage_projects',    icon: 'work',       route: '/dashboard/projects' },
     { labelKey: 'admin.manage_experiences', icon: 'history_edu',route: '/dashboard/experiences' },
     { labelKey: 'admin.manage_blog',        icon: 'article',    route: '/dashboard/blog' },
+    { labelKey: 'admin.manage_notes',       icon: 'forum',      route: '/dashboard/notes' },
     { labelKey: 'admin.edit_about',         icon: 'person',     route: '/dashboard/about' },
   ];
 
