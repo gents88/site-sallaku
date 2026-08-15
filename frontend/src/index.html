@@ -63,16 +63,22 @@
     <!-- Font Awesome ships font-display:block (Lighthouse: ~2.5s combined FCP
          cost on this page). Declared after FA's own <link> so it wins the
          same-family/weight/style @font-face resolution (document order),
-         same font files. Using `optional` rather than `swap`: icons render
-         only if the font arrives within the ~100ms block window, otherwise
-         they're skipped for this page view instead of popping in late —
-         `swap`'s unbounded late swap was reflowing icon-heavy rows (footer,
-         cookie banner) well after first paint, the main source of this
-         page's CLS. -->
+         same font files. `optional` (~100ms block, then give up forever for
+         that page view) was tried here and made icons across the site
+         (notably the article share row) go permanently missing whenever the
+         jsdelivr fetch didn't land inside that razor-thin window — which on
+         real-world connections, especially cold ones like arriving fresh
+         from a Google search result, is often. `fallback` keeps the same
+         ~100ms block (no first-paint delay) but adds a bounded ~3s swap
+         window, so a font that's merely a bit slow still shows up instead
+         of being skipped — while capping the late-swap reflow that made
+         `swap` reflow icon-heavy rows (footer, cookie banner) at an
+         arbitrary time after first paint, which was this page's original
+         CLS source. -->
     <style>
-      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 900; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-solid-900.woff2") format("woff2"); }
-      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 400; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-regular-400.woff2") format("woff2"); }
-      @font-face { font-family: "Font Awesome 6 Brands"; font-style: normal; font-weight: 400; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-brands-400.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 900; font-display: fallback; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-solid-900.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 400; font-display: fallback; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-regular-400.woff2") format("woff2"); }
+      @font-face { font-family: "Font Awesome 6 Brands"; font-style: normal; font-weight: 400; font-display: fallback; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-brands-400.woff2") format("woff2"); }
     </style>
     <!-- Google Analytics 4 (loaded conditionally by SeoService when ID is set) -->
     <script>
