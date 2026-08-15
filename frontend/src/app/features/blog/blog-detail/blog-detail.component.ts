@@ -24,13 +24,19 @@ import { ArticleNotesComponent } from '../../../shared/components/article-notes/
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogDetailComponent implements OnInit {
-  @Input() slug!: string; // injected via withComponentInputBinding()
+  @Input() slug?: string; // injected via withComponentInputBinding(), public route
+  @Input() id?: string; // injected via withComponentInputBinding(), admin preview route
 
   post: Post | null = null;
   loading = true;
   notFound = false;
   /** Self-referencing canonical URL for the current language — also fed to app-social-share. */
   pageUrl = '';
+
+  /** True when reached via the admin preview route (fetches by id, bypasses the published filter). */
+  get isPreview(): boolean {
+    return !!this.id;
+  }
 
   private readonly langService = inject(LanguageService);
   private readonly el = inject(ElementRef);
@@ -107,7 +113,8 @@ export class BlogDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.blogService.getBySlug(this.slug).pipe(
+    const post$ = this.isPreview ? this.blogService.getOne(this.id!) : this.blogService.getBySlug(this.slug!);
+    post$.pipe(
       // NOTE: deliberately no retry() here. Prerendering builds fetch
       // ~200+ posts (every post × every language) from the live API in
       // well under a minute, which can trip the backend's default per-IP
@@ -127,14 +134,15 @@ export class BlogDetailComponent implements OnInit {
         this.post = post;
         afterNextRender(() => this.highlightCode(), { injector: this.injector });
         this.cdr.markForCheck();
+        if (this.isPreview) return; // no view tracking, canonical tags, or JSON-LD for an unpublished draft
         // Fire-and-forget: increment view count without blocking rendering
-        this.blogService.trackView(this.slug).subscribe({ error: () => {} });
+        this.blogService.trackView(post.slug).subscribe({ error: () => {} });
         // Self-referencing canonical: previously always pointed at the
         // Italian URL regardless of currentLang(), which was wrong for
         // every non-IT visitor/crawler once /en/, /es/... URLs became real.
         // Also fed to app-social-share so shared links point at the exact
         // language variant the visitor was actually reading.
-        this.pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog/' + this.slug, this.currentLang())}`;
+        this.pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog/' + post.slug, this.currentLang())}`;
         const pageUrl = this.pageUrl;
         this.seo.update({
           title: this.localizedMetaTitle,
