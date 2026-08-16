@@ -28,7 +28,7 @@ function parseCorsOrigins(rawOrigins?: string): string[] {
 }
 
 function validateRequiredEnv(): void {
-  const required = ['JWT_SECRET', 'MONGODB_URI', 'GEMINI_API_KEY'];
+  const required = ['JWT_SECRET', 'MONGODB_URI', 'GROQ_API_KEY'];
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length > 0) {
     throw new Error(
