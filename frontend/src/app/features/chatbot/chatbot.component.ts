@@ -29,6 +29,7 @@ type PanelView = 'chat' | 'transcript';
     <!-- ── Floating toggle button ──────────────────────── -->
     <button
       class="cb-fab"
+      [class.cb-fab--panel-open]="isOpen"
       (click)="chatbot.toggleOpen()"
       [attr.aria-label]="isOpen ? ('chatbot_ui.close' | translate) : ('chatbot_ui.open' | translate)"
       [attr.aria-expanded]="isOpen"
@@ -732,9 +733,57 @@ type PanelView = 'chat' | 'transcript';
       .cb-panel { bottom: calc(100px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); }
     }
 
-    @media (max-width: 480px) {
-      .cb-fab { bottom: calc(18px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); right: 18px; }
-      .cb-panel { bottom: calc(88px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); right: 18px; left: 18px; width: auto; }
+    /* ── Mobile: pannello a schermo intero (bottom sheet) ──────
+       Sotto i 640px il pannello flottante "da desktop" viene sostituito
+       da un pannello full-screen ancorato tra il notch e la tab bar,
+       come le app di chat native, invece di una card ridotta al centro. */
+    @media (max-width: 640px) {
+      .cb-fab.cb-fab--panel-open {
+        display: none;
+      }
+
+      .cb-panel {
+        top: env(safe-area-inset-top, 0px);
+        left: 0;
+        right: 0;
+        bottom: calc(var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
+        width: 100%;
+        height: auto;
+        max-width: none;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        animation: cbSlideUpMobile 0.25s ease-out;
+      }
+
+      @keyframes cbSlideUpMobile {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      .cb-header { padding: 14px 16px; }
+      .cb-header__title { font-size: 0.95rem; }
+
+      .cb-icon-btn {
+        width: 40px;
+        height: 40px;
+      }
+
+      .cb-msg__bubble { max-width: 86%; }
+      .cb-msg__content { font-size: 0.9rem; }
+
+      .cb-chip { padding: 8px 14px; font-size: 0.8rem; }
+
+      /* font-size 16px per evitare lo zoom automatico di iOS Safari al focus */
+      .cb-input,
+      .cb-email-input {
+        font-size: 16px;
+      }
+
+      .cb-send-btn {
+        width: 44px;
+        height: 44px;
+      }
     }
 
     /* ── Info banner ─────────────────────────────────── */
