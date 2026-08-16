@@ -865,12 +865,12 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   send(): void {
     if (!this.inputText.trim() || this.isLoading) return;
-    this.chatbot.sendMessage(this.inputText);
+    this.chatbot.sendMessage(this.inputText, this.langService.current());
     this.inputText = '';
   }
 
   sendChip(text: string): void {
-    this.chatbot.sendMessage(text);
+    this.chatbot.sendMessage(text, this.langService.current());
   }
 
   handleEnter(event: Event): void {
