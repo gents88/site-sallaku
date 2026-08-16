@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class SnackbarService {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private container: HTMLElement | null = null;
 
   private ensureContainer() {
@@ -18,6 +20,10 @@ export class SnackbarService {
   }
 
   show(message: string, type: 'success' | 'error' | 'info' = 'info', duration = 4000) {
+    // Called from error handlers that can run during SSR/prerender (e.g. a
+    // failed API fetch while generating static pages) — there's no DOM and
+    // no user to show a toast to there, so this is a silent no-op.
+    if (!this.isBrowser) return;
     this.ensureContainer();
     const el = document.createElement('div');
     el.textContent = message;
