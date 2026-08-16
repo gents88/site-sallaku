@@ -6,7 +6,22 @@ import { randomUUID } from 'crypto';
 import { ChatSession, ChatSessionDocument, ChatMessage } from './schemas/chat-session.schema';
 import { MailService } from '../mail/mail.service';
 
-const SYSTEM_PROMPT = `You are an AI assistant embedded in Gent Sallaku's developer portfolio website.
+const LANG_NAMES: Record<string, string> = {
+  it: 'Italian (Italiano)',
+  en: 'English',
+  sq: 'Albanian (Shqip)',
+  es: 'Spanish (Español)',
+  pt: 'Portuguese (Português)',
+  fr: 'French (Français)',
+  de: 'German (Deutsch)',
+};
+
+function buildSystemPrompt(lang?: string): string {
+  const langInstruction = lang && LANG_NAMES[lang]
+    ? `The user's interface language is ${LANG_NAMES[lang]} (code: ${lang}). Always reply in ${LANG_NAMES[lang]}, regardless of ambiguous wording, and never switch to a different language (e.g. do not reply in Serbian, Bosnian, Croatian, or Macedonian when the language is Albanian).`
+    : 'Always respond in the same language the user writes in.';
+
+  return `You are an AI assistant embedded in Gent Sallaku's developer portfolio website.
 Gent Sallaku is a full-stack developer specialized in Angular, Javascript, NestJS, MongoDB, and modern web technologies.
 He built this portfolio to showcase his projects, experiences, and services.
 
@@ -18,7 +33,8 @@ Your role:
 
 Keep responses under 150 words unless asked for more detail.
 If you don't know something specific about Gent, suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section.
-Always respond in the same language the user writes in.`;
+${langInstruction}`;
+}
 
 const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
   {
@@ -76,6 +92,7 @@ export class ChatbotService {
     message: string,
     sessionId?: string,
     meta?: { ip?: string; userAgent?: string },
+    lang?: string,
   ): Promise<{ sessionId: string; reply: string; timestamp: Date }> {
     const sid = sessionId && sessionId.length > 0 ? sessionId : randomUUID();
 
@@ -91,7 +108,7 @@ export class ChatbotService {
       .slice(-20) // last 20 messages for context window
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const reply = await this.callAI(historyForAI);
+    const reply = await this.callAI(historyForAI, lang);
 
     const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date() };
     session.messages.push(assistantMsg);
@@ -198,7 +215,7 @@ export class ChatbotService {
     return { success: result.success };
   }
 
-  private async callAI(messages: { role: string; content: string }[]): Promise<string> {
+  private async callAI(messages: { role: string; content: string }[], lang?: string): Promise<string> {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
     if (!apiKey) {
       return this.getFallbackResponse(messages[messages.length - 1].content);
@@ -213,7 +230,7 @@ export class ChatbotService {
         },
         body: JSON.stringify({
           model: 'llama-3.1-8b-instant',
-          messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
+          messages: [{ role: 'system', content: buildSystemPrompt(lang) }, ...messages],
           max_tokens: 350,
           temperature: 0.7,
         }),

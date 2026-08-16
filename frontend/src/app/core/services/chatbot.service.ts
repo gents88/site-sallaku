@@ -54,7 +54,7 @@ export class ChatbotService {
     this._isOpen.next(false);
   }
 
-  sendMessage(text: string): void {
+  sendMessage(text: string, lang?: string): void {
     const trimmed = text.trim();
     if (!trimmed || this._isLoading.getValue()) return;
 
@@ -70,6 +70,7 @@ export class ChatbotService {
       .post<SendMessageResponse>(`${this.apiUrl}/message`, {
         message: trimmed,
         sessionId: this.sessionId ?? undefined,
+        lang,
       })
       .pipe(
         tap((res) => {
