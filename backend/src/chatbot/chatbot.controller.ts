@@ -33,7 +33,7 @@ export class ChatbotController {
   sendMessage(@Req() req: any, @Body() dto: SendMessageDto) {
     const ip: string = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
     const userAgent: string = req.headers?.['user-agent'] ?? '';
-    return this.chatbotService.sendMessage(dto.message, dto.sessionId, { ip, userAgent });
+    return this.chatbotService.sendMessage(dto.message, dto.sessionId, { ip, userAgent }, dto.lang);
   }
 
   @Get('session/:sessionId')
