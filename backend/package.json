@@ -7,7 +7,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "NODE_ENV=dev nest start --watch",
+    "start:dev": "NODE_ENV=dev NODE_OPTIONS=--max-old-space-size=4096 nest start --watch",
     "start:uat": "NODE_ENV=uat nest start",
     "start:debug": "nest start --debug --watch",
     "start:prod": "NODE_ENV=prod node dist/main",
