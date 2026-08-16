@@ -14,7 +14,7 @@ interface GroqMessage {
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private readonly model = 'llama-3.3-70b-versatile';
+  private readonly model = 'openai/gpt-oss-120b';
 
   constructor(private readonly config: ConfigService) {}
 
