@@ -16,7 +16,7 @@ export class AiService {
   private readonly logger = new Logger(AiService.name);
   // Provider precedente (Groq) — tenuto per eventuale ripristino futuro, vedi callGroq() più sotto.
   // private readonly model = 'openai/gpt-oss-120b';
-  private readonly geminiModel = 'gemini-2.5-flash';
+  private readonly geminiModel = 'gemini-flash-latest';
 
   constructor(private readonly config: ConfigService) {}
 
