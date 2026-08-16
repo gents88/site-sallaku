@@ -5,6 +5,8 @@ import { Model } from 'mongoose';
 import { randomUUID } from 'crypto';
 import { ChatSession, ChatSessionDocument, ChatMessage } from './schemas/chat-session.schema';
 import { MailService } from '../mail/mail.service';
+import { AboutService } from '../about/about.service';
+import { AboutDocument } from '../about/schemas/about.schema';
 
 const LANG_NAMES: Record<string, string> = {
   it: 'Italian (Italiano)',
@@ -16,24 +18,56 @@ const LANG_NAMES: Record<string, string> = {
   de: 'German (Deutsch)',
 };
 
-function buildSystemPrompt(lang?: string): string {
-  const langInstruction = lang && LANG_NAMES[lang]
-    ? `The user's interface language is ${LANG_NAMES[lang]} (code: ${lang}). Always reply in ${LANG_NAMES[lang]}, regardless of ambiguous wording, and never switch to a different language (e.g. do not reply in Serbian, Bosnian, Croatian, or Macedonian when the language is Albanian).`
-    : 'Always respond in the same language the user writes in.';
+function buildSystemPrompt(lang?: string, about?: Partial<AboutDocument> | null): string {
+  const uiLangHint = lang && LANG_NAMES[lang]
+    ? `The visitor's interface language is set to ${LANG_NAMES[lang]} (code: ${lang}) — use this only as a fallback guess when the message itself gives no clear signal about the language.`
+    : '';
+
+  const aboutLines = [
+    about?.headline && `Headline: ${about.headline}`,
+    about?.bio && `Bio: ${about.bio}`,
+    about?.location && `Location: ${about.location}`,
+    about?.skills?.length && `Skills: ${about.skills.join(', ')}`,
+  ].filter(Boolean);
+
+  const aboutBlock = aboutLines.length
+    ? `\nHere is real, up-to-date information about Gent — use it to answer questions about him accurately:\n${aboutLines.join('\n')}\n`
+    : '';
 
   return `You are an AI assistant embedded in Gent Sallaku's developer portfolio website.
 Gent Sallaku is a full-stack developer specialized in Angular, Javascript, NestJS, MongoDB, and modern web technologies.
 He built this portfolio to showcase his projects, experiences, and services.
+${aboutBlock}
+Gent also built a suite of free tools available on this site, under the "🧰 AI & Tools" menu (base path /dashboard/...). If a visitor asks about tools, document processing, PDFs, or productivity utilities, proactively mention the relevant ones and give their exact path.
+
+AI-powered tools:
+- AI Document Summarizer (/dashboard/pdf-summary): upload a PDF, Word, or TXT file and get an AI-generated summary in seconds.
+- AI Formatter (/dashboard/ai-formatter): turns raw, unformatted notes and text into a polished, well-structured document.
+- AI PDF Translator (/dashboard/pdf-translate): translates any PDF or document into 12 languages with AI quality.
+- AI Slides Generator (/dashboard/ai-ppt): turns any topic into a full presentation with speaker notes.
+
+Other PDF/document utilities (not AI-based):
+- PDF Editor (/dashboard/pdf-editor): merge, split, rotate, delete pages, add watermarks to any PDF.
+- Viewer (/dashboard/viewer): view, navigate, and search inside PDF documents in the browser.
+- Editor (/dashboard/editor): rich text editor with export to PDF and DOCX.
+- Converter (/dashboard/convert): convert between PDF, Word, Excel, images, and more.
+- OCR (/dashboard/ocr): extract text from PDFs and scanned images.
+- Scanner (/dashboard/scanner): scan physical documents with the camera and convert them to PDF.
 
 Your role:
 - Answer questions about Gent's skills, projects, and experience
-- Help visitors navigate the portfolio (sections: Home, Projects, Blog, Services, Contact)
-- Answer general programming questions concisely
+- Help visitors navigate the portfolio (sections: Home, Projects, Blog, Services, Contact) and the AI & Tools suite above
+- Act as a general-purpose assistant: answer any other question the visitor asks (programming, general knowledge, advice, casual conversation, anything), even if unrelated to Gent or the portfolio
 - Be welcoming, professional, and helpful
 
 Keep responses under 150 words unless asked for more detail.
-If you don't know something specific about Gent, suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section.
-${langInstruction}`;
+If you don't know something specific about Gent (not covered above), suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section — but this only applies to questions about Gent himself, not to general questions.
+
+Language rules:
+- Always reply in the same language the visitor's latest message is written in — this takes priority over any interface-language setting below.
+- ${uiLangHint}
+- Pay close attention to correctly recognizing Albanian (Shqip) and never confuse it with similar-sounding Balkan languages (Serbian, Bosnian, Croatian, Macedonian) — if the visitor writes in Albanian, reply in Albanian.
+- If you are genuinely unsure which language the visitor is writing in, don't guess: ask them (briefly, in simple neutral wording) which language they'd like to continue in, and reply in that language from then on.`;
 }
 
 const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
@@ -86,6 +120,7 @@ export class ChatbotService {
     private readonly chatSessionModel: Model<ChatSessionDocument>,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    private readonly aboutService: AboutService,
   ) {}
 
   async sendMessage(
@@ -223,6 +258,7 @@ export class ChatbotService {
     }
 
     try {
+      const about = await this.aboutService.get().catch(() => null);
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -231,7 +267,7 @@ export class ChatbotService {
         },
         body: JSON.stringify({
           model: 'llama-3.1-8b-instant',
-          messages: [{ role: 'system', content: buildSystemPrompt(lang) }, ...messages],
+          messages: [{ role: 'system', content: buildSystemPrompt(lang, about) }, ...messages],
           max_tokens: 350,
           temperature: 0.7,
         }),
