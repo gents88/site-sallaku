@@ -215,92 +215,92 @@ export class ChatbotService {
     return { success: result.success };
   }
 
-  // Provider precedente (Groq) — tenuto per eventuale ripristino futuro.
-  // private async callGroqAI(messages: { role: string; content: string }[], lang?: string): Promise<string> {
-  //   const apiKey = this.configService.get<string>('GROQ_API_KEY');
-  //   if (!apiKey) {
-  //     return this.getFallbackResponse(messages[messages.length - 1].content);
-  //   }
-  //
-  //   try {
-  //     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${apiKey}`,
-  //       },
-  //       body: JSON.stringify({
-  //         model: 'llama-3.1-8b-instant',
-  //         messages: [{ role: 'system', content: buildSystemPrompt(lang) }, ...messages],
-  //         max_tokens: 350,
-  //         temperature: 0.7,
-  //       }),
-  //       signal: AbortSignal.timeout(15_000),
-  //     });
-  //
-  //     if (!response.ok) {
-  //       const err = await response.text();
-  //       this.logger.warn(`Groq responded with status ${response.status}: ${err}`);
-  //       return this.getFallbackResponse(messages[messages.length - 1].content);
-  //     }
-  //
-  //     const data = (await response.json()) as {
-  //       choices: { message: { content: string } }[];
-  //       model: string;
-  //       usage: { prompt_tokens: number; completion_tokens: number };
-  //     };
-  //     this.logger.log(`Groq [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`);
-  //     return data.choices?.[0]?.message?.content?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
-  //   } catch (err) {
-  //     this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
-  //     return this.getFallbackResponse(messages[messages.length - 1].content);
-  //   }
-  // }
-
-  // Provider attivo: Google Gemini (tier gratuito).
+  // Provider attivo: Groq.
   private async callAI(messages: { role: string; content: string }[], lang?: string): Promise<string> {
-    const apiKey = this.configService.get<string>('GEMINI_API_KEY');
+    const apiKey = this.configService.get<string>('GROQ_API_KEY');
     if (!apiKey) {
       return this.getFallbackResponse(messages[messages.length - 1].content);
     }
 
-    const contents = messages.map((m) => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }],
-    }));
-
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: buildSystemPrompt(lang) }] },
-            contents,
-            generationConfig: { maxOutputTokens: 350, temperature: 0.7 },
-          }),
-          signal: AbortSignal.timeout(15_000),
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
         },
-      );
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{ role: 'system', content: buildSystemPrompt(lang) }, ...messages],
+          max_tokens: 350,
+          temperature: 0.7,
+        }),
+        signal: AbortSignal.timeout(15_000),
+      });
 
       if (!response.ok) {
         const err = await response.text();
-        this.logger.warn(`Gemini responded with status ${response.status}: ${err}`);
+        this.logger.warn(`Groq responded with status ${response.status}: ${err}`);
         return this.getFallbackResponse(messages[messages.length - 1].content);
       }
 
       const data = (await response.json()) as {
-        candidates?: { content?: { parts?: { text?: string }[] } }[];
-        usageMetadata?: { promptTokenCount: number; candidatesTokenCount: number };
+        choices: { message: { content: string } }[];
+        model: string;
+        usage: { prompt_tokens: number; completion_tokens: number };
       };
-      this.logger.log(`Gemini → ${data.usageMetadata?.promptTokenCount ?? '?'} prompt + ${data.usageMetadata?.candidatesTokenCount ?? '?'} completion tokens`);
-      return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
+      this.logger.log(`Groq [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`);
+      return data.choices?.[0]?.message?.content?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
       return this.getFallbackResponse(messages[messages.length - 1].content);
     }
   }
+
+  // Provider alternativo (Gemini) — tenuto per eventuale ripristino futuro.
+  // private async callGeminiAI(messages: { role: string; content: string }[], lang?: string): Promise<string> {
+  //   const apiKey = this.configService.get<string>('GEMINI_API_KEY');
+  //   if (!apiKey) {
+  //     return this.getFallbackResponse(messages[messages.length - 1].content);
+  //   }
+  //
+  //   const contents = messages.map((m) => ({
+  //     role: m.role === 'assistant' ? 'model' : 'user',
+  //     parts: [{ text: m.content }],
+  //   }));
+  //
+  //   try {
+  //     const response = await fetch(
+  //       `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${apiKey}`,
+  //       {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({
+  //           system_instruction: { parts: [{ text: buildSystemPrompt(lang) }] },
+  //           contents,
+  //           generationConfig: { maxOutputTokens: 350, temperature: 0.7 },
+  //         }),
+  //         signal: AbortSignal.timeout(15_000),
+  //       },
+  //     );
+  //
+  //     if (!response.ok) {
+  //       const err = await response.text();
+  //       this.logger.warn(`Gemini responded with status ${response.status}: ${err}`);
+  //       return this.getFallbackResponse(messages[messages.length - 1].content);
+  //     }
+  //
+  //     const data = (await response.json()) as {
+  //       candidates?: { content?: { parts?: { text?: string }[] } }[];
+  //       usageMetadata?: { promptTokenCount: number; candidatesTokenCount: number };
+  //     };
+  //     this.logger.log(`Gemini → ${data.usageMetadata?.promptTokenCount ?? '?'} prompt + ${data.usageMetadata?.candidatesTokenCount ?? '?'} completion tokens`);
+  //     return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
+  //   } catch (err) {
+  //     this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
+  //     return this.getFallbackResponse(messages[messages.length - 1].content);
+  //   }
+  // }
 
   private getFallbackResponse(userMessage: string): string {
     for (const { pattern, response } of FALLBACK_RESPONSES) {

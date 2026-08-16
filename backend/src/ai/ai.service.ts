@@ -14,9 +14,9 @@ interface GroqMessage {
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  // Provider precedente (Groq) — tenuto per eventuale ripristino futuro, vedi callGroq() più sotto.
-  // private readonly model = 'openai/gpt-oss-120b';
-  private readonly geminiModel = 'gemini-flash-latest';
+  private readonly model = 'openai/gpt-oss-120b';
+  // Provider alternativo (Gemini) — tenuto per eventuale ripristino futuro, vedi callGemini() più sotto.
+  // private readonly geminiModel = 'gemini-flash-lite-latest';
 
   constructor(private readonly config: ConfigService) {}
 
@@ -44,68 +44,68 @@ export class AiService {
     throw new BadRequestException(`Unsupported file type: ${file.mimetype || ext}. Supported: PDF, TXT, DOCX.`);
   }
 
-  // ── GROQ API (disattivato, tenuto per eventuale ripristino futuro) ────
-  //
-  // private async callGroq(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
-  //   const apiKey = this.config.get<string>('GROQ_API_KEY');
-  //   if (!apiKey) throw new Error('GROQ_API_KEY is not configured');
-  //
-  //   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${apiKey}`,
-  //     },
-  //     body: JSON.stringify({ model: this.model, messages, max_tokens: maxTokens, temperature: 0.7 }),
-  //     signal: AbortSignal.timeout(60_000),
-  //   });
-  //
-  //   if (!res.ok) {
-  //     const text = await res.text();
-  //     this.logger.error(`Groq ${res.status}: ${text}`);
-  //     throw new Error(`Groq API error ${res.status}`);
-  //   }
-  //
-  //   const data = await res.json() as { choices: { message: { content: string } }[] };
-  //   return data.choices?.[0]?.message?.content?.trim() ?? '';
-  // }
+  // ── GROQ API (provider attivo) ──────────────────────────────────────────
 
-  // ── GOOGLE GEMINI API (provider attivo, tier gratuito) ─────────────────
+  private async callGroq(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
+    const apiKey = this.config.get<string>('GROQ_API_KEY');
+    if (!apiKey) throw new Error('GROQ_API_KEY is not configured');
 
-  private async callGemini(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
-    const apiKey = this.config.get<string>('GEMINI_API_KEY');
-    if (!apiKey) throw new Error('GEMINI_API_KEY is not configured');
-
-    const systemText = messages.filter((m) => m.role === 'system').map((m) => m.content).join('\n\n');
-    const contents = messages
-      .filter((m) => m.role !== 'system')
-      .map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
-
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${this.geminiModel}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...(systemText ? { system_instruction: { parts: [{ text: systemText }] } } : {}),
-          contents,
-          generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 },
-        }),
-        signal: AbortSignal.timeout(60_000),
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
       },
-    );
+      body: JSON.stringify({ model: this.model, messages, max_tokens: maxTokens, temperature: 0.7 }),
+      signal: AbortSignal.timeout(60_000),
+    });
 
     if (!res.ok) {
       const text = await res.text();
-      this.logger.error(`Gemini ${res.status}: ${text}`);
-      throw new Error(`Gemini API error ${res.status}`);
+      this.logger.error(`Groq ${res.status}: ${text}`);
+      throw new Error(`Groq API error ${res.status}`);
     }
 
-    const data = await res.json() as {
-      candidates?: { content?: { parts?: { text?: string }[] } }[];
-    };
-    return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? '';
+    const data = await res.json() as { choices: { message: { content: string } }[] };
+    return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
+
+  // ── GOOGLE GEMINI API (disattivato, tenuto per eventuale ripristino futuro) ──
+  //
+  // private async callGemini(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
+  //   const apiKey = this.config.get<string>('GEMINI_API_KEY');
+  //   if (!apiKey) throw new Error('GEMINI_API_KEY is not configured');
+  //
+  //   const systemText = messages.filter((m) => m.role === 'system').map((m) => m.content).join('\n\n');
+  //   const contents = messages
+  //     .filter((m) => m.role !== 'system')
+  //     .map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
+  //
+  //   const res = await fetch(
+  //     `https://generativelanguage.googleapis.com/v1beta/models/${this.geminiModel}:generateContent?key=${apiKey}`,
+  //     {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({
+  //         ...(systemText ? { system_instruction: { parts: [{ text: systemText }] } } : {}),
+  //         contents,
+  //         generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 },
+  //       }),
+  //       signal: AbortSignal.timeout(60_000),
+  //     },
+  //   );
+  //
+  //   if (!res.ok) {
+  //     const text = await res.text();
+  //     this.logger.error(`Gemini ${res.status}: ${text}`);
+  //     throw new Error(`Gemini API error ${res.status}`);
+  //   }
+  //
+  //   const data = await res.json() as {
+  //     candidates?: { content?: { parts?: { text?: string }[] } }[];
+  //   };
+  //   return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? '';
+  // }
 
   private parseJson<T>(raw: string): T {
     const match = raw.match(/\{[\s\S]*\}/);
@@ -126,7 +126,7 @@ export class AiService {
     const responseLang = langMap[lang] || 'English';
     const truncated = text.substring(0, 8000);
 
-    const raw = await this.callGemini([
+    const raw = await this.callGroq([
       {
         role: 'system',
         content: `You are a document analysis expert. Respond ONLY with valid JSON, no markdown. Respond in ${responseLang}.`,
@@ -184,7 +184,7 @@ ${truncated}`,
       article:           'an article (headline, intro, sections, conclusion)',
     };
 
-    const formatted = await this.callGemini([
+    const formatted = await this.callGroq([
       {
         role: 'system',
         content: `You are an expert document formatter. Transform raw text into well-structured Markdown.
@@ -200,7 +200,7 @@ Create ${docDesc[docType] || docDesc.general}. Return ONLY the formatted Markdow
     const wordCount = formatted.trim().split(/\s+/).filter(Boolean).length;
     const sections = (formatted.match(/^#{1,3} /gm) || []).length;
 
-    const summary = await this.callGemini([
+    const summary = await this.callGroq([
       { role: 'system', content: 'Generate a single sentence summarising what this document is about. Just the sentence, nothing else.' },
       { role: 'user', content: formatted.substring(0, 800) },
     ], 120);
@@ -232,7 +232,7 @@ Create ${docDesc[docType] || docDesc.general}. Return ONLY the formatted Markdow
       if (text.trim()) contextSection = `\n\nContext from uploaded file:\n${text.substring(0, 3000)}`;
     }
 
-    const raw = await this.callGemini([
+    const raw = await this.callGroq([
       {
         role: 'system',
         content: `You are an expert presentation designer. Create structured slides. Style: ${styleDesc[style] || styleDesc.modern}. Return ONLY valid JSON, no markdown.`,
@@ -285,7 +285,7 @@ Rules:
 
     const truncated = originalText.substring(0, 10000);
 
-    const translatedText = await this.callGemini([
+    const translatedText = await this.callGroq([
       {
         role: 'system',
         content: `You are a professional translator. Translate the provided text to ${targetLanguage}.
