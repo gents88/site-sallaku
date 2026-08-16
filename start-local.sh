@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-#  start-local.sh  –  Avvia MongoDB, Backend (NestJS) e Frontend (Angular) in locale
+#  start-local.sh  –  Avvia Backend (NestJS) e Frontend (Angular) in locale
+#  Il DB è quello remoto Railway (database "portfolio_dev"), condiviso
+#  con l'ambiente di sviluppo — non viene avviato nessun MongoDB locale.
 #  Uso: ./start-local.sh
-#  Ogni avvio termina prima le eventuali istanze precedenti (db, backend,
+#  Ogni avvio termina prima le eventuali istanze precedenti (backend,
 #  frontend) e riparte da zero, cosi non si accumulano processi orfani.
 # ─────────────────────────────────────────────────────────────────
 
@@ -29,17 +31,6 @@ kill_port() {
   lsof -ti ":$port" -s TCP:LISTEN 2>/dev/null | xargs kill -9 2>/dev/null || true
 }
 
-# Aspetta che mongod termini da solo (shutdown pulito = checkpoint salvato,
-# quindi il prossimo avvio è veloce). Se dopo il timeout è ancora vivo, forza.
-wait_mongod_stop() {
-  local tries=10
-  while (( tries > 0 )) && pgrep -x mongod &>/dev/null; do
-    sleep 0.5
-    (( tries-- ))
-  done
-  pkill -9 -x mongod 2>/dev/null || true
-}
-
 # ── Cleanup: termina tutti i processi figli alla chiusura ─────────
 BACKEND_PID=""
 FRONTEND_PID=""
@@ -48,73 +39,14 @@ cleanup() {
   log "Arresto in corso..."
   [[ -n "$FRONTEND_PID" ]] && kill "$FRONTEND_PID" 2>/dev/null || true
   [[ -n "$BACKEND_PID" ]]  && kill "$BACKEND_PID"  2>/dev/null || true
-  log "Fermo MongoDB..."
-  pkill -x mongod 2>/dev/null || true
   ok "Tutto fermato. Ciao!"
 }
 trap cleanup EXIT INT TERM
 
 # ─────────────────────────────────────────────────────────────────
-# 0. Termina eventuali istanze precedenti (db, backend, frontend)
+# 1. Backend .env — forza sempre il DB Railway "portfolio_dev"
 # ─────────────────────────────────────────────────────────────────
-log "Termino eventuali istanze precedenti..."
-kill_port 3000
-kill_port 4200
-pkill -x mongod 2>/dev/null || true
-wait_mongod_stop
-kill_port 27017
-ok "Istanze precedenti terminate."
-
-# ─────────────────────────────────────────────────────────────────
-# 1. MongoDB
-# ─────────────────────────────────────────────────────────────────
-log "Preparo MongoDB..."
-
-MONGO_LOCAL_DIR="$HOME/.local/mongodb"
-MONGO_DATA_DIR="/tmp/mongodb-data"
-MONGO_LOG="$MONGO_DATA_DIR/mongod.log"
-MONGO_BIN=""
-
-# 1a. Cerca mongod: PATH di sistema, brew, o installazione locale dello script
-if   command -v mongod &>/dev/null; then
-  MONGO_BIN="mongod"
-elif [[ -x "$MONGO_LOCAL_DIR/bin/mongod" ]]; then
-  MONGO_BIN="$MONGO_LOCAL_DIR/bin/mongod"
-else
-  # Installa MongoDB 7.0 come binario ufficiale (nessun brew, nessun sudo)
-  warn "mongod non trovato. Scarico MongoDB 7.0 Community (macOS x86_64 ~150 MB)..."
-  ARCH="$(uname -m)"
-  # Sceglie il tarball corretto per arm64 o x86_64
-  if [[ "$ARCH" == "arm64" ]]; then
-    MONGO_URL="https://fastdl.mongodb.org/osx/mongodb-macos-arm64-7.0.14.tgz"
-  else
-    MONGO_URL="https://fastdl.mongodb.org/osx/mongodb-macos-x86_64-7.0.14.tgz"
-  fi
-  MONGO_TGZ="/tmp/mongodb-download.tgz"
-  curl -fL --progress-bar "$MONGO_URL" -o "$MONGO_TGZ" \
-    || die "Download MongoDB fallito. Controlla la connessione internet."
-  mkdir -p "$MONGO_LOCAL_DIR"
-  tar -xzf "$MONGO_TGZ" --strip-components=1 -C "$MONGO_LOCAL_DIR" \
-    || die "Estrazione MongoDB fallita."
-  rm -f "$MONGO_TGZ"
-  MONGO_BIN="$MONGO_LOCAL_DIR/bin/mongod"
-  ok "MongoDB installato in $MONGO_LOCAL_DIR"
-fi
-
-# 1b. Avvia sempre un mongod pulito (le istanze precedenti sono già state terminate)
-mkdir -p "$MONGO_DATA_DIR"
-log "Avvio mongod (dbpath: $MONGO_DATA_DIR)..."
-"$MONGO_BIN" --dbpath "$MONGO_DATA_DIR" \
-             --logpath "$MONGO_LOG" \
-             --port 27017 \
-             --fork \
-  || die "Impossibile avviare MongoDB. Vedi log: $MONGO_LOG"
-ok "MongoDB avviato (log: $MONGO_LOG)."
-
-# ─────────────────────────────────────────────────────────────────
-# 2. Backend .env
-# ─────────────────────────────────────────────────────────────────
-LOCAL_MONGO_URI="mongodb://localhost:27017/portfolio_dev"
+RAILWAY_MONGO_URI="mongodb://mongo:OCLbPjcLuqyKXHNrRHzrSUyentMFuMCz@caboose.proxy.rlwy.net:17308/portfolio_dev?authSource=admin"
 
 if [[ ! -f "$BACKEND/.env" ]]; then
   warn "Nessun .env trovato nel backend. Creo da .env.example..."
@@ -128,22 +60,28 @@ else
   ok ".env backend trovato."
 fi
 
-# Forza sempre il DB locale: start-local.sh deve avviare un ambiente
-# completamente isolato (frontend + backend + db), senza mai toccare
-# un MongoDB remoto (es. Railway) anche se il .env lo referenzia.
 CURRENT_MONGO_URI="$(grep -m1 '^MONGODB_URI=' "$BACKEND/.env" | cut -d= -f2-)"
-if [[ "$CURRENT_MONGO_URI" != "$LOCAL_MONGO_URI" ]]; then
-  warn "MONGODB_URI nel .env punta altrove (${CURRENT_MONGO_URI:-vuoto}). Forzo il DB locale."
+if [[ "$CURRENT_MONGO_URI" != "$RAILWAY_MONGO_URI" ]]; then
+  warn "MONGODB_URI nel .env non corrisponde al DB Railway portfolio_dev. Lo correggo."
   if grep -q '^MONGODB_URI=' "$BACKEND/.env"; then
-    sed -i '' "s|^MONGODB_URI=.*|MONGODB_URI=${LOCAL_MONGO_URI}|" "$BACKEND/.env"
+    sed -i '' "s|^MONGODB_URI=.*|MONGODB_URI=${RAILWAY_MONGO_URI}|" "$BACKEND/.env"
   else
-    echo "MONGODB_URI=${LOCAL_MONGO_URI}" >> "$BACKEND/.env"
+    echo "MONGODB_URI=${RAILWAY_MONGO_URI}" >> "$BACKEND/.env"
   fi
 fi
-sed -i '' 's|^NODE_ENV=.*|NODE_ENV=development|'                   "$BACKEND/.env" 2>/dev/null || true
-sed -i '' 's|^CORS_ORIGIN=.*|CORS_ORIGIN=http://localhost:4200|'   "$BACKEND/.env" 2>/dev/null || true
-sed -i '' 's|^FRONTEND_URL=.*|FRONTEND_URL=http://localhost:4200|' "$BACKEND/.env" 2>/dev/null || true
-ok "Backend userà il DB locale: $LOCAL_MONGO_URI"
+ok "Backend userà il DB Railway: portfolio_dev"
+
+# Porta del backend: quella impostata in .env (default 3000 se assente)
+BACKEND_PORT="$(grep -m1 '^PORT=' "$BACKEND/.env" | cut -d= -f2-)"
+BACKEND_PORT="${BACKEND_PORT:-3000}"
+
+# ─────────────────────────────────────────────────────────────────
+# 2. Termina eventuali istanze precedenti (backend, frontend)
+# ─────────────────────────────────────────────────────────────────
+log "Termino eventuali istanze precedenti..."
+kill_port "$BACKEND_PORT"
+kill_port 4200
+ok "Istanze precedenti terminate."
 
 # ─────────────────────────────────────────────────────────────────
 # 3. Installa dipendenze (se node_modules mancante)
@@ -160,10 +98,8 @@ fi
 
 # ─────────────────────────────────────────────────────────────────
 # 4. Avvia Backend e Frontend insieme, in parallelo
-#    (Mongoose riprova la connessione da solo finché mongod è pronto,
-#    quindi non serve aspettare il backend prima di avviare Angular)
 # ─────────────────────────────────────────────────────────────────
-log "Avvio Backend NestJS su http://localhost:3000 ..."
+log "Avvio Backend NestJS su http://localhost:${BACKEND_PORT} ..."
 (cd "$BACKEND" && npm run start:dev) &
 BACKEND_PID=$!
 
@@ -179,9 +115,9 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo -e "${GREEN}  Tutto avviato in locale!${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "  Frontend  →  ${CYAN}http://localhost:4200${NC}"
-echo -e "  Backend   →  ${CYAN}http://localhost:3000${NC}"
-echo -e "  Swagger   →  ${CYAN}http://localhost:3000/api${NC}"
-echo -e "  MongoDB   →  ${CYAN}${LOCAL_MONGO_URI}${NC}"
+echo -e "  Backend   →  ${CYAN}http://localhost:${BACKEND_PORT}${NC}"
+echo -e "  Swagger   →  ${CYAN}http://localhost:${BACKEND_PORT}/api${NC}"
+echo -e "  MongoDB   →  ${CYAN}Railway (portfolio_dev)${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "  Premi  ${YELLOW}Ctrl+C${NC}  per fermare tutto."
 echo ""
