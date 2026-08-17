@@ -10,6 +10,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService, stripLangPrefix } from '../../../core/services/language.service';
 import { DrawerService } from '../../../core/services/drawer.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { filter, Subscription } from 'rxjs';
 
@@ -71,13 +72,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return 'other';
   }
 
-  // stessa label mostrata nell'header della sidebar (SidebarComponent)
+  // stesse label mostrate nell'header della sidebar (SidebarComponent)
+  get drawerBadge(): string {
+    return this.auth.isLoggedIn() && this.auth.isAdmin() ? '⚙️' : '🧰';
+  }
+
+  get drawerLabel(): string {
+    return this.auth.isLoggedIn() && this.auth.isAdmin() ? 'Admin' : 'AI & Tools';
+  }
+
   get drawerToggleLabel(): string {
-    return this.auth.isLoggedIn() && this.auth.isAdmin() ? '⚙️ Admin' : '🧰 AI & Tools';
+    return `${this.drawerBadge} ${this.drawerLabel}`;
   }
 
   private routerSub: Subscription | null = null;
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly analytics = inject(AnalyticsTrackingService);
 
   constructor(
     public auth: AuthService,
@@ -168,6 +178,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   openDrawerFromMenu(): void {
     this.closeMenu();
     this.drawer.open();
+    this.analytics.trackClick('sidebar', 'sidebar_open_mobile_menu');
+  }
+
+  /** Trigger etichettato in navbar: visibile solo nella fascia 901–1199px. */
+  toggleDrawerFromNavbar(): void {
+    const willOpen = !this.drawer.drawerOpen();
+    this.drawer.toggle();
+    this.analytics.trackClick('sidebar', willOpen ? 'sidebar_open_navbar' : 'sidebar_close_navbar');
   }
 
   openLoginModal(): void {
