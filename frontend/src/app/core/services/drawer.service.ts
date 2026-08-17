@@ -11,7 +11,6 @@ export type SidebarMode = 'overlay' | 'rail';
 const RAIL_MIN_WIDTH = 1200;
 
 const EXPANDED_KEY = 'gs-sidebar-expanded';
-const DISCOVERED_KEY = 'gs-sidebar-discovered';
 
 /**
  * Unico proprietario dello stato della sidebar.
@@ -40,19 +39,12 @@ export class DrawerService {
   /** Rail espansa (icone + etichette) invece che collassata a sole icone. */
   readonly railExpanded = signal(false);
 
-  /** False finché l'utente non ha interagito almeno una volta con la sidebar su desktop. */
-  private readonly discovered = signal(true);
-
   /** True quando la rail è visibile ed espansa: usato per label, tooltip e offset. */
   readonly expanded = computed(() => this.mode() === 'rail' && this.railExpanded());
-
-  /** Callout di scoperta: solo su desktop e solo finché la rail non è mai stata usata. */
-  readonly showNudge = computed(() => this.mode() === 'rail' && !this.discovered());
 
   constructor() {
     if (this.isBrowser) {
       this.railExpanded.set(this.readFlag(EXPANDED_KEY));
-      this.discovered.set(this.readFlag(DISCOVERED_KEY));
 
       // matchMedia invece di window:resize: notifica solo all'attraversamento
       // della soglia, senza un listener che gira a ogni pixel di ridimensionamento.
@@ -95,17 +87,9 @@ export class DrawerService {
     this.setRailExpanded(!this.railExpanded());
   }
 
-  /** Segna la sidebar come "scoperta": nasconde il nudge per sempre su questo device. */
-  markDiscovered(): void {
-    if (this.discovered()) return;
-    this.discovered.set(true);
-    this.writeFlag(DISCOVERED_KEY, true);
-  }
-
   private setRailExpanded(value: boolean): void {
     this.railExpanded.set(value);
     this.writeFlag(EXPANDED_KEY, value);
-    this.markDiscovered();
   }
 
   // localStorage è preferenza funzionale di UI (stessa classe del tema), non
