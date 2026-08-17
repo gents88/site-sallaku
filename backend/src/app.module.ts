@@ -24,6 +24,7 @@ import { AiModule } from './ai/ai.module';
 import { ConversionModule } from './conversion/conversion.module';
 import { OcrModule } from './ocr/ocr.module';
 import { NotesModule } from './notes/notes.module';
+import { TestimonialsModule } from './testimonials/testimonials.module';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { NotesModule } from './notes/notes.module';
     ConversionModule,
     OcrModule,
     NotesModule,
+    TestimonialsModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default

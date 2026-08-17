@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNoteDto } from '../dto/create-note.dto';
+
+export interface SpamCheckInput {
+  content: string;
+  name?: string;
+  email?: string;
+  honeypot?: string;
+  website?: string;
+}
 
 @Injectable()
 export class SpamDetectionService {
@@ -20,14 +27,14 @@ export class SpamDetectionService {
     /[A-Z]{5,}/g,
   ];
 
-  detectSpam(dto: CreateNoteDto, userIp?: string): { isSpam: boolean; score: number } {
+  detectSpam(input: SpamCheckInput, userIp?: string): { isSpam: boolean; score: number } {
     let score = 0;
 
-    if (dto.honeypot) {
+    if (input.honeypot) {
       return { isSpam: true, score: 100 };
     }
 
-    const contentLower = dto.content.toLowerCase();
+    const contentLower = input.content.toLowerCase();
 
     for (const keyword of this.spamKeywords) {
       if (contentLower.includes(keyword)) {
@@ -42,15 +49,15 @@ export class SpamDetectionService {
       }
     }
 
-    if (dto.website && dto.website.length > 0) {
+    if (input.website && input.website.length > 0) {
       score += 25;
     }
 
-    if (dto.content.length > 500) {
+    if (input.content.length > 500) {
       score += 5;
     }
 
-    if (!dto.name && !dto.email) {
+    if (!input.name && !input.email) {
       score += 10;
     }
 

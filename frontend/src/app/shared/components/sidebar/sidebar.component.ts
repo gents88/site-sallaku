@@ -34,6 +34,7 @@ const ADMIN_NAV: NavGroup[] = [
       { icon: '✍️', label: 'Blog',         route: '/dashboard/blog' },
       { icon: '💼', label: 'Experiences',  route: '/dashboard/experiences' },
       { icon: '👤', label: 'About',        route: '/dashboard/about' },
+      { icon: '⭐', label: 'Testimonials', route: '/dashboard/testimonials' },
     ],
   },
   {

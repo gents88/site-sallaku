@@ -6,7 +6,7 @@ import { Post, PostDocument } from '../../blog/schemas/post.schema';
 import { CreateNoteDto } from '../dto/create-note.dto';
 import { NoteResponseDto } from '../dto/note-response.dto';
 import { NoteAdminListItemDto } from '../dto/note-admin-list-item.dto';
-import { SpamDetectionService } from './spam-detection.service';
+import { SpamDetectionService } from '../../common/services/spam-detection.service';
 import { plainToInstance } from 'class-transformer';
 
 export type NoteModerationStatus = 'pending' | 'approved' | 'spam' | 'all';
