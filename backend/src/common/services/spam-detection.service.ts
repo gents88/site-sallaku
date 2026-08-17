@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import sanitizeHtml from 'sanitize-html';
 
 export interface SpamCheckInput {
   content: string;
@@ -72,11 +73,13 @@ export class SpamDetectionService {
     return emailRegex.test(email);
   }
 
+  /**
+   * Notes/testimonials content is plain text only — strip any HTML the
+   * submitter tried to inject rather than merely escaping it, using a real
+   * parser (sanitize-html/htmlparser2) instead of the previous naive
+   * character-replace, which could miss malformed/nested markup.
+   */
   sanitizeContent(content: string): string {
-    return content
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;');
+    return sanitizeHtml(content, { allowedTags: [], allowedAttributes: {} }).trim();
   }
 }

@@ -3,6 +3,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 
 type Status = 'idle' | 'preparing' | 'recognizing' | 'done' | 'error';
 
@@ -23,7 +24,7 @@ const UI_TO_OCR_LANG: Record<string, string> = {
   selector: 'app-ocr',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
+  imports: [TranslateModule, FileDropzoneDirective],
   template: `
     <div class="cp-page">
       <header class="cp-header">
@@ -34,10 +35,11 @@ const UI_TO_OCR_LANG: Record<string, string> = {
       <div class="cp-panel">
         <!-- Upload -->
         <div class="dz"
+             appFileDropzone
+             #dz="fileDropzone"
              (click)="pick.click()"
-             (dragover)="$event.preventDefault()"
-             (drop)="drop($event)"
-             [class.dz--active]="file()">
+             (filesDropped)="onFilesDropped($event)"
+             [class.dz--active]="file() || dz.isDragging">
           <input #pick type="file" hidden [attr.accept]="accept" (change)="select($event)">
           @if (!file()) {
             <span class="dz-icon">📂</span>
@@ -234,7 +236,7 @@ export class OcrComponent implements OnInit {
     this.seo.update({
       title: 'Free Online OCR — Extract Text from Images & Scanned PDFs',
       description: 'Extract text from photos, scanned documents and PDFs in 7 languages. Free online OCR, no signup required.',
-      url: 'https://gentsallaku.it/dashboard/ocr',
+      url: 'https://gentsallaku.it/lab/ocr',
     });
     this.seo.injectJsonLd([
       {
@@ -242,7 +244,7 @@ export class OcrComponent implements OnInit {
         '@type': 'WebApplication',
         name: 'Free Online OCR',
         description: 'Extract text from photos, scanned documents and PDFs in 7 languages, directly in the browser.',
-        url: 'https://gentsallaku.it/dashboard/ocr',
+        url: 'https://gentsallaku.it/lab/ocr',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -274,7 +276,7 @@ export class OcrComponent implements OnInit {
   }
 
   select(e: Event): void { this.setFile((e.target as HTMLInputElement).files?.[0] ?? null); }
-  drop(e: DragEvent): void { e.preventDefault(); this.setFile(e.dataTransfer?.files?.[0] ?? null); }
+  onFilesDropped(files: FileList): void { this.setFile(files[0] ?? null); }
 
   onLangChange(code: string): void {
     this.lang.set(code);

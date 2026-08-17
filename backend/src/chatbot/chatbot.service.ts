@@ -7,6 +7,7 @@ import { ChatSession, ChatSessionDocument, ChatMessage } from './schemas/chat-se
 import { MailService } from '../mail/mail.service';
 import { AboutService } from '../about/about.service';
 import { AboutDocument } from '../about/schemas/about.schema';
+import { AiProviderService } from '../common/services/ai-provider.service';
 
 const LANG_NAMES: Record<string, string> = {
   it: 'Italian (Italiano)',
@@ -121,6 +122,7 @@ export class ChatbotService {
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
     private readonly aboutService: AboutService,
+    private readonly aiProvider: AiProviderService,
   ) {}
 
   async sendMessage(
@@ -259,34 +261,11 @@ export class ChatbotService {
 
     try {
       const about = await this.aboutService.get().catch(() => null);
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
-          messages: [{ role: 'system', content: buildSystemPrompt(lang, about) }, ...messages],
-          max_tokens: 350,
-          temperature: 0.7,
-        }),
-        signal: AbortSignal.timeout(15_000),
-      });
-
-      if (!response.ok) {
-        const err = await response.text();
-        this.logger.warn(`Groq responded with status ${response.status}: ${err}`);
-        return this.getFallbackResponse(messages[messages.length - 1].content);
-      }
-
-      const data = (await response.json()) as {
-        choices: { message: { content: string } }[];
-        model: string;
-        usage: { prompt_tokens: number; completion_tokens: number };
-      };
-      this.logger.log(`Groq [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`);
-      return data.choices?.[0]?.message?.content?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
+      const content = await this.aiProvider.chatCompletion(
+        [{ role: 'system', content: buildSystemPrompt(lang, about) }, ...messages],
+        { model: 'llama-3.1-8b-instant', maxTokens: 350, timeoutMs: 15_000 },
+      );
+      return content || this.getFallbackResponse(messages[messages.length - 1].content);
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
       return this.getFallbackResponse(messages[messages.length - 1].content);

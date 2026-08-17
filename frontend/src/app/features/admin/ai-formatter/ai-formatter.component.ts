@@ -18,6 +18,7 @@ import {
   DocType,
   FormatTextResult,
 } from '../../../core/services/ai-formatter.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 
 type ViewMode = 'formatted' | 'raw';
 
@@ -25,7 +26,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
@@ -40,7 +41,7 @@ export class AiFormatterComponent implements OnInit {
     this.seo.update({
       title: 'AI Text Formatter — Convert Notes to Polished Documents',
       description: 'Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter.',
-      url: 'https://gentsallaku.it/dashboard/ai-formatter',
+      url: 'https://gentsallaku.it/lab/ai-formatter',
     });
     this.seo.injectJsonLd([
       {
@@ -48,7 +49,7 @@ export class AiFormatterComponent implements OnInit {
         '@type': 'WebApplication',
         name: 'AI Document Formatter',
         description: 'Transform raw text and notes into structured professional documents with AI. Supports reports, proposals, résumés and more.',
-        url: 'https://gentsallaku.it/dashboard/ai-formatter',
+        url: 'https://gentsallaku.it/lab/ai-formatter',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -85,7 +86,6 @@ export class AiFormatterComponent implements OnInit {
   readonly result           = signal<FormatTextResult | null>(null);
   readonly error            = signal('');
   readonly viewMode         = signal<ViewMode>('formatted');
-  readonly isDragging       = signal(false);
   readonly selectedDocType  = signal<DocType>('general');
   readonly copied           = signal(false);
 
@@ -141,12 +141,8 @@ export class AiFormatterComponent implements OnInit {
     this.formatterSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  onDragOver(event: DragEvent): void { event.preventDefault(); this.isDragging.set(true); }
-  onDragLeave(): void { this.isDragging.set(false); }
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.isDragging.set(false);
-    const file = event.dataTransfer?.files?.[0];
+  onFilesDropped(files: FileList): void {
+    const file = files[0];
     if (file) this.readFileAsText(file);
   }
   onFileSelected(event: Event): void {

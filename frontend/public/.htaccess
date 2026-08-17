@@ -10,6 +10,13 @@
   RewriteEngine On
   RewriteBase /
 
+  # AI/PDF tool pages moved from /dashboard/* to /lab/* (2026-08) — permanent
+  # redirects so existing bookmarks/search results keep working instead of
+  # 404ing, and so the old URLs' indexing transfers to the new ones instead
+  # of being lost. Must come before the SPA fallback rules below.
+  RewriteRule ^dashboard/tools/?$ /lab [R=301,L]
+  RewriteRule ^dashboard/(pdf-summary|ai-formatter|pdf-translate|ai-ppt|convert|pdf-editor|viewer|editor|ocr|scanner)(/.*)?$ /lab/$1$2 [R=301,L]
+
   # Serve the build-time prerendered homepage for the exact root request,
   # keeping the URL as / (canonical) instead of redirecting to /homepage.
   RewriteRule ^$ homepage/index.html [L]
@@ -28,8 +35,17 @@
   RewriteRule ^ index.html [L]
 </IfModule>
 
+# Brotli first: when the client advertises `br`, Apache prefers this filter
+# over mod_deflate's gzip below and skips it. Browsers that only send
+# `gzip` fall through to mod_deflate untouched, so this is purely additive
+# — roughly 15-20% smaller than gzip on the prerendered HTML (~33KB gzip
+# for the homepage) and on the JS/CSS bundles.
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/x-font-woff application/x-font-ttf
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/x-font-woff application/x-font-ttf image/svg+xml
 </IfModule>
 
 <IfModule mod_headers.c>
@@ -53,16 +69,17 @@
   # Disable browser features not used anywhere in the app.
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
 
-  # Scoped to the actual external origins this site loads: Google Fonts
-  # (Inter/JetBrains Mono text faces only — Material Icons and Font Awesome
-  # are self-hosted under /assets/fonts, no longer need cdn.jsdelivr.net or
-  # fonts.gstatic.com in this policy), GA4 (gtag.js + beacons), the Railway
-  # API. unsafe-inline on script/style is required for GA4's inline
-  # bootstrap snippet and Angular Material's runtime style injection —
-  # narrowing that further would need a nonce/hash pipeline this static
-  # deploy doesn't have. frame-src blob: is required for the PDF tools'
-  # <iframe [src]="blobUrl"> previews (pdf-translate, convert). Verify in a
-  # browser (DevTools console shows CSP violations) after deploying,
-  # especially the PDF tool pages.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  # Scoped to the actual external origins this site loads. Every font is now
+  # self-hosted under /assets/fonts — Inter and JetBrains Mono joined the
+  # icon faces there — so fonts.googleapis.com and fonts.gstatic.com are no
+  # longer in style-src/font-src. GA4 (gtag.js + beacons) and the Railway API
+  # are the only third parties left.
+  # unsafe-inline on script/style is required for GA4's inline bootstrap
+  # snippet and Angular Material's runtime style injection — narrowing that
+  # further would need a nonce/hash pipeline this static deploy doesn't have.
+  # frame-src blob: is required for the PDF tools' <iframe [src]="blobUrl">
+  # previews (pdf-translate, convert). Verify in a browser (DevTools console
+  # shows CSP violations) after deploying, especially the PDF tool pages and
+  # that text still renders in Inter rather than a system fallback.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com; frame-src 'self' blob:; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
 </IfModule>

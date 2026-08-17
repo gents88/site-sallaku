@@ -7,6 +7,7 @@ import { CreateTestimonialDto } from '../dto/create-testimonial.dto';
 import { TestimonialResponseDto } from '../dto/testimonial-response.dto';
 import { TestimonialAdminItemDto } from '../dto/testimonial-admin-item.dto';
 import { SpamDetectionService } from '../../common/services/spam-detection.service';
+import { TurnstileService } from '../../common/services/turnstile.service';
 
 export type TestimonialModerationStatus = 'pending' | 'approved' | 'spam' | 'all';
 
@@ -15,12 +16,17 @@ export class TestimonialsService {
   constructor(
     @InjectModel(Testimonial.name) private testimonialModel: Model<TestimonialDocument>,
     private spamDetectionService: SpamDetectionService,
+    private turnstile: TurnstileService,
   ) {}
 
   async createTestimonial(
     dto: CreateTestimonialDto,
     userIp?: string,
   ): Promise<TestimonialResponseDto> {
+    if (!(await this.turnstile.verify(dto.turnstileToken, userIp))) {
+      throw new BadRequestException('Verifica anti-spam non superata. Riprova.');
+    }
+
     // Absorb accidental double-submits (double click) before they even reach the throttler.
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
     const duplicate = await this.testimonialModel

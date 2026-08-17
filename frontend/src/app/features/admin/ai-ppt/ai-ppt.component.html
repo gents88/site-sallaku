@@ -130,10 +130,10 @@
         @if (!contextFile()) {
           <div
             class="context-drop"
-            [class.dragging]="isDragging()"
-            (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave()"
-            (drop)="onDrop($event)"
+            appFileDropzone
+            #dz="fileDropzone"
+            [class.dragging]="dz.isDragging"
+            (filesDropped)="onFilesDropped($event)"
             (click)="triggerFileInput()"
             role="button"
             tabindex="0"

@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 
 interface FileSummaryResult {
   title: string;
@@ -23,7 +24,7 @@ type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FileDropzoneDirective],
   template: `
     <div class="page">
       <div class="page-header">
@@ -47,11 +48,11 @@ type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
       <!-- Drop zone -->
       <div
         class="dropzone"
-        [class.dragging]="isDragging()"
+        appFileDropzone
+        #dz="fileDropzone"
+        [class.dragging]="dz.isDragging"
         [class.has-file]="!!selectedFile()"
-        (dragover)="onDragOver($event)"
-        (dragleave)="onDragLeave()"
-        (drop)="onDrop($event)"
+        (filesDropped)="onFilesDropped($event)"
         (click)="fileInput.click()">
 
         <input #fileInput type="file" hidden
@@ -317,7 +318,7 @@ export class PdfSummaryComponent implements OnInit {
     this.seo.update({
       title: 'AI PDF Summarizer — Extract Key Points from Any Document',
       description: 'Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.',
-      url: 'https://gentsallaku.it/dashboard/pdf-summary',
+      url: 'https://gentsallaku.it/lab/pdf-summary',
     });
     this.seo.injectJsonLd([
       {
@@ -325,7 +326,7 @@ export class PdfSummaryComponent implements OnInit {
         '@type': 'WebApplication',
         name: 'AI PDF Summarizer',
         description: 'Upload any PDF, Word or TXT file and get an AI-powered summary, key points and insights instantly.',
-        url: 'https://gentsallaku.it/dashboard/pdf-summary',
+        url: 'https://gentsallaku.it/lab/pdf-summary',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -357,7 +358,6 @@ export class PdfSummaryComponent implements OnInit {
   }
 
   selectedFile   = signal<File | null>(null);
-  isDragging     = signal(false);
   loading        = signal(false);
   result         = signal<FileSummaryResult | null>(null);
   error          = signal<string | null>(null);
@@ -385,11 +385,8 @@ export class PdfSummaryComponent implements OnInit {
     }
   });
 
-  onDragOver(event: DragEvent): void { event.preventDefault(); this.isDragging.set(true); }
-  onDragLeave(): void { this.isDragging.set(false); }
-  onDrop(event: DragEvent): void {
-    event.preventDefault(); this.isDragging.set(false);
-    const file = event.dataTransfer?.files?.[0];
+  onFilesDropped(files: FileList): void {
+    const file = files[0];
     if (file) this.setFile(file);
   }
   onFileSelected(event: Event): void {

@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
   PdfTranslateService,
   TranslationLanguage,
@@ -28,7 +29,7 @@ type TranslationMode = 'high_fidelity' | 'standard';
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -44,7 +45,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     this.seo.update({
       title: 'AI PDF Translator — Translate PDF with Layout Preserved',
       description: 'Translate any PDF to 12 languages while keeping fonts, images and layout intact. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
-      url: 'https://gentsallaku.it/dashboard/pdf-translate',
+      url: 'https://gentsallaku.it/lab/pdf-translate',
     });
     this.seo.injectJsonLd([
       {
@@ -52,7 +53,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
         '@type': 'WebApplication',
         name: 'AI PDF Translator',
         description: 'Translate any PDF to 12 languages while preserving the original layout, fonts and images. Powered by GPT-4o.',
-        url: 'https://gentsallaku.it/dashboard/pdf-translate',
+        url: 'https://gentsallaku.it/lab/pdf-translate',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -93,7 +94,6 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   readonly file             = signal<File | null>(null);
   readonly result           = signal<TranslatePdfResult | null>(null);
   readonly error            = signal('');
-  readonly isDragging       = signal(false);
   readonly selectedLanguage = signal<TranslationLanguage>('english');
   readonly copied           = signal(false);
   readonly mode             = signal<TranslationMode>('high_fidelity');
@@ -164,11 +164,8 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     return this.languages.filter((l) => l.value !== current);
   });
 
-  onDragOver(event: DragEvent): void { event.preventDefault(); this.isDragging.set(true); }
-  onDragLeave(): void { this.isDragging.set(false); }
-  onDrop(event: DragEvent): void {
-    event.preventDefault(); this.isDragging.set(false);
-    const f = event.dataTransfer?.files?.[0];
+  onFilesDropped(files: FileList): void {
+    const f = files[0];
     if (f) this.setFile(f);
   }
   onFileSelected(event: Event): void {

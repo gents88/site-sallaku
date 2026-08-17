@@ -5,6 +5,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 
 interface SearchMatch { page: number; }
 
@@ -14,7 +15,7 @@ const MAX_THUMBS = 200;
   selector: 'app-viewer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
+  imports: [TranslateModule, FileDropzoneDirective],
   template: `
     <div class="cp-page">
       <header class="cp-header">
@@ -26,9 +27,11 @@ const MAX_THUMBS = 200;
       @if (!doc()) {
         <div class="cp-panel">
           <div class="dz"
+               appFileDropzone
+               #dz="fileDropzone"
                (click)="pick.click()"
-               (dragover)="$event.preventDefault()"
-               (drop)="drop($event)">
+               (filesDropped)="onFilesDropped($event)"
+               [class.dz--active]="dz.isDragging">
             <input #pick type="file" hidden accept=".pdf" (change)="select($event)">
             <span class="dz-icon">📂</span>
             <strong>{{ 'viewer.drop_prompt' | translate }}</strong>
@@ -112,7 +115,7 @@ const MAX_THUMBS = 200;
       border: 2px dashed var(--border-color, #30363d); border-radius: 12px; padding: 2.5rem 1rem;
       text-align: center; cursor: pointer; display: grid; gap: 0.3rem; transition: border-color .18s, background .18s;
     }
-    .dz:hover { border-color: var(--accent, #6c63ff); background: rgba(108,99,255,.04); }
+    .dz:hover, .dz--active { border-color: var(--accent, #6c63ff); background: rgba(108,99,255,.04); }
     .dz-icon { font-size: 1.75rem; line-height: 1; }
     .dz small { color: var(--text-secondary, #8b949e); }
     .msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); font-size: .85rem; color: var(--warning, #fbbf24); margin: 1rem 0 0; }
@@ -212,14 +215,14 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.seo.update({
       title: 'Free PDF Viewer Online — Zoom, Search & Thumbnails',
       description: 'View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload.',
-      url: 'https://gentsallaku.it/dashboard/viewer',
+      url: 'https://gentsallaku.it/lab/viewer',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free PDF Viewer',
       description: 'View PDF documents in the browser with page navigation, zoom, full-text search and thumbnail preview.',
-      url: 'https://gentsallaku.it/dashboard/viewer',
+      url: 'https://gentsallaku.it/lab/viewer',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -231,7 +234,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void { this.close(); }
 
   select(e: Event): void { void this.open((e.target as HTMLInputElement).files?.[0] ?? null); }
-  drop(e: DragEvent): void { e.preventDefault(); void this.open(e.dataTransfer?.files?.[0] ?? null); }
+  onFilesDropped(files: FileList): void { void this.open(files[0] ?? null); }
 
   async open(f: File | null): Promise<void> {
     if (!f) return;

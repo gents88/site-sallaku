@@ -26,6 +26,7 @@ export interface CreateNotePayload {
   content: string;
   website?: string;
   honeypot?: string;
+  turnstileToken?: string;
 }
 
 @Injectable({

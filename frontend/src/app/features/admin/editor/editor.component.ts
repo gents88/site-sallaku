@@ -209,14 +209,14 @@ export class EditorComponent implements OnInit {
     this.seo.update({
       title: 'Free Online Document Editor — Export to PDF & DOCX',
       description: 'Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup.',
-      url: 'https://gentsallaku.it/dashboard/editor',
+      url: 'https://gentsallaku.it/lab/editor',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free Online Document Editor',
       description: 'Write and format documents in the browser, import Word files and export to PDF, DOCX or HTML.',
-      url: 'https://gentsallaku.it/dashboard/editor',
+      url: 'https://gentsallaku.it/lab/editor',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },

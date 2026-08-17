@@ -4,6 +4,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 
 interface SourcePdf {
   bytes: Uint8Array; // per pdf-lib (export)
@@ -22,7 +23,7 @@ interface PageEntry {
   selector: 'app-pdf-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
+  imports: [TranslateModule, FileDropzoneDirective],
   template: `
     <div class="cp-page">
       <header class="cp-header">
@@ -33,10 +34,11 @@ interface PageEntry {
       <!-- ── Upload / merge ───────────────────────── -->
       <div class="cp-panel">
         <div class="dz"
+             appFileDropzone
+             #dz="fileDropzone"
              (click)="pick.click()"
-             (dragover)="$event.preventDefault()"
-             (drop)="drop($event)"
-             [class.dz--active]="pages().length > 0">
+             (filesDropped)="onFilesDropped($event)"
+             [class.dz--active]="pages().length > 0 || dz.isDragging">
           <input #pick type="file" hidden accept=".pdf" multiple (change)="select($event)">
           @if (pages().length === 0) {
             <span class="dz-icon">📂</span>
@@ -217,7 +219,7 @@ export class PdfEditorComponent implements OnInit {
     this.seo.update({
       title: 'Free PDF Editor — Merge, Split, Rotate & Watermark',
       description: 'Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.',
-      url: 'https://gentsallaku.it/dashboard/pdf-editor',
+      url: 'https://gentsallaku.it/lab/pdf-editor',
     });
     this.seo.injectJsonLd([
       {
@@ -225,7 +227,7 @@ export class PdfEditorComponent implements OnInit {
         '@type': 'WebApplication',
         name: 'Free PDF Editor',
         description: 'Merge, split, extract, rotate, delete pages and add watermarks to PDF files entirely in the browser.',
-        url: 'https://gentsallaku.it/dashboard/pdf-editor',
+        url: 'https://gentsallaku.it/lab/pdf-editor',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -267,9 +269,8 @@ export class PdfEditorComponent implements OnInit {
     void this.addFiles(files);
   }
 
-  drop(e: DragEvent): void {
-    e.preventDefault();
-    void this.addFiles(Array.from(e.dataTransfer?.files ?? []));
+  onFilesDropped(files: FileList): void {
+    void this.addFiles(Array.from(files));
   }
 
   rotate(i: number): void {

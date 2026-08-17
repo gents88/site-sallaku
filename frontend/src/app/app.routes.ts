@@ -67,6 +67,56 @@ const publicPages: Route[] = [
     loadComponent: () =>
       import('./features/contact/contact.component').then(m => m.ContactComponent),
   },
+
+  // ── Lab: public AI/PDF tools ──────────────────────
+  // Moved out from under /dashboard/* (2026-08) — these never required auth,
+  // sharing the admin prefix was purely historical. Component files still
+  // live under features/admin/<tool>/ (not moved, only the route changed);
+  // old /dashboard/<tool> URLs 301-redirect here via frontend/public/.htaccess.
+  {
+    path: 'lab',
+    loadComponent: () => import('./features/admin/tools/tools.component').then(m => m.ToolsComponent),
+  },
+  {
+    path: 'lab/pdf-summary',
+    loadComponent: () => import('./features/admin/pdf-summary/pdf-summary.component').then(m => m.PdfSummaryComponent),
+  },
+  {
+    path: 'lab/ai-formatter',
+    loadComponent: () => import('./features/admin/ai-formatter/ai-formatter.component').then(m => m.AiFormatterComponent),
+  },
+  {
+    path: 'lab/pdf-translate',
+    loadComponent: () => import('./features/admin/pdf-translate/pdf-translate.component').then(m => m.PdfTranslateComponent),
+  },
+  {
+    path: 'lab/ai-ppt',
+    loadComponent: () => import('./features/admin/ai-ppt/ai-ppt.component').then(m => m.AiPptComponent),
+  },
+  {
+    path: 'lab/convert',
+    loadComponent: () => import('./features/admin/convert/convert.component').then(m => m.ConvertComponent),
+  },
+  {
+    path: 'lab/pdf-editor',
+    loadComponent: () => import('./features/admin/pdf-editor/pdf-editor.component').then(m => m.PdfEditorComponent),
+  },
+  {
+    path: 'lab/viewer',
+    loadComponent: () => import('./features/admin/viewer/viewer.component').then(m => m.ViewerComponent),
+  },
+  {
+    path: 'lab/editor',
+    loadComponent: () => import('./features/admin/editor/editor.component').then(m => m.EditorComponent),
+  },
+  {
+    path: 'lab/ocr',
+    loadComponent: () => import('./features/admin/ocr/ocr.component').then(m => m.OcrComponent),
+  },
+  {
+    path: 'lab/scanner',
+    loadComponent: () => import('./features/admin/scanner/scanner.component').then(m => m.ScannerComponent),
+  },
 ];
 
 export const routes: Routes = [
@@ -110,9 +160,9 @@ export const routes: Routes = [
       import('./features/admin/auth/register/register.component').then(m => m.RegisterComponent),
   },
 
-  // ── Admin shell: hosts the sidebar. AI/Tools children below are public;
-  // Content-management children (projects/blog/experiences/about) are
-  // individually guarded inside adminRoutes ─────────────────────────
+  // ── Admin shell: hosts the sidebar. All children (projects/blog/
+  // experiences/about/notes/testimonials) are guarded inside adminRoutes —
+  // the public AI/Tools pages that used to live here moved to /lab/* above.
   {
     path: 'dashboard',
     loadComponent: () =>

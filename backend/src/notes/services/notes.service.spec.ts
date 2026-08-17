@@ -1,32 +1,41 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Note } from '../schemas/note.schema';
+import { Post } from '../../blog/schemas/post.schema';
 import { NotesService } from './notes.service';
 import { SpamDetectionService } from '../../common/services/spam-detection.service';
+import { TurnstileService } from '../../common/services/turnstile.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 
 describe('NotesService', () => {
   let service: NotesService;
   let mockNoteModel: any;
+  let mockPostModel: any;
   let mockSpamDetectionService: any;
+  let mockTurnstileService: any;
 
   const mockArticleId = new Types.ObjectId();
   const mockNoteId = new Types.ObjectId();
 
   beforeEach(async () => {
-    mockNoteModel = {
-      create: jest.fn(),
-      find: jest.fn(),
-      findById: jest.fn(),
-      findByIdAndUpdate: jest.fn(),
-      findByIdAndDelete: jest.fn(),
-      countDocuments: jest.fn(),
-      exec: jest.fn(),
-      sort: jest.fn(),
-      limit: jest.fn(),
-      skip: jest.fn(),
-      save: jest.fn(),
+    mockNoteModel = jest.fn().mockImplementation((data) => ({
+      ...data,
+      _id: mockNoteId,
+      save: jest.fn().mockResolvedValue({
+        ...data,
+        _id: mockNoteId,
+        toObject: jest.fn().mockReturnValue({ ...data, _id: mockNoteId }),
+      }),
+    }));
+    mockNoteModel.find = jest.fn();
+    mockNoteModel.findById = jest.fn();
+    mockNoteModel.findByIdAndUpdate = jest.fn();
+    mockNoteModel.findByIdAndDelete = jest.fn();
+    mockNoteModel.countDocuments = jest.fn();
+
+    mockPostModel = {
+      find: jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue([]) }),
     };
 
     mockSpamDetectionService = {
@@ -34,17 +43,17 @@ describe('NotesService', () => {
       sanitizeContent: jest.fn((content) => content),
     };
 
+    mockTurnstileService = {
+      verify: jest.fn().mockResolvedValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotesService,
-        {
-          provide: getModelToken(Note.name),
-          useValue: mockNoteModel,
-        },
-        {
-          provide: SpamDetectionService,
-          useValue: mockSpamDetectionService,
-        },
+        { provide: getModelToken(Note.name), useValue: mockNoteModel },
+        { provide: getModelToken(Post.name), useValue: mockPostModel },
+        { provide: SpamDetectionService, useValue: mockSpamDetectionService },
+        { provide: TurnstileService, useValue: mockTurnstileService },
       ],
     }).compile();
 
@@ -52,26 +61,14 @@ describe('NotesService', () => {
   });
 
   describe('createNote', () => {
+    const dto = {
+      name: 'John Doe',
+      email: 'john@example.com',
+      content: 'Great article!',
+      honeypot: '',
+    };
+
     it('should create a note successfully', async () => {
-      const dto = {
-        name: 'John Doe',
-        email: 'john@example.com',
-        content: 'Great article!',
-        honeypot: '',
-      };
-
-      const mockNote = {
-        _id: mockNoteId,
-        articleId: mockArticleId,
-        ...dto,
-        isApproved: true,
-        isSpam: false,
-        spamScore: 10,
-        toObject: jest.fn().mockReturnValue({ _id: mockNoteId, articleId: mockArticleId }),
-      };
-
-      mockNoteModel.prototype.save = jest.fn().mockResolvedValue(mockNote);
-
       const result = await service.createNote(mockArticleId.toString(), dto, '127.0.0.1');
 
       expect(result).toHaveProperty('id');
@@ -79,11 +76,18 @@ describe('NotesService', () => {
     });
 
     it('should throw BadRequestException for invalid articleId', async () => {
-      const dto = { content: 'Test' };
-
       await expect(
         service.createNote('invalid-id', dto, '127.0.0.1'),
       ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should reject when Turnstile verification fails', async () => {
+      mockTurnstileService.verify.mockResolvedValue(false);
+
+      await expect(
+        service.createNote(mockArticleId.toString(), dto, '127.0.0.1'),
+      ).rejects.toThrow(BadRequestException);
+      expect(mockNoteModel).not.toHaveBeenCalled();
     });
 
     it('should detect spam and reject', async () => {
@@ -92,13 +96,8 @@ describe('NotesService', () => {
         score: 85,
       });
 
-      const dto = {
-        content: 'Click here for viagra!',
-        honeypot: '',
-      };
-
       await expect(
-        service.createNote(mockArticleId.toString(), dto, '127.0.0.1'),
+        service.createNote(mockArticleId.toString(), { ...dto, content: 'Click here for viagra!' }, '127.0.0.1'),
       ).rejects.toThrow(BadRequestException);
     });
   });
@@ -112,19 +111,27 @@ describe('NotesService', () => {
           name: 'John Doe',
           content: 'Great!',
           isApproved: true,
-          toObject: jest.fn(),
+          toObject: jest.fn().mockReturnValue({
+            _id: mockNoteId,
+            articleId: mockArticleId,
+            name: 'John Doe',
+            content: 'Great!',
+            isApproved: true,
+          }),
         },
       ];
 
-      mockNoteModel.find = jest.fn().mockReturnValue({
+      mockNoteModel.find.mockReturnValue({
         sort: jest.fn().mockReturnValue({
           limit: jest.fn().mockReturnValue({
-            skip: jest.fn().mockResolvedValue(mockNotes),
+            skip: jest.fn().mockReturnValue({
+              exec: jest.fn().mockResolvedValue(mockNotes),
+            }),
           }),
         }),
       });
 
-      mockNoteModel.countDocuments = jest.fn().mockResolvedValue(1);
+      mockNoteModel.countDocuments.mockResolvedValue(1);
 
       const result = await service.getNotes(mockArticleId.toString(), true, 50, 0);
 
@@ -146,10 +153,10 @@ describe('NotesService', () => {
         _id: mockNoteId,
         articleId: mockArticleId,
         content: 'Test',
-        toObject: jest.fn(),
+        toObject: jest.fn().mockReturnValue({ _id: mockNoteId, articleId: mockArticleId, content: 'Test' }),
       };
 
-      mockNoteModel.findById = jest.fn().mockReturnValue({
+      mockNoteModel.findById.mockReturnValue({
         exec: jest.fn().mockResolvedValue(mockNote),
       });
 
@@ -159,7 +166,7 @@ describe('NotesService', () => {
     });
 
     it('should throw NotFoundException if note not found', async () => {
-      mockNoteModel.findById = jest.fn().mockReturnValue({
+      mockNoteModel.findById.mockReturnValue({
         exec: jest.fn().mockResolvedValue(null),
       });
 
@@ -175,10 +182,10 @@ describe('NotesService', () => {
         _id: mockNoteId,
         articleId: mockArticleId,
         isApproved: true,
-        toObject: jest.fn(),
+        toObject: jest.fn().mockReturnValue({ _id: mockNoteId, articleId: mockArticleId, isApproved: true }),
       };
 
-      mockNoteModel.findByIdAndUpdate = jest.fn().mockResolvedValue(mockNote);
+      mockNoteModel.findByIdAndUpdate.mockResolvedValue(mockNote);
 
       const result = await service.updateNoteApprovalStatus(mockNoteId.toString(), true);
 
@@ -190,11 +197,12 @@ describe('NotesService', () => {
     it('should mark note as spam', async () => {
       const mockNote = {
         _id: mockNoteId,
+        articleId: mockArticleId,
         isSpam: true,
-        toObject: jest.fn(),
+        toObject: jest.fn().mockReturnValue({ _id: mockNoteId, articleId: mockArticleId, isSpam: true }),
       };
 
-      mockNoteModel.findByIdAndUpdate = jest.fn().mockResolvedValue(mockNote);
+      mockNoteModel.findByIdAndUpdate.mockResolvedValue(mockNote);
 
       const result = await service.markAsSpam(mockNoteId.toString());
 
@@ -204,7 +212,7 @@ describe('NotesService', () => {
 
   describe('deleteNote', () => {
     it('should delete a note', async () => {
-      mockNoteModel.findByIdAndDelete = jest.fn().mockResolvedValue({
+      mockNoteModel.findByIdAndDelete.mockResolvedValue({
         _id: mockNoteId,
       });
 
@@ -214,7 +222,7 @@ describe('NotesService', () => {
     });
 
     it('should throw NotFoundException if note not found', async () => {
-      mockNoteModel.findByIdAndDelete = jest.fn().mockResolvedValue(null);
+      mockNoteModel.findByIdAndDelete.mockResolvedValue(null);
 
       await expect(
         service.deleteNote(mockNoteId.toString()),
@@ -224,8 +232,7 @@ describe('NotesService', () => {
 
   describe('getArticleNotesStats', () => {
     it('should return notes statistics', async () => {
-      mockNoteModel.countDocuments = jest
-        .fn()
+      mockNoteModel.countDocuments
         .mockResolvedValueOnce(15) // total
         .mockResolvedValueOnce(13) // approved
         .mockResolvedValueOnce(1) // pending

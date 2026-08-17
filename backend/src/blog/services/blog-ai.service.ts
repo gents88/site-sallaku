@@ -7,6 +7,7 @@ import {
   DEFAULT_BLOG_LANGUAGE,
 } from '../blog.constants';
 import { ExtractedPdfDocument } from './pdf-extraction.service';
+import { escapeHtmlEntities } from '../../common/utils/html-escape.util';
 
 interface FeaturedImageSuggestion {
   url: string;
@@ -255,14 +256,14 @@ export class BlogAiService {
       .filter((paragraph) => paragraph.length > 40)
       .slice(0, 8);
 
-    const intro = excerpt ? `<p>${this.escapeHtml(excerpt)}</p>` : '';
+    const intro = excerpt ? `<p>${escapeHtmlEntities(excerpt)}</p>` : '';
     const sections = paragraphs.slice(0, 6).map((paragraph, index) => {
       const headingLevel = index === 0 ? 'h2' : index < 3 ? 'h2' : 'h3';
       const headingText = this.pickSectionHeading(paragraph, index);
-      return `<${headingLevel}>${this.escapeHtml(headingText)}</${headingLevel}><p>${this.escapeHtml(paragraph)}</p>`;
+      return `<${headingLevel}>${escapeHtmlEntities(headingText)}</${headingLevel}><p>${escapeHtmlEntities(paragraph)}</p>`;
     });
 
-    return [`<h1>${this.escapeHtml(title)}</h1>`, intro, ...sections].filter(Boolean).join('\n');
+    return [`<h1>${escapeHtmlEntities(title)}</h1>`, intro, ...sections].filter(Boolean).join('\n');
   }
 
   private pickSectionHeading(paragraph: string, index: number): string {
@@ -342,12 +343,4 @@ export class BlogAiService {
       .join(' ');
   }
 
-  private escapeHtml(value: string): string {
-    return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
 }

@@ -6,7 +6,7 @@ import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { UsersService } from '../users/users.service';
 import { ContactService } from '../contact/contact.service';
 import { BlogService } from '../blog/blog.service';
-import { AnalyticsService } from '../analytics/analytics.service';
+import { AnalyticsQueryService } from '../analytics/services/analytics-query.service';
 
 interface StatsContactPoint {
   date: string;
@@ -43,7 +43,7 @@ export class StatsController {
     private users: UsersService,
     private contacts: ContactService,
     private blog: BlogService,
-    private analytics: AnalyticsService,
+    private analytics: AnalyticsQueryService,
   ) {}
 
   @Get()

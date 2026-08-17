@@ -35,6 +35,7 @@ const ADMIN_NAV: NavGroup[] = [
       { icon: '💼', label: 'Experiences',  route: '/dashboard/experiences' },
       { icon: '👤', label: 'About',        route: '/dashboard/about' },
       { icon: '⭐', label: 'Testimonials', route: '/dashboard/testimonials' },
+      { icon: '💬', label: 'Notes',        route: '/dashboard/notes' },
     ],
   },
   {
@@ -42,10 +43,10 @@ const ADMIN_NAV: NavGroup[] = [
     emoji: '🧠',
     title: 'AI',
     items: [
-      { icon: '📋', label: 'PDF Summary',   route: '/dashboard/pdf-summary' },
-      { icon: '✨', label: 'AI Formatter',  route: '/dashboard/ai-formatter' },
-      { icon: '🌐', label: 'PDF Translate', route: '/dashboard/pdf-translate' },
-      { icon: '🎞️', label: 'AI Slides',    route: '/dashboard/ai-ppt' },
+      { icon: '📋', label: 'PDF Summary',   route: '/lab/pdf-summary' },
+      { icon: '✨', label: 'AI Formatter',  route: '/lab/ai-formatter' },
+      { icon: '🌐', label: 'PDF Translate', route: '/lab/pdf-translate' },
+      { icon: '🎞️', label: 'AI Slides',    route: '/lab/ai-ppt' },
     ],
   },
   {
@@ -53,12 +54,12 @@ const ADMIN_NAV: NavGroup[] = [
     emoji: '🧰',
     title: 'Tools',
     items: [
-      { icon: '🖊️', label: 'PDF Editor', route: '/dashboard/pdf-editor' },
-      { icon: '👁',  label: 'Viewer',     route: '/dashboard/viewer' },
-      { icon: '✏️', label: 'Editor',      route: '/dashboard/editor' },
-      { icon: '🔄', label: 'Convert',     route: '/dashboard/convert' },
-      { icon: '🔤', label: 'OCR',         route: '/dashboard/ocr' },
-      { icon: '📷', label: 'Scanner',     route: '/dashboard/scanner' },
+      { icon: '🖊️', label: 'PDF Editor', route: '/lab/pdf-editor' },
+      { icon: '👁',  label: 'Viewer',     route: '/lab/viewer' },
+      { icon: '✏️', label: 'Editor',      route: '/lab/editor' },
+      { icon: '🔄', label: 'Convert',     route: '/lab/convert' },
+      { icon: '🔤', label: 'OCR',         route: '/lab/ocr' },
+      { icon: '📷', label: 'Scanner',     route: '/lab/scanner' },
     ],
   },
 ];

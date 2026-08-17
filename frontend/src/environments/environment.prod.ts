@@ -7,4 +7,5 @@ export const environment = {
   // Replace with your real Sentry DSN once the project is created (public key, safe to commit).
   // Left empty until then — Sentry.init() no-ops on an empty DSN.
   sentryDsn: '',
+  turnstileSiteKey: '',
 };
