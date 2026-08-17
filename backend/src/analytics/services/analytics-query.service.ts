@@ -169,32 +169,43 @@ export class AnalyticsQueryService {
       this.aggregateByField('path', limit), 60_000);
   }
 
-  async getClickStats(limit = 20): Promise<{
+  /**
+   * `eventType` restringe l'aggregazione a una sola famiglia di eventi. Serve
+   * perché `topLabels` è troncata a `limit` sull'intero dataset: senza filtro,
+   * i click di una singola superficie (es. la sidebar) vengono schiacciati
+   * fuori classifica dai CTA storici e il funnel diventa illeggibile.
+   */
+  async getClickStats(limit = 20, eventType?: string): Promise<{
     topLabels: BreakdownItem[];
     topEventTypes: BreakdownItem[];
     topDestinations: BreakdownItem[];
     totalClicks: number;
   }> {
-    return this.cache.getOrSet('analytics:clicks:stats', async () => {
+    // eventType fa parte della chiave: due filtri diversi non devono condividere cache.
+    const cacheKey = `analytics:clicks:stats:${limit}:${eventType ?? 'all'}`;
+    // $match vuoto = nessun filtro, così la pipeline resta una sola forma.
+    const scope: Record<string, unknown> = eventType ? { eventType } : {};
+
+    return this.cache.getOrSet(cacheKey, async () => {
       const [topLabels, topEventTypes, topDestinations, totalClicks] = await Promise.all([
         this.clickEventModel
-          .aggregate([{ $group: { _id: '$label', count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: limit }])
+          .aggregate([{ $match: scope }, { $group: { _id: '$label', count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: limit }])
           .exec()
           .then(r => r.map(i => ({ label: i._id as string, count: i.count as number }))),
         this.clickEventModel
-          .aggregate([{ $group: { _id: '$eventType', count: { $sum: 1 } } }, { $sort: { count: -1 } }])
+          .aggregate([{ $match: scope }, { $group: { _id: '$eventType', count: { $sum: 1 } } }, { $sort: { count: -1 } }])
           .exec()
           .then(r => r.map(i => ({ label: i._id as string, count: i.count as number }))),
         this.clickEventModel
           .aggregate([
-            { $match: { destination: { $ne: '' } } },
+            { $match: { ...scope, destination: { $ne: '' } } },
             { $group: { _id: '$destination', count: { $sum: 1 } } },
             { $sort: { count: -1 } },
             { $limit: limit },
           ])
           .exec()
           .then(r => r.map(i => ({ label: i._id as string, count: i.count as number }))),
-        this.clickEventModel.countDocuments().exec(),
+        this.clickEventModel.countDocuments(scope).exec(),
       ]);
 
       return { topLabels, topEventTypes, topDestinations, totalClicks };

@@ -113,5 +113,23 @@ describe('AnalyticsQueryService', () => {
       expect(result.topLabels).toEqual([{ label: 'hero-cta', count: 3 }]);
       expect(result.totalClicks).toBe(3);
     });
+
+    it('scopes every stage to eventType when the filter is provided', async () => {
+      mockClickEventModel.aggregate
+        .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue([{ _id: 'sidebar_rail_expand', count: 7 }]) })
+        .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue([{ _id: 'sidebar', count: 7 }]) })
+        .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue([]) });
+      mockClickEventModel.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(7) });
+
+      const result = await service.getClickStats(20, 'sidebar');
+
+      expect(result.topLabels).toEqual([{ label: 'sidebar_rail_expand', count: 7 }]);
+      expect(mockClickEventModel.countDocuments).toHaveBeenCalledWith({ eventType: 'sidebar' });
+      // Ogni pipeline deve partire dallo stesso $match, incluso il ramo destinations
+      // che aggiunge una sua condizione.
+      for (const [pipeline] of mockClickEventModel.aggregate.mock.calls) {
+        expect(pipeline[0].$match).toMatchObject({ eventType: 'sidebar' });
+      }
+    });
   });
 });

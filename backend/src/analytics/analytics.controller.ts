@@ -13,6 +13,7 @@ import { TrackPageLeaveDto } from './dto/track-page-leave.dto';
 import { TrackClickEventDto } from './dto/track-click-event.dto';
 import { AdminTrackingBypassInterceptor } from './interceptors/admin-tracking-bypass.interceptor';
 import { MonthsQueryDto } from './dto/months-query.dto';
+import { ClickStatsQueryDto } from './dto/click-stats-query.dto';
 import { LimitOnlyDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Analytics')
@@ -143,7 +144,8 @@ export class AnalyticsController {
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get aggregated click stats: top labels, event types, destinations (admin only)' })
   @ApiQuery({ name: 'limit', required: false })
-  getClickStats(@Query() { limit }: LimitOnlyDto) {
-    return this.query.getClickStats(limit ?? 20);
+  @ApiQuery({ name: 'eventType', required: false, description: "Restringe a una famiglia di eventi, es. 'sidebar' o 'sidebar_nav'" })
+  getClickStats(@Query() { limit, eventType }: ClickStatsQueryDto) {
+    return this.query.getClickStats(limit ?? 20, eventType);
   }
 }

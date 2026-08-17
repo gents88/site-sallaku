@@ -5,6 +5,19 @@
     <title>Gent Sallaku | Senior Front-End &amp; API Developer</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Stato iniziale della sidebar prima del primo paint. DrawerService scrive
+         lo stesso attributo dopo il bootstrap: senza questo, su desktop il
+         contenuto partirebbe a piena larghezza e slitterebbe di 76px appena
+         Angular idrata. Tenere soglia e chiave allineate a drawer.service.ts. -->
+    <script>
+      (function () {
+        try {
+          if (!window.matchMedia('(min-width: 1200px)').matches) return;
+          var expanded = localStorage.getItem('gs-sidebar-expanded') === '1';
+          document.documentElement.setAttribute('data-sidebar', expanded ? 'rail-expanded' : 'rail');
+        } catch (e) { /* storage/matchMedia non disponibili: nessun offset iniziale */ }
+      })();
+    </script>
     <meta name="description" content="Gent Sallaku - Senior Front-End Developer e API Developer. Sviluppo web e applicazioni enterprise con Angular, JavaScript, TypeScript, .NET e Django." />
     <meta name="author" content="Gent Sallaku" />
     <meta name="theme-color" content="#0b1220" />
