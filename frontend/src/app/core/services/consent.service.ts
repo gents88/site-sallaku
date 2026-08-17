@@ -83,6 +83,16 @@ export class ConsentService {
   private updateGtagConsent(payload: ConsentPayload): void {
     const adGranted = payload.marketing ? 'granted' : 'denied';
     const analyticsGranted = payload.analytics ? 'granted' : 'denied';
+
+    // The GA4 library is no longer in index.html's critical path (187KB and
+    // ~680ms of execution). Load it here, the first moment it can actually do
+    // anything — visitors who decline never download it at all.
+    if (payload.analytics || payload.marketing) {
+      try {
+        (window as any).__loadGtag?.();
+      } catch { /* ignore */ }
+    }
+
     try {
       if ((window as any).gtag) {
         (window as any).gtag('consent', 'update', {

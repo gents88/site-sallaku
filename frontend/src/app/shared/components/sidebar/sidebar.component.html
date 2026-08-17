@@ -97,18 +97,3 @@
 @if (tooltip(); as tip) {
   <div class="rail-tooltip" role="tooltip" [style.top.px]="tip.top">{{ tip.label }}</div>
 }
-
-<!-- Nudge di scoperta: mostrato una sola volta per device, finché l'utente non
-     tocca la sidebar. È la leva che rompe la "banner blindness" su desktop. -->
-@if (showNudge()) {
-  <div class="rail-nudge" role="note">
-    <button type="button" class="nudge-close" aria-label="Nascondi il suggerimento" (click)="dismissNudge()">
-      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-        <path d="M18 6 6 18M6 6l12 12" />
-      </svg>
-    </button>
-    <p class="nudge-title">{{ brandBadge() }} {{ itemCount() }} strumenti qui</p>
-    <p class="nudge-text">Riassunti PDF, traduzioni, slide AI e altro: sempre a portata di click.</p>
-    <button type="button" class="nudge-cta" (click)="expandFromNudge()">Apri il menu</button>
-  </div>
-}

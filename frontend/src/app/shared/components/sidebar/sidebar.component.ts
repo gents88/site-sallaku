@@ -88,7 +88,6 @@ export class SidebarComponent {
   readonly mode = this.drawer.mode;
   readonly drawerOpen = this.drawer.drawerOpen;
   readonly expanded = this.drawer.expanded;
-  readonly showNudge = this.drawer.showNudge;
 
   readonly tooltip = signal<RailTooltip | null>(null);
 
@@ -132,24 +131,12 @@ export class SidebarComponent {
 
   /** Click su una voce: traccia la destinazione e, in overlay, chiude il drawer. */
   onNavigate(item: NavItem): void {
-    this.drawer.markDiscovered();
     this.analytics.trackClick(
       'sidebar_nav',
       `sidebar_${this.mode()}_${item.label.toLowerCase().replace(/\s+/g, '_')}`,
       item.route,
     );
     if (this.mode() === 'overlay') this.drawer.close();
-  }
-
-  dismissNudge(): void {
-    this.drawer.markDiscovered();
-    this.analytics.trackClick('sidebar', 'sidebar_nudge_dismiss');
-  }
-
-  /** Apre la rail dal callout di scoperta: è la CTA principale del nudge. */
-  expandFromNudge(): void {
-    this.drawer.open();
-    this.analytics.trackClick('sidebar', 'sidebar_nudge_expand');
   }
 
   showTooltip(event: Event, label: string): void {
