@@ -1,0 +1,114 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'testimonials_manage.title' | translate }}</h1>
+    </div>
+  </header>
+
+  <!-- Status tabs -->
+  <div class="status-tabs">
+    @for (s of statuses; track s) {
+      <button
+        type="button"
+        class="status-tab"
+        [class.active]="status === s"
+        (click)="switchStatus(s)"
+      >
+        {{ ('testimonials_manage.status_' + s) | translate }}
+        @if (status === s) { <span class="status-tab__count">{{ total }}</span> }
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else if (!testimonials.length) {
+    <p class="empty-state">{{ 'testimonials_manage.empty' | translate }}</p>
+  } @else {
+    <div class="list">
+      @for (item of testimonials; track item.id) {
+        <div class="card testimonial-row" [class.testimonial-row--busy]="actioningId === item.id">
+          @if (item.avatarUrl) {
+            <img class="testimonial-row__avatar" [src]="item.avatarUrl" [alt]="item.authorName" />
+          } @else {
+            <span class="testimonial-row__avatar testimonial-row__avatar--fallback" aria-hidden="true">
+              {{ initials(item.authorName) }}
+            </span>
+          }
+
+          <div class="testimonial-row__main">
+            <div class="testimonial-row__meta">
+              <span class="testimonial-row__author">{{ item.authorName }}</span>
+              @if (item.role) {
+                <span class="testimonial-row__role">{{ item.role }}</span>
+              }
+              @if (item.email) {
+                <span class="testimonial-row__email">({{ item.email }})</span>
+              }
+              <span class="testimonial-row__dot">·</span>
+              <app-rating-stars [value]="item.rating" [readonly]="true" [ariaLabel]="'testimonials.rating' | translate" />
+              <span class="testimonial-row__dot">·</span>
+              <time class="testimonial-row__date">{{ item.createdAt | date:'medium' }}</time>
+              @if (item.isSpam) {
+                <span class="badge badge--spam">{{ 'testimonials_manage.status_spam' | translate }}</span>
+              } @else if (item.isApproved) {
+                <span class="badge badge--approved">{{ 'testimonials_manage.status_approved' | translate }}</span>
+              } @else {
+                <span class="badge badge--pending">{{ 'testimonials_manage.status_pending' | translate }}</span>
+              }
+              @if (item.featured) {
+                <span class="badge badge--featured">{{ 'testimonials_manage.featured_on' | translate }}</span>
+              }
+              <span class="testimonial-row__score" [matTooltip]="'testimonials_manage.spam_score_tooltip' | translate">
+                {{ 'testimonials_manage.spam_score' | translate }}: {{ item.spamScore }}
+              </span>
+            </div>
+            <p class="testimonial-row__content">{{ item.content }}</p>
+          </div>
+
+          <div class="testimonial-row__actions">
+            @if (!item.isApproved || item.isSpam) {
+              <button mat-icon-button color="primary" [disabled]="actioningId === item.id"
+                      (click)="approve(item)" [attr.title]="'testimonials_manage.approve' | translate">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            }
+            @if (item.isApproved) {
+              <button mat-icon-button [disabled]="actioningId === item.id"
+                      (click)="reject(item)" [attr.title]="'testimonials_manage.reject' | translate">
+                <mat-icon>unpublished</mat-icon>
+              </button>
+            }
+            @if (item.isApproved && !item.isSpam) {
+              <button mat-icon-button [color]="item.featured ? 'accent' : ''" [disabled]="actioningId === item.id"
+                      (click)="toggleFeatured(item)" [attr.title]="'testimonials_manage.toggle_featured' | translate">
+                <mat-icon>{{ item.featured ? 'star' : 'star_border' }}</mat-icon>
+              </button>
+            }
+            @if (!item.isSpam) {
+              <button mat-icon-button [disabled]="actioningId === item.id"
+                      (click)="markSpam(item)" [attr.title]="'testimonials_manage.mark_spam' | translate">
+                <mat-icon>report</mat-icon>
+              </button>
+            }
+            <button mat-icon-button color="warn" [disabled]="actioningId === item.id"
+                    (click)="delete(item)" [attr.title]="'common.delete' | translate">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="pagination">
+      <button mat-button [disabled]="skip === 0" (click)="prevPage()">
+        <mat-icon>chevron_left</mat-icon> {{ 'testimonials_manage.prev_page' | translate }}
+      </button>
+      <span class="pagination__info">{{ skip + 1 }}–{{ skip + testimonials.length }} / {{ total }}</span>
+      <button mat-button [disabled]="skip + testimonials.length >= total" (click)="nextPage()">
+        {{ 'testimonials_manage.next_page' | translate }} <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  }
+</div>

@@ -1,0 +1,30 @@
+.rating-stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--text-muted, #475569);
+  cursor: default;
+  transition: color var(--transition-fast, 0.2s ease), transform var(--transition-fast, 0.2s ease);
+
+  &--filled {
+    color: var(--accent-500, #8b5cf6);
+  }
+}
+
+.rating-stars--interactive .star {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.15);
+    outline: none;
+  }
+}

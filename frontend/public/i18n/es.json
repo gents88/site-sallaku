@@ -13,7 +13,8 @@
     "login": "Acceder",
     "admin": "Admin",
     "dashboard": "Dashboard",
-    "ai_tools": "IA & Herramientas"
+    "ai_tools": "IA & Herramientas",
+    "testimonials": "Testimonios"
   },
   "lang": {
     "label": "Idioma",
@@ -618,6 +619,72 @@
     "confirm_delete": "¿Eliminar definitivamente esta nota?",
     "spam_score": "Puntuación de spam",
     "spam_score_tooltip": "Puntuación automática de detección de spam (0-100, cuanto más alta más sospechosa)",
+    "prev_page": "Anterior",
+    "next_page": "Siguiente"
+  },
+  "testimonials": {
+    "tag": "Testimonios",
+    "title": "Lo que dicen de mí",
+    "subtitle": "Experiencias reales de clientes y colaboradores sobre trabajar juntos: proyectos, resultados e historias contadas por ellos mismos.",
+    "rating": "Valoración",
+    "form": {
+      "title": "Deja un testimonio",
+      "author_name": "Nombre",
+      "author_name_ph": "Tu nombre completo",
+      "role": "Cargo / Empresa",
+      "role_ph": "ej. CTO @ Acme (opcional)",
+      "company_url": "Enlace de la empresa o proyecto",
+      "company_url_ph": "ej. acme.com (opcional)",
+      "email": "Email",
+      "email_ph": "Tu email (opcional, nunca se publica)",
+      "rating": "Valoración",
+      "content": "Tu testimonio",
+      "content_ph": "Cuéntanos tu experiencia trabajando conmigo...",
+      "submit": "Enviar testimonio",
+      "submitting": "Enviando...",
+      "success": "¡Gracias! Tu testimonio está en revisión y aparecerá pronto.",
+      "error_generic": "Se produjo un error. Inténtalo de nuevo más tarde."
+    },
+    "errors": {
+      "required": "Este campo es obligatorio",
+      "minlength": "Mínimo {{count}} caracteres",
+      "maxlength": "Máximo {{count}} caracteres",
+      "email": "Email no válido",
+      "rating_required": "Selecciona una valoración de 1 a 5 estrellas",
+      "invalid": "Campo no válido"
+    },
+    "list": {
+      "loading": "Cargando testimonios...",
+      "empty": "Aún no hay testimonios publicados."
+    },
+    "wall": {
+      "tag": "Testimonios",
+      "title": "Lo que dicen de mí",
+      "cta": "Deja tu testimonio"
+    }
+  },
+  "testimonials_manage": {
+    "title": "Moderar testimonios",
+    "status_pending": "Pendientes",
+    "status_approved": "Aprobados",
+    "status_spam": "Spam",
+    "status_all": "Todos",
+    "empty": "No hay testimonios en esta categoría.",
+    "load_error": "No se pudieron cargar los testimonios.",
+    "action_error": "La acción falló. Inténtalo de nuevo.",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "mark_spam": "Marcar como spam",
+    "toggle_featured": "Mostrar/ocultar en la portada",
+    "approved": "Testimonio aprobado.",
+    "rejected": "Testimonio rechazado.",
+    "marked_spam": "Testimonio marcado como spam.",
+    "featured_on": "Destacado",
+    "featured_off": "Eliminado de la portada.",
+    "deleted": "Testimonio eliminado.",
+    "confirm_delete": "¿Eliminar este testimonio permanentemente?",
+    "spam_score": "Puntuación de spam",
+    "spam_score_tooltip": "Puntuación automática de detección de spam (0-100, más alto = más sospechoso)",
     "prev_page": "Anterior",
     "next_page": "Siguiente"
   },

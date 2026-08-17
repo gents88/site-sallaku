@@ -13,7 +13,8 @@
     "login": "Login",
     "admin": "Admin",
     "dashboard": "Dashboard",
-    "ai_tools": "AI & Tools"
+    "ai_tools": "AI & Tools",
+    "testimonials": "Testimonials"
   },
   "lang": {
     "label": "Language",
@@ -618,6 +619,72 @@
     "confirm_delete": "Permanently delete this note?",
     "spam_score": "Spam score",
     "spam_score_tooltip": "Automated spam detection score (0-100, higher = more suspicious)",
+    "prev_page": "Previous",
+    "next_page": "Next"
+  },
+  "testimonials": {
+    "tag": "Testimonials",
+    "title": "What people say",
+    "subtitle": "Real feedback from clients and collaborators about working together — projects, results, and experiences.",
+    "rating": "Rating",
+    "form": {
+      "title": "Leave a testimonial",
+      "author_name": "Name",
+      "author_name_ph": "Your full name",
+      "role": "Role / Company",
+      "role_ph": "e.g. CTO @ Acme (optional)",
+      "company_url": "Company or project link",
+      "company_url_ph": "e.g. acme.com (optional)",
+      "email": "Email",
+      "email_ph": "Your email (optional, never published)",
+      "rating": "Rating",
+      "content": "Your testimonial",
+      "content_ph": "Tell us about your experience working with me...",
+      "submit": "Submit testimonial",
+      "submitting": "Submitting...",
+      "success": "Thank you! Your testimonial is under review and will appear shortly.",
+      "error_generic": "Something went wrong. Please try again later."
+    },
+    "errors": {
+      "required": "This field is required",
+      "minlength": "Minimum {{count}} characters",
+      "maxlength": "Maximum {{count}} characters",
+      "email": "Invalid email",
+      "rating_required": "Please select a rating from 1 to 5 stars",
+      "invalid": "Invalid field"
+    },
+    "list": {
+      "loading": "Loading testimonials...",
+      "empty": "No testimonials published yet."
+    },
+    "wall": {
+      "tag": "Testimonials",
+      "title": "What people say",
+      "cta": "Leave your testimonial"
+    }
+  },
+  "testimonials_manage": {
+    "title": "Moderate testimonials",
+    "status_pending": "Pending",
+    "status_approved": "Approved",
+    "status_spam": "Spam",
+    "status_all": "All",
+    "empty": "No testimonials in this category.",
+    "load_error": "Unable to load testimonials.",
+    "action_error": "Action failed. Please try again.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "mark_spam": "Mark as spam",
+    "toggle_featured": "Toggle homepage feature",
+    "approved": "Testimonial approved.",
+    "rejected": "Testimonial rejected.",
+    "marked_spam": "Testimonial marked as spam.",
+    "featured_on": "Featured",
+    "featured_off": "Removed from homepage.",
+    "deleted": "Testimonial deleted.",
+    "confirm_delete": "Permanently delete this testimonial?",
+    "spam_score": "Spam score",
+    "spam_score_tooltip": "Automatic spam-detection score (0-100, higher = more suspicious)",
     "prev_page": "Previous",
     "next_page": "Next"
   },

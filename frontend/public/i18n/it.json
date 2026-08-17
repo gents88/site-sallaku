@@ -13,7 +13,8 @@
     "login": "Login",
     "admin": "Admin",
     "dashboard": "Dashboard",
-    "ai_tools": "AI & Strumenti"
+    "ai_tools": "AI & Strumenti",
+    "testimonials": "Testimonianze"
   },
   "lang": {
     "label": "Lingua",
@@ -616,6 +617,72 @@
     "marked_spam": "Nota segnata come spam.",
     "deleted": "Nota eliminata.",
     "confirm_delete": "Eliminare definitivamente questa nota?",
+    "spam_score": "Punteggio spam",
+    "spam_score_tooltip": "Punteggio automatico di rilevamento spam (0-100, più alto = più sospetto)",
+    "prev_page": "Precedente",
+    "next_page": "Successiva"
+  },
+  "testimonials": {
+    "tag": "Testimonianze",
+    "title": "Cosa dicono di me",
+    "subtitle": "Le esperienze di chi ha lavorato con me: collaborazioni, progetti e risultati raccontati da chi li ha vissuti.",
+    "rating": "Valutazione",
+    "form": {
+      "title": "Lascia una testimonianza",
+      "author_name": "Nome",
+      "author_name_ph": "Il tuo nome e cognome",
+      "role": "Ruolo / Azienda",
+      "role_ph": "es. CTO @ Acme (opzionale)",
+      "company_url": "Link azienda o progetto",
+      "company_url_ph": "es. acme.com (opzionale)",
+      "email": "Email",
+      "email_ph": "La tua email (opzionale, non pubblicata)",
+      "rating": "Valutazione",
+      "content": "La tua testimonianza",
+      "content_ph": "Racconta la tua esperienza di lavoro con me...",
+      "submit": "Invia testimonianza",
+      "submitting": "Invio in corso...",
+      "success": "Grazie! La tua testimonianza è in fase di revisione e apparirà a breve.",
+      "error_generic": "Si è verificato un errore. Riprova più tardi."
+    },
+    "errors": {
+      "required": "Questo campo è obbligatorio",
+      "minlength": "Minimo {{count}} caratteri",
+      "maxlength": "Massimo {{count}} caratteri",
+      "email": "Email non valida",
+      "rating_required": "Seleziona una valutazione da 1 a 5 stelle",
+      "invalid": "Campo non valido"
+    },
+    "list": {
+      "loading": "Caricamento testimonianze...",
+      "empty": "Nessuna testimonianza pubblicata ancora."
+    },
+    "wall": {
+      "tag": "Testimonianze",
+      "title": "Cosa dicono di me",
+      "cta": "Lascia la tua testimonianza"
+    }
+  },
+  "testimonials_manage": {
+    "title": "Modera testimonianze",
+    "status_pending": "In attesa",
+    "status_approved": "Approvate",
+    "status_spam": "Spam",
+    "status_all": "Tutte",
+    "empty": "Nessuna testimonianza in questa categoria.",
+    "load_error": "Impossibile caricare le testimonianze.",
+    "action_error": "Azione non riuscita. Riprova.",
+    "approve": "Approva",
+    "reject": "Rifiuta",
+    "mark_spam": "Segna come spam",
+    "toggle_featured": "Mostra/nascondi in homepage",
+    "approved": "Testimonianza approvata.",
+    "rejected": "Testimonianza rifiutata.",
+    "marked_spam": "Testimonianza segnata come spam.",
+    "featured_on": "In evidenza",
+    "featured_off": "Rimossa dalla homepage.",
+    "deleted": "Testimonianza eliminata.",
+    "confirm_delete": "Eliminare definitivamente questa testimonianza?",
     "spam_score": "Punteggio spam",
     "spam_score_tooltip": "Punteggio automatico di rilevamento spam (0-100, più alto = più sospetto)",
     "prev_page": "Precedente",

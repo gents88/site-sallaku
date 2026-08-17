@@ -1,0 +1,153 @@
+<!-- ── Hero ─────────────────────────────────────────── -->
+<section class="testimonials-hero" aria-labelledby="testimonials-title">
+  <div class="testimonials-hero__glow" aria-hidden="true"></div>
+  <div class="container testimonials-hero__inner">
+    <span class="section-tag animate-fade-up">{{ 'testimonials.tag' | translate }}</span>
+    <h1 id="testimonials-title" class="section-title text-gradient animate-fade-up delay-1">
+      {{ 'testimonials.title' | translate }}
+    </h1>
+    <p class="section-subtitle animate-fade-up delay-2">
+      {{ 'testimonials.subtitle' | translate }}
+    </p>
+  </div>
+</section>
+
+<!-- ── Wall ─────────────────────────────────────────── -->
+<section class="testimonials-wall-section">
+  <div class="container">
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>{{ 'testimonials.list.loading' | translate }}</p>
+      </div>
+    } @else if (testimonials().length === 0) {
+      <div class="empty-state">
+        <p>{{ 'testimonials.list.empty' | translate }}</p>
+      </div>
+    } @else {
+      <div class="testimonials-grid">
+        @for (t of testimonials(); track t.id) {
+          <article class="testimonial-card glass-card reveal">
+            <app-rating-stars [value]="t.rating" [readonly]="true" [ariaLabel]="'testimonials.rating' | translate" />
+            <p class="testimonial-content">&ldquo;{{ t.content }}&rdquo;</p>
+            <div class="testimonial-author">
+              @if (t.avatarUrl) {
+                <img class="author-avatar" [src]="t.avatarUrl" [alt]="t.authorName" loading="lazy" />
+              } @else {
+                <span class="author-avatar author-avatar--fallback" aria-hidden="true">{{ initials(t.authorName) }}</span>
+              }
+              <div class="author-meta">
+                <strong class="author-name">{{ t.authorName }}</strong>
+                @if (t.role) {
+                  <span class="author-role">{{ t.role }}</span>
+                }
+                @if (t.companyUrl) {
+                  <a class="author-link" [href]="t.companyUrl" target="_blank" rel="nofollow ugc noopener">
+                    {{ t.companyUrl }}
+                  </a>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ── Form ─────────────────────────────────────────── -->
+<section class="testimonials-form-section">
+  <div class="container">
+    <form class="testimonials-form glass-card reveal"
+          [formGroup]="form" (ngSubmit)="submit()" novalidate
+          aria-label="Testimonial form">
+
+      <h2 class="form-title">{{ 'testimonials.form.title' | translate }}</h2>
+
+      <!-- Honeypot fields (hidden from users) -->
+      <input type="text" formControlName="honeypot" class="honeypot" aria-hidden="true" autocomplete="off" tabindex="-1" />
+      <div class="field-group hidden" aria-hidden="true">
+        <label for="testimonial-website">Website</label>
+        <input type="url" id="testimonial-website" formControlName="website" autocomplete="off" tabindex="-1" />
+      </div>
+
+      <div class="form-row">
+        <div class="field-group">
+          <label class="field-label" for="testimonial-name">{{ 'testimonials.form.author_name' | translate }}</label>
+          <input class="field-input" id="testimonial-name" type="text"
+                 formControlName="authorName" maxlength="100"
+                 [placeholder]="'testimonials.form.author_name_ph' | translate" />
+          @if (getErrorMessage('authorName')) {
+            <span class="field-error">{{ getErrorMessage('authorName') }}</span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="testimonial-role">{{ 'testimonials.form.role' | translate }}</label>
+          <input class="field-input" id="testimonial-role" type="text"
+                 formControlName="role" maxlength="150"
+                 [placeholder]="'testimonials.form.role_ph' | translate" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field-group">
+          <label class="field-label" for="testimonial-company">{{ 'testimonials.form.company_url' | translate }}</label>
+          <input class="field-input" id="testimonial-company" type="text"
+                 formControlName="companyUrl" maxlength="500"
+                 [placeholder]="'testimonials.form.company_url_ph' | translate" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label" for="testimonial-email">{{ 'testimonials.form.email' | translate }}</label>
+          <input class="field-input" id="testimonial-email" type="email"
+                 formControlName="email" maxlength="255"
+                 [placeholder]="'testimonials.form.email_ph' | translate" />
+          @if (getErrorMessage('email')) {
+            <span class="field-error">{{ getErrorMessage('email') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">{{ 'testimonials.form.rating' | translate }}</label>
+        <app-rating-stars
+          [value]="form.get('rating')?.value ?? 0"
+          [readonly]="false"
+          [ariaLabel]="'testimonials.form.rating' | translate"
+          (valueChange)="setRating($event)"
+        />
+        @if (getErrorMessage('rating')) {
+          <span class="field-error">{{ getErrorMessage('rating') }}</span>
+        }
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="testimonial-content">{{ 'testimonials.form.content' | translate }}</label>
+        <textarea class="field-input" id="testimonial-content" rows="5"
+                  formControlName="content" maxlength="600"
+                  [placeholder]="'testimonials.form.content_ph' | translate"></textarea>
+        <div class="textarea-footer">
+          @if (getErrorMessage('content')) {
+            <span class="field-error">{{ getErrorMessage('content') }}</span>
+          }
+          <span class="char-count">{{ form.get('content')?.value?.length || 0 }}/600</span>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn btn-primary submit-btn" type="submit" [disabled]="submitting()">
+          @if (submitting()) {
+            {{ 'testimonials.form.submitting' | translate }}
+          } @else {
+            {{ 'testimonials.form.submit' | translate }}
+          }
+        </button>
+
+        @if (submitted()) {
+          <span class="sent-badge">{{ 'testimonials.form.success' | translate }}</span>
+        }
+      </div>
+    </form>
+  </div>
+</section>

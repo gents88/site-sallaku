@@ -13,7 +13,8 @@
     "login": "Entrar",
     "admin": "Admin",
     "dashboard": "Dashboard",
-    "ai_tools": "IA & Ferramentas"
+    "ai_tools": "IA & Ferramentas",
+    "testimonials": "Depoimentos"
   },
   "lang": {
     "label": "Idioma",
@@ -618,6 +619,72 @@
     "confirm_delete": "Eliminar definitivamente esta nota?",
     "spam_score": "Pontuação de spam",
     "spam_score_tooltip": "Pontuação automática de deteção de spam (0-100, quanto maior mais suspeito)",
+    "prev_page": "Anterior",
+    "next_page": "Seguinte"
+  },
+  "testimonials": {
+    "tag": "Depoimentos",
+    "title": "O que dizem sobre mim",
+    "subtitle": "Experiências reais de clientes e colaboradores sobre trabalhar juntos: projetos, resultados e histórias contadas por eles.",
+    "rating": "Avaliação",
+    "form": {
+      "title": "Deixe um depoimento",
+      "author_name": "Nome",
+      "author_name_ph": "O seu nome completo",
+      "role": "Cargo / Empresa",
+      "role_ph": "ex. CTO @ Acme (opcional)",
+      "company_url": "Link da empresa ou projeto",
+      "company_url_ph": "ex. acme.com (opcional)",
+      "email": "Email",
+      "email_ph": "O seu email (opcional, nunca publicado)",
+      "rating": "Avaliação",
+      "content": "O seu depoimento",
+      "content_ph": "Conte a sua experiência a trabalhar comigo...",
+      "submit": "Enviar depoimento",
+      "submitting": "A enviar...",
+      "success": "Obrigado! O seu depoimento está em revisão e aparecerá em breve.",
+      "error_generic": "Ocorreu um erro. Tente novamente mais tarde."
+    },
+    "errors": {
+      "required": "Este campo é obrigatório",
+      "minlength": "Mínimo de {{count}} caracteres",
+      "maxlength": "Máximo de {{count}} caracteres",
+      "email": "Email inválido",
+      "rating_required": "Selecione uma avaliação de 1 a 5 estrelas",
+      "invalid": "Campo inválido"
+    },
+    "list": {
+      "loading": "A carregar depoimentos...",
+      "empty": "Ainda não há depoimentos publicados."
+    },
+    "wall": {
+      "tag": "Depoimentos",
+      "title": "O que dizem sobre mim",
+      "cta": "Deixe o seu depoimento"
+    }
+  },
+  "testimonials_manage": {
+    "title": "Moderar depoimentos",
+    "status_pending": "Pendentes",
+    "status_approved": "Aprovados",
+    "status_spam": "Spam",
+    "status_all": "Todos",
+    "empty": "Não há depoimentos nesta categoria.",
+    "load_error": "Não foi possível carregar os depoimentos.",
+    "action_error": "A ação falhou. Tente novamente.",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "mark_spam": "Marcar como spam",
+    "toggle_featured": "Mostrar/ocultar na página inicial",
+    "approved": "Depoimento aprovado.",
+    "rejected": "Depoimento rejeitado.",
+    "marked_spam": "Depoimento marcado como spam.",
+    "featured_on": "Em destaque",
+    "featured_off": "Removido da página inicial.",
+    "deleted": "Depoimento eliminado.",
+    "confirm_delete": "Eliminar definitivamente este depoimento?",
+    "spam_score": "Pontuação de spam",
+    "spam_score_tooltip": "Pontuação automática de deteção de spam (0-100, quanto mais alto, mais suspeito)",
     "prev_page": "Anterior",
     "next_page": "Seguinte"
   },

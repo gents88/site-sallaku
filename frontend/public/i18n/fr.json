@@ -13,7 +13,8 @@
     "login": "Connexion",
     "admin": "Admin",
     "dashboard": "Dashboard",
-    "ai_tools": "IA & Outils"
+    "ai_tools": "IA & Outils",
+    "testimonials": "Témoignages"
   },
   "lang": {
     "label": "Langue",
@@ -616,6 +617,72 @@
     "marked_spam": "Note marquée comme spam.",
     "deleted": "Note supprimée.",
     "confirm_delete": "Supprimer définitivement cette note ?",
+    "spam_score": "Score de spam",
+    "spam_score_tooltip": "Score automatique de détection de spam (0-100, plus élevé = plus suspect)",
+    "prev_page": "Précédent",
+    "next_page": "Suivant"
+  },
+  "testimonials": {
+    "tag": "Témoignages",
+    "title": "Ce que l'on dit de moi",
+    "subtitle": "Des retours réels de clients et collaborateurs sur notre collaboration : projets, résultats et expériences racontés par eux-mêmes.",
+    "rating": "Note",
+    "form": {
+      "title": "Laisser un témoignage",
+      "author_name": "Nom",
+      "author_name_ph": "Votre nom complet",
+      "role": "Poste / Entreprise",
+      "role_ph": "ex. CTO @ Acme (facultatif)",
+      "company_url": "Lien de l'entreprise ou du projet",
+      "company_url_ph": "ex. acme.com (facultatif)",
+      "email": "Email",
+      "email_ph": "Votre email (facultatif, jamais publié)",
+      "rating": "Note",
+      "content": "Votre témoignage",
+      "content_ph": "Racontez votre expérience de travail avec moi...",
+      "submit": "Envoyer le témoignage",
+      "submitting": "Envoi en cours...",
+      "success": "Merci ! Votre témoignage est en cours de vérification et apparaîtra bientôt.",
+      "error_generic": "Une erreur est survenue. Veuillez réessayer plus tard."
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "minlength": "Minimum {{count}} caractères",
+      "maxlength": "Maximum {{count}} caractères",
+      "email": "Email invalide",
+      "rating_required": "Sélectionnez une note de 1 à 5 étoiles",
+      "invalid": "Champ invalide"
+    },
+    "list": {
+      "loading": "Chargement des témoignages...",
+      "empty": "Aucun témoignage publié pour le moment."
+    },
+    "wall": {
+      "tag": "Témoignages",
+      "title": "Ce que l'on dit de moi",
+      "cta": "Laisser votre témoignage"
+    }
+  },
+  "testimonials_manage": {
+    "title": "Modérer les témoignages",
+    "status_pending": "En attente",
+    "status_approved": "Approuvés",
+    "status_spam": "Spam",
+    "status_all": "Tous",
+    "empty": "Aucun témoignage dans cette catégorie.",
+    "load_error": "Impossible de charger les témoignages.",
+    "action_error": "L'action a échoué. Veuillez réessayer.",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "mark_spam": "Marquer comme spam",
+    "toggle_featured": "Afficher/masquer sur la page d'accueil",
+    "approved": "Témoignage approuvé.",
+    "rejected": "Témoignage rejeté.",
+    "marked_spam": "Témoignage marqué comme spam.",
+    "featured_on": "En vedette",
+    "featured_off": "Retiré de la page d'accueil.",
+    "deleted": "Témoignage supprimé.",
+    "confirm_delete": "Supprimer définitivement ce témoignage ?",
     "spam_score": "Score de spam",
     "spam_score_tooltip": "Score automatique de détection de spam (0-100, plus élevé = plus suspect)",
     "prev_page": "Précédent",

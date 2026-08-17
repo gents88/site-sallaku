@@ -13,7 +13,8 @@
     "login": "Anmelden",
     "admin": "Admin",
     "dashboard": "Dashboard",
-    "ai_tools": "KI & Tools"
+    "ai_tools": "KI & Tools",
+    "testimonials": "Referenzen"
   },
   "lang": {
     "label": "Sprache",
@@ -616,6 +617,72 @@
     "marked_spam": "Notiz als Spam markiert.",
     "deleted": "Notiz gelöscht.",
     "confirm_delete": "Diese Notiz endgültig löschen?",
+    "spam_score": "Spam-Bewertung",
+    "spam_score_tooltip": "Automatische Spam-Erkennungsbewertung (0-100, höher = verdächtiger)",
+    "prev_page": "Zurück",
+    "next_page": "Weiter"
+  },
+  "testimonials": {
+    "tag": "Referenzen",
+    "title": "Was andere sagen",
+    "subtitle": "Echte Rückmeldungen von Kunden und Mitarbeitern zur Zusammenarbeit – Projekte, Ergebnisse und Erfahrungen aus erster Hand.",
+    "rating": "Bewertung",
+    "form": {
+      "title": "Referenz hinterlassen",
+      "author_name": "Name",
+      "author_name_ph": "Ihr vollständiger Name",
+      "role": "Position / Unternehmen",
+      "role_ph": "z. B. CTO @ Acme (optional)",
+      "company_url": "Link zum Unternehmen oder Projekt",
+      "company_url_ph": "z. B. acme.com (optional)",
+      "email": "E-Mail",
+      "email_ph": "Ihre E-Mail (optional, wird nie veröffentlicht)",
+      "rating": "Bewertung",
+      "content": "Ihre Referenz",
+      "content_ph": "Erzählen Sie von Ihrer Erfahrung bei der Zusammenarbeit mit mir...",
+      "submit": "Referenz senden",
+      "submitting": "Wird gesendet...",
+      "success": "Danke! Ihre Referenz wird geprüft und erscheint in Kürze.",
+      "error_generic": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich",
+      "minlength": "Mindestens {{count}} Zeichen",
+      "maxlength": "Höchstens {{count}} Zeichen",
+      "email": "Ungültige E-Mail",
+      "rating_required": "Bitte wählen Sie eine Bewertung von 1 bis 5 Sternen",
+      "invalid": "Ungültiges Feld"
+    },
+    "list": {
+      "loading": "Referenzen werden geladen...",
+      "empty": "Noch keine Referenzen veröffentlicht."
+    },
+    "wall": {
+      "tag": "Referenzen",
+      "title": "Was andere sagen",
+      "cta": "Hinterlassen Sie Ihre Referenz"
+    }
+  },
+  "testimonials_manage": {
+    "title": "Referenzen moderieren",
+    "status_pending": "Ausstehend",
+    "status_approved": "Genehmigt",
+    "status_spam": "Spam",
+    "status_all": "Alle",
+    "empty": "Keine Referenzen in dieser Kategorie.",
+    "load_error": "Referenzen konnten nicht geladen werden.",
+    "action_error": "Aktion fehlgeschlagen. Bitte erneut versuchen.",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "mark_spam": "Als Spam markieren",
+    "toggle_featured": "Auf der Startseite anzeigen/ausblenden",
+    "approved": "Referenz genehmigt.",
+    "rejected": "Referenz abgelehnt.",
+    "marked_spam": "Referenz als Spam markiert.",
+    "featured_on": "Hervorgehoben",
+    "featured_off": "Von der Startseite entfernt.",
+    "deleted": "Referenz gelöscht.",
+    "confirm_delete": "Diese Referenz endgültig löschen?",
     "spam_score": "Spam-Bewertung",
     "spam_score_tooltip": "Automatische Spam-Erkennungsbewertung (0-100, höher = verdächtiger)",
     "prev_page": "Zurück",
