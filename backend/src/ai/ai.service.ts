@@ -14,7 +14,9 @@ interface GroqMessage {
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private readonly model = 'llama-3.3-70b-versatile';
+  private readonly model = 'openai/gpt-oss-120b';
+  // Provider alternativo (Gemini) — tenuto per eventuale ripristino futuro, vedi callGemini() più sotto.
+  // private readonly geminiModel = 'gemini-flash-lite-latest';
 
   constructor(private readonly config: ConfigService) {}
 
@@ -42,7 +44,7 @@ export class AiService {
     throw new BadRequestException(`Unsupported file type: ${file.mimetype || ext}. Supported: PDF, TXT, DOCX.`);
   }
 
-  // ── GROQ API ─────────────────────────────────────────────────────────
+  // ── GROQ API (provider attivo) ──────────────────────────────────────────
 
   private async callGroq(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
     const apiKey = this.config.get<string>('GROQ_API_KEY');
@@ -67,6 +69,43 @@ export class AiService {
     const data = await res.json() as { choices: { message: { content: string } }[] };
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
+
+  // ── GOOGLE GEMINI API (disattivato, tenuto per eventuale ripristino futuro) ──
+  //
+  // private async callGemini(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
+  //   const apiKey = this.config.get<string>('GEMINI_API_KEY');
+  //   if (!apiKey) throw new Error('GEMINI_API_KEY is not configured');
+  //
+  //   const systemText = messages.filter((m) => m.role === 'system').map((m) => m.content).join('\n\n');
+  //   const contents = messages
+  //     .filter((m) => m.role !== 'system')
+  //     .map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
+  //
+  //   const res = await fetch(
+  //     `https://generativelanguage.googleapis.com/v1beta/models/${this.geminiModel}:generateContent?key=${apiKey}`,
+  //     {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({
+  //         ...(systemText ? { system_instruction: { parts: [{ text: systemText }] } } : {}),
+  //         contents,
+  //         generationConfig: { maxOutputTokens: maxTokens, temperature: 0.7 },
+  //       }),
+  //       signal: AbortSignal.timeout(60_000),
+  //     },
+  //   );
+  //
+  //   if (!res.ok) {
+  //     const text = await res.text();
+  //     this.logger.error(`Gemini ${res.status}: ${text}`);
+  //     throw new Error(`Gemini API error ${res.status}`);
+  //   }
+  //
+  //   const data = await res.json() as {
+  //     candidates?: { content?: { parts?: { text?: string }[] } }[];
+  //   };
+  //   return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? '';
+  // }
 
   private parseJson<T>(raw: string): T {
     const match = raw.match(/\{[\s\S]*\}/);

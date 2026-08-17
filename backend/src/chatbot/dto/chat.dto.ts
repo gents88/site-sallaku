@@ -12,6 +12,12 @@ export class SendMessageDto {
   @IsString()
   @IsOptional()
   sessionId?: string;
+
+  @ApiPropertyOptional({ description: 'UI language code of the user (e.g. it, en, sq, es, pt, fr, de)' })
+  @IsString()
+  @IsOptional()
+  @MaxLength(5)
+  lang?: string;
 }
 
 export class SendTranscriptDto {

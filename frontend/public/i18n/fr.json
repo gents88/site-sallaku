@@ -1,5 +1,6 @@
 {
   "nav": {
+    "home": "Accueil",
     "about": "À propos",
     "tech": "Stack Technique",
     "projects": "Projets",
@@ -8,6 +9,7 @@
     "skills": "Soft Skills",
     "contact": "Contact",
     "blog": "Blog",
+    "more": "Plus",
     "login": "Connexion",
     "admin": "Admin",
     "dashboard": "Dashboard",
@@ -335,6 +337,7 @@
     "manage_projects": "Gérer les Projets",
     "manage_experiences": "Gérer les Expériences",
     "manage_blog": "Gérer le Blog",
+    "manage_notes": "Modérer les notes",
     "edit_about": "Modifier About",
     "logout": "Déconnexion",
     "loading": "Chargement…",
@@ -562,6 +565,61 @@
       "copyLink": "Copier le lien",
       "linkCopied": "Lien copié !"
     }
+  },
+  "notes": {
+    "title": "Notes des lecteurs",
+    "count_singular": "{{count}} note",
+    "count_plural": "{{count}} notes",
+    "form": {
+      "title": "Écrire une note",
+      "description": "Partagez votre avis, une suggestion ou un compliment",
+      "name": "Nom",
+      "name_ph": "Votre nom",
+      "email": "Email",
+      "email_ph": "Votre email",
+      "content": "Note",
+      "content_ph": "Écrivez votre message...",
+      "optional": "(facultatif)",
+      "submit": "Publier la note",
+      "submitting": "Envoi en cours...",
+      "success": "Votre note a été publiée avec succès !",
+      "error_generic": "Une erreur est survenue. Veuillez réessayer plus tard."
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "minlength": "Minimum {{count}} caractères",
+      "maxlength": "Maximum {{count}} caractères",
+      "email": "Email invalide",
+      "invalid": "Champ invalide"
+    },
+    "list": {
+      "title": "Dernières notes",
+      "loading": "Chargement des notes...",
+      "empty": "Aucune note pour le moment. Soyez le premier à commenter !",
+      "anonymous": "Anonyme"
+    }
+  },
+  "notes_manage": {
+    "title": "Modérer les notes des lecteurs",
+    "status_pending": "En attente",
+    "status_approved": "Approuvées",
+    "status_spam": "Spam",
+    "status_all": "Toutes",
+    "empty": "Aucune note dans cette catégorie.",
+    "load_error": "Impossible de charger les notes.",
+    "action_error": "Échec de l'action. Veuillez réessayer.",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "mark_spam": "Marquer comme spam",
+    "approved": "Note approuvée.",
+    "rejected": "Note rejetée.",
+    "marked_spam": "Note marquée comme spam.",
+    "deleted": "Note supprimée.",
+    "confirm_delete": "Supprimer définitivement cette note ?",
+    "spam_score": "Score de spam",
+    "spam_score_tooltip": "Score automatique de détection de spam (0-100, plus élevé = plus suspect)",
+    "prev_page": "Précédent",
+    "next_page": "Suivant"
   },
   "chatbot_ui": {
     "title": "Assistant AI",
