@@ -196,8 +196,11 @@ export class LanguageService {
       this._current.set(lang);
       this.applyLanguageAccent(lang);
     }
+    // Not browser-gated: this must also run at SSR/prerender time so the
+    // static HTML shipped for /de/, /pt/... URLs declares the right
+    // language instead of inheriting index.html's default lang="it".
+    this.doc.documentElement.lang = lang;
     if (isPlatformBrowser(this.platformId)) {
-      this.doc.documentElement.lang = lang;
       if (explicit) {
         // Whatever prefixed URL the visitor is actually on (whether they
         // clicked the switcher, a bookmark, or a search result) becomes
