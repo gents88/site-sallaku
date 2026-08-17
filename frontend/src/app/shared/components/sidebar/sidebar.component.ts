@@ -1,4 +1,4 @@
-import { Component, HostListener, computed, ElementRef } from '@angular/core';
+import { Component, HostListener, computed, effect, ElementRef } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
@@ -76,7 +76,15 @@ export class SidebarComponent {
     this.isAdminUser() ? ADMIN_NAV : ADMIN_NAV.filter(group => group.id !== 'overview' && group.id !== 'content'),
   );
 
-  constructor(private auth: AuthService, private drawer: DrawerService, private elementRef: ElementRef<HTMLElement>) {}
+  constructor(private auth: AuthService, private drawer: DrawerService, private elementRef: ElementRef<HTMLElement>) {
+    // All'apertura il focus tastiera restava sul trigger dietro il backdrop
+    // (quindi "sulla pagina"): lo sposta dentro il drawer, sul close-btn.
+    effect(() => {
+      if (this.drawerOpen()) {
+        this.elementRef.nativeElement.querySelector<HTMLElement>('.close-btn')?.focus();
+      }
+    });
+  }
 
   closeDrawer(): void {
     this.drawer.close();

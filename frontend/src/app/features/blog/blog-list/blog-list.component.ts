@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +14,7 @@ import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

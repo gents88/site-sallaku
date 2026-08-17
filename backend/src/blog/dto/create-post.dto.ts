@@ -1,17 +1,20 @@
 import {
   IsString, IsArray, IsOptional, IsBoolean, MaxLength, MinLength, Matches, IsIn, IsUrl,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BLOG_LANGUAGES, BlogLanguage } from '../blog.constants';
 
 export class CreatePostDto {
   @ApiProperty({ example: 'Building a CMS with NestJS' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @MinLength(3)
   @MaxLength(200)
   title: string;
 
   @ApiPropertyOptional({ example: 'A practical guide to turning source material into readable content.' })
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(220)
@@ -57,6 +60,7 @@ export class CreatePostDto {
   published?: boolean;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(200)
@@ -70,12 +74,14 @@ export class CreatePostDto {
 
   // ── Multilanguage translations ─────────────────────────────
   @ApiPropertyOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(200)
   title_en?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(200)
@@ -104,6 +110,7 @@ export class CreatePostDto {
   excerpt_sq?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(200)
@@ -121,6 +128,7 @@ export class CreatePostDto {
   excerpt_pt?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(200)
@@ -138,6 +146,7 @@ export class CreatePostDto {
   excerpt_es?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(200)
@@ -155,6 +164,7 @@ export class CreatePostDto {
   excerpt_fr?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @IsString()
   @IsOptional()
   @MaxLength(200)

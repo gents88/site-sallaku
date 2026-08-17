@@ -87,35 +87,44 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
 
   private needsPreviewHighlight = false;
 
+  // Matches backend DTO limits (create-post.dto.ts) — kept here so the form
+  // can block input before it ever reaches the API instead of round-tripping
+  // a 400 (excerpt/meta fields have no visible cap in the UI otherwise).
+  readonly TITLE_MAX = 200;
+  readonly SUBTITLE_MAX = 220;
+  readonly EXCERPT_MAX = 300;
+  readonly META_TITLE_MAX = 200;
+  readonly META_DESCRIPTION_MAX = 300;
+
   form = this.fb.group({
-    title:           ['', [Validators.required, Validators.minLength(3)]],
-    subtitle:        [''],
+    title:           ['', [Validators.required, Validators.minLength(3), Validators.maxLength(this.TITLE_MAX)]],
+    subtitle:        ['', [Validators.maxLength(this.SUBTITLE_MAX)]],
     slug:            [''],
     language:        ['it' as BlogLanguage],
     content:         ['', [Validators.required, Validators.minLength(10)]],
-    excerpt:         [''],
+    excerpt:         ['', [Validators.maxLength(this.EXCERPT_MAX)]],
     coverImage:      [''],
-    metaTitle:       [''],
-    metaDescription: [''],
+    metaTitle:       ['', [Validators.maxLength(this.META_TITLE_MAX)]],
+    metaDescription: ['', [Validators.maxLength(this.META_DESCRIPTION_MAX)]],
     // Translations
-    title_en:        [''],
-    title_sq:        [''],
-    title_pt:        [''],
-    title_es:        [''],
-    title_fr:        [''],
-    title_de:        [''],
+    title_en:        ['', [Validators.maxLength(this.TITLE_MAX)]],
+    title_sq:        ['', [Validators.maxLength(this.TITLE_MAX)]],
+    title_pt:        ['', [Validators.maxLength(this.TITLE_MAX)]],
+    title_es:        ['', [Validators.maxLength(this.TITLE_MAX)]],
+    title_fr:        ['', [Validators.maxLength(this.TITLE_MAX)]],
+    title_de:        ['', [Validators.maxLength(this.TITLE_MAX)]],
     content_en:      [''],
     content_sq:      [''],
     content_pt:      [''],
     content_es:      [''],
     content_fr:      [''],
     content_de:      [''],
-    excerpt_en:      [''],
-    excerpt_sq:      [''],
-    excerpt_pt:      [''],
-    excerpt_es:      [''],
-    excerpt_fr:      [''],
-    excerpt_de:      [''],
+    excerpt_en:      ['', [Validators.maxLength(this.EXCERPT_MAX)]],
+    excerpt_sq:      ['', [Validators.maxLength(this.EXCERPT_MAX)]],
+    excerpt_pt:      ['', [Validators.maxLength(this.EXCERPT_MAX)]],
+    excerpt_es:      ['', [Validators.maxLength(this.EXCERPT_MAX)]],
+    excerpt_fr:      ['', [Validators.maxLength(this.EXCERPT_MAX)]],
+    excerpt_de:      ['', [Validators.maxLength(this.EXCERPT_MAX)]],
   });
 
   // ── Active-language control getters ────────────────────────────────────────
@@ -297,7 +306,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       filter(() => {
         const title = (this.form.get('title')?.value || '').trim();
         const content = (this.form.get('content')?.value || '').trim();
-        return title.length >= 3 && content.length >= 10;
+        return title.length >= 3 && content.length >= 10 && this.form.valid;
       }),
       takeUntil(this.destroy$),
     ).subscribe(() => this.performAutoSave());
@@ -354,6 +363,11 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.form.get('content')?.markAsTouched();
       this.activeTab = 'it';
       this.snackBar.open('Italian title and content are required.', 'Close', { duration: 3000 });
+      return;
+    }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.snackBar.open(`Excerpt/subtitle/meta fields too long (max ${this.EXCERPT_MAX} chars for excerpt).`, 'Close', { duration: 4000 });
       return;
     }
 
@@ -683,9 +697,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'en'))      : Promise.resolve(''),
       ]);
       this.form.patchValue({
-        title_en:   titleEn,
+        title_en:   this.truncate(titleEn, this.TITLE_MAX),
         content_en: contentEn ? this.textToHtml(contentEn) : '',
-        excerpt_en: excerptEn,
+        excerpt_en: this.truncate(excerptEn, this.EXCERPT_MAX),
       });
 
       const [titleSq, contentSq, excerptSq] = await Promise.all([
@@ -694,9 +708,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'sq'))      : Promise.resolve(''),
       ]);
       this.form.patchValue({
-        title_sq:   titleSq,
+        title_sq:   this.truncate(titleSq, this.TITLE_MAX),
         content_sq: contentSq ? this.textToHtml(contentSq) : '',
-        excerpt_sq: excerptSq,
+        excerpt_sq: this.truncate(excerptSq, this.EXCERPT_MAX),
       });
 
       const [titlePt, contentPt, excerptPt] = await Promise.all([
@@ -705,9 +719,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'pt'))      : Promise.resolve(''),
       ]);
       this.form.patchValue({
-        title_pt:   titlePt,
+        title_pt:   this.truncate(titlePt, this.TITLE_MAX),
         content_pt: contentPt ? this.textToHtml(contentPt) : '',
-        excerpt_pt: excerptPt,
+        excerpt_pt: this.truncate(excerptPt, this.EXCERPT_MAX),
       });
 
       const [titleEs, contentEs, excerptEs] = await Promise.all([
@@ -716,9 +730,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'es'))      : Promise.resolve(''),
       ]);
       this.form.patchValue({
-        title_es:   titleEs,
+        title_es:   this.truncate(titleEs, this.TITLE_MAX),
         content_es: contentEs ? this.textToHtml(contentEs) : '',
-        excerpt_es: excerptEs,
+        excerpt_es: this.truncate(excerptEs, this.EXCERPT_MAX),
       });
 
       const [titleFr, contentFr, excerptFr] = await Promise.all([
@@ -727,9 +741,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'fr'))      : Promise.resolve(''),
       ]);
       this.form.patchValue({
-        title_fr:   titleFr,
+        title_fr:   this.truncate(titleFr, this.TITLE_MAX),
         content_fr: contentFr ? this.textToHtml(contentFr) : '',
-        excerpt_fr: excerptFr,
+        excerpt_fr: this.truncate(excerptFr, this.EXCERPT_MAX),
       });
 
       const [titleDe, contentDe, excerptDe] = await Promise.all([
@@ -738,9 +752,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt      ? firstValueFrom(this.blogService.translateText(excerpt, 'it', 'de'))      : Promise.resolve(''),
       ]);
       this.form.patchValue({
-        title_de:   titleDe,
+        title_de:   this.truncate(titleDe, this.TITLE_MAX),
         content_de: contentDe ? this.textToHtml(contentDe) : '',
-        excerpt_de: excerptDe,
+        excerpt_de: this.truncate(excerptDe, this.EXCERPT_MAX),
       });
 
       this.snackBar.open('Translated to EN, SQ, PT, ES, FR, DE. Review before publishing.', 'Close', { duration: 4000 });
@@ -750,6 +764,11 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.translating = false;
       this.cdr.detectChanges();
     }
+  }
+
+  /** Translated text can run longer than the source (e.g. German), so clamp to the backend's DTO limits before patching the form. */
+  private truncate(text: string, max: number): string {
+    return text.length > max ? text.slice(0, max - 1).trimEnd() + '…' : text;
   }
 
   private stripHtml(html: string): string {

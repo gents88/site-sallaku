@@ -1,0 +1,95 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'notes_manage.title' | translate }}</h1>
+    </div>
+  </header>
+
+  <!-- Status tabs -->
+  <div class="status-tabs">
+    @for (s of statuses; track s) {
+      <button
+        type="button"
+        class="status-tab"
+        [class.active]="status === s"
+        (click)="switchStatus(s)"
+      >
+        {{ ('notes_manage.status_' + s) | translate }}
+        @if (status === s) { <span class="status-tab__count">{{ total }}</span> }
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else if (!notes.length) {
+    <p class="empty-state">{{ 'notes_manage.empty' | translate }}</p>
+  } @else {
+    <div class="list">
+      @for (note of notes; track note.id) {
+        <div class="card note-row" [class.note-row--busy]="actioningId === note.id">
+          <div class="note-row__main">
+            <div class="note-row__meta">
+              <a [routerLink]="['/blog', note.articleSlug]" target="_blank" rel="noopener" class="note-row__article">
+                {{ note.articleTitle }}
+              </a>
+              <span class="note-row__dot">·</span>
+              <span class="note-row__author">{{ note.name || ('notes.list.anonymous' | translate) }}</span>
+              @if (note.email) {
+                <span class="note-row__email">({{ note.email }})</span>
+              }
+              <span class="note-row__dot">·</span>
+              <time class="note-row__date">{{ note.createdAt | date:'medium' }}</time>
+              @if (note.isSpam) {
+                <span class="badge badge--spam">{{ 'notes_manage.status_spam' | translate }}</span>
+              } @else if (note.isApproved) {
+                <span class="badge badge--approved">{{ 'notes_manage.status_approved' | translate }}</span>
+              } @else {
+                <span class="badge badge--pending">{{ 'notes_manage.status_pending' | translate }}</span>
+              }
+              <span class="note-row__score" [matTooltip]="'notes_manage.spam_score_tooltip' | translate">
+                {{ 'notes_manage.spam_score' | translate }}: {{ note.spamScore }}
+              </span>
+            </div>
+            <p class="note-row__content">{{ note.content }}</p>
+          </div>
+          <div class="note-row__actions">
+            @if (!note.isApproved || note.isSpam) {
+              <button mat-icon-button color="primary" [disabled]="actioningId === note.id"
+                      (click)="approve(note)" [attr.title]="'notes_manage.approve' | translate">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            }
+            @if (note.isApproved) {
+              <button mat-icon-button [disabled]="actioningId === note.id"
+                      (click)="reject(note)" [attr.title]="'notes_manage.reject' | translate">
+                <mat-icon>unpublished</mat-icon>
+              </button>
+            }
+            @if (!note.isSpam) {
+              <button mat-icon-button [disabled]="actioningId === note.id"
+                      (click)="markSpam(note)" [attr.title]="'notes_manage.mark_spam' | translate">
+                <mat-icon>report</mat-icon>
+              </button>
+            }
+            <button mat-icon-button color="warn" [disabled]="actioningId === note.id"
+                    (click)="delete(note)" [attr.title]="'common.delete' | translate">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="pagination">
+      <button mat-button [disabled]="skip === 0" (click)="prevPage()">
+        <mat-icon>chevron_left</mat-icon> {{ 'notes_manage.prev_page' | translate }}
+      </button>
+      <span class="pagination__info">{{ skip + 1 }}–{{ skip + notes.length }} / {{ total }}</span>
+      <button mat-button [disabled]="skip + notes.length >= total" (click)="nextPage()">
+        {{ 'notes_manage.next_page' | translate }} <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  }
+</div>

@@ -1,3 +1,25 @@
+.preview-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 780px;
+  margin: 0 auto 1.5rem;
+  padding: 0.75rem 1rem;
+  background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+
+  mat-icon { color: var(--color-warning); flex-shrink: 0; }
+  span { flex: 1; }
+
+  .btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+}
+
 .post-article {
   max-width: 780px;
   margin-inline: auto;
@@ -12,7 +34,7 @@
 
   &__header {
     margin-bottom: 2rem;
-    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0.75rem 0; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0.75rem 0; text-transform: none; }
   }
 
   &__tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
@@ -21,7 +43,7 @@
     line-height: 1.85;
     font-size: 1.05rem;
 
-    h2, h3 { margin: 2rem 0 0.75rem; }
+    h2, h3 { margin: 2rem 0 0.75rem; text-transform: none; }
     p { margin-bottom: 1.25rem; }
     code {
       background: var(--color-bg-alt);

@@ -24,10 +24,10 @@
       <div class="nav-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
     }
 
-    <!-- Desktop nav links -->
+    <!-- Desktop nav links (raddoppia anche come sheet "Altro" sul mobile) -->
     <ul class="nav-menu" [class.open]="mobileMenuOpen" id="nav-menu" role="navigation">
       @for (link of desktopNavLinks; track link.labelKey) {
-        <li>
+        <li [class.nav-item-mobile-hide]="bottomTabRoutes.has(link.route ?? '')">
           <a [routerLink]="link.route | langUrl"
              class="nav-link"
              [class.active]="isHomepage ? activeSection === (link.route ?? '').slice(1) : false"
@@ -38,15 +38,6 @@
       }
       <li class="nav-item-mobile-drawer">
         <button type="button" class="nav-link nav-link--button" (click)="openDrawerFromMenu()">{{ drawerToggleLabel }}</button>
-      </li>
-
-      <li class="nav-item-mobile-auth">
-        @if (!auth.isLoggedIn()) {
-          <button type="button" class="nav-link nav-link--button" (click)="openLoginModal()">{{ 'nav.login' | translate }}</button>
-        }
-        @if (auth.isLoggedIn()) {
-          <button type="button" class="nav-link nav-link--button" (click)="openAccountModal()">{{ auth.currentUser()?.name || 'Admin' }}</button>
-        }
       </li>
     </ul>
 
@@ -69,14 +60,76 @@
         </button>
       }
 
-      <!-- Hamburger -->
-      <button class="nav-toggle" [class.active]="mobileMenuOpen"
-              (click)="toggleMenu()" 
-              [attr.aria-expanded]="mobileMenuOpen"
-              aria-label="Toggle navigation menu"
-              aria-controls="nav-menu">
-        <span class="hamburger-bar" aria-hidden="true"></span>
-      </button>
     </div>
   </div>
 </nav>
+
+<!-- Bottom tab bar (solo mobile). Fratello di <nav>, non figlio: se stesse
+     dentro .navbar, il backdrop-filter di .navbar.scrolled creerebbe un
+     nuovo containing block e questo elemento position:fixed si ancorerebbe
+     al fondo della navbar invece che al fondo reale della viewport. -->
+<div class="bottom-tabbar" role="navigation" aria-label="Bottom navigation">
+    <a [routerLink]="'/homepage' | langUrl"
+       class="tab-item"
+       [class.active]="activeBottomTab === 'home'"
+       (click)="closeMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 11.5 12 4l9 7.5"/>
+        <path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"/>
+      </svg>
+      <span>{{ 'nav.home' | translate }}</span>
+    </a>
+
+    <a [routerLink]="'/projects' | langUrl"
+       class="tab-item"
+       [class.active]="activeBottomTab === 'projects'"
+       (click)="closeMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/>
+        <rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/>
+        <rect x="3.5" y="13.5" width="7" height="7" rx="1.2"/>
+        <rect x="13.5" y="13.5" width="7" height="7" rx="1.2"/>
+      </svg>
+      <span>{{ 'nav.projects' | translate }}</span>
+    </a>
+
+    <a [routerLink]="'/services' | langUrl"
+       class="tab-item"
+       [class.active]="activeBottomTab === 'services'"
+       (click)="closeMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="7.5" width="18" height="12" rx="2"/>
+        <path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5"/>
+      </svg>
+      <span>{{ 'nav.services' | translate }}</span>
+    </a>
+
+    <button type="button" class="tab-item"
+            [class.active]="mobileMenuOpen"
+            (click)="toggleMenu()"
+            [attr.aria-expanded]="mobileMenuOpen"
+            aria-controls="nav-menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="5" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+        <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+        <circle cx="19" cy="12" r="1.3" fill="currentColor" stroke="none"/>
+      </svg>
+      <span>{{ 'nav.more' | translate }}</span>
+    </button>
+
+    @if (!auth.isLoggedIn()) {
+      <button type="button" class="tab-item" (click)="openLoginModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.4"/>
+          <path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/>
+        </svg>
+        <span>{{ 'nav.login' | translate }}</span>
+      </button>
+    }
+    @if (auth.isLoggedIn()) {
+      <button type="button" class="tab-item" (click)="openAccountModal()">
+        <span class="tab-avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</span>
+        <span>{{ auth.currentUser()?.name || 'Admin' }}</span>
+      </button>
+    }
+</div>

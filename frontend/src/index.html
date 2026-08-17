@@ -33,28 +33,30 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Google Fonts — async, non-render-blocking -->
+    <!-- Google Fonts — async, non-render-blocking. Only the Inter/JetBrains
+         Mono text faces still come from Google; the icon fonts below are
+         self-hosted (see comment there for why). -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" /></noscript>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" /></noscript>
-    <!-- Font Awesome 6 — async, non-render-blocking -->
-    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css" /></noscript>
-    <!-- Font Awesome ships font-display:block (Lighthouse: ~2.5s combined FCP
-         cost on this page). Declared after FA's own <link> so it wins the
-         same-family/weight/style @font-face resolution (document order),
-         same font files. Using `optional` rather than `swap`: icons render
-         only if the font arrives within the ~100ms block window, otherwise
-         they're skipped for this page view instead of popping in late —
-         `swap`'s unbounded late swap was reflowing icon-heavy rows (footer,
-         cookie banner) well after first paint, the main source of this
-         page's CLS. -->
-    <style>
-      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 900; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-solid-900.woff2") format("woff2"); }
-      @font-face { font-family: "Font Awesome 6 Free"; font-style: normal; font-weight: 400; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-regular-400.woff2") format("woff2"); }
-      @font-face { font-family: "Font Awesome 6 Brands"; font-style: normal; font-weight: 400; font-display: optional; src: url("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/webfonts/fa-brands-400.woff2") format("woff2"); }
-    </style>
+    <!-- Material Icons and Font Awesome are self-hosted from /assets/fonts
+         instead of Google Fonts / jsdelivr. Three independent bugs traced
+         back to those being third-party CDNs: (1) font-display:optional's
+         ~100ms window routinely missed on cold cross-origin connections,
+         permanently hiding icons for that page view; (2) a hand-copied
+         gstatic URL silently went stale when Google rotated the file hash
+         under the same version; (3) some visitors' ad/tracker blockers
+         reject requests to fonts.googleapis.com / cdn.jsdelivr.net outright,
+         which no amount of preconnect/font-display tuning can fix — same
+         origin as the page itself isn't a domain a blocklist targets, and
+         there's no cross-origin handshake left to race against. Same-origin
+         hosting also means a plain `swap` is safe: no third-party latency
+         to hide, so the font arrives fast enough that the invisible-text
+         window is negligible, without `optional`'s risk of a permanent miss
+         or `block`'s multi-second invisible-text stall. -->
+    <link rel="preload" as="style" href="/assets/fonts/material-icons/material-icons.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/assets/fonts/material-icons/material-icons.css" /></noscript>
+    <link rel="preload" as="style" href="/assets/fonts/fontawesome/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css" /></noscript>
     <!-- Google Analytics 4 (loaded conditionally by SeoService when ID is set) -->
     <script>
       window.dataLayer = window.dataLayer || [];
