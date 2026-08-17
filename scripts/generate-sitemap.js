@@ -13,7 +13,6 @@ const routes = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
   { loc: '/projects', changefreq: 'monthly', priority: '0.95' },
   { loc: '/blog', changefreq: 'weekly', priority: '0.9' },
-  { loc: '/services', changefreq: 'monthly', priority: '0.8' },
   { loc: '/contact', changefreq: 'yearly', priority: '0.7' },
 
   // ── AI & PDF Tools — public tool pages (Allow-listed in robots.txt) ──
