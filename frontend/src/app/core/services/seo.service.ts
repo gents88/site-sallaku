@@ -9,6 +9,16 @@ import { Lang, NON_DEFAULT_LANGS, stripLangPrefix, withLangPrefix } from './lang
 
 export const SITE_ORIGIN = 'https://gentsallaku.it';
 
+/**
+ * basePaths that intentionally canonicalize to the homepage instead of
+ * themselves (see home.component.ts's ngOnInit comment — About/Services/
+ * Tech-stack/Experience/Skills are scroll-anchor sections on the same
+ * physical page, not separate content). Google ignores hreflang declared
+ * on a page whose own canonical points elsewhere, so these pages skip
+ * emitting hreflang entirely rather than shipping tags that get discarded.
+ */
+const HOMEPAGE_ALIAS_BASE_PATHS = new Set(['/about', '/tech-stack', '/experience', '/skills', '/services']);
+
 interface SeoData {
   title?: string;
   description?: string;
@@ -72,8 +82,15 @@ export class SeoService {
     // Canonical link tag
     this.updateCanonical(canonicalUrl);
 
-    // hreflang alternate links (it / en / sq)
-    this.updateHreflang(this.router.url.split('?')[0]);
+    // hreflang alternate links — skipped on homepage-alias pages (see
+    // HOMEPAGE_ALIAS_BASE_PATHS), which never self-canonicalize.
+    const currentPath = this.router.url.split('?')[0];
+    const { basePath } = stripLangPrefix(currentPath);
+    if (HOMEPAGE_ALIAS_BASE_PATHS.has(basePath)) {
+      this.removeHreflang();
+    } else {
+      this.updateHreflang(currentPath);
+    }
 
     // Open Graph
     this.meta.updateTag({ property: 'og:title',       content: pageTitle });
@@ -173,6 +190,11 @@ export class SeoService {
 
     setHref('x-default', `${SITE_ORIGIN}${basePath}`);
     allLangs.forEach(lang => setHref(lang, `${SITE_ORIGIN}${withLangPrefix(basePath, lang)}`));
+  }
+
+  /** Strips all hreflang alternate tags — used on pages that don't self-canonicalize (see HOMEPAGE_ALIAS_BASE_PATHS). */
+  private removeHreflang(): void {
+    this.document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
   }
 
   private loadGtag(id: string): void {
