@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -38,6 +38,7 @@ export class NotesManageComponent implements OnInit {
     private notesAdminService: NotesAdminService,
     private snackBar: MatSnackBar,
     private t: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +56,7 @@ export class NotesManageComponent implements OnInit {
     this.loading = true;
     this.notesAdminService.list(this.status, PAGE_SIZE, this.skip).pipe(
       timeout(15000),
-      finalize(() => { this.loading = false; }),
+      finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: (res) => { this.notes = res.data; this.total = res.total; },
       error: () => {
@@ -96,7 +97,7 @@ export class NotesManageComponent implements OnInit {
   private runAction(note: AdminNote, request$: Observable<unknown>, successKey: string): void {
     this.actioningId = note.id;
     request$.pipe(
-      finalize(() => { this.actioningId = null; }),
+      finalize(() => { this.actioningId = null; this.cdr.markForCheck(); }),
     ).subscribe({
       next: () => {
         this.snackBar.open(this.t.instant(successKey), this.t.instant('common.close'), { duration: 2500 });

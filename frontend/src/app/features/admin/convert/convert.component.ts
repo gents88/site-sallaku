@@ -4,6 +4,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
   ConversionService, ConversionTypeId, CONVERSION_TYPES, ConversionDef,
 } from '../../../core/services/conversion.service';
@@ -24,7 +25,7 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
   selector: 'app-convert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, FileDropzoneDirective],
   template: `
     <!-- ════════════════ LANDING PAGE ════════════════ -->
     <div class="cp-page">
@@ -137,10 +138,11 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
           <!-- Step 1 -->
           <section *ngIf="step() === 'preview'">
             <div class="dz"
+                 appFileDropzone
+                 #dz="fileDropzone"
                  (click)="pick.click()"
-                 (dragover)="$event.preventDefault()"
-                 (drop)="drop($event)"
-                 [class.dz--active]="file()">
+                 (filesDropped)="onFilesDropped($event)"
+                 [class.dz--active]="file() || dz.isDragging">
               <input #pick type="file" hidden
                      (change)="select($event)"
                      [attr.accept]="selectedDef()?.accept || null"
@@ -448,14 +450,14 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.seo.update({
       title: 'Free File Converter — PDF, Word, Excel, Images & More',
       description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
-      url: 'https://gentsallaku.it/dashboard/convert',
+      url: 'https://gentsallaku.it/lab/convert',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free File Converter',
       description: `Convert files between PDF, Word, Excel, images and other formats — ${this.totalCount} conversion types, entirely in the browser.`,
-      url: 'https://gentsallaku.it/dashboard/convert',
+      url: 'https://gentsallaku.it/lab/convert',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -566,7 +568,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
   }
 
   select(e: Event): void { this.load((e.target as HTMLInputElement).files?.[0] ?? null); }
-  drop(e: DragEvent): void { e.preventDefault(); this.load(e.dataTransfer?.files?.[0] ?? null); }
+  onFilesDropped(files: FileList): void { this.load(files[0] ?? null); }
 
   confirm(): void {
     if (!this.file()) return;

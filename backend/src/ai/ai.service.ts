@@ -1,6 +1,7 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
+import { AiProviderService } from '../common/services/ai-provider.service';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { PDFParse } = require('pdf-parse');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -18,7 +19,10 @@ export class AiService {
   // Provider alternativo (Gemini) — tenuto per eventuale ripristino futuro, vedi callGemini() più sotto.
   // private readonly geminiModel = 'gemini-flash-lite-latest';
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly aiProvider: AiProviderService,
+  ) {}
 
   // ── TEXT EXTRACTION ──────────────────────────────────────────────────
 
@@ -47,27 +51,11 @@ export class AiService {
   // ── GROQ API (provider attivo) ──────────────────────────────────────────
 
   private async callGroq(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
-    const apiKey = this.config.get<string>('GROQ_API_KEY');
-    if (!apiKey) throw new Error('GROQ_API_KEY is not configured');
-
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({ model: this.model, messages, max_tokens: maxTokens, temperature: 0.7 }),
-      signal: AbortSignal.timeout(60_000),
+    return this.aiProvider.chatCompletion(messages, {
+      model: this.model,
+      maxTokens,
+      timeoutMs: 60_000,
     });
-
-    if (!res.ok) {
-      const text = await res.text();
-      this.logger.error(`Groq ${res.status}: ${text}`);
-      throw new Error(`Groq API error ${res.status}`);
-    }
-
-    const data = await res.json() as { choices: { message: { content: string } }[] };
-    return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
 
   // ── GOOGLE GEMINI API (disattivato, tenuto per eventuale ripristino futuro) ──

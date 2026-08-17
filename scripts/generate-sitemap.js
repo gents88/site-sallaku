@@ -13,20 +13,21 @@ const routes = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
   { loc: '/projects', changefreq: 'monthly', priority: '0.95' },
   { loc: '/blog', changefreq: 'weekly', priority: '0.9' },
+  { loc: '/testimonials', changefreq: 'weekly', priority: '0.85' },
   { loc: '/contact', changefreq: 'yearly', priority: '0.7' },
 
-  // ── AI & PDF Tools — public tool pages (Allow-listed in robots.txt) ──
-  { loc: '/dashboard/tools', changefreq: 'monthly', priority: '0.9' },
-  { loc: '/dashboard/pdf-translate', changefreq: 'monthly', priority: '0.88' },
-  { loc: '/dashboard/ai-ppt', changefreq: 'monthly', priority: '0.87' },
-  { loc: '/dashboard/pdf-summary', changefreq: 'monthly', priority: '0.86' },
-  { loc: '/dashboard/ai-formatter', changefreq: 'monthly', priority: '0.85' },
-  { loc: '/dashboard/convert', changefreq: 'monthly', priority: '0.84' },
-  { loc: '/dashboard/ocr', changefreq: 'monthly', priority: '0.83' },
-  { loc: '/dashboard/pdf-editor', changefreq: 'monthly', priority: '0.82' },
-  { loc: '/dashboard/viewer', changefreq: 'monthly', priority: '0.8' },
-  { loc: '/dashboard/editor', changefreq: 'monthly', priority: '0.8' },
-  { loc: '/dashboard/scanner', changefreq: 'monthly', priority: '0.8' },
+  // ── AI & PDF Tools — public pages under /lab (moved from /dashboard/*, 2026-08) ──
+  { loc: '/lab', changefreq: 'monthly', priority: '0.9' },
+  { loc: '/lab/pdf-translate', changefreq: 'monthly', priority: '0.88' },
+  { loc: '/lab/ai-ppt', changefreq: 'monthly', priority: '0.87' },
+  { loc: '/lab/pdf-summary', changefreq: 'monthly', priority: '0.86' },
+  { loc: '/lab/ai-formatter', changefreq: 'monthly', priority: '0.85' },
+  { loc: '/lab/convert', changefreq: 'monthly', priority: '0.84' },
+  { loc: '/lab/ocr', changefreq: 'monthly', priority: '0.83' },
+  { loc: '/lab/pdf-editor', changefreq: 'monthly', priority: '0.82' },
+  { loc: '/lab/viewer', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/lab/editor', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/lab/scanner', changefreq: 'monthly', priority: '0.8' },
 ];
 
 const today = formatDate(new Date());

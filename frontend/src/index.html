@@ -30,14 +30,25 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:creator" content="@gentsallaku" />
     <meta name="twitter:image" content="https://gentsallaku.it/assets/og-image.png" />
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Google Fonts — async, non-render-blocking. Only the Inter/JetBrains
-         Mono text faces still come from Google; the icon fonts below are
-         self-hosted (see comment there for why). -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" /></noscript>
+    <!-- Fonts — all self-hosted, no third-party origins left in the critical
+         path. Inter and JetBrains Mono moved here from Google Fonts for the
+         same three reasons documented below for the icon fonts, plus one
+         specific to Inter: it renders the hero <h1>, which is the LCP
+         element on the homepage. A font blocked by an ad blocker or stalled
+         on a cold cross-origin connection was a visible reflow on exactly
+         the metric that matters most.
+
+         Both are variable fonts: one file each covers the full weight range
+         the site uses (Inter 300-900, all seven weights are in use), instead
+         of seven and three separate static requests.
+
+         Inter is preloaded because it's LCP-critical: without it the browser
+         only discovers the font after parsing the stylesheet. JetBrains Mono
+         is not — it's for code blocks, well below the fold. -->
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter/inter-latin.woff2" crossorigin />
+    <link rel="stylesheet" href="/assets/fonts/inter/inter.css" />
+    <link rel="preload" as="style" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" /></noscript>
     <!-- Material Icons and Font Awesome are self-hosted from /assets/fonts
          instead of Google Fonts / jsdelivr. Three independent bugs traced
          back to those being third-party CDNs: (1) font-display:optional's

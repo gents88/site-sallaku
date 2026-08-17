@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,6 +39,7 @@ export class TestimonialsManageComponent implements OnInit {
     private testimonialsAdminService: TestimonialsAdminService,
     private snackBar: MatSnackBar,
     private t: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -56,7 +57,7 @@ export class TestimonialsManageComponent implements OnInit {
     this.loading = true;
     this.testimonialsAdminService.list(this.status, PAGE_SIZE, this.skip).pipe(
       timeout(15000),
-      finalize(() => { this.loading = false; }),
+      finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: (res) => { this.testimonials = res.data; this.total = res.total; },
       error: () => {
@@ -111,7 +112,7 @@ export class TestimonialsManageComponent implements OnInit {
   private runAction(item: AdminTestimonial, request$: Observable<unknown>, successKey: string): void {
     this.actioningId = item.id;
     request$.pipe(
-      finalize(() => { this.actioningId = null; }),
+      finalize(() => { this.actioningId = null; this.cdr.markForCheck(); }),
     ).subscribe({
       next: () => {
         this.snackBar.open(this.t.instant(successKey), this.t.instant('common.close'), { duration: 2500 });
