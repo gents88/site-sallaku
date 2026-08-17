@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -51,12 +51,13 @@ export class AboutManageComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private t: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.aboutService.get().pipe(
       timeout(15000),
-      finalize(() => { this.loading = false; }),
+      finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: about => {
         this.skills = [...(about.skills ?? [])];
@@ -88,10 +89,12 @@ export class AboutManageComponent implements OnInit {
     this.aboutService.update(payload).subscribe({
       next: () => {
         this.saving = false;
+        this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('about_manage.update_success'), this.t.instant('common.close'), { duration: 3000 });
       },
       error: () => {
         this.saving = false;
+        this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('about_manage.update_error'), this.t.instant('common.close'), { duration: 3000 });
       },
     });

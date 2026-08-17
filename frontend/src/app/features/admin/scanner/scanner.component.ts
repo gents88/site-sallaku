@@ -222,14 +222,14 @@ export class ScannerComponent implements OnInit, OnDestroy {
     this.seo.update({
       title: 'Free Document Scanner — Camera to PDF Online',
       description: 'Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup.',
-      url: 'https://gentsallaku.it/dashboard/scanner',
+      url: 'https://gentsallaku.it/lab/scanner',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free Document Scanner',
       description: 'Scan documents with a webcam or phone camera, crop and enhance them, and export as PDF.',
-      url: 'https://gentsallaku.it/dashboard/scanner',
+      url: 'https://gentsallaku.it/lab/scanner',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },

@@ -15,11 +15,13 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { TestimonialsService, TestimonialModerationStatus } from './services/testimonials.service';
+import { TestimonialsService } from './services/testimonials.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import { SetFeaturedDto } from './dto/set-featured.dto';
 import { TestimonialResponseDto } from './dto/testimonial-response.dto';
 import { TestimonialAdminItemDto } from './dto/testimonial-admin-item.dto';
+import { TestimonialsAdminQueryDto } from './dto/testimonials-admin-query.dto';
+import { SkipLimitDto, LimitOnlyDto } from '../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
@@ -41,13 +43,9 @@ export class TestimonialsController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'skip', required: false, type: Number })
   async getAllForAdmin(
-    @Query('status') status?: TestimonialModerationStatus,
-    @Query('limit') limit?: string,
-    @Query('skip') skip?: string,
+    @Query() { status, limit, skip }: TestimonialsAdminQueryDto,
   ): Promise<{ data: TestimonialAdminItemDto[]; total: number }> {
-    const limitNum = Math.min(parseInt(limit) || 50, 100);
-    const skipNum = Math.max(parseInt(skip) || 0, 0);
-    return this.testimonialsService.getAllForAdmin(status ?? 'pending', limitNum, skipNum);
+    return this.testimonialsService.getAllForAdmin(status ?? 'pending', limit ?? 50, skip ?? 0);
   }
 
   @Get('admin/stats')
@@ -65,9 +63,8 @@ export class TestimonialsController {
   @UseInterceptors(new CacheControlInterceptor(300, 60))
   @ApiOperation({ summary: 'Get curated featured testimonials (public)' })
   @ApiQuery({ name: 'limit', required: false, type: Number })
-  async getFeatured(@Query('limit') limit?: string): Promise<TestimonialResponseDto[]> {
-    const limitNum = Math.min(parseInt(limit) || 6, 20);
-    return this.testimonialsService.getFeatured(limitNum);
+  async getFeatured(@Query() { limit }: LimitOnlyDto): Promise<TestimonialResponseDto[]> {
+    return this.testimonialsService.getFeatured(Math.min(limit ?? 6, 20));
   }
 
   @Post()
@@ -91,12 +88,9 @@ export class TestimonialsController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'skip', required: false, type: Number })
   async getApproved(
-    @Query('limit') limit?: string,
-    @Query('skip') skip?: string,
+    @Query() { limit, skip }: SkipLimitDto,
   ): Promise<{ data: TestimonialResponseDto[]; total: number }> {
-    const limitNum = Math.min(parseInt(limit) || 20, 100);
-    const skipNum = Math.max(parseInt(skip) || 0, 0);
-    return this.testimonialsService.getApproved(limitNum, skipNum);
+    return this.testimonialsService.getApproved(limit ?? 20, skip ?? 0);
   }
 
   @Get(':id/admin')

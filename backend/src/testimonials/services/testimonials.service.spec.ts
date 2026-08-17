@@ -3,6 +3,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Testimonial } from '../schemas/testimonial.schema';
 import { TestimonialsService } from './testimonials.service';
 import { SpamDetectionService } from '../../common/services/spam-detection.service';
+import { TurnstileService } from '../../common/services/turnstile.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 
@@ -10,6 +11,7 @@ describe('TestimonialsService', () => {
   let service: TestimonialsService;
   let mockTestimonialModel: any;
   let mockSpamDetectionService: any;
+  let mockTurnstileService: any;
 
   const mockId = new Types.ObjectId();
 
@@ -41,11 +43,16 @@ describe('TestimonialsService', () => {
       sanitizeContent: jest.fn((content) => content),
     };
 
+    mockTurnstileService = {
+      verify: jest.fn().mockResolvedValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TestimonialsService,
         { provide: getModelToken(Testimonial.name), useValue: mockTestimonialModel },
         { provide: SpamDetectionService, useValue: mockSpamDetectionService },
+        { provide: TurnstileService, useValue: mockTurnstileService },
       ],
     }).compile();
 
@@ -76,6 +83,15 @@ describe('TestimonialsService', () => {
 
       expect(result).toHaveProperty('id');
       expect(mockTestimonialModel).not.toHaveBeenCalled();
+    });
+
+    it('rejects with BadRequestException when Turnstile verification fails', async () => {
+      mockTurnstileService.verify.mockResolvedValue(false);
+
+      await expect(service.createTestimonial(dto, '127.0.0.1')).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(mockTestimonialModel.findOne).not.toHaveBeenCalled();
     });
 
     it('rejects with BadRequestException when the spam score is >= 80', async () => {

@@ -16,6 +16,7 @@ import { SnackbarService } from '../../core/services/snackbar.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { RatingStarsComponent } from '../../shared/components/rating-stars/rating-stars.component';
+import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 
 const DATE_LOCALES: Record<string, string> = {
   it: 'it-IT',
@@ -30,7 +31,7 @@ const DATE_LOCALES: Record<string, string> = {
 @Component({
   selector: 'app-testimonials',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent],
   templateUrl: './testimonials.component.html',
   styleUrls: ['./testimonials.component.scss'],
 })
@@ -52,6 +53,7 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
   loading = signal(true);
   submitting = signal(false);
   submitted = signal(false);
+  turnstileToken = signal('');
 
   constructor(
     private fb: FormBuilder,
@@ -142,6 +144,7 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
         content: (v.content ?? '').trim(),
         website: v.website || undefined,
         honeypot: v.honeypot || undefined,
+        turnstileToken: this.turnstileToken() || undefined,
       })
       .subscribe({
         next: () => {
@@ -156,6 +159,10 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
           this.snackbar.show(message, 'error');
         },
       });
+  }
+
+  onTurnstileVerified(token: string): void {
+    this.turnstileToken.set(token);
   }
 
   setRating(value: number): void {

@@ -25,4 +25,5 @@ export interface CreateTestimonialPayload {
   avatarUrl?: string;
   website?: string;
   honeypot?: string;
+  turnstileToken?: string;
 }

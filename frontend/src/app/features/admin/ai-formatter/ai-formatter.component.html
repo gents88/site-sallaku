@@ -95,10 +95,10 @@
         @if (!text()) {
           <div
             class="dropzone"
-            [class.dragging]="isDragging()"
-            (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave()"
-            (drop)="onDrop($event)"
+            appFileDropzone
+            #dz="fileDropzone"
+            [class.dragging]="dz.isDragging"
+            (filesDropped)="onFilesDropped($event)"
             (click)="fileInput.click()">
             <input
               #fileInput

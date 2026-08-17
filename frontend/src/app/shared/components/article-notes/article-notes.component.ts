@@ -14,6 +14,7 @@ import { NotesService, Note } from '../../services/notes.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TurnstileWidgetComponent } from '../turnstile-widget/turnstile-widget.component';
 
 const DATE_LOCALES: Record<string, string> = {
   it: 'it-IT',
@@ -28,7 +29,7 @@ const DATE_LOCALES: Record<string, string> = {
 @Component({
   selector: 'app-article-notes',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, TurnstileWidgetComponent],
   templateUrl: './article-notes.component.html',
   styleUrls: ['./article-notes.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +44,7 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
   submitError: string | null = null;
   submitSuccess = false;
   totalNotes = 0;
+  turnstileToken = '';
 
   private destroy$ = new Subject<void>();
 
@@ -120,6 +122,7 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
       content: formValue.content.trim(),
       website: formValue.website || undefined,
       honeypot: formValue.honeypot,
+      turnstileToken: this.turnstileToken || undefined,
     };
 
     this.notesService
@@ -148,6 +151,10 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         },
       });
+  }
+
+  onTurnstileVerified(token: string): void {
+    this.turnstileToken = token;
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {

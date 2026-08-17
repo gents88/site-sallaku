@@ -165,7 +165,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   readonly services: ServiceItem[] = [
-    { key: 'pdf',      icon: 'picture_as_pdf',  colorClass: 'color-red',    route: '/dashboard/tools' },
+    { key: 'pdf',      icon: 'picture_as_pdf',  colorClass: 'color-red',    route: '/lab' },
     { key: 'frontend', icon: 'web',            colorClass: 'color-blue'   },
     { key: 'web3d',    icon: 'public',          colorClass: 'color-cyan'   },
     { key: 'dataviz',  icon: 'bar_chart',       colorClass: 'color-violet' },

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -111,6 +111,7 @@ export class RegisterComponent {
     private router: Router,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   register(): void {
@@ -122,6 +123,7 @@ export class RegisterComponent {
       next: () => this.router.navigate(['/dashboard']),
       error: (err) => {
         this.loading = false;
+        this.cdr.markForCheck();
         const msg = err?.error?.message || this.translate.instant('common.error');
         this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 4000 });
       },

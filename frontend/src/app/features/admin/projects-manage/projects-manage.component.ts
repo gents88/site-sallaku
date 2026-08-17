@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -55,6 +55,7 @@ export class ProjectsManageComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private t: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -65,7 +66,7 @@ export class ProjectsManageComponent implements OnInit {
     this.loading = true;
     this.projectsService.getAll().pipe(
       timeout(15000),
-      finalize(() => { this.loading = false; }),
+      finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: p => { this.projects = p; this.loading = false; },
       error: () => {},
@@ -108,11 +109,13 @@ export class ProjectsManageComponent implements OnInit {
       next: () => {
         this.saving = false;
         this.showForm = false;
+        this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('projects_manage.saved'), this.t.instant('common.close'), { duration: 3000 });
         this.loadProjects();
       },
       error: () => {
         this.saving = false;
+        this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('projects_manage.save_error'), this.t.instant('common.close'), { duration: 3000 });
       },
     });
@@ -123,6 +126,7 @@ export class ProjectsManageComponent implements OnInit {
     this.projectsService.remove(id).subscribe({
       next: () => {
         this.projects = this.projects.filter(p => p._id !== id);
+        this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('projects_manage.deleted'), this.t.instant('common.close'), { duration: 3000 });
       },
     });

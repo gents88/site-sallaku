@@ -1,4 +1,4 @@
-import { ApplicationConfig, ErrorHandler } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling, withPreloading } from '@angular/router';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -18,6 +18,16 @@ const initialLanguage = resolveInitialLanguage();
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Zoneless: drops the zone.js polyfill (~34KB raw / 12KB gzip off every
+    // page) and stops the blanket change-detection runs that zone.js
+    // triggered on every timer, event and XHR.
+    //
+    // The app was already written in a compatible style — no NgZone usage
+    // anywhere, signals throughout, and OnPush on the components that
+    // matter. Components using plain properties mutated inside async
+    // callbacks were audited and now call ChangeDetectorRef.markForCheck()
+    // explicitly, which is what schedules a tick without zone.js.
+    provideZonelessChangeDetection(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideRouter(
       routes,

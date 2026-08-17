@@ -69,4 +69,8 @@ export class CreateTestimonialDto {
   @IsOptional()
   @IsString()
   honeypot?: string;
+
+  @IsOptional()
+  @IsString()
+  turnstileToken?: string;
 }
