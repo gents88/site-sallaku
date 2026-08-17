@@ -49,6 +49,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     { labelKey: 'nav.skills',     route: '/skills' },
     { labelKey: 'nav.contact',    route: '/contact' },
     { labelKey: 'nav.blog',       route: '/blog' },
+    { labelKey: 'nav.testimonials', route: '/testimonials' },
   ];
 
   get desktopNavLinks() {

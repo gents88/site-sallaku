@@ -13,7 +13,8 @@
     "login": "Hyrje",
     "admin": "Admin",
     "dashboard": "Dashboard",
-    "ai_tools": "AI & Mjetet"
+    "ai_tools": "AI & Mjetet",
+    "testimonials": "Dëshmi"
   },
   "lang": {
     "label": "Gjuha",
@@ -618,6 +619,72 @@
     "confirm_delete": "Fshi përfundimisht këtë shënim?",
     "spam_score": "Pikët e spam-it",
     "spam_score_tooltip": "Pikë automatike zbulimi spam (0-100, sa më e lartë aq më e dyshimtë)",
+    "prev_page": "Mbrapa",
+    "next_page": "Përpara"
+  },
+  "testimonials": {
+    "tag": "Dëshmi",
+    "title": "Çfarë thonë të tjerët",
+    "subtitle": "Përvoja të vërteta nga klientë dhe bashkëpunëtorë për punën së bashku — projekte, rezultate dhe histori të treguara nga vetë ata.",
+    "rating": "Vlerësimi",
+    "form": {
+      "title": "Lini një dëshmi",
+      "author_name": "Emri",
+      "author_name_ph": "Emri dhe mbiemri juaj",
+      "role": "Roli / Kompania",
+      "role_ph": "p.sh. CTO @ Acme (opsionale)",
+      "company_url": "Lidhja e kompanisë ose projektit",
+      "company_url_ph": "p.sh. acme.com (opsionale)",
+      "email": "Email",
+      "email_ph": "Email-i juaj (opsionale, nuk publikohet)",
+      "rating": "Vlerësimi",
+      "content": "Dëshmia juaj",
+      "content_ph": "Na tregoni për përvojën tuaj duke punuar me mua...",
+      "submit": "Dërgo dëshminë",
+      "submitting": "Duke dërguar...",
+      "success": "Faleminderit! Dëshmia juaj është në shqyrtim dhe do të shfaqet së shpejti.",
+      "error_generic": "Ndodhi një gabim. Provoni përsëri më vonë."
+    },
+    "errors": {
+      "required": "Ky fushë është e detyrueshme",
+      "minlength": "Minimumi {{count}} karaktere",
+      "maxlength": "Maksimumi {{count}} karaktere",
+      "email": "Email jo i vlefshëm",
+      "rating_required": "Zgjidhni një vlerësim nga 1 deri në 5 yje",
+      "invalid": "Fushë jo e vlefshme"
+    },
+    "list": {
+      "loading": "Duke ngarkuar dëshmitë...",
+      "empty": "Ende nuk ka dëshmi të publikuara."
+    },
+    "wall": {
+      "tag": "Dëshmi",
+      "title": "Çfarë thonë të tjerët",
+      "cta": "Lini dëshminë tuaj"
+    }
+  },
+  "testimonials_manage": {
+    "title": "Modero dëshmitë",
+    "status_pending": "Në pritje",
+    "status_approved": "Të aprovuara",
+    "status_spam": "Spam",
+    "status_all": "Të gjitha",
+    "empty": "Nuk ka dëshmi në këtë kategori.",
+    "load_error": "Nuk mund të ngarkohen dëshmitë.",
+    "action_error": "Veprimi dështoi. Provoni përsëri.",
+    "approve": "Aprovo",
+    "reject": "Refuzo",
+    "mark_spam": "Shëno si spam",
+    "toggle_featured": "Shfaq/fshih në faqen kryesore",
+    "approved": "Dëshmia u aprovua.",
+    "rejected": "Dëshmia u refuzua.",
+    "marked_spam": "Dëshmia u shënua si spam.",
+    "featured_on": "Në vitrinë",
+    "featured_off": "U hoq nga faqja kryesore.",
+    "deleted": "Dëshmia u fshi.",
+    "confirm_delete": "Të fshihet përfundimisht kjo dëshmi?",
+    "spam_score": "Pikët e spam-it",
+    "spam_score_tooltip": "Pikë automatike të zbulimit të spam-it (0-100, sa më lart aq më dyshimtë)",
     "prev_page": "Mbrapa",
     "next_page": "Përpara"
   },

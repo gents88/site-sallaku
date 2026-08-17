@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { Note } from '../schemas/note.schema';
 import { NotesService } from './notes.service';
-import { SpamDetectionService } from './spam-detection.service';
+import { SpamDetectionService } from '../../common/services/spam-detection.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 
