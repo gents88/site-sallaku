@@ -96,14 +96,44 @@
         });
       } catch (e) { /* ignore if gtag not available */ }
     </script>
-    <!-- GA4 library itself: loaded statically (present in prerendered HTML, not
-         just injected client-side) so tools like Search Console's "verify via
-         Google Analytics" can find it. Consent Mode defaults above are already
-         set before this loads, so no tracking/cookies fire until the user
-         grants consent. Keep this ID in sync with environment.prod.ts's
-         googleAnalyticsId. -->
-    <script id="ga-script" async src="https://www.googletagmanager.com/gtag/js?id=G-ENE1XXREY6"></script>
-    <script>gtag('config', 'G-ENE1XXREY6');</script>
+    <!-- GA4 library: 187KB of third-party JavaScript, measured as the single
+         heaviest request on the homepage — heavier than the entire app bundle,
+         and ~680ms of main-thread execution.
+
+         It is no longer loaded here at all. ConsentService pulls it in only
+         after the visitor actually grants analytics consent, so every visitor
+         who declines or ignores the banner — the majority — never pays for it.
+         This was already the effective behaviour: Consent Mode defaults below
+         deny storage, so the library was downloading and executing on every
+         page load to then do nothing.
+
+         The old comment justified loading it statically so Search Console's
+         "verify via Google Analytics" could find it. That reason no longer
+         holds: this site is verified with the HTML-file method instead
+         (public/googleee6031aefa85f68c.html), so nothing depends on the tag
+         being present for a crawler.
+
+         The dataLayer stub, the Consent Mode v2 defaults and the config call
+         stay inline and synchronous, so hits queued before consent replay in
+         order once the library arrives. Keep the ID in sync with
+         environment.prod.ts's googleAnalyticsId. -->
+    <script>
+      (function () {
+        var ID = 'G-ENE1XXREY6';
+        gtag('config', ID);
+
+        // Exposed for ConsentService, which calls it once the visitor grants
+        // analytics consent. Idempotent — repeated calls are no-ops.
+        window.__loadGtag = function () {
+          if (document.getElementById('ga-script')) return;
+          var s = document.createElement('script');
+          s.id = 'ga-script';
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+          document.head.appendChild(s);
+        };
+      })();
+    </script>
     <!-- Google Tag Manager — disabled. The placeholder ID below was never replaced
          with a real container ID, so every time a user granted analytics/marketing
          consent, consent.service.ts fired a real (failing) request to

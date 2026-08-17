@@ -8,7 +8,7 @@
     "prebuild": "node ../scripts/generate-sitemap.js && node ../scripts/copy-vendor-css.js",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
-    "build:filezilla": "ng build --configuration production && node -e \"const fs=require('fs'),d='dist/portfolio-frontend/browser';if(!fs.existsSync(d+'/index.html')&&fs.existsSync(d+'/index.csr.html'))fs.renameSync(d+'/index.csr.html',d+'/index.html')\"",
+    "build:filezilla": "ng build --configuration production && node -e \"const fs=require('fs'),d='dist/portfolio-frontend/browser';if(!fs.existsSync(d+'/index.html')&&fs.existsSync(d+'/index.csr.html'))fs.renameSync(d+'/index.csr.html',d+'/index.html')\" && node ../scripts/precompress.js dist/portfolio-frontend/browser",
     "deploy:prep": "ng build --configuration production",
     "test": "ng test --watch=false",
     "test:e2e": "playwright test",

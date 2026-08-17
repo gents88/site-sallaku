@@ -10,6 +10,22 @@
   RewriteEngine On
   RewriteBase /
 
+  # ── Pre-compressed assets ────────────────────────────────────
+  # This server has no mod_brotli (requesting `Accept-Encoding: br` alone
+  # returns an uncompressed response), and a FileZilla deploy can't enable
+  # server modules. scripts/precompress.js therefore emits <file>.br and
+  # <file>.gz at build time — at quality 11 / level 9, which would be far too
+  # slow to run per request but is free once on the build machine — and these
+  # rules hand them out when the client advertises support.
+  # Must stay above the SPA fallback rules below, which end in [L].
+  RewriteCond %{HTTP:Accept-Encoding} br
+  RewriteCond %{REQUEST_FILENAME}\.br -f
+  RewriteRule ^(.+)$ $1.br [L]
+
+  RewriteCond %{HTTP:Accept-Encoding} gzip
+  RewriteCond %{REQUEST_FILENAME}\.gz -f
+  RewriteRule ^(.+)$ $1.gz [L]
+
   # AI/PDF tool pages moved from /dashboard/* to /lab/* (2026-08) — permanent
   # redirects so existing bookmarks/search results keep working instead of
   # 404ing, and so the old URLs' indexing transfers to the new ones instead
@@ -46,6 +62,46 @@
 
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/x-font-woff application/x-font-ttf image/svg+xml
+</IfModule>
+
+# ── Serving the pre-compressed files the rewrite rules above select ──
+# Without these the browser receives Brotli bytes labelled as plain
+# JavaScript and fails to parse them.
+<IfModule mod_mime.c>
+  # Declare the real media type for each double extension, so the .br/.gz
+  # suffix doesn't erase the Content-Type the browser needs.
+  AddType application/javascript      .js.br .js.gz .mjs.br .mjs.gz
+  AddType text/css                    .css.br .css.gz
+  AddType text/html                   .html.br .html.gz
+  AddType application/json            .json.br .json.gz .webmanifest.br .webmanifest.gz
+  AddType image/svg+xml               .svg.br .svg.gz
+  AddType application/xml             .xml.br .xml.gz
+  AddType text/plain                  .txt.br .txt.gz
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.br$">
+    Header set Content-Encoding br
+    Header append Vary Accept-Encoding
+    # Already compressed — stop mod_deflate from gzipping the Brotli payload.
+    SetEnv no-gzip 1
+  </FilesMatch>
+
+  <FilesMatch "\.gz$">
+    Header set Content-Encoding gzip
+    Header append Vary Accept-Encoding
+    SetEnv no-gzip 1
+  </FilesMatch>
+
+  # The hashed-filename cache policy below matches on the real extension, so
+  # repeat it for the pre-compressed twins of those same immutable assets.
+  <FilesMatch "\.(js|mjs|css|json|svg)\.(br|gz)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  <FilesMatch "^index\.html\.(br|gz)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </FilesMatch>
 </IfModule>
 
 <IfModule mod_headers.c>

@@ -42,18 +42,9 @@
   background: var(--bg-secondary, #0f1424);
   border: 1px solid var(--border-color, var(--glass-border, #30363d));
   border-left: none;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-color, #30363d) transparent;
-}
-
-.app-sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-.app-sidebar::-webkit-scrollbar-thumb {
-  background: var(--border-color, #30363d);
-  border-radius: 999px;
+  /* Il pannello non scrolla mai: scorre solo .sidebar-nav, così header e CTA
+     restano ancorati e non finiscono sopra le ultime voci dell'elenco. */
+  overflow: hidden;
 }
 
 /* ─── Modalità OVERLAY (< 1200px) — comportamento storico ─────────── */
@@ -117,6 +108,7 @@
 /* ─── Header ─────────────────────────────────────────────────────── */
 .sidebar-header {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   gap: 0.4rem;
@@ -197,10 +189,27 @@
 }
 
 /* ─── Nav ────────────────────────────────────────────────────────── */
+/* Unica area scorrevole. `min-height: 0` è obbligatorio: senza, un flex item
+   non scende sotto la propria altezza di contenuto e l'overflow non parte. */
 .sidebar-nav {
   display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
   flex-direction: column;
   gap: 0.2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color, #30363d) transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: var(--border-color, #30363d);
+  border-radius: 999px;
 }
 
 .nav-group {
@@ -301,19 +310,14 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  /* margin-top:auto la spinge in fondo, sticky la tiene visibile anche quando
-     l'elenco supera l'altezza della colonna (viewport basse, 10 voci). */
-  margin-top: auto;
-  position: sticky;
-  bottom: 0;
+  /* Fuori dall'area scorrevole: resta sempre in fondo alla colonna senza
+     sovrapporsi alle ultime voci quando l'elenco eccede l'altezza. */
+  flex-shrink: 0;
+  margin-top: 0.75rem;
   padding: 0.6rem;
   border-radius: var(--radius-md, 12px);
   border: 1px solid rgba(139, 92, 246, 0.24);
-  /* Fondo opaco (gradiente + colore del pannello): essendo sticky, deve coprire
-     le voci che le scorrono sotto. */
-  background:
-    linear-gradient(135deg, rgba(79, 106, 245, 0.16), rgba(139, 92, 246, 0.1)),
-    var(--bg-secondary, #0f1424);
+  background: linear-gradient(135deg, rgba(79, 106, 245, 0.16), rgba(139, 92, 246, 0.1));
   color: var(--text-primary, #e6edf3);
   text-decoration: none;
   overflow: hidden;
@@ -390,12 +394,23 @@
     white-space: nowrap;
   }
 
+  /* Ritmo verticale compresso: senza etichette le voci non hanno bisogno del
+     respiro della modalità espansa, e così tutte e 10 entrano senza scroll
+     anche su un portatile con barra dei segnalibri (~750px di viewport). */
   .nav-item,
   .sidebar-cta {
     justify-content: center;
     gap: 0;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0.3rem 0;
+  }
+
+  .nav-item {
+    margin-bottom: 2px;
+  }
+
+  .rail-toggle {
+    width: 26px;
+    height: 26px;
   }
 
   .nav-label {
@@ -405,9 +420,13 @@
 
   .nav-group-label {
     justify-content: center;
-    padding: 0.55rem 0 0.35rem;
-    font-size: 13px;
+    padding: 0.4rem 0 0.25rem;
+    font-size: 12px;
     letter-spacing: 0;
+  }
+
+  .sidebar-cta {
+    margin-top: 0.5rem;
   }
 
   /* Separatore tra gruppi: senza le etichette servirebbe altrimenti un blocco
@@ -476,94 +495,6 @@
   to   { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
-/* ─── Nudge di scoperta (una volta per device) ───────────────────── */
-.rail-nudge {
-  position: fixed;
-  left: calc(var(--sidebar-rail-width, 76px) + 14px);
-  bottom: 28px;
-  z-index: 1400;
-  width: 260px;
-  padding: 0.9rem 1rem;
-  border-radius: var(--radius-md, 14px);
-  border: 1px solid rgba(139, 92, 246, 0.32);
-  background:
-    radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 60%),
-    var(--bg-tertiary, #141a2e);
-  box-shadow: var(--shadow-md, 0 8px 32px rgba(0, 0, 0, 0.4));
-  color: var(--text-primary, #f1f5f9);
-  animation: nudgeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s both;
-}
-
-.rail-nudge::before {
-  content: '';
-  position: absolute;
-  left: -5px;
-  bottom: 22px;
-  width: 9px;
-  height: 9px;
-  transform: rotate(45deg);
-  border-left: 1px solid rgba(139, 92, 246, 0.32);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.32);
-  background: var(--bg-tertiary, #141a2e);
-}
-
-.nudge-close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(148, 163, 184, 0.12);
-  color: var(--text-secondary, #94a3b8);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--text-primary, #f1f5f9);
-  }
-}
-
-.nudge-title {
-  margin: 0 0 0.3rem;
-  padding-right: 1.4rem;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.nudge-text {
-  margin: 0 0 0.75rem;
-  color: var(--text-secondary, #94a3b8);
-  font-size: 0.78rem;
-  line-height: 1.45;
-}
-
-.nudge-cta {
-  width: 100%;
-  min-height: 34px;
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  border-radius: var(--radius-sm, 8px);
-  background: linear-gradient(135deg, rgba(79, 106, 245, 0.28), rgba(139, 92, 246, 0.2));
-  color: inherit;
-  font: inherit;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.16s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-  }
-}
-
-@keyframes nudgeIn {
-  from { opacity: 0; transform: translateX(-12px) scale(0.96); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-
 /* ─── Tema chiaro ────────────────────────────────────────────────── */
 :host-context(html[data-theme='light']) {
   .app-sidebar {
@@ -575,9 +506,7 @@
   }
 
   .rail-tooltip,
-  .rail-tooltip::before,
-  .rail-nudge,
-  .rail-nudge::before {
+  .rail-tooltip::before {
     background: var(--bg-secondary, #ffffff);
   }
 }
