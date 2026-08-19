@@ -952,7 +952,7 @@
     "badge": "Public Domain PDF Search",
     "hero_title_1": "Find Books and Documents",
     "hero_title_2": "As PDFs, Legally",
-    "hero_subtitle": "Search millions of public-domain books and open-access works on Internet Archive. No copyright worries.",
+    "hero_subtitle": "Search millions of public-domain books and open-access works from Internet Archive and Project Gutenberg. No copyright worries.",
     "search_placeholder": "Search a title, e.g. \"The Little Prince\"…",
     "search_button": "Search",
     "searching": "Searching…",
@@ -969,7 +969,7 @@
     "feature_legal_title": "100% Legal",
     "feature_legal_desc": "Public domain and open-access works only, never pirated content.",
     "feature_sources_title": "Verified Sources",
-    "feature_sources_desc": "Internet Archive, millions of catalogued and verified books.",
+    "feature_sources_desc": "Internet Archive and Project Gutenberg, millions of catalogued books.",
     "feature_preview_title": "Instant Preview",
     "feature_preview_desc": "View the PDF right in your browser before downloading it."
   },

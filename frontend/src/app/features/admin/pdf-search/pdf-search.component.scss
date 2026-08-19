@@ -243,6 +243,7 @@ $error-clr:     #f87171;
   background: rgba(148, 163, 184, 0.12); color: #94a3b8;
 
   &.source-ia { background: rgba(56, 189, 248, 0.12); color: #38bdf8; }
+  &.source-gb { background: $accent-glow; color: #34d399; }
 }
 
 .year-pill {
