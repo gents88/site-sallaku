@@ -947,6 +947,32 @@
     "dl_sent_name": "Gesendet ✓",
     "guide_link": "Leitfaden: Wie funktioniert die KI-PDF-Übersetzung"
   },
+  "pdf_search": {
+    "title": "PDF-Suche",
+    "badge": "Gemeinfreie PDF-Suche",
+    "hero_title_1": "Bücher und Dokumente finden",
+    "hero_title_2": "Als PDF, ganz legal",
+    "hero_subtitle": "Durchsuche Millionen gemeinfreier Bücher und frei zugänglicher Werke von Internet Archive und Project Gutenberg. Keine Urheberrechtsprobleme.",
+    "search_placeholder": "Titel suchen, z. B. \"Der kleine Prinz\"…",
+    "search_button": "Suchen",
+    "searching": "Suche läuft…",
+    "empty_title": "Suche nach einem Buch oder Dokument",
+    "empty_subtitle": "Ergebnisse stammen nur aus gemeinfreien und frei zugänglichen Archiven.",
+    "no_results_title": "Keine Ergebnisse",
+    "no_results_subtitle": "Versuche einen anderen Titel oder Autor.",
+    "result_by": "von",
+    "preview_close": "Schließen",
+    "btn_download": "PDF herunterladen",
+    "btn_source_page": "Quellseite ansehen",
+    "select_hint": "Wähle ein Ergebnis für die Vorschau",
+    "legal_note": "Alle Ergebnisse stammen aus gemeinfreien oder frei lizenzierten Archiven.",
+    "feature_legal_title": "100% Legal",
+    "feature_legal_desc": "Nur gemeinfreie und frei zugängliche Werke, niemals raubkopierte Inhalte.",
+    "feature_sources_title": "Geprüfte Quellen",
+    "feature_sources_desc": "Internet Archive und Project Gutenberg, Millionen katalogisierter Bücher.",
+    "feature_preview_title": "Sofortige Vorschau",
+    "feature_preview_desc": "Sieh dir das PDF direkt im Browser an, bevor du es herunterlädst."
+  },
   "convert": {
     "title": "Konverter",
     "subtitle": "Konvertierungen verfügbar",
@@ -1118,7 +1144,9 @@
     "ocr_title": "OCR",
     "ocr_desc": "Text aus gescannten PDFs und Bildern mit OCR extrahieren.",
     "scanner_title": "Scanner",
-    "scanner_desc": "Scanne physische Dokumente mit deiner Kamera und wandle sie in PDF um."
+    "scanner_desc": "Scanne physische Dokumente mit deiner Kamera und wandle sie in PDF um.",
+    "pdf_search_title": "PDF-Suche",
+    "pdf_search_desc": "Suche gemeinfreie PDF-Bücher und -Dokumente mit Vorschau vor dem Download."
   },
   "about_manage": {
     "title": "About-Bereich",

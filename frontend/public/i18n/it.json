@@ -947,6 +947,32 @@
     "dl_sent_name": "Inviato ✓",
     "guide_link": "Guida: come funziona la traduzione PDF con l'AI"
   },
+  "pdf_search": {
+    "title": "Ricerca PDF",
+    "badge": "Ricerca PDF Pubblico Dominio",
+    "hero_title_1": "Trova Libri e Documenti",
+    "hero_title_2": "In PDF, Legalmente",
+    "hero_subtitle": "Cerca tra milioni di libri di pubblico dominio e opere open access da Internet Archive e Project Gutenberg. Nessun problema di copyright.",
+    "search_placeholder": "Cerca un titolo, es. \"Il Piccolo Principe\"…",
+    "search_button": "Cerca",
+    "searching": "Ricerca in corso…",
+    "empty_title": "Cerca un libro o documento",
+    "empty_subtitle": "I risultati arrivano solo da archivi di pubblico dominio e open access.",
+    "no_results_title": "Nessun risultato",
+    "no_results_subtitle": "Prova con un altro titolo o autore.",
+    "result_by": "di",
+    "preview_close": "Chiudi",
+    "btn_download": "Scarica PDF",
+    "btn_source_page": "Vedi pagina sorgente",
+    "select_hint": "Seleziona un risultato per l'anteprima",
+    "legal_note": "Tutti i risultati provengono da archivi di pubblico dominio o licenza aperta.",
+    "feature_legal_title": "100% Legale",
+    "feature_legal_desc": "Solo pubblico dominio e opere open access, mai contenuti piratati.",
+    "feature_sources_title": "Fonti Verificate",
+    "feature_sources_desc": "Internet Archive e Project Gutenberg, milioni di libri catalogati.",
+    "feature_preview_title": "Anteprima Istantanea",
+    "feature_preview_desc": "Guarda il PDF direttamente nel browser prima di scaricarlo."
+  },
   "convert": {
     "title": "Convertitore",
     "subtitle": "conversioni disponibili",
@@ -1118,7 +1144,9 @@
     "ocr_title": "OCR",
     "ocr_desc": "Estrai testo da PDF e immagini scansionate con l'OCR.",
     "scanner_title": "Scanner",
-    "scanner_desc": "Scansiona documenti fisici con la fotocamera e convertili in PDF."
+    "scanner_desc": "Scansiona documenti fisici con la fotocamera e convertili in PDF.",
+    "pdf_search_title": "Ricerca PDF",
+    "pdf_search_desc": "Cerca libri e documenti in PDF di pubblico dominio, con anteprima prima del download."
   },
   "about_manage": {
     "title": "Sezione About",

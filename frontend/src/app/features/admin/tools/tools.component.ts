@@ -253,12 +253,14 @@ export class ToolsComponent implements OnInit {
         { '@type': 'WebApplication', name: 'Document Editor', url: 'https://gentsallaku.it/lab/editor', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'OCR — Text Recognition', url: 'https://gentsallaku.it/lab/ocr', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'Document Scanner', url: 'https://gentsallaku.it/lab/scanner', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'PDF Search', url: 'https://gentsallaku.it/lab/pdf-search', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'Workflow', url: 'https://gentsallaku.it/lab/workspace', applicationCategory: 'UtilitiesApplication' },
       ],
     });
   }
 
   readonly aiCards: ToolCard[] = [
+    { icon: '🔎', titleKey: 'tools.pdf_search_title',   descKey: 'tools.pdf_search_desc',   route: '/lab/pdf-search',    group: 'ai' },
     { icon: '📋', titleKey: 'tools.pdf_summary_title',  descKey: 'tools.pdf_summary_desc',  route: '/lab/pdf-summary',   group: 'ai' },
     { icon: '✨', titleKey: 'tools.ai_formatter_title', descKey: 'tools.ai_formatter_desc', route: '/lab/ai-formatter',  group: 'ai' },
     { icon: '🌐', titleKey: 'tools.pdf_translate_title',descKey: 'tools.pdf_translate_desc',route: '/lab/pdf-translate', group: 'ai' },

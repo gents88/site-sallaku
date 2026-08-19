@@ -99,6 +99,10 @@ const publicPages: Route[] = [
     loadComponent: () => import('./features/admin/ai-ppt/ai-ppt.component').then(m => m.AiPptComponent),
   },
   {
+    path: 'lab/pdf-search',
+    loadComponent: () => import('./features/admin/pdf-search/pdf-search.component').then(m => m.PdfSearchComponent),
+  },
+  {
     path: 'lab/convert',
     loadComponent: () => import('./features/admin/convert/convert.component').then(m => m.ConvertComponent),
   },

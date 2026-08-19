@@ -947,6 +947,32 @@
     "dl_sent_name": "Sent ✓",
     "guide_link": "Guide: how AI PDF translation works"
   },
+  "pdf_search": {
+    "title": "PDF Search",
+    "badge": "Public Domain PDF Search",
+    "hero_title_1": "Find Books and Documents",
+    "hero_title_2": "As PDFs, Legally",
+    "hero_subtitle": "Search millions of public-domain books and open-access works from Internet Archive and Project Gutenberg. No copyright worries.",
+    "search_placeholder": "Search a title, e.g. \"The Little Prince\"…",
+    "search_button": "Search",
+    "searching": "Searching…",
+    "empty_title": "Search for a book or document",
+    "empty_subtitle": "Results only come from public-domain and open-access archives.",
+    "no_results_title": "No results",
+    "no_results_subtitle": "Try a different title or author.",
+    "result_by": "by",
+    "preview_close": "Close",
+    "btn_download": "Download PDF",
+    "btn_source_page": "View source page",
+    "select_hint": "Select a result to preview it",
+    "legal_note": "All results come from public-domain or openly licensed archives.",
+    "feature_legal_title": "100% Legal",
+    "feature_legal_desc": "Public domain and open-access works only, never pirated content.",
+    "feature_sources_title": "Verified Sources",
+    "feature_sources_desc": "Internet Archive and Project Gutenberg, millions of catalogued books.",
+    "feature_preview_title": "Instant Preview",
+    "feature_preview_desc": "View the PDF right in your browser before downloading it."
+  },
   "convert": {
     "title": "Converter",
     "subtitle": "conversions available",
@@ -1118,7 +1144,9 @@
     "ocr_title": "OCR",
     "ocr_desc": "Extract text from scanned PDFs and images with OCR.",
     "scanner_title": "Scanner",
-    "scanner_desc": "Scan physical documents with your camera and convert to PDF."
+    "scanner_desc": "Scan physical documents with your camera and convert to PDF.",
+    "pdf_search_title": "PDF Search",
+    "pdf_search_desc": "Search public-domain PDF books and documents, with a preview before you download."
   },
   "about_manage": {
     "title": "About Section",
