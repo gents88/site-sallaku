@@ -16,8 +16,11 @@ export class PdfSearchService {
 
   async search(query: string, limit: number = DEFAULT_LIMIT): Promise<PdfSearchResult[]> {
     // Over-fetch per provider so a shared limit still gets contributions from
-    // both sources instead of one provider's results crowding out the other.
-    const perProvider = Math.ceil(limit / this.providers.length) + 4;
+    // both sources instead of one provider's results crowding out the other,
+    // and so per-item attrition (restricted items, slow/failed metadata
+    // lookups) doesn't visibly shrink the result count under real network
+    // conditions (e.g. Railway → archive.org latency higher than local dev).
+    const perProvider = Math.ceil(limit / this.providers.length) + 6;
     const settled = await Promise.allSettled(this.providers.map((p) => p.search(query, perProvider)));
 
     const results: PdfSearchResult[] = [];
