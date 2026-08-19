@@ -48,6 +48,9 @@
 
     <!-- Right actions -->
     <div class="nav-right">
+      <button mat-icon-button type="button" (click)="openSearch()" [attr.aria-label]="'search.trigger' | translate" [title]="'search.trigger' | translate">
+        <mat-icon>search</mat-icon>
+      </button>
       <app-lang-switcher />
       <app-theme-toggle />
       @if (!auth.isLoggedIn()) {

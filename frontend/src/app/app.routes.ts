@@ -67,6 +67,11 @@ const publicPages: Route[] = [
     loadComponent: () =>
       import('./features/contact/contact.component').then(m => m.ContactComponent),
   },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./features/search/search-results/search-results.component').then(m => m.SearchResultsComponent),
+  },
 
   // ── Lab: public AI/PDF tools ──────────────────────
   // Moved out from under /dashboard/* (2026-08) — these never required auth,
