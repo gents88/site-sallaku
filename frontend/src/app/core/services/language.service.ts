@@ -152,6 +152,22 @@ export class LanguageService {
   }
 
   /**
+   * Persists `lang` as the stored preference immediately, without touching
+   * `_current`/TranslateService. Needed by lang-switcher specifically when
+   * switching TO 'it': setLangFromUrl() only persists when `explicit` is
+   * true, and an 'it' URL never carries a prefix so it's always resolved as
+   * explicit=false. Without this, the old (non-'it') preference stays in
+   * localStorage through the navigation, and maybeRedirectToStoredPreference
+   * reads it and bounces the user straight back to the language they just
+   * switched away from.
+   */
+  persistChoice(lang: Lang): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(STORAGE_KEY, lang);
+    }
+  }
+
+  /**
    * Clears the stored preference and re-derives the language from
    * navigator locale, then re-runs IP-geo detection as if this were a
    * first visit. Useful for a "use my detected language" settings action.
