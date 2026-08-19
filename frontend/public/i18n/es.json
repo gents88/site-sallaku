@@ -752,6 +752,7 @@
     "btn_carousel": "Carrusel",
     "btn_grid": "Cuadrícula",
     "btn_export": "Exportar",
+    "btn_exporting": "Exportando…",
     "btn_new": "Nuevo",
     "btn_copy_slide": "Copiar Diapositiva",
     "btn_copied": "✓ Copiado",
@@ -807,7 +808,31 @@
     "doctype_report": "Informe",
     "doctype_meeting_notes": "Acta de Reunión",
     "doctype_resume": "Currículum",
-    "doctype_article": "Artículo"
+    "doctype_article": "Artículo",
+    "draft_restored": "Se ha restaurado tu borrador anterior"
+  },
+  "pdf_summary": {
+    "title": "AI Summarizer",
+    "subtitle": "Sube un PDF, Word o TXT — la IA lo lee y genera un resumen en segundos",
+    "lang_label": "Idioma",
+    "drop_title": "Arrastra tu archivo aquí",
+    "drop_sub": "o haz clic para seleccionarlo",
+    "drop_formats": "PDF · Word (.docx/.doc) · TXT · HTML — máx. 20 MB",
+    "mode_short": "Breve",
+    "mode_detailed": "Detallado",
+    "mode_bullets": "Puntos clave",
+    "mode_insights": "Ideas clave",
+    "btn_generate": "Generar resumen",
+    "btn_analysing": "Analizando…",
+    "section_short": "Resumen breve",
+    "section_detailed": "Resumen detallado",
+    "section_bullets": "Puntos clave",
+    "section_insights": "Palabras clave",
+    "btn_copy": "Copiar",
+    "btn_copied": "¡Copiado!",
+    "btn_download": "Descargar",
+    "btn_regenerate": "Regenerar",
+    "btn_new_file": "Nuevo archivo"
   },
   "pdf_translate": {
     "badge": "Traducción de PDF con IA",
@@ -862,7 +887,10 @@
     "dl_copy_name": "Copiar Texto",
     "dl_copied_name": "¡Copiado!",
     "dl_copy_sub": "Al portapapeles",
-    "btn_translate_another": "Traducir otro archivo"
+    "btn_translate_another": "Traducir otro archivo",
+    "step_extracting": "Extrayendo texto…",
+    "step_translating": "Traduciendo…",
+    "step_rebuilding": "Reconstruyendo el documento…"
   },
   "convert": {
     "title": "Convertidor",
@@ -956,7 +984,16 @@
     "type_b64_to_jpg": "Base64 → JPG",
     "type_b64_to_pdf": "Base64 → PDF",
     "type_file_to_b64": "Archivo → Base64",
-    "type_merge_pdf": "Fusionar PDFs"
+    "type_merge_pdf": "Fusionar PDFs",
+    "drop_prompt_multi": "Haz clic o arrastra los archivos aquí",
+    "remove_file": "Eliminar archivo",
+    "files_selected_count": "{{count}} archivos seleccionados",
+    "merge_min_files": "Selecciona al menos 2 archivos PDF para combinar.",
+    "selected_files": "Archivos seleccionados",
+    "batch_combine_note": "Estos archivos se combinarán en un único resultado.",
+    "batch_pending": "En cola",
+    "batch_done": "Incluido",
+    "batch_error": "Fallido"
   },
   "ocr": {
     "title": "OCR — Reconocimiento de texto",
@@ -981,7 +1018,14 @@
     "err_failed": "Error en el procesamiento OCR",
     "err_rate_limit": "Demasiadas solicitudes, espera un momento e inténtalo de nuevo",
     "err_too_large": "Archivo demasiado grande",
-    "pages_truncated": "Solo se procesaron las primeras {{max}} páginas"
+    "pages_truncated": "Solo se procesaron las primeras {{max}} páginas",
+    "files_selected": "{{count}} archivo(s) seleccionado(s)",
+    "add_more": "Haz clic para añadir más archivos",
+    "remove_file": "Eliminar archivo",
+    "err_too_many_files": "Demasiados archivos seleccionados (máx. {{max}})",
+    "err_file_too_large": "Archivo demasiado grande (máx. {{max}}MB): {{names}}",
+    "err_too_many_pages": "Demasiadas páginas requieren OCR ({{count}}, máx. {{max}}). Elimina algunos archivos e inténtalo de nuevo.",
+    "low_confidence_hint": "Confianza baja: considera volver a escanear esta página o usar una imagen de mayor calidad"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1132,7 +1176,9 @@
     "search_placeholder": "Buscar en el documento…",
     "no_matches": "Sin resultados",
     "close_file": "Cerrar archivo",
-    "err_open": "No se pudo abrir el PDF"
+    "err_open": "No se pudo abrir el PDF",
+    "ocr_hint": "Este documento no parece contener texto extraíble: podría ser un PDF escaneado.",
+    "ocr_hint_cta": "Probar OCR"
   },
   "scanner": {
     "title": "Escáner de Documentos",
@@ -1158,6 +1204,8 @@
     "export_pdf": "Exportar PDF",
     "err_camera": "No se pudo acceder a la cámara",
     "success": "PDF exportado correctamente",
-    "err_failed": "La operación falló"
+    "err_failed": "La operación falló",
+    "run_ocr": "Ejecutar OCR",
+    "ocr_results_title": "Texto extraído (OCR)"
   }
 }

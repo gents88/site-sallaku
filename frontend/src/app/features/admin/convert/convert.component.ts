@@ -12,6 +12,9 @@ import {
 type Step = 'preview' | 'convert';
 type Kind = 'pdf' | 'image' | 'text' | 'base64' | 'unknown';
 
+/** Mirrors the backend's FilesInterceptor('files', MAX_FILE_COUNT) cap in conversion.controller.ts. */
+const MULTI_MAX_FILES = 20;
+
 const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: string }> = {
   'Documenti':   { icon: '📄', nameKey: 'convert.group_docs',       descKey: 'convert.group_docs_desc'       },
   'Spreadsheet': { icon: '📊', nameKey: 'convert.group_sheets',     descKey: 'convert.group_sheets_desc'     },
@@ -137,47 +140,84 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
 
           <!-- Step 1 -->
           <section *ngIf="step() === 'preview'">
-            <div class="dz"
-                 appFileDropzone
-                 #dz="fileDropzone"
-                 (click)="pick.click()"
-                 (filesDropped)="onFilesDropped($event)"
-                 [class.dz--active]="file() || dz.isDragging">
-              <input #pick type="file" hidden
-                     (change)="select($event)"
-                     [attr.accept]="selectedDef()?.accept || null"
-                     [attr.multiple]="(selectedDef()?.multi ?? false) ? true : null">
-              <ng-container *ngIf="!file(); else fileLoaded">
+
+            <!-- Single-file types -->
+            <ng-container *ngIf="!isMulti()">
+              <div class="dz"
+                   appFileDropzone
+                   #dz="fileDropzone"
+                   (click)="pick.click()"
+                   (filesDropped)="onFilesDropped($event)"
+                   [class.dz--active]="file() || dz.isDragging">
+                <input #pick type="file" hidden
+                       (change)="select($event)"
+                       [attr.accept]="selectedDef()?.accept || null">
+                <ng-container *ngIf="!file(); else fileLoaded">
+                  <span class="dz-icon">📂</span>
+                  <strong>{{ 'convert.drop_prompt' | translate }}</strong>
+                  <small *ngIf="selectedDef()?.accept">{{ 'convert.accepted_formats' | translate }}:&nbsp;<b>{{ selectedDef()!.accept }}</b></small>
+                </ng-container>
+                <ng-template #fileLoaded>
+                  <span class="dz-icon">✅</span>
+                  <strong>{{ file()!.name }}</strong>
+                  <small>{{ meta()?.size }} · {{ 'convert.change_file' | translate }}</small>
+                </ng-template>
+              </div>
+
+              <div class="meta" *ngIf="meta()">
+                <div><small>{{ 'convert.meta_name' | translate }}</small><b>{{ meta()!.name }}</b></div>
+                <div><small>{{ 'convert.meta_size' | translate }}</small><b>{{ meta()!.size }}</b></div>
+                <div><small>{{ 'convert.meta_type' | translate }}</small><b>{{ meta()!.type }}</b></div>
+                <div><small>{{ 'convert.meta_pages' | translate }}</small><b>{{ meta()!.pages ?? '—' }}</b></div>
+              </div>
+
+              <article class="pv" *ngIf="file()">
+                <h3>{{ 'convert.preview_title' | translate }}</h3>
+                <iframe *ngIf="kind() === 'pdf' && pdf()" [src]="pdf()" class="fr" title="PDF preview"></iframe>
+                <img *ngIf="kind() === 'image' && img()" [src]="img()" class="im" alt="preview">
+                <pre *ngIf="(kind() === 'text' || kind() === 'base64') && txt()" class="tx">{{ txt() }}</pre>
+                <p *ngIf="kind() === 'unknown'" class="pv-unknown">{{ 'convert.preview_unavailable' | translate }}</p>
+                <p *ngIf="hint()" class="hint">{{ hint() }}</p>
+              </article>
+            </ng-container>
+
+            <!-- Multi-file types (image-to-pdf, merge-pdf, …) -->
+            <ng-container *ngIf="isMulti()">
+              <div class="dz"
+                   appFileDropzone
+                   #dzm="fileDropzone"
+                   (click)="pickMulti.click()"
+                   (filesDropped)="onFilesDropped($event)"
+                   [class.dz--active]="files().length > 0 || dzm.isDragging">
+                <input #pickMulti type="file" hidden multiple
+                       (change)="select($event)"
+                       [attr.accept]="selectedDef()?.accept || null">
                 <span class="dz-icon">📂</span>
-                <strong>{{ 'convert.drop_prompt' | translate }}</strong>
+                <strong>{{ 'convert.drop_prompt_multi' | translate }}</strong>
                 <small *ngIf="selectedDef()?.accept">{{ 'convert.accepted_formats' | translate }}:&nbsp;<b>{{ selectedDef()!.accept }}</b></small>
-              </ng-container>
-              <ng-template #fileLoaded>
-                <span class="dz-icon">✅</span>
-                <strong>{{ file()!.name }}</strong>
-                <small>{{ meta()?.size }} · {{ 'convert.change_file' | translate }}</small>
-              </ng-template>
-            </div>
+              </div>
 
-            <div class="meta" *ngIf="meta()">
-              <div><small>{{ 'convert.meta_name' | translate }}</small><b>{{ meta()!.name }}</b></div>
-              <div><small>{{ 'convert.meta_size' | translate }}</small><b>{{ meta()!.size }}</b></div>
-              <div><small>{{ 'convert.meta_type' | translate }}</small><b>{{ meta()!.type }}</b></div>
-              <div><small>{{ 'convert.meta_pages' | translate }}</small><b>{{ meta()!.pages ?? '—' }}</b></div>
-            </div>
-
-            <article class="pv" *ngIf="file()">
-              <h3>{{ 'convert.preview_title' | translate }}</h3>
-              <iframe *ngIf="kind() === 'pdf' && pdf()" [src]="pdf()" class="fr" title="PDF preview"></iframe>
-              <img *ngIf="kind() === 'image' && img()" [src]="img()" class="im" alt="preview">
-              <pre *ngIf="(kind() === 'text' || kind() === 'base64') && txt()" class="tx">{{ txt() }}</pre>
-              <p *ngIf="kind() === 'unknown'" class="pv-unknown">{{ 'convert.preview_unavailable' | translate }}</p>
-              <p *ngIf="hint()" class="hint">{{ hint() }}</p>
-            </article>
+              <div class="file-list" *ngIf="files().length > 0">
+                <div class="file-row" *ngFor="let f of files(); let i = index"
+                     [class.file-row--invalid]="!matchesAccept(selectedDef()!, f)">
+                  <span class="file-row-icon">{{ matchesAccept(selectedDef()!, f) ? '📄' : '⚠️' }}</span>
+                  <div class="file-row-info">
+                    <b>{{ f.name }}</b>
+                    <small>{{ bytes(f.size) }}</small>
+                  </div>
+                  <button type="button" class="file-row-remove" (click)="removeFile(i)"
+                          [attr.aria-label]="'convert.remove_file' | translate">✕</button>
+                </div>
+                <p class="file-list-count">{{ 'convert.files_selected_count' | translate: { count: files().length } }}</p>
+                <p *ngIf="selectedDef()?.id === 'merge-pdf' && files().length < 2" class="conv-warn">
+                  {{ 'convert.merge_min_files' | translate }}
+                </p>
+              </div>
+            </ng-container>
 
             <div class="ac">
               <button class="btn btn-s" (click)="tryClose()">{{ 'convert.cancel' | translate }}</button>
-              <button class="btn btn-p" [disabled]="!file()" (click)="confirm()">{{ 'convert.continue_btn' | translate }}</button>
+              <button class="btn btn-p" [disabled]="!hasSelection()" (click)="confirm()">{{ 'convert.continue_btn' | translate }}</button>
             </div>
           </section>
 
@@ -187,8 +227,9 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
               <div class="conv-summary-file">
                 <span class="conv-file-icon">📄</span>
                 <div>
-                  <small>{{ 'convert.selected_file' | translate }}</small>
-                  <b>{{ file()!.name }}</b>
+                  <small>{{ (isMulti() ? 'convert.selected_files' : 'convert.selected_file') | translate }}</small>
+                  <b *ngIf="!isMulti()">{{ file()!.name }}</b>
+                  <b *ngIf="isMulti()">{{ 'convert.files_selected_count' | translate: { count: files().length } }}</b>
                 </div>
               </div>
               <div class="conv-summary-type">
@@ -203,6 +244,17 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
               <p *ngIf="!canConvert()" class="conv-warn">
                 {{ 'convert.format_warning' | translate: { accept: selectedDef()!.accept } }}
               </p>
+            </div>
+
+            <div class="batch-list" *ngIf="isMulti() && files().length > 0">
+              <p class="batch-note">{{ 'convert.batch_combine_note' | translate }}</p>
+              <div class="batch-row" *ngFor="let f of files()">
+                <span class="batch-row-icon">{{ batchIcon() }}</span>
+                <span class="batch-row-name">{{ f.name }}</span>
+                <span class="batch-row-status" [class.ok]="batchStatus() === 'done'" [class.err]="batchStatus() === 'error'">
+                  {{ batchStatusLabel() | translate }}
+                </span>
+              </div>
             </div>
 
             <p *ngIf="msg()" class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
@@ -393,6 +445,35 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
     .pv-unknown { color: var(--text-secondary, #8b949e); font-style: italic; font-size: .85rem; }
     .hint { margin-top: .65rem; padding: .55rem .8rem; border: 1px solid rgba(108,99,255,.4); border-radius: 8px; background: rgba(108,99,255,.08); font-size: .82rem; }
 
+    .file-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .file-row {
+      display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.7rem;
+      border: 1px solid var(--border-color, #30363d); border-radius: 8px; background: var(--bg-primary, #0d1117);
+    }
+    .file-row--invalid { border-color: rgba(251,191,36,.5); }
+    .file-row-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .file-row-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+    .file-row-info b { font-size: 0.82rem; word-break: break-all; }
+    .file-row-info small { font-size: 0.7rem; color: var(--text-secondary, #8b949e); }
+    .file-row-remove {
+      background: none; border: none; color: var(--text-secondary, #8b949e); cursor: pointer;
+      font-size: 0.85rem; padding: 0.2rem 0.4rem; border-radius: 4px; flex-shrink: 0;
+    }
+    .file-row-remove:hover { color: #f87171; background: var(--bg-tertiary, #1c2333); }
+    .file-list-count { margin: 0.25rem 0 0; font-size: 0.75rem; color: var(--text-secondary, #8b949e); }
+
+    .batch-list { margin: 0.75rem 0; display: flex; flex-direction: column; gap: 0.4rem; }
+    .batch-note { margin: 0 0 0.25rem; font-size: 0.78rem; color: var(--text-secondary, #8b949e); }
+    .batch-row {
+      display: flex; align-items: center; gap: 0.55rem; padding: 0.4rem 0.65rem;
+      border: 1px solid var(--border-color, #30363d); border-radius: 8px; background: var(--bg-primary, #0d1117); font-size: 0.8rem;
+    }
+    .batch-row-icon { flex-shrink: 0; }
+    .batch-row-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .batch-row-status { flex-shrink: 0; color: var(--text-secondary, #8b949e); font-size: 0.72rem; }
+    .batch-row-status.ok { color: var(--success, #34d399); }
+    .batch-row-status.err { color: #f87171; }
+
     .conv-summary {
       display: flex; flex-direction: column; gap: 1rem; padding: 1.1rem;
       background: var(--bg-primary, #0d1117); border: 1px solid var(--border-color, #30363d);
@@ -517,20 +598,49 @@ export class ConvertComponent implements OnInit, OnDestroy {
   readonly hint        = signal('');
   readonly msgOk       = signal(false);
 
+  /** Files staged for a `multi: true` conversion type (e.g. merge-pdf, image-to-pdf). */
+  readonly files       = signal<File[]>([]);
+  /**
+   * Shared status of the batch call. The backend combines every staged file into a
+   * SINGLE output (merged PDF, images bundled into one PDF) — it does not convert
+   * files independently — so this status applies to the whole batch, not per-file.
+   */
+  readonly batchStatus = signal<'pending' | 'running' | 'done' | 'error'>('pending');
+
   private url: string | null = null;
   private ext = '';
   private b64: string | null = null;
   private done = false;
 
+  readonly isMulti = computed(() => this.selectedDef()?.multi ?? false);
+
+  readonly hasSelection = computed(() =>
+    this.isMulti() ? this.files().length > 0 : Boolean(this.file()),
+  );
+
   readonly canConvert = computed(() => {
     const def = this.selectedDef();
-    const f   = this.file();
-    if (!def || !f || this.run()) return false;
+    if (!def || this.run()) return false;
+
+    if (def.multi) {
+      const fs = this.files();
+      if (fs.length === 0) return false;
+      if (def.id === 'merge-pdf' && fs.length < 2) return false;
+      return fs.every(f => this.matchesAccept(def, f));
+    }
+
+    const f = this.file();
+    if (!f) return false;
     if (def.id.startsWith('base64-')) return Boolean(this.b64);
+    return this.matchesAccept(def, f);
+  });
+
+  matchesAccept(def: ConversionDef, f: File): boolean {
     if (!def.accept || def.accept === '*') return true;
     const exts = def.accept.split(',').map(a => a.trim().replace('.', '').toLowerCase());
-    return exts.includes(this.ext.toLowerCase()) || exts.some(e => f.type.includes(e));
-  });
+    const ext = this.extOf(f.name);
+    return exts.includes(ext) || exts.some(e => f.type.includes(e));
+  }
 
   ngOnDestroy(): void { this.clean(); }
 
@@ -540,12 +650,14 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.openModal.set(true);
     this.step.set('preview');
     this.file.set(null);
+    this.files.set([]);
     this.meta.set(null);
     this.kind.set('unknown');
     this.txt.set('');
     this.msg.set('');
     this.hint.set('');
     this.msgOk.set(false);
+    this.batchStatus.set('pending');
     this.done = false;
     this.b64  = null;
     this.ext  = '';
@@ -563,18 +675,71 @@ export class ConvertComponent implements OnInit, OnDestroy {
 
   tryClose(): void {
     if (this.run()) return;
-    if (this.file() && !this.done && !confirm(this.t.instant('convert.close_confirm'))) return;
+    const hasWork = this.file() !== null || this.files().length > 0;
+    if (hasWork && !this.done && !confirm(this.t.instant('convert.close_confirm'))) return;
     this.openModal.set(false);
   }
 
-  select(e: Event): void { this.load((e.target as HTMLInputElement).files?.[0] ?? null); }
-  onFilesDropped(files: FileList): void { this.load(files[0] ?? null); }
+  select(e: Event): void {
+    const input = e.target as HTMLInputElement;
+    const list = input.files;
+    if (!list || list.length === 0) return;
+    if (this.isMulti()) {
+      this.addFiles(list);
+      input.value = '';
+    } else {
+      this.load(list[0] ?? null);
+    }
+  }
+
+  onFilesDropped(files: FileList): void {
+    if (this.isMulti()) {
+      this.addFiles(files);
+    } else {
+      this.load(files[0] ?? null);
+    }
+  }
+
+  private addFiles(list: FileList): void {
+    const incoming = Array.from(list);
+    const merged = [...this.files(), ...incoming].slice(0, MULTI_MAX_FILES);
+    this.files.set(merged);
+    this.step.set('preview');
+    this.msg.set('');
+    this.msgOk.set(false);
+    this.batchStatus.set('pending');
+    this.done = false;
+  }
+
+  removeFile(i: number): void {
+    const next = this.files().slice();
+    next.splice(i, 1);
+    this.files.set(next);
+  }
 
   confirm(): void {
-    if (!this.file()) return;
+    if (!this.hasSelection()) return;
     this.step.set('convert');
     this.msg.set('');
     this.msgOk.set(false);
+    this.batchStatus.set('pending');
+  }
+
+  batchIcon(): string {
+    switch (this.batchStatus()) {
+      case 'done': return '✅';
+      case 'error': return '❌';
+      default: return '⏳';
+    }
+  }
+
+  batchStatusLabel(): string {
+    switch (this.batchStatus()) {
+      case 'done': return 'convert.batch_done';
+      case 'error': return 'convert.batch_error';
+      case 'running': return 'convert.in_progress';
+      default: return 'convert.batch_pending';
+    }
   }
 
   convert(): void {
@@ -600,6 +765,36 @@ export class ConvertComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (def.multi) {
+      const fs = this.files();
+      if (fs.length === 0) { this.run.set(false); this.msg.set(this.t.instant('convert.no_file')); return; }
+
+      this.batchStatus.set('running');
+      this.svc.convertFiles(def.id as ConversionTypeId, fs).subscribe({
+        next: (ev) => {
+          if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
+            if (ev.body instanceof Blob) {
+              this.download(ev.body, this.outputExt(def), this.batchBaseName(def));
+              this.done = true;
+              this.batchStatus.set('done');
+              this.msg.set(this.t.instant('convert.success'));
+              this.msgOk.set(true);
+            } else {
+              this.batchStatus.set('error');
+              this.msg.set(this.t.instant('convert.payload_not_downloadable'));
+            }
+            this.run.set(false);
+          }
+        },
+        error: (err) => {
+          this.run.set(false);
+          this.batchStatus.set('error');
+          this.msg.set(this.errMsg(err));
+        },
+      });
+      return;
+    }
+
     const f = this.file();
     if (!f) { this.run.set(false); this.msg.set(this.t.instant('convert.no_file')); return; }
 
@@ -619,6 +814,12 @@ export class ConvertComponent implements OnInit, OnDestroy {
       },
       error: (err) => { this.run.set(false); this.msg.set(this.errMsg(err)); },
     });
+  }
+
+  private batchBaseName(def: ConversionDef): string {
+    if (def.id === 'merge-pdf') return 'merged';
+    if (def.id === 'image-to-pdf') return 'images';
+    return 'converted-files';
   }
 
   private errMsg(err: { status?: number; error?: { message?: string } | Blob }): string {
@@ -683,7 +884,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
       this.pdf.set(null);
       this.txt.set('');
     }
-    this.hint.set(this.ai(f.name, k));
+    this.hint.set(this.suggestTip(f.name, k));
   }
 
   private detect(f: File): Kind {
@@ -696,7 +897,13 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return 'unknown';
   }
 
-  private ai(name: string, k: Kind): string {
+  /**
+   * Plain filename/kind keyword matching — NOT an AI/LLM call. Kept honest on purpose:
+   * this only suggests a likely conversion based on the filename and detected file kind,
+   * unlike the genuinely LLM-backed tools elsewhere in AI & Tools (PDF Summary, AI
+   * Formatter, PDF Translate, AI Slides). Do not relabel this as "AI" in the UI.
+   */
+  private suggestTip(name: string, k: Kind): string {
     const n = name.toLowerCase();
     if (n.includes('invoice') || n.includes('fattura'))    return this.t.instant('convert.hint_invoice');
     if (n.includes('contract') || n.includes('contratto')) return this.t.instant('convert.hint_contract');
@@ -723,7 +930,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return /^[A-Za-z0-9+/=]+$/.test(x) ? x : null;
   }
 
-  private bytes(s: number): string {
+  /** Public: also used from the multi-file list template to render each staged file's size. */
+  bytes(s: number): string {
     if (s === 0) return '0 B';
     const u = ['B', 'KB', 'MB', 'GB'];
     const i = Math.min(Math.floor(Math.log(s) / Math.log(1024)), u.length - 1);
@@ -731,8 +939,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return `${v.toFixed(v >= 10 || i === 0 ? 0 : 1)} ${u[i]}`;
   }
 
-  private download(b: Blob, e: string): void {
-    const n = this.file()?.name.replace(/\.[^.]+$/, '') || 'converted-file';
+  private download(b: Blob, e: string, baseName?: string): void {
+    const n = baseName ?? (this.file()?.name.replace(/\.[^.]+$/, '') || 'converted-file');
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
     a.href = u;

@@ -227,7 +227,9 @@
             <button [class.active]="viewMode() === 'carousel'" (click)="setViewMode('carousel')">🖥 {{ 'ai_ppt.btn_carousel' | translate }}</button>
             <button [class.active]="viewMode() === 'grid'"     (click)="setViewMode('grid')"   >⊞ {{ 'ai_ppt.btn_grid' | translate }}</button>
           </div>
-          <button class="action-btn" (click)="exportSlides()">⬇ {{ 'ai_ppt.btn_export' | translate }}</button>
+          <button class="action-btn" [disabled]="exporting()" (click)="exportSlides()">
+            {{ exporting() ? '⏳ ' + ('ai_ppt.btn_exporting' | translate) : '⬇ ' + ('ai_ppt.btn_export' | translate) }}
+          </button>
           <button class="action-btn action-btn-ghost" (click)="reset()">↩ {{ 'ai_ppt.btn_new' | translate }}</button>
         </div>
       </div>

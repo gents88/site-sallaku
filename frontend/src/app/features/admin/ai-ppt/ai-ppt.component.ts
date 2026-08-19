@@ -97,6 +97,7 @@ export class AiPptComponent implements OnInit {
   readonly contextFile     = signal<File | null>(null);
   readonly isFullscreen    = signal(false);
   readonly copied          = signal(false);
+  readonly exporting       = signal(false);
 
   readonly styles      = PPT_STYLES;
   readonly slideCounts = SLIDE_COUNT_OPTIONS;
@@ -196,8 +197,9 @@ export class AiPptComponent implements OnInit {
 
   exportSlides(): void {
     const r = this.result();
-    if (!r) return;
-    this.service.exportAsPdf(r);
+    if (!r || this.exporting()) return;
+    this.exporting.set(true);
+    this.service.exportAsPdf(r).finally(() => this.exporting.set(false));
   }
 
   copySlideContent(): void {

@@ -62,12 +62,12 @@ const ADMIN_NAV: NavGroup[] = [
     emoji: '🧰',
     title: 'Tools',
     items: [
-      { icon: '🖊️', label: 'PDF Editor', route: '/lab/pdf-editor' },
-      { icon: '👁',  label: 'Viewer',     route: '/lab/viewer' },
-      { icon: '✏️', label: 'Editor',      route: '/lab/editor' },
-      { icon: '🔄', label: 'Convert',     route: '/lab/convert' },
-      { icon: '🔤', label: 'OCR',         route: '/lab/ocr' },
-      { icon: '📷', label: 'Scanner',     route: '/lab/scanner' },
+      { icon: '🖊️', label: 'Pagine PDF',      route: '/lab/pdf-editor' },
+      { icon: '👁',  label: 'Viewer',          route: '/lab/viewer' },
+      { icon: '✏️', label: 'Editor Documenti', route: '/lab/editor' },
+      { icon: '🔄', label: 'Convert',          route: '/lab/convert' },
+      { icon: '🔤', label: 'OCR',              route: '/lab/ocr' },
+      { icon: '📷', label: 'Scanner',          route: '/lab/scanner' },
     ],
   },
 ];

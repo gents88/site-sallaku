@@ -4,6 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '@env/environment';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
@@ -24,16 +25,16 @@ type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
   template: `
     <div class="page">
       <div class="page-header">
         <div>
-          <h2>🤖 AI Summarizer</h2>
-          <p class="subtitle">Upload PDF, Word or TXT — AI reads it and generates a summary in seconds</p>
+          <h2>🤖 {{ 'pdf_summary.title' | translate }}</h2>
+          <p class="subtitle">{{ 'pdf_summary.subtitle' | translate }}</p>
         </div>
         <div class="header-controls">
-          <label class="ctrl-label">🌐 Language</label>
+          <label class="ctrl-label">🌐 {{ 'pdf_summary.lang_label' | translate }}</label>
           <select class="lang-select" [(ngModel)]="selectedLang">
             <option value="it">Italiano</option>
             <option value="en">English</option>
@@ -62,9 +63,9 @@ type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
         @if (!selectedFile()) {
           <div class="drop-content">
             <span class="drop-icon">📂</span>
-            <p class="drop-title">Drag your file here</p>
-            <p class="drop-sub">or click to browse</p>
-            <p class="drop-formats">PDF · Word (.docx/.doc) · TXT · HTML — max 20 MB</p>
+            <p class="drop-title">{{ 'pdf_summary.drop_title' | translate }}</p>
+            <p class="drop-sub">{{ 'pdf_summary.drop_sub' | translate }}</p>
+            <p class="drop-formats">{{ 'pdf_summary.drop_formats' | translate }}</p>
           </div>
         } @else {
           <div class="file-selected">
@@ -82,15 +83,15 @@ type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
         <div class="mode-tabs">
           @for (m of outputModes; track m.id) {
             <button class="mode-tab" [class.active]="outputMode() === m.id" (click)="outputMode.set(m.id)">
-              {{ m.icon }} {{ m.label }}
+              {{ m.icon }} {{ m.labelKey | translate }}
             </button>
           }
         </div>
         <button class="summarize-btn" [disabled]="loading()" (click)="summarize()">
           @if (loading()) {
-            <span class="spinner"></span> Analysing…
+            <span class="spinner"></span> {{ 'pdf_summary.btn_analysing' | translate }}
           } @else {
-            🤖 Generate Summary
+            🤖 {{ 'pdf_summary.btn_generate' | translate }}
           }
         </button>
       }
@@ -106,47 +107,58 @@ type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
             <h3>{{ result()!.title }}</h3>
           </div>
 
-          <div class="result-section">
-            <h4>📋 Short Summary</h4>
-            <p class="short-summary">{{ result()!.shortSummary }}</p>
-          </div>
-
-          <div class="result-section">
-            <h4>📝 Detailed Summary</h4>
-            <p class="long-summary">{{ result()!.longSummary }}</p>
-          </div>
-
-          @if (result()!.keyPoints.length) {
-            <div class="result-section">
-              <h4>✅ Key Points</h4>
-              <ul class="key-points">
-                @for (pt of result()!.keyPoints; track $index) {
-                  <li>{{ pt }}</li>
-                }
-              </ul>
-            </div>
-          }
-
-          @if (result()!.keywords.length) {
-            <div class="result-section">
-              <h4>🏷 Keywords</h4>
-              <div class="keywords">
-                @for (kw of result()!.keywords; track kw) {
-                  <span class="kw-chip">{{ kw }}</span>
+          @switch (outputMode()) {
+            @case ('short') {
+              <div class="result-section">
+                <h4>📋 {{ 'pdf_summary.section_short' | translate }}</h4>
+                <p class="short-summary">{{ result()!.shortSummary }}</p>
+              </div>
+            }
+            @case ('detailed') {
+              <div class="result-section">
+                <h4>📝 {{ 'pdf_summary.section_detailed' | translate }}</h4>
+                <p class="long-summary">{{ result()!.longSummary }}</p>
+              </div>
+            }
+            @case ('bullets') {
+              <div class="result-section">
+                <h4>✅ {{ 'pdf_summary.section_bullets' | translate }}</h4>
+                @if (result()!.keyPoints.length) {
+                  <ul class="key-points">
+                    @for (pt of result()!.keyPoints; track $index) {
+                      <li>{{ pt }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="long-summary">{{ result()!.shortSummary }}</p>
                 }
               </div>
-            </div>
+            }
+            @case ('insights') {
+              <div class="result-section">
+                <h4>🏷 {{ 'pdf_summary.section_insights' | translate }}</h4>
+                @if (result()!.keywords.length) {
+                  <div class="keywords">
+                    @for (kw of result()!.keywords; track kw) {
+                      <span class="kw-chip">{{ kw }}</span>
+                    }
+                  </div>
+                } @else {
+                  <p class="long-summary">{{ result()!.shortSummary }}</p>
+                }
+              </div>
+            }
           }
 
           <div class="result-actions">
             <button class="action-btn" (click)="copyToClipboard()" [class.copied]="justCopied()">
-              {{ justCopied() ? '✅ Copied!' : '📋 Copy' }}
+              {{ justCopied() ? ('pdf_summary.btn_copied' | translate) : ('pdf_summary.btn_copy' | translate) }}
             </button>
-            <button class="action-btn" (click)="downloadSummary()">⬇️ Download</button>
+            <button class="action-btn" (click)="downloadSummary()">⬇️ {{ 'pdf_summary.btn_download' | translate }}</button>
             <button class="action-btn" (click)="summarize()" [disabled]="loading()">
-              🔄 Regenerate
+              🔄 {{ 'pdf_summary.btn_regenerate' | translate }}
             </button>
-            <button class="action-btn danger" (click)="reset()">✕ New file</button>
+            <button class="action-btn danger" (click)="reset()">✕ {{ 'pdf_summary.btn_new_file' | translate }}</button>
           </div>
         </div>
       }
@@ -366,11 +378,11 @@ export class PdfSummaryComponent implements OnInit {
   selectedLang: SummaryLang = 'en';
   outputMode     = signal<OutputMode>('short');
 
-  readonly outputModes: { id: OutputMode; icon: string; label: string }[] = [
-    { id: 'short',    icon: '⚡', label: 'Brief' },
-    { id: 'detailed', icon: '📄', label: 'Detailed' },
-    { id: 'bullets',  icon: '•',  label: 'Key Points' },
-    { id: 'insights', icon: '💡', label: 'Insights' },
+  readonly outputModes: { id: OutputMode; icon: string; labelKey: string }[] = [
+    { id: 'short',    icon: '⚡', labelKey: 'pdf_summary.mode_short' },
+    { id: 'detailed', icon: '📄', labelKey: 'pdf_summary.mode_detailed' },
+    { id: 'bullets',  icon: '•',  labelKey: 'pdf_summary.mode_bullets' },
+    { id: 'insights', icon: '💡', labelKey: 'pdf_summary.mode_insights' },
   ];
 
   readonly displayedSummary = computed(() => {

@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
+import { OcrService, OcrResult, OcrPageResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
@@ -13,7 +13,20 @@ interface PageText {
   confidence: number | null; // null → estratto dal text layer, non OCR
 }
 
+/** Risultato OCR raggruppato per file sorgente (un file può avere più pagine se è un PDF). */
+interface FileResult {
+  name: string;
+  pages: PageText[];
+  text: string;
+}
+
 const MAX_PDF_PAGES = 20;
+/** Allineati ai limiti del backend (vedi ocr.controller.ts: MAX_FILE_COUNT / MAX_FILE_SIZE). */
+const MAX_FILES = 30;
+const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024;
+/** Sotto questa soglia (%) la confidenza OCR di una pagina viene segnalata come bassa. */
+const LOW_CONFIDENCE_THRESHOLD = 60;
+
 const IMG_ACCEPT = '.png,.jpg,.jpeg,.webp,.bmp,.tiff,.pdf';
 const LANG_STORAGE_KEY = 'ocr-lang';
 const UI_TO_OCR_LANG: Record<string, string> = {
@@ -39,18 +52,30 @@ const UI_TO_OCR_LANG: Record<string, string> = {
              #dz="fileDropzone"
              (click)="pick.click()"
              (filesDropped)="onFilesDropped($event)"
-             [class.dz--active]="file() || dz.isDragging">
-          <input #pick type="file" hidden [attr.accept]="accept" (change)="select($event)">
-          @if (!file()) {
+             [class.dz--active]="files().length > 0 || dz.isDragging">
+          <input #pick type="file" hidden multiple [attr.accept]="accept" (change)="select($event)">
+          @if (files().length === 0) {
             <span class="dz-icon">📂</span>
             <strong>{{ 'ocr.drop_prompt' | translate }}</strong>
             <small>{{ 'ocr.accepted' | translate }}</small>
           } @else {
             <span class="dz-icon">✅</span>
-            <strong>{{ file()!.name }}</strong>
-            <small>{{ size() }} · {{ 'ocr.change_file' | translate }}</small>
+            <strong>{{ 'ocr.files_selected' | translate: { count: files().length } }}</strong>
+            <small>{{ totalSize() }} · {{ 'ocr.add_more' | translate }}</small>
           }
         </div>
+
+        @if (files().length > 0) {
+          <ul class="file-list">
+            @for (f of files(); track f.name + f.size + $index; let i = $index) {
+              <li class="file-item">
+                <span class="file-item-name">{{ f.name }}</span>
+                <span class="file-item-size">{{ formatSize(f.size) }}</span>
+                <button type="button" class="file-item-remove" [disabled]="busy()" (click)="removeFile(i)" [attr.aria-label]="'ocr.remove_file' | translate">✕</button>
+              </li>
+            }
+          </ul>
+        }
 
         <!-- Options -->
         <div class="opts">
@@ -63,10 +88,10 @@ const UI_TO_OCR_LANG: Record<string, string> = {
             </select>
           </label>
           <div class="ac">
-            @if (result() || status() === 'error') {
+            @if (fileResults().length > 0 || status() === 'error') {
               <button class="btn btn-s" (click)="reset()">{{ 'ocr.clear' | translate }}</button>
             }
-            <button class="btn btn-p" [disabled]="!file() || busy()" (click)="start()">
+            <button class="btn btn-p" [disabled]="files().length === 0 || busy()" (click)="start()">
               {{ (busy() ? 'ocr.processing' : 'ocr.start') | translate }}
             </button>
           </div>
@@ -78,7 +103,11 @@ const UI_TO_OCR_LANG: Record<string, string> = {
             <div class="progress-bar"><div class="progress-fill"></div></div>
             <small>
               @if (status() === 'preparing') {
-                {{ 'ocr.preparing' | translate }} {{ progress().current }}/{{ progress().total }}
+                {{ 'ocr.preparing' | translate }}
+                @if (files().length > 1 && preparingFile()) {
+                  — {{ preparingFile() }}
+                }
+                {{ progress().current }}/{{ progress().total }}
               } @else {
                 {{ 'ocr.recognizing' | translate }}
               }
@@ -92,7 +121,7 @@ const UI_TO_OCR_LANG: Record<string, string> = {
       </div>
 
       <!-- Results -->
-      @if (result(); as res) {
+      @if (fileResults().length > 0) {
         <section class="cp-panel res">
           <div class="res-head">
             <div>
@@ -104,21 +133,35 @@ const UI_TO_OCR_LANG: Record<string, string> = {
               <button class="btn btn-p" (click)="downloadTxt()">{{ 'ocr.download_txt' | translate }}</button>
             </div>
           </div>
-          @if (!res.text) {
+          @if (!allText()) {
             <p class="cp-subtitle">{{ 'ocr.no_text' | translate }}</p>
           } @else {
-            <pre class="tx">{{ res.text }}</pre>
-            @if (res.pages.length > 1) {
-              <div class="pages">
-                @for (p of pages(); track p.index) {
-                  <span class="page-chip">
-                    {{ 'ocr.page' | translate }} {{ p.index + 1 }}
-                    @if (p.confidence !== null) {
-                      · {{ p.confidence }}%
-                    } @else {
-                      · {{ 'ocr.text_layer' | translate }}
-                    }
-                  </span>
+            @for (fr of fileResults(); track fr.name + $index) {
+              <div class="file-res">
+                @if (fileResults().length > 1) {
+                  <h3 class="file-res-name">📄 {{ fr.name }}</h3>
+                }
+                @if (!fr.text) {
+                  <p class="cp-subtitle file-res-empty">{{ 'ocr.no_text' | translate }}</p>
+                } @else {
+                  <pre class="tx">{{ fr.text }}</pre>
+                  @if (fr.pages.length > 1 || hasConfidence(fr)) {
+                    <div class="pages">
+                      @for (p of fr.pages; track p.index) {
+                        <span class="page-chip" [class.page-chip--low]="isLowConfidence(p)">
+                          {{ 'ocr.page' | translate }} {{ p.index + 1 }}
+                          @if (p.confidence !== null) {
+                            · {{ p.confidence }}%
+                            @if (isLowConfidence(p)) {
+                              <span class="low-conf" [title]="'ocr.low_confidence_hint' | translate">⚠️</span>
+                            }
+                          } @else {
+                            · {{ 'ocr.text_layer' | translate }}
+                          }
+                        </span>
+                      }
+                    </div>
+                  }
                 }
               </div>
             }
@@ -147,6 +190,21 @@ const UI_TO_OCR_LANG: Record<string, string> = {
     .dz--active { border-color: var(--success, #34d399); background: rgba(52,211,153,.04); }
     .dz-icon { font-size: 1.75rem; line-height: 1; }
     .dz small { color: var(--text-secondary, #8b949e); }
+
+    .file-list { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .4rem; max-height: 220px; overflow-y: auto; }
+    .file-item {
+      display: flex; align-items: center; gap: .6rem; padding: .4rem .6rem;
+      background: var(--bg-primary, #0d1117); border: 1px solid var(--border-color, #30363d); border-radius: 8px;
+      font-size: .8rem;
+    }
+    .file-item-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-item-size { color: var(--text-secondary, #8b949e); flex-shrink: 0; }
+    .file-item-remove {
+      background: transparent; border: none; color: var(--text-secondary, #8b949e); cursor: pointer;
+      font-size: .8rem; line-height: 1; padding: .2rem .35rem; border-radius: 6px; flex-shrink: 0;
+    }
+    .file-item-remove:hover:not(:disabled) { color: var(--danger, #f87171); background: rgba(248,113,113,.08); }
+    .file-item-remove:disabled { opacity: .4; cursor: not-allowed; }
 
     .opts { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
     .opt small { display: block; font-size: 0.72rem; color: var(--text-secondary, #8b949e); margin-bottom: 0.3rem; }
@@ -182,6 +240,12 @@ const UI_TO_OCR_LANG: Record<string, string> = {
     .res-head h2 { margin: 0; font-size: 1.05rem; }
     .res-lang { color: var(--text-secondary, #8b949e); }
     .res-actions { display: flex; gap: .6rem; }
+
+    .file-res { margin-bottom: 1.5rem; }
+    .file-res:last-child { margin-bottom: 0; }
+    .file-res-name { margin: 0 0 .5rem; font-size: .85rem; font-weight: 600; color: var(--text-primary, #e6edf3); }
+    .file-res-empty { margin: 0; }
+
     .tx {
       padding: .8rem; overflow: auto; white-space: pre-wrap; word-break: break-word; font-size: .82rem;
       background: var(--bg-primary,#0d1117); color: var(--text-primary,#e6edf3);
@@ -193,6 +257,10 @@ const UI_TO_OCR_LANG: Record<string, string> = {
       background: var(--bg-tertiary, #1c2333); border: 1px solid var(--border-color, #30363d);
       color: var(--text-secondary, #8b949e);
     }
+    .page-chip--low {
+      background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.4); color: var(--warning, #fbbf24);
+    }
+    .low-conf { margin-left: .15rem; }
 
     @media (max-width: 600px) {
       .cp-page { padding: 1rem; }
@@ -211,24 +279,21 @@ export class OcrComponent implements OnInit {
   readonly accept = IMG_ACCEPT;
   readonly languages = OCR_LANGUAGES;
 
-  readonly file = signal<File | null>(null);
+  readonly files = signal<File[]>([]);
   readonly lang = signal(this.defaultLang());
   readonly status = signal<Status>('idle');
   readonly progress = signal({ current: 0, total: 0 });
-  readonly result = signal<OcrResult | null>(null);
-  readonly pages = signal<PageText[]>([]);
+  readonly preparingFile = signal('');
+  readonly fileResults = signal<FileResult[]>([]);
+  readonly resultLang = signal<string | null>(null);
   readonly msg = signal('');
   readonly copied = signal(false);
 
   readonly busy = computed(() => this.status() === 'preparing' || this.status() === 'recognizing');
-  readonly size = computed(() => {
-    const f = this.file();
-    if (!f) return '';
-    const kb = f.size / 1024;
-    return kb >= 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${Math.round(kb)} KB`;
-  });
+  readonly totalSize = computed(() => this.formatSize(this.files().reduce((sum, f) => sum + f.size, 0)));
+  readonly allText = computed(() => this.fileResults().map((fr) => fr.text).filter(Boolean).join('\n\n'));
   readonly resultLangLabel = computed(() => {
-    const code = this.result()?.lang ?? this.lang();
+    const code = this.resultLang() ?? this.lang();
     return this.languages.find((l) => l.code === code)?.label ?? code;
   });
 
@@ -275,8 +340,20 @@ export class OcrComponent implements OnInit {
     ]);
   }
 
-  select(e: Event): void { this.setFile((e.target as HTMLInputElement).files?.[0] ?? null); }
-  onFilesDropped(files: FileList): void { this.setFile(files[0] ?? null); }
+  select(e: Event): void {
+    const input = e.target as HTMLInputElement;
+    const list = Array.from(input.files ?? []);
+    input.value = '';
+    this.addFiles(list);
+  }
+
+  onFilesDropped(files: FileList): void { this.addFiles(Array.from(files)); }
+
+  removeFile(i: number): void {
+    this.files.update((all) => all.filter((_, idx) => idx !== i));
+    this.fileResults.set([]);
+    this.status.set('idle');
+  }
 
   onLangChange(code: string): void {
     this.lang.set(code);
@@ -284,28 +361,23 @@ export class OcrComponent implements OnInit {
   }
 
   reset(): void {
-    this.file.set(null);
-    this.result.set(null);
-    this.pages.set([]);
+    this.files.set([]);
+    this.fileResults.set([]);
     this.msg.set('');
     this.status.set('idle');
   }
 
   async start(): Promise<void> {
-    const f = this.file();
-    if (!f || this.busy()) return;
+    const fs = this.files();
+    if (fs.length === 0 || this.busy()) return;
 
-    this.result.set(null);
-    this.pages.set([]);
+    this.fileResults.set([]);
     this.msg.set('');
     this.copied.set(false);
+    this.resultLang.set(this.lang());
 
     try {
-      if (this.isPdf(f)) {
-        await this.processPdf(f);
-      } else {
-        await this.processImages([{ blob: f, name: f.name }], []);
-      }
+      await this.processBatch(fs);
     } catch (err) {
       this.status.set('error');
       this.msg.set(`❌ ${this.errText(err)}`);
@@ -313,22 +385,34 @@ export class OcrComponent implements OnInit {
   }
 
   copy(): void {
-    const text = this.result()?.text ?? '';
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(this.allText()).then(() => {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 2000);
     });
   }
 
   downloadTxt(): void {
-    const text = this.result()?.text ?? '';
-    const name = this.file()?.name.replace(/\.[^.]+$/, '') || 'ocr-result';
-    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+    const fs = this.files();
+    const name = fs.length === 1 ? fs[0].name.replace(/\.[^.]+$/, '') : 'ocr-result';
+    const url = URL.createObjectURL(new Blob([this.allText()], { type: 'text/plain;charset=utf-8' }));
     const a = document.createElement('a');
     a.href = url;
     a.download = `${name}.txt`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  isLowConfidence(p: PageText): boolean {
+    return p.confidence !== null && p.confidence < LOW_CONFIDENCE_THRESHOLD;
+  }
+
+  hasConfidence(fr: FileResult): boolean {
+    return fr.pages.some((p) => p.confidence !== null);
+  }
+
+  formatSize(bytes: number): string {
+    const kb = bytes / 1024;
+    return kb >= 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${Math.round(kb)} KB`;
   }
 
   // ── Internals ──────────────────────────────────────────────────────────
@@ -341,10 +425,33 @@ export class OcrComponent implements OnInit {
     return UI_TO_OCR_LANG[this.t.currentLang] ?? 'eng';
   }
 
-  private setFile(f: File | null): void {
-    if (!f) return;
-    this.reset();
-    this.file.set(f);
+  private addFiles(newFiles: File[]): void {
+    if (this.busy() || newFiles.length === 0) return;
+
+    const tooLarge: string[] = [];
+    const accepted: File[] = [];
+    for (const f of newFiles) {
+      if (!this.isPdf(f) && f.size > MAX_FILE_SIZE_BYTES) {
+        tooLarge.push(f.name);
+      } else {
+        accepted.push(f);
+      }
+    }
+
+    const combined = [...this.files(), ...accepted];
+    if (combined.length > MAX_FILES) {
+      this.msg.set(`❌ ${this.t.instant('ocr.err_too_many_files', { max: MAX_FILES })}`);
+      return;
+    }
+
+    this.files.set(combined);
+    this.fileResults.set([]);
+    this.status.set('idle');
+    this.msg.set(
+      tooLarge.length > 0
+        ? `❌ ${this.t.instant('ocr.err_file_too_large', { names: tooLarge.join(', '), max: 15 })}`
+        : '',
+    );
   }
 
   private isPdf(f: File): boolean {
@@ -352,17 +459,71 @@ export class OcrComponent implements OnInit {
   }
 
   /**
-   * PDF: per ogni pagina prova prima il text layer (gratis, istantaneo);
-   * solo le pagine senza testo vengono rasterizzate e mandate all'OCR.
+   * Elabora tutti i file selezionati: per ogni PDF prova prima il text layer per
+   * pagina (gratis, istantaneo), solo le pagine senza testo vengono rasterizzate;
+   * le immagini vanno direttamente in coda OCR. Tutte le immagini raccolte da
+   * tutti i file vengono poi mandate al backend in un'unica chiamata batch.
    */
-  private async processPdf(f: File): Promise<void> {
+  private async processBatch(fs: File[]): Promise<void> {
     this.status.set('preparing');
+
+    const perFileTextPages: PageText[][] = fs.map(() => []);
+    const toOcr: { blob: Blob; name: string; fileIdx: number; pageIndex: number }[] = [];
+    let truncatedAny = false;
+
+    for (let fi = 0; fi < fs.length; fi++) {
+      const f = fs[fi];
+      if (this.isPdf(f)) {
+        const truncated = await this.collectPdfPages(f, fi, perFileTextPages[fi], toOcr);
+        if (truncated) truncatedAny = true;
+      } else {
+        toOcr.push({ blob: f, name: f.name, fileIdx: fi, pageIndex: 0 });
+      }
+    }
+    this.preparingFile.set('');
+
+    if (toOcr.length > MAX_FILES) {
+      this.status.set('error');
+      this.msg.set(`❌ ${this.t.instant('ocr.err_too_many_pages', { count: toOcr.length, max: MAX_FILES })}`);
+      return;
+    }
+
+    let ocrPages: OcrPageResult[] = [];
+    if (toOcr.length > 0) {
+      this.status.set('recognizing');
+      const res = await new Promise<OcrResult>((resolve, reject) => {
+        this.svc.extract(toOcr, this.lang()).subscribe({ next: resolve, error: reject });
+      });
+      ocrPages = res.pages;
+    }
+
+    ocrPages.forEach((p, i) => {
+      const meta = toOcr[i];
+      perFileTextPages[meta.fileIdx].push({ index: meta.pageIndex, text: p.text, confidence: p.confidence });
+    });
+
+    const results: FileResult[] = fs.map((f, fi) => {
+      const pages = [...perFileTextPages[fi]].sort((a, b) => a.index - b.index);
+      return { name: f.name, pages, text: pages.map((p) => p.text).filter(Boolean).join('\n\n') };
+    });
+
+    this.fileResults.set(results);
+    this.status.set('done');
+    if (truncatedAny) this.msg.set(this.t.instant('ocr.pages_truncated', { max: MAX_PDF_PAGES }));
+    if (!this.msg()) this.msg.set(`✅ ${this.t.instant('ocr.success')}`);
+  }
+
+  /** Estrae il testo layer o accoda per OCR le pagine di un singolo PDF. Ritorna true se il PDF è stato troncato a MAX_PDF_PAGES. */
+  private async collectPdfPages(
+    f: File,
+    fileIdx: number,
+    textPagesOut: PageText[],
+    toOcrOut: { blob: Blob; name: string; fileIdx: number; pageIndex: number }[],
+  ): Promise<boolean> {
+    this.preparingFile.set(f.name);
     const doc = await this.pdfjs.openDocument(await f.arrayBuffer());
     const total = Math.min(doc.numPages, MAX_PDF_PAGES);
     this.progress.set({ current: 0, total });
-
-    const textPages: PageText[] = [];
-    const toOcr: { blob: Blob; name: string; index: number }[] = [];
 
     for (let i = 1; i <= total; i++) {
       this.progress.set({ current: i, total });
@@ -375,50 +536,15 @@ export class OcrComponent implements OnInit {
         .trim();
 
       if (text.length >= 40) {
-        textPages.push({ index: i - 1, text, confidence: null });
+        textPagesOut.push({ index: i - 1, text, confidence: null });
       } else {
         const blob = await this.pdfjs.renderPageToBlob(page, 2);
-        toOcr.push({ blob, name: `page-${i}.png`, index: i - 1 });
+        toOcrOut.push({ blob, name: `${f.name}-page-${i}.png`, fileIdx, pageIndex: i - 1 });
       }
     }
     const truncated = doc.numPages > MAX_PDF_PAGES;
     await doc.loadingTask.destroy();
-
-    if (truncated) {
-      this.msg.set(this.t.instant('ocr.pages_truncated', { max: MAX_PDF_PAGES }));
-    }
-
-    await this.processImages(toOcr, textPages);
-  }
-
-  /** Manda le immagini all'OCR backend e unisce i risultati con le pagine da text layer. */
-  private async processImages(
-    toOcr: { blob: Blob; name: string; index?: number }[],
-    textPages: PageText[],
-  ): Promise<void> {
-    let merged = [...textPages];
-
-    if (toOcr.length > 0) {
-      this.status.set('recognizing');
-      const res = await new Promise<OcrResult>((resolve, reject) => {
-        this.svc.extract(toOcr, this.lang()).subscribe({ next: resolve, error: reject });
-      });
-      merged = merged.concat(
-        res.pages.map((p, i) => ({
-          index: toOcr[i].index ?? i,
-          text: p.text,
-          confidence: p.confidence,
-        })),
-      );
-    }
-
-    merged.sort((a, b) => a.index - b.index);
-    const text = merged.map((p) => p.text).filter(Boolean).join('\n\n');
-
-    this.pages.set(merged);
-    this.result.set({ lang: this.lang(), pages: merged.map((p, i) => ({ index: i, text: p.text, confidence: p.confidence ?? 100 })), text });
-    this.status.set('done');
-    if (!this.msg()) this.msg.set(`✅ ${this.t.instant('ocr.success')}`);
+    return truncated;
   }
 
   private errText(err: unknown): string {

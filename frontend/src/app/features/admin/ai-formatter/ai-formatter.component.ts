@@ -4,11 +4,13 @@ import {
   OnInit,
   signal,
   computed,
+  effect,
   inject,
+  PLATFORM_ID,
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
@@ -33,11 +35,27 @@ type ViewMode = 'formatted' | 'raw';
 export class AiFormatterComponent implements OnInit {
   @ViewChild('formatterSection') formatterSection!: ElementRef<HTMLElement>;
 
-  private readonly sanitizer = inject(DomSanitizer);
-  private readonly service   = inject(AiFormatterService);
-  private readonly seo       = inject(SeoService);
+  private readonly sanitizer  = inject(DomSanitizer);
+  private readonly service    = inject(AiFormatterService);
+  private readonly seo        = inject(SeoService);
+  private readonly platformId = inject(PLATFORM_ID);
+
+  private static readonly DRAFT_KEY = 'ai-formatter-draft';
+  private saveTimer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    // Debounce-persist the draft (input text + last result) to localStorage.
+    effect(() => {
+      const text   = this.text();
+      const result = this.result();
+      if (!isPlatformBrowser(this.platformId)) return;
+      if (this.saveTimer) clearTimeout(this.saveTimer);
+      this.saveTimer = setTimeout(() => this.saveDraft(text, result), 500);
+    });
+  }
 
   ngOnInit(): void {
+    this.restoreDraft();
     this.seo.update({
       title: 'AI Text Formatter — Convert Notes to Polished Documents',
       description: 'Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter.',
@@ -88,6 +106,7 @@ export class AiFormatterComponent implements OnInit {
   readonly viewMode         = signal<ViewMode>('formatted');
   readonly selectedDocType  = signal<DocType>('general');
   readonly copied           = signal(false);
+  readonly draftRestored    = signal(false);
 
   readonly wordCount = computed(() =>
     this.text().trim() ? this.text().trim().split(/\s+/).filter(Boolean).length : 0,
@@ -178,6 +197,43 @@ export class AiFormatterComponent implements OnInit {
     this.text.set('');
     this.result.set(null);
     this.error.set('');
+    this.draftRestored.set(false);
+    if (isPlatformBrowser(this.platformId)) {
+      try { localStorage.removeItem(AiFormatterComponent.DRAFT_KEY); } catch { /* storage unavailable */ }
+    }
+  }
+
+  dismissDraftNotice(): void {
+    this.draftRestored.set(false);
+  }
+
+  private saveDraft(text: string, result: FormatTextResult | null): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      if (!text) {
+        localStorage.removeItem(AiFormatterComponent.DRAFT_KEY);
+        return;
+      }
+      localStorage.setItem(AiFormatterComponent.DRAFT_KEY, JSON.stringify({ text, result }));
+    } catch {
+      // localStorage unavailable (private mode, quota) — silently skip autosave
+    }
+  }
+
+  private restoreDraft(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      const raw = localStorage.getItem(AiFormatterComponent.DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as { text?: string; result?: FormatTextResult | null };
+      if (draft?.text) {
+        this.text.set(draft.text);
+        if (draft.result) this.result.set(draft.result);
+        this.draftRestored.set(true);
+      }
+    } catch {
+      // corrupted draft — ignore and start fresh
+    }
   }
 
   useSampleText(): void {
@@ -227,10 +283,58 @@ Full team offsite planned for April 5-6 in Milan. Q2 targets to be circulated vi
         .replace(/\*(.+?)\*/g,         '<em>$1</em>')
         .replace(/`([^`]+)`/g,         '<code>$1</code>');
 
-    for (const raw of lines) {
-      const t = raw.trim();
-      if (!t) { closeList(); out.push('<br>'); continue; }
-      if      (t.startsWith('#### ')) { closeList(); out.push(`<h4>${inline(t.slice(5))}</h4>`); }
+    // GFM table separator row, e.g. `| --- | :---: | ---: |`
+    const isTableSeparator = (s: string) =>
+      /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/.test(s);
+
+    const splitRow = (s: string): string[] => {
+      let row = s.trim();
+      if (row.startsWith('|')) row = row.slice(1);
+      if (row.endsWith('|')) row = row.slice(0, -1);
+      return row.split('|').map((c) => c.trim());
+    };
+
+    let i = 0;
+    while (i < lines.length) {
+      const t = lines[i].trim();
+
+      // Fenced code blocks: ```lang ... ```
+      if (t.startsWith('```')) {
+        closeList();
+        const codeLines: string[] = [];
+        i++;
+        while (i < lines.length && !lines[i].trim().startsWith('```')) {
+          codeLines.push(lines[i]);
+          i++;
+        }
+        if (i < lines.length) i++; // consume closing fence
+        out.push(`<pre><code>${esc(codeLines.join('\n'))}</code></pre>`);
+        continue;
+      }
+
+      // GFM pipe tables: header row followed by a `---` separator row
+      if (t.includes('|') && i + 1 < lines.length && isTableSeparator(lines[i + 1].trim())) {
+        closeList();
+        const headerCells = splitRow(t);
+        i += 2; // skip header + separator rows
+        const bodyRows: string[][] = [];
+        while (i < lines.length && lines[i].trim() !== '' && lines[i].trim().includes('|')) {
+          bodyRows.push(splitRow(lines[i].trim()));
+          i++;
+        }
+        out.push('<table>');
+        out.push('<thead><tr>' + headerCells.map((c) => `<th>${inline(c)}</th>`).join('') + '</tr></thead>');
+        out.push('<tbody>');
+        for (const row of bodyRows) {
+          out.push('<tr>' + row.map((c) => `<td>${inline(c)}</td>`).join('') + '</tr>');
+        }
+        out.push('</tbody>');
+        out.push('</table>');
+        continue;
+      }
+
+      if (!t) { closeList(); out.push('<br>'); }
+      else if (t.startsWith('#### ')) { closeList(); out.push(`<h4>${inline(t.slice(5))}</h4>`); }
       else if (t.startsWith('### '))  { closeList(); out.push(`<h3>${inline(t.slice(4))}</h3>`); }
       else if (t.startsWith('## '))   { closeList(); out.push(`<h2>${inline(t.slice(3))}</h2>`); }
       else if (t.startsWith('# '))    { closeList(); out.push(`<h1>${inline(t.slice(2))}</h1>`); }
@@ -248,6 +352,7 @@ Full team offsite planned for April 5-6 in Milan. Q2 targets to be circulated vi
         closeList();
         out.push(`<p>${inline(t)}</p>`);
       }
+      i++;
     }
 
     closeList();

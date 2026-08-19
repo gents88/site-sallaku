@@ -69,35 +69,89 @@ export class AiPptService {
       );
   }
 
-  exportAsPdf(result: GeneratePptResult): void {
-    const content = this.buildTextContent(result);
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  async exportAsPdf(result: GeneratePptResult): Promise<void> {
+    const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
+    const doc = await PDFDocument.create();
+    const titleFont  = await doc.embedFont(StandardFonts.HelveticaBold);
+    const bodyFont   = await doc.embedFont(StandardFonts.Helvetica);
+    const notesFont  = await doc.embedFont(StandardFonts.HelveticaOblique);
+
+    const pageWidth    = 792;  // 11in landscape
+    const pageHeight   = 612;  // 8.5in
+    const margin       = 56;
+    const contentWidth = pageWidth - margin * 2;
+
+    result.slides.forEach((slide, i) => {
+      const page = doc.addPage([pageWidth, pageHeight]);
+      let y = pageHeight - margin;
+
+      const titleSize = 26;
+      for (const line of this.wrapText(slide.title, titleFont, titleSize, contentWidth)) {
+        page.drawText(line, { x: margin, y: y - titleSize, size: titleSize, font: titleFont, color: rgb(0.11, 0.09, 0.2) });
+        y -= titleSize * 1.3;
+      }
+      y -= 10;
+      page.drawLine({ start: { x: margin, y }, end: { x: pageWidth - margin, y }, thickness: 1.5, color: rgb(0.42, 0.39, 1) });
+      y -= 30;
+
+      const bodySize = 15;
+      const items = this.bulletLines(slide.content);
+      for (const item of items.length ? items : [slide.content.trim()]) {
+        const lines = this.wrapText(item, bodyFont, bodySize, contentWidth - 20);
+        lines.forEach((line, idx) => {
+          page.drawText((idx === 0 ? '•  ' : '   ') + line, {
+            x: margin, y: y - bodySize, size: bodySize, font: bodyFont, color: rgb(0.2, 0.2, 0.24),
+          });
+          y -= bodySize * 1.55;
+        });
+        y -= 6;
+        if (y < 90) break;
+      }
+
+      if (slide.notes) {
+        let ny = 62;
+        for (const line of this.wrapText(`Notes: ${slide.notes}`, notesFont, 9.5, contentWidth).slice(0, 3)) {
+          page.drawText(line, { x: margin, y: ny, size: 9.5, font: notesFont, color: rgb(0.5, 0.5, 0.55) });
+          ny -= 13;
+        }
+      }
+
+      const footer = `${result.title} · ${i + 1}/${result.slides.length}`;
+      page.drawText(footer, {
+        x: pageWidth - margin - bodyFont.widthOfTextAtSize(footer, 9),
+        y: 28, size: 9, font: bodyFont, color: rgb(0.6, 0.6, 0.65),
+      });
+    });
+
+    const bytes = await doc.save();
+    const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${this.sanitizeFilename(result.title)}_slides.txt`;
+    a.download = `${this.sanitizeFilename(result.title)}_slides.pdf`;
     a.click();
     URL.revokeObjectURL(url);
   }
 
-  private buildTextContent(result: GeneratePptResult): string {
-    const lines: string[] = [
-      `PRESENTATION: ${result.title}`,
-      `Style: ${result.style} | Slides: ${result.slideCount}`,
-      '='.repeat(60),
-      '',
-    ];
-    result.slides.forEach((slide, i) => {
-      lines.push(`SLIDE ${i + 1}: ${slide.title}`);
-      lines.push('-'.repeat(40));
-      lines.push(slide.content);
-      if (slide.notes) {
-        lines.push('');
-        lines.push(`[SPEAKER NOTES]: ${slide.notes}`);
+  private bulletLines(content: string): string[] {
+    return content.split('\n').map((l) => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
+  }
+
+  private wrapText(text: string, font: import('pdf-lib').PDFFont, size: number, maxWidth: number): string[] {
+    const words = text.split(/\s+/).filter(Boolean);
+    const lines: string[] = [];
+    let current = '';
+    for (const word of words) {
+      const candidate = current ? `${current} ${word}` : word;
+      if (current && font.widthOfTextAtSize(candidate, size) > maxWidth) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = candidate;
       }
-      lines.push('');
-    });
-    return lines.join('\n');
+    }
+    if (current) lines.push(current);
+    return lines;
   }
 
   private sanitizeFilename(name: string): string {
