@@ -717,6 +717,7 @@
     "chip_contact": "📬 Si mund ta kontaktoj?"
   },
   "ai_ppt": {
+    "title": "Gjenerator Slide",
     "badge": "Gjenerator Slide AI",
     "hero_title_1": "Ktheje Çdo Ide në",
     "hero_title_2": "Prezantim Profesional",
@@ -774,6 +775,7 @@
     "workspace_sent": "U dërgua ✓"
   },
   "ai_formatter": {
+    "title": "Formatues AI",
     "badge": "Fuqizuar nga AI",
     "hero_title_1": "Formatoni Tekst të Papunuar në",
     "hero_title_2": "Dokumente të Rafinuara",
@@ -862,6 +864,7 @@
     "start_here": "Veglat e fillimit"
   },
   "pdf_translate": {
+    "title": "Përkthim PDF",
     "badge": "Përkthim PDF me AI",
     "hero_title_1": "Përkthe Çdo PDF",
     "hero_title_2": "Me Layout të Ruajtur",
