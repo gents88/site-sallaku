@@ -973,7 +973,8 @@
     "feature_sources_desc": "Internet Archive, Project Gutenberg, arXiv e PubMed Central — milioni di libri e paper catalogati.",
     "feature_preview_title": "Anteprima Istantanea",
     "feature_preview_desc": "Guarda il PDF direttamente nel browser prima di scaricarlo.",
-    "preview_unavailable": "Anteprima non disponibile per questa fonte. Scarica il PDF per leggerlo."
+    "preview_unavailable": "Anteprima non disponibile per questa fonte. Scarica il PDF per leggerlo.",
+    "mobile_preview_hint": "L'anteprima integrata su mobile mostra solo la prima pagina. Usa \"Scarica PDF\" qui sotto per sfogliarlo tutto nel visualizzatore del telefono."
   },
   "convert": {
     "title": "Convertitore",
