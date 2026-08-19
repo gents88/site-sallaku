@@ -1,0 +1,136 @@
+    <div class="page">
+      <div class="page-header">
+        <div>
+          <h2>🤖 {{ 'pdf_summary.title' | translate }}</h2>
+          <p class="subtitle">{{ 'pdf_summary.subtitle' | translate }}</p>
+        </div>
+        <div class="header-controls">
+          <label class="ctrl-label">🌐 {{ 'pdf_summary.lang_label' | translate }}</label>
+          <select class="lang-select" [(ngModel)]="selectedLang">
+            <option value="it">Italiano</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="pt">Português</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Drop zone -->
+      <div
+        class="dropzone"
+        appFileDropzone
+        #dz="fileDropzone"
+        [class.dragging]="dz.isDragging"
+        [class.has-file]="!!selectedFile()"
+        (filesDropped)="onFilesDropped($event)"
+        (click)="fileInput.click()">
+
+        <input #fileInput type="file" hidden
+               accept=".pdf,.doc,.docx,.txt,.html,.htm"
+               (change)="onFileSelected($event)">
+
+        @if (!selectedFile()) {
+          <div class="drop-content">
+            <span class="drop-icon">📂</span>
+            <p class="drop-title">{{ 'pdf_summary.drop_title' | translate }}</p>
+            <p class="drop-sub">{{ 'pdf_summary.drop_sub' | translate }}</p>
+            <p class="drop-formats">{{ 'pdf_summary.drop_formats' | translate }}</p>
+          </div>
+        } @else {
+          <div class="file-selected">
+            <span class="file-icon">{{ fileIcon(selectedFile()!.name) }}</span>
+            <div class="file-info">
+              <strong>{{ selectedFile()!.name }}</strong>
+              <span class="file-size">{{ formatSize(selectedFile()!.size) }}</span>
+            </div>
+            <button class="remove-btn" (click)="removeFile($event)">✕</button>
+          </div>
+        }
+      </div>
+
+      @if (selectedFile()) {
+        <div class="mode-tabs">
+          @for (m of outputModes; track m.id) {
+            <button class="mode-tab" [class.active]="outputMode() === m.id" (click)="outputMode.set(m.id)">
+              {{ m.icon }} {{ m.labelKey | translate }}
+            </button>
+          }
+        </div>
+        <button class="summarize-btn" [disabled]="loading()" (click)="summarize()">
+          @if (loading()) {
+            <span class="spinner"></span> {{ 'pdf_summary.btn_analysing' | translate }}
+          } @else {
+            🤖 {{ 'pdf_summary.btn_generate' | translate }}
+          }
+        </button>
+      }
+
+      @if (error()) {
+        <div class="error-box">⚠️ {{ error() }}</div>
+      }
+
+      @if (result()) {
+        <div class="result-card">
+          <div class="result-header">
+            <span class="result-type-badge">{{ result()!.detectedType }}</span>
+            <h3>{{ result()!.title }}</h3>
+          </div>
+
+          @switch (outputMode()) {
+            @case ('short') {
+              <div class="result-section">
+                <h4>📋 {{ 'pdf_summary.section_short' | translate }}</h4>
+                <p class="short-summary">{{ result()!.shortSummary }}</p>
+              </div>
+            }
+            @case ('detailed') {
+              <div class="result-section">
+                <h4>📝 {{ 'pdf_summary.section_detailed' | translate }}</h4>
+                <p class="long-summary">{{ result()!.longSummary }}</p>
+              </div>
+            }
+            @case ('bullets') {
+              <div class="result-section">
+                <h4>✅ {{ 'pdf_summary.section_bullets' | translate }}</h4>
+                @if (result()!.keyPoints.length) {
+                  <ul class="key-points">
+                    @for (pt of result()!.keyPoints; track $index) {
+                      <li>{{ pt }}</li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="long-summary">{{ result()!.shortSummary }}</p>
+                }
+              </div>
+            }
+            @case ('insights') {
+              <div class="result-section">
+                <h4>🏷 {{ 'pdf_summary.section_insights' | translate }}</h4>
+                @if (result()!.keywords.length) {
+                  <div class="keywords">
+                    @for (kw of result()!.keywords; track kw) {
+                      <span class="kw-chip">{{ kw }}</span>
+                    }
+                  </div>
+                } @else {
+                  <p class="long-summary">{{ result()!.shortSummary }}</p>
+                }
+              </div>
+            }
+          }
+
+          <div class="result-actions">
+            <button class="action-btn" (click)="copyToClipboard()" [class.copied]="justCopied()">
+              {{ justCopied() ? ('pdf_summary.btn_copied' | translate) : ('pdf_summary.btn_copy' | translate) }}
+            </button>
+            <button class="action-btn" (click)="downloadSummary()">⬇️ {{ 'pdf_summary.btn_download' | translate }}</button>
+            <button class="action-btn" (click)="summarize()" [disabled]="loading()">
+              🔄 {{ 'pdf_summary.btn_regenerate' | translate }}
+            </button>
+            <button class="action-btn danger" (click)="reset()">✕ {{ 'pdf_summary.btn_new_file' | translate }}</button>
+          </div>
+        </div>
+      }
+    </div>

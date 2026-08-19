@@ -1,0 +1,99 @@
+    <div class="cp-page">
+      <header class="cp-header">
+        <h1 class="cp-title">👁 {{ 'viewer.title' | translate }}</h1>
+        <p class="cp-subtitle">{{ 'viewer.subtitle' | translate }}</p>
+      </header>
+
+      <!-- ── Upload ─────────────────────────────── -->
+      @if (!doc()) {
+        <div class="cp-panel">
+          <div class="dz"
+               appFileDropzone
+               #dz="fileDropzone"
+               (click)="pick.click()"
+               (filesDropped)="onFilesDropped($event)"
+               [class.dz--active]="dz.isDragging">
+            <input #pick type="file" hidden accept=".pdf" (change)="select($event)">
+            <span class="dz-icon">📂</span>
+            <strong>{{ 'viewer.drop_prompt' | translate }}</strong>
+            <small>PDF</small>
+          </div>
+          @if (msg()) {
+            <p class="msg">{{ msg() }}</p>
+          }
+        </div>
+      } @else {
+        <!-- ── Toolbar ──────────────────────────── -->
+        <div class="vw-toolbar">
+          <div class="vw-group">
+            <button class="tb" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" aria-label="prev">‹</button>
+            <span class="vw-pageinfo">
+              <input class="vw-pagein" type="number" min="1" [max]="numPages()"
+                     [value]="pageNum()" (change)="goTo(+$any($event.target).value)">
+              / {{ numPages() }}
+            </span>
+            <button class="tb" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" aria-label="next">›</button>
+          </div>
+
+          <div class="vw-group">
+            <button class="tb" (click)="zoomBy(-0.25)" [disabled]="scale() <= 0.5" aria-label="zoom out">−</button>
+            <span class="vw-zoom">{{ zoomPct() }}%</span>
+            <button class="tb" (click)="zoomBy(0.25)" [disabled]="scale() >= 4" aria-label="zoom in">+</button>
+            <button class="tb tb--wide" (click)="fitWidth()">{{ 'viewer.fit_width' | translate }}</button>
+          </div>
+
+          <div class="vw-group vw-search">
+            <input class="vw-searchin" type="search"
+                   [placeholder]="'viewer.search_placeholder' | translate"
+                   [value]="query()"
+                   (change)="search($any($event.target).value)"
+                   (keydown.enter)="search($any($event.target).value)">
+            @if (query()) {
+              <span class="vw-matches">
+                @if (searching()) { … } @else {
+                  {{ matches().length === 0 ? ('viewer.no_matches' | translate) : (matchIdx() + 1) + '/' + matches().length }}
+                }
+              </span>
+              <button class="tb" (click)="nextMatch(-1)" [disabled]="matches().length === 0" aria-label="prev match">↑</button>
+              <button class="tb" (click)="nextMatch(1)" [disabled]="matches().length === 0" aria-label="next match">↓</button>
+            }
+          </div>
+
+          <div class="vw-group">
+            <button class="tb tb--wide" (click)="close()">{{ 'viewer.close_file' | translate }}</button>
+          </div>
+        </div>
+
+        <!-- ── Hint OCR se il documento non ha testo estraibile ── -->
+        @if (showOcrHint()) {
+          <div class="vw-hint">
+            <span>💡 {{ 'viewer.ocr_hint' | translate }}</span>
+            <a routerLink="/lab/ocr" class="vw-hint-link">{{ 'viewer.ocr_hint_cta' | translate }} →</a>
+          </div>
+        }
+
+        <!-- ── Layout: thumbs + pagina ──────────── -->
+        <div class="vw-body">
+          <aside class="vw-thumbs">
+            @for (t of thumbs(); track $index) {
+              <button class="vw-thumb" [class.vw-thumb--active]="$index + 1 === pageNum()" (click)="goTo($index + 1)">
+                @if (t) { <img [src]="t" alt="p. {{ $index + 1 }}"> } @else { <span class="vw-thumb-ph">{{ $index + 1 }}</span> }
+                <small>{{ $index + 1 }}</small>
+              </button>
+            }
+          </aside>
+          <main class="vw-main">
+            <canvas #page class="vw-canvas"></canvas>
+          </main>
+        </div>
+
+        <!-- ── Navigazione pagina mobile (sostituisce la sidebar thumb sotto i 700px) ── -->
+        <div class="vw-mobile-nav">
+          <button class="tb" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" aria-label="prev page">‹</button>
+          <input class="vw-pagein" type="number" min="1" [max]="numPages()"
+                 [value]="pageNum()" (change)="goTo(+$any($event.target).value)">
+          <span class="vw-mobile-nav-total">/ {{ numPages() }}</span>
+          <button class="tb" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" aria-label="next page">›</button>
+        </div>
+      }
+    </div>
