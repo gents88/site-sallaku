@@ -80,8 +80,11 @@ export class InternetArchiveProvider implements PdfSearchProvider {
 
   private async findPdfFile(identifier: string): Promise<string | null> {
     try {
+      // 10s, not 6s: from some hosts (e.g. Railway) this follow-up call runs
+      // noticeably slower than from a local machine — a tight timeout here
+      // silently drops otherwise-valid results rather than erroring visibly.
       const res = await fetch(`https://archive.org/metadata/${identifier}`, {
-        signal: AbortSignal.timeout(6000),
+        signal: AbortSignal.timeout(10_000),
       });
       if (!res.ok) return null;
       const data = (await res.json()) as IaMetadataResponse;
