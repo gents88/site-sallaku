@@ -75,6 +75,7 @@ export class InternetArchiveProvider implements PdfSearchProvider {
       pdfUrl: `https://archive.org/download/${doc.identifier}/${encodeURIComponent(pdfFile)}`,
       coverUrl: `https://archive.org/services/img/${doc.identifier}`,
       detailsUrl: `https://archive.org/details/${doc.identifier}`,
+      previewable: true,
     };
   }
 

@@ -969,9 +969,10 @@
     "feature_legal_title": "100% Legal",
     "feature_legal_desc": "Apenas obras de domínio público e acesso aberto, nunca conteúdo pirata.",
     "feature_sources_title": "Fontes Verificadas",
-    "feature_sources_desc": "Internet Archive, Project Gutenberg e arXiv, milhões de livros e artigos catalogados.",
+    "feature_sources_desc": "Internet Archive, Project Gutenberg, arXiv e PubMed Central — milhões de livros e artigos catalogados.",
     "feature_preview_title": "Pré-visualização Instantânea",
-    "feature_preview_desc": "Veja o PDF diretamente no navegador antes de baixá-lo."
+    "feature_preview_desc": "Veja o PDF diretamente no navegador antes de baixá-lo.",
+    "preview_unavailable": "Pré-visualização não disponível para esta fonte. Baixe o PDF para lê-lo."
   },
   "convert": {
     "title": "Conversor",

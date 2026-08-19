@@ -40,14 +40,14 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.seo.update({
       title: 'Ricerca PDF Pubblico Dominio — Libri e Documenti Legali',
-      description: 'Cerca PDF gratuiti e legali tra milioni di libri di pubblico dominio, paper scientifici e opere open access su Internet Archive, Project Gutenberg e arXiv, con anteprima prima del download.',
+      description: 'Cerca PDF gratuiti e legali tra milioni di libri di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima prima del download.',
       url: 'https://gentsallaku.it/lab/pdf-search',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Ricerca PDF',
-      description: 'Ricerca di PDF di pubblico dominio, paper scientifici e opere open access su Internet Archive, Project Gutenberg e arXiv, con anteprima integrata.',
+      description: 'Ricerca di PDF di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima integrata.',
       url: 'https://gentsallaku.it/lab/pdf-search',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
@@ -87,8 +87,15 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   select(result: PdfSearchResult): void {
     this.selected.set(result);
-    this.previewLoading.set(true);
-    this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(result.pdfUrl));
+    if (result.previewable) {
+      this.previewLoading.set(true);
+      this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(result.pdfUrl));
+    } else {
+      // Source blocks iframe embedding outright (e.g. PMC sends X-Frame-Options:
+      // DENY) — no point loading an iframe that will never render.
+      this.previewLoading.set(false);
+      this.previewUrl.set(null);
+    }
   }
 
   onPreviewLoaded(): void {

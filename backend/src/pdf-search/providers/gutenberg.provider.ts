@@ -76,6 +76,7 @@ export class GutenbergProvider implements PdfSearchProvider {
       pdfUrl: `/api/v1/pdf-search/gutenberg/${book.id}`,
       coverUrl,
       detailsUrl: `https://www.gutenberg.org/ebooks/${book.id}`,
+      previewable: true,
     };
   }
 
