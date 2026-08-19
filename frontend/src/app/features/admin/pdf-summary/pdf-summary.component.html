@@ -17,6 +17,24 @@
         </div>
       </div>
 
+      @if (workspaceItem()) {
+        <div class="workspace-banner">
+          <span class="workspace-banner-icon">🔗</span>
+          <div class="workspace-banner-text">
+            <strong>{{ 'pdf_summary.workspace_banner_title' | translate }}</strong>
+            <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+          </div>
+          <div class="workspace-banner-actions">
+            <button class="workspace-btn primary" (click)="useWorkspaceFile()">
+              {{ 'pdf_summary.workspace_banner_use' | translate }}
+            </button>
+            <button class="workspace-btn" (click)="dismissWorkspaceBanner()">
+              {{ 'pdf_summary.workspace_banner_dismiss' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
       <!-- Drop zone -->
       <div
         class="dropzone"
@@ -72,7 +90,7 @@
       }
 
       @if (result()) {
-        <div class="result-card">
+        <div class="result-card result-pop">
           <div class="result-header">
             <span class="result-type-badge">{{ result()!.detectedType }}</span>
             <h3>{{ result()!.title }}</h3>
@@ -126,6 +144,13 @@
               {{ justCopied() ? ('pdf_summary.btn_copied' | translate) : ('pdf_summary.btn_copy' | translate) }}
             </button>
             <button class="action-btn" (click)="downloadSummary()">⬇️ {{ 'pdf_summary.btn_download' | translate }}</button>
+            <button class="action-btn" (click)="sendToWorkspace()" [class.copied]="justSent()">
+              @if (justSent()) {
+                {{ 'pdf_summary.btn_sent' | translate }}
+              } @else {
+                🔗 {{ 'pdf_summary.btn_send_workspace' | translate }}
+              }
+            </button>
             <button class="action-btn" (click)="summarize()" [disabled]="loading()">
               🔄 {{ 'pdf_summary.btn_regenerate' | translate }}
             </button>

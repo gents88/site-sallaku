@@ -4,6 +4,27 @@
     .cp-title { font-size: 1.75rem; font-weight: 700; color: var(--text-primary, #e6edf3); margin: 0 0 0.25rem; }
     .cp-subtitle { color: var(--text-secondary, #8b949e); margin: 0; font-size: 0.9rem; }
 
+    .workspace-banner {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: rgba(108, 99, 255, 0.08); border: 1px solid rgba(108, 99, 255, 0.3);
+      border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.25rem;
+    }
+    .workspace-banner-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .workspace-banner-text {
+      flex: 1; display: flex; flex-direction: column; gap: 0.1rem; min-width: 0;
+      strong { font-size: 0.85rem; color: var(--text-primary, #e6edf3); }
+      .workspace-banner-filename { font-size: 0.78rem; color: var(--text-secondary, #8b949e); word-break: break-all; }
+    }
+    .workspace-banner-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .workspace-btn {
+      padding: 0.35rem 0.8rem; border-radius: 7px;
+      border: 1px solid var(--border-color, #30363d);
+      background: transparent; color: var(--text-secondary, #8b949e);
+      font-size: 0.78rem; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+      &:hover { border-color: var(--accent, #6c63ff); color: var(--text-primary); }
+      &.primary { background: var(--accent, #6c63ff); color: #fff; border-color: var(--accent, #6c63ff); &:hover { opacity: 0.85; color: #fff; } }
+    }
+
     .cp-panel {
       background: var(--bg-secondary, #161b22); border: 1px solid var(--border-color, #30363d);
       border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; color: var(--text-primary, #e6edf3);

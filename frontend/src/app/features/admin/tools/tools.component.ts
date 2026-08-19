@@ -29,6 +29,15 @@ interface ToolCard {
         <p>{{ 'tools.subtitle' | translate }}</p>
       </header>
 
+      <a routerLink="/lab/workspace" class="workspace-banner">
+        <div class="workspace-banner-icon">🔗</div>
+        <div class="workspace-banner-body">
+          <h2>{{ 'workspace.title' | translate }}</h2>
+          <p>{{ 'workspace.subtitle' | translate }}</p>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+
       <section class="tools-section">
         <h2 class="section-title">
           <span class="section-emoji">🧠</span> {{ 'tools.section_ai' | translate }}
@@ -106,6 +115,33 @@ interface ToolCard {
     .page-header p {
       font-size: 1.05rem; color: var(--text-secondary, #8b949e);
       line-height: 1.7; margin: 0;
+    }
+
+    /* ─── Workspace banner ─── */
+    .workspace-banner {
+      display: flex; align-items: center; gap: 1.25rem;
+      padding: 1.5rem 1.75rem; margin-bottom: 3rem;
+      background: linear-gradient(120deg, rgba(108,99,255,.12), rgba(99,179,255,.06));
+      border: 1px solid rgba(108,99,255,.35);
+      border-radius: 16px; text-decoration: none;
+      transition: border-color .2s, transform .2s;
+
+      &:hover {
+        border-color: rgba(108,99,255,.6);
+        transform: translateY(-2px);
+        .card-arrow { opacity: 1; transform: translateX(3px); }
+      }
+    }
+    .workspace-banner-icon {
+      font-size: 2rem; flex-shrink: 0;
+      width: 56px; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(108,99,255,.15); border-radius: 12px;
+    }
+    .workspace-banner-body {
+      flex: 1; min-width: 0;
+      h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 .3rem; color: var(--text-primary, #e6edf3); background: none; -webkit-text-fill-color: initial; }
+      p { font-size: .85rem; color: var(--text-secondary, #8b949e); margin: 0; line-height: 1.5; }
     }
 
     /* ─── Section ─── */
@@ -217,6 +253,7 @@ export class ToolsComponent implements OnInit {
         { '@type': 'WebApplication', name: 'Document Editor', url: 'https://gentsallaku.it/lab/editor', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'OCR — Text Recognition', url: 'https://gentsallaku.it/lab/ocr', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'Document Scanner', url: 'https://gentsallaku.it/lab/scanner', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Workflow', url: 'https://gentsallaku.it/lab/workspace', applicationCategory: 'UtilitiesApplication' },
       ],
     });
   }

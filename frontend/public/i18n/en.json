@@ -769,7 +769,9 @@
     "style_modern_label": "Modern",
     "style_modern_desc": "Vibrant contemporary design",
     "style_pitch_deck_label": "Pitch Deck",
-    "style_pitch_deck_desc": "Startup investor-ready deck"
+    "style_pitch_deck_desc": "Startup investor-ready deck",
+    "workspace_send": "Send to Workspace",
+    "workspace_sent": "Sent ✓"
   },
   "ai_formatter": {
     "badge": "Powered by AI",
@@ -809,7 +811,12 @@
     "doctype_meeting_notes": "Meeting Notes",
     "doctype_resume": "Résumé",
     "doctype_article": "Article",
-    "draft_restored": "Your previous draft has been restored"
+    "draft_restored": "Your previous draft has been restored",
+    "workspace_banner_title": "Text received from Workspace",
+    "workspace_banner_use": "Use this text",
+    "workspace_banner_dismiss": "Ignore",
+    "workspace_send": "Send to Workspace",
+    "workspace_sent": "Sent ✓"
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -832,7 +839,27 @@
     "btn_copied": "Copied!",
     "btn_download": "Download",
     "btn_regenerate": "Regenerate",
-    "btn_new_file": "New file"
+    "btn_new_file": "New file",
+    "workspace_banner_title": "File received from Workspace",
+    "workspace_banner_use": "Use this file",
+    "workspace_banner_dismiss": "Ignore",
+    "btn_send_workspace": "Send to Workspace",
+    "btn_sent": "Sent ✓"
+  },
+  "workspace": {
+    "badge": "New",
+    "title": "Workflow",
+    "subtitle": "Send the result of one tool straight into the next — no downloading and re-uploading.",
+    "empty_title": "Nothing in transit yet",
+    "empty_hint": "Start from one of these tools, then send its result here to continue with another.",
+    "received_from": "Received from {{tool}}",
+    "btn_clear": "Clear",
+    "btn_download": "Download",
+    "next_steps": "Continue with",
+    "history_title": "Session history",
+    "kind_file": "File",
+    "kind_text": "Text",
+    "start_here": "Starting tools"
   },
   "pdf_translate": {
     "badge": "AI PDF Translation",
@@ -890,7 +917,14 @@
     "btn_translate_another": "Translate another file",
     "step_extracting": "Extracting text…",
     "step_translating": "Translating…",
-    "step_rebuilding": "Rebuilding document…"
+    "step_rebuilding": "Rebuilding document…",
+    "workspace_banner_title": "File received from Workspace",
+    "workspace_banner_use": "Use this file",
+    "workspace_banner_dismiss": "Ignore",
+    "dl_send_workspace_name": "Send to Workspace",
+    "dl_send_workspace_sub": "Hand off the result to another tool",
+    "dl_sent_name": "Sent ✓",
+    "guide_link": "Guide: how AI PDF translation works"
   },
   "convert": {
     "title": "Converter",
@@ -993,7 +1027,13 @@
     "batch_combine_note": "These files will be combined into a single output.",
     "batch_pending": "Queued",
     "batch_done": "Included",
-    "batch_error": "Failed"
+    "batch_error": "Failed",
+    "workspace_banner_title": "File received from Workspace",
+    "workspace_banner_use": "Use this file",
+    "workspace_banner_dismiss": "Ignore",
+    "workspace_send": "Send to Workspace",
+    "workspace_sent": "Sent ✓",
+    "blog_link": "Guide: how to convert PDF to Word without losing formatting"
   },
   "ocr": {
     "title": "OCR — Text Recognition",
@@ -1025,7 +1065,12 @@
     "err_too_many_files": "Too many files selected (max {{max}})",
     "err_file_too_large": "File too large (max {{max}}MB): {{names}}",
     "err_too_many_pages": "Too many pages need OCR ({{count}}, max {{max}}). Remove some files and try again.",
-    "low_confidence_hint": "Low confidence — consider rescanning this page or using a higher-quality image"
+    "low_confidence_hint": "Low confidence — consider rescanning this page or using a higher-quality image",
+    "workspace_banner_title": "File received from Workspace",
+    "workspace_banner_use": "Use this file",
+    "workspace_banner_dismiss": "Ignore",
+    "send_workspace": "Send to Workspace",
+    "sent": "Sent ✓"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1146,7 +1191,12 @@
     "err_import": "Import failed",
     "err_empty": "The document is empty",
     "err_export": "Export failed",
-    "success": "Document exported successfully"
+    "success": "Document exported successfully",
+    "workspace_banner_title": "Text received from Workspace",
+    "workspace_banner_use": "Use this text",
+    "workspace_banner_dismiss": "Ignore",
+    "workspace_send": "Send to Workspace",
+    "workspace_sent": "Sent ✓"
   },
   "pdf_editor": {
     "title": "PDF Editor",
@@ -1166,7 +1216,13 @@
     "err_range": "Invalid page range",
     "success": "PDF exported successfully",
     "err_failed": "Export failed",
-    "err_open": "Could not open the PDF"
+    "err_open": "Could not open the PDF",
+    "workspace_banner_title": "File received from Workspace",
+    "workspace_banner_use": "Use this file",
+    "workspace_banner_dismiss": "Ignore",
+    "workspace_send": "Send to Workspace",
+    "workspace_sent": "Sent ✓",
+    "page_moved": "Page moved to position {{position}}"
   },
   "viewer": {
     "title": "PDF Viewer",
@@ -1178,7 +1234,8 @@
     "close_file": "Close file",
     "err_open": "Could not open the PDF",
     "ocr_hint": "This document doesn't seem to contain extractable text — it may be a scanned PDF.",
-    "ocr_hint_cta": "Try OCR"
+    "ocr_hint_cta": "Try OCR",
+    "trust_badge": "Files are processed entirely in your browser — never uploaded"
   },
   "scanner": {
     "title": "Document Scanner",
@@ -1206,6 +1263,10 @@
     "success": "PDF exported successfully",
     "err_failed": "Operation failed",
     "run_ocr": "Run OCR",
-    "ocr_results_title": "Extracted text (OCR)"
+    "ocr_results_title": "Extracted text (OCR)",
+    "trust_badge": "Capture, crop and filters stay in your browser — only “Run OCR” and PDF export are sent to the server",
+    "workspace_send_pdf": "Send PDF to Workspace",
+    "workspace_send_text": "Send text to Workspace",
+    "workspace_sent": "Sent ✓"
   }
 }

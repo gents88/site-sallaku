@@ -1,10 +1,13 @@
 import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
   ConversionService, ConversionTypeId, CONVERSION_TYPES, ConversionDef,
 } from '../../../core/services/conversion.service';
@@ -28,7 +31,7 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
   selector: 'app-convert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink, LangUrlPipe],
   templateUrl: './convert.component.html',
   styleUrls: ['./convert.component.scss'],
 })
@@ -37,12 +40,23 @@ export class ConvertComponent implements OnInit, OnDestroy {
   private readonly san = inject(DomSanitizer);
   private readonly t   = inject(TranslateService);
   private readonly seo = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
 
   readonly searchQuery = signal('');
   readonly favorites   = signal<Set<string>>(this.loadFavs());
   readonly totalCount  = CONVERSION_TYPES.length;
 
+  /** Blog cross-link: real, relevant existing post — see task note in this file's PR. */
+  readonly blogGuideUrl = '/blog/come-convertire-pdf-in-word-senza-perdere-formattazione';
+
+  /** Set once at startup from a pending Workspace hand-off (file kind only); cleared on use/dismiss. */
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file') {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
       title: 'Free File Converter — PDF, Word, Excel, Images & More',
       description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
@@ -122,6 +136,10 @@ export class ConvertComponent implements OnInit, OnDestroy {
    */
   readonly batchStatus = signal<'pending' | 'running' | 'done' | 'error'>('pending');
 
+  /** Captured on every successful conversion (single, multi-batch and base64 paths all funnel through `download()`). */
+  readonly lastResult  = signal<{ blob: Blob; filename: string; mime: string } | null>(null);
+  readonly justSent    = signal(false);
+
   private url: string | null = null;
   private ext = '';
   private b64: string | null = null;
@@ -176,6 +194,46 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.done = false;
     this.b64  = null;
     this.ext  = '';
+    this.lastResult.set(null);
+    this.justSent.set(false);
+  }
+
+  /** Loads the pending Workspace file into this modal's current selection, per single/multi flow. */
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const f = new File([item.blob], item.filename, { type: item.mime });
+    if (this.isMulti()) {
+      const merged = [...this.files(), f].slice(0, MULTI_MAX_FILES);
+      this.files.set(merged);
+      this.step.set('preview');
+      this.msg.set('');
+      this.msgOk.set(false);
+      this.batchStatus.set('pending');
+      this.done = false;
+    } else {
+      this.load(f);
+    }
+  }
+
+  /** Local-only dismiss — does NOT consume the Workspace item, so another tool can still pick it up. */
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const r = this.lastResult();
+    if (!r) return;
+    this.workspace.send({
+      kind: 'file',
+      blob: r.blob,
+      filename: r.filename,
+      mime: r.mime || undefined,
+      fromTool: 'convert',
+    });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   toggleFav(event: Event, id: string): void {
@@ -456,10 +514,12 @@ export class ConvertComponent implements OnInit, OnDestroy {
 
   private download(b: Blob, e: string, baseName?: string): void {
     const n = baseName ?? (this.file()?.name.replace(/\.[^.]+$/, '') || 'converted-file');
+    const filename = `${n}.${e}`;
+    this.lastResult.set({ blob: b, filename, mime: b.type || '' });
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
     a.href = u;
-    a.download = `${n}.${e}`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(u);
   }

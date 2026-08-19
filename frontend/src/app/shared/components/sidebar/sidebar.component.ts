@@ -5,13 +5,13 @@ import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 
-interface NavItem {
+export interface NavItem {
   icon: string;
   label: string;
   route: string;
 }
 
-interface NavGroup {
+export interface NavGroup {
   id: string;
   emoji: string;
   title: string;
@@ -24,7 +24,7 @@ interface RailTooltip {
   top: number;
 }
 
-const ADMIN_NAV: NavGroup[] = [
+export const ADMIN_NAV: NavGroup[] = [
   {
     id: 'overview',
     emoji: '📊',
@@ -55,6 +55,14 @@ const ADMIN_NAV: NavGroup[] = [
       { icon: '✨', label: 'AI Formatter',  route: '/lab/ai-formatter' },
       { icon: '🌐', label: 'PDF Translate', route: '/lab/pdf-translate' },
       { icon: '🎞️', label: 'AI Slides',    route: '/lab/ai-ppt' },
+    ],
+  },
+  {
+    id: 'workspace',
+    emoji: '🔗',
+    title: 'Flusso di lavoro',
+    items: [
+      { icon: '🧩', label: 'Workspace', route: '/lab/workspace' },
     ],
   },
   {

@@ -20,6 +20,7 @@ import {
   PPT_STYLES,
   SLIDE_COUNT_OPTIONS,
 } from '../../../core/services/ai-ppt.service';
+import { WorkspaceService } from '../../../core/services/workspace.service';
 
 type ViewMode = 'carousel' | 'grid';
 
@@ -35,8 +36,9 @@ export class AiPptComponent implements OnInit {
   @ViewChild('generatorSection') generatorSection!: ElementRef<HTMLElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private readonly service = inject(AiPptService);
-  private readonly seo     = inject(SeoService);
+  private readonly service   = inject(AiPptService);
+  private readonly seo       = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
 
   ngOnInit(): void {
     this.seo.update({
@@ -98,6 +100,8 @@ export class AiPptComponent implements OnInit {
   readonly isFullscreen    = signal(false);
   readonly copied          = signal(false);
   readonly exporting       = signal(false);
+  readonly sending         = signal(false);
+  readonly justSent        = signal(false);
 
   readonly styles      = PPT_STYLES;
   readonly slideCounts = SLIDE_COUNT_OPTIONS;
@@ -200,6 +204,26 @@ export class AiPptComponent implements OnInit {
     if (!r || this.exporting()) return;
     this.exporting.set(true);
     this.service.exportAsPdf(r).finally(() => this.exporting.set(false));
+  }
+
+  async sendToWorkspace(): Promise<void> {
+    const r = this.result();
+    if (!r || this.sending()) return;
+    this.sending.set(true);
+    try {
+      const blob = await this.service.buildPdfBlob(r);
+      this.workspace.send({
+        kind: 'file',
+        blob,
+        filename: `${this.service.sanitizeFilename(r.title)}_slides.pdf`,
+        mime: 'application/pdf',
+        fromTool: 'ai_ppt',
+      });
+      this.justSent.set(true);
+      setTimeout(() => this.justSent.set(false), 1500);
+    } finally {
+      this.sending.set(false);
+    }
   }
 
   copySlideContent(): void {

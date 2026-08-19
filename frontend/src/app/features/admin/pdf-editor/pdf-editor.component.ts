@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 interface SourcePdf {
   bytes: Uint8Array; // per pdf-lib (export)
@@ -31,6 +32,7 @@ export class PdfEditorComponent implements OnInit {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly workspace = inject(WorkspaceService);
 
   readonly pages = signal<PageEntry[]>([]);
   readonly loading = signal(false);
@@ -41,6 +43,12 @@ export class PdfEditorComponent implements OnInit {
   readonly range = signal('');
   readonly dragIndex = signal<number | null>(null);
   readonly dragOverIndex = signal<number | null>(null);
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  readonly justSent = signal(false);
+  readonly moveAnnouncement = signal('');
+  readonly exportReady = signal(false);
+  private lastExportBlob: Blob | null = null;
+  private lastExportName = '';
 
   readonly sourceNames = computed(() => {
     this.pages(); // ricalcola quando cambiano le pagine
@@ -51,6 +59,10 @@ export class PdfEditorComponent implements OnInit {
   private nextId = 1;
 
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file' && pending.blob) {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
       title: 'Free PDF Editor — Merge, Split, Rotate & Watermark',
       description: 'Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.',
@@ -108,6 +120,31 @@ export class PdfEditorComponent implements OnInit {
     void this.addFiles(Array.from(files));
   }
 
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const file = new File([item.blob], item.filename, { type: item.mime });
+    void this.addFiles([file]);
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    if (!this.lastExportBlob) return;
+    this.workspace.send({
+      kind: 'file',
+      blob: this.lastExportBlob,
+      filename: this.lastExportName,
+      mime: 'application/pdf',
+      fromTool: 'pdf_editor',
+    });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
+  }
+
   rotate(i: number): void {
     this.pages.update((all) => {
       const next = [...all];
@@ -122,6 +159,7 @@ export class PdfEditorComponent implements OnInit {
       [next[i], next[i + dir]] = [next[i + dir], next[i]];
       return next;
     });
+    this.announceMove(i + dir);
   }
 
   remove(i: number): void {
@@ -161,6 +199,7 @@ export class PdfEditorComponent implements OnInit {
       next.splice(i, 0, moved);
       return next;
     });
+    this.announceMove(i);
   }
 
   onDragEnd(): void {
@@ -174,6 +213,9 @@ export class PdfEditorComponent implements OnInit {
     this.watermark.set('');
     this.range.set('');
     this.msg.set('');
+    this.lastExportBlob = null;
+    this.lastExportName = '';
+    this.exportReady.set(false);
   }
 
   async exportPdf(): Promise<void> {
@@ -223,12 +265,16 @@ export class PdfEditorComponent implements OnInit {
       }
 
       const bytes = await out.save();
-      const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: 'application/pdf' }));
+      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = this.outputName();
       a.click();
       URL.revokeObjectURL(url);
+      this.lastExportBlob = blob;
+      this.lastExportName = this.outputName();
+      this.exportReady.set(true);
       this.msg.set(`✅ ${this.t.instant('pdf_editor.success')}`);
       this.msgOk.set(true);
     } catch {
@@ -239,6 +285,10 @@ export class PdfEditorComponent implements OnInit {
   }
 
   // ── Internals ────────────────────────────────────────────────────────
+
+  private announceMove(newIndex: number): void {
+    this.moveAnnouncement.set(this.t.instant('pdf_editor.page_moved', { position: newIndex + 1 }));
+  }
 
   private async addFiles(files: File[]): Promise<void> {
     const pdfs = files.filter((f) => f.type.includes('pdf') || f.name.toLowerCase().endsWith('.pdf'));

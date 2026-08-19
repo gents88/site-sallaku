@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { environment } from '@env/environment';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 interface FileSummaryResult {
   title: string;
@@ -34,9 +35,16 @@ export class PdfSummaryComponent implements OnInit {
 
   private http       = inject(HttpClient);
   private readonly seo = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
   private readonly api = `${environment.apiUrl}/ai/summarize-file`;
 
+  workspaceItem = signal<WorkspaceItem | null>(null);
+
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file') {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
       title: 'AI PDF Summarizer — Extract Key Points from Any Document',
       description: 'Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.',
@@ -84,6 +92,7 @@ export class PdfSummaryComponent implements OnInit {
   result         = signal<FileSummaryResult | null>(null);
   error          = signal<string | null>(null);
   justCopied     = signal(false);
+  justSent       = signal(false);
 
   selectedLang: SummaryLang = 'en';
   outputMode     = signal<OutputMode>('short');
@@ -120,6 +129,31 @@ export class PdfSummaryComponent implements OnInit {
   removeFile(event: MouseEvent): void {
     event.stopPropagation();
     this.selectedFile.set(null); this.result.set(null); this.error.set(null);
+  }
+
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const file = new File([item.blob], item.filename, { type: item.mime });
+    this.setFile(file);
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const r = this.result();
+    if (!r) return;
+    this.workspace.send({
+      kind: 'text',
+      text: this.displayedSummary(),
+      filename: `${r.title || 'summary'}.txt`,
+      fromTool: 'pdf_summary',
+    });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   copyToClipboard(): void {

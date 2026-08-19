@@ -769,7 +769,9 @@
     "style_modern_label": "Moderne",
     "style_modern_desc": "Design contemporain et vibrant",
     "style_pitch_deck_label": "Pitch Deck",
-    "style_pitch_deck_desc": "Deck prêt pour les investisseurs startup"
+    "style_pitch_deck_desc": "Deck prêt pour les investisseurs startup",
+    "workspace_send": "Envoyer vers Workspace",
+    "workspace_sent": "Envoyé ✓"
   },
   "ai_formatter": {
     "badge": "Alimenté par l'IA",
@@ -809,7 +811,12 @@
     "doctype_meeting_notes": "Compte Rendu",
     "doctype_resume": "CV",
     "doctype_article": "Article",
-    "draft_restored": "Votre brouillon précédent a été restauré"
+    "draft_restored": "Votre brouillon précédent a été restauré",
+    "workspace_banner_title": "Texte reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce texte",
+    "workspace_banner_dismiss": "Ignorer",
+    "workspace_send": "Envoyer vers Workspace",
+    "workspace_sent": "Envoyé ✓"
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -832,7 +839,27 @@
     "btn_copied": "Copié !",
     "btn_download": "Télécharger",
     "btn_regenerate": "Régénérer",
-    "btn_new_file": "Nouveau fichier"
+    "btn_new_file": "Nouveau fichier",
+    "workspace_banner_title": "Fichier reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce fichier",
+    "workspace_banner_dismiss": "Ignorer",
+    "btn_send_workspace": "Envoyer vers Workspace",
+    "btn_sent": "Envoyé ✓"
+  },
+  "workspace": {
+    "badge": "Nouveau",
+    "title": "Flux de travail",
+    "subtitle": "Envoyez le résultat d'un outil directement vers le suivant, sans télécharger ni re-téléverser de fichiers.",
+    "empty_title": "Rien en transit pour l'instant",
+    "empty_hint": "Commencez par l'un de ces outils, puis envoyez ici son résultat pour continuer avec un autre.",
+    "received_from": "Reçu de {{tool}}",
+    "btn_clear": "Effacer",
+    "btn_download": "Télécharger",
+    "next_steps": "Continuer avec",
+    "history_title": "Historique de la session",
+    "kind_file": "Fichier",
+    "kind_text": "Texte",
+    "start_here": "Outils de départ"
   },
   "pdf_translate": {
     "badge": "Traduction PDF par IA",
@@ -890,7 +917,14 @@
     "btn_translate_another": "Traduire un autre fichier",
     "step_extracting": "Extraction du texte…",
     "step_translating": "Traduction en cours…",
-    "step_rebuilding": "Reconstruction du document…"
+    "step_rebuilding": "Reconstruction du document…",
+    "workspace_banner_title": "Fichier reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce fichier",
+    "workspace_banner_dismiss": "Ignorer",
+    "dl_send_workspace_name": "Envoyer vers Workspace",
+    "dl_send_workspace_sub": "Transmettez le résultat à un autre outil",
+    "dl_sent_name": "Envoyé ✓",
+    "guide_link": "Guide : comment fonctionne la traduction de PDF par IA"
   },
   "convert": {
     "title": "Convertisseur",
@@ -993,7 +1027,13 @@
     "batch_combine_note": "Ces fichiers seront combinés en un seul fichier de sortie.",
     "batch_pending": "En attente",
     "batch_done": "Inclus",
-    "batch_error": "Échec"
+    "batch_error": "Échec",
+    "workspace_banner_title": "Fichier reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce fichier",
+    "workspace_banner_dismiss": "Ignorer",
+    "workspace_send": "Envoyer vers Workspace",
+    "workspace_sent": "Envoyé ✓",
+    "blog_link": "Guide : comment convertir un PDF en Word sans perdre la mise en forme"
   },
   "ocr": {
     "title": "OCR — Reconnaissance de texte",
@@ -1025,7 +1065,12 @@
     "err_too_many_files": "Trop de fichiers sélectionnés (max {{max}})",
     "err_file_too_large": "Fichier trop volumineux (max {{max}}Mo) : {{names}}",
     "err_too_many_pages": "Trop de pages nécessitent l'OCR ({{count}}, max {{max}}). Supprimez des fichiers et réessayez.",
-    "low_confidence_hint": "Confiance faible — envisagez de rescanner cette page ou d'utiliser une image de meilleure qualité"
+    "low_confidence_hint": "Confiance faible — envisagez de rescanner cette page ou d'utiliser une image de meilleure qualité",
+    "workspace_banner_title": "Fichier reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce fichier",
+    "workspace_banner_dismiss": "Ignorer",
+    "send_workspace": "Envoyer vers Workspace",
+    "sent": "Envoyé ✓"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1146,7 +1191,12 @@
     "err_import": "Échec de l'importation",
     "err_empty": "Le document est vide",
     "err_export": "Échec de l'exportation",
-    "success": "Document exporté avec succès"
+    "success": "Document exporté avec succès",
+    "workspace_banner_title": "Texte reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce texte",
+    "workspace_banner_dismiss": "Ignorer",
+    "workspace_send": "Envoyer vers Workspace",
+    "workspace_sent": "Envoyé ✓"
   },
   "pdf_editor": {
     "title": "Éditeur PDF",
@@ -1166,7 +1216,13 @@
     "err_range": "Plage de pages invalide",
     "success": "PDF exporté avec succès",
     "err_failed": "Échec de l'exportation",
-    "err_open": "Impossible d'ouvrir le PDF"
+    "err_open": "Impossible d'ouvrir le PDF",
+    "workspace_banner_title": "Fichier reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce fichier",
+    "workspace_banner_dismiss": "Ignorer",
+    "workspace_send": "Envoyer vers Workspace",
+    "workspace_sent": "Envoyé ✓",
+    "page_moved": "Page déplacée à la position {{position}}"
   },
   "viewer": {
     "title": "Visionneuse PDF",
@@ -1178,7 +1234,8 @@
     "close_file": "Fermer le fichier",
     "err_open": "Impossible d'ouvrir le PDF",
     "ocr_hint": "Ce document ne semble pas contenir de texte extractible : il s'agit peut-être d'un PDF scanné.",
-    "ocr_hint_cta": "Essayer l'OCR"
+    "ocr_hint_cta": "Essayer l'OCR",
+    "trust_badge": "Les fichiers sont traités entièrement dans votre navigateur — jamais envoyés"
   },
   "scanner": {
     "title": "Scanner de Documents",
@@ -1206,6 +1263,10 @@
     "success": "PDF exporté avec succès",
     "err_failed": "L'opération a échoué",
     "run_ocr": "Lancer l'OCR",
-    "ocr_results_title": "Texte extrait (OCR)"
+    "ocr_results_title": "Texte extrait (OCR)",
+    "trust_badge": "Capture, recadrage et filtres restent dans votre navigateur — seuls l'OCR et l'export PDF sont envoyés au serveur",
+    "workspace_send_pdf": "Envoyer le PDF vers Workspace",
+    "workspace_send_text": "Envoyer le texte vers Workspace",
+    "workspace_sent": "Envoyé ✓"
   }
 }

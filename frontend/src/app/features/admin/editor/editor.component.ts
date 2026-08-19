@@ -7,6 +7,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService, ConversionTypeId } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 type ExportFormat = 'pdf' | 'docx' | 'html';
 
@@ -63,6 +64,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly workspace = inject(WorkspaceService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
@@ -75,6 +77,8 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly exporting = signal(false);
   readonly msg = signal('');
   readonly msgOk = signal(false);
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  readonly justSent = signal(false);
 
   private draftSaveTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -99,6 +103,15 @@ export class EditorComponent implements OnInit, OnDestroy {
     // Ripristino della bozza: eseguito solo qui, prima di qualunque interazione
     // dell'utente (import compreso), quindi è per costruzione un "fresh load".
     this.restoreDraft();
+
+    // Un item Workspace viene offerto solo se il ripristino bozza non ha già
+    // popolato l'editor — non deve mai sovrascrivere contenuto già presente.
+    if (this.isBrowser && !this.sheetRef.nativeElement.innerText.trim()) {
+      const pending = this.workspace.peek();
+      if (pending && pending.kind === 'text') {
+        this.workspaceItem.set(pending);
+      }
+    }
   }
 
   ngOnDestroy(): void {
@@ -129,6 +142,26 @@ export class EditorComponent implements OnInit, OnDestroy {
     const text = this.sheetRef.nativeElement.innerText.trim();
     this.wordCount.set(text ? text.split(/\s+/).length : 0);
     this.scheduleDraftSave();
+  }
+
+  useWorkspaceText(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'text' || !item.text) return;
+    this.setContent(this.textToHtml(item.text));
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const text = this.sheetRef.nativeElement.innerText.trim();
+    if (!text) return;
+    const name = this.docName().trim() || 'document';
+    this.workspace.send({ kind: 'text', text, filename: `${name}.txt`, fromTool: 'editor' });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   // ── Import ───────────────────────────────────────────────────────────

@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
+import { WorkspaceService } from '../../../core/services/workspace.service';
 
 type Filter = 'none' | 'grayscale' | 'bw' | 'enhance';
 
@@ -43,6 +44,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
   private readonly ocr = inject(OcrService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly workspace = inject(WorkspaceService);
 
   @ViewChild('video', { static: true }) private videoRef!: ElementRef<HTMLVideoElement>;
   @ViewChild('edit', { static: true }) private editRef!: ElementRef<HTMLCanvasElement>;
@@ -55,6 +57,10 @@ export class ScannerComponent implements OnInit, OnDestroy {
   readonly exporting = signal(false);
   readonly msg = signal('');
   readonly msgOk = signal(false);
+  /** Ultimo PDF esportato con successo (per l'invio a Workspace), invalidato quando le pagine cambiano. */
+  readonly lastPdf = signal<{ blob: Blob; filename: string } | null>(null);
+  readonly pdfSent = signal(false);
+  readonly ocrSent = signal(false);
 
   readonly ocrLanguages = OCR_LANGUAGES;
   readonly ocrLang = signal(this.defaultOcrLang());
@@ -179,6 +185,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
     this.pages.update((p) => [...p, { id: this.nextId++, thumb, blob }]);
     this.msg.set('');
     this.resetOcrState();
+    this.lastPdf.set(null);
     this.editing.set(false);
     this.baseCanvas = null;
     this.crop.set(null);
@@ -224,17 +231,20 @@ export class ScannerComponent implements OnInit, OnDestroy {
       return next;
     });
     this.resetOcrState();
+    this.lastPdf.set(null);
   }
 
   remove(i: number): void {
     this.pages.update((p) => p.filter((_, idx) => idx !== i));
     this.resetOcrState();
+    this.lastPdf.set(null);
   }
 
   clearPages(): void {
     this.pages.set([]);
     this.msg.set('');
     this.resetOcrState();
+    this.lastPdf.set(null);
   }
 
   exportPdf(): void {
@@ -250,12 +260,14 @@ export class ScannerComponent implements OnInit, OnDestroy {
         if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
           this.exporting.set(false);
           if (ev.body instanceof Blob) {
+            const filename = `scan-${new Date().toISOString().slice(0, 10)}.pdf`;
             const url = URL.createObjectURL(ev.body);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `scan-${new Date().toISOString().slice(0, 10)}.pdf`;
+            a.download = filename;
             a.click();
             URL.revokeObjectURL(url);
+            this.lastPdf.set({ blob: ev.body, filename });
             this.msg.set(`✅ ${this.t.instant('scanner.success')}`);
             this.msgOk.set(true);
           } else {
@@ -300,6 +312,22 @@ export class ScannerComponent implements OnInit, OnDestroy {
         this.ocrMsg.set(`❌ ${this.ocrErrText(err)}`);
       },
     });
+  }
+
+  sendPdfToWorkspace(): void {
+    const pdf = this.lastPdf();
+    if (!pdf) return;
+    this.workspace.send({ kind: 'file', blob: pdf.blob, filename: pdf.filename, mime: 'application/pdf', fromTool: 'scanner' });
+    this.pdfSent.set(true);
+    setTimeout(() => this.pdfSent.set(false), 1500);
+  }
+
+  sendOcrToWorkspace(): void {
+    const res = this.ocrResult();
+    if (!res) return;
+    this.workspace.send({ kind: 'text', text: res.text, filename: `scan-${new Date().toISOString().slice(0, 10)}.txt`, fromTool: 'scanner' });
+    this.ocrSent.set(true);
+    setTimeout(() => this.ocrSent.set(false), 1500);
   }
 
   copyOcrText(): void {

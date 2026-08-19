@@ -16,16 +16,18 @@ import { PlatformUiService } from './core/services/platform-ui.service';
 import { AppUpdateService } from './core/services/app-update.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
+import { CommandPaletteComponent } from './shared/components/command-palette/command-palette.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, CommandPaletteComponent],
   template: `
     <a class="skip-link" href="#homepage">{{ 'skip.link' | translate }}</a>
     <app-navbar />
     <app-consent-banner />
     <app-sidebar />
+    <app-command-palette />
     <main>
       <router-outlet />
     </main>

@@ -70,6 +70,17 @@ export class AiPptService {
   }
 
   async exportAsPdf(result: GeneratePptResult): Promise<void> {
+    const blob = await this.buildPdfBlob(result);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${this.sanitizeFilename(result.title)}_slides.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  /** Builds the multi-page PDF and returns its Blob without triggering a download — used to hand the deck off to another lab tool (Workspace). */
+  async buildPdfBlob(result: GeneratePptResult): Promise<Blob> {
     const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
     const doc = await PDFDocument.create();
     const titleFont  = await doc.embedFont(StandardFonts.HelveticaBold);
@@ -124,13 +135,7 @@ export class AiPptService {
     });
 
     const bytes = await doc.save();
-    const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${this.sanitizeFilename(result.title)}_slides.pdf`;
-    a.click();
-    URL.revokeObjectURL(url);
+    return new Blob([bytes as BlobPart], { type: 'application/pdf' });
   }
 
   private bulletLines(content: string): string[] {
@@ -154,7 +159,7 @@ export class AiPptService {
     return lines;
   }
 
-  private sanitizeFilename(name: string): string {
+  sanitizeFilename(name: string): string {
     return name.replace(/[^a-z0-9 _-]/gi, '').replace(/\s+/g, '_').toLowerCase().substring(0, 50);
   }
 }

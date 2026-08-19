@@ -211,7 +211,7 @@
 
   <!-- ── RESULT ────────────────────────────────────────────────────── -->
   @if (result(); as res) {
-    <section class="result-section">
+    <section class="result-section result-pop">
 
       <div class="result-header">
         <div class="result-title-block">
@@ -229,6 +229,9 @@
           </div>
           <button class="action-btn" [disabled]="exporting()" (click)="exportSlides()">
             {{ exporting() ? '⏳ ' + ('ai_ppt.btn_exporting' | translate) : '⬇ ' + ('ai_ppt.btn_export' | translate) }}
+          </button>
+          <button class="action-btn" [disabled]="sending()" (click)="sendToWorkspace()">
+            {{ justSent() ? ('ai_ppt.workspace_sent' | translate) : ('🔗 ' + ('ai_ppt.workspace_send' | translate)) }}
           </button>
           <button class="action-btn action-btn-ghost" (click)="reset()">↩ {{ 'ai_ppt.btn_new' | translate }}</button>
         </div>

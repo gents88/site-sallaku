@@ -4,6 +4,7 @@ import { OcrService, OcrResult, OcrPageResult, OCR_LANGUAGES } from '../../../co
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 type Status = 'idle' | 'preparing' | 'recognizing' | 'done' | 'error';
 
@@ -46,6 +47,7 @@ export class OcrComponent implements OnInit {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly workspace = inject(WorkspaceService);
 
   readonly accept = IMG_ACCEPT;
   readonly languages = OCR_LANGUAGES;
@@ -59,6 +61,8 @@ export class OcrComponent implements OnInit {
   readonly resultLang = signal<string | null>(null);
   readonly msg = signal('');
   readonly copied = signal(false);
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  readonly justSent = signal(false);
 
   readonly busy = computed(() => this.status() === 'preparing' || this.status() === 'recognizing');
   readonly totalSize = computed(() => this.formatSize(this.files().reduce((sum, f) => sum + f.size, 0)));
@@ -69,6 +73,10 @@ export class OcrComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file') {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
       title: 'Free Online OCR — Extract Text from Images & Scanned PDFs',
       description: 'Extract text from photos, scanned documents and PDFs in 7 languages. Free online OCR, no signup required.',
@@ -153,6 +161,26 @@ export class OcrComponent implements OnInit {
       this.status.set('error');
       this.msg.set(`❌ ${this.errText(err)}`);
     }
+  }
+
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const file = new File([item.blob], item.filename, { type: item.mime });
+    this.addFiles([file]);
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const text = this.allText();
+    if (!text) return;
+    this.workspace.send({ kind: 'text', text, filename: 'ocr-text.txt', fromTool: 'ocr' });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   copy(): void {

@@ -769,7 +769,9 @@
     "style_modern_label": "Modern",
     "style_modern_desc": "Dizajn bashkëkohor dhe i gjallë",
     "style_pitch_deck_label": "Pitch Deck",
-    "style_pitch_deck_desc": "Deck gati për investitorë startup"
+    "style_pitch_deck_desc": "Deck gati për investitorë startup",
+    "workspace_send": "Dërgo te Workspace",
+    "workspace_sent": "U dërgua ✓"
   },
   "ai_formatter": {
     "badge": "Fuqizuar nga AI",
@@ -809,7 +811,12 @@
     "doctype_meeting_notes": "Procesverbal",
     "doctype_resume": "CV",
     "doctype_article": "Artikull",
-    "draft_restored": "Skica juaj e mëparshme u rikthye"
+    "draft_restored": "Skica juaj e mëparshme u rikthye",
+    "workspace_banner_title": "Tekst i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë tekst",
+    "workspace_banner_dismiss": "Injoro",
+    "workspace_send": "Dërgo te Workspace",
+    "workspace_sent": "U dërgua ✓"
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -832,7 +839,27 @@
     "btn_copied": "U kopjua!",
     "btn_download": "Shkarko",
     "btn_regenerate": "Rigjenero",
-    "btn_new_file": "Skedar i ri"
+    "btn_new_file": "Skedar i ri",
+    "workspace_banner_title": "Skedar i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë skedar",
+    "workspace_banner_dismiss": "Injoro",
+    "btn_send_workspace": "Dërgo te Workspace",
+    "btn_sent": "U dërgua ✓"
+  },
+  "workspace": {
+    "badge": "E re",
+    "title": "Rrjedha e punës",
+    "subtitle": "Dërgo rezultatin e një vegle direkt te tjetra — pa shkarkuar dhe ringarkuar skedarë.",
+    "empty_title": "Ende asgjë në tranzit",
+    "empty_hint": "Fillo nga një prej këtyre veglave, pastaj dërgo rezultatin këtu për të vazhduar me një tjetër.",
+    "received_from": "Marrë nga {{tool}}",
+    "btn_clear": "Pastro",
+    "btn_download": "Shkarko",
+    "next_steps": "Vazhdo me",
+    "history_title": "Historiku i sesionit",
+    "kind_file": "Skedar",
+    "kind_text": "Tekst",
+    "start_here": "Veglat e fillimit"
   },
   "pdf_translate": {
     "badge": "Përkthim PDF me AI",
@@ -890,7 +917,14 @@
     "btn_translate_another": "Përkthe një skedar tjetër",
     "step_extracting": "Duke nxjerrë tekstin…",
     "step_translating": "Duke përkthyer…",
-    "step_rebuilding": "Duke rindërtuar dokumentin…"
+    "step_rebuilding": "Duke rindërtuar dokumentin…",
+    "workspace_banner_title": "Skedar i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë skedar",
+    "workspace_banner_dismiss": "Injoro",
+    "dl_send_workspace_name": "Dërgo te Workspace",
+    "dl_send_workspace_sub": "Kalo rezultatin te një vegël tjetër",
+    "dl_sent_name": "U dërgua ✓",
+    "guide_link": "Udhëzues: si funksionon përkthimi i PDF me AI"
   },
   "convert": {
     "title": "Konvertues",
@@ -993,7 +1027,13 @@
     "batch_combine_note": "Këta skedarë do të bashkohen në një rezultat të vetëm.",
     "batch_pending": "Në pritje",
     "batch_done": "I përfshirë",
-    "batch_error": "Dështoi"
+    "batch_error": "Dështoi",
+    "workspace_banner_title": "Skedar i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë skedar",
+    "workspace_banner_dismiss": "Injoro",
+    "workspace_send": "Dërgo te Workspace",
+    "workspace_sent": "U dërgua ✓",
+    "blog_link": "Udhëzues: si të konvertosh PDF në Word pa humbur formatimin"
   },
   "ocr": {
     "title": "OCR — Njohja e tekstit",
@@ -1025,7 +1065,12 @@
     "err_too_many_files": "Shumë skedarë të zgjedhur (maksimumi {{max}})",
     "err_file_too_large": "Skedari shumë i madh (maksimumi {{max}}MB): {{names}}",
     "err_too_many_pages": "Shumë faqe kanë nevojë për OCR ({{count}}, maksimumi {{max}}). Hiq disa skedarë dhe provo përsëri.",
-    "low_confidence_hint": "Besueshmëri e ulët — provo ta skanosh përsëri këtë faqe ose përdor një imazh me cilësi më të lartë"
+    "low_confidence_hint": "Besueshmëri e ulët — provo ta skanosh përsëri këtë faqe ose përdor një imazh me cilësi më të lartë",
+    "workspace_banner_title": "Skedar i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë skedar",
+    "workspace_banner_dismiss": "Injoro",
+    "send_workspace": "Dërgo te Workspace",
+    "sent": "U dërgua ✓"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1146,7 +1191,12 @@
     "err_import": "Importimi dështoi",
     "err_empty": "Dokumenti është bosh",
     "err_export": "Eksportimi dështoi",
-    "success": "Dokumenti u eksportua me sukses"
+    "success": "Dokumenti u eksportua me sukses",
+    "workspace_banner_title": "Tekst i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë tekst",
+    "workspace_banner_dismiss": "Injoro",
+    "workspace_send": "Dërgo te Workspace",
+    "workspace_sent": "U dërgua ✓"
   },
   "pdf_editor": {
     "title": "Editor PDF",
@@ -1166,7 +1216,13 @@
     "err_range": "Interval faqesh i pavlefshëm",
     "success": "PDF u eksportua me sukses",
     "err_failed": "Eksportimi dështoi",
-    "err_open": "Nuk mund të hapet PDF-ja"
+    "err_open": "Nuk mund të hapet PDF-ja",
+    "workspace_banner_title": "Skedar i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë skedar",
+    "workspace_banner_dismiss": "Injoro",
+    "workspace_send": "Dërgo te Workspace",
+    "workspace_sent": "U dërgua ✓",
+    "page_moved": "Faqja u zhvendos në pozicionin {{position}}"
   },
   "viewer": {
     "title": "Shikues PDF",
@@ -1178,7 +1234,8 @@
     "close_file": "Mbyll skedarin",
     "err_open": "Nuk mund të hapet PDF-ja",
     "ocr_hint": "Ky dokument nuk duket se përmban tekst të nxjerrshëm — mund të jetë një PDF i skanuar.",
-    "ocr_hint_cta": "Provo OCR-in"
+    "ocr_hint_cta": "Provo OCR-in",
+    "trust_badge": "Skedarët përpunohen tërësisht në shfletuesin tënd — asnjëherë nuk ngarkohen"
   },
   "scanner": {
     "title": "Skaner Dokumentesh",
@@ -1206,6 +1263,10 @@
     "success": "PDF u eksportua me sukses",
     "err_failed": "Operacioni dështoi",
     "run_ocr": "Ekzekuto OCR-in",
-    "ocr_results_title": "Teksti i nxjerrë (OCR)"
+    "ocr_results_title": "Teksti i nxjerrë (OCR)",
+    "trust_badge": "Kapja, prerja dhe filtrat qëndrojnë në shfletuesin tënd — vetëm OCR-i dhe eksportimi në PDF dërgohen te serveri",
+    "workspace_send_pdf": "Dërgo PDF-në te Workspace",
+    "workspace_send_text": "Dërgo tekstin te Workspace",
+    "workspace_sent": "U dërgua ✓"
   }
 }
