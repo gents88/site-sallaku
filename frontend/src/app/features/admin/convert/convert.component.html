@@ -1,0 +1,245 @@
+    <!-- ════════════════ LANDING PAGE ════════════════ -->
+    <div class="cp-page">
+
+      <header class="cp-header">
+        <h1 class="cp-title">{{ 'convert.title' | translate }}</h1>
+        <p class="cp-subtitle">{{ totalCount }} {{ 'convert.subtitle' | translate }}</p>
+        <div class="cp-search-wrap">
+          <span class="cp-search-icon">🔍</span>
+          <input class="cp-search" type="search" [placeholder]="'convert.search_placeholder' | translate"
+                 [value]="searchQuery()"
+                 (input)="searchQuery.set($any($event.target).value)">
+          <button *ngIf="searchQuery()" class="cp-search-clear" (click)="searchQuery.set('')" aria-label="×">✕</button>
+        </div>
+      </header>
+
+      <!-- Preferiti -->
+      <section *ngIf="favoriteItems().length > 0 && !searchQuery()" class="cp-section">
+        <div class="cp-section-header">
+          <span class="cp-group-icon">⭐</span>
+          <div>
+            <h2 class="cp-group-name">{{ 'convert.favorites' | translate }}</h2>
+            <p class="cp-group-desc">{{ 'convert.favorites_desc' | translate }}</p>
+          </div>
+        </div>
+        <div class="cp-grid">
+          <button *ngFor="let item of favoriteItems()" class="cp-card cp-card--fav" (click)="open(item)">
+            <div class="cp-card-badges">
+              <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
+              <span class="cp-arrow">→</span>
+              <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+            </div>
+            <span class="cp-card-label">{{ item.label | translate }}</span>
+            <button class="cp-fav cp-fav--active" [attr.aria-label]="'convert.remove_fav' | translate"
+                    (click)="toggleFav($event, item.id)">★</button>
+          </button>
+        </div>
+      </section>
+
+      <!-- Nessun risultato -->
+      <div *ngIf="visibleGroups().length === 0" class="cp-empty">
+        <span class="cp-empty-icon">🔍</span>
+        <p>{{ 'convert.no_results' | translate: { query: searchQuery() } }}</p>
+        <button class="cp-btn-ghost" (click)="searchQuery.set('')">{{ 'convert.show_all' | translate }}</button>
+      </div>
+
+      <!-- Categorie -->
+      <section *ngFor="let g of visibleGroups()" class="cp-section">
+        <div class="cp-section-header">
+          <span class="cp-group-icon">{{ g.icon }}</span>
+          <div>
+            <h2 class="cp-group-name">{{ g.nameKey | translate }}</h2>
+            <p class="cp-group-desc">{{ g.descKey | translate }}</p>
+          </div>
+          <span class="cp-count-badge">{{ g.items.length }}</span>
+        </div>
+        <div class="cp-grid">
+          <button *ngFor="let item of g.items"
+                  class="cp-card"
+                  [class.cp-card--fav]="favorites().has(item.id)"
+                  (click)="open(item)">
+            <div class="cp-card-badges">
+              <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
+              <span class="cp-arrow">→</span>
+              <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+            </div>
+            <span class="cp-card-label">{{ item.label | translate }}</span>
+            <button class="cp-fav"
+                    [class.cp-fav--active]="favorites().has(item.id)"
+                    [attr.aria-label]="(favorites().has(item.id) ? 'convert.remove_fav' : 'convert.add_fav') | translate"
+                    (click)="toggleFav($event, item.id)">
+              {{ favorites().has(item.id) ? '★' : '☆' }}
+            </button>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ════════════════ MODAL ════════════════ -->
+    <div *ngIf="openModal()" class="ov" (click)="tryClose()">
+      <section class="md" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+               [attr.aria-label]="'convert.title' | translate">
+
+        <header>
+          <div class="md-title-block">
+            <div class="md-conv-badge" *ngIf="selectedDef()">
+              <span class="cp-badge cp-badge--sm" [attr.data-fmt]="selectedDef()!.from">{{ selectedDef()!.from }}</span>
+              <span class="md-arrow">→</span>
+              <span class="cp-badge cp-badge--sm" [attr.data-fmt]="selectedDef()!.to">{{ selectedDef()!.to }}</span>
+            </div>
+            <h2>{{ selectedDef()?.label | translate }}</h2>
+            <small class="md-step-label">{{ 'convert.step' | translate }} {{ step() === 'preview' ? '1' : '2' }} {{ 'convert.step_of' | translate }} 2</small>
+          </div>
+          <button class="x" (click)="tryClose()" [attr.aria-label]="'convert.close' | translate">✕</button>
+        </header>
+
+        <div class="st">
+          <span [class.a]="step() === 'preview'" [class.done]="step() === 'convert'">
+            <span class="st-num">1</span>&nbsp;{{ 'convert.step1_label' | translate }}
+          </span>
+          <span class="st-sep">›</span>
+          <span [class.a]="step() === 'convert'">
+            <span class="st-num">2</span>&nbsp;{{ 'convert.step2_label' | translate }}
+          </span>
+        </div>
+
+        <main>
+
+          <!-- Step 1 -->
+          <section *ngIf="step() === 'preview'">
+
+            <!-- Single-file types -->
+            <ng-container *ngIf="!isMulti()">
+              <div class="dz"
+                   appFileDropzone
+                   #dz="fileDropzone"
+                   (click)="pick.click()"
+                   (filesDropped)="onFilesDropped($event)"
+                   [class.dz--active]="file() || dz.isDragging">
+                <input #pick type="file" hidden
+                       (change)="select($event)"
+                       [attr.accept]="selectedDef()?.accept || null">
+                <ng-container *ngIf="!file(); else fileLoaded">
+                  <span class="dz-icon">📂</span>
+                  <strong>{{ 'convert.drop_prompt' | translate }}</strong>
+                  <small *ngIf="selectedDef()?.accept">{{ 'convert.accepted_formats' | translate }}:&nbsp;<b>{{ selectedDef()!.accept }}</b></small>
+                </ng-container>
+                <ng-template #fileLoaded>
+                  <span class="dz-icon">✅</span>
+                  <strong>{{ file()!.name }}</strong>
+                  <small>{{ meta()?.size }} · {{ 'convert.change_file' | translate }}</small>
+                </ng-template>
+              </div>
+
+              <div class="meta" *ngIf="meta()">
+                <div><small>{{ 'convert.meta_name' | translate }}</small><b>{{ meta()!.name }}</b></div>
+                <div><small>{{ 'convert.meta_size' | translate }}</small><b>{{ meta()!.size }}</b></div>
+                <div><small>{{ 'convert.meta_type' | translate }}</small><b>{{ meta()!.type }}</b></div>
+                <div><small>{{ 'convert.meta_pages' | translate }}</small><b>{{ meta()!.pages ?? '—' }}</b></div>
+              </div>
+
+              <article class="pv" *ngIf="file()">
+                <h3>{{ 'convert.preview_title' | translate }}</h3>
+                <iframe *ngIf="kind() === 'pdf' && pdf()" [src]="pdf()" class="fr" title="PDF preview"></iframe>
+                <img *ngIf="kind() === 'image' && img()" [src]="img()" class="im" alt="preview">
+                <pre *ngIf="(kind() === 'text' || kind() === 'base64') && txt()" class="tx">{{ txt() }}</pre>
+                <p *ngIf="kind() === 'unknown'" class="pv-unknown">{{ 'convert.preview_unavailable' | translate }}</p>
+                <p *ngIf="hint()" class="hint">{{ hint() }}</p>
+              </article>
+            </ng-container>
+
+            <!-- Multi-file types (image-to-pdf, merge-pdf, …) -->
+            <ng-container *ngIf="isMulti()">
+              <div class="dz"
+                   appFileDropzone
+                   #dzm="fileDropzone"
+                   (click)="pickMulti.click()"
+                   (filesDropped)="onFilesDropped($event)"
+                   [class.dz--active]="files().length > 0 || dzm.isDragging">
+                <input #pickMulti type="file" hidden multiple
+                       (change)="select($event)"
+                       [attr.accept]="selectedDef()?.accept || null">
+                <span class="dz-icon">📂</span>
+                <strong>{{ 'convert.drop_prompt_multi' | translate }}</strong>
+                <small *ngIf="selectedDef()?.accept">{{ 'convert.accepted_formats' | translate }}:&nbsp;<b>{{ selectedDef()!.accept }}</b></small>
+              </div>
+
+              <div class="file-list" *ngIf="files().length > 0">
+                <div class="file-row" *ngFor="let f of files(); let i = index"
+                     [class.file-row--invalid]="!matchesAccept(selectedDef()!, f)">
+                  <span class="file-row-icon">{{ matchesAccept(selectedDef()!, f) ? '📄' : '⚠️' }}</span>
+                  <div class="file-row-info">
+                    <b>{{ f.name }}</b>
+                    <small>{{ bytes(f.size) }}</small>
+                  </div>
+                  <button type="button" class="file-row-remove" (click)="removeFile(i)"
+                          [attr.aria-label]="'convert.remove_file' | translate">✕</button>
+                </div>
+                <p class="file-list-count">{{ 'convert.files_selected_count' | translate: { count: files().length } }}</p>
+                <p *ngIf="selectedDef()?.id === 'merge-pdf' && files().length < 2" class="conv-warn">
+                  {{ 'convert.merge_min_files' | translate }}
+                </p>
+              </div>
+            </ng-container>
+
+            <div class="ac">
+              <button class="btn btn-s" (click)="tryClose()">{{ 'convert.cancel' | translate }}</button>
+              <button class="btn btn-p" [disabled]="!hasSelection()" (click)="confirm()">{{ 'convert.continue_btn' | translate }}</button>
+            </div>
+          </section>
+
+          <!-- Step 2 -->
+          <section *ngIf="step() === 'convert'">
+            <div class="conv-summary" *ngIf="selectedDef()">
+              <div class="conv-summary-file">
+                <span class="conv-file-icon">📄</span>
+                <div>
+                  <small>{{ (isMulti() ? 'convert.selected_files' : 'convert.selected_file') | translate }}</small>
+                  <b *ngIf="!isMulti()">{{ file()!.name }}</b>
+                  <b *ngIf="isMulti()">{{ 'convert.files_selected_count' | translate: { count: files().length } }}</b>
+                </div>
+              </div>
+              <div class="conv-summary-type">
+                <small>{{ 'convert.conversion_label' | translate }}</small>
+                <div class="conv-type-badges">
+                  <span class="cp-badge" [attr.data-fmt]="selectedDef()!.from">{{ selectedDef()!.from }}</span>
+                  <span class="conv-mid-arrow">→</span>
+                  <span class="cp-badge" [attr.data-fmt]="selectedDef()!.to">{{ selectedDef()!.to }}</span>
+                  <span class="conv-label-text">{{ selectedDef()!.label | translate }}</span>
+                </div>
+              </div>
+              <p *ngIf="!canConvert()" class="conv-warn">
+                {{ 'convert.format_warning' | translate: { accept: selectedDef()!.accept } }}
+              </p>
+            </div>
+
+            <div class="batch-list" *ngIf="isMulti() && files().length > 0">
+              <p class="batch-note">{{ 'convert.batch_combine_note' | translate }}</p>
+              <div class="batch-row" *ngFor="let f of files()">
+                <span class="batch-row-icon">{{ batchIcon() }}</span>
+                <span class="batch-row-name">{{ f.name }}</span>
+                <span class="batch-row-status" [class.ok]="batchStatus() === 'done'" [class.err]="batchStatus() === 'error'">
+                  {{ batchStatusLabel() | translate }}
+                </span>
+              </div>
+            </div>
+
+            <p *ngIf="msg()" class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+
+            <div *ngIf="run()" class="progress-wrap">
+              <div class="progress-bar"><div class="progress-fill"></div></div>
+              <small>{{ 'convert.in_progress' | translate }}</small>
+            </div>
+
+            <div class="ac">
+              <button class="btn btn-s" [disabled]="run()" (click)="back()">{{ 'convert.back' | translate }}</button>
+              <button class="btn btn-p" [disabled]="!canConvert() || run()" (click)="convert()">
+                {{ (run() ? 'convert.converting' : 'convert.convert_now') | translate }}
+              </button>
+            </div>
+          </section>
+
+        </main>
+      </section>
+    </div>

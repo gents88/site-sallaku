@@ -1,0 +1,61 @@
+    <div class="cp-page">
+      <header class="cp-header">
+        <h1 class="cp-title">✏️ {{ 'editor.title' | translate }}</h1>
+        <p class="cp-subtitle">{{ 'editor.subtitle' | translate }}</p>
+      </header>
+
+      <div class="cp-panel">
+        <!-- ── Barra documento ─────────────────────── -->
+        <div class="doc-bar">
+          <input class="in doc-name" type="text" maxlength="80"
+                 [placeholder]="'editor.doc_name_placeholder' | translate"
+                 [value]="docName()" (input)="onDocNameChange($any($event.target).value)">
+          <div class="ac">
+            <button class="btn btn-s" (click)="pick.click()">{{ 'editor.import' | translate }}</button>
+            <input #pick type="file" hidden accept=".docx,.txt,.md,.html,.htm" (change)="importFile($event)">
+            <button class="btn btn-s" [disabled]="exporting()" (click)="exportAs('html')">HTML</button>
+            <button class="btn btn-s" [disabled]="exporting()" (click)="exportAs('docx')">DOCX</button>
+            <button class="btn btn-p" [disabled]="exporting()" (click)="exportAs('pdf')">
+              {{ exporting() ? ('editor.exporting' | translate) : 'PDF' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Toolbar formattazione ────────────────── -->
+        <div class="fmt-bar">
+          <select class="sel" (change)="block($any($event.target).value); $any($event.target).value = ''">
+            <option value="" disabled selected>{{ 'editor.style' | translate }}</option>
+            <option value="p">{{ 'editor.paragraph' | translate }}</option>
+            <option value="h1">H1</option>
+            <option value="h2">H2</option>
+            <option value="h3">H3</option>
+            <option value="pre">{{ 'editor.code' | translate }}</option>
+          </select>
+          @for (group of toolbar; track $index) {
+            <span class="fmt-group">
+              @for (b of group; track b.cmd + (b.arg ?? '')) {
+                <button class="tb" [title]="b.labelKey | translate" (click)="exec(b.cmd, b.arg)">{{ b.icon }}</button>
+              }
+            </span>
+          }
+          <span class="fmt-group">
+            <button class="tb" [title]="'editor.link' | translate" (click)="addLink()">🔗</button>
+          </span>
+          <span class="words">{{ wordCount() }} {{ 'editor.words' | translate }}</span>
+        </div>
+
+        <!-- ── Area di scrittura ────────────────────── -->
+        <div #sheet class="sheet" contenteditable="true"
+             [attr.data-placeholder]="'editor.placeholder' | translate"
+             (input)="onEdit()"></div>
+
+        @if (importing()) {
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+          </div>
+        }
+        @if (msg()) {
+          <p class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+        }
+      </div>
+    </div>
