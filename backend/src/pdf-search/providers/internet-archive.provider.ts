@@ -13,6 +13,11 @@ interface IaMetadataFile {
   format?: string;
 }
 
+interface IaMetadataResponse {
+  metadata?: { 'access-restricted-item'?: string };
+  files?: IaMetadataFile[];
+}
+
 /**
  * Internet Archive's advancedsearch only tells us an item *has* a PDF file,
  * not its filename (that varies: "{id}.pdf", "{id}_djvu.pdf", ...), so each
@@ -79,7 +84,13 @@ export class InternetArchiveProvider implements PdfSearchProvider {
         signal: AbortSignal.timeout(6000),
       });
       if (!res.ok) return null;
-      const data = (await res.json()) as { files?: IaMetadataFile[] };
+      const data = (await res.json()) as IaMetadataResponse;
+
+      // Controlled Digital Lending items still list a PDF in `files`, but
+      // fetching it 401s without a borrowed/logged-in session — skip them
+      // rather than surfacing a result that can't actually be opened.
+      if (data.metadata?.['access-restricted-item'] === 'true') return null;
+
       const files = data.files ?? [];
       const pdf = files.find((f) => f.format === 'Text PDF') ?? files.find((f) => f.name?.toLowerCase().endsWith('.pdf'));
       return pdf?.name ?? null;
