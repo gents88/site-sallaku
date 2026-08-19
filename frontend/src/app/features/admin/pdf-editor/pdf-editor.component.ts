@@ -69,9 +69,18 @@ interface PageEntry {
           </div>
           <div class="pages-grid">
             @for (p of pages(); track p.id; let i = $index) {
-              <figure class="page-card">
+              <figure class="page-card"
+                      draggable="true"
+                      [class.page-card--dragging]="dragIndex() === i"
+                      [class.page-card--drag-over]="dragOverIndex() === i && dragIndex() !== i"
+                      (dragstart)="onDragStart($event, i)"
+                      (dragover)="onDragOver($event, i)"
+                      (dragleave)="onDragLeave(i)"
+                      (drop)="onDrop($event, i)"
+                      (dragend)="onDragEnd()"
+                      aria-label="drag to reorder">
                 @if (p.thumb) {
-                  <img [src]="p.thumb" [style.transform]="'rotate(' + p.rot + 'deg)'" alt="p. {{ i + 1 }}">
+                  <img [src]="p.thumb" draggable="false" [style.transform]="'rotate(' + p.rot + 'deg)'" alt="p. {{ i + 1 }}">
                 } @else {
                   <span class="page-ph">{{ i + 1 }}</span>
                 }
@@ -141,7 +150,12 @@ interface PageEntry {
     .hint-line { font-size: .78rem; color: var(--text-secondary, #8b949e); margin: 0; }
 
     .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .75rem; }
-    .page-card { margin: 0; border: 1px solid var(--border-color, #30363d); border-radius: 10px; overflow: hidden; background: var(--bg-primary, #0d1117); }
+    .page-card {
+      margin: 0; border: 1px solid var(--border-color, #30363d); border-radius: 10px; overflow: hidden;
+      background: var(--bg-primary, #0d1117); cursor: grab; transition: border-color .15s, box-shadow .15s, opacity .15s;
+    }
+    .page-card--dragging { opacity: .35; cursor: grabbing; }
+    .page-card--drag-over { border-color: var(--accent, #6c63ff); box-shadow: 0 0 0 2px var(--accent, #6c63ff) inset; }
     .page-card img { width: 100%; aspect-ratio: 3/4; object-fit: contain; display: block; background: #fff; transition: transform .2s; }
     .page-ph {
       width: 100%; aspect-ratio: 3/4; display: grid; place-items: center;
@@ -206,6 +220,8 @@ export class PdfEditorComponent implements OnInit {
   readonly msgOk = signal(false);
   readonly watermark = signal('');
   readonly range = signal('');
+  readonly dragIndex = signal<number | null>(null);
+  readonly dragOverIndex = signal<number | null>(null);
 
   readonly sourceNames = computed(() => {
     this.pages(); // ricalcola quando cambiano le pagine
@@ -291,6 +307,46 @@ export class PdfEditorComponent implements OnInit {
 
   remove(i: number): void {
     this.pages.update((all) => all.filter((_, idx) => idx !== i));
+  }
+
+  onDragStart(event: DragEvent, i: number): void {
+    this.dragIndex.set(i);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      // richiesto da Firefox per attivare correttamente il drag
+      event.dataTransfer.setData('text/plain', String(i));
+    }
+  }
+
+  onDragOver(event: DragEvent, i: number): void {
+    event.preventDefault(); // necessario per consentire il drop
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    if (this.dragIndex() === null || this.dragIndex() === i) return;
+    this.dragOverIndex.set(i);
+  }
+
+  onDragLeave(i: number): void {
+    if (this.dragOverIndex() === i) this.dragOverIndex.set(null);
+  }
+
+  onDrop(event: DragEvent, i: number): void {
+    event.preventDefault();
+    const from = this.dragIndex();
+    this.dragIndex.set(null);
+    this.dragOverIndex.set(null);
+    if (from === null || from === i) return;
+
+    this.pages.update((all) => {
+      const next = [...all];
+      const [moved] = next.splice(from, 1);
+      next.splice(i, 0, moved);
+      return next;
+    });
+  }
+
+  onDragEnd(): void {
+    this.dragIndex.set(null);
+    this.dragOverIndex.set(null);
   }
 
   reset(): void {

@@ -156,7 +156,7 @@
       >
         @if (loading()) {
           <span class="spinner"></span>
-          <span>{{ 'pdf_translate.btn_translating' | translate }}</span>
+          <span>{{ currentStepKey() | translate }}</span>
         } @else {
           <span>🌍</span>
           <span>
@@ -167,6 +167,22 @@
           </span>
         }
       </button>
+
+      @if (loading()) {
+        <div class="progress-wrap" aria-live="polite">
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <ul class="step-list">
+            @for (step of translateStepKeys; track step; let i = $index) {
+              <li class="step-item" [class.is-done]="i < currentStepIndex()" [class.is-active]="i === currentStepIndex()">
+                <span class="step-marker">
+                  @if (i < currentStepIndex()) { ✓ }
+                </span>
+                <span class="step-text">{{ step | translate }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
 
     </div>
   </section>

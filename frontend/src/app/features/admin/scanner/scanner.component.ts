@@ -6,6 +6,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 
 type Filter = 'none' | 'grayscale' | 'bw' | 'enhance';
 
@@ -22,6 +23,11 @@ const PREVIEW_FILTERS: Record<Filter, string> = {
   grayscale: 'grayscale(1)',
   bw: 'grayscale(1) contrast(2.2) brightness(1.05)',
   enhance: 'contrast(1.25) brightness(1.08) saturate(1.1)',
+};
+
+const OCR_LANG_STORAGE_KEY = 'ocr-lang';
+const UI_TO_OCR_LANG: Record<string, string> = {
+  it: 'ita', en: 'eng', es: 'spa', fr: 'fra', de: 'deu', pt: 'por', sq: 'sqi',
 };
 
 @Component({
@@ -90,7 +96,18 @@ const PREVIEW_FILTERS: Record<Filter, string> = {
           <div class="res-head">
             <h2>{{ 'scanner.pages_title' | translate }} ({{ pages().length }})</h2>
             <div class="ac">
-              <button class="btn btn-s" [disabled]="exporting()" (click)="clearPages()">{{ 'scanner.clear' | translate }}</button>
+              <label class="opt">
+                <small>{{ 'ocr.lang_label' | translate }}</small>
+                <select class="sel" [value]="ocrLang()" (change)="onOcrLangChange($any($event.target).value)" [disabled]="ocrBusy()">
+                  @for (l of ocrLanguages; track l.code) {
+                    <option [value]="l.code">{{ l.label }}</option>
+                  }
+                </select>
+              </label>
+              <button class="btn btn-s" [disabled]="exporting() || ocrBusy()" (click)="clearPages()">{{ 'scanner.clear' | translate }}</button>
+              <button class="btn btn-s" [disabled]="exporting() || ocrBusy()" (click)="runOcr()">
+                {{ (ocrBusy() ? 'ocr.recognizing' : 'scanner.run_ocr') | translate }}
+              </button>
               <button class="btn btn-p" [disabled]="exporting()" (click)="exportPdf()">
                 {{ (exporting() ? 'scanner.exporting' : 'scanner.export_pdf') | translate }}
               </button>
@@ -111,13 +128,38 @@ const PREVIEW_FILTERS: Record<Filter, string> = {
               </figure>
             }
           </div>
-          @if (exporting()) {
+          @if (exporting() || ocrBusy()) {
             <div class="progress-wrap">
               <div class="progress-bar"><div class="progress-fill"></div></div>
             </div>
           }
           @if (msg()) {
             <p class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+          }
+          @if (ocrMsg()) {
+            <p class="msg" [class.msg--ok]="ocrMsgOk()">{{ ocrMsg() }}</p>
+          }
+        </section>
+      }
+
+      <!-- ── Risultati OCR ──────────────────────────── -->
+      @if (ocrResult(); as res) {
+        <section class="cp-panel">
+          <div class="res-head">
+            <h2>{{ 'scanner.ocr_results_title' | translate }}</h2>
+            <div class="ac">
+              <button class="btn btn-s" (click)="copyOcrText()">{{ (ocrCopied() ? 'ocr.copied' : 'ocr.copy') | translate }}</button>
+              <button class="btn btn-p" (click)="downloadOcrTxt()">{{ 'ocr.download_txt' | translate }}</button>
+            </div>
+          </div>
+          @for (p of res.pages; track p.index) {
+            <div class="ocr-page">
+              <div class="ocr-page-head">
+                <span>{{ 'ocr.page' | translate }} {{ p.index + 1 }}</span>
+                <span class="conf">{{ p.confidence }}%</span>
+              </div>
+              <pre class="tx">{{ p.text || ('ocr.no_text' | translate) }}</pre>
+            </div>
           }
         </section>
       }
@@ -188,6 +230,16 @@ const PREVIEW_FILTERS: Record<Filter, string> = {
     .msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); font-size: .85rem; color: var(--warning, #fbbf24); margin: 1rem 0 0; }
     .msg--ok { background: rgba(52,211,153,.08); border-color: rgba(52,211,153,.3); color: var(--success, #34d399); }
 
+    .ocr-page { margin-top: 1rem; }
+    .ocr-page:first-of-type { margin-top: 0; }
+    .ocr-page-head { display: flex; align-items: center; justify-content: space-between; font-size: .78rem; color: var(--text-secondary, #8b949e); margin-bottom: .35rem; }
+    .ocr-page-head .conf { font-variant-numeric: tabular-nums; }
+    .tx {
+      padding: .8rem; overflow: auto; white-space: pre-wrap; word-break: break-word; font-size: .82rem;
+      background: var(--bg-primary,#0d1117); color: var(--text-primary,#e6edf3);
+      border: 1px solid var(--border-color, #30363d); border-radius: 8px; max-height: 320px; margin: 0;
+    }
+
     @media (max-width: 600px) {
       .cp-page { padding: 1rem; }
       .cp-title { font-size: 1.35rem; }
@@ -196,6 +248,7 @@ const PREVIEW_FILTERS: Record<Filter, string> = {
 })
 export class ScannerComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
+  private readonly ocr = inject(OcrService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
 
@@ -210,6 +263,14 @@ export class ScannerComponent implements OnInit, OnDestroy {
   readonly exporting = signal(false);
   readonly msg = signal('');
   readonly msgOk = signal(false);
+
+  readonly ocrLanguages = OCR_LANGUAGES;
+  readonly ocrLang = signal(this.defaultOcrLang());
+  readonly ocrBusy = signal(false);
+  readonly ocrResult = signal<OcrResult | null>(null);
+  readonly ocrMsg = signal('');
+  readonly ocrMsgOk = signal(false);
+  readonly ocrCopied = signal(false);
 
   private stream: MediaStream | null = null;
   private baseCanvas: HTMLCanvasElement | null = null; // immagine di lavoro a piena risoluzione
@@ -325,6 +386,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
     const thumb = this.makeThumb(out);
     this.pages.update((p) => [...p, { id: this.nextId++, thumb, blob }]);
     this.msg.set('');
+    this.resetOcrState();
     this.editing.set(false);
     this.baseCanvas = null;
     this.crop.set(null);
@@ -369,15 +431,18 @@ export class ScannerComponent implements OnInit, OnDestroy {
       [next[i], next[i + dir]] = [next[i + dir], next[i]];
       return next;
     });
+    this.resetOcrState();
   }
 
   remove(i: number): void {
     this.pages.update((p) => p.filter((_, idx) => idx !== i));
+    this.resetOcrState();
   }
 
   clearPages(): void {
     this.pages.set([]);
     this.msg.set('');
+    this.resetOcrState();
   }
 
   exportPdf(): void {
@@ -411,6 +476,79 @@ export class ScannerComponent implements OnInit, OnDestroy {
         this.msg.set(`❌ ${this.t.instant('scanner.err_failed')}`);
       },
     });
+  }
+
+  // ── OCR ──────────────────────────────────────────────────────────────
+
+  onOcrLangChange(code: string): void {
+    this.ocrLang.set(code);
+    try { localStorage.setItem(OCR_LANG_STORAGE_KEY, code); } catch { /* storage unavailable */ }
+  }
+
+  /** Esegue l'OCR sulle pagine acquisite (già ritagliate/filtrate) senza produrre un PDF con testo incorporato. */
+  runOcr(): void {
+    const pages = this.pages();
+    if (pages.length === 0 || this.ocrBusy()) return;
+    this.ocrBusy.set(true);
+    this.ocrMsg.set('');
+    this.ocrMsgOk.set(false);
+    this.ocrResult.set(null);
+    this.ocrCopied.set(false);
+
+    const images = pages.map((p, i) => ({ blob: p.blob, name: `scan-${i + 1}.jpg` }));
+    this.ocr.extract(images, this.ocrLang()).subscribe({
+      next: (res) => {
+        this.ocrBusy.set(false);
+        this.ocrResult.set(res);
+        this.ocrMsg.set(`✅ ${this.t.instant('ocr.success')}`);
+        this.ocrMsgOk.set(true);
+      },
+      error: (err) => {
+        this.ocrBusy.set(false);
+        this.ocrMsg.set(`❌ ${this.ocrErrText(err)}`);
+      },
+    });
+  }
+
+  copyOcrText(): void {
+    const text = this.ocrResult()?.text ?? '';
+    navigator.clipboard.writeText(text).then(() => {
+      this.ocrCopied.set(true);
+      setTimeout(() => this.ocrCopied.set(false), 2000);
+    });
+  }
+
+  downloadOcrTxt(): void {
+    const text = this.ocrResult()?.text ?? '';
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `scan-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  private resetOcrState(): void {
+    this.ocrResult.set(null);
+    this.ocrMsg.set('');
+  }
+
+  private defaultOcrLang(): string {
+    try {
+      const saved = localStorage.getItem(OCR_LANG_STORAGE_KEY);
+      if (saved && OCR_LANGUAGES.some((l) => l.code === saved)) return saved;
+    } catch { /* storage unavailable */ }
+    return UI_TO_OCR_LANG[this.t.currentLang] ?? 'eng';
+  }
+
+  private ocrErrText(err: unknown): string {
+    const e = err as { status?: number; error?: { message?: string | string[] } };
+    if (e?.status === 429) return this.t.instant('ocr.err_rate_limit');
+    if (e?.status === 413) return this.t.instant('ocr.err_too_large');
+    const detail = e?.error?.message;
+    if (Array.isArray(detail)) return detail.join('; ');
+    if (typeof detail === 'string') return detail;
+    return this.t.instant('ocr.err_failed');
   }
 
   // ── Internals ────────────────────────────────────────────────────────
@@ -510,22 +648,83 @@ export class ScannerComponent implements OnInit, OnDestroy {
     return out;
   }
 
-  /** Bianco/nero documentale: soglia adattiva sulla luminanza media. */
+  /**
+   * Bianco/nero documentale con soglia locale adattiva.
+   * Una soglia globale unica fallisce su foto con illuminazione irregolare (es. un'ombra
+   * che copre parte del foglio): la zona in ombra colava tutta a nero o perdeva i dettagli.
+   * Qui l'immagine è divisa in una griglia di blocchi; per ogni pixel la soglia è ottenuta
+   * interpolando (bilineare) le medie di luminanza dei blocchi vicini, così ogni zona del
+   * documento viene sogliata rispetto alla propria illuminazione locale. Costo O(n): un
+   * passaggio per accumulare le medie a blocchi, uno per sogliare — nessuna ricerca di vicini
+   * per pixel.
+   */
   private applyThreshold(canvas: HTMLCanvasElement): void {
     const ctx = canvas.getContext('2d')!;
     const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const d = img.data;
-    let sum = 0;
-    const lum = new Float32Array(d.length / 4);
-    for (let i = 0; i < lum.length; i++) {
-      const l = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
-      lum[i] = l;
-      sum += l;
+    const w = canvas.width;
+    const h = canvas.height;
+    const n = w * h;
+
+    // Luminanza per pixel (un solo passaggio, riusata sia per l'accumulo a blocchi sia per la soglia finale).
+    const lum = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      lum[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
     }
-    const threshold = (sum / lum.length) * 0.92;
-    for (let i = 0; i < lum.length; i++) {
-      const v = lum[i] > threshold ? 255 : 0;
-      d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = v;
+
+    // Griglia di blocchi: ~1 blocco ogni 40px, con un minimo di 4 e un massimo di 32 per lato.
+    const cols = Math.max(4, Math.min(32, Math.round(w / 40)));
+    const rows = Math.max(4, Math.min(32, Math.round(h / 40)));
+    const blockW = Math.ceil(w / cols);
+    const blockH = Math.ceil(h / rows);
+
+    const blockSum = new Float64Array(cols * rows);
+    const blockCount = new Int32Array(cols * rows);
+    for (let y = 0; y < h; y++) {
+      const by = Math.min(rows - 1, (y / blockH) | 0);
+      const rowOff = y * w;
+      for (let x = 0; x < w; x++) {
+        const bx = Math.min(cols - 1, (x / blockW) | 0);
+        const bi = by * cols + bx;
+        blockSum[bi] += lum[rowOff + x];
+        blockCount[bi]++;
+      }
+    }
+    const blockMean = new Float32Array(cols * rows);
+    for (let i = 0; i < blockMean.length; i++) {
+      blockMean[i] = blockCount[i] ? blockSum[i] / blockCount[i] : 255;
+    }
+
+    // Bias: soglia leggermente sotto la media locale per non perdere tratti sottili di testo.
+    const bias = 0.9;
+
+    for (let y = 0; y < h; y++) {
+      // Coordinata di blocco frazionaria (centrata sui centri dei blocchi) per l'interpolazione bilineare.
+      const fy = y / blockH - 0.5;
+      const by0 = Math.max(0, Math.min(rows - 1, Math.floor(fy)));
+      const by1 = Math.min(rows - 1, by0 + 1);
+      const ty = Math.min(1, Math.max(0, fy - by0));
+      const rowOff = y * w;
+
+      for (let x = 0; x < w; x++) {
+        const fx = x / blockW - 0.5;
+        const bx0 = Math.max(0, Math.min(cols - 1, Math.floor(fx)));
+        const bx1 = Math.min(cols - 1, bx0 + 1);
+        const tx = Math.min(1, Math.max(0, fx - bx0));
+
+        const m00 = blockMean[by0 * cols + bx0];
+        const m10 = blockMean[by0 * cols + bx1];
+        const m01 = blockMean[by1 * cols + bx0];
+        const m11 = blockMean[by1 * cols + bx1];
+        const mTop = m00 + (m10 - m00) * tx;
+        const mBot = m01 + (m11 - m01) * tx;
+        const localThreshold = (mTop + (mBot - mTop) * ty) * bias;
+
+        const idx = rowOff + x;
+        const v = lum[idx] > localThreshold ? 255 : 0;
+        const di = idx * 4;
+        d[di] = d[di + 1] = d[di + 2] = v;
+      }
     }
     ctx.putImageData(img, 0, 0);
   }
