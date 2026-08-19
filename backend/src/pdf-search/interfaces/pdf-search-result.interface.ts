@@ -1,4 +1,4 @@
-export type PdfSource = 'internet_archive' | 'gutenberg';
+export type PdfSource = 'internet_archive' | 'gutenberg' | 'arxiv';
 
 export interface PdfSearchResult {
   id: string;
