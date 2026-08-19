@@ -245,6 +245,7 @@ $error-clr:     #f87171;
   &.source-ia { background: rgba(56, 189, 248, 0.12); color: #38bdf8; }
   &.source-gb { background: $accent-glow; color: #34d399; }
   &.source-arxiv { background: rgba(248, 113, 113, 0.12); color: #f87171; }
+  &.source-pmc { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
 }
 
 .year-pill {
@@ -301,13 +302,15 @@ $error-clr:     #f87171;
 
 .pdf-iframe { width: 100%; height: 100%; border: none; background: #fff; }
 
-.preview-loading {
+.preview-loading,
+.preview-unavailable {
   position: absolute; inset: 0; z-index: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 10px;
+  gap: 10px; text-align: center; padding: 24px;
   background: var(--bg-secondary, #161b22);
 
-  p { font-size: 13px; color: var(--text-secondary, #8b949e); margin: 0; }
+  p { font-size: 13px; color: var(--text-secondary, #8b949e); margin: 0; max-width: 320px; }
+  .state-icon { font-size: 28px; }
 }
 
 .preview-actions {

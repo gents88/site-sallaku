@@ -107,7 +107,7 @@
                 <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
               }
               <div class="result-meta">
-                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'">
+                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
                   {{ r.sourceLabel }}
                 </span>
                 @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
@@ -135,14 +135,21 @@
         </div>
 
         <div class="preview-body">
-          @if (previewLoading()) {
-            <div class="preview-loading" aria-live="polite">
-              <span class="spinner spinner-lg"></span>
-              <p>{{ 'pdf_search.preview_loading' | translate }}</p>
+          @if (!sel.previewable) {
+            <div class="preview-unavailable">
+              <span class="state-icon">🔒</span>
+              <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
             </div>
-          }
-          @if (previewUrl(); as src) {
-            <iframe class="pdf-iframe" [src]="src" title="PDF preview" (load)="onPreviewLoaded()"></iframe>
+          } @else {
+            @if (previewLoading()) {
+              <div class="preview-loading" aria-live="polite">
+                <span class="spinner spinner-lg"></span>
+                <p>{{ 'pdf_search.preview_loading' | translate }}</p>
+              </div>
+            }
+            @if (previewUrl(); as src) {
+              <iframe class="pdf-iframe" [src]="src" title="PDF preview" (load)="onPreviewLoaded()"></iframe>
+            }
           }
         </div>
 
