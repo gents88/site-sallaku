@@ -70,11 +70,28 @@ def source_files():
 
 
 def literal_material_names() -> set[str]:
-    """Icon names written out as <mat-icon>name</mat-icon> in a template."""
-    pattern = re.compile(r"<mat-icon[^>]*>\s*([a-z0-9_]+)\s*</mat-icon>")
+    """Icon names written out as <mat-icon>name</mat-icon> in a template.
+
+    Covers both the plain case (`<mat-icon>menu</mat-icon>`) and a conditional
+    written inline (`<mat-icon>{{ cond ? 'a' : 'b' }}</mat-icon>`, e.g. the
+    theme toggle's dark_mode/light_mode swap) — the block regex first isolates
+    each <mat-icon>...</mat-icon>, then pulls out either the bare word or any
+    quoted identifiers inside it. A previous version only matched the bare-word
+    case, so every icon only ever reached via a ternary silently disappeared
+    from the subset (button still worked, glyph just didn't exist to render).
+    """
+    block_pattern = re.compile(r"<mat-icon[^>]*>(.*?)</mat-icon>", re.DOTALL)
+    bare_pattern = re.compile(r"^[a-z0-9_]+$")
+    quoted_pattern = re.compile(r"""['"]([a-z0-9_]+)['"]""")
     names = set()
     for path in source_files():
-        names.update(pattern.findall(path.read_text(encoding="utf-8", errors="ignore")))
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for block in block_pattern.findall(text):
+            stripped = block.strip()
+            if bare_pattern.match(stripped):
+                names.add(stripped)
+            else:
+                names.update(quoted_pattern.findall(block))
     return names
 
 
