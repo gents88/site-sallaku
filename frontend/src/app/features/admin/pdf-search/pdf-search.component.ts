@@ -40,14 +40,14 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.seo.update({
       title: 'Ricerca PDF Pubblico Dominio — Libri e Documenti Legali',
-      description: 'Cerca PDF gratuiti e legali tra milioni di libri di pubblico dominio e opere open access su Internet Archive e Project Gutenberg, con anteprima prima del download.',
+      description: 'Cerca PDF gratuiti e legali tra milioni di libri di pubblico dominio, paper scientifici e opere open access su Internet Archive, Project Gutenberg e arXiv, con anteprima prima del download.',
       url: 'https://gentsallaku.it/lab/pdf-search',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Ricerca PDF',
-      description: 'Ricerca di PDF di pubblico dominio e open access su Internet Archive e Project Gutenberg, con anteprima integrata.',
+      description: 'Ricerca di PDF di pubblico dominio, paper scientifici e opere open access su Internet Archive, Project Gutenberg e arXiv, con anteprima integrata.',
       url: 'https://gentsallaku.it/lab/pdf-search',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
