@@ -114,10 +114,16 @@ export class LangSwitcherComponent {
       // langResolver (triggered by this navigation) calls setLangFromUrl,
       // which persists the choice and updates TranslateService — no need
       // to also call setLang() here, avoids a double-set race.
+      //
+      // Exception: switching TO 'it' resolves as explicit=false (no URL
+      // prefix), so setLangFromUrl won't persist it — it'll instead see the
+      // still-stored old language and bounce the navigation right back.
+      // Persist 'it' ourselves before navigating to prevent that.
+      if (code === 'it') {
+        this.lang.persistChoice('it');
+      }
       const targetUrl = withLangPrefix(basePath, code);
-      this.router.navigateByUrl(targetUrl).then(success => {
-        // Only close the menu if navigation succeeded, or if it failed but
-        // we should still close since the user made their choice.
+      this.router.navigateByUrl(targetUrl).then(() => {
         this._open.set(false);
       }).catch(() => {
         this._open.set(false);
