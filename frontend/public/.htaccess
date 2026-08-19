@@ -139,6 +139,9 @@
   # that text still renders in Inter rather than a system fallback.
   # archive.org + *.archive.org (its download links 302-redirect to a
   # per-item storage subdomain, e.g. dn710203.ca.archive.org) are needed for
-  # the PDF Search tool's <iframe [src]="externalPdfUrl"> preview.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com; frame-src 'self' blob: https://archive.org https://*.archive.org; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  # the PDF Search tool's <iframe [src]="externalPdfUrl"> preview. The Railway
+  # backend origin is also needed there: Project Gutenberg books are rendered
+  # to PDF on the fly by our own API (no PDF format exists on gutenberg.org
+  # itself), so that preview loads from portfolio-backend-*, not archive.org.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com; frame-src 'self' blob: https://archive.org https://*.archive.org https://portfolio-backend-production-e76d.up.railway.app; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
 </IfModule>
