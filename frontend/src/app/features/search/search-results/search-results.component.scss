@@ -25,11 +25,21 @@
   gap: 1rem;
 }
 
+.menu-results {
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
 .result-card {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 1.25rem;
+
+  &--menu {
+    border-color: var(--color-primary);
+  }
 
   &__type {
     align-self: flex-start;

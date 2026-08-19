@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-export type SearchHitType = 'post' | 'project';
+export type SearchHitType = 'post' | 'project' | 'page';
 
 export interface SearchHit {
   id: string;

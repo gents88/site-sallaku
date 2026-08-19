@@ -1,7 +1,8 @@
-import { Component, ElementRef, HostListener, ViewChild, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
 import { SearchHit, SearchService } from '../../../core/services/search.service';
+import { SiteSearchService } from '../../../core/services/site-search.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { SearchOverlayService } from '../../../core/services/search-overlay.service';
@@ -39,9 +40,9 @@ const DEBOUNCE_MS = 250;
           <div class="so-hint">{{ 'search.min_chars' | translate: { count: minLength } }}</div>
         } @else if (loading()) {
           <div class="so-hint">{{ 'search.loading' | translate }}</div>
-        } @else if (results().length) {
+        } @else if (combined().length) {
           <ul class="so-list">
-            @for (hit of results(); track hit.id; let i = $index) {
+            @for (hit of combined(); track hit.id; let i = $index) {
               <li>
                 <button
                   type="button"
@@ -50,7 +51,7 @@ const DEBOUNCE_MS = 250;
                   (mouseenter)="activeIndex.set(i)"
                   (click)="select(i)"
                 >
-                  <span class="so-item-icon">{{ hit.type === 'post' ? '📝' : '💼' }}</span>
+                  <span class="so-item-icon">{{ hitIcon(hit) }}</span>
                   <span class="so-item-body">
                     <span class="so-item-title">{{ hit.title }}</span>
                     <span class="so-item-excerpt">{{ hit.excerpt }}</span>
@@ -138,6 +139,7 @@ export class SearchOverlayComponent {
   readonly overlay = inject(SearchOverlayService);
   private readonly router = inject(Router);
   private readonly searchSvc = inject(SearchService);
+  private readonly siteSearchSvc = inject(SiteSearchService);
   private readonly langSvc = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   private readonly analytics = inject(AnalyticsTrackingService);
@@ -145,6 +147,8 @@ export class SearchOverlayComponent {
   readonly minLength = MIN_QUERY_LENGTH;
   readonly query = signal('');
   readonly results = signal<SearchHit[]>([]);
+  readonly menuResults = signal<SearchHit[]>([]);
+  readonly combined = computed(() => [...this.menuResults(), ...this.results()]);
   readonly loading = signal(false);
   readonly activeIndex = signal(0);
 
@@ -176,6 +180,7 @@ export class SearchOverlayComponent {
       if (this.overlay.open()) {
         this.query.set('');
         this.results.set([]);
+        this.menuResults.set([]);
         this.activeIndex.set(0);
         this.analytics.trackClick('search', 'search_overlay_open');
         queueMicrotask(() => this.inputRef?.nativeElement?.focus());
@@ -203,22 +208,31 @@ export class SearchOverlayComponent {
   onQuery(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.query.set(value);
+    // Local menu-entry matching is instant (no network round-trip) — no need to debounce it like the backend suggest call.
+    this.menuResults.set(this.siteSearchSvc.search(value));
+    this.activeIndex.set(0);
     this.query$.next(value);
   }
 
+  hitIcon(hit: SearchHit): string {
+    if (hit.type === 'post') return '📝';
+    if (hit.type === 'project') return '💼';
+    return '🧭';
+  }
+
   move(delta: number): void {
-    const len = this.results().length;
+    const len = this.combined().length;
     if (!len) return;
     this.activeIndex.update(i => (i + delta + len) % len);
   }
 
   onEnter(): void {
-    if (this.results().length) this.select(this.activeIndex());
+    if (this.combined().length) this.select(this.activeIndex());
     else this.viewAll();
   }
 
   select(index: number): void {
-    const hit = this.results()[index];
+    const hit = this.combined()[index];
     if (!hit) return;
     this.analytics.trackClick('search', 'search_overlay_navigate', hit.url);
     this.router.navigateByUrl(withLangPrefix(hit.url, this.langSvc.current()));
