@@ -752,6 +752,7 @@
     "btn_carousel": "Carousel",
     "btn_grid": "Grid",
     "btn_export": "Export",
+    "btn_exporting": "Exporting…",
     "btn_new": "New",
     "btn_copy_slide": "Copy Slide",
     "btn_copied": "✓ Copied",
@@ -807,7 +808,31 @@
     "doctype_report": "Report",
     "doctype_meeting_notes": "Meeting Notes",
     "doctype_resume": "Résumé",
-    "doctype_article": "Article"
+    "doctype_article": "Article",
+    "draft_restored": "Your previous draft has been restored"
+  },
+  "pdf_summary": {
+    "title": "AI Summarizer",
+    "subtitle": "Upload PDF, Word or TXT — AI reads it and generates a summary in seconds",
+    "lang_label": "Language",
+    "drop_title": "Drag your file here",
+    "drop_sub": "or click to browse",
+    "drop_formats": "PDF · Word (.docx/.doc) · TXT · HTML — max 20 MB",
+    "mode_short": "Brief",
+    "mode_detailed": "Detailed",
+    "mode_bullets": "Key Points",
+    "mode_insights": "Insights",
+    "btn_generate": "Generate Summary",
+    "btn_analysing": "Analysing…",
+    "section_short": "Short Summary",
+    "section_detailed": "Detailed Summary",
+    "section_bullets": "Key Points",
+    "section_insights": "Keywords",
+    "btn_copy": "Copy",
+    "btn_copied": "Copied!",
+    "btn_download": "Download",
+    "btn_regenerate": "Regenerate",
+    "btn_new_file": "New file"
   },
   "pdf_translate": {
     "badge": "AI PDF Translation",
@@ -862,7 +887,10 @@
     "dl_copy_name": "Copy Text",
     "dl_copied_name": "Copied!",
     "dl_copy_sub": "To clipboard",
-    "btn_translate_another": "Translate another file"
+    "btn_translate_another": "Translate another file",
+    "step_extracting": "Extracting text…",
+    "step_translating": "Translating…",
+    "step_rebuilding": "Rebuilding document…"
   },
   "convert": {
     "title": "Converter",
@@ -956,7 +984,16 @@
     "type_b64_to_jpg": "Base64 → JPG",
     "type_b64_to_pdf": "Base64 → PDF",
     "type_file_to_b64": "File → Base64",
-    "type_merge_pdf": "Merge PDFs"
+    "type_merge_pdf": "Merge PDFs",
+    "drop_prompt_multi": "Click or drag files here",
+    "remove_file": "Remove file",
+    "files_selected_count": "{{count}} files selected",
+    "merge_min_files": "Select at least 2 PDF files to merge.",
+    "selected_files": "Selected files",
+    "batch_combine_note": "These files will be combined into a single output.",
+    "batch_pending": "Queued",
+    "batch_done": "Included",
+    "batch_error": "Failed"
   },
   "ocr": {
     "title": "OCR — Text Recognition",
@@ -981,7 +1018,14 @@
     "err_failed": "OCR processing failed",
     "err_rate_limit": "Too many requests, please wait a moment and try again",
     "err_too_large": "File too large",
-    "pages_truncated": "Only the first {{max}} pages were processed"
+    "pages_truncated": "Only the first {{max}} pages were processed",
+    "files_selected": "{{count}} file(s) selected",
+    "add_more": "Click to add more files",
+    "remove_file": "Remove file",
+    "err_too_many_files": "Too many files selected (max {{max}})",
+    "err_file_too_large": "File too large (max {{max}}MB): {{names}}",
+    "err_too_many_pages": "Too many pages need OCR ({{count}}, max {{max}}). Remove some files and try again.",
+    "low_confidence_hint": "Low confidence — consider rescanning this page or using a higher-quality image"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1132,7 +1176,9 @@
     "search_placeholder": "Search in document…",
     "no_matches": "No matches",
     "close_file": "Close file",
-    "err_open": "Could not open the PDF"
+    "err_open": "Could not open the PDF",
+    "ocr_hint": "This document doesn't seem to contain extractable text — it may be a scanned PDF.",
+    "ocr_hint_cta": "Try OCR"
   },
   "scanner": {
     "title": "Document Scanner",
@@ -1158,6 +1204,8 @@
     "export_pdf": "Export PDF",
     "err_camera": "Could not access the camera",
     "success": "PDF exported successfully",
-    "err_failed": "Operation failed"
+    "err_failed": "Operation failed",
+    "run_ocr": "Run OCR",
+    "ocr_results_title": "Extracted text (OCR)"
   }
 }

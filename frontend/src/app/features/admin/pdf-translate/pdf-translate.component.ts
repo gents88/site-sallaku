@@ -12,6 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
+import { finalize } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
@@ -98,6 +99,38 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   readonly copied           = signal(false);
   readonly mode             = signal<TranslationMode>('high_fidelity');
 
+  // Staged status indicator shown while `loading` is true. The backend call is a
+  // single synchronous POST with no progress channel, so this is an honest
+  // client-side heuristic (time-based step advance) — not real fractional progress.
+  readonly translateStepKeys: string[] = [
+    'pdf_translate.step_extracting',
+    'pdf_translate.step_translating',
+    'pdf_translate.step_rebuilding',
+  ];
+  readonly currentStepIndex = signal(0);
+  readonly currentStepKey   = computed(() => this.translateStepKeys[this.currentStepIndex()] ?? this.translateStepKeys[0]);
+
+  private _stepTimer: ReturnType<typeof setInterval> | null = null;
+
+  private _startStepCycle(fileSizeBytes: number): void {
+    this._stopStepCycle();
+    this.currentStepIndex.set(0);
+    const totalSteps = this.translateStepKeys.length;
+    if (totalSteps <= 1) return;
+    // Rough heuristic: bigger files get more time per step. Not tied to real progress.
+    const mb = fileSizeBytes / (1024 * 1024);
+    const perStepMs = Math.min(9000, Math.max(2200, mb * 900));
+    this._stepTimer = setInterval(() => {
+      const next = this.currentStepIndex() + 1;
+      if (next >= totalSteps) { this._stopStepCycle(); return; }
+      this.currentStepIndex.set(next);
+    }, perStepMs);
+  }
+
+  private _stopStepCycle(): void {
+    if (this._stepTimer) { clearInterval(this._stepTimer); this._stepTimer = null; }
+  }
+
   private _originalBlobUrl:   string | null = null;
   private _translatedBlobUrl: string | null = null;
 
@@ -105,6 +138,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   readonly translatedPdfUrl = signal<SafeResourceUrl | null>(null);
 
   ngOnDestroy(): void {
+    this._stopStepCycle();
     this._revokeOriginal();
     this._revokeTranslated();
   }
@@ -208,16 +242,20 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
 
     const options: TranslateOptions = { highFidelity: this.mode() === 'high_fidelity' };
 
-    this.service.translate(f, this.selectedLanguage(), options).subscribe({
-      next: (res) => {
-        this.result.set(res);
-        if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
-      },
-      error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? 'Translation failed. Please try again.';
-        this.error.set(msg);
-      },
-    });
+    this._startStepCycle(f.size);
+
+    this.service.translate(f, this.selectedLanguage(), options)
+      .pipe(finalize(() => this._stopStepCycle()))
+      .subscribe({
+        next: (res) => {
+          this.result.set(res);
+          if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
+        },
+        error: (err) => {
+          const msg = err?.error?.message ?? err?.message ?? 'Translation failed. Please try again.';
+          this.error.set(msg);
+        },
+      });
   }
 
   retranslate(lang: TranslationLanguage): void {

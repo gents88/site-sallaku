@@ -91,6 +91,13 @@
           </div>
         </div>
 
+        @if (draftRestored()) {
+          <div class="draft-banner">
+            <span>💾 {{ 'ai_formatter.draft_restored' | translate }}</span>
+            <button type="button" class="draft-dismiss" (click)="dismissDraftNotice()">✕</button>
+          </div>
+        }
+
         <!-- Drop zone (shown only when textarea is empty) -->
         @if (!text()) {
           <div

@@ -2,6 +2,7 @@ import {
   Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef,
   ViewChild, inject, signal, computed,
 } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -15,7 +16,7 @@ const MAX_THUMBS = 200;
   selector: 'app-viewer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective],
+  imports: [TranslateModule, FileDropzoneDirective, RouterLink],
   template: `
     <div class="cp-page">
       <header class="cp-header">
@@ -83,6 +84,14 @@ const MAX_THUMBS = 200;
           </div>
         </div>
 
+        <!-- ── Hint OCR se il documento non ha testo estraibile ── -->
+        @if (showOcrHint()) {
+          <div class="vw-hint">
+            <span>💡 {{ 'viewer.ocr_hint' | translate }}</span>
+            <a routerLink="/lab/ocr" class="vw-hint-link">{{ 'viewer.ocr_hint_cta' | translate }} →</a>
+          </div>
+        }
+
         <!-- ── Layout: thumbs + pagina ──────────── -->
         <div class="vw-body">
           <aside class="vw-thumbs">
@@ -96,6 +105,15 @@ const MAX_THUMBS = 200;
           <main class="vw-main">
             <canvas #page class="vw-canvas"></canvas>
           </main>
+        </div>
+
+        <!-- ── Navigazione pagina mobile (sostituisce la sidebar thumb sotto i 700px) ── -->
+        <div class="vw-mobile-nav">
+          <button class="tb" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" aria-label="prev page">‹</button>
+          <input class="vw-pagein" type="number" min="1" [max]="numPages()"
+                 [value]="pageNum()" (change)="goTo(+$any($event.target).value)">
+          <span class="vw-mobile-nav-total">/ {{ numPages() }}</span>
+          <button class="tb" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" aria-label="next page">›</button>
         </div>
       }
     </div>
@@ -177,11 +195,30 @@ const MAX_THUMBS = 200;
     }
     .vw-canvas { max-width: none; box-shadow: 0 4px 24px rgba(0,0,0,.45); border-radius: 4px; background: #fff; }
 
+    .vw-hint {
+      display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+      background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.3);
+      border-radius: 10px; padding: .6rem .9rem; margin-bottom: .75rem;
+      font-size: .82rem; color: var(--text-secondary, #8b949e);
+    }
+    .vw-hint-link { color: var(--accent, #6c63ff); font-weight: 600; text-decoration: none; }
+    .vw-hint-link:hover { text-decoration: underline; }
+
+    .vw-mobile-nav { display: none; }
+
     @media (max-width: 700px) {
       .cp-page { padding: 1rem; }
       .cp-title { font-size: 1.35rem; }
       .vw-thumbs { display: none; }
       .vw-search { margin-left: 0; }
+      .vw-mobile-nav {
+        display: flex; align-items: center; justify-content: center; gap: .5rem;
+        margin-top: .75rem; padding: .6rem .75rem;
+        background: var(--bg-secondary, #161b22); border: 1px solid var(--border-color, #30363d);
+        border-radius: 12px; position: sticky; bottom: 0; z-index: 10;
+      }
+      .vw-mobile-nav-total { font-size: .85rem; color: var(--text-secondary, #8b949e); }
+      .vw-mobile-nav .vw-pagein { width: 60px; }
     }
   `],
 })
@@ -206,8 +243,13 @@ export class ViewerComponent implements OnInit, OnDestroy {
   readonly searching = signal(false);
   readonly matches = signal<SearchMatch[]>([]);
   readonly matchIdx = signal(0);
+  /** true se l'ultima ricerca ha rilevato pochissimo testo estraibile (probabile PDF scansionato) */
+  readonly docSparseText = signal(false);
 
   readonly zoomPct = computed(() => Math.round(this.scale() * 100));
+  readonly showOcrHint = computed(() =>
+    this.query().trim().length > 0 && !this.searching() && this.matches().length === 0 && this.docSparseText()
+  );
 
   private renderToken = 0;
 
@@ -248,6 +290,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
       this.scale.set(1);
       this.query.set('');
       this.matches.set([]);
+      this.docSparseText.set(false);
       this.thumbs.set(new Array(Math.min(doc.numPages, MAX_THUMBS)).fill(null));
       await this.renderPage();
       void this.renderThumbs(doc);
@@ -263,6 +306,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.thumbs.set([]);
     this.matches.set([]);
     this.query.set('');
+    this.docSparseText.set(false);
     this.renderToken++;
   }
 
@@ -300,10 +344,13 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.searching.set(true);
     const needle = q.trim().toLowerCase();
     const found: SearchMatch[] = [];
+    let totalChars = 0;
     for (let i = 1; i <= doc.numPages; i++) {
       const page = await doc.getPage(i);
       const content = await page.getTextContent();
-      const text = content.items.map((it) => ('str' in it ? it.str : '')).join(' ').toLowerCase();
+      const raw = content.items.map((it) => ('str' in it ? it.str : '')).join(' ');
+      totalChars += raw.trim().length;
+      const text = raw.toLowerCase();
       let pos = text.indexOf(needle);
       while (pos !== -1) {
         found.push({ page: i });
@@ -312,6 +359,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
     }
     this.searching.set(false);
     this.matches.set(found);
+    // < 15 caratteri/pagina in media ⇒ quasi certamente un PDF scansionato senza layer di testo
+    this.docSparseText.set(totalChars / doc.numPages < 15);
     if (found.length > 0) {
       this.matchIdx.set(0);
       this.pageNum.set(found[0].page);

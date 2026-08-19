@@ -1,13 +1,24 @@
 import {
-  Component, ChangeDetectionStrategy, OnInit, ElementRef, ViewChild,
-  inject, signal,
+  Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef, ViewChild,
+  PLATFORM_ID, inject, signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService, ConversionTypeId } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
 
 type ExportFormat = 'pdf' | 'docx' | 'html';
+
+/** Chiave localStorage per l'autosave della bozza (protegge da refresh/chiusura accidentale). */
+const EDITOR_DRAFT_KEY = 'editor-draft';
+/** Debounce dell'autosave: evita di scrivere su localStorage ad ogni singolo carattere. */
+const DRAFT_SAVE_DEBOUNCE_MS = 1000;
+
+interface EditorDraft {
+  docName: string;
+  html: string;
+}
 
 interface ToolBtn {
   cmd: string;
@@ -57,7 +68,7 @@ const TOOLBAR: ToolBtn[][] = [
         <div class="doc-bar">
           <input class="in doc-name" type="text" maxlength="80"
                  [placeholder]="'editor.doc_name_placeholder' | translate"
-                 [value]="docName()" (input)="docName.set($any($event.target).value)">
+                 [value]="docName()" (input)="onDocNameChange($any($event.target).value)">
           <div class="ac">
             <button class="btn btn-s" (click)="pick.click()">{{ 'editor.import' | translate }}</button>
             <input #pick type="file" hidden accept=".docx,.txt,.md,.html,.htm" (change)="importFile($event)">
@@ -190,10 +201,12 @@ const TOOLBAR: ToolBtn[][] = [
     }
   `],
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   @ViewChild('sheet', { static: true }) private sheetRef!: ElementRef<HTMLDivElement>;
 
@@ -204,6 +217,8 @@ export class EditorComponent implements OnInit {
   readonly exporting = signal(false);
   readonly msg = signal('');
   readonly msgOk = signal(false);
+
+  private draftSaveTimer: ReturnType<typeof setTimeout> | undefined;
 
   ngOnInit(): void {
     this.seo.update({
@@ -223,6 +238,18 @@ export class EditorComponent implements OnInit {
       featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
     });
+    // Ripristino della bozza: eseguito solo qui, prima di qualunque interazione
+    // dell'utente (import compreso), quindi è per costruzione un "fresh load".
+    this.restoreDraft();
+  }
+
+  ngOnDestroy(): void {
+    if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+  }
+
+  onDocNameChange(value: string): void {
+    this.docName.set(value);
+    this.scheduleDraftSave();
   }
 
   exec(cmd: string, arg?: string): void {
@@ -243,6 +270,7 @@ export class EditorComponent implements OnInit {
   onEdit(): void {
     const text = this.sheetRef.nativeElement.innerText.trim();
     this.wordCount.set(text ? text.split(/\s+/).length : 0);
+    this.scheduleDraftSave();
   }
 
   // ── Import ───────────────────────────────────────────────────────────
@@ -288,6 +316,7 @@ export class EditorComponent implements OnInit {
 
     if (format === 'html') {
       this.download(new Blob([html], { type: 'text/html;charset=utf-8' }), `${name}.html`);
+      this.clearDraft();
       return;
     }
 
@@ -305,6 +334,7 @@ export class EditorComponent implements OnInit {
             this.download(ev.body, `${name}.${format}`);
             this.msg.set(`✅ ${this.t.instant('editor.success')}`);
             this.msgOk.set(true);
+            this.clearDraft();
           } else {
             this.msg.set(`❌ ${this.t.instant('editor.err_export')}`);
           }
@@ -342,6 +372,60 @@ export class EditorComponent implements OnInit {
   private setContent(html: string): void {
     this.sheetRef.nativeElement.innerHTML = html;
     this.onEdit();
+  }
+
+  // ── Autosave bozza (localStorage) ───────────────────────────────────────
+  // Protegge da refresh/chiusura/navigazione accidentale: essendo localStorage
+  // (non sessionStorage) la bozza sopravvive anche alla chiusura del tab/browser,
+  // quindi copre lo stesso scenario per cui servirebbe un prompt beforeunload.
+  // Per questo non aggiungiamo anche il prompt nativo "vuoi uscire?": nagerebbe
+  // l'utente ad ogni uscita dalla pagina pur avendo già il contenuto al sicuro,
+  // senza reale beneficio se non nel caso limite della navigazione privata con
+  // storage cancellato alla chiusura — troppo marginale per giustificare il fastidio.
+
+  /** Ripristina la bozza salvata, se presente, solo al caricamento iniziale del componente. */
+  private restoreDraft(): void {
+    if (!this.isBrowser) return;
+    try {
+      const raw = localStorage.getItem(EDITOR_DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as Partial<EditorDraft>;
+      if (!draft.html || !draft.html.trim()) return;
+      this.sheetRef.nativeElement.innerHTML = draft.html;
+      if (draft.docName) this.docName.set(draft.docName);
+      this.onEdit();
+    } catch {
+      // Bozza corrotta o non leggibile: ignora silenziosamente, si riparte da vuoto.
+    }
+  }
+
+  private scheduleDraftSave(): void {
+    if (!this.isBrowser) return;
+    if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+    this.draftSaveTimer = setTimeout(() => this.saveDraft(), DRAFT_SAVE_DEBOUNCE_MS);
+  }
+
+  private saveDraft(): void {
+    if (!this.isBrowser) return;
+    if (!this.sheetRef.nativeElement.innerText.trim()) {
+      // Editor vuoto: non ha senso tenere in giro una bozza vuota.
+      localStorage.removeItem(EDITOR_DRAFT_KEY);
+      return;
+    }
+    const draft: EditorDraft = { docName: this.docName(), html: this.sheetRef.nativeElement.innerHTML };
+    try {
+      localStorage.setItem(EDITOR_DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // Storage pieno o non disponibile (es. navigazione privata): l'autosave
+      // diventa no-op, ma non deve mai bloccare la scrittura nell'editor.
+    }
+  }
+
+  /** Svuota la bozza salvata: chiamato quando "il lavoro è fatto" (export riuscito). */
+  private clearDraft(): void {
+    if (!this.isBrowser) return;
+    if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+    localStorage.removeItem(EDITOR_DRAFT_KEY);
   }
 
   /** Estrae il body e rimuove script/style/eventi inline dall'HTML importato. */

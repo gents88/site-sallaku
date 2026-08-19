@@ -752,6 +752,7 @@
     "btn_carousel": "Karusel",
     "btn_grid": "Rrjet",
     "btn_export": "Eksporto",
+    "btn_exporting": "Duke eksportuar…",
     "btn_new": "Ri",
     "btn_copy_slide": "Kopjo Slide",
     "btn_copied": "✓ Kopjuar",
@@ -807,7 +808,31 @@
     "doctype_report": "Raport",
     "doctype_meeting_notes": "Procesverbal",
     "doctype_resume": "CV",
-    "doctype_article": "Artikull"
+    "doctype_article": "Artikull",
+    "draft_restored": "Skica juaj e mëparshme u rikthye"
+  },
+  "pdf_summary": {
+    "title": "AI Summarizer",
+    "subtitle": "Ngarko një PDF, Word ose TXT — AI e lexon dhe gjeneron një përmbledhje brenda pak sekondash",
+    "lang_label": "Gjuha",
+    "drop_title": "Tërhiqe skedarin këtu",
+    "drop_sub": "ose kliko për ta zgjedhur",
+    "drop_formats": "PDF · Word (.docx/.doc) · TXT · HTML — maksimumi 20 MB",
+    "mode_short": "Shkurt",
+    "mode_detailed": "Detajuar",
+    "mode_bullets": "Pikat kryesore",
+    "mode_insights": "Insights",
+    "btn_generate": "Gjenero përmbledhjen",
+    "btn_analysing": "Duke analizuar…",
+    "section_short": "Përmbledhje e shkurtër",
+    "section_detailed": "Përmbledhje e detajuar",
+    "section_bullets": "Pikat kryesore",
+    "section_insights": "Fjalë kyçe",
+    "btn_copy": "Kopjo",
+    "btn_copied": "U kopjua!",
+    "btn_download": "Shkarko",
+    "btn_regenerate": "Rigjenero",
+    "btn_new_file": "Skedar i ri"
   },
   "pdf_translate": {
     "badge": "Përkthim PDF me AI",
@@ -862,7 +887,10 @@
     "dl_copy_name": "Kopjo Tekst",
     "dl_copied_name": "Kopjuar!",
     "dl_copy_sub": "Në clipboard",
-    "btn_translate_another": "Përkthe një skedar tjetër"
+    "btn_translate_another": "Përkthe një skedar tjetër",
+    "step_extracting": "Duke nxjerrë tekstin…",
+    "step_translating": "Duke përkthyer…",
+    "step_rebuilding": "Duke rindërtuar dokumentin…"
   },
   "convert": {
     "title": "Konvertues",
@@ -956,7 +984,16 @@
     "type_b64_to_jpg": "Base64 → JPG",
     "type_b64_to_pdf": "Base64 → PDF",
     "type_file_to_b64": "Skedar → Base64",
-    "type_merge_pdf": "Bashko PDF-të"
+    "type_merge_pdf": "Bashko PDF-të",
+    "drop_prompt_multi": "Kliko ose tërhiq skedarët këtu",
+    "remove_file": "Hiq skedarin",
+    "files_selected_count": "{{count}} skedarë të zgjedhur",
+    "merge_min_files": "Zgjidh të paktën 2 skedarë PDF për t'i bashkuar.",
+    "selected_files": "Skedarët e zgjedhur",
+    "batch_combine_note": "Këta skedarë do të bashkohen në një rezultat të vetëm.",
+    "batch_pending": "Në pritje",
+    "batch_done": "I përfshirë",
+    "batch_error": "Dështoi"
   },
   "ocr": {
     "title": "OCR — Njohja e tekstit",
@@ -981,7 +1018,14 @@
     "err_failed": "Procesimi OCR dështoi",
     "err_rate_limit": "Shumë kërkesa, prit një moment dhe provo përsëri",
     "err_too_large": "Skedari është shumë i madh",
-    "pages_truncated": "U procesuan vetëm {{max}} faqet e para"
+    "pages_truncated": "U procesuan vetëm {{max}} faqet e para",
+    "files_selected": "{{count}} skedar(ë) të zgjedhur",
+    "add_more": "Kliko për të shtuar skedarë të tjerë",
+    "remove_file": "Hiq skedarin",
+    "err_too_many_files": "Shumë skedarë të zgjedhur (maksimumi {{max}})",
+    "err_file_too_large": "Skedari shumë i madh (maksimumi {{max}}MB): {{names}}",
+    "err_too_many_pages": "Shumë faqe kanë nevojë për OCR ({{count}}, maksimumi {{max}}). Hiq disa skedarë dhe provo përsëri.",
+    "low_confidence_hint": "Besueshmëri e ulët — provo ta skanosh përsëri këtë faqe ose përdor një imazh me cilësi më të lartë"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1132,7 +1176,9 @@
     "search_placeholder": "Kërko në dokument…",
     "no_matches": "Asnjë rezultat",
     "close_file": "Mbyll skedarin",
-    "err_open": "Nuk mund të hapet PDF-ja"
+    "err_open": "Nuk mund të hapet PDF-ja",
+    "ocr_hint": "Ky dokument nuk duket se përmban tekst të nxjerrshëm — mund të jetë një PDF i skanuar.",
+    "ocr_hint_cta": "Provo OCR-in"
   },
   "scanner": {
     "title": "Skaner Dokumentesh",
@@ -1158,6 +1204,8 @@
     "export_pdf": "Eksporto PDF",
     "err_camera": "Nuk mund të aksesohet kamera",
     "success": "PDF u eksportua me sukses",
-    "err_failed": "Operacioni dështoi"
+    "err_failed": "Operacioni dështoi",
+    "run_ocr": "Ekzekuto OCR-in",
+    "ocr_results_title": "Teksti i nxjerrë (OCR)"
   }
 }
