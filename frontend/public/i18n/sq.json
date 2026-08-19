@@ -973,7 +973,8 @@
     "feature_sources_desc": "Internet Archive, Project Gutenberg, arXiv dhe PubMed Central — miliona libra dhe artikuj të katalogizuar.",
     "feature_preview_title": "Parashikim i Menjëhershëm",
     "feature_preview_desc": "Shiko PDF-në direkt në shfletues para se ta shkarkosh.",
-    "preview_unavailable": "Parashikimi nuk është i disponueshëm për këtë burim. Shkarko PDF-në për ta lexuar."
+    "preview_unavailable": "Parashikimi nuk është i disponueshëm për këtë burim. Shkarko PDF-në për ta lexuar.",
+    "mobile_preview_hint": "Parashikimi i integruar në celular shfaq vetëm faqen e parë. Përdor \"Shkarko PDF\" më poshtë për ta shfletuar të gjithë në shikuesin e telefonit."
   },
   "convert": {
     "title": "Konvertues",

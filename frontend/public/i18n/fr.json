@@ -973,7 +973,8 @@
     "feature_sources_desc": "Internet Archive, Project Gutenberg, arXiv et PubMed Central — des millions de livres et articles catalogués.",
     "feature_preview_title": "Aperçu Instantané",
     "feature_preview_desc": "Consultez le PDF directement dans le navigateur avant de le télécharger.",
-    "preview_unavailable": "Aperçu non disponible pour cette source. Téléchargez le PDF pour le lire."
+    "preview_unavailable": "Aperçu non disponible pour cette source. Téléchargez le PDF pour le lire.",
+    "mobile_preview_hint": "L’aperçu intégré sur mobile n’affiche que la première page. Utilisez « Télécharger le PDF » ci-dessous pour le parcourir entièrement dans la visionneuse de votre téléphone."
   },
   "convert": {
     "title": "Convertisseur",

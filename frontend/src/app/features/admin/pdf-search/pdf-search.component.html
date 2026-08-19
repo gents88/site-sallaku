@@ -140,6 +140,11 @@
               <span class="state-icon">🔒</span>
               <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
             </div>
+          } @else if (isMobile()) {
+            <div class="preview-unavailable">
+              <span class="state-icon">📱</span>
+              <p>{{ 'pdf_search.mobile_preview_hint' | translate }}</p>
+            </div>
           } @else {
             @if (previewLoading()) {
               <div class="preview-loading" aria-live="polite">

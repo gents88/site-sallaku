@@ -973,7 +973,8 @@
     "feature_sources_desc": "Internet Archive, Project Gutenberg, arXiv and PubMed Central — millions of catalogued books and papers.",
     "feature_preview_title": "Instant Preview",
     "feature_preview_desc": "View the PDF right in your browser before downloading it.",
-    "preview_unavailable": "Preview not available for this source. Download the PDF to read it."
+    "preview_unavailable": "Preview not available for this source. Download the PDF to read it.",
+    "mobile_preview_hint": "The embedded preview on mobile only shows the first page. Use \"Download PDF\" below to browse the whole document in your phone's viewer."
   },
   "convert": {
     "title": "Converter",

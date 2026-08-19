@@ -1,10 +1,12 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, PLATFORM_ID, signal, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SeoService } from '../../../core/services/seo.service';
 import { PdfSearchService, PdfSearchResult } from '../../../core/services/pdf-search.service';
+
+const MOBILE_QUERY = '(max-width: 640px)';
 
 @Component({
   selector: 'app-pdf-search',
@@ -18,6 +20,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly service = inject(PdfSearchService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo = inject(SeoService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   readonly loading = this.service.isLoading;
 
@@ -37,7 +40,22 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   readonly previewUrl = signal<SafeResourceUrl | null>(null);
   readonly previewLoading = signal(false);
 
+  // Mobile browsers' native PDF viewer inside an <iframe> commonly renders
+  // only the first page instead of the full scrollable document — a browser
+  // limitation, not something CSS can fix — so on narrow viewports the
+  // preview modal skips the iframe entirely and points at the download
+  // button instead, which opens the PDF in the phone's own full viewer.
+  private mobileQuery: MediaQueryList | null = null;
+  private readonly onMobileQueryChange = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
+  readonly isMobile = signal(false);
+
   ngOnInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.mobileQuery = window.matchMedia(MOBILE_QUERY);
+      this.isMobile.set(this.mobileQuery.matches);
+      this.mobileQuery.addEventListener('change', this.onMobileQueryChange);
+    }
+
     this.seo.update({
       title: 'Ricerca PDF Pubblico Dominio — Libri e Documenti Legali',
       description: 'Cerca PDF gratuiti e legali tra milioni di libri di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima prima del download.',
@@ -57,6 +75,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.mobileQuery?.removeEventListener('change', this.onMobileQueryChange);
     this._revokePreview();
   }
 
@@ -87,12 +106,14 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   select(result: PdfSearchResult): void {
     this.selected.set(result);
-    if (result.previewable) {
+    if (result.previewable && !this.isMobile()) {
       this.previewLoading.set(true);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(result.pdfUrl));
     } else {
-      // Source blocks iframe embedding outright (e.g. PMC sends X-Frame-Options:
-      // DENY) — no point loading an iframe that will never render.
+      // Either the source blocks iframe embedding outright (e.g. PMC sends
+      // X-Frame-Options: DENY), or we're on a narrow viewport where mobile
+      // browsers' native PDF viewer inside an iframe typically renders only
+      // the first page — neither case is worth loading an iframe for.
       this.previewLoading.set(false);
       this.previewUrl.set(null);
     }
