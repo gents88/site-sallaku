@@ -717,6 +717,7 @@
     "chip_contact": "📬 Como posso contatá-lo?"
   },
   "ai_ppt": {
+    "title": "Gerador de Slides",
     "badge": "Gerador de Slides com IA",
     "hero_title_1": "Transforme Qualquer Ideia em uma",
     "hero_title_2": "Apresentação Profissional",
@@ -774,6 +775,7 @@
     "workspace_sent": "Enviado ✓"
   },
   "ai_formatter": {
+    "title": "Formatador IA",
     "badge": "Alimentado por IA",
     "hero_title_1": "Formate Texto Simples em",
     "hero_title_2": "Documentos Refinados",
@@ -862,6 +864,7 @@
     "start_here": "Ferramentas iniciais"
   },
   "pdf_translate": {
+    "title": "Tradução de PDF",
     "badge": "Tradução de PDF com IA",
     "hero_title_1": "Traduza Qualquer PDF",
     "hero_title_2": "Com Layout Preservado",

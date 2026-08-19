@@ -1,6 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef, ViewChild,
-  PLATFORM_ID, inject, signal,
+  PLATFORM_ID, afterNextRender, inject, signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
@@ -82,6 +82,29 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   private draftSaveTimer: ReturnType<typeof setTimeout> | undefined;
 
+  constructor() {
+    // Deferred to right after the initial (hydrated) render, not ngOnInit: restoring
+    // the draft / offering a Workspace item mutates content that's part of the
+    // template (docName, wordCount, the contenteditable body) during ngOnInit, which
+    // runs before hydration reconciliation on the client — that would make the first
+    // client render diverge from the server's (always-empty) one, and Angular can't
+    // reconcile the resulting DOM mismatch.
+    afterNextRender(() => {
+      // Ripristino della bozza: eseguito solo qui, prima di qualunque interazione
+      // dell'utente (import compreso), quindi è per costruzione un "fresh load".
+      this.restoreDraft();
+
+      // Un item Workspace viene offerto solo se il ripristino bozza non ha già
+      // popolato l'editor — non deve mai sovrascrivere contenuto già presente.
+      if (this.isBrowser && !this.sheetRef.nativeElement.innerText.trim()) {
+        const pending = this.workspace.peek();
+        if (pending && pending.kind === 'text') {
+          this.workspaceItem.set(pending);
+        }
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.seo.update({
       title: 'Free Online Document Editor — Export to PDF & DOCX',
@@ -100,18 +123,6 @@ export class EditorComponent implements OnInit, OnDestroy {
       featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
     });
-    // Ripristino della bozza: eseguito solo qui, prima di qualunque interazione
-    // dell'utente (import compreso), quindi è per costruzione un "fresh load".
-    this.restoreDraft();
-
-    // Un item Workspace viene offerto solo se il ripristino bozza non ha già
-    // popolato l'editor — non deve mai sovrascrivere contenuto già presente.
-    if (this.isBrowser && !this.sheetRef.nativeElement.innerText.trim()) {
-      const pending = this.workspace.peek();
-      if (pending && pending.kind === 'text') {
-        this.workspaceItem.set(pending);
-      }
-    }
   }
 
   ngOnDestroy(): void {
