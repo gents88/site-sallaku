@@ -1,0 +1,130 @@
+    <div class="cp-page">
+      <header class="cp-header">
+        <h1 class="cp-title">🔤 {{ 'ocr.title' | translate }}</h1>
+        <p class="cp-subtitle">{{ 'ocr.subtitle' | translate }}</p>
+      </header>
+
+      <div class="cp-panel">
+        <!-- Upload -->
+        <div class="dz"
+             appFileDropzone
+             #dz="fileDropzone"
+             (click)="pick.click()"
+             (filesDropped)="onFilesDropped($event)"
+             [class.dz--active]="files().length > 0 || dz.isDragging">
+          <input #pick type="file" hidden multiple [attr.accept]="accept" (change)="select($event)">
+          @if (files().length === 0) {
+            <span class="dz-icon">📂</span>
+            <strong>{{ 'ocr.drop_prompt' | translate }}</strong>
+            <small>{{ 'ocr.accepted' | translate }}</small>
+          } @else {
+            <span class="dz-icon">✅</span>
+            <strong>{{ 'ocr.files_selected' | translate: { count: files().length } }}</strong>
+            <small>{{ totalSize() }} · {{ 'ocr.add_more' | translate }}</small>
+          }
+        </div>
+
+        @if (files().length > 0) {
+          <ul class="file-list">
+            @for (f of files(); track f.name + f.size + $index; let i = $index) {
+              <li class="file-item">
+                <span class="file-item-name">{{ f.name }}</span>
+                <span class="file-item-size">{{ formatSize(f.size) }}</span>
+                <button type="button" class="file-item-remove" [disabled]="busy()" (click)="removeFile(i)" [attr.aria-label]="'ocr.remove_file' | translate">✕</button>
+              </li>
+            }
+          </ul>
+        }
+
+        <!-- Options -->
+        <div class="opts">
+          <label class="opt">
+            <small>{{ 'ocr.lang_label' | translate }}</small>
+            <select class="sel" [value]="lang()" (change)="onLangChange($any($event.target).value)" [disabled]="busy()">
+              @for (l of languages; track l.code) {
+                <option [value]="l.code">{{ l.label }}</option>
+              }
+            </select>
+          </label>
+          <div class="ac">
+            @if (fileResults().length > 0 || status() === 'error') {
+              <button class="btn btn-s" (click)="reset()">{{ 'ocr.clear' | translate }}</button>
+            }
+            <button class="btn btn-p" [disabled]="files().length === 0 || busy()" (click)="start()">
+              {{ (busy() ? 'ocr.processing' : 'ocr.start') | translate }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        @if (busy()) {
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <small>
+              @if (status() === 'preparing') {
+                {{ 'ocr.preparing' | translate }}
+                @if (files().length > 1 && preparingFile()) {
+                  — {{ preparingFile() }}
+                }
+                {{ progress().current }}/{{ progress().total }}
+              } @else {
+                {{ 'ocr.recognizing' | translate }}
+              }
+            </small>
+          </div>
+        }
+
+        @if (msg()) {
+          <p class="msg" [class.msg--ok]="status() === 'done'">{{ msg() }}</p>
+        }
+      </div>
+
+      <!-- Results -->
+      @if (fileResults().length > 0) {
+        <section class="cp-panel res">
+          <div class="res-head">
+            <div>
+              <h2>{{ 'ocr.results_title' | translate }}</h2>
+              <small class="res-lang">{{ 'ocr.lang_label' | translate }}: {{ resultLangLabel() }}</small>
+            </div>
+            <div class="res-actions">
+              <button class="btn btn-s" (click)="copy()">{{ (copied() ? 'ocr.copied' : 'ocr.copy') | translate }}</button>
+              <button class="btn btn-p" (click)="downloadTxt()">{{ 'ocr.download_txt' | translate }}</button>
+            </div>
+          </div>
+          @if (!allText()) {
+            <p class="cp-subtitle">{{ 'ocr.no_text' | translate }}</p>
+          } @else {
+            @for (fr of fileResults(); track fr.name + $index) {
+              <div class="file-res">
+                @if (fileResults().length > 1) {
+                  <h3 class="file-res-name">📄 {{ fr.name }}</h3>
+                }
+                @if (!fr.text) {
+                  <p class="cp-subtitle file-res-empty">{{ 'ocr.no_text' | translate }}</p>
+                } @else {
+                  <pre class="tx">{{ fr.text }}</pre>
+                  @if (fr.pages.length > 1 || hasConfidence(fr)) {
+                    <div class="pages">
+                      @for (p of fr.pages; track p.index) {
+                        <span class="page-chip" [class.page-chip--low]="isLowConfidence(p)">
+                          {{ 'ocr.page' | translate }} {{ p.index + 1 }}
+                          @if (p.confidence !== null) {
+                            · {{ p.confidence }}%
+                            @if (isLowConfidence(p)) {
+                              <span class="low-conf" [title]="'ocr.low_confidence_hint' | translate">⚠️</span>
+                            }
+                          } @else {
+                            · {{ 'ocr.text_layer' | translate }}
+                          }
+                        </span>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            }
+          }
+        </section>
+      }
+    </div>
