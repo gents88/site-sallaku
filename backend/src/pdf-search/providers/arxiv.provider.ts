@@ -81,6 +81,7 @@ export class ArxivProvider implements PdfSearchProvider {
       pdfUrl,
       coverUrl: null,
       detailsUrl: `https://arxiv.org/abs/${id}`,
+      previewable: true,
     };
   }
 }

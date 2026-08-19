@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InternetArchiveProvider } from './providers/internet-archive.provider';
 import { GutenbergProvider } from './providers/gutenberg.provider';
 import { ArxivProvider } from './providers/arxiv.provider';
+import { PmcProvider } from './providers/pmc.provider';
 import { PdfSearchProvider, PdfSearchResult } from './interfaces/pdf-search-result.interface';
 
 const DEFAULT_LIMIT = 12;
@@ -11,8 +12,13 @@ export class PdfSearchService {
   private readonly logger = new Logger(PdfSearchService.name);
   private readonly providers: PdfSearchProvider[];
 
-  constructor(internetArchive: InternetArchiveProvider, gutenberg: GutenbergProvider, arxiv: ArxivProvider) {
-    this.providers = [internetArchive, gutenberg, arxiv];
+  constructor(
+    internetArchive: InternetArchiveProvider,
+    gutenberg: GutenbergProvider,
+    arxiv: ArxivProvider,
+    pmc: PmcProvider,
+  ) {
+    this.providers = [internetArchive, gutenberg, arxiv, pmc];
   }
 
   async search(query: string, limit: number = DEFAULT_LIMIT): Promise<PdfSearchResult[]> {

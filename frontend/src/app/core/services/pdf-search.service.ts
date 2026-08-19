@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, finalize, catchError, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 
-export type PdfSource = 'internet_archive' | 'gutenberg' | 'arxiv';
+export type PdfSource = 'internet_archive' | 'gutenberg' | 'arxiv' | 'pmc';
 
 export interface PdfSearchResult {
   id: string;
@@ -15,6 +15,8 @@ export interface PdfSearchResult {
   pdfUrl: string;
   coverUrl: string | null;
   detailsUrl: string;
+  /** False when the source blocks iframe embedding outright (e.g. PMC) — show a download-only state instead of an iframe. */
+  previewable: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
