@@ -947,6 +947,32 @@
     "dl_sent_name": "Enviado ✓",
     "guide_link": "Guía: cómo funciona la traducción de PDF con IA"
   },
+  "pdf_search": {
+    "title": "Buscar PDF",
+    "badge": "Búsqueda de PDF de Dominio Público",
+    "hero_title_1": "Encuentra Libros y Documentos",
+    "hero_title_2": "En PDF, Legalmente",
+    "hero_subtitle": "Busca entre millones de libros de dominio público y obras de acceso abierto en Internet Archive y Project Gutenberg. Sin problemas de derechos de autor.",
+    "search_placeholder": "Busca un título, p. ej. \"El Principito\"…",
+    "search_button": "Buscar",
+    "searching": "Buscando…",
+    "empty_title": "Busca un libro o documento",
+    "empty_subtitle": "Los resultados provienen solo de archivos de dominio público y acceso abierto.",
+    "no_results_title": "Sin resultados",
+    "no_results_subtitle": "Prueba con otro título o autor.",
+    "result_by": "de",
+    "preview_close": "Cerrar",
+    "btn_download": "Descargar PDF",
+    "btn_source_page": "Ver página de origen",
+    "select_hint": "Selecciona un resultado para previsualizarlo",
+    "legal_note": "Todos los resultados provienen de archivos de dominio público o con licencia abierta.",
+    "feature_legal_title": "100% Legal",
+    "feature_legal_desc": "Solo obras de dominio público y acceso abierto, nunca contenido pirata.",
+    "feature_sources_title": "Fuentes Verificadas",
+    "feature_sources_desc": "Internet Archive y Project Gutenberg, millones de libros catalogados.",
+    "feature_preview_title": "Vista Previa Instantánea",
+    "feature_preview_desc": "Consulta el PDF directamente en el navegador antes de descargarlo."
+  },
   "convert": {
     "title": "Convertidor",
     "subtitle": "conversiones disponibles",
@@ -1118,7 +1144,9 @@
     "ocr_title": "OCR",
     "ocr_desc": "Extrae texto de PDF e imágenes escaneadas con OCR.",
     "scanner_title": "Escáner",
-    "scanner_desc": "Escanea documentos físicos con tu cámara y conviértelos en PDF."
+    "scanner_desc": "Escanea documentos físicos con tu cámara y conviértelos en PDF.",
+    "pdf_search_title": "Buscar PDF",
+    "pdf_search_desc": "Busca libros y documentos en PDF de dominio público, con vista previa antes de descargar."
   },
   "about_manage": {
     "title": "Sección About",

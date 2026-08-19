@@ -947,6 +947,32 @@
     "dl_sent_name": "Enviado ✓",
     "guide_link": "Guia: como funciona a tradução de PDF com IA"
   },
+  "pdf_search": {
+    "title": "Pesquisa de PDF",
+    "badge": "Pesquisa de PDF de Domínio Público",
+    "hero_title_1": "Encontre Livros e Documentos",
+    "hero_title_2": "Em PDF, Legalmente",
+    "hero_subtitle": "Pesquise entre milhões de livros de domínio público e obras de acesso aberto do Internet Archive e do Project Gutenberg. Sem problemas de direitos autorais.",
+    "search_placeholder": "Pesquise um título, ex. \"O Pequeno Príncipe\"…",
+    "search_button": "Pesquisar",
+    "searching": "Pesquisando…",
+    "empty_title": "Pesquise um livro ou documento",
+    "empty_subtitle": "Os resultados vêm apenas de arquivos de domínio público e acesso aberto.",
+    "no_results_title": "Nenhum resultado",
+    "no_results_subtitle": "Tente outro título ou autor.",
+    "result_by": "de",
+    "preview_close": "Fechar",
+    "btn_download": "Baixar PDF",
+    "btn_source_page": "Ver página de origem",
+    "select_hint": "Selecione um resultado para pré-visualizar",
+    "legal_note": "Todos os resultados vêm de arquivos de domínio público ou com licença aberta.",
+    "feature_legal_title": "100% Legal",
+    "feature_legal_desc": "Apenas obras de domínio público e acesso aberto, nunca conteúdo pirata.",
+    "feature_sources_title": "Fontes Verificadas",
+    "feature_sources_desc": "Internet Archive e Project Gutenberg, milhões de livros catalogados.",
+    "feature_preview_title": "Pré-visualização Instantânea",
+    "feature_preview_desc": "Veja o PDF diretamente no navegador antes de baixá-lo."
+  },
   "convert": {
     "title": "Conversor",
     "subtitle": "conversões disponíveis",
@@ -1118,7 +1144,9 @@
     "ocr_title": "OCR",
     "ocr_desc": "Extraia texto de PDFs e imagens digitalizadas com OCR.",
     "scanner_title": "Scanner",
-    "scanner_desc": "Digitalize documentos físicos com a câmara e converta-os em PDF."
+    "scanner_desc": "Digitalize documentos físicos com a câmara e converta-os em PDF.",
+    "pdf_search_title": "Pesquisa de PDF",
+    "pdf_search_desc": "Pesquise livros e documentos PDF de domínio público, com pré-visualização antes de baixar."
   },
   "about_manage": {
     "title": "Secção About",

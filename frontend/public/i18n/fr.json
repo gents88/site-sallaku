@@ -947,6 +947,32 @@
     "dl_sent_name": "Envoyé ✓",
     "guide_link": "Guide : comment fonctionne la traduction de PDF par IA"
   },
+  "pdf_search": {
+    "title": "Recherche PDF",
+    "badge": "Recherche de PDF du Domaine Public",
+    "hero_title_1": "Trouvez Livres et Documents",
+    "hero_title_2": "En PDF, Légalement",
+    "hero_subtitle": "Recherchez parmi des millions de livres du domaine public et d'œuvres en libre accès sur Internet Archive et Project Gutenberg. Sans souci de droits d'auteur.",
+    "search_placeholder": "Cherchez un titre, ex. \"Le Petit Prince\"…",
+    "search_button": "Rechercher",
+    "searching": "Recherche en cours…",
+    "empty_title": "Recherchez un livre ou un document",
+    "empty_subtitle": "Les résultats proviennent uniquement d'archives du domaine public et en libre accès.",
+    "no_results_title": "Aucun résultat",
+    "no_results_subtitle": "Essayez un autre titre ou auteur.",
+    "result_by": "de",
+    "preview_close": "Fermer",
+    "btn_download": "Télécharger le PDF",
+    "btn_source_page": "Voir la page source",
+    "select_hint": "Sélectionnez un résultat pour l'aperçu",
+    "legal_note": "Tous les résultats proviennent d'archives du domaine public ou sous licence libre.",
+    "feature_legal_title": "100% Légal",
+    "feature_legal_desc": "Uniquement des œuvres du domaine public et en libre accès, jamais de contenu piraté.",
+    "feature_sources_title": "Sources Vérifiées",
+    "feature_sources_desc": "Internet Archive et Project Gutenberg, des millions de livres catalogués.",
+    "feature_preview_title": "Aperçu Instantané",
+    "feature_preview_desc": "Consultez le PDF directement dans le navigateur avant de le télécharger."
+  },
   "convert": {
     "title": "Convertisseur",
     "subtitle": "conversions disponibles",
@@ -1118,7 +1144,9 @@
     "ocr_title": "OCR",
     "ocr_desc": "Extrayez le texte de PDF et d'images scannés avec l'OCR.",
     "scanner_title": "Scanner",
-    "scanner_desc": "Numérisez des documents physiques avec votre caméra et convertissez-les en PDF."
+    "scanner_desc": "Numérisez des documents physiques avec votre caméra et convertissez-les en PDF.",
+    "pdf_search_title": "Recherche PDF",
+    "pdf_search_desc": "Recherchez des livres et documents PDF du domaine public, avec aperçu avant téléchargement."
   },
   "about_manage": {
     "title": "Section À propos",
