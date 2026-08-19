@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, afterNextRender, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -6,7 +6,6 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
-import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
   ConversionService, ConversionTypeId, CONVERSION_TYPES, ConversionDef,
@@ -31,7 +30,7 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
   selector: 'app-convert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink, LangUrlPipe],
+  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink],
   templateUrl: './convert.component.html',
   styleUrls: ['./convert.component.scss'],
 })
@@ -43,7 +42,12 @@ export class ConvertComponent implements OnInit, OnDestroy {
   private readonly workspace = inject(WorkspaceService);
 
   readonly searchQuery = signal('');
-  readonly favorites   = signal<Set<string>>(this.loadFavs());
+  // Starts empty on purpose: reading localStorage here would make this SSR/prerendered
+  // page's initial render diverge from the server's (favorites are inherently
+  // client-only), which breaks Angular hydration with a null DOM-node mismatch the
+  // moment a real visitor has any favorite saved. Populated just after hydration
+  // settles instead — see the afterNextRender() call below.
+  readonly favorites   = signal<Set<string>>(new Set());
   readonly totalCount  = CONVERSION_TYPES.length;
 
   /** Blog cross-link: real, relevant existing post — see task note in this file's PR. */
@@ -51,6 +55,13 @@ export class ConvertComponent implements OnInit, OnDestroy {
 
   /** Set once at startup from a pending Workspace hand-off (file kind only); cleared on use/dismiss. */
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
+
+  constructor() {
+    // Client-only, runs once right after the initial (hydrated) render is stable —
+    // safe to read localStorage here, unlike a field initializer or ngOnInit, both
+    // of which also execute during SSR/prerendering.
+    afterNextRender(() => this.favorites.set(this.loadFavs()));
+  }
 
   ngOnInit(): void {
     const pending = this.workspace.peek();
@@ -111,6 +122,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     const favs = this.favorites();
     return (CONVERSION_TYPES as unknown as ConversionDef[]).filter(c => favs.has(c.id));
   });
+
+  trackByFileName = (_: number, f: File): string => f.name;
 
   // Modal state
   readonly openModal   = signal(false);

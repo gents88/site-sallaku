@@ -2,6 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
   OnInit,
+  afterNextRender,
   signal,
   computed,
   effect,
@@ -54,11 +55,16 @@ export class AiFormatterComponent implements OnInit {
       if (this.saveTimer) clearTimeout(this.saveTimer);
       this.saveTimer = setTimeout(() => this.saveDraft(text, result), 500);
     });
+
+    // Deferred to right after the initial (hydrated) render, not ngOnInit: this reads
+    // localStorage and flips draftRestored/text/result, which show up as a structural
+    // *ngIf banner and textarea content — doing that during ngOnInit runs before
+    // hydration reconciliation on the client, so it'd diverge from the server's
+    // (always-empty) render and Angular can't reconcile the mismatched DOM.
+    afterNextRender(() => this.restoreDraft());
   }
 
   ngOnInit(): void {
-    this.restoreDraft();
-
     // Workspace handoff: another lab tool may have sent plain text here. Only offer
     // it for 'text' items — this tool works on raw text, not files. Peek (not take)
     // so the item survives until the user explicitly confirms loading it.

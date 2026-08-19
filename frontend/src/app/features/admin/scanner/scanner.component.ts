@@ -1,6 +1,6 @@
 import {
   Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef,
-  ViewChild, inject, signal,
+  ViewChild, afterNextRender, inject, signal,
 } from '@angular/core';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -63,7 +63,9 @@ export class ScannerComponent implements OnInit, OnDestroy {
   readonly ocrSent = signal(false);
 
   readonly ocrLanguages = OCR_LANGUAGES;
-  readonly ocrLang = signal(this.defaultOcrLang());
+  // Deterministic fallback only — see the matching comment in ocr.component.ts.
+  // The real saved preference is applied after hydration, in the constructor.
+  readonly ocrLang = signal(UI_TO_OCR_LANG[this.t.currentLang] ?? 'eng');
   readonly ocrBusy = signal(false);
   readonly ocrResult = signal<OcrResult | null>(null);
   readonly ocrMsg = signal('');
@@ -76,6 +78,10 @@ export class ScannerComponent implements OnInit, OnDestroy {
   private dragStart: { x: number; y: number } | null = null;
   private nextId = 1;
   private uploadQueue: File[] = [];
+
+  constructor() {
+    afterNextRender(() => this.ocrLang.set(this.defaultOcrLang()));
+  }
 
   ngOnInit(): void {
     this.seo.update({

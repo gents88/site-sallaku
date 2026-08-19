@@ -717,6 +717,7 @@
     "chip_contact": "📬 Wie kann ich ihn kontaktieren?"
   },
   "ai_ppt": {
+    "title": "KI-Foliengenerator",
     "badge": "KI-Foliengenerator",
     "hero_title_1": "Mach aus Jeder Idee eine",
     "hero_title_2": "Professionelle Präsentation",
@@ -774,6 +775,7 @@
     "workspace_sent": "Gesendet ✓"
   },
   "ai_formatter": {
+    "title": "KI-Formatierer",
     "badge": "KI-gestützt",
     "hero_title_1": "Formatiere Rohtext in",
     "hero_title_2": "Professionelle Dokumente",
@@ -862,6 +864,7 @@
     "start_here": "Start-Tools"
   },
   "pdf_translate": {
+    "title": "PDF-Übersetzung",
     "badge": "KI-PDF-Übersetzung",
     "hero_title_1": "Übersetze Jedes PDF",
     "hero_title_2": "Mit Erhaltenem Layout",

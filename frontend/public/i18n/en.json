@@ -717,6 +717,7 @@
     "chip_contact": "📬 How can I contact him?"
   },
   "ai_ppt": {
+    "title": "AI Slides",
     "badge": "AI Slides Generator",
     "hero_title_1": "Turn Any Idea Into a",
     "hero_title_2": "Professional Presentation",
@@ -774,6 +775,7 @@
     "workspace_sent": "Sent ✓"
   },
   "ai_formatter": {
+    "title": "AI Formatter",
     "badge": "Powered by AI",
     "hero_title_1": "Format Plain Text into",
     "hero_title_2": "Polished Documents",
@@ -862,6 +864,7 @@
     "start_here": "Starting tools"
   },
   "pdf_translate": {
+    "title": "PDF Translation",
     "badge": "AI PDF Translation",
     "hero_title_1": "Translate Any PDF",
     "hero_title_2": "With Layout Preserved",

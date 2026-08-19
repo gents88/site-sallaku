@@ -17,7 +17,6 @@ import { finalize } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
-import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
   PdfTranslateService,
@@ -33,7 +32,7 @@ type TranslationMode = 'high_fidelity' | 'standard';
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, LangUrlPipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })

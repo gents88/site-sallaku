@@ -81,6 +81,7 @@
       position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none;
       font-size: 0.875rem; cursor: pointer; color: var(--text-secondary, #8b949e);
       padding: 0.2rem; border-radius: 4px; opacity: 0; transition: opacity .15s, color .15s; line-height: 1;
+      &:focus-visible { outline: 2px solid var(--accent, #6c63ff); outline-offset: 1px; opacity: 1; }
     }
     .cp-card:hover .cp-fav { opacity: 1; }
     .cp-fav--active { color: #f59e0b !important; opacity: 1 !important; }

@@ -717,6 +717,7 @@
     "chip_contact": "📬 Comment le contacter ?"
   },
   "ai_ppt": {
+    "title": "Générateur de Diapositives",
     "badge": "Générateur de Diapositives IA",
     "hero_title_1": "Transformez Chaque Idée en une",
     "hero_title_2": "Présentation Professionnelle",
@@ -774,6 +775,7 @@
     "workspace_sent": "Envoyé ✓"
   },
   "ai_formatter": {
+    "title": "Formateur IA",
     "badge": "Alimenté par l'IA",
     "hero_title_1": "Formatez du Texte Brut en",
     "hero_title_2": "Documents Soignés",
@@ -862,6 +864,7 @@
     "start_here": "Outils de départ"
   },
   "pdf_translate": {
+    "title": "Traduction de PDF",
     "badge": "Traduction PDF par IA",
     "hero_title_1": "Traduisez N'importe Quel PDF",
     "hero_title_2": "Avec la Mise en Page Préservée",

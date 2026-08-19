@@ -4,7 +4,7 @@
       <header class="cp-header">
         <h1 class="cp-title">{{ 'convert.title' | translate }}</h1>
         <p class="cp-subtitle">{{ totalCount }} {{ 'convert.subtitle' | translate }}</p>
-        <a class="cp-blog-link" [routerLink]="blogGuideUrl | langUrl">📖 {{ 'convert.blog_link' | translate }}</a>
+        <a class="cp-blog-link" [routerLink]="blogGuideUrl">📖 {{ 'convert.blog_link' | translate }}</a>
         <div class="cp-search-wrap">
           <span class="cp-search-icon">🔍</span>
           <input class="cp-search" type="search" [placeholder]="'convert.search_placeholder' | translate"
@@ -15,65 +15,85 @@
       </header>
 
       <!-- Preferiti -->
-      <section *ngIf="favoriteItems().length > 0 && !searchQuery()" class="cp-section">
-        <div class="cp-section-header">
-          <span class="cp-group-icon">⭐</span>
-          <div>
-            <h2 class="cp-group-name">{{ 'convert.favorites' | translate }}</h2>
-            <p class="cp-group-desc">{{ 'convert.favorites_desc' | translate }}</p>
-          </div>
-        </div>
-        <div class="cp-grid">
-          <button *ngFor="let item of favoriteItems()" class="cp-card cp-card--fav" (click)="open(item)">
-            <div class="cp-card-badges">
-              <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
-              <span class="cp-arrow">→</span>
-              <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+      @if (favoriteItems().length > 0 && !searchQuery()) {
+        <section class="cp-section">
+          <div class="cp-section-header">
+            <span class="cp-group-icon">⭐</span>
+            <div>
+              <h2 class="cp-group-name">{{ 'convert.favorites' | translate }}</h2>
+              <p class="cp-group-desc">{{ 'convert.favorites_desc' | translate }}</p>
             </div>
-            <span class="cp-card-label">{{ item.label | translate }}</span>
-            <button class="cp-fav cp-fav--active" [attr.aria-label]="'convert.remove_fav' | translate"
-                    (click)="toggleFav($event, item.id)">★</button>
-          </button>
-        </div>
-      </section>
+          </div>
+          <div class="cp-grid">
+            @for (item of favoriteItems(); track item.id) {
+              <button class="cp-card cp-card--fav" (click)="open(item)">
+                <div class="cp-card-badges">
+                  <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
+                  <span class="cp-arrow">→</span>
+                  <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+                </div>
+                <span class="cp-card-label">{{ item.label | translate }}</span>
+                <!-- span, not button: nesting an interactive control inside the card
+                     <button> is invalid HTML — the browser silently re-parents it on
+                     parse, which desyncs the DOM Angular's hydration expects to find
+                     from what's actually there and crashes hydration reconciliation. -->
+                <span class="cp-fav cp-fav--active" role="button" tabindex="0"
+                      [attr.aria-label]="'convert.remove_fav' | translate"
+                      (click)="toggleFav($event, item.id)"
+                      (keydown.enter)="toggleFav($event, item.id)"
+                      (keydown.space)="toggleFav($event, item.id); $event.preventDefault()">★</span>
+              </button>
+            }
+          </div>
+        </section>
+      }
 
       <!-- Nessun risultato -->
-      <div *ngIf="visibleGroups().length === 0" class="cp-empty">
-        <span class="cp-empty-icon">🔍</span>
-        <p>{{ 'convert.no_results' | translate: { query: searchQuery() } }}</p>
-        <button class="cp-btn-ghost" (click)="searchQuery.set('')">{{ 'convert.show_all' | translate }}</button>
-      </div>
+      @if (visibleGroups().length === 0) {
+        <div class="cp-empty">
+          <span class="cp-empty-icon">🔍</span>
+          <p>{{ 'convert.no_results' | translate: { query: searchQuery() } }}</p>
+          <button class="cp-btn-ghost" (click)="searchQuery.set('')">{{ 'convert.show_all' | translate }}</button>
+        </div>
+      }
 
       <!-- Categorie -->
-      <section *ngFor="let g of visibleGroups()" class="cp-section">
-        <div class="cp-section-header">
-          <span class="cp-group-icon">{{ g.icon }}</span>
-          <div>
-            <h2 class="cp-group-name">{{ g.nameKey | translate }}</h2>
-            <p class="cp-group-desc">{{ g.descKey | translate }}</p>
-          </div>
-          <span class="cp-count-badge">{{ g.items.length }}</span>
-        </div>
-        <div class="cp-grid">
-          <button *ngFor="let item of g.items"
-                  class="cp-card"
-                  [class.cp-card--fav]="favorites().has(item.id)"
-                  (click)="open(item)">
-            <div class="cp-card-badges">
-              <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
-              <span class="cp-arrow">→</span>
-              <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+      @for (g of visibleGroups(); track g.name) {
+        <section class="cp-section">
+          <div class="cp-section-header">
+            <span class="cp-group-icon">{{ g.icon }}</span>
+            <div>
+              <h2 class="cp-group-name">{{ g.nameKey | translate }}</h2>
+              <p class="cp-group-desc">{{ g.descKey | translate }}</p>
             </div>
-            <span class="cp-card-label">{{ item.label | translate }}</span>
-            <button class="cp-fav"
-                    [class.cp-fav--active]="favorites().has(item.id)"
-                    [attr.aria-label]="(favorites().has(item.id) ? 'convert.remove_fav' : 'convert.add_fav') | translate"
-                    (click)="toggleFav($event, item.id)">
-              {{ favorites().has(item.id) ? '★' : '☆' }}
-            </button>
-          </button>
-        </div>
-      </section>
+            <span class="cp-count-badge">{{ g.items.length }}</span>
+          </div>
+          <div class="cp-grid">
+            @for (item of g.items; track item.id) {
+              <button class="cp-card"
+                      [class.cp-card--fav]="favorites().has(item.id)"
+                      (click)="open(item)">
+                <div class="cp-card-badges">
+                  <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
+                  <span class="cp-arrow">→</span>
+                  <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+                </div>
+                <span class="cp-card-label">{{ item.label | translate }}</span>
+                <!-- span, not button — see the comment on the matching favorite toggle above. -->
+                <span class="cp-fav"
+                      role="button" tabindex="0"
+                      [class.cp-fav--active]="favorites().has(item.id)"
+                      [attr.aria-label]="(favorites().has(item.id) ? 'convert.remove_fav' : 'convert.add_fav') | translate"
+                      (click)="toggleFav($event, item.id)"
+                      (keydown.enter)="toggleFav($event, item.id)"
+                      (keydown.space)="toggleFav($event, item.id); $event.preventDefault()">
+                  {{ favorites().has(item.id) ? '★' : '☆' }}
+                </span>
+              </button>
+            }
+          </div>
+        </section>
+      }
 
     </div>
 
@@ -183,7 +203,7 @@
               </div>
 
               <div class="file-list" *ngIf="files().length > 0">
-                <div class="file-row" *ngFor="let f of files(); let i = index"
+                <div class="file-row" *ngFor="let f of files(); let i = index; trackBy: trackByFileName"
                      [class.file-row--invalid]="!matchesAccept(selectedDef()!, f)">
                   <span class="file-row-icon">{{ matchesAccept(selectedDef()!, f) ? '📄' : '⚠️' }}</span>
                   <div class="file-row-info">
@@ -233,7 +253,7 @@
 
             <div class="batch-list" *ngIf="isMulti() && files().length > 0">
               <p class="batch-note">{{ 'convert.batch_combine_note' | translate }}</p>
-              <div class="batch-row" *ngFor="let f of files()">
+              <div class="batch-row" *ngFor="let f of files(); trackBy: trackByFileName">
                 <span class="batch-row-icon">{{ batchIcon() }}</span>
                 <span class="batch-row-name">{{ f.name }}</span>
                 <span class="batch-row-status" [class.ok]="batchStatus() === 'done'" [class.err]="batchStatus() === 'error'">

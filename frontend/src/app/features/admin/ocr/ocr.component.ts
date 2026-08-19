@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, afterNextRender, inject, signal, computed } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { OcrService, OcrResult, OcrPageResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
@@ -53,7 +53,12 @@ export class OcrComponent implements OnInit {
   readonly languages = OCR_LANGUAGES;
 
   readonly files = signal<File[]>([]);
-  readonly lang = signal(this.defaultLang());
+  // Deterministic fallback only (no localStorage) so the first client render matches
+  // the server/prerendered one — the real saved preference, if any, is applied just
+  // after hydration settles (see constructor). Reading localStorage here directly
+  // would make this SSR/prerendered page hydrate with a different <select> value
+  // than the server sent, which Angular can't reconcile.
+  readonly lang = signal(UI_TO_OCR_LANG[this.t.currentLang] ?? 'eng');
   readonly status = signal<Status>('idle');
   readonly progress = signal({ current: 0, total: 0 });
   readonly preparingFile = signal('');
@@ -71,6 +76,10 @@ export class OcrComponent implements OnInit {
     const code = this.resultLang() ?? this.lang();
     return this.languages.find((l) => l.code === code)?.label ?? code;
   });
+
+  constructor() {
+    afterNextRender(() => this.lang.set(this.defaultLang()));
+  }
 
   ngOnInit(): void {
     const pending = this.workspace.peek();
