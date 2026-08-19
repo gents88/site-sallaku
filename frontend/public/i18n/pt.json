@@ -952,7 +952,7 @@
     "badge": "Pesquisa de PDF de Domínio Público",
     "hero_title_1": "Encontre Livros e Documentos",
     "hero_title_2": "Em PDF, Legalmente",
-    "hero_subtitle": "Pesquise entre milhões de livros de domínio público e obras de acesso aberto no Internet Archive. Sem problemas de direitos autorais.",
+    "hero_subtitle": "Pesquise entre milhões de livros de domínio público e obras de acesso aberto do Internet Archive e do Project Gutenberg. Sem problemas de direitos autorais.",
     "search_placeholder": "Pesquise um título, ex. \"O Pequeno Príncipe\"…",
     "search_button": "Pesquisar",
     "searching": "Pesquisando…",
@@ -969,7 +969,7 @@
     "feature_legal_title": "100% Legal",
     "feature_legal_desc": "Apenas obras de domínio público e acesso aberto, nunca conteúdo pirata.",
     "feature_sources_title": "Fontes Verificadas",
-    "feature_sources_desc": "Internet Archive, milhões de livros catalogados e verificados.",
+    "feature_sources_desc": "Internet Archive e Project Gutenberg, milhões de livros catalogados.",
     "feature_preview_title": "Pré-visualização Instantânea",
     "feature_preview_desc": "Veja o PDF diretamente no navegador antes de baixá-lo."
   },

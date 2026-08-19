@@ -952,7 +952,7 @@
     "badge": "Gemeinfreie PDF-Suche",
     "hero_title_1": "Bücher und Dokumente finden",
     "hero_title_2": "Als PDF, ganz legal",
-    "hero_subtitle": "Durchsuche Millionen gemeinfreier Bücher und frei zugänglicher Werke auf Internet Archive. Keine Urheberrechtsprobleme.",
+    "hero_subtitle": "Durchsuche Millionen gemeinfreier Bücher und frei zugänglicher Werke von Internet Archive und Project Gutenberg. Keine Urheberrechtsprobleme.",
     "search_placeholder": "Titel suchen, z. B. \"Der kleine Prinz\"…",
     "search_button": "Suchen",
     "searching": "Suche läuft…",
@@ -969,7 +969,7 @@
     "feature_legal_title": "100% Legal",
     "feature_legal_desc": "Nur gemeinfreie und frei zugängliche Werke, niemals raubkopierte Inhalte.",
     "feature_sources_title": "Geprüfte Quellen",
-    "feature_sources_desc": "Internet Archive, Millionen katalogisierter und geprüfter Bücher.",
+    "feature_sources_desc": "Internet Archive und Project Gutenberg, Millionen katalogisierter Bücher.",
     "feature_preview_title": "Sofortige Vorschau",
     "feature_preview_desc": "Sieh dir das PDF direkt im Browser an, bevor du es herunterlädst."
   },

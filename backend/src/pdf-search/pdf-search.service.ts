@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InternetArchiveProvider } from './providers/internet-archive.provider';
+import { GutenbergProvider } from './providers/gutenberg.provider';
 import { PdfSearchProvider, PdfSearchResult } from './interfaces/pdf-search-result.interface';
 
 const DEFAULT_LIMIT = 12;
@@ -9,11 +10,8 @@ export class PdfSearchService {
   private readonly logger = new Logger(PdfSearchService.name);
   private readonly providers: PdfSearchProvider[];
 
-  // Project Gutenberg was dropped: its catalog (verified via the Gutendex API)
-  // never exposes an "application/pdf" format, only EPUB/MOBI/HTML/TXT — every
-  // lookup there resolved to zero results, so it only added a wasted API call.
-  constructor(internetArchive: InternetArchiveProvider) {
-    this.providers = [internetArchive];
+  constructor(internetArchive: InternetArchiveProvider, gutenberg: GutenbergProvider) {
+    this.providers = [internetArchive, gutenberg];
   }
 
   async search(query: string, limit: number = DEFAULT_LIMIT): Promise<PdfSearchResult[]> {

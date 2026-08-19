@@ -952,7 +952,7 @@
     "badge": "Kërkim PDF në Pronësi Publike",
     "hero_title_1": "Gjej Libra dhe Dokumente",
     "hero_title_2": "Në PDF, Ligjërisht",
-    "hero_subtitle": "Kërko mes miliona librash në pronësi publike dhe veprash me qasje të hapur në Internet Archive. Pa probleme të drejtash autori.",
+    "hero_subtitle": "Kërko mes miliona librash në pronësi publike dhe veprash me qasje të hapur nga Internet Archive dhe Project Gutenberg. Pa probleme të drejtash autori.",
     "search_placeholder": "Kërko një titull, p.sh. \"Princi i Vogël\"…",
     "search_button": "Kërko",
     "searching": "Duke kërkuar…",
@@ -969,7 +969,7 @@
     "feature_legal_title": "100% Ligjor",
     "feature_legal_desc": "Vetëm vepra në pronësi publike dhe me qasje të hapur, kurrë përmbajtje e piratuar.",
     "feature_sources_title": "Burime të Verifikuara",
-    "feature_sources_desc": "Internet Archive, miliona libra të katalogizuar dhe të verifikuar.",
+    "feature_sources_desc": "Internet Archive dhe Project Gutenberg, miliona libra të katalogizuar.",
     "feature_preview_title": "Parashikim i Menjëhershëm",
     "feature_preview_desc": "Shiko PDF-në direkt në shfletues para se ta shkarkosh."
   },

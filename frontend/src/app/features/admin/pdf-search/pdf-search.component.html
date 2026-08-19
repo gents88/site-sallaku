@@ -107,7 +107,7 @@
                 <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
               }
               <div class="result-meta">
-                <span class="source-pill source-ia">
+                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'">
                   {{ r.sourceLabel }}
                 </span>
                 @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
