@@ -108,14 +108,21 @@ export class LangSwitcherComponent {
       // client-state-only behavior there instead of navigating to a URL
       // the router can't match.
       this.lang.setLang(code);
+      this._open.set(false);
     } else {
       const { basePath } = stripLangPrefix(currentUrl);
       // langResolver (triggered by this navigation) calls setLangFromUrl,
       // which persists the choice and updates TranslateService — no need
       // to also call setLang() here, avoids a double-set race.
-      this.router.navigateByUrl(withLangPrefix(basePath, code));
+      const targetUrl = withLangPrefix(basePath, code);
+      this.router.navigateByUrl(targetUrl).then(success => {
+        // Only close the menu if navigation succeeded, or if it failed but
+        // we should still close since the user made their choice.
+        this._open.set(false);
+      }).catch(() => {
+        this._open.set(false);
+      });
     }
-    this._open.set(false);
   }
 
   @HostListener('document:click', ['$event'])
