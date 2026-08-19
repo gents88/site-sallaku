@@ -8,6 +8,7 @@ import { NON_DEFAULT_LANGS } from './core/services/language.service';
 // URLs 301-redirect via frontend/public/.htaccess.
 const PUBLIC_TOOL_PAGES = [
   'lab',
+  'lab/pdf-search',
   'lab/pdf-summary',
   'lab/ai-formatter',
   'lab/pdf-translate',

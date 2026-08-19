@@ -11,7 +11,7 @@ export class PdfSearchController {
   // ── GET /pdf-search?q=... ────────────────────────────────────────────
   @Get()
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
-  @ApiOperation({ summary: 'Search public-domain / open-access PDFs (Internet Archive, Project Gutenberg)' })
+  @ApiOperation({ summary: 'Search public-domain / open-access PDFs on Internet Archive' })
   async search(@Query('q') q?: string) {
     const query = (q ?? '').trim();
     if (query.length < 2) throw new BadRequestException('q must be at least 2 characters');
