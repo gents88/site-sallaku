@@ -41,7 +41,8 @@
     "filters": {
       "all": "Alle",
       "post": "Blog",
-      "project": "Projekte"
+      "project": "Projekte",
+      "page": "Seiten"
     }
   },
   "hero": {
