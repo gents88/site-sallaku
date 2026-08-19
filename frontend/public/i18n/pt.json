@@ -973,7 +973,8 @@
     "feature_sources_desc": "Internet Archive, Project Gutenberg, arXiv e PubMed Central — milhões de livros e artigos catalogados.",
     "feature_preview_title": "Pré-visualização Instantânea",
     "feature_preview_desc": "Veja o PDF diretamente no navegador antes de baixá-lo.",
-    "preview_unavailable": "Pré-visualização não disponível para esta fonte. Baixe o PDF para lê-lo."
+    "preview_unavailable": "Pré-visualização não disponível para esta fonte. Baixe o PDF para lê-lo.",
+    "mobile_preview_hint": "A pré-visualização incorporada no celular mostra apenas a primeira página. Use \"Baixar PDF\" abaixo para percorrer o documento inteiro no visualizador do seu telefone."
   },
   "convert": {
     "title": "Conversor",
