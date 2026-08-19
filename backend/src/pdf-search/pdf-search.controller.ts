@@ -1,5 +1,6 @@
 import { Controller, Get, Query, Param, Req, Res, BadRequestException } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { PdfSearchService } from './pdf-search.service';
@@ -11,6 +12,7 @@ export class PdfSearchController {
   constructor(
     private readonly pdfSearchService: PdfSearchService,
     private readonly gutenbergProvider: GutenbergProvider,
+    private readonly config: ConfigService,
   ) {}
 
   // ── GET /pdf-search?q=... ────────────────────────────────────────────
@@ -41,6 +43,20 @@ export class PdfSearchController {
   async gutenbergPdf(@Param('id') id: string, @Res() res: Response) {
     if (!/^\d+$/.test(id)) throw new BadRequestException('id must be numeric');
     const pdf = await this.gutenbergProvider.fetchAsPdf(id);
+
+    // Helmet's global defaults (X-Frame-Options: SAMEORIGIN, CSP frame-ancestors
+    // 'self') protect the API's normal JSON endpoints from clickjacking, but
+    // they also block the frontend — a different origin — from embedding this
+    // one legitimately-public PDF in its preview <iframe>. Override just here,
+    // scoped to the same origins CORS already trusts, rather than loosening
+    // framing globally.
+    const frontendOrigins = (this.config.get<string>('CORS_ORIGIN') ?? '')
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean);
+    res.removeHeader('X-Frame-Options');
+    res.setHeader('Content-Security-Policy', `frame-ancestors 'self' ${frontendOrigins.join(' ')}`);
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Cache-Control', 'public, max-age=86400');
     res.send(pdf);
