@@ -41,7 +41,8 @@
     "filters": {
       "all": "Të gjitha",
       "post": "Blog",
-      "project": "Projekte"
+      "project": "Projekte",
+      "page": "Faqe"
     }
   },
   "hero": {

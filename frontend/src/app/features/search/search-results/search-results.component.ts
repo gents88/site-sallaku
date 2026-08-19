@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize } from 'rxjs';
 import { SearchHit, SearchHitType, SearchService } from '../../../core/services/search.service';
+import { SiteSearchService } from '../../../core/services/site-search.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 
@@ -20,6 +21,8 @@ export class SearchResultsComponent implements OnInit {
   query = '';
   activeType: SearchHitType | null = null;
   results: SearchHit[] = [];
+  /** Site sections/tools matched client-side (e.g. "PDF Search" the /lab tool) — not paginated, always shown in full when relevant. */
+  menuResults: SearchHit[] = [];
   total = 0;
   page = 1;
   totalPages = 1;
@@ -27,6 +30,7 @@ export class SearchResultsComponent implements OnInit {
 
   private readonly limit = 10;
   private readonly langService = inject(LanguageService);
+  private readonly siteSearchSvc = inject(SiteSearchService);
   readonly currentLang = this.langService.current;
 
   constructor(
@@ -36,8 +40,13 @@ export class SearchResultsComponent implements OnInit {
     private seo: SeoService,
     private cdr: ChangeDetectorRef,
   ) {
-    // Re-render when UI language changes (OnPush requires explicit trigger)
-    effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+    // Re-render when UI language changes (OnPush requires explicit trigger) —
+    // also recompute menu matches since their titles/descriptions are translated.
+    effect(() => {
+      this.langService.current();
+      this.menuResults = this.siteSearchSvc.search(this.query);
+      this.cdr.markForCheck();
+    });
   }
 
   ngOnInit(): void {
@@ -55,6 +64,8 @@ export class SearchResultsComponent implements OnInit {
   }
 
   private runSearch(): void {
+    this.menuResults = this.siteSearchSvc.search(this.query);
+
     if (this.query.trim().length < 2) {
       this.results = [];
       this.total = 0;
@@ -63,6 +74,18 @@ export class SearchResultsComponent implements OnInit {
       this.cdr.markForCheck();
       return;
     }
+
+    // 'page' (site sections/tools) is a purely client-side match — the backend
+    // only knows about 'post'/'project', so skip it entirely for that filter.
+    if (this.activeType === 'page') {
+      this.results = [];
+      this.total = this.menuResults.length;
+      this.totalPages = 1;
+      this.loading = false;
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.loading = true;
     this.searchSvc
       .search(this.query, {

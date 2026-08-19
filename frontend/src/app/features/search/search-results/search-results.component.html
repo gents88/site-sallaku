@@ -5,6 +5,7 @@
     <button class="badge" [class.active]="!activeType" (click)="setType(null)">{{ 'search.filters.all' | translate }}</button>
     <button class="badge" [class.active]="activeType === 'post'" (click)="setType('post')">{{ 'search.filters.post' | translate }}</button>
     <button class="badge" [class.active]="activeType === 'project'" (click)="setType('project')">{{ 'search.filters.project' | translate }}</button>
+    <button class="badge" [class.active]="activeType === 'page'" (click)="setType('page')">{{ 'search.filters.page' | translate }}</button>
   </div>
 
   @if (loading) {
@@ -22,34 +23,52 @@
       <mat-icon class="empty-icon">search</mat-icon>
       <h3 class="empty-title">{{ 'search.min_chars' | translate: { count: 2 } }}</h3>
     </div>
-  } @else if (!results.length) {
+  } @else if (!results.length && !menuResults.length) {
     <div class="empty-state-illustrated">
       <mat-icon class="empty-icon">search_off</mat-icon>
       <h3 class="empty-title">{{ 'search.no_results' | translate }}</h3>
     </div>
   } @else {
-    <p class="text-muted results-count">{{ total }} {{ 'search.results_count' | translate }}</p>
+    @if (activeType !== 'post' && activeType !== 'project' && menuResults.length) {
+      <div class="results-list menu-results">
+        @for (hit of menuResults; track hit.id) {
+          <article class="card result-card result-card--menu">
+            <span class="badge result-card__type">{{ ('search.filters.' + hit.type) | translate }}</span>
+            <h2 class="result-card__title">
+              <a [routerLink]="hitLink(hit)">{{ hit.title }}</a>
+            </h2>
+            @if (hit.excerpt) {
+              <p class="text-muted result-card__excerpt">{{ hit.excerpt }}</p>
+            }
+          </article>
+        }
+      </div>
+    }
 
-    <div class="results-list">
-      @for (hit of results; track hit.id) {
-        <article class="card result-card">
-          <span class="badge result-card__type">{{ ('search.filters.' + hit.type) | translate }}</span>
-          <h2 class="result-card__title">
-            <a [routerLink]="hitLink(hit)">{{ hit.title }}</a>
-          </h2>
-          <p class="text-muted result-card__excerpt">{{ hit.excerpt }}</p>
-          @if (hit.tags.length) {
-            <div class="result-card__tags">
-              @for (tag of hit.tags; track tag) {
-                <span class="badge badge-sm">#{{ tag }}</span>
-              }
-            </div>
-          }
-        </article>
-      }
-    </div>
+    @if (activeType !== 'page') {
+      <p class="text-muted results-count">{{ total }} {{ 'search.results_count' | translate }}</p>
 
-    @if (totalPages > 1) {
+      <div class="results-list">
+        @for (hit of results; track hit.id) {
+          <article class="card result-card">
+            <span class="badge result-card__type">{{ ('search.filters.' + hit.type) | translate }}</span>
+            <h2 class="result-card__title">
+              <a [routerLink]="hitLink(hit)">{{ hit.title }}</a>
+            </h2>
+            <p class="text-muted result-card__excerpt">{{ hit.excerpt }}</p>
+            @if (hit.tags.length) {
+              <div class="result-card__tags">
+                @for (tag of hit.tags; track tag) {
+                  <span class="badge badge-sm">#{{ tag }}</span>
+                }
+              </div>
+            }
+          </article>
+        }
+      </div>
+    }
+
+    @if (activeType !== 'page' && totalPages > 1) {
       <div class="pagination">
         <button class="btn btn-outline btn-sm" [disabled]="page <= 1" (click)="goToPage(page - 1)">
           <mat-icon>chevron_left</mat-icon>
