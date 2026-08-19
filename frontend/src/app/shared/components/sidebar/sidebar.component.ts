@@ -51,6 +51,7 @@ export const ADMIN_NAV: NavGroup[] = [
     emoji: '🧠',
     title: 'AI',
     items: [
+      { icon: '🔎', label: 'Ricerca PDF',   route: '/lab/pdf-search' },
       { icon: '📋', label: 'PDF Summary',   route: '/lab/pdf-summary' },
       { icon: '✨', label: 'AI Formatter',  route: '/lab/ai-formatter' },
       { icon: '🌐', label: 'PDF Translate', route: '/lab/pdf-translate' },

@@ -947,6 +947,32 @@
     "dl_sent_name": "U dërgua ✓",
     "guide_link": "Udhëzues: si funksionon përkthimi i PDF me AI"
   },
+  "pdf_search": {
+    "title": "Kërko PDF",
+    "badge": "Kërkim PDF në Pronësi Publike",
+    "hero_title_1": "Gjej Libra dhe Dokumente",
+    "hero_title_2": "Në PDF, Ligjërisht",
+    "hero_subtitle": "Kërko mes miliona librash në pronësi publike dhe veprash me qasje të hapur nga Internet Archive dhe Project Gutenberg. Pa probleme të drejtash autori.",
+    "search_placeholder": "Kërko një titull, p.sh. \"Princi i Vogël\"…",
+    "search_button": "Kërko",
+    "searching": "Duke kërkuar…",
+    "empty_title": "Kërko një libër ose dokument",
+    "empty_subtitle": "Rezultatet vijnë vetëm nga arkiva në pronësi publike dhe me qasje të hapur.",
+    "no_results_title": "Asnjë rezultat",
+    "no_results_subtitle": "Provo një titull ose autor tjetër.",
+    "result_by": "nga",
+    "preview_close": "Mbyll",
+    "btn_download": "Shkarko PDF",
+    "btn_source_page": "Shiko faqen burimore",
+    "select_hint": "Zgjidh një rezultat për ta parashikuar",
+    "legal_note": "Të gjitha rezultatet vijnë nga arkiva në pronësi publike ose me licencë të hapur.",
+    "feature_legal_title": "100% Ligjor",
+    "feature_legal_desc": "Vetëm vepra në pronësi publike dhe me qasje të hapur, kurrë përmbajtje e piratuar.",
+    "feature_sources_title": "Burime të Verifikuara",
+    "feature_sources_desc": "Internet Archive dhe Project Gutenberg, miliona libra të katalogizuar.",
+    "feature_preview_title": "Parashikim i Menjëhershëm",
+    "feature_preview_desc": "Shiko PDF-në direkt në shfletues para se ta shkarkosh."
+  },
   "convert": {
     "title": "Konvertues",
     "subtitle": "konvertime të disponueshme",
@@ -1118,7 +1144,9 @@
     "ocr_title": "OCR",
     "ocr_desc": "Nxirr tekst nga PDF dhe imazhe të skanuara me OCR.",
     "scanner_title": "Skaner",
-    "scanner_desc": "Skano dokumente fizike me kamerën tënde dhe kthe-i në PDF."
+    "scanner_desc": "Skano dokumente fizike me kamerën tënde dhe kthe-i në PDF.",
+    "pdf_search_title": "Kërko PDF",
+    "pdf_search_desc": "Kërko libra dhe dokumente PDF në pronësi publike, me parashikim para shkarkimit."
   },
   "about_manage": {
     "title": "Seksioni About",
