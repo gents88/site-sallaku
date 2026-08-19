@@ -14,7 +14,8 @@
     "admin": "Admin",
     "dashboard": "Dashboard",
     "ai_tools": "AI & Mjetet",
-    "testimonials": "Dëshmi"
+    "testimonials": "Dëshmi",
+    "search": "Kërko"
   },
   "lang": {
     "label": "Gjuha",
@@ -25,6 +26,23 @@
     "pt": "Portugalisht",
     "fr": "Frëngjisht",
     "de": "Gjermanisht"
+  },
+  "search": {
+    "trigger": "Kërko në sajt",
+    "dialog_label": "Kërkim në sajt",
+    "placeholder": "Kërko artikuj, projekte...",
+    "min_chars": "Shkruaj të paktën {{count}} karaktere",
+    "loading": "Duke kërkuar...",
+    "tap_outside_close": "Prek jashtë për të mbyllur",
+    "no_results": "Asnjë rezultat",
+    "view_all": "Shiko të gjitha rezultatet",
+    "results_for": "Rezultate për",
+    "results_count": "rezultate gjetur",
+    "filters": {
+      "all": "Të gjitha",
+      "post": "Blog",
+      "project": "Projekte"
+    }
   },
   "hero": {
     "role": "Zhvillues Senior Front-End & API",

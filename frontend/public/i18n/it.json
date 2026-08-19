@@ -14,7 +14,8 @@
     "admin": "Admin",
     "dashboard": "Dashboard",
     "ai_tools": "AI & Strumenti",
-    "testimonials": "Testimonianze"
+    "testimonials": "Testimonianze",
+    "search": "Cerca"
   },
   "lang": {
     "label": "Lingua",
@@ -25,6 +26,23 @@
     "pt": "Portoghese",
     "fr": "Francese",
     "de": "Tedesco"
+  },
+  "search": {
+    "trigger": "Cerca nel sito",
+    "dialog_label": "Ricerca nel sito",
+    "placeholder": "Cerca articoli, progetti...",
+    "min_chars": "Digita almeno {{count}} caratteri",
+    "loading": "Ricerca in corso...",
+    "tap_outside_close": "Tocca fuori per chiudere",
+    "no_results": "Nessun risultato",
+    "view_all": "Vedi tutti i risultati",
+    "results_for": "Risultati per",
+    "results_count": "risultati trovati",
+    "filters": {
+      "all": "Tutti",
+      "post": "Blog",
+      "project": "Progetti"
+    }
   },
   "hero": {
     "role": "Senior Front‑End & API Developer",
