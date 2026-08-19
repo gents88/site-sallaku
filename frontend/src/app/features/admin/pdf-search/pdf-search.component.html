@@ -86,76 +86,76 @@
     }
 
     @if (results().length > 0 && !loading()) {
-      <div class="results-layout" [class.has-preview]="selected()">
-
-        <div class="results-grid">
-          @for (r of results(); track r.id) {
-            <button
-              type="button"
-              class="result-card"
-              [class.active]="selected()?.id === r.id"
-              (click)="select(r)"
-            >
-              <div class="result-cover">
-                @if (r.coverUrl) {
-                  <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" />
-                } @else {
-                  <span class="cover-fallback">📄</span>
-                }
-              </div>
-              <div class="result-info">
-                <h3 class="result-title">{{ r.title }}</h3>
-                @if (r.author) {
-                  <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
-                }
-                <div class="result-meta">
-                  <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'">
-                    {{ r.sourceLabel }}
-                  </span>
-                  @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
-                </div>
-              </div>
-            </button>
-          }
-        </div>
-
-        @if (selected(); as sel) {
-          <div class="preview-panel">
-            <div class="preview-header">
-              <div class="preview-header-info">
-                <h3>{{ sel.title }}</h3>
-                @if (sel.author) { <p>{{ 'pdf_search.result_by' | translate }} {{ sel.author }}</p> }
-              </div>
-              <button type="button" class="preview-close" (click)="closePreview()" [attr.aria-label]="'pdf_search.preview_close' | translate">✕</button>
-            </div>
-
-            <div class="preview-body">
-              @if (previewUrl(); as src) {
-                <iframe class="pdf-iframe" [src]="src" title="PDF preview"></iframe>
+      <div class="results-grid">
+        @for (r of results(); track r.id) {
+          <button
+            type="button"
+            class="result-card"
+            [class.active]="selected()?.id === r.id"
+            (click)="select(r)"
+          >
+            <div class="result-cover">
+              @if (r.coverUrl) {
+                <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" />
+              } @else {
+                <span class="cover-fallback">📄</span>
               }
             </div>
-
-            <div class="preview-actions">
-              <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener">
-                📥 {{ 'pdf_search.btn_download' | translate }}
-              </a>
-              <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener">
-                {{ 'pdf_search.btn_source_page' | translate }} →
-              </a>
+            <div class="result-info">
+              <h3 class="result-title">{{ r.title }}</h3>
+              @if (r.author) {
+                <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
+              }
+              <div class="result-meta">
+                <span class="source-pill source-ia">
+                  {{ r.sourceLabel }}
+                </span>
+                @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
+              </div>
             </div>
-          </div>
-        } @else {
-          <div class="preview-panel preview-panel--placeholder">
-            <div class="state-icon">👈</div>
-            <p>{{ 'pdf_search.select_hint' | translate }}</p>
-          </div>
+          </button>
         }
-
       </div>
 
       <p class="legal-note">{{ 'pdf_search.legal_note' | translate }}</p>
     }
 
   </section>
+
+  <!-- ── PREVIEW MODAL ─────────────────────────────────────────────────────── -->
+  @if (selected(); as sel) {
+    <div class="modal-backdrop" (click)="closePreview()">
+      <div class="preview-modal" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()">
+        <div class="preview-header">
+          <div class="preview-header-info">
+            <h3>{{ sel.title }}</h3>
+            @if (sel.author) { <p>{{ 'pdf_search.result_by' | translate }} {{ sel.author }}</p> }
+          </div>
+          <button type="button" class="preview-close" (click)="closePreview()" [attr.aria-label]="'pdf_search.preview_close' | translate">✕</button>
+        </div>
+
+        <div class="preview-body">
+          @if (previewLoading()) {
+            <div class="preview-loading" aria-live="polite">
+              <span class="spinner spinner-lg"></span>
+              <p>{{ 'pdf_search.preview_loading' | translate }}</p>
+            </div>
+          }
+          @if (previewUrl(); as src) {
+            <iframe class="pdf-iframe" [src]="src" title="PDF preview" (load)="onPreviewLoaded()"></iframe>
+          }
+        </div>
+
+        <div class="preview-actions">
+          <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener">
+            📥 {{ 'pdf_search.btn_download' | translate }}
+          </a>
+          <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener">
+            {{ 'pdf_search.btn_source_page' | translate }} →
+          </a>
+        </div>
+      </div>
+    </div>
+  }
 
 </div>
