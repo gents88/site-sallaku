@@ -4,6 +4,24 @@
         <p class="cp-subtitle">{{ 'ocr.subtitle' | translate }}</p>
       </header>
 
+      @if (workspaceItem()) {
+        <div class="workspace-banner">
+          <span class="workspace-banner-icon">🔗</span>
+          <div class="workspace-banner-text">
+            <strong>{{ 'ocr.workspace_banner_title' | translate }}</strong>
+            <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+          </div>
+          <div class="workspace-banner-actions">
+            <button class="workspace-btn primary" (click)="useWorkspaceFile()">
+              {{ 'ocr.workspace_banner_use' | translate }}
+            </button>
+            <button class="workspace-btn" (click)="dismissWorkspaceBanner()">
+              {{ 'ocr.workspace_banner_dismiss' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
       <div class="cp-panel">
         <!-- Upload -->
         <div class="dz"
@@ -81,7 +99,7 @@
 
       <!-- Results -->
       @if (fileResults().length > 0) {
-        <section class="cp-panel res">
+        <section class="cp-panel res result-pop">
           <div class="res-head">
             <div>
               <h2>{{ 'ocr.results_title' | translate }}</h2>
@@ -89,6 +107,15 @@
             </div>
             <div class="res-actions">
               <button class="btn btn-s" (click)="copy()">{{ (copied() ? 'ocr.copied' : 'ocr.copy') | translate }}</button>
+              @if (allText()) {
+                <button class="btn btn-s" (click)="sendToWorkspace()">
+                  @if (justSent()) {
+                    {{ 'ocr.sent' | translate }}
+                  } @else {
+                    🔗 {{ 'ocr.send_workspace' | translate }}
+                  }
+                </button>
+              }
               <button class="btn btn-p" (click)="downloadTxt()">{{ 'ocr.download_txt' | translate }}</button>
             </div>
           </div>

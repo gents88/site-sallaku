@@ -28,6 +28,7 @@ const routes = [
   { loc: '/lab/viewer', changefreq: 'monthly', priority: '0.8' },
   { loc: '/lab/editor', changefreq: 'monthly', priority: '0.8' },
   { loc: '/lab/scanner', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/lab/workspace', changefreq: 'monthly', priority: '0.8' },
 ];
 
 const today = formatDate(new Date());

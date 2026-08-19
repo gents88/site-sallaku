@@ -166,7 +166,95 @@ $error-clr:     #f87171;
   gap: 24px;
 }
 
-.translator-header { display: flex; align-items: flex-start; }
+.translator-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.guide-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--border, #30363d);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #8b949e);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: $accent-border;
+    color: #38bdf8;
+    background: $accent-glow;
+  }
+}
+
+// ── WORKSPACE HANDOFF ──────────────────────────────────────────────────────────
+.workspace-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: $accent-glow;
+  border: 1px solid $accent-border;
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.workspace-banner-icon { font-size: 20px; flex-shrink: 0; }
+
+.workspace-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 160px;
+
+  strong { font-size: 13px; font-weight: 700; color: var(--text-primary, #e6edf3); }
+
+  .workspace-banner-filename {
+    font-size: 12px;
+    color: var(--text-secondary, #8b949e);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.workspace-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.workspace-btn {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #30363d);
+  background: transparent;
+  color: var(--text-secondary, #8b949e);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s, opacity 0.15s;
+
+  &:hover { border-color: $accent-border; color: #38bdf8; }
+
+  &.primary {
+    background: linear-gradient(135deg, $accent 0%, $accent-dark 100%);
+    border-color: transparent;
+    color: #fff;
+
+    &:hover { opacity: 0.92; }
+  }
+}
 
 .translator-title {
   display: flex;

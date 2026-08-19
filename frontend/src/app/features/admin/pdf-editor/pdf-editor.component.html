@@ -4,6 +4,24 @@
         <p class="cp-subtitle">{{ 'pdf_editor.subtitle' | translate }}</p>
       </header>
 
+      @if (workspaceItem()) {
+        <div class="workspace-banner">
+          <span class="workspace-banner-icon">🔗</span>
+          <div class="workspace-banner-text">
+            <strong>{{ 'pdf_editor.workspace_banner_title' | translate }}</strong>
+            <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+          </div>
+          <div class="workspace-banner-actions">
+            <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">
+              {{ 'pdf_editor.workspace_banner_use' | translate }}
+            </button>
+            <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">
+              {{ 'pdf_editor.workspace_banner_dismiss' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
       <!-- ── Upload / merge ───────────────────────── -->
       <div class="cp-panel">
         <div class="dz"
@@ -40,6 +58,7 @@
             <h2>{{ 'pdf_editor.pages_title' | translate }} ({{ pages().length }})</h2>
             <p class="hint-line">{{ 'pdf_editor.pages_hint' | translate }}</p>
           </div>
+          <span class="sr-only" aria-live="polite">{{ moveAnnouncement() }}</span>
           <div class="pages-grid">
             @for (p of pages(); track p.id; let i = $index) {
               <figure class="page-card"
@@ -92,6 +111,13 @@
                 {{ (exporting() ? 'pdf_editor.exporting' : 'pdf_editor.export') | translate }}
               </button>
             </div>
+            @if (exportReady()) {
+              <div class="workspace-send-row result-pop">
+                <button type="button" class="workspace-btn primary" (click)="sendToWorkspace()">
+                  {{ justSent() ? ('pdf_editor.workspace_sent' | translate) : ('🔗 ' + ('pdf_editor.workspace_send' | translate)) }}
+                </button>
+              </div>
+            }
           </div>
         </section>
       }

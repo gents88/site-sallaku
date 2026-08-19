@@ -21,6 +21,7 @@ import {
   FormatTextResult,
 } from '../../../core/services/ai-formatter.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 type ViewMode = 'formatted' | 'raw';
 
@@ -39,6 +40,7 @@ export class AiFormatterComponent implements OnInit {
   private readonly service    = inject(AiFormatterService);
   private readonly seo        = inject(SeoService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly workspace  = inject(WorkspaceService);
 
   private static readonly DRAFT_KEY = 'ai-formatter-draft';
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -56,6 +58,15 @@ export class AiFormatterComponent implements OnInit {
 
   ngOnInit(): void {
     this.restoreDraft();
+
+    // Workspace handoff: another lab tool may have sent plain text here. Only offer
+    // it for 'text' items — this tool works on raw text, not files. Peek (not take)
+    // so the item survives until the user explicitly confirms loading it.
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'text') {
+      this.workspaceItem.set(pending);
+    }
+
     this.seo.update({
       title: 'AI Text Formatter — Convert Notes to Polished Documents',
       description: 'Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter.',
@@ -107,6 +118,8 @@ export class AiFormatterComponent implements OnInit {
   readonly selectedDocType  = signal<DocType>('general');
   readonly copied           = signal(false);
   readonly draftRestored    = signal(false);
+  readonly workspaceItem    = signal<WorkspaceItem | null>(null);
+  readonly justSentToWorkspace = signal(false);
 
   readonly wordCount = computed(() =>
     this.text().trim() ? this.text().trim().split(/\s+/).filter(Boolean).length : 0,
@@ -191,6 +204,31 @@ export class AiFormatterComponent implements OnInit {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 2000);
     });
+  }
+
+  useWorkspaceText(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'text' || !item.text) return;
+    this.text.set(item.text);
+    this.error.set('');
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const r = this.result();
+    if (!r) return;
+    this.workspace.send({
+      kind: 'text',
+      text: r.formatted,
+      filename: 'formatted.txt',
+      fromTool: 'ai_formatter',
+    });
+    this.justSentToWorkspace.set(true);
+    setTimeout(() => this.justSentToWorkspace.set(false), 1500);
   }
 
   clearAll(): void {

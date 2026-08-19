@@ -2,6 +2,7 @@
       <header class="cp-header">
         <h1 class="cp-title">📷 {{ 'scanner.title' | translate }}</h1>
         <p class="cp-subtitle">{{ 'scanner.subtitle' | translate }}</p>
+        <span class="cp-trust-badge">🔒 {{ 'scanner.trust_badge' | translate }}</span>
       </header>
 
       <!-- ── Sorgente ─────────────────────────────── -->
@@ -96,22 +97,32 @@
             </div>
           }
           @if (msg()) {
-            <p class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+            <p class="msg result-pop" [class.msg--ok]="msgOk()">{{ msg() }}</p>
           }
           @if (ocrMsg()) {
-            <p class="msg" [class.msg--ok]="ocrMsgOk()">{{ ocrMsg() }}</p>
+            <p class="msg result-pop" [class.msg--ok]="ocrMsgOk()">{{ ocrMsg() }}</p>
+          }
+          @if (lastPdf()) {
+            <div class="workspace-send-row">
+              <button type="button" class="workspace-btn primary" (click)="sendPdfToWorkspace()">
+                {{ pdfSent() ? ('scanner.workspace_sent' | translate) : ('🔗 ' + ('scanner.workspace_send_pdf' | translate)) }}
+              </button>
+            </div>
           }
         </section>
       }
 
       <!-- ── Risultati OCR ──────────────────────────── -->
       @if (ocrResult(); as res) {
-        <section class="cp-panel">
+        <section class="cp-panel result-pop">
           <div class="res-head">
             <h2>{{ 'scanner.ocr_results_title' | translate }}</h2>
             <div class="ac">
               <button class="btn btn-s" (click)="copyOcrText()">{{ (ocrCopied() ? 'ocr.copied' : 'ocr.copy') | translate }}</button>
-              <button class="btn btn-p" (click)="downloadOcrTxt()">{{ 'ocr.download_txt' | translate }}</button>
+              <button class="btn btn-s" (click)="downloadOcrTxt()">{{ 'ocr.download_txt' | translate }}</button>
+              <button class="btn btn-p" (click)="sendOcrToWorkspace()">
+                {{ ocrSent() ? ('scanner.workspace_sent' | translate) : ('🔗 ' + ('scanner.workspace_send_text' | translate)) }}
+              </button>
             </div>
           </div>
           @for (p of res.pages; track p.index) {

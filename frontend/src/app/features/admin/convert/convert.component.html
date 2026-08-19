@@ -4,6 +4,7 @@
       <header class="cp-header">
         <h1 class="cp-title">{{ 'convert.title' | translate }}</h1>
         <p class="cp-subtitle">{{ totalCount }} {{ 'convert.subtitle' | translate }}</p>
+        <a class="cp-blog-link" [routerLink]="blogGuideUrl | langUrl">📖 {{ 'convert.blog_link' | translate }}</a>
         <div class="cp-search-wrap">
           <span class="cp-search-icon">🔍</span>
           <input class="cp-search" type="search" [placeholder]="'convert.search_placeholder' | translate"
@@ -108,6 +109,22 @@
 
           <!-- Step 1 -->
           <section *ngIf="step() === 'preview'">
+
+            <div class="workspace-banner" *ngIf="workspaceItem()">
+              <span class="workspace-banner-icon">🔗</span>
+              <div class="workspace-banner-text">
+                <strong>{{ 'convert.workspace_banner_title' | translate }}</strong>
+                <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+              </div>
+              <div class="workspace-banner-actions">
+                <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">
+                  {{ 'convert.workspace_banner_use' | translate }}
+                </button>
+                <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">
+                  {{ 'convert.workspace_banner_dismiss' | translate }}
+                </button>
+              </div>
+            </div>
 
             <!-- Single-file types -->
             <ng-container *ngIf="!isMulti()">
@@ -225,7 +242,13 @@
               </div>
             </div>
 
-            <p *ngIf="msg()" class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+            <p *ngIf="msg()" class="msg result-pop" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+
+            <div class="workspace-send-row" *ngIf="msgOk() && lastResult()">
+              <button type="button" class="workspace-btn primary" (click)="sendToWorkspace()">
+                {{ justSent() ? ('convert.workspace_sent' | translate) : ('🔗 ' + ('convert.workspace_send' | translate)) }}
+              </button>
+            </div>
 
             <div *ngIf="run()" class="progress-wrap">
               <div class="progress-bar"><div class="progress-fill"></div></div>
