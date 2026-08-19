@@ -117,6 +117,10 @@ const publicPages: Route[] = [
     path: 'lab/scanner',
     loadComponent: () => import('./features/admin/scanner/scanner.component').then(m => m.ScannerComponent),
   },
+  {
+    path: 'lab/workspace',
+    loadComponent: () => import('./features/admin/workspace/workspace.component').then(m => m.WorkspaceComponent),
+  },
 ];
 
 export const routes: Routes = [

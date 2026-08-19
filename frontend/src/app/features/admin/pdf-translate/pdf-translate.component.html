@@ -60,7 +60,28 @@
             <p>{{ 'pdf_translate.section_subtitle' | translate }}</p>
           </div>
         </div>
+        <a class="guide-link" [routerLink]="'/blog/pdf-ai-translation-guide-2026' | langUrl">
+          📖 {{ 'pdf_translate.guide_link' | translate }}
+        </a>
       </div>
+
+      @if (workspaceItem()) {
+        <div class="workspace-banner">
+          <span class="workspace-banner-icon">🔗</span>
+          <div class="workspace-banner-text">
+            <strong>{{ 'pdf_translate.workspace_banner_title' | translate }}</strong>
+            <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+          </div>
+          <div class="workspace-banner-actions">
+            <button class="workspace-btn primary" (click)="useWorkspaceFile()">
+              {{ 'pdf_translate.workspace_banner_use' | translate }}
+            </button>
+            <button class="workspace-btn" (click)="dismissWorkspaceBanner()">
+              {{ 'pdf_translate.workspace_banner_dismiss' | translate }}
+            </button>
+          </div>
+        </div>
+      }
 
       <!-- Mode Selection -->
       <div class="mode-section">
@@ -189,7 +210,7 @@
 
   <!-- ── RESULT ─────────────────────────────────────────────────────────────── -->
   @if (result(); as res) {
-    <section class="result-section">
+    <section class="result-section result-pop">
 
       <div class="result-meta">
         <div class="meta-pill">📄 {{ res.pageCount }} {{ res.pageCount === 1 ? ('pdf_translate.page' | translate) : ('pdf_translate.pages' | translate) }}</div>
@@ -287,6 +308,14 @@
             <div class="dl-info">
               <span class="dl-name">{{ copied() ? ('pdf_translate.dl_copied_name' | translate) : ('pdf_translate.dl_copy_name' | translate) }}</span>
               <span class="dl-sub">{{ 'pdf_translate.dl_copy_sub' | translate }}</span>
+            </div>
+          </button>
+
+          <button class="download-btn ghost-dl" (click)="sendToWorkspace()">
+            <span class="dl-icon">{{ justSent() ? '✓' : '🔗' }}</span>
+            <div class="dl-info">
+              <span class="dl-name">{{ justSent() ? ('pdf_translate.dl_sent_name' | translate) : ('pdf_translate.dl_send_workspace_name' | translate) }}</span>
+              <span class="dl-sub">{{ 'pdf_translate.dl_send_workspace_sub' | translate }}</span>
             </div>
           </button>
 

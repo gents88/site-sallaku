@@ -11,11 +11,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
   PdfTranslateService,
   TranslationLanguage,
@@ -30,7 +33,7 @@ type TranslationMode = 'high_fidelity' | 'standard';
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, LangUrlPipe],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -41,8 +44,16 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   private readonly service   = inject(PdfTranslateService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo       = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
+
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  readonly justSent      = signal(false);
 
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file') {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
       title: 'AI PDF Translator — Translate PDF with Layout Preserved',
       description: 'Translate any PDF to 12 languages while keeping fonts, images and layout intact. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
@@ -222,6 +233,18 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     this._setOriginalUrl(f);
   }
 
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const file = new File([item.blob], item.filename, { type: item.mime });
+    this.setFile(file);
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
   triggerFileInput(): void { this.fileInput.nativeElement.click(); }
 
   removeFile(): void {
@@ -281,6 +304,31 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     const res = this.result();
     if (!res) return;
     this.service.downloadText(text, `translated-${res.targetLanguage}-${Date.now()}.txt`);
+  }
+
+  sendToWorkspace(): void {
+    const res = this.result();
+    if (!res) return;
+    if (res.pdfBase64) {
+      const bytes = Uint8Array.from(atob(res.pdfBase64), (c) => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      this.workspace.send({
+        kind: 'file',
+        blob,
+        filename: `translated-${res.targetLanguage}.pdf`,
+        mime: 'application/pdf',
+        fromTool: 'pdf_translate',
+      });
+    } else {
+      this.workspace.send({
+        kind: 'text',
+        text: res.translatedText,
+        filename: `translated-${res.targetLanguage}.txt`,
+        fromTool: 'pdf_translate',
+      });
+    }
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   reset(): void {

@@ -4,6 +4,23 @@
         <p class="cp-subtitle">{{ 'editor.subtitle' | translate }}</p>
       </header>
 
+      @if (workspaceItem()) {
+        <div class="workspace-banner">
+          <span class="workspace-banner-icon">🔗</span>
+          <div class="workspace-banner-text">
+            <strong>{{ 'editor.workspace_banner_title' | translate }}</strong>
+          </div>
+          <div class="workspace-banner-actions">
+            <button type="button" class="workspace-btn primary" (click)="useWorkspaceText()">
+              {{ 'editor.workspace_banner_use' | translate }}
+            </button>
+            <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">
+              {{ 'editor.workspace_banner_dismiss' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
       <div class="cp-panel">
         <!-- ── Barra documento ─────────────────────── -->
         <div class="doc-bar">
@@ -17,6 +34,9 @@
             <button class="btn btn-s" [disabled]="exporting()" (click)="exportAs('docx')">DOCX</button>
             <button class="btn btn-p" [disabled]="exporting()" (click)="exportAs('pdf')">
               {{ exporting() ? ('editor.exporting' | translate) : 'PDF' }}
+            </button>
+            <button class="btn btn-s" (click)="sendToWorkspace()">
+              {{ justSent() ? ('editor.workspace_sent' | translate) : ('🔗 ' + ('editor.workspace_send' | translate)) }}
             </button>
           </div>
         </div>

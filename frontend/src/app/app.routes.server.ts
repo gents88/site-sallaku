@@ -18,6 +18,7 @@ const PUBLIC_TOOL_PAGES = [
   'lab/editor',
   'lab/ocr',
   'lab/scanner',
+  'lab/workspace',
 ];
 
 // Static top-level pages — same static-deploy reasoning as PUBLIC_TOOL_PAGES.

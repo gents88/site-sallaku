@@ -848,3 +848,15 @@ app-scanner {
     animation: none;
   }
 }
+
+/* ── Lab tools: shared "result ready" pop ────────── */
+/* Applied to a result/output container right after it renders, across the
+   /lab/* tools, so completing any of them reads consistently. */
+@keyframes result-pop {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.99); }
+  60%  { opacity: 1; transform: translateY(0) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.result-pop {
+  animation: result-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
