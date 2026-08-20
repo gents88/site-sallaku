@@ -2,11 +2,13 @@ import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, PL
 import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, of, debounceTime, distinctUntilChanged, map, switchMap, catchError } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
@@ -30,6 +32,9 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
+  private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly loading = this.service.isLoading;
@@ -135,6 +140,16 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       this.mobileQuery.addEventListener('change', this.onMobileQueryChange);
     }
 
+    // Read once, not a reactive subscription: runSearch() below writes this
+    // same param back with replaceUrl, and staying subscribed would turn
+    // every search into a read-then-write loop for no benefit — the debounced
+    // typing pipeline is already the single source of truth after this point.
+    const initialQuery = this.route.snapshot.queryParamMap.get('q');
+    if (initialQuery && initialQuery.trim().length >= 2) {
+      this.query.set(initialQuery);
+      this.runSearch(initialQuery.trim());
+    }
+
     this.seo.update({
       title: 'Ricerca PDF Pubblico Dominio — Libri e Documenti Legali',
       description: 'Cerca PDF gratuiti e legali tra milioni di libri di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima prima del download.',
@@ -171,6 +186,17 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.selected.set(null);
     this._revokePreview();
     this.searchTrigger$.next(q);
+
+    this.analytics.trackClick('pdf_search_query', q);
+    // replaceUrl: with live-as-you-type search, every settled keystroke would
+    // otherwise push a new history entry — this keeps the URL shareable
+    // without turning the back button into a keystroke-by-keystroke replay.
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { q },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   /** Explicit trigger (submit button / Enter) — the debounced live-typing search above covers the rest. */
@@ -180,7 +206,18 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.runSearch(q);
   }
 
+  setFilter(filter: SourceFilter): void {
+    this.sourceFilter.set(filter);
+    this.analytics.trackClick('pdf_search_filter', filter);
+  }
+
+  setSortBy(sort: SortOrder): void {
+    this.sortBy.set(sort);
+    this.analytics.trackClick('pdf_search_sort', sort);
+  }
+
   select(result: PdfSearchResult): void {
+    this.analytics.trackClick('pdf_search_result_open', result.source, result.pdfUrl);
     this.selected.set(result);
     if (result.previewable && !this.isMobile()) {
       this.previewLoading.set(true);
@@ -205,7 +242,12 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this._revokePreview();
   }
 
+  trackDownload(result: PdfSearchResult): void {
+    this.analytics.trackClick('pdf_search_download', result.source, result.pdfUrl);
+  }
+
   sendToWorkspace(result: PdfSearchResult): void {
+    this.analytics.trackClick('pdf_search_workspace_send', result.source);
     this.sendingToWorkspace.set(true);
     this.service.downloadBlob(result).subscribe({
       next: (blob) => {

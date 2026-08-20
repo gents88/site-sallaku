@@ -95,18 +95,18 @@
     @if (results().length > 0 && !loading()) {
       <div class="results-toolbar">
         <div class="filter-chips">
-          <button type="button" class="chip" [class.active]="sourceFilter() === 'all'" (click)="sourceFilter.set('all')">
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'all'" (click)="setFilter('all')">
             {{ 'pdf_search.filter_all' | translate }}
           </button>
-          <button type="button" class="chip" [class.active]="sourceFilter() === 'books'" (click)="sourceFilter.set('books')">
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'books'" (click)="setFilter('books')">
             {{ 'pdf_search.filter_books' | translate }}
           </button>
-          <button type="button" class="chip" [class.active]="sourceFilter() === 'papers'" (click)="sourceFilter.set('papers')">
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'papers'" (click)="setFilter('papers')">
             {{ 'pdf_search.filter_papers' | translate }}
           </button>
         </div>
 
-        <select class="sort-select" [(ngModel)]="sortBy" [attr.aria-label]="'pdf_search.sort_label' | translate">
+        <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="setSortBy($event)" [attr.aria-label]="'pdf_search.sort_label' | translate">
           <option value="relevance">{{ 'pdf_search.sort_relevance' | translate }}</option>
           <option value="year_desc">{{ 'pdf_search.sort_year_desc' | translate }}</option>
           <option value="year_asc">{{ 'pdf_search.sort_year_asc' | translate }}</option>
@@ -200,7 +200,7 @@
         </div>
 
         <div class="preview-actions">
-          <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener">
+          <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener" (click)="trackDownload(sel)">
             📥 {{ 'pdf_search.btn_download' | translate }}
           </a>
           <button type="button" class="btn-workspace" [disabled]="sendingToWorkspace()" (click)="sendToWorkspace(sel)">
