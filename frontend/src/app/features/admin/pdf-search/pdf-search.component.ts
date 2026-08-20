@@ -9,12 +9,15 @@ import { Subject, of, debounceTime, distinctUntilChanged, map, switchMap, catchE
 import { SeoService } from '../../../core/services/seo.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
 const SEARCH_DEBOUNCE_MS = 500;
 const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
 const PAPER_SOURCES: PdfSource[] = ['arxiv', 'pmc'];
+const RECENT_SEARCHES_KEY = 'pdf-search-recent-queries';
+const MAX_RECENT_SEARCHES = 8;
 
 export type SourceFilter = 'all' | 'books' | 'papers';
 export type SortOrder = 'relevance' | 'year_desc' | 'year_asc';
@@ -33,6 +36,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly seo = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
   private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly pdfjs = inject(PdfjsService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly platformId = inject(PLATFORM_ID);
@@ -71,18 +75,37 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     { icon: '👁️', titleKey: 'pdf_search.feature_preview_title', descKey: 'pdf_search.feature_preview_desc' },
   ];
 
+  readonly recentSearches = signal<string[]>([]);
+
+  // ── Preview: iframe path (desktop, source allows framing) ──────────────────
   private _previewBlobUrl: string | null = null;
   readonly previewUrl = signal<SafeResourceUrl | null>(null);
   readonly previewLoading = signal(false);
 
+  // ── Preview: pdf.js canvas path — used whenever the iframe path can't work:
+  // mobile (native in-iframe PDF viewers commonly render only the first page)
+  // or a source that blocks framing outright (PMC sends X-Frame-Options: DENY).
+  // Neither restriction applies to fetching raw bytes and rendering them
+  // ourselves, so this reuses the same proxy download the Workspace button
+  // already relies on. Desktop keeps the iframe for previewable sources —
+  // it streams natively from the source with no backend round-trip, which
+  // matters for the largest archive.org scans.
+  private pdfDoc: PdfDocument | null = null;
+  private _pdfPageObjectUrl: string | null = null;
+  readonly canvasPageUrl = signal<string | null>(null);
+  readonly canvasPageNum = signal(1);
+  readonly canvasNumPages = signal(0);
+  readonly canvasViewerLoading = signal(false);
+  readonly canvasViewerFailed = signal(false);
+
+  readonly useCanvasViewer = computed(() => {
+    const sel = this.selected();
+    return !!sel && (this.isMobile() || !sel.previewable);
+  });
+
   readonly sendingToWorkspace = signal(false);
   readonly justSent = signal(false);
 
-  // Mobile browsers' native PDF viewer inside an <iframe> commonly renders
-  // only the first page instead of the full scrollable document — a browser
-  // limitation, not something CSS can fix — so on narrow viewports the
-  // preview modal skips the iframe entirely and points at the download
-  // button instead, which opens the PDF in the phone's own full viewer.
   private mobileQuery: MediaQueryList | null = null;
   private readonly onMobileQueryChange = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
   readonly isMobile = signal(false);
@@ -138,6 +161,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       this.mobileQuery = window.matchMedia(MOBILE_QUERY);
       this.isMobile.set(this.mobileQuery.matches);
       this.mobileQuery.addEventListener('change', this.onMobileQueryChange);
+      this.loadRecentSearches();
     }
 
     // Read once, not a reactive subscription: runSearch() below writes this
@@ -171,6 +195,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.mobileQuery?.removeEventListener('change', this.onMobileQueryChange);
     this._revokePreview();
+    this._revokeCanvasPage();
   }
 
   private _revokePreview(): void {
@@ -180,12 +205,52 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.previewUrl.set(null);
   }
 
+  private _revokeCanvasPage(): void {
+    if (this._pdfPageObjectUrl) { URL.revokeObjectURL(this._pdfPageObjectUrl); this._pdfPageObjectUrl = null; }
+    this.canvasPageUrl.set(null);
+  }
+
+  // ── Recent searches (localStorage) ──────────────────────────────────────
+  private loadRecentSearches(): void {
+    try {
+      const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
+      this.recentSearches.set(raw ? JSON.parse(raw) : []);
+    } catch {
+      this.recentSearches.set([]);
+    }
+  }
+
+  private saveRecentSearch(q: string): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const withoutDupe = this.recentSearches().filter((x) => x.toLowerCase() !== q.toLowerCase());
+    const updated = [q, ...withoutDupe].slice(0, MAX_RECENT_SEARCHES);
+    this.recentSearches.set(updated);
+    try {
+      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+    } catch {
+      // Storage full/unavailable (private browsing etc.) — recent searches just won't persist.
+    }
+  }
+
+  useRecentSearch(q: string): void {
+    this.query.set(q);
+    this.runSearch(q);
+  }
+
+  clearRecentSearches(): void {
+    this.recentSearches.set([]);
+    if (isPlatformBrowser(this.platformId)) {
+      try { localStorage.removeItem(RECENT_SEARCHES_KEY); } catch { /* ignore */ }
+    }
+  }
+
   private runSearch(q: string): void {
     this.error.set('');
     this.hasSearched.set(true);
     this.selected.set(null);
     this._revokePreview();
     this.searchTrigger$.next(q);
+    this.saveRecentSearch(q);
 
     this.analytics.trackClick('pdf_search_query', q);
     // replaceUrl: with live-as-you-type search, every settled keystroke would
@@ -219,16 +284,12 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   select(result: PdfSearchResult): void {
     this.analytics.trackClick('pdf_search_result_open', result.source, result.pdfUrl);
     this.selected.set(result);
+
     if (result.previewable && !this.isMobile()) {
       this.previewLoading.set(true);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(result.pdfUrl));
     } else {
-      // Either the source blocks iframe embedding outright (e.g. PMC sends
-      // X-Frame-Options: DENY), or we're on a narrow viewport where mobile
-      // browsers' native PDF viewer inside an iframe typically renders only
-      // the first page — neither case is worth loading an iframe for.
-      this.previewLoading.set(false);
-      this.previewUrl.set(null);
+      this.loadCanvasPreview(result);
     }
   }
 
@@ -236,10 +297,63 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.previewLoading.set(false);
   }
 
+  /** Fetches the PDF via the same proxy Workspace uses and renders it page-by-page with pdf.js. */
+  private loadCanvasPreview(result: PdfSearchResult): void {
+    this.canvasViewerLoading.set(true);
+    this.canvasViewerFailed.set(false);
+    this._revokeCanvasPage();
+    this.pdfDoc = null;
+    this.canvasPageNum.set(1);
+    this.canvasNumPages.set(0);
+
+    this.service.downloadBlob(result).subscribe({
+      next: async (blob) => {
+        try {
+          const buffer = await blob.arrayBuffer();
+          this.pdfDoc = await this.pdfjs.openDocument(buffer);
+          this.canvasNumPages.set(this.pdfDoc.numPages);
+          await this.renderCanvasPage();
+        } catch {
+          this.canvasViewerFailed.set(true);
+        } finally {
+          this.canvasViewerLoading.set(false);
+        }
+      },
+      error: () => {
+        this.canvasViewerFailed.set(true);
+        this.canvasViewerLoading.set(false);
+      },
+    });
+  }
+
+  private async renderCanvasPage(): Promise<void> {
+    if (!this.pdfDoc) return;
+    const page = await this.pdfDoc.getPage(this.canvasPageNum());
+    const blob = await this.pdfjs.renderPageToBlob(page, 1.5);
+    this._revokeCanvasPage();
+    this._pdfPageObjectUrl = URL.createObjectURL(blob);
+    this.canvasPageUrl.set(this._pdfPageObjectUrl);
+  }
+
+  nextCanvasPage(): void {
+    if (this.canvasPageNum() >= this.canvasNumPages()) return;
+    this.canvasPageNum.update((p) => p + 1);
+    this.renderCanvasPage();
+  }
+
+  prevCanvasPage(): void {
+    if (this.canvasPageNum() <= 1) return;
+    this.canvasPageNum.update((p) => p - 1);
+    this.renderCanvasPage();
+  }
+
   closePreview(): void {
     this.selected.set(null);
     this.previewLoading.set(false);
     this._revokePreview();
+    this.pdfDoc = null;
+    this.canvasViewerFailed.set(false);
+    this._revokeCanvasPage();
   }
 
   trackDownload(result: PdfSearchResult): void {

@@ -68,6 +68,22 @@
         <h2>{{ 'pdf_search.empty_title' | translate }}</h2>
         <p>{{ 'pdf_search.empty_subtitle' | translate }}</p>
       </div>
+
+      @if (recentSearches().length > 0) {
+        <div class="recent-searches">
+          <div class="recent-searches-header">
+            <span>{{ 'pdf_search.recent_searches_title' | translate }}</span>
+            <button type="button" class="recent-clear-btn" (click)="clearRecentSearches()">
+              {{ 'pdf_search.recent_clear' | translate }}
+            </button>
+          </div>
+          <div class="recent-searches-chips">
+            @for (q of recentSearches(); track q) {
+              <button type="button" class="chip" (click)="useRecentSearch(q)">🕓 {{ q }}</button>
+            }
+          </div>
+        </div>
+      }
     }
 
     @if (loading()) {
@@ -159,7 +175,7 @@
   <!-- ── PREVIEW MODAL ─────────────────────────────────────────────────────── -->
   @if (selected(); as sel) {
     <div class="modal-backdrop" (click)="closePreview()">
-      <div class="preview-modal" [class.preview-modal--compact]="!sel.previewable || isMobile()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()">
+      <div class="preview-modal" [class.preview-modal--compact]="useCanvasViewer() && canvasViewerFailed()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()">
         <div class="preview-header">
           <div class="preview-header-cover">
             @if (sel.coverUrl) {
@@ -175,17 +191,23 @@
           <button type="button" class="preview-close" (click)="closePreview()" [attr.aria-label]="'pdf_search.preview_close' | translate">✕</button>
         </div>
 
-        <div class="preview-body" [class.preview-body--compact]="!sel.previewable || isMobile()">
-          @if (!sel.previewable) {
-            <div class="preview-unavailable">
-              <span class="state-icon">🔒</span>
-              <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
-            </div>
-          } @else if (isMobile()) {
-            <div class="preview-unavailable">
-              <span class="state-icon">📱</span>
-              <p>{{ 'pdf_search.mobile_preview_hint' | translate }}</p>
-            </div>
+        <div class="preview-body" [class.preview-body--compact]="useCanvasViewer() && canvasViewerFailed()">
+          @if (useCanvasViewer()) {
+            @if (canvasViewerLoading()) {
+              <div class="preview-loading" aria-live="polite">
+                <span class="spinner spinner-lg"></span>
+                <p>{{ 'pdf_search.preview_loading' | translate }}</p>
+              </div>
+            } @else if (canvasViewerFailed()) {
+              <div class="preview-unavailable">
+                <span class="state-icon">🔒</span>
+                <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
+              </div>
+            } @else if (canvasPageUrl(); as src) {
+              <div class="canvas-page-wrap">
+                <img [src]="src" [alt]="sel.title + ' — ' + canvasPageNum()" />
+              </div>
+            }
           } @else {
             @if (previewLoading()) {
               <div class="preview-loading" aria-live="polite">
@@ -198,6 +220,14 @@
             }
           }
         </div>
+
+        @if (useCanvasViewer() && canvasNumPages() > 0) {
+          <div class="canvas-page-nav">
+            <button type="button" (click)="prevCanvasPage()" [disabled]="canvasPageNum() <= 1" aria-label="Previous page">‹</button>
+            <span>{{ canvasPageNum() }} / {{ canvasNumPages() }}</span>
+            <button type="button" (click)="nextCanvasPage()" [disabled]="canvasPageNum() >= canvasNumPages()" aria-label="Next page">›</button>
+          </div>
+        }
 
         <div class="preview-actions">
           <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener" (click)="trackDownload(sel)">

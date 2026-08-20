@@ -974,7 +974,6 @@
     "feature_preview_title": "Anteprima Istantanea",
     "feature_preview_desc": "Guarda il PDF direttamente nel browser prima di scaricarlo.",
     "preview_unavailable": "Anteprima non disponibile per questa fonte. Scarica il PDF per leggerlo.",
-    "mobile_preview_hint": "L'anteprima integrata su mobile mostra solo la prima pagina. Usa \"Scarica PDF\" qui sotto per sfogliarlo tutto nel visualizzatore del telefono.",
     "filter_all": "Tutti",
     "filter_books": "Libri",
     "filter_papers": "Paper",
@@ -984,7 +983,9 @@
     "sort_year_desc": "Anno (più recente)",
     "sort_year_asc": "Anno (più vecchio)",
     "btn_send_workspace": "Invia a Workspace",
-    "workspace_sent": "Inviato"
+    "workspace_sent": "Inviato",
+    "recent_searches_title": "Ricerche recenti",
+    "recent_clear": "Cancella"
   },
   "convert": {
     "title": "Convertitore",
