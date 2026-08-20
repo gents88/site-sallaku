@@ -17,9 +17,15 @@ const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
 const PAPER_SOURCES: PdfSource[] = ['arxiv', 'pmc'];
 const RECENT_SEARCHES_KEY = 'pdf-search-recent-queries';
 const MAX_RECENT_SEARCHES = 8;
+// Typical library scanning runs 300-600 ppi; below ~150 is usually a rough
+// phone/camera capture rather than a proper scan. Anything in between is
+// unremarkable — no badge, to keep the signal meaningful.
+const HD_SCAN_PPI = 300;
+const LOW_SCAN_PPI = 150;
 
 export type SourceFilter = 'all' | 'books' | 'papers';
 export type SortOrder = 'relevance' | 'year_desc' | 'year_asc';
+export type ScanQuality = 'hd' | 'low' | null;
 
 @Component({
   selector: 'app-pdf-search',
@@ -405,6 +411,13 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.pdfDoc = null;
     this.canvasViewerFailed.set(false);
     this._revokeCanvasPage();
+  }
+
+  scanQuality(result: PdfSearchResult): ScanQuality {
+    if (result.scanPpi === null) return null;
+    if (result.scanPpi >= HD_SCAN_PPI) return 'hd';
+    if (result.scanPpi < LOW_SCAN_PPI) return 'low';
+    return null;
   }
 
   trackDownload(result: PdfSearchResult): void {
