@@ -985,7 +985,20 @@
     "btn_send_workspace": "Enviar a Workspace",
     "workspace_sent": "Enviado",
     "recent_searches_title": "Búsquedas recientes",
-    "recent_clear": "Borrar"
+    "recent_clear": "Borrar",
+    "faq_title": "Preguntas frecuentes",
+    "faq_q1": "¿Cómo funciona este motor de búsqueda de PDF?",
+    "faq_a1": "Busca simultáneamente en Internet Archive, Project Gutenberg, arXiv y PubMed Central y muestra solo los resultados con un PDF realmente disponible, con vista previa directa en el navegador antes de descargar.",
+    "faq_q2": "¿Es legal descargar estos PDF?",
+    "faq_a2": "Sí. Cada fuente indexada publica solo material de dominio público o de acceso abierto: libros con derechos vencidos, artículos científicos y trabajos con licencia de distribución libre. Ningún contenido pirata.",
+    "faq_q3": "¿Qué fuentes cubre esta búsqueda de PDF sin copyright?",
+    "faq_a3": "Internet Archive y Project Gutenberg para libros y clásicos de dominio público, arXiv y PubMed Central para artículos científicos y académicos de acceso abierto.",
+    "faq_q4": "¿Puedo buscar libros PDF de dominio público en español?",
+    "faq_a4": "Sí, Internet Archive incluye muchos libros de dominio público escaneados en decenas de idiomas, además del catálogo mayormente en inglés de Project Gutenberg.",
+    "faq_q5": "¿Por qué algunos resultados no tienen vista previa?",
+    "faq_a5": "Algunas fuentes (p. ej. PubMed Central) impiden incrustar la página directamente por motivos técnicos de su servidor; en ese caso, la descarga sigue disponible.",
+    "faq_q6": "¿El motor de búsqueda de PDF es gratuito?",
+    "faq_a6": "Sí, totalmente gratis, sin registro ni límites de uso, salvo un límite técnico antiabuso de 20 búsquedas por minuto."
   },
   "convert": {
     "title": "Convertidor",
