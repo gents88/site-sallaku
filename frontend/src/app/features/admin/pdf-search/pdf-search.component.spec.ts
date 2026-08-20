@@ -68,10 +68,10 @@ describe('PdfSearchComponent', () => {
       const component = fixture.componentInstance;
 
       component.results.set([
-        makeResult({ id: 'ia', source: 'internet_archive' }),
-        makeResult({ id: 'gb', source: 'gutenberg' }),
-        makeResult({ id: 'ax', source: 'arxiv' }),
-        makeResult({ id: 'pmc', source: 'pmc' }),
+        makeResult({ id: 'ia', title: 'Title IA', source: 'internet_archive' }),
+        makeResult({ id: 'gb', title: 'Title GB', source: 'gutenberg' }),
+        makeResult({ id: 'ax', title: 'Title AX', source: 'arxiv' }),
+        makeResult({ id: 'pmc', title: 'Title PMC', source: 'pmc' }),
       ]);
 
       component.sourceFilter.set('books');
@@ -90,9 +90,9 @@ describe('PdfSearchComponent', () => {
       const component = fixture.componentInstance;
 
       component.results.set([
-        makeResult({ id: 'old', year: '1920' }),
-        makeResult({ id: 'new', year: '2020' }),
-        makeResult({ id: 'mid', year: '1980' }),
+        makeResult({ id: 'old', title: 'Old Title', year: '1920' }),
+        makeResult({ id: 'new', title: 'New Title', year: '2020' }),
+        makeResult({ id: 'mid', title: 'Mid Title', year: '1980' }),
       ]);
 
       component.sortBy.set('year_desc');
@@ -107,10 +107,48 @@ describe('PdfSearchComponent', () => {
       const fixture = TestBed.createComponent(PdfSearchComponent);
       const component = fixture.componentInstance;
 
-      component.results.set([makeResult({ id: 'b', year: '1920' }), makeResult({ id: 'a', year: '2020' })]);
+      component.results.set([makeResult({ id: 'b', title: 'B Title', year: '1920' }), makeResult({ id: 'a', title: 'A Title', year: '2020' })]);
       component.sortBy.set('relevance');
 
       expect(component.displayResults().map((r) => r.id)).toEqual(['b', 'a']);
+    });
+
+    it('groups near-duplicate titles into one card with a duplicateCount, when groupSimilar is on', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      const component = fixture.componentInstance;
+
+      component.results.set([
+        makeResult({ id: 'a1', title: "Alice's Adventures in Wonderland" }),
+        makeResult({ id: 'a2', title: "alice's adventures in wonderland!" }), // same work, different casing/punctuation
+        makeResult({ id: 'a3', title: 'ALICE’S ADVENTURES IN WONDERLAND' }), // curly apostrophe variant
+        makeResult({ id: 'b1', title: 'Dracula' }),
+      ]);
+
+      const grouped = component.displayResults();
+
+      expect(grouped).toHaveLength(2);
+      const alice = grouped.find((r) => r.id === 'a1')!;
+      expect(alice.duplicateCount).toBe(3);
+      const dracula = grouped.find((r) => r.id === 'b1')!;
+      expect(dracula.duplicateCount).toBe(1);
+    });
+
+    it('shows every result ungrouped (duplicateCount 1) when groupSimilar is off', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      const component = fixture.componentInstance;
+
+      component.results.set([
+        makeResult({ id: 'a1', title: 'Same Title' }),
+        makeResult({ id: 'a2', title: 'Same Title' }),
+      ]);
+      component.groupSimilar.set(false);
+
+      const list = component.displayResults();
+
+      expect(list).toHaveLength(2);
+      expect(list.every((r) => r.duplicateCount === 1)).toBe(true);
     });
   });
 
@@ -203,6 +241,37 @@ describe('PdfSearchComponent', () => {
       expect(component.recentSearches()).toHaveLength(8);
       expect(component.recentSearches()[0]).toBe('QUERY-8');
       expect(component.recentSearches().filter((q) => q.toLowerCase() === 'query-8')).toHaveLength(1);
+    });
+  });
+
+  describe('favorites (localStorage)', () => {
+    it('loads previously saved favorites on init', () => {
+      const saved = [makeResult({ id: 'fav-1' })];
+      localStorage.setItem('pdf-search-favorites', JSON.stringify(saved));
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.favorites().map((f) => f.id)).toEqual(['fav-1']);
+    });
+
+    it('toggleFavorite() adds then removes a result, persisting to localStorage each time, without triggering select()', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+      const result = makeResult({ id: 'r-1' });
+      const event = { stopPropagation: vi.fn(), preventDefault: vi.fn() } as unknown as Event;
+
+      component.toggleFavorite(result, event);
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(component.isFavorite(result)).toBe(true);
+      expect(component.selected()).toBeNull(); // the card's own click-to-preview must not also fire
+      expect(JSON.parse(localStorage.getItem('pdf-search-favorites')!)).toHaveLength(1);
+
+      component.toggleFavorite(result, event);
+      expect(component.isFavorite(result)).toBe(false);
+      expect(JSON.parse(localStorage.getItem('pdf-search-favorites')!)).toHaveLength(0);
     });
   });
 });

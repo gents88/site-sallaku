@@ -194,6 +194,13 @@ $error-clr:     #f87171;
 
 .recent-searches-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 
+.favorites-section { max-width: 1100px; margin: 32px auto 0; }
+
+.favorites-title {
+  text-align: center;
+  font-size: 15px; font-weight: 700; margin: 0 0 14px;
+}
+
 .spinner {
   width: 16px; height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.35);
@@ -236,12 +243,41 @@ $error-clr:     #f87171;
   }
 }
 
+.toolbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.group-toggle {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--text-secondary, #8b949e); cursor: pointer;
+  user-select: none;
+
+  input { accent-color: $accent; cursor: pointer; }
+}
+
 .sort-select {
   padding: 7px 12px; border-radius: 10px;
   background: var(--bg-secondary, #161b22);
   border: 1px solid var(--border-color, #30363d);
   color: var(--text-primary, #e6edf3);
   font-size: 12.5px; font-weight: 600; cursor: pointer;
+}
+
+.duplicate-pill {
+  font-size: 10.5px; color: var(--text-muted, #6e7681);
+  padding: 2px 8px; border-radius: 100px;
+  background: var(--bg-tertiary, #0d1117);
+}
+
+.favorite-star {
+  position: absolute; bottom: 8px; right: 8px; z-index: 2;
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; line-height: 1; cursor: pointer;
+  background: rgba(13, 17, 23, 0.7);
+  transition: transform 0.15s, background 0.15s;
+
+  &:hover, &:focus-visible { transform: scale(1.15); background: rgba(13, 17, 23, 0.9); }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 1px; }
+  &.active { filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.6)); }
 }
 
 // ── RESULTS GRID ──────────────────────────────────────────────────────────────
