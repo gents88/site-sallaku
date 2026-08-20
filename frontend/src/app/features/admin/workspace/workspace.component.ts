@@ -12,6 +12,7 @@ interface ToolLink {
 }
 
 const FILE_CONSUMERS: ToolLink[] = [
+  { id: 'library',       icon: '📚',  route: '/lab/library' },
   { id: 'pdf_summary',   icon: '📋',  route: '/lab/pdf-summary' },
   { id: 'pdf_translate', icon: '🌐',  route: '/lab/pdf-translate' },
   { id: 'ocr',           icon: '🔤',  route: '/lab/ocr' },
@@ -25,6 +26,7 @@ const TEXT_CONSUMERS: ToolLink[] = [
 ];
 
 const STARTING_TOOLS: ToolLink[] = [
+  { id: 'library',       icon: '📚',  route: '/lab/library' },
   { id: 'scanner',       icon: '📷',  route: '/lab/scanner' },
   { id: 'ocr',           icon: '🔤',  route: '/lab/ocr' },
   { id: 'convert',       icon: '🔄',  route: '/lab/convert' },

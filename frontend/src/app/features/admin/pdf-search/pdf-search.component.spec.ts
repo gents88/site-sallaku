@@ -2,7 +2,7 @@ import { PLATFORM_ID, signal, importProvidersFrom } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { PdfSearchComponent } from './pdf-search.component';
 import { PdfSearchService, PdfSearchResult } from '../../../core/services/pdf-search.service';
@@ -10,6 +10,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
+import { LibraryService } from '../../../core/services/library.service';
 
 function makeResult(overrides: Partial<PdfSearchResult> = {}): PdfSearchResult {
   return {
@@ -22,21 +23,42 @@ function makeResult(overrides: Partial<PdfSearchResult> = {}): PdfSearchResult {
 
 describe('PdfSearchComponent', () => {
   let searchMock: ReturnType<typeof vi.fn>;
+  let downloadBlobMock: ReturnType<typeof vi.fn>;
+  let libraryMock: {
+    refresh: ReturnType<typeof vi.fn>;
+    add: ReturnType<typeof vi.fn>;
+    indexPages: ReturnType<typeof vi.fn>;
+    has: ReturnType<typeof vi.fn>;
+  };
+  let pdfjsMock: { openDocument: ReturnType<typeof vi.fn>; extractPages: ReturnType<typeof vi.fn>; renderPageToBlob: ReturnType<typeof vi.fn> };
 
   function configure(): void {
     searchMock = vi.fn().mockReturnValue(of([]));
+    downloadBlobMock = vi.fn();
+    libraryMock = {
+      refresh: vi.fn().mockResolvedValue([]),
+      add: vi.fn().mockResolvedValue(undefined),
+      indexPages: vi.fn().mockResolvedValue(null),
+      has: vi.fn().mockReturnValue(false),
+    };
+    pdfjsMock = {
+      openDocument: vi.fn().mockResolvedValue({ numPages: 1, loadingTask: { destroy: vi.fn() } }),
+      extractPages: vi.fn().mockResolvedValue([{ page: 1, text: 'testo' }]),
+      renderPageToBlob: vi.fn(),
+    };
 
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
         {
           provide: PdfSearchService,
-          useValue: { isLoading: signal(false), search: searchMock, downloadBlob: vi.fn() },
+          useValue: { isLoading: signal(false), search: searchMock, downloadBlob: downloadBlobMock },
         },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn() } },
         { provide: WorkspaceService, useValue: { send: vi.fn() } },
         { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
-        { provide: PdfjsService, useValue: { openDocument: vi.fn(), renderPageToBlob: vi.fn() } },
+        { provide: PdfjsService, useValue: pdfjsMock },
+        { provide: LibraryService, useValue: libraryMock },
         { provide: Router, useValue: { navigate: vi.fn() } },
         { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
         { provide: PLATFORM_ID, useValue: 'browser' },
@@ -272,6 +294,104 @@ describe('PdfSearchComponent', () => {
       component.toggleFavorite(result, event);
       expect(component.isFavorite(result)).toBe(false);
       expect(JSON.parse(localStorage.getItem('pdf-search-favorites')!)).toHaveLength(0);
+    });
+  });
+
+  describe('saveToLibrary', () => {
+    /** Lascia sfilare le promise incatenate dentro il subscribe di saveToLibrary. */
+    const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+    it('scarica il PDF e lo archivia con i metadati del risultato', async () => {
+      configure();
+      downloadBlobMock.mockReturnValue(of(new Blob([new Uint8Array(4)], { type: 'application/pdf' })));
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+      const result = makeResult({ id: 'ia-x', title: 'Un Libro', author: 'Autore', year: '1900' });
+
+      fixture.componentInstance.saveToLibrary(result);
+      await flush();
+
+      expect(downloadBlobMock).toHaveBeenCalledWith(result);
+      const [meta, blob] = libraryMock.add.mock.calls[0];
+      expect(meta).toMatchObject({ id: 'ia-x', title: 'Un Libro', author: 'Autore', year: '1900', source: 'internet_archive' });
+      expect(blob.size).toBe(4);
+    });
+
+    it('indicizza subito il testo, così il documento è cercabile senza altri passaggi', async () => {
+      configure();
+      downloadBlobMock.mockReturnValue(of(new Blob([new Uint8Array(4)], { type: 'application/pdf' })));
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+
+      fixture.componentInstance.saveToLibrary(makeResult({ id: 'ia-x' }));
+      await flush();
+
+      expect(pdfjsMock.extractPages).toHaveBeenCalled();
+      expect(libraryMock.indexPages).toHaveBeenCalledWith('ia-x', [{ page: 1, text: 'testo' }]);
+    });
+
+    it('segnala il salvataggio riuscito e sblocca il bottone', async () => {
+      configure();
+      downloadBlobMock.mockReturnValue(of(new Blob([new Uint8Array(4)], { type: 'application/pdf' })));
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+
+      component.saveToLibrary(makeResult());
+      await flush();
+
+      expect(component.justSaved()).toBe(true);
+      expect(component.savingToLibrary()).toBe(false);
+      expect(component.error()).toBe('');
+    });
+
+    it('un documento resta in libreria anche se l indicizzazione fallisce', async () => {
+      configure();
+      downloadBlobMock.mockReturnValue(of(new Blob([new Uint8Array(4)], { type: 'application/pdf' })));
+      pdfjsMock.openDocument.mockRejectedValue(new Error('pdf corrotto'));
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+
+      component.saveToLibrary(makeResult());
+      await flush();
+
+      expect(libraryMock.add).toHaveBeenCalled();
+      expect(component.justSaved()).toBe(true);
+      expect(component.error()).toBe('');
+    });
+
+    it('mostra un errore se il download non riesce', async () => {
+      configure();
+      downloadBlobMock.mockReturnValue(throwError(() => new Error('rete')));
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+
+      component.saveToLibrary(makeResult());
+      await flush();
+
+      expect(component.error()).toContain('libreria');
+      expect(component.savingToLibrary()).toBe(false);
+      expect(libraryMock.add).not.toHaveBeenCalled();
+    });
+
+    it('isInLibrary riflette lo stato della libreria', () => {
+      configure();
+      libraryMock.has.mockReturnValue(true);
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.isInLibrary(makeResult({ id: 'ia-x' }))).toBe(true);
+      expect(libraryMock.has).toHaveBeenCalledWith('ia-x');
+    });
+
+    it('carica la libreria all avvio per sapere cosa è già salvato', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      fixture.detectChanges();
+
+      expect(libraryMock.refresh).toHaveBeenCalled();
     });
   });
 });

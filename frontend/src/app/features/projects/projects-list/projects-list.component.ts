@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 
@@ -26,6 +26,7 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly seo = inject(SeoService);
   private readonly langService = inject(LanguageService);
+  private readonly translate = inject(TranslateService);
 
   readonly staticProjects: ProjectItem[] = [
     {
@@ -66,27 +67,35 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   ngOnInit(): void {
-    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/projects', this.langService.current())}`;
+    const lang = this.langService.current();
+    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/projects', lang)}`;
+    const title = this.translate.instant('projects.title');
+    const description = this.translate.instant('projects.subtitle');
     this.seo.update({
-      title: 'Portfolio Projects',
-      description: 'Scopri i miei progetti principali: Cesium.js geospatial, Photo Sphere VR, data visualization, library management e security applications. Angular, TypeScript, 3D visualization.',
+      title,
+      description,
       url: pageUrl,
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'CollectionPage',
-      name: 'Portfolio Projects',
-      description: 'Enterprise projects delivered in production: 3D geospatial visualization, 360° virtual tours, analytics dashboards, library management and insurance platforms.',
-      url: pageUrl,
-      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-      hasPart: [
-        { '@type': 'CreativeWork', name: '3D Geospatial Visualization', description: 'Interactive platform for 3D geospatial visualization with real-time data on an interactive globe.', keywords: 'Cesium.js, Angular, TypeScript' },
-        { '@type': 'CreativeWork', name: '360° Virtual Tour', description: 'Immersive application for virtual tours with smooth navigation between 360° environments.', keywords: 'Photo Sphere, Angular, WebGL' },
-        { '@type': 'CreativeWork', name: 'Analytics Dashboard', description: 'Analytics dashboard suite with Looker Embedded and high-performance custom visualizations.', keywords: 'Looker, Angular, Chart.js' },
-        { '@type': 'CreativeWork', name: 'Libraria', description: 'Digital platform for full library, catalog and lending management.', keywords: 'Angular, Node.js, PostgreSQL' },
-        { '@type': 'CreativeWork', name: 'Insurance Platform', description: 'Web solution for the insurance sector with policy, claims and approval workflow management.', keywords: 'Angular, .NET, API' },
-      ],
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: title,
+        description,
+        url: pageUrl,
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        hasPart: this.staticProjects.map(p => ({
+          '@type': 'CreativeWork',
+          name: this.translate.instant(p.titleKey),
+          description: this.translate.instant(p.descKey),
+          keywords: p.tags.join(', '),
+        })),
+      },
+      this.seo.breadcrumb([
+        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: title, url: pageUrl },
+      ]),
+    ]);
   }
 
   ngAfterViewInit(): void {

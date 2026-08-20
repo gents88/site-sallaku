@@ -19,6 +19,7 @@ const routes = [
   // ── AI & PDF Tools — public pages under /lab (moved from /dashboard/*, 2026-08) ──
   { loc: '/lab', changefreq: 'monthly', priority: '0.9' },
   { loc: '/lab/pdf-search', changefreq: 'weekly', priority: '0.89' },
+  { loc: '/lab/library', changefreq: 'monthly', priority: '0.88' },
   { loc: '/lab/pdf-translate', changefreq: 'monthly', priority: '0.88' },
   { loc: '/lab/ai-ppt', changefreq: 'monthly', priority: '0.87' },
   { loc: '/lab/pdf-summary', changefreq: 'monthly', priority: '0.86' },

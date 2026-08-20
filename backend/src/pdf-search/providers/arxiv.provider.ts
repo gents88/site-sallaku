@@ -31,8 +31,17 @@ export class ArxivProvider implements PdfSearchProvider {
   private readonly logger = new Logger(ArxivProvider.name);
 
   async search(query: string, limit: number): Promise<PdfSearchResult[]> {
+    // Quoted as a phrase, not `all:${query}` bare: arXiv splits an unquoted
+    // multi-word value into an implicit OR of the individual terms (verified
+    // live — search_query=all:piccolo principe silently becomes "all:piccolo
+    // OR all:principe" and surfaces any paper by an author surnamed Piccolo
+    // or Principe, completely unrelated to the query). Quoting requires the
+    // phrase to appear contiguously, which is what a title/topic search
+    // actually wants and still matches real multi-word topics fine (verified
+    // live with "quantum entanglement", "attention is all you need").
+    const phrase = query.replace(/"/g, "'");
     const params = new URLSearchParams({
-      search_query: `all:${query}`,
+      search_query: `all:"${phrase}"`,
       start: '0',
       max_results: String(limit),
       sortBy: 'relevance',

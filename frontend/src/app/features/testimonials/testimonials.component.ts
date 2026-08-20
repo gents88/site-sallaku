@@ -106,14 +106,21 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
   }
 
   private injectStructuredData(testimonials: Testimonial[]): void {
+    const lang = this.langService.current();
+    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/testimonials', lang)}`;
+    const title = this.translate.instant('testimonials.title');
     const nodes: object[] = [
       {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        url: `${SITE_ORIGIN}${withLangPrefix('/testimonials', this.langService.current())}`,
-        name: 'Testimonials',
-        description: 'What clients and collaborators say about working with Gent Sallaku.',
+        url: pageUrl,
+        name: title,
+        description: this.translate.instant('testimonials.subtitle'),
       },
+      this.seo.breadcrumb([
+        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: title, url: pageUrl },
+      ]),
       ...testimonials.map((t) => ({
         '@context': 'https://schema.org',
         '@type': 'Review',

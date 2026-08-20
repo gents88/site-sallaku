@@ -11,6 +11,7 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
+import { LibraryService } from '../../../core/services/library.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
 const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
@@ -56,6 +57,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly workspace = inject(WorkspaceService);
   private readonly analytics = inject(AnalyticsTrackingService);
   private readonly pdfjs = inject(PdfjsService);
+  private readonly library = inject(LibraryService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly platformId = inject(PLATFORM_ID);
@@ -152,6 +154,9 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   readonly sendingToWorkspace = signal(false);
   readonly justSent = signal(false);
 
+  readonly savingToLibrary = signal(false);
+  readonly justSaved = signal(false);
+
   private mobileQuery: MediaQueryList | null = null;
   private readonly onMobileQueryChange = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
   readonly isMobile = signal(false);
@@ -193,6 +198,8 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       this.mobileQuery.addEventListener('change', this.onMobileQueryChange);
       this.loadRecentSearches();
       this.loadFavorites();
+      // Serve a sapere quali risultati sono già in libreria, per mostrare "Salvato".
+      void this.library.refresh();
     }
 
     // Read once, not a reactive subscription: runSearch() below writes this
@@ -526,6 +533,62 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
         this.error.set('Invio a Workspace non riuscito. Riprova.');
       },
     });
+  }
+
+  isInLibrary(result: PdfSearchResult): boolean {
+    return this.library.has(result.id);
+  }
+
+  /**
+   * Scarica il PDF e lo archivia nella Libreria locale (IndexedDB), poi ne
+   * estrae il testo pagina per pagina così diventa subito cercabile e
+   * interrogabile. L'indicizzazione non blocca il salvataggio: se fallisce,
+   * il documento resta comunque in libreria e si potrà reindicizzare da lì.
+   */
+  saveToLibrary(result: PdfSearchResult): void {
+    this.analytics.trackClick('pdf_search_library_save', result.source);
+    this.savingToLibrary.set(true);
+    this.service.downloadBlob(result).subscribe({
+      next: async (blob) => {
+        try {
+          await this.library.add(
+            {
+              id: result.id,
+              title: result.title,
+              author: result.author,
+              year: result.year,
+              source: result.source,
+              sourceLabel: result.sourceLabel,
+              detailsUrl: result.detailsUrl,
+              coverUrl: result.coverUrl,
+            },
+            blob,
+          );
+          await this.indexSavedDoc(result.id, blob);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        } catch {
+          this.error.set('Salvataggio in libreria non riuscito. Riprova.');
+        } finally {
+          this.savingToLibrary.set(false);
+        }
+      },
+      error: () => {
+        this.savingToLibrary.set(false);
+        this.error.set('Salvataggio in libreria non riuscito. Riprova.');
+      },
+    });
+  }
+
+  private async indexSavedDoc(id: string, blob: Blob): Promise<void> {
+    try {
+      const doc = await this.pdfjs.openDocument(await blob.arrayBuffer());
+      const pages = await this.pdfjs.extractPages(doc);
+      await this.library.indexPages(id, pages);
+      await doc.loadingTask.destroy();
+    } catch {
+      // Documento salvato ma non indicizzato: la Libreria lo segnala e offre di riprovare.
+    }
   }
 
   @HostListener('window:keydown.escape')

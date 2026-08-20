@@ -24,13 +24,13 @@ import { SearchOverlayComponent } from './shared/components/search-overlay/searc
   standalone: true,
   imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, CommandPaletteComponent, SearchOverlayComponent],
   template: `
-    <a class="skip-link" href="#homepage">{{ 'skip.link' | translate }}</a>
+    <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
     <app-navbar />
     <app-consent-banner />
     <app-sidebar />
     <app-command-palette />
     <app-search-overlay />
-    <main>
+    <main id="main-content" tabindex="-1">
       <router-outlet />
     </main>
     <app-footer />

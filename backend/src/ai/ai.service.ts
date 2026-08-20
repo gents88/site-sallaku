@@ -2,6 +2,7 @@ import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { AiProviderService } from '../common/services/ai-provider.service';
+import { AskPassageDto as AskPassage } from './dto/ask-document.dto';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { PDFParse } = require('pdf-parse');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -261,6 +262,78 @@ Rules:
         content: s.content || '',
         notes: s.notes || '',
       })),
+    };
+  }
+
+  // ── ASK DOCUMENT (RAG) ───────────────────────────────────────────────
+
+  /**
+   * Risponde a una domanda usando SOLO i passaggi forniti dal client.
+   *
+   * Il recupero dei passaggi avviene nel browser — la Libreria vive in
+   * IndexedDB e il server non possiede i documenti — quindi qui non c'è
+   * nessuna ricerca da fare: il compito del modello è rispondere restando
+   * dentro il contesto ricevuto e citare le pagine da cui ha attinto.
+   */
+  async askDocument(question: string, passages: AskPassage[], lang: string) {
+    const start = Date.now();
+
+    const langMap: Record<string, string> = {
+      it: 'Italian', en: 'English', es: 'Spanish', fr: 'French',
+      de: 'German', pt: 'Portuguese', sq: 'Albanian',
+    };
+    const responseLang = langMap[lang] || 'Italian';
+
+    // I passaggi sono numerati: il modello cita per numero e noi rimappiamo
+    // sul documento/pagina reali, così una citazione inventata non può
+    // puntare a una pagina che non gli abbiamo mai mostrato.
+    const context = passages
+      .map((p, i) => `[${i + 1}] (${p.docTitle}, pagina ${p.page})\n${p.text}`)
+      .join('\n\n');
+
+    const raw = await this.callGroq([
+      {
+        role: 'system',
+        content: `You answer questions strictly from the provided excerpts of a user's own documents.
+Rules:
+- Use ONLY the excerpts. Never rely on outside knowledge.
+- If the excerpts do not contain the answer, say so plainly and set "grounded" to false.
+- Cite the excerpt numbers you actually used in "usedPassages".
+- Answer in ${responseLang}.
+Respond ONLY with valid JSON, no markdown.`,
+      },
+      {
+        role: 'user',
+        content: `Excerpts:\n\n${context}\n\nQuestion: ${question}\n\nReturn JSON:
+{
+  "answer": "the answer, in ${responseLang}",
+  "grounded": true,
+  "usedPassages": [1, 2]
+}`,
+      },
+    ], 1200);
+
+    interface AskJson {
+      answer?: string;
+      grounded?: boolean;
+      usedPassages?: number[];
+    }
+
+    const result = this.parseJson<AskJson>(raw);
+    const used = Array.isArray(result.usedPassages) ? result.usedPassages : [];
+
+    return {
+      answer: (result.answer ?? '').trim(),
+      grounded: result.grounded !== false,
+      citations: used
+        // Scarta gli indici fuori range: un modello che cita "[7]" avendone
+        // ricevuti 4 non deve produrre una citazione a una pagina inesistente.
+        .filter((n) => Number.isInteger(n) && n >= 1 && n <= passages.length)
+        .map((n) => ({
+          page: passages[n - 1].page,
+          docTitle: passages[n - 1].docTitle,
+        })),
+      processingTime: Date.now() - start,
     };
   }
 

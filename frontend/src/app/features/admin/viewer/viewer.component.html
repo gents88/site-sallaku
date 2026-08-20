@@ -61,6 +61,28 @@
           </div>
 
           <div class="vw-group">
+            @if (canAnnotate()) {
+              <button class="tb tb--wide" [class.tb--on]="annotateMode()" (click)="toggleAnnotateMode()">
+                {{ (annotateMode() ? 'viewer.annotate_off' : 'viewer.annotate_on') | translate }}
+              </button>
+              @if (annotateMode()) {
+                <span class="vw-colors">
+                  @for (c of colors; track c) {
+                    <button
+                      class="vw-color"
+                      [class.vw-color--on]="activeColor() === c"
+                      [style.background]="c"
+                      (click)="setColor(c)"
+                      [attr.aria-label]="c"
+                    ></button>
+                  }
+                </span>
+              }
+            } @else {
+              <button class="tb tb--wide" (click)="saveCurrentToLibrary()">
+                📚 {{ 'viewer.save_to_library' | translate }}
+              </button>
+            }
             <button class="tb tb--wide" (click)="close()">{{ 'viewer.close_file' | translate }}</button>
           </div>
         </div>
@@ -84,9 +106,101 @@
             }
           </aside>
           <main class="vw-main">
-            <canvas #page class="vw-canvas"></canvas>
+            <div class="vw-stage" [class.vw-stage--annotating]="annotateMode()">
+              <canvas
+                #page
+                class="vw-canvas"
+                (pointerdown)="onPointerDown($event)"
+                (pointermove)="onPointerMove($event)"
+                (pointerup)="onPointerUp($event)"
+                (pointercancel)="onPointerUp($event)"
+              ></canvas>
+
+              <!-- Overlay in percentuale: le annotazioni restano al loro posto a ogni zoom. -->
+              @for (a of pageAnnotations(); track a.id) {
+                <div
+                  class="vw-hl"
+                  [style.left.%]="a.rect.x * 100"
+                  [style.top.%]="a.rect.y * 100"
+                  [style.width.%]="a.rect.w * 100"
+                  [style.height.%]="a.rect.h * 100"
+                  [style.background]="a.color"
+                  [title]="a.note || a.quote"
+                ></div>
+              }
+
+              @if (dragRect(); as d) {
+                <div
+                  class="vw-hl vw-hl--draft"
+                  [style.left.%]="d.x * 100"
+                  [style.top.%]="d.y * 100"
+                  [style.width.%]="d.w * 100"
+                  [style.height.%]="d.h * 100"
+                  [style.background]="activeColor()"
+                ></div>
+              }
+            </div>
+
+            @if (annotateMode()) {
+              <p class="vw-annotate-hint">✏️ {{ 'viewer.annotate_hint' | translate }}</p>
+            }
           </main>
         </div>
+
+        <!-- ── Annotazioni del documento ────────── -->
+        @if (canAnnotate()) {
+          <section class="vw-notes">
+            <header class="vw-notes-head">
+              <h2>🖍 {{ 'viewer.annotations_title' | translate }}</h2>
+              @if (annotations().length) {
+                <button class="tb tb--wide" (click)="exportAnnotations()">
+                  {{ 'viewer.export_annotations' | translate }} →
+                </button>
+              }
+            </header>
+
+            @if (annotations().length === 0) {
+              <p class="vw-notes-empty">{{ 'viewer.annotations_empty' | translate }}</p>
+            } @else {
+              <ul class="vw-notes-list">
+                @for (a of annotations(); track a.id) {
+                  <li class="vw-note" [style.border-left-color]="a.color">
+                    <button class="vw-note-jump" (click)="goToAnnotation(a)">
+                      {{ 'library.page_n' | translate: { n: a.page } }}
+                    </button>
+                    @if (a.quote) {
+                      <blockquote class="vw-note-quote">{{ a.quote }}</blockquote>
+                    }
+
+                    @if (editingNoteId() === a.id) {
+                      <div class="vw-note-editor">
+                        <input
+                          type="text"
+                          [ngModel]="noteDraft()"
+                          (ngModelChange)="noteDraft.set($event)"
+                          (keyup.enter)="saveNote(a)"
+                          [placeholder]="'viewer.note_placeholder' | translate"
+                        />
+                        <button class="tb" (click)="saveNote(a)">✓</button>
+                        <button class="tb" (click)="cancelNote()">✕</button>
+                      </div>
+                    } @else {
+                      <button class="vw-note-text" (click)="startNote(a)">
+                        {{ a.note || ('viewer.note_placeholder' | translate) }}
+                      </button>
+                    }
+
+                    <button
+                      class="vw-note-del"
+                      (click)="deleteAnnotation(a)"
+                      [attr.aria-label]="'viewer.delete_annotation' | translate"
+                    >🗑</button>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+        }
 
         <!-- ── Navigazione pagina mobile (sostituisce la sidebar thumb sotto i 700px) ── -->
         <div class="vw-mobile-nav">

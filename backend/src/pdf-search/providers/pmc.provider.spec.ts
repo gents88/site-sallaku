@@ -108,4 +108,13 @@ describe('PmcProvider', () => {
 
     expect(results).toEqual([]);
   });
+
+  it('scopes the query to TITLE:(...) instead of an unqualified value — Europe PMC\'s default field matches title/abstract/author/full-text together, so an unqualified multi-word query loosely matched any single field (e.g. an author surname), unrelated to the query as a whole (verified live)', async () => {
+    fetchMock.mockResolvedValue(jsonResponse({ resultList: { result: [] } }));
+
+    await provider.search('piccolo principe', 10);
+
+    const requestedUrl = new URL(fetchMock.mock.calls[0][0] as string);
+    expect(requestedUrl.searchParams.get('query')).toBe('TITLE:(piccolo principe) AND OPEN_ACCESS:Y AND HAS_PDF:Y');
+  });
 });

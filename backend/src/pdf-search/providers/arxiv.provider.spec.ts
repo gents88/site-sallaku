@@ -107,4 +107,22 @@ describe('ArxivProvider', () => {
 
     expect(results.map((r) => r.id)).toEqual(['arxiv-a1', 'arxiv-a2']);
   });
+
+  it('sends a quoted phrase, not a bare multi-word value — arXiv silently splits an unquoted value into an OR of the individual terms (verified live), surfacing papers whose author happens to be surnamed after one of the words rather than papers about the phrase', async () => {
+    fetchMock.mockResolvedValue(textResponse(ATOM_HEADER + ATOM_FOOTER));
+
+    await provider.search('piccolo principe', 5);
+
+    const requestedUrl = new URL(fetchMock.mock.calls[0][0] as string);
+    expect(requestedUrl.searchParams.get('search_query')).toBe('all:"piccolo principe"');
+  });
+
+  it('strips double quotes from the query so a user-supplied quote cannot break out of the phrase wrapper', async () => {
+    fetchMock.mockResolvedValue(textResponse(ATOM_HEADER + ATOM_FOOTER));
+
+    await provider.search('foo "bar" baz', 5);
+
+    const requestedUrl = new URL(fetchMock.mock.calls[0][0] as string);
+    expect(requestedUrl.searchParams.get('search_query')).toBe(`all:"foo 'bar' baz"`);
+  });
 });
