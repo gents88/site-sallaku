@@ -1000,7 +1000,12 @@
     "faq_q6": "A është falas motori i kërkimit për PDF?",
     "faq_a6": "Po, plotësisht falas, pa regjistrim dhe pa kufij përdorimi, përveç një kufiri teknik anti-abuzim prej 20 kërkimesh në minutë.",
     "quality_hd": "Rezolucion i lartë",
-    "quality_low": "Rezolucion i ulët"
+    "quality_low": "Rezolucion i ulët",
+    "group_similar_label": "Grupo edicionet e ngjashme",
+    "duplicate_count": "+{{count}} edicione të tjera",
+    "favorites_title": "Të preferuarat e tua",
+    "btn_favorite_add": "Shto te të preferuarat",
+    "btn_favorite_remove": "Hiq nga të preferuarat"
   },
   "convert": {
     "title": "Konvertues",

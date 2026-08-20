@@ -1000,7 +1000,12 @@
     "faq_q6": "Il motore di ricerca PDF è gratuito?",
     "faq_a6": "Sì, completamente gratuito, senza registrazione né limiti di utilizzo, salvo un limite tecnico anti-abuso di 20 ricerche al minuto.",
     "quality_hd": "Alta risoluzione",
-    "quality_low": "Bassa risoluzione"
+    "quality_low": "Bassa risoluzione",
+    "group_similar_label": "Raggruppa edizioni simili",
+    "duplicate_count": "+{{count}} altre edizioni",
+    "favorites_title": "I tuoi preferiti",
+    "btn_favorite_add": "Aggiungi ai preferiti",
+    "btn_favorite_remove": "Rimuovi dai preferiti"
   },
   "convert": {
     "title": "Convertitore",
