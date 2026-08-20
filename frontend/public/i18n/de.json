@@ -974,7 +974,6 @@
     "feature_preview_title": "Sofortige Vorschau",
     "feature_preview_desc": "Sieh dir das PDF direkt im Browser an, bevor du es herunterlädst.",
     "preview_unavailable": "Vorschau für diese Quelle nicht verfügbar. Lade das PDF herunter, um es zu lesen.",
-    "mobile_preview_hint": "Die eingebettete Vorschau zeigt auf Mobilgeräten nur die erste Seite. Nutze unten „PDF herunterladen“, um das ganze Dokument im Viewer deines Telefons zu durchblättern.",
     "filter_all": "Alle",
     "filter_books": "Bücher",
     "filter_papers": "Paper",
@@ -984,7 +983,9 @@
     "sort_year_desc": "Jahr (neueste)",
     "sort_year_asc": "Jahr (älteste)",
     "btn_send_workspace": "An Workspace senden",
-    "workspace_sent": "Gesendet"
+    "workspace_sent": "Gesendet",
+    "recent_searches_title": "Letzte Suchen",
+    "recent_clear": "Löschen"
   },
   "convert": {
     "title": "Konverter",

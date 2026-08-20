@@ -974,7 +974,6 @@
     "feature_preview_title": "Parashikim i Menjëhershëm",
     "feature_preview_desc": "Shiko PDF-në direkt në shfletues para se ta shkarkosh.",
     "preview_unavailable": "Parashikimi nuk është i disponueshëm për këtë burim. Shkarko PDF-në për ta lexuar.",
-    "mobile_preview_hint": "Parashikimi i integruar në celular shfaq vetëm faqen e parë. Përdor \"Shkarko PDF\" më poshtë për ta shfletuar të gjithë në shikuesin e telefonit.",
     "filter_all": "Të gjitha",
     "filter_books": "Libra",
     "filter_papers": "Artikuj",
@@ -984,7 +983,9 @@
     "sort_year_desc": "Vitit (më i ri)",
     "sort_year_asc": "Vitit (më i vjetër)",
     "btn_send_workspace": "Dërgo te Workspace",
-    "workspace_sent": "U dërgua"
+    "workspace_sent": "U dërgua",
+    "recent_searches_title": "Kërkimet e fundit",
+    "recent_clear": "Pastro"
   },
   "convert": {
     "title": "Konvertues",
