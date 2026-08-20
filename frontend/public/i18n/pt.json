@@ -974,7 +974,17 @@
     "feature_preview_title": "Pré-visualização Instantânea",
     "feature_preview_desc": "Veja o PDF diretamente no navegador antes de baixá-lo.",
     "preview_unavailable": "Pré-visualização não disponível para esta fonte. Baixe o PDF para lê-lo.",
-    "mobile_preview_hint": "A pré-visualização incorporada no celular mostra apenas a primeira página. Use \"Baixar PDF\" abaixo para percorrer o documento inteiro no visualizador do seu telefone."
+    "mobile_preview_hint": "A pré-visualização incorporada no celular mostra apenas a primeira página. Use \"Baixar PDF\" abaixo para percorrer o documento inteiro no visualizador do seu telefone.",
+    "filter_all": "Todos",
+    "filter_books": "Livros",
+    "filter_papers": "Artigos",
+    "filter_no_results": "Nenhum resultado para este filtro. Tente \"Todos\".",
+    "sort_label": "Ordenar por",
+    "sort_relevance": "Relevância",
+    "sort_year_desc": "Ano (mais recente)",
+    "sort_year_asc": "Ano (mais antigo)",
+    "btn_send_workspace": "Enviar para o Workspace",
+    "workspace_sent": "Enviado"
   },
   "convert": {
     "title": "Conversor",
