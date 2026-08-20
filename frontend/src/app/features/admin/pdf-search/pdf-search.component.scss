@@ -275,31 +275,70 @@ $error-clr:     #f87171;
 }
 
 .result-card {
+  position: relative;
   display: flex; flex-direction: column; align-items: stretch;
   padding: 0; background: var(--bg-secondary, #161b22);
   border: 1px solid var(--border-color, #30363d);
   border-radius: 14px; overflow: hidden; cursor: pointer;
   text-align: left; font: inherit; color: inherit;
-  transition: border-color 0.15s, transform 0.15s;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 
-  &:hover { border-color: $accent-border; transform: translateY(-2px); }
-  &.active { border-color: $accent; box-shadow: 0 0 0 1px $accent; }
+  &:hover { border-color: $accent-border; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+  &:hover .result-cover .hover-hint { opacity: 1; }
+  &:hover .result-cover img { transform: scale(1.05); }
+  &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
+  &.active { border-color: $accent; box-shadow: 0 0 0 1px $accent, 0 8px 20px rgba(0, 0, 0, 0.25); }
+}
+
+.active-badge {
+  position: absolute; top: 8px; right: 8px; z-index: 2;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: $accent; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .result-cover {
-  height: 150px;
+  position: relative;
+  width: 100%; aspect-ratio: 2 / 3; max-height: 220px;
   display: flex; align-items: center; justify-content: center;
   background: var(--bg-tertiary, #0d1117);
   overflow: hidden;
 
-  img { width: 100%; height: 100%; object-fit: cover; }
-  .cover-fallback { font-size: 32px; opacity: 0.4; }
+  img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s ease; }
+  .cover-fallback { font-size: 32px; opacity: 0.5; }
+
+  // Tinted gradient fallback background per source, so cards without a real
+  // cover (arXiv/PMC never have one; Gutenberg sometimes doesn't) still read
+  // as visually distinct instead of every one being identical flat gray.
+  &.source-ia:not(:has(img)) { background: linear-gradient(150deg, rgba(56, 189, 248, 0.16), var(--bg-tertiary, #0d1117)); }
+  &.source-gb:not(:has(img)) { background: linear-gradient(150deg, $accent-glow, var(--bg-tertiary, #0d1117)); }
+  &.source-arxiv:not(:has(img)) { background: linear-gradient(150deg, rgba(248, 113, 113, 0.16), var(--bg-tertiary, #0d1117)); }
+  &.source-pmc:not(:has(img)) { background: linear-gradient(150deg, rgba(251, 191, 36, 0.16), var(--bg-tertiary, #0d1117)); }
+}
+
+.hover-hint {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0; transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.no-preview-badge {
+  position: absolute; top: 6px; left: 6px; z-index: 1;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(13, 17, 23, 0.85);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
 }
 
 .result-info { padding: 12px 14px 14px; }
 
 .result-title {
-  font-size: 13.5px; font-weight: 700; margin: 0 0 4px;
+  font-size: 13.5px; font-weight: 700; margin: 0 0 4px; line-height: 1.35;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 
