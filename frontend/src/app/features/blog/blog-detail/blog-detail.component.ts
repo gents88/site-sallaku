@@ -7,6 +7,7 @@ import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
+import { TranslateService } from '@ngx-translate/core';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { PrismService } from '../../../shared/services/prism.service';
 import { TrackClickDirective } from '../../../shared/directives/track-click.directive';
@@ -101,7 +102,12 @@ export class BlogDetailComponent implements OnInit {
     return this.post.content;
   }
 
-  constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {
+  constructor(
+    private blogService: BlogService,
+    private seo: SeoService,
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef,
+  ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
   }
@@ -151,34 +157,42 @@ export class BlogDetailComponent implements OnInit {
           type: 'article',
           url: pageUrl,
         });
-        this.seo.injectJsonLd({
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          '@id': `${pageUrl}#article`,
-          headline: this.localizedMetaTitle,
-          description: this.localizedMetaDescription,
-          image: post.coverImage ? [post.coverImage] : undefined,
-          url: pageUrl,
-          datePublished: post.publishedAt,
-          dateModified: post.updatedAt ?? post.publishedAt,
-          mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': pageUrl,
+        const lang = this.currentLang();
+        this.seo.injectJsonLd([
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            '@id': `${pageUrl}#article`,
+            headline: this.localizedMetaTitle,
+            description: this.localizedMetaDescription,
+            image: post.coverImage ? [post.coverImage] : undefined,
+            url: pageUrl,
+            datePublished: post.publishedAt,
+            dateModified: post.updatedAt ?? post.publishedAt,
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': pageUrl,
+            },
+            author: {
+              '@type': 'Person',
+              '@id': 'https://gentsallaku.it/#person',
+              name: 'Gent Sallaku',
+              url: 'https://gentsallaku.it',
+            },
+            publisher: {
+              '@type': 'Person',
+              '@id': 'https://gentsallaku.it/#person',
+              name: 'Gent Sallaku',
+            },
+            keywords: post.tags?.join(', '),
+            inLanguage: lang,
           },
-          author: {
-            '@type': 'Person',
-            '@id': 'https://gentsallaku.it/#person',
-            name: 'Gent Sallaku',
-            url: 'https://gentsallaku.it',
-          },
-          publisher: {
-            '@type': 'Person',
-            '@id': 'https://gentsallaku.it/#person',
-            name: 'Gent Sallaku',
-          },
-          keywords: post.tags?.join(', '),
-          inLanguage: this.currentLang(),
-        });
+          this.seo.breadcrumb([
+            { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+            { name: 'Blog', url: `${SITE_ORIGIN}${withLangPrefix('/blog', lang)}` },
+            { name: this.localizedMetaTitle, url: pageUrl },
+          ]),
+        ]);
       },
       error: () => { this.notFound = true; this.cdr.markForCheck(); },
     });

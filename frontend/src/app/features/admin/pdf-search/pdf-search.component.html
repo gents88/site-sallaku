@@ -305,6 +305,15 @@
           <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener" (click)="trackDownload(sel)">
             📥 {{ 'pdf_search.btn_download' | translate }}
           </a>
+          <button type="button" class="btn-library" [disabled]="savingToLibrary()" (click)="saveToLibrary(sel)">
+            @if (savingToLibrary()) {
+              <span class="spinner"></span>
+            } @else if (justSaved() || isInLibrary(sel)) {
+              ✓ {{ 'pdf_search.library_saved' | translate }}
+            } @else {
+              📚 {{ 'pdf_search.btn_save_library' | translate }}
+            }
+          </button>
           <button type="button" class="btn-workspace" [disabled]="sendingToWorkspace()" (click)="sendToWorkspace(sel)">
             @if (sendingToWorkspace()) {
               <span class="spinner"></span>

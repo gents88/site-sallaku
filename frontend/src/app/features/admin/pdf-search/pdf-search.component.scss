@@ -494,12 +494,13 @@ $error-clr:     #f87171;
   font-size: 13px; color: var(--text-secondary, #8b949e);
 
   button {
-    width: 30px; height: 30px; border-radius: 8px;
-    background: var(--bg-tertiary, #0d1117); border: 1px solid var(--border-color, #30363d);
-    color: var(--text-primary, #e6edf3); font-size: 16px; cursor: pointer;
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25);
+    color: var(--text-primary, #e6edf3); font-size: 20px; font-weight: 600; line-height: 1;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
 
-    &:hover:not(:disabled) { border-color: $accent-border; }
-    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &:hover:not(:disabled) { border-color: $accent-border; background: rgba(255, 255, 255, 0.14); }
+    &:disabled { opacity: 0.35; cursor: not-allowed; }
   }
 }
 
@@ -530,7 +531,8 @@ $error-clr:     #f87171;
 
 .btn-download,
 .btn-source,
-.btn-workspace {
+.btn-workspace,
+.btn-library {
   flex: 1; text-align: center;
   padding: 10px 14px; border-radius: 10px;
   font-size: 13px; font-weight: 700; text-decoration: none;
@@ -550,6 +552,14 @@ $error-clr:     #f87171;
 .btn-workspace {
   background: transparent; border: 1px solid var(--border-color, #30363d);
   color: var(--text-primary, #e6edf3);
+}
+
+// Salvataggio in Libreria: è l'azione che vogliamo incoraggiare rispetto al
+// download secco, quindi si distingue dagli altri bottoni secondari.
+.btn-library {
+  background: rgba(108, 99, 255, 0.14);
+  border: 1px solid rgba(108, 99, 255, 0.4);
+  color: #c4b5fd;
 }
 
 .legal-note {
@@ -578,7 +588,7 @@ $error-clr:     #f87171;
   // Side-by-side "Scarica PDF" / "Vedi pagina sorgente →" gets too cramped
   // for the longer label at this width — stack them full-width instead.
   .preview-actions { flex-direction: column; }
-  .btn-download, .btn-source, .btn-workspace { width: 100%; }
+  .btn-download, .btn-source, .btn-workspace, .btn-library { width: 100%; }
 }
 
 // ── FAQ ──────────────────────────────────────────────────────────────────────

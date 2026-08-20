@@ -27,6 +27,35 @@ export class PdfjsService {
     return pdfjs.getDocument({ data }).promise;
   }
 
+  /**
+   * Estrae il testo pagina per pagina, per l'indicizzazione della Libreria.
+   *
+   * Restituisce una riga per ogni pagina anche quando è vuota: chi legge ha
+   * bisogno del conteggio pagine reale per distinguere "documento senza testo"
+   * (scansione) da "documento non ancora indicizzato".
+   */
+  async extractPages(
+    doc: PdfDocument,
+    onProgress?: (done: number, total: number) => void,
+  ): Promise<{ page: number; text: string }[]> {
+    const pages: { page: number; text: string }[] = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const content = await page.getTextContent();
+      const text = content.items
+        .map((it) => ('str' in it ? it.str : ''))
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      pages.push({ page: i, text });
+      // La pagina resta in cache dentro pdf.js finché il documento è vivo: su un
+      // libro da 800 pagine è memoria che non serve più una volta letto il testo.
+      page.cleanup();
+      onProgress?.(i, doc.numPages);
+    }
+    return pages;
+  }
+
   /** Rasterizza una pagina in PNG (Blob), a scala data. */
   async renderPageToBlob(page: PdfPage, scale = 2): Promise<Blob> {
     const viewport = page.getViewport({ scale });

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, AfterViewInit, ElementRef, inject, PLATFORM_ID } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { take } from 'rxjs/operators';
@@ -41,6 +41,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
     private snackBar: MatSnackBar,
     private seo: SeoService,
     private langService: LanguageService,
+    private translate: TranslateService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -56,24 +57,33 @@ export class ContactComponent implements OnInit, AfterViewInit {
       .pipe(take(1))
       .subscribe(() => void loadStylesheetOnce(MATERIAL_CSS));
 
-    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/contact', this.langService.current())}`;
+    const lang = this.langService.current();
+    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/contact', lang)}`;
+    const title = this.translate.instant('contact.title');
+    const description = this.translate.instant('contact.info.desc');
     this.seo.update({
-      title: 'Contact',
-      description: 'Get in touch with Gent Sallaku for web development projects, collaborations or freelance work.',
+      title,
+      description,
       url: pageUrl,
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'ContactPage',
-      url: pageUrl,
-      name: 'Contact Gent Sallaku',
-      description: 'Get in touch with Gent Sallaku for web development projects.',
-      author: {
-        '@type': 'Person',
-        '@id': 'https://gentsallaku.it/#person',
-        name: 'Gent Sallaku',
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'ContactPage',
+        url: pageUrl,
+        name: title,
+        description,
+        author: {
+          '@type': 'Person',
+          '@id': 'https://gentsallaku.it/#person',
+          name: 'Gent Sallaku',
+        },
       },
-    });
+      this.seo.breadcrumb([
+        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: title, url: pageUrl },
+      ]),
+    ]);
   }
 
   ngAfterViewInit(): void {
