@@ -1,10 +1,15 @@
-import { Controller, Get, Query, Param, Req, Res, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Query, Param, Req, Res, BadRequestException, NotFoundException } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { PdfSearchService } from './pdf-search.service';
 import { GutenbergProvider } from './providers/gutenberg.provider';
+
+// Hosts the /proxy endpoint will fetch on the client's behalf — an allow-list,
+// not a generic proxy, to keep this from becoming an SSRF vector.
+const PROXY_ALLOWED_HOSTS = ['archive.org', 'arxiv.org', 'europepmc.org'];
+const PROXY_MAX_BYTES = 100 * 1024 * 1024;
 
 @ApiTags('PDF Search')
 @Controller('pdf-search')
@@ -60,5 +65,44 @@ export class PdfSearchController {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Cache-Control', 'public, max-age=86400');
     res.send(pdf);
+  }
+
+  // ── GET /pdf-search/proxy?url=... ────────────────────────────────────
+  // Internet Archive doesn't send Access-Control-Allow-Origin on its PDF
+  // files (verified live), so the frontend can't fetch() the bytes directly
+  // to hand them to the Workspace tool — only <iframe>/<a> navigation works
+  // cross-origin without it. This relays the bytes through our own origin,
+  // which the frontend already has CORS access to.
+  @Get('proxy')
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Proxy-fetch a PDF from an allow-listed source for cross-origin client-side use' })
+  async proxyPdf(@Query('url') url: string | undefined, @Res() res: Response) {
+    if (!url) throw new BadRequestException('url is required');
+
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      throw new BadRequestException('url is not a valid URL');
+    }
+    if (parsed.protocol !== 'https:') throw new BadRequestException('url must use https');
+    const allowed = PROXY_ALLOWED_HOSTS.some((h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`));
+    if (!allowed) throw new BadRequestException('url host is not allow-listed');
+
+    const upstream = await fetch(parsed.toString(), { signal: AbortSignal.timeout(20_000) });
+    if (!upstream.ok) throw new NotFoundException('Could not fetch the requested file');
+
+    const contentType = upstream.headers.get('content-type') ?? '';
+    if (!contentType.includes('application/pdf')) throw new BadRequestException('Requested resource is not a PDF');
+
+    const contentLength = Number(upstream.headers.get('content-length') ?? '0');
+    if (contentLength > PROXY_MAX_BYTES) throw new BadRequestException('File is too large to proxy');
+
+    const buffer = Buffer.from(await upstream.arrayBuffer());
+    if (buffer.byteLength > PROXY_MAX_BYTES) throw new BadRequestException('File is too large to proxy');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(buffer);
   }
 }

@@ -71,9 +71,16 @@
     }
 
     @if (loading()) {
-      <div class="state-panel">
-        <span class="spinner spinner-lg"></span>
-        <p>{{ 'pdf_search.searching' | translate }}</p>
+      <div class="results-grid" aria-hidden="true">
+        @for (i of skeletonPlaceholders; track $index) {
+          <div class="result-card skeleton-card">
+            <div class="result-cover skeleton-shimmer"></div>
+            <div class="result-info">
+              <div class="skeleton-line skeleton-shimmer"></div>
+              <div class="skeleton-line skeleton-shimmer short"></div>
+            </div>
+          </div>
+        }
       </div>
     }
 
@@ -86,8 +93,35 @@
     }
 
     @if (results().length > 0 && !loading()) {
+      <div class="results-toolbar">
+        <div class="filter-chips">
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'all'" (click)="sourceFilter.set('all')">
+            {{ 'pdf_search.filter_all' | translate }}
+          </button>
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'books'" (click)="sourceFilter.set('books')">
+            {{ 'pdf_search.filter_books' | translate }}
+          </button>
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'papers'" (click)="sourceFilter.set('papers')">
+            {{ 'pdf_search.filter_papers' | translate }}
+          </button>
+        </div>
+
+        <select class="sort-select" [(ngModel)]="sortBy" [attr.aria-label]="'pdf_search.sort_label' | translate">
+          <option value="relevance">{{ 'pdf_search.sort_relevance' | translate }}</option>
+          <option value="year_desc">{{ 'pdf_search.sort_year_desc' | translate }}</option>
+          <option value="year_asc">{{ 'pdf_search.sort_year_asc' | translate }}</option>
+        </select>
+      </div>
+
+      @if (displayResults().length === 0) {
+        <div class="state-panel">
+          <div class="state-icon">🗂️</div>
+          <p>{{ 'pdf_search.filter_no_results' | translate }}</p>
+        </div>
+      }
+
       <div class="results-grid">
-        @for (r of results(); track r.id) {
+        @for (r of displayResults(); track r.id) {
           <button
             type="button"
             class="result-card"
@@ -169,6 +203,13 @@
           <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener">
             📥 {{ 'pdf_search.btn_download' | translate }}
           </a>
+          <button type="button" class="btn-workspace" [disabled]="sendingToWorkspace()" (click)="sendToWorkspace(sel)">
+            @if (sendingToWorkspace()) {
+              <span class="spinner"></span>
+            } @else {
+              {{ justSent() ? '✓' : '🔗' }} {{ justSent() ? ('pdf_search.workspace_sent' | translate) : ('pdf_search.btn_send_workspace' | translate) }}
+            }
+          </button>
           <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener">
             {{ 'pdf_search.btn_source_page' | translate }} →
           </a>

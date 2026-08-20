@@ -974,7 +974,17 @@
     "feature_preview_title": "Instant Preview",
     "feature_preview_desc": "View the PDF right in your browser before downloading it.",
     "preview_unavailable": "Preview not available for this source. Download the PDF to read it.",
-    "mobile_preview_hint": "The embedded preview on mobile only shows the first page. Use \"Download PDF\" below to browse the whole document in your phone's viewer."
+    "mobile_preview_hint": "The embedded preview on mobile only shows the first page. Use \"Download PDF\" below to browse the whole document in your phone's viewer.",
+    "filter_all": "All",
+    "filter_books": "Books",
+    "filter_papers": "Papers",
+    "filter_no_results": "No results for this filter. Try \"All\".",
+    "sort_label": "Sort by",
+    "sort_relevance": "Relevance",
+    "sort_year_desc": "Year (newest)",
+    "sort_year_asc": "Year (oldest)",
+    "btn_send_workspace": "Send to Workspace",
+    "workspace_sent": "Sent"
   },
   "convert": {
     "title": "Converter",

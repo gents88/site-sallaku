@@ -5,7 +5,10 @@ import { ArxivProvider } from './providers/arxiv.provider';
 import { PmcProvider } from './providers/pmc.provider';
 import { PdfSearchProvider, PdfSearchResult } from './interfaces/pdf-search-result.interface';
 
-const DEFAULT_LIMIT = 12;
+// 20, not 12: the frontend's source filter (books / papers) narrows this
+// same result set client-side, so a wider pool keeps each filtered view from
+// looking sparse.
+const DEFAULT_LIMIT = 20;
 
 @Injectable()
 export class PdfSearchService {

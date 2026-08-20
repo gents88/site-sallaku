@@ -974,7 +974,17 @@
     "feature_preview_title": "Vista Previa Instantánea",
     "feature_preview_desc": "Consulta el PDF directamente en el navegador antes de descargarlo.",
     "preview_unavailable": "Vista previa no disponible para esta fuente. Descarga el PDF para leerlo.",
-    "mobile_preview_hint": "La vista previa integrada en móvil solo muestra la primera página. Usa \"Descargar PDF\" abajo para verlo completo en el visor de tu teléfono."
+    "mobile_preview_hint": "La vista previa integrada en móvil solo muestra la primera página. Usa \"Descargar PDF\" abajo para verlo completo en el visor de tu teléfono.",
+    "filter_all": "Todos",
+    "filter_books": "Libros",
+    "filter_papers": "Artículos",
+    "filter_no_results": "Sin resultados para este filtro. Prueba \"Todos\".",
+    "sort_label": "Ordenar por",
+    "sort_relevance": "Relevancia",
+    "sort_year_desc": "Año (más reciente)",
+    "sort_year_asc": "Año (más antiguo)",
+    "btn_send_workspace": "Enviar a Workspace",
+    "workspace_sent": "Enviado"
   },
   "convert": {
     "title": "Convertidor",

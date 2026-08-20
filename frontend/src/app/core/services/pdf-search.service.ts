@@ -36,4 +36,18 @@ export class PdfSearchService {
         catchError((err) => throwError(() => err)),
       );
   }
+
+  /**
+   * Fetches a result's PDF bytes for handoff to the Workspace tool. Gutenberg
+   * results already point at our own backend (CORS already open to this
+   * frontend), but Internet Archive/arXiv/PMC don't send
+   * Access-Control-Allow-Origin on the file itself — those go through our
+   * `/pdf-search/proxy` relay instead, which does.
+   */
+  downloadBlob(result: PdfSearchResult): Observable<Blob> {
+    const url = result.source === 'gutenberg'
+      ? result.pdfUrl
+      : `${this.api}/proxy?url=${encodeURIComponent(result.pdfUrl)}`;
+    return this.http.get(url, { responseType: 'blob' });
+  }
 }
