@@ -77,6 +77,7 @@ export class GutenbergProvider implements PdfSearchProvider {
       coverUrl,
       detailsUrl: `https://www.gutenberg.org/ebooks/${book.id}`,
       previewable: true,
+      scanPpi: null, // rendered from plain text by us, never a scan
     };
   }
 

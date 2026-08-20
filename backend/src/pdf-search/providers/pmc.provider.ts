@@ -77,6 +77,7 @@ export class PmcProvider implements PdfSearchProvider {
       coverUrl: null,
       detailsUrl: `https://europepmc.org/article/PMC/${r.pmcid}`,
       previewable: false,
+      scanPpi: null, // native digital PDF, never a scan
     };
   }
 }
