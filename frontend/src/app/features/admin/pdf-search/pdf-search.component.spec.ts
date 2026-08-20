@@ -114,32 +114,31 @@ describe('PdfSearchComponent', () => {
     });
   });
 
-  describe('live debounced search', () => {
-    it('does not search immediately after typing, only once the debounce window elapses', async () => {
-      vi.useFakeTimers();
+  describe('search only fires on an explicit trigger', () => {
+    it('typing into the query signal alone never calls the search API (no search-as-you-type)', async () => {
       configure();
       const fixture = TestBed.createComponent(PdfSearchComponent);
       const component = fixture.componentInstance;
 
       component.query.set('piccolo');
+      // Give any stray async/microtask work a chance to run — there should be none.
+      await Promise.resolve();
+
       expect(searchMock).not.toHaveBeenCalled();
-
-      await vi.advanceTimersByTimeAsync(500);
-
-      expect(searchMock).toHaveBeenCalledTimes(1);
-      expect(searchMock).toHaveBeenCalledWith('piccolo');
     });
 
-    it('does not trigger a search for a single-character query', async () => {
-      vi.useFakeTimers();
+    it('search() only runs for a query of 2+ characters', () => {
       configure();
       const fixture = TestBed.createComponent(PdfSearchComponent);
       const component = fixture.componentInstance;
 
       component.query.set('p');
-      await vi.advanceTimersByTimeAsync(500);
-
+      component.search();
       expect(searchMock).not.toHaveBeenCalled();
+
+      component.query.set('piccolo');
+      component.search();
+      expect(searchMock).toHaveBeenCalledWith('piccolo');
     });
   });
 

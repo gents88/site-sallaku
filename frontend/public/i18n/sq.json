@@ -985,7 +985,20 @@
     "btn_send_workspace": "Dërgo te Workspace",
     "workspace_sent": "U dërgua",
     "recent_searches_title": "Kërkimet e fundit",
-    "recent_clear": "Pastro"
+    "recent_clear": "Pastro",
+    "faq_title": "Pyetje të shpeshta",
+    "faq_q1": "Si funksionon ky motor kërkimi për PDF?",
+    "faq_a1": "Kërkon njëkohësisht në Internet Archive, Project Gutenberg, arXiv dhe PubMed Central dhe shfaq vetëm rezultatet me një PDF vërtet të disponueshëm, me parashikim direkt në shfletues përpara shkarkimit.",
+    "faq_q2": "A është legale të shkarkosh këto PDF?",
+    "faq_a2": "Po. Çdo burim i indeksuar publikon vetëm material në pronësi publike ose me qasje të hapur: libra me të drejta autori të skaduara, artikuj shkencorë dhe punime me licencë shpërndarjeje të lirë. Asnjë përmbajtje e piratuar.",
+    "faq_q3": "Cilat burime mbulon kjo kërkim PDF pa të drejta autori?",
+    "faq_a3": "Internet Archive dhe Project Gutenberg për libra dhe klasikë në pronësi publike, arXiv dhe PubMed Central për artikuj shkencorë dhe akademikë me qasje të hapur.",
+    "faq_q4": "A mund të kërkoj libra PDF në pronësi publike në shqip?",
+    "faq_a4": "Po, Internet Archive përfshin shumë skanime në pronësi publike në dhjetëra gjuhë, përveç katalogut kryesisht në anglisht të Project Gutenberg.",
+    "faq_q5": "Pse disa rezultate nuk kanë parashikim?",
+    "faq_a5": "Disa burime (p.sh. PubMed Central) pengojnë integrimin e drejtpërdrejtë të faqes për arsye teknike të serverit të tyre — në atë rast, shkarkimi mbetet gjithsesi i disponueshëm.",
+    "faq_q6": "A është falas motori i kërkimit për PDF?",
+    "faq_a6": "Po, plotësisht falas, pa regjistrim dhe pa kufij përdorimi, përveç një kufiri teknik anti-abuzim prej 20 kërkimesh në minutë."
   },
   "convert": {
     "title": "Konvertues",
