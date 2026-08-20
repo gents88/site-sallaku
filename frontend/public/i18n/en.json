@@ -985,7 +985,20 @@
     "btn_send_workspace": "Send to Workspace",
     "workspace_sent": "Sent",
     "recent_searches_title": "Recent searches",
-    "recent_clear": "Clear"
+    "recent_clear": "Clear",
+    "faq_title": "Frequently asked questions",
+    "faq_q1": "How does this PDF search engine work?",
+    "faq_a1": "It searches Internet Archive, Project Gutenberg, arXiv and PubMed Central at the same time and only shows results with an actually available PDF, with a direct in-browser preview before downloading.",
+    "faq_q2": "Is it legal to download these PDFs?",
+    "faq_a2": "Yes. Every indexed source only publishes public-domain or open-access material: books with expired copyright, scientific papers and freely licensed articles. No pirated content.",
+    "faq_q3": "What sources does this copyright-free PDF search cover?",
+    "faq_a3": "Internet Archive and Project Gutenberg for public-domain books and classics, arXiv and PubMed Central for scientific papers and open-access academic articles.",
+    "faq_q4": "Can I search for public-domain PDF books in other languages?",
+    "faq_a4": "Yes, Internet Archive includes many public-domain scans in dozens of languages, alongside Project Gutenberg's mostly English-language catalog.",
+    "faq_q5": "Why don't some results have a preview?",
+    "faq_a5": "Some sources (e.g. PubMed Central) block direct page embedding for technical reasons on their server — in that case, downloading is still available.",
+    "faq_q6": "Is the PDF search engine free?",
+    "faq_a6": "Yes, completely free, no registration and no usage limits, aside from a technical anti-abuse cap of 20 searches per minute."
   },
   "convert": {
     "title": "Converter",

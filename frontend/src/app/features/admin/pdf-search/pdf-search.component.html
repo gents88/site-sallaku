@@ -248,4 +248,17 @@
     </div>
   }
 
+  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
+  <section class="faq">
+    <h2 class="faq-title">{{ 'pdf_search.faq_title' | translate }}</h2>
+    <div class="faq-list">
+      @for (item of faqs; track item.qKey) {
+        <details class="faq-item">
+          <summary>{{ item.qKey | translate }}</summary>
+          <p>{{ item.aKey | translate }}</p>
+        </details>
+      }
+    </div>
+  </section>
+
 </div>

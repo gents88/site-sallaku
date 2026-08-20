@@ -985,7 +985,20 @@
     "btn_send_workspace": "An Workspace senden",
     "workspace_sent": "Gesendet",
     "recent_searches_title": "Letzte Suchen",
-    "recent_clear": "Löschen"
+    "recent_clear": "Löschen",
+    "faq_title": "Häufig gestellte Fragen",
+    "faq_q1": "Wie funktioniert diese PDF-Suchmaschine?",
+    "faq_a1": "Sie durchsucht gleichzeitig Internet Archive, Project Gutenberg, arXiv und PubMed Central und zeigt nur Ergebnisse mit tatsächlich verfügbarem PDF, mit direkter Vorschau im Browser vor dem Download.",
+    "faq_q2": "Ist der Download dieser PDFs legal?",
+    "faq_a2": "Ja. Jede indexierte Quelle veröffentlicht nur gemeinfreies oder frei zugängliches Material: Bücher mit abgelaufenem Urheberrecht, wissenschaftliche Paper und frei lizenzierte Artikel. Keine Raubkopien.",
+    "faq_q3": "Welche Quellen deckt diese urheberrechtsfreie PDF-Suche ab?",
+    "faq_a3": "Internet Archive und Project Gutenberg für gemeinfreie Bücher und Klassiker, arXiv und PubMed Central für wissenschaftliche Paper und frei zugängliche akademische Artikel.",
+    "faq_q4": "Kann ich gemeinfreie PDF-Bücher in anderen Sprachen suchen?",
+    "faq_a4": "Ja, Internet Archive enthält viele gemeinfreie Scans in dutzenden Sprachen, zusätzlich zum überwiegend englischsprachigen Katalog von Project Gutenberg.",
+    "faq_q5": "Warum haben manche Ergebnisse keine Vorschau?",
+    "faq_a5": "Manche Quellen (z. B. PubMed Central) verhindern aus technischen Gründen ihres Servers das direkte Einbetten der Seite — in diesem Fall bleibt der Download trotzdem verfügbar.",
+    "faq_q6": "Ist die PDF-Suchmaschine kostenlos?",
+    "faq_a6": "Ja, komplett kostenlos, ohne Registrierung und ohne Nutzungslimit, abgesehen von einer technischen Missbrauchsgrenze von 20 Suchen pro Minute."
   },
   "convert": {
     "title": "Konverter",

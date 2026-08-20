@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, PLATFORM_ID, signal, computed, inject } from '@angular/core';
-import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { Subject, of, debounceTime, distinctUntilChanged, map, switchMap, catchError } from 'rxjs';
+import { Subject, of, switchMap, catchError } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -13,7 +13,6 @@ import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service'
 import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
-const SEARCH_DEBOUNCE_MS = 500;
 const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
 const PAPER_SOURCES: PdfSource[] = ['arxiv', 'pmc'];
 const RECENT_SEARCHES_KEY = 'pdf-search-recent-queries';
@@ -75,6 +74,15 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     { icon: '👁️', titleKey: 'pdf_search.feature_preview_title', descKey: 'pdf_search.feature_preview_desc' },
   ];
 
+  readonly faqs = [
+    { qKey: 'pdf_search.faq_q1', aKey: 'pdf_search.faq_a1' },
+    { qKey: 'pdf_search.faq_q2', aKey: 'pdf_search.faq_a2' },
+    { qKey: 'pdf_search.faq_q3', aKey: 'pdf_search.faq_a3' },
+    { qKey: 'pdf_search.faq_q4', aKey: 'pdf_search.faq_a4' },
+    { qKey: 'pdf_search.faq_q5', aKey: 'pdf_search.faq_a5' },
+    { qKey: 'pdf_search.faq_q6', aKey: 'pdf_search.faq_a6' },
+  ];
+
   readonly recentSearches = signal<string[]>([]);
 
   // ── Preview: iframe path (desktop, source allows framing) ──────────────────
@@ -110,10 +118,12 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly onMobileQueryChange = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
   readonly isMobile = signal(false);
 
-  // Single pipeline for every trigger (typing, Enter, button click) so a
-  // slow earlier response can never overwrite a newer one — switchMap cancels
-  // it. catchError lives inside the inner pipe: letting it escape would kill
-  // the whole subscription on the first failed search.
+  // Search only fires on an explicit trigger (submit button / Enter / a saved
+  // recent search) — no search-as-you-type, to avoid hammering the external
+  // APIs (and their rate limits) on every keystroke. switchMap still cancels
+  // a slow earlier request if a newer one comes in. catchError lives inside
+  // the inner pipe: letting it escape would kill the whole subscription on
+  // the first failed search.
   private readonly searchTrigger$ = new Subject<string>();
 
   constructor() {
@@ -136,24 +146,6 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
         this.error.set('');
         this.results.set(results);
       });
-
-    toObservable(this.query)
-      .pipe(
-        debounceTime(SEARCH_DEBOUNCE_MS),
-        map((q) => q.trim()),
-        distinctUntilChanged(),
-        takeUntilDestroyed(),
-      )
-      .subscribe((q) => {
-        if (q.length === 0) {
-          this.hasSearched.set(false);
-          this.results.set([]);
-          this.error.set('');
-          return;
-        }
-        if (q.length < 2) return;
-        this.runSearch(q);
-      });
   }
 
   ngOnInit(): void {
@@ -166,8 +158,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
     // Read once, not a reactive subscription: runSearch() below writes this
     // same param back with replaceUrl, and staying subscribed would turn
-    // every search into a read-then-write loop for no benefit — the debounced
-    // typing pipeline is already the single source of truth after this point.
+    // every search into a read-then-write loop for no benefit.
     const initialQuery = this.route.snapshot.queryParamMap.get('q');
     if (initialQuery && initialQuery.trim().length >= 2) {
       this.query.set(initialQuery);
@@ -175,21 +166,81 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     }
 
     this.seo.update({
-      title: 'Ricerca PDF Pubblico Dominio — Libri e Documenti Legali',
-      description: 'Cerca PDF gratuiti e legali tra milioni di libri di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima prima del download.',
+      title: 'Motore di Ricerca PDF Pubblico Dominio — Libri Senza Copyright',
+      description: 'Motore di ricerca PDF per trovare e scaricare libri di pubblico dominio, paper scientifici e articoli open access, senza problemi di copyright. Cerca su Internet Archive, Project Gutenberg, arXiv e PubMed Central con anteprima prima del download.',
       url: 'https://gentsallaku.it/lab/pdf-search',
     });
-    this.seo.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'Ricerca PDF',
-      description: 'Ricerca di PDF di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima integrata.',
-      url: 'https://gentsallaku.it/lab/pdf-search',
-      applicationCategory: 'UtilitiesApplication',
-      operatingSystem: 'Web',
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-      provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    this.seo.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'Ricerca PDF',
+        description: 'Motore di ricerca PDF di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima integrata.',
+        url: 'https://gentsallaku.it/lab/pdf-search',
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+        provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      },
+      // FAQPage schema — eligible for expandable Q&A rich results in Google's
+      // SERP, which raises click-through even without ranking #1. Kept in
+      // Italian to match the rest of this component's JSON-LD (not localized
+      // dynamically, same as the WebApplication block above).
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Come funziona questo motore di ricerca PDF?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Cerca contemporaneamente su Internet Archive, Project Gutenberg, arXiv e PubMed Central e mostra solo i risultati con un PDF realmente disponibile, con anteprima diretta nel browser prima di scaricare.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'È legale scaricare questi PDF?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Sì. Ogni fonte indicizzata pubblica solo materiale di pubblico dominio o open access: libri con diritti scaduti, paper scientifici e articoli con licenza di distribuzione libera. Nessun contenuto piratato.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Quali fonti copre la ricerca PDF senza copyright?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Internet Archive e Project Gutenberg per libri e classici di pubblico dominio, arXiv e PubMed Central per paper scientifici e articoli accademici open access.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Posso cercare libri PDF di pubblico dominio in italiano?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Sì, Internet Archive include molte scansioni di libri italiani di pubblico dominio, oltre al catalogo prevalentemente in inglese di Project Gutenberg.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Perché alcuni risultati non hanno l’anteprima?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Alcune fonti (es. PubMed Central) impediscono l’incorporazione diretta della pagina per motivi tecnici del loro server — in quel caso il download resta comunque disponibile.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Il motore di ricerca PDF è gratuito?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Sì, completamente gratuito, senza registrazione né limiti di utilizzo, salvo un limite tecnico anti-abuso di 20 ricerche al minuto.',
+            },
+          },
+        ],
+      },
+    ]);
   }
 
   ngOnDestroy(): void {
@@ -264,7 +315,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Explicit trigger (submit button / Enter) — the debounced live-typing search above covers the rest. */
+  /** Only trigger: submit button / Enter. No search-as-you-type. */
   search(): void {
     const q = this.query().trim();
     if (q.length < 2) return;
