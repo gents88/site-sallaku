@@ -45,6 +45,40 @@ describe('InternetArchiveProvider', () => {
     expect(results[0].source).toBe('internet_archive');
   });
 
+  it('reads the scan resolution (ppi) from metadata when the item went through IA’s own scanning pipeline', async () => {
+    fetchMock.mockImplementation((url: string) => {
+      if (url.includes('advancedsearch')) {
+        return Promise.resolve(jsonResponse({ response: { docs: [{ identifier: 'scanned-book', title: 'Scanned Book' }] } }));
+      }
+      if (url.includes('/metadata/')) {
+        return Promise.resolve(
+          jsonResponse({ metadata: { ppi: '400' }, files: [{ name: 'scanned-book.pdf', format: 'Text PDF' }] }),
+        );
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+
+    const results = await provider.search('scanned', 10);
+
+    expect(results[0].scanPpi).toBe(400);
+  });
+
+  it('leaves scanPpi null for items uploaded as a ready-made PDF (no ppi recorded)', async () => {
+    fetchMock.mockImplementation((url: string) => {
+      if (url.includes('advancedsearch')) {
+        return Promise.resolve(jsonResponse({ response: { docs: [{ identifier: 'uploaded-pdf', title: 'Uploaded PDF' }] } }));
+      }
+      if (url.includes('/metadata/')) {
+        return Promise.resolve(jsonResponse({ files: [{ name: 'uploaded-pdf.pdf', format: 'Text PDF' }] }));
+      }
+      throw new Error(`unexpected fetch: ${url}`);
+    });
+
+    const results = await provider.search('uploaded', 10);
+
+    expect(results[0].scanPpi).toBeNull();
+  });
+
   it('skips Controlled Digital Lending items (access-restricted-item: true)', async () => {
     fetchMock.mockImplementation((url: string) => {
       if (url.includes('advancedsearch')) {

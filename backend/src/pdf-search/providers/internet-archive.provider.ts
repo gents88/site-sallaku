@@ -14,8 +14,14 @@ interface IaMetadataFile {
 }
 
 interface IaMetadataResponse {
-  metadata?: { 'access-restricted-item'?: string };
+  metadata?: { 'access-restricted-item'?: string; ppi?: string };
   files?: IaMetadataFile[];
+}
+
+interface IaFileLookup {
+  pdfFile: string;
+  /** Scan resolution, when IA's own scanning pipeline recorded one (absent for items uploaded as a ready-made PDF). */
+  scanPpi: number | null;
 }
 
 /**
@@ -62,8 +68,8 @@ export class InternetArchiveProvider implements PdfSearchProvider {
   }
 
   private async toResult(doc: IaDoc): Promise<PdfSearchResult | null> {
-    const pdfFile = await this.findPdfFile(doc.identifier);
-    if (!pdfFile) return null;
+    const found = await this.findPdfFile(doc.identifier);
+    if (!found) return null;
     const creator = Array.isArray(doc.creator) ? doc.creator[0] : doc.creator;
     return {
       id: `ia-${doc.identifier}`,
@@ -72,14 +78,15 @@ export class InternetArchiveProvider implements PdfSearchProvider {
       year: doc.year ?? '',
       source: 'internet_archive',
       sourceLabel: 'Internet Archive',
-      pdfUrl: `https://archive.org/download/${doc.identifier}/${encodeURIComponent(pdfFile)}`,
+      pdfUrl: `https://archive.org/download/${doc.identifier}/${encodeURIComponent(found.pdfFile)}`,
       coverUrl: `https://archive.org/services/img/${doc.identifier}`,
       detailsUrl: `https://archive.org/details/${doc.identifier}`,
       previewable: true,
+      scanPpi: found.scanPpi,
     };
   }
 
-  private async findPdfFile(identifier: string): Promise<string | null> {
+  private async findPdfFile(identifier: string): Promise<IaFileLookup | null> {
     try {
       // 10s, not 6s: from some hosts (e.g. Railway) this follow-up call runs
       // noticeably slower than from a local machine — a tight timeout here
@@ -97,7 +104,10 @@ export class InternetArchiveProvider implements PdfSearchProvider {
 
       const files = data.files ?? [];
       const pdf = files.find((f) => f.format === 'Text PDF') ?? files.find((f) => f.name?.toLowerCase().endsWith('.pdf'));
-      return pdf?.name ?? null;
+      if (!pdf?.name) return null;
+
+      const ppi = Number(data.metadata?.ppi);
+      return { pdfFile: pdf.name, scanPpi: Number.isFinite(ppi) && ppi > 0 ? ppi : null };
     } catch (err) {
       this.logger.warn(`metadata failed for ${identifier}: ${(err as Error).message}`);
       return null;

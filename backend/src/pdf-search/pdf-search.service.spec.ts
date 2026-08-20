@@ -9,7 +9,7 @@ function makeResult(source: PdfSearchResult['source'], id: string): PdfSearchRes
   return {
     id, title: `Title ${id}`, author: '', year: '', source, sourceLabel: source,
     pdfUrl: `https://example.com/${id}.pdf`, coverUrl: null, detailsUrl: `https://example.com/${id}`,
-    previewable: true,
+    previewable: true, scanPpi: null,
   };
 }
 
