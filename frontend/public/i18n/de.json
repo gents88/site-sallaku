@@ -1000,7 +1000,12 @@
     "faq_q6": "Ist die PDF-Suchmaschine kostenlos?",
     "faq_a6": "Ja, komplett kostenlos, ohne Registrierung und ohne Nutzungslimit, abgesehen von einer technischen Missbrauchsgrenze von 20 Suchen pro Minute.",
     "quality_hd": "Hohe Auflösung",
-    "quality_low": "Niedrige Auflösung"
+    "quality_low": "Niedrige Auflösung",
+    "group_similar_label": "Ähnliche Ausgaben gruppieren",
+    "duplicate_count": "+{{count}} weitere Ausgaben",
+    "favorites_title": "Deine Favoriten",
+    "btn_favorite_add": "Zu Favoriten hinzufügen",
+    "btn_favorite_remove": "Aus Favoriten entfernen"
   },
   "convert": {
     "title": "Konverter",

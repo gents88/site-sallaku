@@ -17,6 +17,8 @@ const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
 const PAPER_SOURCES: PdfSource[] = ['arxiv', 'pmc'];
 const RECENT_SEARCHES_KEY = 'pdf-search-recent-queries';
 const MAX_RECENT_SEARCHES = 8;
+const FAVORITES_KEY = 'pdf-search-favorites';
+const MAX_FAVORITES = 100;
 // Typical library scanning runs 300-600 ppi; below ~150 is usually a rough
 // phone/camera capture rather than a proper scan. Anything in between is
 // unremarkable — no badge, to keep the signal meaningful.
@@ -26,6 +28,18 @@ const LOW_SCAN_PPI = 150;
 export type SourceFilter = 'all' | 'books' | 'papers';
 export type SortOrder = 'relevance' | 'year_desc' | 'year_asc';
 export type ScanQuality = 'hd' | 'low' | null;
+export type DisplayResult = PdfSearchResult & { duplicateCount: number };
+
+/** Lowercase, strip diacritics/punctuation, collapse whitespace — good enough to catch "Alice's Adventures in Wonderland!" vs "alice s adventures in wonderland" as the same work. */
+function normalizeTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^\w\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 @Component({
   selector: 'app-pdf-search',
@@ -56,20 +70,37 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   readonly sourceFilter = signal<SourceFilter>('all');
   readonly sortBy = signal<SortOrder>('relevance');
+  // Internet Archive in particular often has 3-5 near-identical scans of the
+  // same public-domain classic, uploaded independently by different people —
+  // grouping by normalized title keeps the grid from being dominated by one
+  // popular title's many editions.
+  readonly groupSimilar = signal(true);
 
-  readonly displayResults = computed(() => {
+  readonly displayResults = computed<DisplayResult[]>(() => {
     const filter = this.sourceFilter();
     let list = this.results();
     if (filter === 'books') list = list.filter((r) => BOOK_SOURCES.includes(r.source));
     else if (filter === 'papers') list = list.filter((r) => PAPER_SOURCES.includes(r.source));
 
     const sort = this.sortBy();
-    if (sort === 'relevance') return list;
-    return [...list].sort((a, b) => {
-      const ay = parseInt(a.year, 10) || 0;
-      const by = parseInt(b.year, 10) || 0;
-      return sort === 'year_desc' ? by - ay : ay - by;
-    });
+    if (sort !== 'relevance') {
+      list = [...list].sort((a, b) => {
+        const ay = parseInt(a.year, 10) || 0;
+        const by = parseInt(b.year, 10) || 0;
+        return sort === 'year_desc' ? by - ay : ay - by;
+      });
+    }
+
+    if (!this.groupSimilar()) return list.map((r) => ({ ...r, duplicateCount: 1 }));
+
+    const byTitle = new Map<string, DisplayResult>();
+    for (const r of list) {
+      const key = normalizeTitle(r.title);
+      const existing = byTitle.get(key);
+      if (existing) existing.duplicateCount++;
+      else byTitle.set(key, { ...r, duplicateCount: 1 });
+    }
+    return [...byTitle.values()];
   });
 
   readonly skeletonPlaceholders = Array.from({ length: 8 });
@@ -90,6 +121,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   ];
 
   readonly recentSearches = signal<string[]>([]);
+  readonly favorites = signal<PdfSearchResult[]>([]);
 
   // ── Preview: iframe path (desktop, source allows framing) ──────────────────
   private _previewBlobUrl: string | null = null;
@@ -160,6 +192,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       this.isMobile.set(this.mobileQuery.matches);
       this.mobileQuery.addEventListener('change', this.onMobileQueryChange);
       this.loadRecentSearches();
+      this.loadFavorites();
     }
 
     // Read once, not a reactive subscription: runSearch() below writes this
@@ -299,6 +332,54 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       try { localStorage.removeItem(RECENT_SEARCHES_KEY); } catch { /* ignore */ }
     }
+  }
+
+  setGroupSimilar(value: boolean): void {
+    this.groupSimilar.set(value);
+    this.analytics.trackClick('pdf_search_group_similar', String(value));
+  }
+
+  // ── Favorites (localStorage) ────────────────────────────────────────────
+  private loadFavorites(): void {
+    try {
+      const raw = localStorage.getItem(FAVORITES_KEY);
+      this.favorites.set(raw ? JSON.parse(raw) : []);
+    } catch {
+      this.favorites.set([]);
+    }
+  }
+
+  private saveFavorites(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(this.favorites()));
+    } catch {
+      // Storage full/unavailable (private browsing etc.) — favorites just won't persist.
+    }
+  }
+
+  isFavorite(result: PdfSearchResult): boolean {
+    return this.favorites().some((f) => f.id === result.id);
+  }
+
+  /**
+   * stopPropagation is required — the star sits inside the result-card button
+   * and must not also open the preview. preventDefault matters for the Space
+   * key specifically: the star is a <span role="button"> (nesting a real
+   * <button> inside result-card's own <button> is invalid HTML), so the
+   * browser doesn't know to suppress its default page-scroll-on-Space.
+   */
+  toggleFavorite(result: PdfSearchResult, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    const isFav = this.isFavorite(result);
+    if (isFav) {
+      this.favorites.set(this.favorites().filter((f) => f.id !== result.id));
+    } else {
+      this.favorites.set([result, ...this.favorites()].slice(0, MAX_FAVORITES));
+    }
+    this.saveFavorites();
+    this.analytics.trackClick('pdf_search_favorite', isFav ? 'remove' : 'add', result.pdfUrl);
   }
 
   private runSearch(q: string): void {
