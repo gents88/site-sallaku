@@ -998,7 +998,9 @@
     "faq_q5": "Pse disa rezultate nuk kanë parashikim?",
     "faq_a5": "Disa burime (p.sh. PubMed Central) pengojnë integrimin e drejtpërdrejtë të faqes për arsye teknike të serverit të tyre — në atë rast, shkarkimi mbetet gjithsesi i disponueshëm.",
     "faq_q6": "A është falas motori i kërkimit për PDF?",
-    "faq_a6": "Po, plotësisht falas, pa regjistrim dhe pa kufij përdorimi, përveç një kufiri teknik anti-abuzim prej 20 kërkimesh në minutë."
+    "faq_a6": "Po, plotësisht falas, pa regjistrim dhe pa kufij përdorimi, përveç një kufiri teknik anti-abuzim prej 20 kërkimesh në minutë.",
+    "quality_hd": "Rezolucion i lartë",
+    "quality_low": "Rezolucion i ulët"
   },
   "convert": {
     "title": "Konvertues",

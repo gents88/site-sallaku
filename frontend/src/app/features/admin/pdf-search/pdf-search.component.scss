@@ -363,6 +363,13 @@ $error-clr:     #f87171;
   font-size: 10.5px; color: var(--text-muted, #6e7681);
 }
 
+.quality-pill {
+  font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 100px;
+
+  &.quality-hd { background: rgba(52, 211, 153, 0.12); color: #34d399; }
+  &.quality-low { background: rgba(251, 146, 60, 0.12); color: #fb923c; }
+}
+
 // ── PREVIEW MODAL ─────────────────────────────────────────────────────────────
 .modal-backdrop {
   position: fixed; inset: 0; z-index: 1000;

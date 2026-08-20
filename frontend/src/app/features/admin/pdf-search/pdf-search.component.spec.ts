@@ -15,7 +15,7 @@ function makeResult(overrides: Partial<PdfSearchResult> = {}): PdfSearchResult {
   return {
     id: 'r-1', title: 'Title', author: '', year: '', source: 'internet_archive', sourceLabel: 'Internet Archive',
     pdfUrl: 'https://archive.org/download/x/x.pdf', coverUrl: null, detailsUrl: 'https://archive.org/details/x',
-    previewable: true,
+    previewable: true, scanPpi: null,
     ...overrides,
   };
 }
@@ -139,6 +139,20 @@ describe('PdfSearchComponent', () => {
       component.query.set('piccolo');
       component.search();
       expect(searchMock).toHaveBeenCalledWith('piccolo');
+    });
+  });
+
+  describe('scanQuality', () => {
+    it('labels a high-resolution scan as hd, a rough capture as low, and everything else as unlabeled', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      const component = fixture.componentInstance;
+
+      expect(component.scanQuality(makeResult({ scanPpi: 400 }))).toBe('hd');
+      expect(component.scanQuality(makeResult({ scanPpi: 300 }))).toBe('hd');
+      expect(component.scanQuality(makeResult({ scanPpi: 72 }))).toBe('low');
+      expect(component.scanQuality(makeResult({ scanPpi: 200 }))).toBeNull();
+      expect(component.scanQuality(makeResult({ scanPpi: null }))).toBeNull();
     });
   });
 
