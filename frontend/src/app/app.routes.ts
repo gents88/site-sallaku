@@ -130,6 +130,10 @@ const publicPages: Route[] = [
     path: 'lab/workspace',
     loadComponent: () => import('./features/admin/workspace/workspace.component').then(m => m.WorkspaceComponent),
   },
+  {
+    path: 'lab/library',
+    loadComponent: () => import('./features/admin/library/library.component').then(m => m.LibraryComponent),
+  },
 ];
 
 export const routes: Routes = [

@@ -2,11 +2,17 @@ import {
   Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef,
   ViewChild, inject, signal, computed,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { WorkspaceService } from '../../../core/services/workspace.service';
+import { LibraryService, LibraryAnnotation, LibraryDoc } from '../../../core/services/library.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import {
+  toNormRect, quoteFromRect, annotationsToMarkdown, HIGHLIGHT_COLORS, NormRect,
+} from './viewer-annotations';
 
 interface SearchMatch { page: number; }
 
@@ -16,7 +22,7 @@ const MAX_THUMBS = 200;
   selector: 'app-viewer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, RouterLink],
+  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule],
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],
 })
@@ -24,6 +30,10 @@ export class ViewerComponent implements OnInit, OnDestroy {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly library = inject(LibraryService);
+  private readonly workspace = inject(WorkspaceService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   private pageRef?: ElementRef<HTMLCanvasElement>;
   @ViewChild('page') private set pageCanvas(ref: ElementRef<HTMLCanvasElement> | undefined) {
@@ -49,9 +59,36 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.query().trim().length > 0 && !this.searching() && this.matches().length === 0 && this.docSparseText()
   );
 
+  // ── Annotazioni ────────────────────────────────────────────────────
+  // Vivono nella Libreria, quindi esistono solo per un documento che ne fa
+  // parte: un PDF aperto al volo da disco non ha un id a cui legarle.
+  readonly libraryDoc = signal<LibraryDoc | null>(null);
+  /** Il file attualmente aperto, per poterlo archiviare in Libreria e sbloccare le annotazioni. */
+  readonly currentFile = signal<File | null>(null);
+  readonly annotations = signal<LibraryAnnotation[]>([]);
+  readonly annotateMode = signal(false);
+  readonly activeColor = signal<string>(HIGHLIGHT_COLORS[0]);
+  readonly colors = HIGHLIGHT_COLORS;
+  readonly editingNoteId = signal<string | null>(null);
+  readonly noteDraft = signal('');
+  readonly dragRect = signal<NormRect | null>(null);
+
+  readonly canAnnotate = computed(() => this.libraryDoc() !== null);
+  readonly pageAnnotations = computed(() =>
+    this.annotations().filter((a) => a.page === this.pageNum()),
+  );
+
+  private dragStart: { x: number; y: number } | null = null;
+
   private renderToken = 0;
 
   ngOnInit(): void {
+    const docId = this.route.snapshot.queryParamMap.get('doc');
+    if (docId) {
+      const page = Number(this.route.snapshot.queryParamMap.get('page')) || 1;
+      void this.openFromLibrary(docId, page);
+    }
+
     this.seo.update({
       title: 'Free PDF Viewer Online — Zoom, Search & Thumbnails',
       description: 'View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload.',
@@ -82,6 +119,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     try {
       const doc = await this.pdfjs.openDocument(await f.arrayBuffer());
       this.close();
+      this.currentFile.set(f);
       this.doc.set(doc);
       this.numPages.set(doc.numPages);
       this.pageNum.set(1);
@@ -101,6 +139,12 @@ export class ViewerComponent implements OnInit, OnDestroy {
     const doc = this.doc();
     if (doc) void doc.loadingTask.destroy();
     this.doc.set(null);
+    this.currentFile.set(null);
+    this.libraryDoc.set(null);
+    this.annotations.set([]);
+    this.annotateMode.set(false);
+    this.dragRect.set(null);
+    this.dragStart = null;
     this.thumbs.set([]);
     this.matches.set([]);
     this.query.set('');
@@ -173,6 +217,160 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.matchIdx.set(next);
     this.pageNum.set(all[next].page);
     void this.renderPage();
+  }
+
+  // ── Libreria e annotazioni ───────────────────────────────────────────
+
+  /** Apre un documento già archiviato in Libreria, con le sue annotazioni. */
+  async openFromLibrary(docId: string, page = 1): Promise<void> {
+    await this.library.refresh();
+    const meta = this.library.get(docId);
+    const blob = await this.library.getBlob(docId);
+    if (!meta || !blob) {
+      this.msg.set(`❌ ${this.t.instant('viewer.err_load_doc')}`);
+      return;
+    }
+
+    await this.open(new File([blob], `${meta.title}.pdf`, { type: 'application/pdf' }));
+    // open() azzera lo stato del viewer precedente: il legame con la libreria
+    // va ristabilito dopo, non prima, o verrebbe cancellato da close().
+    // Le annotazioni prima di libraryDoc: è quest'ultimo ad accendere il
+    // pannello, che altrimenti apparirebbe un istante come "nessuna nota".
+    this.annotations.set(await this.library.annotationsOf(docId));
+    this.libraryDoc.set(meta);
+    if (page > 1) this.goTo(page);
+  }
+
+  /**
+   * Archivia in Libreria il PDF aperto da disco, per poterlo annotare.
+   * Le annotazioni hanno bisogno di un documento con un id stabile a cui legarsi.
+   */
+  async saveCurrentToLibrary(): Promise<void> {
+    const file = this.currentFile();
+    if (!file) return;
+    const meta = await this.library.add(
+      {
+        id: `upload-${file.name}-${file.size}`,
+        title: file.name.replace(/\.pdf$/i, ''),
+        author: '',
+        year: '',
+        source: 'upload',
+        sourceLabel: this.t.instant('library.source_upload'),
+        detailsUrl: '',
+        coverUrl: null,
+      },
+      file,
+    );
+    this.libraryDoc.set(meta);
+    this.annotations.set([]);
+  }
+
+  toggleAnnotateMode(): void {
+    this.annotateMode.update((on) => !on);
+  }
+
+  setColor(color: string): void {
+    this.activeColor.set(color);
+  }
+
+  // ── Trascinamento sul canvas ──
+  // I gestori sono attivi solo in modalità evidenziazione: fuori da quella,
+  // il canvas deve restare un normale documento selezionabile e scorrevole.
+
+  onPointerDown(event: PointerEvent): void {
+    if (!this.annotateMode() || !this.canAnnotate()) return;
+    const canvas = this.pageRef?.nativeElement;
+    if (!canvas) return;
+    event.preventDefault();
+    canvas.setPointerCapture(event.pointerId);
+    this.dragStart = this.pointOn(canvas, event);
+    this.dragRect.set(null);
+  }
+
+  onPointerMove(event: PointerEvent): void {
+    if (!this.dragStart) return;
+    const canvas = this.pageRef?.nativeElement;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    this.dragRect.set(
+      toNormRect(this.dragStart, this.pointOn(canvas, event), rect.width, rect.height),
+    );
+  }
+
+  async onPointerUp(event: PointerEvent): Promise<void> {
+    const canvas = this.pageRef?.nativeElement;
+    const doc = this.doc();
+    const libraryDoc = this.libraryDoc();
+    const start = this.dragStart;
+    this.dragStart = null;
+    if (!start || !canvas || !doc || !libraryDoc) return;
+
+    const bounds = canvas.getBoundingClientRect();
+    const rect = toNormRect(start, this.pointOn(canvas, event), bounds.width, bounds.height);
+    this.dragRect.set(null);
+    if (!rect) return;
+
+    const page = await doc.getPage(this.pageNum());
+    const quote = await quoteFromRect(page, rect);
+    const saved = await this.library.addAnnotation({
+      docId: libraryDoc.id,
+      page: this.pageNum(),
+      rect,
+      color: this.activeColor(),
+      quote,
+      note: '',
+    });
+    this.annotations.update((list) => [...list, saved]);
+  }
+
+  /** Coordinate del puntatore relative al canvas, in pixel CSS. */
+  private pointOn(canvas: HTMLCanvasElement, event: PointerEvent): { x: number; y: number } {
+    const rect = canvas.getBoundingClientRect();
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+  }
+
+  // ── Gestione delle annotazioni salvate ──
+
+  startNote(a: LibraryAnnotation): void {
+    this.editingNoteId.set(a.id);
+    this.noteDraft.set(a.note);
+  }
+
+  async saveNote(a: LibraryAnnotation): Promise<void> {
+    const note = this.noteDraft();
+    await this.library.updateAnnotation(a.id, { note });
+    this.annotations.update((list) => list.map((x) => (x.id === a.id ? { ...x, note } : x)));
+    this.editingNoteId.set(null);
+    this.noteDraft.set('');
+  }
+
+  cancelNote(): void {
+    this.editingNoteId.set(null);
+    this.noteDraft.set('');
+  }
+
+  async deleteAnnotation(a: LibraryAnnotation): Promise<void> {
+    await this.library.removeAnnotation(a.id);
+    this.annotations.update((list) => list.filter((x) => x.id !== a.id));
+  }
+
+  goToAnnotation(a: LibraryAnnotation): void {
+    this.goTo(a.page);
+  }
+
+  /** Manda le note all'editor via Workspace: da lì diventano un articolo o un appunto. */
+  exportAnnotations(): void {
+    const doc = this.libraryDoc();
+    if (!doc || this.annotations().length === 0) return;
+    const markdown = annotationsToMarkdown(doc.title, this.annotations());
+    this.workspace.send({
+      kind: 'text',
+      text: markdown,
+      filename: `${doc.title.replace(/[\\/:*?"<>|]/g, '').slice(0, 80) || 'note'}.md`,
+      mime: 'text/markdown',
+      fromTool: 'viewer',
+    });
+    void this.router.navigate(['/lab/editor']);
   }
 
   // ── Rendering ────────────────────────────────────────────────────────

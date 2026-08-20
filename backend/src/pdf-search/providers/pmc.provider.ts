@@ -38,8 +38,17 @@ export class PmcProvider implements PdfSearchProvider {
   private readonly logger = new Logger(PmcProvider.name);
 
   async search(query: string, limit: number): Promise<PdfSearchResult[]> {
+    // Scoped to TITLE:(...), not a bare unqualified query: Europe PMC's
+    // default query field matches across title/abstract/author/full text
+    // combined, so an unqualified multi-word query loosely OR-matches any
+    // single field — e.g. "piccolo principe" surfaced unrelated biomedical
+    // papers co-authored by someone surnamed "Principe" (verified live).
+    // TITLE:(term1 term2) keeps the implicit AND but restricts it to the
+    // title, which is what a title/topic search wants — verified live this
+    // still returns hundreds of relevant hits for real topics (e.g. "CRISPR
+    // gene editing") while correctly returning zero for the book title.
     const params = new URLSearchParams({
-      query: `${query} AND OPEN_ACCESS:Y AND HAS_PDF:Y`,
+      query: `TITLE:(${query}) AND OPEN_ACCESS:Y AND HAS_PDF:Y`,
       format: 'json',
       pageSize: String(limit),
     });

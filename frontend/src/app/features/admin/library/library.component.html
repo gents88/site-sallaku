@@ -1,0 +1,302 @@
+<div class="page">
+  <header class="page-header">
+    <div class="header-badge">
+      <span class="badge-dot"></span>
+      {{ 'library.badge' | translate }}
+    </div>
+    <h1>📚 {{ 'library.title' | translate }}</h1>
+    <p>{{ 'library.subtitle' | translate }}</p>
+  </header>
+
+  @if (error()) {
+    <div class="alert" role="alert">{{ error() }}</div>
+  }
+
+  <!-- ─── Barra ricerca full-text ─────────────────────────────── -->
+  <section class="search-bar">
+    <div class="search-input-wrap">
+      <span class="search-icon" aria-hidden="true">🔍</span>
+      <input
+        type="search"
+        class="search-input"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)"
+        (keyup.enter)="runSearch()"
+        [placeholder]="'library.search_placeholder' | translate"
+        [attr.aria-label]="'library.search_placeholder' | translate"
+      />
+      @if (query()) {
+        <button type="button" class="search-clear" (click)="clearSearch()" [attr.aria-label]="'library.search_clear' | translate">✕</button>
+      }
+    </div>
+    <button type="button" class="btn-primary" (click)="runSearch()" [disabled]="query().trim().length < 2 || searching()">
+      {{ (searching() ? 'library.searching' : 'library.search_btn') | translate }}
+    </button>
+    <button type="button" class="btn-ghost" (click)="openChat(null)" [disabled]="searchableCount() === 0">
+      💬 {{ 'library.chat_all' | translate }}
+    </button>
+  </section>
+
+  @if (searchableCount() === 0 && docs().length > 0) {
+    <p class="hint">{{ 'library.hint_index_first' | translate }}</p>
+  }
+
+  <!-- ─── Risultati ricerca nel contenuto ─────────────────────── -->
+  @if (hasSearched()) {
+    <section class="hits-section">
+      <h2 class="section-title">
+        {{ 'library.hits_title' | translate: { count: hits().length } }}
+      </h2>
+      @if (hits().length === 0 && !searching()) {
+        <p class="empty-inline">{{ 'library.hits_empty' | translate }}</p>
+      }
+      <ul class="hits-list">
+        @for (hit of hits(); track hit.docId + '#' + hit.page) {
+          <li>
+            <button type="button" class="hit" (click)="openHit(hit)">
+              <span class="hit-head">
+                <span class="hit-doc">{{ hit.title }}</span>
+                <span class="hit-page">{{ 'library.page_n' | translate: { n: hit.page } }}</span>
+              </span>
+              <span class="hit-snippet">
+                @for (part of snippetParts(hit.snippet); track $index) {
+                  @if (part.hit) { <mark>{{ part.text }}</mark> } @else { <span>{{ part.text }}</span> }
+                }
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- ─── Toolbar libreria ────────────────────────────────────── -->
+  <section class="toolbar">
+    <div class="toolbar-stats">
+      <span>{{ 'library.stat_docs' | translate: { count: docs().length } }}</span>
+      <span class="dot">·</span>
+      <span>{{ 'library.stat_indexed' | translate: { count: indexedCount() } }}</span>
+      <span class="dot">·</span>
+      <span>{{ usedLabel() }}</span>
+    </div>
+
+    <div class="toolbar-actions">
+      @if (pendingIndexCount() > 0) {
+        <button type="button" class="btn-ghost" (click)="indexAllPending()">
+          ⚡ {{ 'library.index_all' | translate: { count: pendingIndexCount() } }}
+        </button>
+      }
+
+      <label class="btn-ghost import-label">
+        {{ (importing() ? 'library.importing' : 'library.import') | translate }}
+        <input type="file" accept="application/pdf,.pdf" multiple hidden (change)="onFilesSelected($event)" />
+      </label>
+
+      <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)" [attr.aria-label]="'library.sort' | translate">
+        <option value="recent">{{ 'library.sort_recent' | translate }}</option>
+        <option value="title">{{ 'library.sort_title' | translate }}</option>
+        <option value="size">{{ 'library.sort_size' | translate }}</option>
+      </select>
+    </div>
+  </section>
+
+  @if (tags().length) {
+    <section class="tag-filters">
+      <button type="button" class="tag-chip" [class.active]="activeTag() === null" (click)="filterByTag(null)">
+        {{ 'library.tag_all' | translate }}
+      </button>
+      @for (tag of tags(); track tag) {
+        <button type="button" class="tag-chip" [class.active]="activeTag() === tag" (click)="filterByTag(tag)">
+          {{ tag }}
+        </button>
+      }
+    </section>
+  }
+
+  <!-- ─── Griglia documenti ───────────────────────────────────── -->
+  @if (!ready()) {
+    <div class="docs-grid">
+      @for (i of skeletonPlaceholders; track i) {
+        <div class="doc-card skeleton"></div>
+      }
+    </div>
+  } @else if (docs().length === 0) {
+    <section class="empty-state">
+      <span class="empty-icon">📭</span>
+      <h3>{{ 'library.empty_title' | translate }}</h3>
+      <p>{{ 'library.empty_hint' | translate }}</p>
+      <div class="empty-actions">
+        <a class="btn-primary" href="/lab/pdf-search">🔍 {{ 'library.empty_cta_search' | translate }}</a>
+        <label class="btn-ghost import-label">
+          {{ 'library.import' | translate }}
+          <input type="file" accept="application/pdf,.pdf" multiple hidden (change)="onFilesSelected($event)" />
+        </label>
+      </div>
+    </section>
+  } @else {
+    <div class="docs-grid">
+      @for (doc of visibleDocs(); track doc.id) {
+        <article class="doc-card">
+          <div class="doc-cover" (click)="openInViewer(doc)">
+            @if (doc.coverUrl) {
+              <img [src]="doc.coverUrl" [alt]="doc.title" loading="lazy" />
+            } @else {
+              <span class="cover-fallback">📄</span>
+            }
+          </div>
+
+          <div class="doc-body">
+            <h3 class="doc-title" [title]="doc.title">{{ doc.title }}</h3>
+            @if (doc.author) {
+              <p class="doc-author">{{ doc.author }}{{ doc.year ? ' · ' + doc.year : '' }}</p>
+            }
+
+            <div class="doc-meta">
+              <span class="meta-source">{{ doc.sourceLabel }}</span>
+              <span class="meta-size">{{ formatSize(doc.size) }}</span>
+              @if (doc.pageCount) {
+                <span class="meta-pages">{{ 'library.pages_n' | translate: { n: doc.pageCount } }}</span>
+              }
+            </div>
+
+            @if (progressOf(doc.id) !== null) {
+              <div class="index-progress" role="progressbar" [attr.aria-valuenow]="progressOf(doc.id)">
+                <div class="index-bar" [style.width.%]="progressOf(doc.id)"></div>
+                <span>{{ 'library.indexing' | translate: { pct: progressOf(doc.id) } }}</span>
+              </div>
+            } @else if (doc.indexedAt === null) {
+              <button type="button" class="status-btn warn" (click)="indexDoc(doc.id)">
+                ⚡ {{ 'library.not_indexed' | translate }}
+              </button>
+            } @else if (doc.isScanned) {
+              <span class="status-badge scan" [title]="'library.scanned_hint' | translate">
+                🖼 {{ 'library.scanned' | translate }}
+              </span>
+            } @else {
+              <span class="status-badge ok">✓ {{ 'library.indexed' | translate }}</span>
+            }
+
+            @if (doc.tags.length && tagEditorId() !== doc.id) {
+              <div class="doc-tags">
+                @for (tag of doc.tags; track tag) {
+                  <span class="doc-tag">{{ tag }}</span>
+                }
+              </div>
+            }
+
+            @if (tagEditorId() === doc.id) {
+              <div class="tag-editor">
+                <input
+                  type="text"
+                  [ngModel]="tagDraft()"
+                  (ngModelChange)="tagDraft.set($event)"
+                  (keyup.enter)="saveTags(doc)"
+                  [placeholder]="'library.tag_placeholder' | translate"
+                />
+                <button type="button" class="btn-mini" (click)="saveTags(doc)">✓</button>
+                <button type="button" class="btn-mini" (click)="cancelTagEdit()">✕</button>
+              </div>
+            }
+          </div>
+
+          <div class="doc-actions">
+            <button type="button" class="btn-mini primary" (click)="openInViewer(doc)">
+              {{ 'library.open' | translate }}
+            </button>
+            <button
+              type="button"
+              class="btn-mini"
+              (click)="openChat(doc.id)"
+              [disabled]="doc.indexedAt === null || doc.isScanned"
+              [title]="'library.chat_doc' | translate"
+            >
+              💬
+            </button>
+            <button type="button" class="btn-mini" (click)="toggleMenu(doc.id)" [attr.aria-expanded]="openMenuId() === doc.id">
+              ⋯
+            </button>
+          </div>
+
+          @if (openMenuId() === doc.id) {
+            <div class="doc-menu">
+              <p class="menu-label">{{ 'library.send_to' | translate }}</p>
+              @for (action of toolActions; track action.id) {
+                <button type="button" class="menu-item" (click)="sendToTool(doc, action)">
+                  <span class="menu-icon">{{ action.icon }}</span>
+                  {{ (action.id + '.title') | translate }}
+                </button>
+              }
+              <hr />
+              <button type="button" class="menu-item" (click)="startTagEdit(doc)">🏷 {{ 'library.edit_tags' | translate }}</button>
+              <button type="button" class="menu-item" (click)="download(doc)">⬇ {{ 'library.download' | translate }}</button>
+              <button type="button" class="menu-item danger" (click)="remove(doc)">🗑 {{ 'library.remove' | translate }}</button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>
+
+<!-- ─── Pannello chat ─────────────────────────────────────────── -->
+@if (chatOpen()) {
+  <div class="chat-backdrop" (click)="closeChat()"></div>
+  <aside class="chat-panel" role="dialog" [attr.aria-label]="'library.chat_title' | translate">
+    <header class="chat-header">
+      <div>
+        <h2>💬 {{ 'library.chat_title' | translate }}</h2>
+        <p class="chat-scope">
+          {{ chatScope() ? chatScopeTitle() : ('library.chat_scope_all' | translate) }}
+        </p>
+      </div>
+      <button type="button" class="btn-mini" (click)="closeChat()" [attr.aria-label]="'library.chat_close' | translate">✕</button>
+    </header>
+
+    <div class="chat-messages">
+      @if (messages().length === 0) {
+        <div class="chat-intro">
+          <p>{{ 'library.chat_intro' | translate }}</p>
+          <p class="chat-privacy">🔒 {{ 'library.chat_privacy' | translate }}</p>
+        </div>
+      }
+      @for (msg of messages(); track $index) {
+        <div class="chat-msg" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
+          <p class="msg-text">{{ msg.text }}</p>
+          @if (msg.ungrounded) {
+            <p class="msg-warn">⚠ {{ 'library.chat_ungrounded' | translate }}</p>
+          }
+          @if (msg.citations?.length) {
+            <div class="msg-citations">
+              <span class="cit-label">{{ 'library.chat_sources' | translate }}</span>
+              @for (c of msg.citations; track $index) {
+                <span class="cit">{{ c.docTitle }} · {{ 'library.page_n' | translate: { n: c.page } }}</span>
+              }
+            </div>
+          }
+        </div>
+      }
+      @if (asking()) {
+        <div class="chat-msg assistant thinking">
+          <span class="dot-1"></span><span class="dot-2"></span><span class="dot-3"></span>
+        </div>
+      }
+    </div>
+
+    <footer class="chat-input-bar">
+      @if (messages().length) {
+        <button type="button" class="btn-mini" (click)="clearChat()" [title]="'library.chat_clear' | translate">🗑</button>
+      }
+      <input
+        type="text"
+        [ngModel]="chatInput()"
+        (ngModelChange)="chatInput.set($event)"
+        (keyup.enter)="ask()"
+        [placeholder]="'library.chat_placeholder' | translate"
+        [disabled]="asking()"
+      />
+      <button type="button" class="btn-primary" (click)="ask()" [disabled]="chatInput().trim().length < 3 || asking()">
+        {{ 'library.chat_send' | translate }}
+      </button>
+    </footer>
+  </aside>
+}
