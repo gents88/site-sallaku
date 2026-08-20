@@ -273,6 +273,12 @@ $error-clr:     #f87171;
   border-radius: 16px; overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
   animation: modal-in 0.18s ease-out;
+
+  // No iframe involved (PMC's "not previewable" state, or the mobile hint) —
+  // sizing this to a near-full-height box just wraps a two-line message in a
+  // huge empty area and can crowd the action buttons out of view. Shrink to
+  // content instead, same as any other confirmation-style dialog.
+  &--compact { height: auto; max-height: min(420px, 80vh); }
 }
 
 @keyframes modal-in {
@@ -288,7 +294,16 @@ $error-clr:     #f87171;
   p  { font-size: 12px; color: var(--text-secondary, #8b949e); margin: 0; }
 }
 
-.preview-header-info { min-width: 0; }
+.preview-header-cover {
+  flex-shrink: 0; width: 38px; height: 52px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-tertiary, #0d1117); border-radius: 6px; overflow: hidden;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+  .cover-fallback { font-size: 18px; opacity: 0.5; }
+}
+
+.preview-header-info { min-width: 0; flex: 1; }
 
 .preview-close {
   flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
@@ -298,16 +313,33 @@ $error-clr:     #f87171;
   &:hover { border-color: $error-clr; color: $error-clr; }
 }
 
-.preview-body { flex: 1; min-height: 0; position: relative; }
+.preview-body {
+  flex: 1; min-height: 0; position: relative;
+
+  // Used for the "not previewable" / mobile-hint states: no iframe sits
+  // behind them, so there's no reason to force this box to fill all the
+  // leftover flex space — that just pushes a two-line message into a huge
+  // empty area on mobile and can crowd the action buttons out of view.
+  &--compact { flex: 0 0 auto; }
+}
 
 .pdf-iframe { width: 100%; height: 100%; border: none; background: #fff; }
 
-.preview-loading,
-.preview-unavailable {
+// Overlays the iframe while it loads, so it must stay absolutely positioned.
+.preview-loading {
   position: absolute; inset: 0; z-index: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 10px; text-align: center; padding: 24px;
   background: var(--bg-secondary, #161b22);
+
+  p { font-size: 13px; color: var(--text-secondary, #8b949e); margin: 0; max-width: 320px; }
+  .state-icon { font-size: 28px; }
+}
+
+// Never shares the box with an iframe — sized to its own content, not absolute.
+.preview-unavailable {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; text-align: center; padding: 32px 24px;
 
   p { font-size: 13px; color: var(--text-secondary, #8b949e); margin: 0; max-width: 320px; }
   .state-icon { font-size: 28px; }
@@ -347,9 +379,22 @@ $error-clr:     #f87171;
 @media (max-width: 640px) {
   .modal-backdrop { padding: 0; }
   .preview-modal { width: 100%; height: 100%; border-radius: 0; }
+
+  // The compact variant (no iframe) keeps its own auto-height + rounded
+  // corners instead of the full-bleed takeover meant for the PDF viewer.
+  .preview-modal--compact {
+    width: min(420px, calc(100% - 32px));
+    height: auto;
+    border-radius: 16px;
+  }
 }
 
 @media (max-width: 520px) {
   .search-box { flex-wrap: wrap; }
   .search-btn { width: 100%; justify-content: center; display: flex; align-items: center; }
+
+  // Side-by-side "Scarica PDF" / "Vedi pagina sorgente →" gets too cramped
+  // for the longer label at this width — stack them full-width instead.
+  .preview-actions { flex-direction: column; }
+  .btn-download, .btn-source { width: 100%; }
 }
