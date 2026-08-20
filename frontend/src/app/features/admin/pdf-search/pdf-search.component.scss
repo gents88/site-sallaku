@@ -194,12 +194,67 @@ $error-clr:     #f87171;
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+// ── RESULTS TOOLBAR (filter + sort) ─────────────────────────────────────────
+.results-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.chip {
+  padding: 7px 14px; border-radius: 100px;
+  background: var(--bg-secondary, #161b22);
+  border: 1px solid var(--border-color, #30363d);
+  color: var(--text-secondary, #8b949e);
+  font-size: 12.5px; font-weight: 600; cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+
+  &:hover { border-color: $accent-border; color: var(--text-primary, #e6edf3); }
+
+  &.active {
+    background: $accent-glow; border-color: $accent-border;
+    color: #34d399;
+  }
+}
+
+.sort-select {
+  padding: 7px 12px; border-radius: 10px;
+  background: var(--bg-secondary, #161b22);
+  border: 1px solid var(--border-color, #30363d);
+  color: var(--text-primary, #e6edf3);
+  font-size: 12.5px; font-weight: 600; cursor: pointer;
+}
+
 // ── RESULTS GRID ──────────────────────────────────────────────────────────────
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 14px;
   align-content: start;
+}
+
+// ── SKELETON LOADING ─────────────────────────────────────────────────────────
+.skeleton-card { cursor: default; &:hover { border-color: var(--border-color, #30363d); transform: none; } }
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--bg-tertiary, #0d1117) 25%, rgba(255, 255, 255, 0.04) 50%, var(--bg-tertiary, #0d1117) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.result-cover.skeleton-shimmer { border-radius: 0; }
+
+.skeleton-line {
+  height: 11px; margin: 6px 0;
+  &.short { width: 55%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .result-card {
@@ -346,18 +401,21 @@ $error-clr:     #f87171;
 }
 
 .preview-actions {
-  display: flex; gap: 10px; padding: 12px 16px;
+  display: flex; gap: 10px; padding: 12px 16px; flex-wrap: wrap;
   border-top: 1px solid var(--border-color, #30363d);
 }
 
 .btn-download,
-.btn-source {
+.btn-source,
+.btn-workspace {
   flex: 1; text-align: center;
   padding: 10px 14px; border-radius: 10px;
   font-size: 13px; font-weight: 700; text-decoration: none;
   transition: transform 0.15s, opacity 0.15s;
+  cursor: pointer;
 
-  &:hover { transform: translateY(-1px); }
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
 .btn-download {
@@ -365,7 +423,8 @@ $error-clr:     #f87171;
   color: #fff;
 }
 
-.btn-source {
+.btn-source,
+.btn-workspace {
   background: transparent; border: 1px solid var(--border-color, #30363d);
   color: var(--text-primary, #e6edf3);
 }
@@ -396,5 +455,5 @@ $error-clr:     #f87171;
   // Side-by-side "Scarica PDF" / "Vedi pagina sorgente →" gets too cramped
   // for the longer label at this width — stack them full-width instead.
   .preview-actions { flex-direction: column; }
-  .btn-download, .btn-source { width: 100%; }
+  .btn-download, .btn-source, .btn-workspace { width: 100%; }
 }

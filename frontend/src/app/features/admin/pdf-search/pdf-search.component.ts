@@ -1,12 +1,21 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, PLATFORM_ID, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, PLATFORM_ID, signal, computed, inject } from '@angular/core';
+import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Subject, of, debounceTime, distinctUntilChanged, map, switchMap, catchError } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
-import { PdfSearchService, PdfSearchResult } from '../../../core/services/pdf-search.service';
+import { WorkspaceService } from '../../../core/services/workspace.service';
+import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
+const SEARCH_DEBOUNCE_MS = 500;
+const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
+const PAPER_SOURCES: PdfSource[] = ['arxiv', 'pmc'];
+
+export type SourceFilter = 'all' | 'books' | 'papers';
+export type SortOrder = 'relevance' | 'year_desc' | 'year_asc';
 
 @Component({
   selector: 'app-pdf-search',
@@ -20,6 +29,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly service = inject(PdfSearchService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly loading = this.service.isLoading;
@@ -29,6 +39,26 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   readonly error = signal('');
   readonly hasSearched = signal(false);
   readonly selected = signal<PdfSearchResult | null>(null);
+
+  readonly sourceFilter = signal<SourceFilter>('all');
+  readonly sortBy = signal<SortOrder>('relevance');
+
+  readonly displayResults = computed(() => {
+    const filter = this.sourceFilter();
+    let list = this.results();
+    if (filter === 'books') list = list.filter((r) => BOOK_SOURCES.includes(r.source));
+    else if (filter === 'papers') list = list.filter((r) => PAPER_SOURCES.includes(r.source));
+
+    const sort = this.sortBy();
+    if (sort === 'relevance') return list;
+    return [...list].sort((a, b) => {
+      const ay = parseInt(a.year, 10) || 0;
+      const by = parseInt(b.year, 10) || 0;
+      return sort === 'year_desc' ? by - ay : ay - by;
+    });
+  });
+
+  readonly skeletonPlaceholders = Array.from({ length: 8 });
 
   readonly features = [
     { icon: '⚖️', titleKey: 'pdf_search.feature_legal_title', descKey: 'pdf_search.feature_legal_desc' },
@@ -40,6 +70,9 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   readonly previewUrl = signal<SafeResourceUrl | null>(null);
   readonly previewLoading = signal(false);
 
+  readonly sendingToWorkspace = signal(false);
+  readonly justSent = signal(false);
+
   // Mobile browsers' native PDF viewer inside an <iframe> commonly renders
   // only the first page instead of the full scrollable document — a browser
   // limitation, not something CSS can fix — so on narrow viewports the
@@ -48,6 +81,52 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private mobileQuery: MediaQueryList | null = null;
   private readonly onMobileQueryChange = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
   readonly isMobile = signal(false);
+
+  // Single pipeline for every trigger (typing, Enter, button click) so a
+  // slow earlier response can never overwrite a newer one — switchMap cancels
+  // it. catchError lives inside the inner pipe: letting it escape would kill
+  // the whole subscription on the first failed search.
+  private readonly searchTrigger$ = new Subject<string>();
+
+  constructor() {
+    this.searchTrigger$
+      .pipe(
+        switchMap((q) =>
+          this.service.search(q).pipe(
+            catchError((err) => {
+              const msg = err?.error?.message ?? 'La ricerca non è riuscita. Riprova.';
+              this.error.set(msg);
+              this.results.set([]);
+              return of(null);
+            }),
+          ),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((results) => {
+        if (results === null) return;
+        this.error.set('');
+        this.results.set(results);
+      });
+
+    toObservable(this.query)
+      .pipe(
+        debounceTime(SEARCH_DEBOUNCE_MS),
+        map((q) => q.trim()),
+        distinctUntilChanged(),
+        takeUntilDestroyed(),
+      )
+      .subscribe((q) => {
+        if (q.length === 0) {
+          this.hasSearched.set(false);
+          this.results.set([]);
+          this.error.set('');
+          return;
+        }
+        if (q.length < 2) return;
+        this.runSearch(q);
+      });
+  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -86,22 +165,19 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.previewUrl.set(null);
   }
 
-  search(): void {
-    const q = this.query().trim();
-    if (q.length < 2) return;
+  private runSearch(q: string): void {
     this.error.set('');
     this.hasSearched.set(true);
     this.selected.set(null);
     this._revokePreview();
+    this.searchTrigger$.next(q);
+  }
 
-    this.service.search(q).subscribe({
-      next: (results) => this.results.set(results),
-      error: (err) => {
-        const msg = err?.error?.message ?? 'La ricerca non è riuscita. Riprova.';
-        this.error.set(msg);
-        this.results.set([]);
-      },
-    });
+  /** Explicit trigger (submit button / Enter) — the debounced live-typing search above covers the rest. */
+  search(): void {
+    const q = this.query().trim();
+    if (q.length < 2) return;
+    this.runSearch(q);
   }
 
   select(result: PdfSearchResult): void {
@@ -127,6 +203,28 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.selected.set(null);
     this.previewLoading.set(false);
     this._revokePreview();
+  }
+
+  sendToWorkspace(result: PdfSearchResult): void {
+    this.sendingToWorkspace.set(true);
+    this.service.downloadBlob(result).subscribe({
+      next: (blob) => {
+        this.workspace.send({
+          kind: 'file',
+          blob,
+          filename: `${result.title.replace(/[\\/:*?"<>|]/g, '').slice(0, 80)}.pdf`,
+          mime: 'application/pdf',
+          fromTool: 'pdf_search',
+        });
+        this.sendingToWorkspace.set(false);
+        this.justSent.set(true);
+        setTimeout(() => this.justSent.set(false), 1500);
+      },
+      error: () => {
+        this.sendingToWorkspace.set(false);
+        this.error.set('Invio a Workspace non riuscito. Riprova.');
+      },
+    });
   }
 
   @HostListener('window:keydown.escape')
