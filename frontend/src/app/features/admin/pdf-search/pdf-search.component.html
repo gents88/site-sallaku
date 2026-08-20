@@ -125,8 +125,15 @@
   <!-- ── PREVIEW MODAL ─────────────────────────────────────────────────────── -->
   @if (selected(); as sel) {
     <div class="modal-backdrop" (click)="closePreview()">
-      <div class="preview-modal" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()">
+      <div class="preview-modal" [class.preview-modal--compact]="!sel.previewable || isMobile()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()">
         <div class="preview-header">
+          <div class="preview-header-cover">
+            @if (sel.coverUrl) {
+              <img [src]="sel.coverUrl" [alt]="sel.title" />
+            } @else {
+              <span class="cover-fallback">📄</span>
+            }
+          </div>
           <div class="preview-header-info">
             <h3>{{ sel.title }}</h3>
             @if (sel.author) { <p>{{ 'pdf_search.result_by' | translate }} {{ sel.author }}</p> }
@@ -134,7 +141,7 @@
           <button type="button" class="preview-close" (click)="closePreview()" [attr.aria-label]="'pdf_search.preview_close' | translate">✕</button>
         </div>
 
-        <div class="preview-body">
+        <div class="preview-body" [class.preview-body--compact]="!sel.previewable || isMobile()">
           @if (!sel.previewable) {
             <div class="preview-unavailable">
               <span class="state-icon">🔒</span>
