@@ -17,6 +17,8 @@ export interface PdfSearchResult {
   detailsUrl: string;
   /** False when the source blocks iframe embedding outright (e.g. PMC) — show a download-only state instead of an iframe. */
   previewable: boolean;
+  /** Scan resolution (pixels/inch) for physical-book scans — currently only ever set for Internet Archive, and only when its own scanning pipeline recorded one. Always null for native digital PDFs (Gutenberg/arXiv/PMC). */
+  scanPpi: number | null;
 }
 
 @Injectable({ providedIn: 'root' })

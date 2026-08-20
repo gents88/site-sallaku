@@ -998,7 +998,9 @@
     "faq_q5": "Pourquoi certains résultats n'ont-ils pas d'aperçu ?",
     "faq_a5": "Certaines sources (par ex. PubMed Central) empêchent l'intégration directe de la page pour des raisons techniques propres à leur serveur — le téléchargement reste alors disponible.",
     "faq_q6": "Le moteur de recherche de PDF est-il gratuit ?",
-    "faq_a6": "Oui, entièrement gratuit, sans inscription ni limite d'utilisation, hormis une limite technique anti-abus de 20 recherches par minute."
+    "faq_a6": "Oui, entièrement gratuit, sans inscription ni limite d'utilisation, hormis une limite technique anti-abus de 20 recherches par minute.",
+    "quality_hd": "Haute résolution",
+    "quality_low": "Basse résolution"
   },
   "convert": {
     "title": "Convertisseur",

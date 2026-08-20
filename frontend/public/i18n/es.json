@@ -998,7 +998,9 @@
     "faq_q5": "¿Por qué algunos resultados no tienen vista previa?",
     "faq_a5": "Algunas fuentes (p. ej. PubMed Central) impiden incrustar la página directamente por motivos técnicos de su servidor; en ese caso, la descarga sigue disponible.",
     "faq_q6": "¿El motor de búsqueda de PDF es gratuito?",
-    "faq_a6": "Sí, totalmente gratis, sin registro ni límites de uso, salvo un límite técnico antiabuso de 20 búsquedas por minuto."
+    "faq_a6": "Sí, totalmente gratis, sin registro ni límites de uso, salvo un límite técnico antiabuso de 20 búsquedas por minuto.",
+    "quality_hd": "Alta resolución",
+    "quality_low": "Baja resolución"
   },
   "convert": {
     "title": "Convertidor",

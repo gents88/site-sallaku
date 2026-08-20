@@ -998,7 +998,9 @@
     "faq_q5": "Warum haben manche Ergebnisse keine Vorschau?",
     "faq_a5": "Manche Quellen (z. B. PubMed Central) verhindern aus technischen Gründen ihres Servers das direkte Einbetten der Seite — in diesem Fall bleibt der Download trotzdem verfügbar.",
     "faq_q6": "Ist die PDF-Suchmaschine kostenlos?",
-    "faq_a6": "Ja, komplett kostenlos, ohne Registrierung und ohne Nutzungslimit, abgesehen von einer technischen Missbrauchsgrenze von 20 Suchen pro Minute."
+    "faq_a6": "Ja, komplett kostenlos, ohne Registrierung und ohne Nutzungslimit, abgesehen von einer technischen Missbrauchsgrenze von 20 Suchen pro Minute.",
+    "quality_hd": "Hohe Auflösung",
+    "quality_low": "Niedrige Auflösung"
   },
   "convert": {
     "title": "Konverter",

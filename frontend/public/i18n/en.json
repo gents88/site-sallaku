@@ -998,7 +998,9 @@
     "faq_q5": "Why don't some results have a preview?",
     "faq_a5": "Some sources (e.g. PubMed Central) block direct page embedding for technical reasons on their server — in that case, downloading is still available.",
     "faq_q6": "Is the PDF search engine free?",
-    "faq_a6": "Yes, completely free, no registration and no usage limits, aside from a technical anti-abuse cap of 20 searches per minute."
+    "faq_a6": "Yes, completely free, no registration and no usage limits, aside from a technical anti-abuse cap of 20 searches per minute.",
+    "quality_hd": "High resolution",
+    "quality_low": "Low resolution"
   },
   "convert": {
     "title": "Converter",

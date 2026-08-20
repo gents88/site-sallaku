@@ -10,7 +10,7 @@ function makeResult(overrides: Partial<PdfSearchResult> = {}): PdfSearchResult {
   return {
     id: 'r-1', title: 'Title', author: '', year: '', source: 'internet_archive', sourceLabel: 'Internet Archive',
     pdfUrl: 'https://archive.org/download/x/x.pdf', coverUrl: null, detailsUrl: 'https://archive.org/details/x',
-    previewable: true,
+    previewable: true, scanPpi: null,
     ...overrides,
   };
 }

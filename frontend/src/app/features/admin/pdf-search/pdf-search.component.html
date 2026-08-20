@@ -149,11 +149,11 @@
               @if (r.coverUrl) {
                 <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" />
               } @else {
-                <span class="cover-fallback">📄</span>
+                <span class="cover-fallback" aria-hidden="true">📄</span>
               }
-              <span class="hover-hint">{{ r.previewable ? '👁️' : '📥' }}</span>
+              <span class="hover-hint" aria-hidden="true">{{ r.previewable ? '👁️' : '📥' }}</span>
               @if (!r.previewable) {
-                <span class="no-preview-badge" [attr.title]="'pdf_search.preview_unavailable' | translate">🔒</span>
+                <span class="no-preview-badge" aria-hidden="true" [attr.title]="'pdf_search.preview_unavailable' | translate">🔒</span>
               }
             </div>
             <div class="result-info">
@@ -166,10 +166,15 @@
                   {{ r.sourceLabel }}
                 </span>
                 @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
+                @if (scanQuality(r); as quality) {
+                  <span class="quality-pill" [class.quality-hd]="quality === 'hd'" [class.quality-low]="quality === 'low'">
+                    {{ (quality === 'hd' ? 'pdf_search.quality_hd' : 'pdf_search.quality_low') | translate }}
+                  </span>
+                }
               </div>
             </div>
             @if (selected()?.id === r.id) {
-              <span class="active-badge">✓</span>
+              <span class="active-badge" aria-hidden="true">✓</span>
             }
           </button>
         }
@@ -189,7 +194,7 @@
             @if (sel.coverUrl) {
               <img [src]="sel.coverUrl" [alt]="sel.title" />
             } @else {
-              <span class="cover-fallback">📄</span>
+              <span class="cover-fallback" aria-hidden="true">📄</span>
             }
           </div>
           <div class="preview-header-info">

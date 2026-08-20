@@ -998,7 +998,9 @@
     "faq_q5": "Por que alguns resultados não têm pré-visualização?",
     "faq_a5": "Algumas fontes (ex. PubMed Central) impedem a incorporação direta da página por motivos técnicos do próprio servidor — nesse caso, o download continua disponível.",
     "faq_q6": "O motor de busca de PDF é gratuito?",
-    "faq_a6": "Sim, totalmente gratuito, sem cadastro nem limites de uso, exceto um limite técnico antiabuso de 20 buscas por minuto."
+    "faq_a6": "Sim, totalmente gratuito, sem cadastro nem limites de uso, exceto um limite técnico antiabuso de 20 buscas por minuto.",
+    "quality_hd": "Alta resolução",
+    "quality_low": "Baixa resolução"
   },
   "convert": {
     "title": "Conversor",

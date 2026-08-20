@@ -998,7 +998,9 @@
     "faq_q5": "Perché alcuni risultati non hanno l'anteprima?",
     "faq_a5": "Alcune fonti (es. PubMed Central) impediscono l'incorporazione diretta della pagina per motivi tecnici del loro server — in quel caso il download resta comunque disponibile.",
     "faq_q6": "Il motore di ricerca PDF è gratuito?",
-    "faq_a6": "Sì, completamente gratuito, senza registrazione né limiti di utilizzo, salvo un limite tecnico anti-abuso di 20 ricerche al minuto."
+    "faq_a6": "Sì, completamente gratuito, senza registrazione né limiti di utilizzo, salvo un limite tecnico anti-abuso di 20 ricerche al minuto.",
+    "quality_hd": "Alta risoluzione",
+    "quality_low": "Bassa risoluzione"
   },
   "convert": {
     "title": "Convertitore",
