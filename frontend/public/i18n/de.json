@@ -837,7 +837,8 @@
     "workspace_banner_use": "Diesen Text verwenden",
     "workspace_banner_dismiss": "Ignorieren",
     "workspace_send": "An Workspace senden",
-    "workspace_sent": "Gesendet ✓"
+    "workspace_sent": "Gesendet ✓",
+    "truncated_warning": "Sehr langes Dokument: Nur der erste Teil wurde verarbeitet, der Rest ist nicht enthalten."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -865,7 +866,8 @@
     "workspace_banner_use": "Diese Datei verwenden",
     "workspace_banner_dismiss": "Ignorieren",
     "btn_send_workspace": "An Workspace senden",
-    "btn_sent": "Gesendet ✓"
+    "btn_sent": "Gesendet ✓",
+    "truncated_warning": "Sehr langes Dokument: Nur der erste Teil wurde verarbeitet, der Rest ist nicht enthalten."
   },
   "workspace": {
     "badge": "Neu",
@@ -887,14 +889,14 @@
     "badge": "KI-PDF-Übersetzung",
     "hero_title_1": "Übersetze Jedes PDF",
     "hero_title_2": "Mit Erhaltenem Layout",
-    "hero_subtitle": "KI-Übersetzung auf Unternehmensniveau, die Struktur, Schriften, Bilder und Layout deines Dokuments beibehält — powered by GPT-4o.",
+    "hero_subtitle": "KI-Übersetzung auf Unternehmensniveau, die Seitenzahl und Seitenformat deines Dokuments beibehält — powered by GPT-4o.",
     "cta_primary": "🌍 PDF kostenlos übersetzen",
     "stat_languages": "Sprachen",
     "stat_scanned": "Gescannte PDFs",
     "stat_quality": "Qualität",
     "stat_max_size": "Max. Größe",
-    "feature_layout_title": "Pixel-genaues Layout",
-    "feature_layout_desc": "Erhält Spalten, Schriften, Bilder, Kopf- und Fußzeilen sowie genaue Blockpositionen.",
+    "feature_layout_title": "Seitengetreues Layout",
+    "feature_layout_desc": "Behält Seitenzahl und Seitengröße des Originals bei, Seite für Seite — nicht die ursprünglichen Schriften oder Bilder.",
     "feature_ai_title": "KI-Übersetzungsqualität",
     "feature_ai_desc": "GPT-4o-gestützt, Block-für-Block-Übersetzung mit strukturbewussten Prompts.",
     "feature_ocr_title": "OCR für gescannte PDFs",
@@ -909,7 +911,7 @@
     "section_subtitle": "KI-Unternehmensübersetzung mit Layout-Erhaltung",
     "label_mode": "Übersetzungsmodus",
     "mode_high_fidelity": "Hohe Wiedergabetreue",
-    "mode_high_fidelity_desc": "Erhält genaues Layout, Schriften und Positionierung",
+    "mode_high_fidelity_desc": "Behält Seitenzahl und Seitengröße des Originals bei",
     "mode_standard": "Standard",
     "mode_standard_desc": "Schnellere Verarbeitung, sauberer Textausgang",
     "label_language": "Zielsprache",
@@ -946,7 +948,9 @@
     "dl_send_workspace_name": "An Workspace senden",
     "dl_send_workspace_sub": "Ergebnis an ein anderes Tool übergeben",
     "dl_sent_name": "Gesendet ✓",
-    "guide_link": "Leitfaden: Wie funktioniert die KI-PDF-Übersetzung"
+    "guide_link": "Leitfaden: Wie funktioniert die KI-PDF-Übersetzung",
+    "truncated_warning": "Sehr langes Dokument: Nur der erste Teil wurde verarbeitet, der Rest ist nicht enthalten.",
+    "pill_clean_layout": "Sauberes Layout"
   },
   "pdf_search": {
     "title": "PDF-Suche",
@@ -1153,7 +1157,9 @@
     "workspace_banner_use": "Diese Datei verwenden",
     "workspace_banner_dismiss": "Ignorieren",
     "send_workspace": "An Workspace senden",
-    "sent": "Gesendet ✓"
+    "sent": "Gesendet ✓",
+    "save_library": "In Bibliothek speichern",
+    "saved_library": "In Bibliothek gespeichert"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1343,6 +1349,8 @@
     "stop_camera": "Kamera stoppen",
     "upload_image": "Bild hochladen",
     "placeholder": "Starte die Kamera oder lade ein Bild hoch, um zu beginnen",
+    "drop_hint": "Bild hierher ziehen oder Kamera nutzen oder Datei hochladen",
+    "limits_hint": "PNG, JPG, WEBP · max. {{size}}MB pro Bild · bis zu {{max}} Seiten",
     "filter": "Filter",
     "filter_none": "Keiner",
     "filter_grayscale": "Graustufen",
@@ -1353,13 +1361,25 @@
     "cancel": "Abbrechen",
     "add_page": "Seite hinzufügen",
     "crop_hint": "Über das Bild ziehen, um es zuzuschneiden",
+    "edit_canvas_label": "Zuschneidebereich. Zum Auswählen ziehen, oder Tastatur nutzen: Eingabe zum Auswählen, Pfeiltasten zum Verschieben, Umschalt+Pfeiltasten zum Skalieren, Esc zum Abbrechen.",
     "pages_title": "Erfasste Seiten",
     "clear": "Leeren",
+    "confirm_clear": "Alle {{count}} erfassten Seiten löschen? Das kann nicht rückgängig gemacht werden.",
+    "confirm_delete_page": "Seite {{n}} löschen?",
     "exporting": "Wird exportiert…",
+    "uploading": "Wird hochgeladen… {{pct}}%",
+    "processing_pdf": "PDF wird erstellt…",
     "export_pdf": "PDF exportieren",
     "err_camera": "Kein Zugriff auf die Kamera möglich",
+    "err_camera_denied": "Kamerazugriff verweigert. Aktiviere ihn in den Browser-Einstellungen und versuche es erneut.",
+    "err_camera_notfound": "Keine Kamera auf diesem Gerät gefunden.",
+    "err_camera_inuse": "Kamera wird bereits von einer anderen App verwendet.",
     "success": "PDF erfolgreich exportiert",
     "err_failed": "Vorgang fehlgeschlagen",
+    "err_file_type": "Nicht unterstütztes Format: {{name}}",
+    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
+    "err_offline": "Du bist offline. Verbindung prüfen und erneut versuchen.",
+    "err_too_many_pages": "Du kannst maximal {{max}} Seiten haben: einige Dateien wurden nicht hinzugefügt.",
     "run_ocr": "OCR ausführen",
     "ocr_results_title": "Extrahierter Text (OCR)",
     "trust_badge": "Aufnahme, Zuschnitt und Filter bleiben in deinem Browser — nur OCR und PDF-Export werden an den Server gesendet",

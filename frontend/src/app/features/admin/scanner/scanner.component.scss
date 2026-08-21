@@ -32,6 +32,16 @@
     .video { width: 100%; max-height: 420px; border-radius: 10px; margin-top: 1rem; background: #000; object-fit: contain; }
     .placeholder { color: var(--text-secondary, #8b949e); text-align: center; padding: 2.5rem 1rem; margin: 0; font-size: .9rem; }
 
+    .dz {
+      margin-top: 1rem;
+      border: 2px dashed var(--border-color, #30363d); border-radius: 12px; padding: 1.5rem 1rem;
+      text-align: center; cursor: pointer; display: grid; gap: 0.3rem; transition: border-color .18s, background .18s;
+    }
+    .dz:hover { border-color: var(--accent, #6c63ff); background: rgba(108,99,255,.04); }
+    .dz--active { border-color: var(--accent, #6c63ff); background: rgba(108,99,255,.06); }
+    .dz-icon { font-size: 1.6rem; line-height: 1; }
+    .dz small { color: var(--text-secondary, #8b949e); font-size: .78rem; }
+
     .edit-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: .6rem; }
     .opt small { display: block; font-size: 0.72rem; color: var(--text-secondary, #8b949e); margin-bottom: 0.3rem; }
     .sel {
@@ -45,6 +55,7 @@
       width: 100%; border-radius: 10px; border: 1px solid var(--border-color, #30363d);
       touch-action: none; cursor: crosshair; display: block; background: #000;
     }
+    .edit-canvas:focus-visible { outline: 2px solid var(--accent, #6c63ff); outline-offset: 2px; }
 
     .res-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
     .res-head h2 { margin: 0; font-size: 1.05rem; }
@@ -70,12 +81,14 @@
     .btn-s { background: transparent; color: var(--text-primary, #e6edf3); border-color: var(--border-color, #30363d); }
     .btn-s:hover { background: var(--bg-tertiary, #1c2333); }
 
-    .progress-wrap { margin-top: 1rem; }
+    .progress-wrap { margin-top: 1rem; display: grid; gap: .35rem; }
+    .progress-wrap small { color: var(--text-secondary, #8b949e); font-size: .75rem; }
     .progress-bar { height: 3px; background: var(--bg-tertiary,#1c2333); border-radius: 2px; overflow: hidden; }
     .progress-fill {
       height: 100%; background: linear-gradient(90deg, var(--accent,#6c63ff), #a855f7); border-radius: 2px;
       animation: prog 1.4s ease-in-out infinite;
     }
+    .progress-fill--det { animation: none; width: 0; transition: width .2s ease-out; }
     @keyframes prog { 0% { width: 0; margin-left: 0; } 50% { width: 60%; margin-left: 20%; } 100% { width: 0; margin-left: 100%; } }
 
     .msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); font-size: .85rem; color: var(--warning, #fbbf24); margin: 1rem 0 0; }

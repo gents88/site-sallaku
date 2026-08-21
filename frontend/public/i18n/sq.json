@@ -837,7 +837,8 @@
     "workspace_banner_use": "Përdor këtë tekst",
     "workspace_banner_dismiss": "Injoro",
     "workspace_send": "Dërgo te Workspace",
-    "workspace_sent": "U dërgua ✓"
+    "workspace_sent": "U dërgua ✓",
+    "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -865,7 +866,8 @@
     "workspace_banner_use": "Përdor këtë skedar",
     "workspace_banner_dismiss": "Injoro",
     "btn_send_workspace": "Dërgo te Workspace",
-    "btn_sent": "U dërgua ✓"
+    "btn_sent": "U dërgua ✓",
+    "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet."
   },
   "workspace": {
     "badge": "E re",
@@ -887,14 +889,14 @@
     "badge": "Përkthim PDF me AI",
     "hero_title_1": "Përkthe Çdo PDF",
     "hero_title_2": "Me Layout të Ruajtur",
-    "hero_subtitle": "Përkthim AI i klasit enterprise që ruan strukturën, fontet, imazhet dhe faqosjen e dokumentit — fuqizuar nga GPT-4o.",
+    "hero_subtitle": "Përkthim AI i klasit enterprise që ruan numrin dhe formatin e faqeve të dokumentit — fuqizuar nga GPT-4o.",
     "cta_primary": "🌍 Përkthe PDF Falas",
     "stat_languages": "Gjuhë",
     "stat_scanned": "PDF të Skanuar",
     "stat_quality": "Cilësi",
     "stat_max_size": "Madhësia Maks",
-    "feature_layout_title": "Layout Pixel-Perfect",
-    "feature_layout_desc": "Ruan kolonat, fontet, imazhet, titujt, fundin e faqes dhe pozicionet ekzakte të bloqeve.",
+    "feature_layout_title": "Faqosje Besnike ndaj Origjinalit",
+    "feature_layout_desc": "Ruan të njëjtin numër faqesh dhe të njëjtën përmasë si origjinali, faqe për faqe — jo fontet apo imazhet origjinale.",
     "feature_ai_title": "Përkthim Cilësi AI",
     "feature_ai_desc": "Fuqizuar nga GPT-4o, përkthim bllok-për-bllok me prompt të ndërgjegjshëm ndaj strukturës.",
     "feature_ocr_title": "OCR për PDF të Skanuar",
@@ -909,7 +911,7 @@
     "section_subtitle": "Përkthim AI enterprise me ruajtje të faqosjes",
     "label_mode": "Modaliteti i Përkthimit",
     "mode_high_fidelity": "Besnikëri e Lartë",
-    "mode_high_fidelity_desc": "Ruan faqosjen, fontet dhe pozicionimin ekzakt",
+    "mode_high_fidelity_desc": "Ruan numrin dhe përmasën e faqeve origjinale",
     "mode_standard": "Standard",
     "mode_standard_desc": "Përpunim më i shpejtë, output tekst i pastër",
     "label_language": "Gjuha e Synuar",
@@ -946,7 +948,9 @@
     "dl_send_workspace_name": "Dërgo te Workspace",
     "dl_send_workspace_sub": "Kalo rezultatin te një vegël tjetër",
     "dl_sent_name": "U dërgua ✓",
-    "guide_link": "Udhëzues: si funksionon përkthimi i PDF me AI"
+    "guide_link": "Udhëzues: si funksionon përkthimi i PDF me AI",
+    "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet.",
+    "pill_clean_layout": "Skemë e pastër"
   },
   "pdf_search": {
     "title": "Kërko PDF",
@@ -1153,7 +1157,9 @@
     "workspace_banner_use": "Përdor këtë skedar",
     "workspace_banner_dismiss": "Injoro",
     "send_workspace": "Dërgo te Workspace",
-    "sent": "U dërgua ✓"
+    "sent": "U dërgua ✓",
+    "save_library": "Ruaj në bibliotekë",
+    "saved_library": "U ruajt në bibliotekë"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1343,6 +1349,8 @@
     "stop_camera": "Ndal kamerën",
     "upload_image": "Ngarko imazh",
     "placeholder": "Nis kamerën ose ngarko një imazh për të filluar",
+    "drop_hint": "Tërhiq një imazh këtu, ose përdor kamerën apo ngarko një skedar",
+    "limits_hint": "PNG, JPG, WEBP · maks {{size}}MB për imazh · deri në {{max}} faqe",
     "filter": "Filtër",
     "filter_none": "Asnjë",
     "filter_grayscale": "Shkallë gri",
@@ -1353,13 +1361,25 @@
     "cancel": "Anulo",
     "add_page": "Shto faqe",
     "crop_hint": "Tërhiq mbi imazh për ta prerë",
+    "edit_canvas_label": "Zona e prerjes. Tërhiq për të zgjedhur, ose përdor tastierën: Enter për të zgjedhur, shigjetat për të lëvizur, Shift+shigjeta për të ripërmasuar, Esc për të anuluar.",
     "pages_title": "Faqet e kapura",
     "clear": "Pastro",
+    "confirm_clear": "Të fshihen të gjitha {{count}} faqet e kapura? Nuk mund të zhbëhet.",
+    "confirm_delete_page": "Të fshihet faqja {{n}}?",
     "exporting": "Duke eksportuar…",
+    "uploading": "Duke ngarkuar… {{pct}}%",
+    "processing_pdf": "Duke krijuar PDF-në…",
     "export_pdf": "Eksporto PDF",
     "err_camera": "Nuk mund të aksesohet kamera",
+    "err_camera_denied": "Leja e kamerës u refuzua. Aktivizoje te cilësimet e shfletuesit dhe provo përsëri.",
+    "err_camera_notfound": "Nuk u gjet asnjë kamerë në këtë pajisje.",
+    "err_camera_inuse": "Kamera është duke u përdorur nga një aplikacion tjetër.",
     "success": "PDF u eksportua me sukses",
     "err_failed": "Operacioni dështoi",
+    "err_file_type": "Format i papërkrahur: {{name}}",
+    "err_file_too_large": "Skedar shumë i madh (maks {{max}}MB): {{name}}",
+    "err_offline": "Je jashtë linje. Kontrollo lidhjen dhe provo përsëri.",
+    "err_too_many_pages": "Mund të kesh maksimumi {{max}} faqe: disa skedarë nuk u shtuan.",
     "run_ocr": "Ekzekuto OCR-in",
     "ocr_results_title": "Teksti i nxjerrë (OCR)",
     "trust_badge": "Kapja, prerja dhe filtrat qëndrojnë në shfletuesin tënd — vetëm OCR-i dhe eksportimi në PDF dërgohen te serveri",

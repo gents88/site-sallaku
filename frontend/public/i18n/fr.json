@@ -837,7 +837,8 @@
     "workspace_banner_use": "Utiliser ce texte",
     "workspace_banner_dismiss": "Ignorer",
     "workspace_send": "Envoyer vers Workspace",
-    "workspace_sent": "Envoyé ✓"
+    "workspace_sent": "Envoyé ✓",
+    "truncated_warning": "Document très long : seule la première partie a été traitée, le reste n'est pas inclus."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -865,7 +866,8 @@
     "workspace_banner_use": "Utiliser ce fichier",
     "workspace_banner_dismiss": "Ignorer",
     "btn_send_workspace": "Envoyer vers Workspace",
-    "btn_sent": "Envoyé ✓"
+    "btn_sent": "Envoyé ✓",
+    "truncated_warning": "Document très long : seule la première partie a été traitée, le reste n'est pas inclus."
   },
   "workspace": {
     "badge": "Nouveau",
@@ -887,14 +889,14 @@
     "badge": "Traduction PDF par IA",
     "hero_title_1": "Traduisez N'importe Quel PDF",
     "hero_title_2": "Avec la Mise en Page Préservée",
-    "hero_subtitle": "Traduction IA de niveau entreprise qui conserve la structure, les polices, les images et la mise en page de votre document — powered by GPT-4o.",
+    "hero_subtitle": "Traduction IA de niveau entreprise qui conserve le nombre et le format de pages de votre document — powered by GPT-4o.",
     "cta_primary": "🌍 Traduire le PDF Gratuitement",
     "stat_languages": "Langues",
     "stat_scanned": "PDF Numérisés",
     "stat_quality": "Qualité",
     "stat_max_size": "Taille Max",
-    "feature_layout_title": "Mise en Page Pixel-Perfect",
-    "feature_layout_desc": "Préserve les colonnes, polices, images, en-têtes, pieds de page et positions exactes.",
+    "feature_layout_title": "Mise en Page Fidèle",
+    "feature_layout_desc": "Conserve le même nombre de pages et le même format que l'original, page par page — pas les polices ni les images d'origine.",
     "feature_ai_title": "Traduction Qualité IA",
     "feature_ai_desc": "Powered by GPT-4o, traduction bloc par bloc avec des invites conscientes de la structure.",
     "feature_ocr_title": "OCR pour PDF Numérisés",
@@ -909,7 +911,7 @@
     "section_subtitle": "Traduction IA entreprise avec préservation de la mise en page",
     "label_mode": "Mode de Traduction",
     "mode_high_fidelity": "Haute Fidélité",
-    "mode_high_fidelity_desc": "Préserve la mise en page, les polices et le positionnement exacts",
+    "mode_high_fidelity_desc": "Conserve le nombre et le format de page d'origine",
     "mode_standard": "Standard",
     "mode_standard_desc": "Traitement plus rapide, sortie texte propre",
     "label_language": "Langue Cible",
@@ -946,7 +948,9 @@
     "dl_send_workspace_name": "Envoyer vers Workspace",
     "dl_send_workspace_sub": "Transmettez le résultat à un autre outil",
     "dl_sent_name": "Envoyé ✓",
-    "guide_link": "Guide : comment fonctionne la traduction de PDF par IA"
+    "guide_link": "Guide : comment fonctionne la traduction de PDF par IA",
+    "truncated_warning": "Document très long : seule la première partie a été traitée, le reste n'est pas inclus.",
+    "pill_clean_layout": "Mise en page nette"
   },
   "pdf_search": {
     "title": "Recherche PDF",
@@ -1153,7 +1157,9 @@
     "workspace_banner_use": "Utiliser ce fichier",
     "workspace_banner_dismiss": "Ignorer",
     "send_workspace": "Envoyer vers Workspace",
-    "sent": "Envoyé ✓"
+    "sent": "Envoyé ✓",
+    "save_library": "Enregistrer dans la bibliothèque",
+    "saved_library": "Enregistré dans la bibliothèque"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1343,6 +1349,8 @@
     "stop_camera": "Arrêter la caméra",
     "upload_image": "Importer une image",
     "placeholder": "Démarrez la caméra ou importez une image pour commencer",
+    "drop_hint": "Déposez une image ici, ou utilisez la caméra ou importez un fichier",
+    "limits_hint": "PNG, JPG, WEBP · max {{size}}Mo par image · jusqu'à {{max}} pages",
     "filter": "Filtre",
     "filter_none": "Aucun",
     "filter_grayscale": "Niveaux de gris",
@@ -1353,13 +1361,25 @@
     "cancel": "Annuler",
     "add_page": "Ajouter une page",
     "crop_hint": "Faites glisser sur l'image pour recadrer",
+    "edit_canvas_label": "Zone de recadrage. Faites glisser pour sélectionner, ou utilisez le clavier : Entrée pour sélectionner, flèches pour déplacer, Maj+flèches pour redimensionner, Échap pour annuler.",
     "pages_title": "Pages capturées",
     "clear": "Effacer",
+    "confirm_clear": "Supprimer les {{count}} pages capturées ? Action irréversible.",
+    "confirm_delete_page": "Supprimer la page {{n}} ?",
     "exporting": "Export en cours…",
+    "uploading": "Envoi en cours… {{pct}}%",
+    "processing_pdf": "Génération du PDF…",
     "export_pdf": "Exporter en PDF",
     "err_camera": "Impossible d'accéder à la caméra",
+    "err_camera_denied": "Autorisation de la caméra refusée. Activez-la dans les paramètres du navigateur et réessayez.",
+    "err_camera_notfound": "Aucune caméra trouvée sur cet appareil.",
+    "err_camera_inuse": "La caméra est déjà utilisée par une autre application.",
     "success": "PDF exporté avec succès",
     "err_failed": "L'opération a échoué",
+    "err_file_type": "Format non pris en charge : {{name}}",
+    "err_file_too_large": "Fichier trop volumineux (max {{max}}Mo) : {{name}}",
+    "err_offline": "Vous êtes hors ligne. Vérifiez votre connexion et réessayez.",
+    "err_too_many_pages": "Vous pouvez avoir au maximum {{max}} pages : certains fichiers n'ont pas été ajoutés.",
     "run_ocr": "Lancer l'OCR",
     "ocr_results_title": "Texte extrait (OCR)",
     "trust_badge": "Capture, recadrage et filtres restent dans votre navigateur — seuls l'OCR et l'export PDF sont envoyés au serveur",

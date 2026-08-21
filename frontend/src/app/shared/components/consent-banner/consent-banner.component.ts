@@ -41,9 +41,34 @@ import { ConsentService } from '../../../core/services/consent.service';
        old 99999 the banner sat on top of the open mobile menu and silently
        ate taps on nav links (e.g. "Blog") that fell in its bottom strip,
        requiring several attempts before a tap landed outside the banner. */
-    .consent-banner { position:fixed; left:12px; right:12px; bottom:12px; background:var(--panel-surface,#081223); color:#fff; padding:14px; border-radius:12px; display:flex; gap:12px; align-items:center; z-index:900; }
+    .consent-banner { position:fixed; left:12px; right:12px; bottom:12px; background:var(--panel-surface,#081223); color:#fff; padding:14px; border-radius:12px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; z-index:900; }
     .consent-banner__text { flex:1 1 480px }
-    .consent-banner__actions { display:flex; gap:8px }
+    .consent-banner__actions { display:flex; flex-wrap:wrap; gap:8px }
+
+    /* Sotto i 900px la navbar aggiunge una bottom tab bar fissa (vedi
+       navbar.component.scss): senza questo offset il banner finirebbe
+       sovrapposto alla tab bar, con quest'ultima che disegna sopra
+       (z-index maggiore) e ne "mangia" i tap sui bottoni inferiori —
+       stesso bug già risolto sopra per il menu mobile, qui per la tab bar.
+       Sotto i 480px testo e bottoni vanno anche in colonna: affiancati
+       (flex-wrap da soli) risultavano troppo compressi su schermi stretti. */
+    @media (max-width: 900px) {
+      .consent-banner { bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); }
+    }
+    @media (max-width: 480px) {
+      .consent-banner { flex-direction: column; align-items: stretch; }
+      /* .consent-banner__text ha "flex:1 1 480px" per il layout a riga: quel
+         480px è pensato come base-larghezza. In colonna diventerebbe una
+         base-altezza, gonfiando il banner a ~480px di area invisibile che
+         intercetta i tap sui controlli della pagina sottostanti — va quindi
+         azzerato qui. */
+      .consent-banner__text { flex: 0 1 auto; }
+      /* flex-start e non flex-end: il FAB della chat (chatbot.component.scss,
+         bottom-right, z-index 1500) vive nello stesso angolo in basso a
+         destra. Bottoni allineati a destra ci finivano sotto, rendendo
+         "Accept all" non cliccabile su schermi stretti. */
+      .consent-banner__actions { justify-content: flex-start; }
+    }
     .consent-modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); z-index:100000 }
     .consent-modal__box { background:#fff; color:#111; padding:18px; border-radius:8px; width:100%; max-width:640px }
     .pref-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee }

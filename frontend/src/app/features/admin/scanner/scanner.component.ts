@@ -8,6 +8,7 @@ import { ConversionService } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 
 type Filter = 'none' | 'grayscale' | 'bw' | 'enhance';
 
@@ -31,11 +32,21 @@ const UI_TO_OCR_LANG: Record<string, string> = {
   it: 'ita', en: 'eng', es: 'spa', fr: 'fra', de: 'deu', pt: 'por', sq: 'sqi',
 };
 
+const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+/** Allineato al limite lato server per l'export (image.converter.ts: MAX_IMAGE_BYTES). */
+const MAX_IMAGE_MB = 20;
+const MAX_IMAGE_BYTES = MAX_IMAGE_MB * 1024 * 1024;
+/** Allineato al limite lato server per l'export (conversion.controller.ts: MAX_FILE_COUNT). */
+const MAX_PAGES = 20;
+/** Passo di spostamento/ridimensionamento del ritaglio da tastiera, in pixel immagine. */
+const CROP_KEY_STEP = 16;
+const CROP_KEY_STEP_FINE = 4;
+
 @Component({
   selector: 'app-scanner',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
+  imports: [TranslateModule, FileDropzoneDirective],
   templateUrl: './scanner.component.html',
   styleUrls: ['./scanner.component.scss'],
 })
@@ -55,8 +66,11 @@ export class ScannerComponent implements OnInit, OnDestroy {
   readonly filter = signal<Filter>('none');
   readonly pages = signal<ScanPage[]>([]);
   readonly exporting = signal(false);
+  /** Percentuale reale di upload durante l'export (0-100), null quando non applicabile (es. in attesa della risposta del server). */
+  readonly exportPct = signal<number | null>(null);
   readonly msg = signal('');
   readonly msgOk = signal(false);
+  readonly limitsHint = { size: MAX_IMAGE_MB, max: MAX_PAGES };
   /** Ultimo PDF esportato con successo (per l'invio a Workspace), invalidato quando le pagine cambiano. */
   readonly lastPdf = signal<{ blob: Blob; filename: string } | null>(null);
   readonly pdfSent = signal(false);
@@ -116,9 +130,17 @@ export class ScannerComponent implements OnInit, OnDestroy {
       });
       this.videoRef.nativeElement.srcObject = this.stream;
       this.cameraOn.set(true);
-    } catch {
-      this.camError.set(`❌ ${this.t.instant('scanner.err_camera')}`);
+    } catch (err) {
+      this.camError.set(`❌ ${this.t.instant(this.cameraErrorKey(err))}`);
     }
+  }
+
+  private cameraErrorKey(err: unknown): string {
+    const name = (err as { name?: string })?.name;
+    if (name === 'NotAllowedError' || name === 'PermissionDeniedError') return 'scanner.err_camera_denied';
+    if (name === 'NotFoundError' || name === 'DevicesNotFoundError') return 'scanner.err_camera_notfound';
+    if (name === 'NotReadableError' || name === 'TrackStartError') return 'scanner.err_camera_inuse';
+    return 'scanner.err_camera';
   }
 
   stopCamera(): void {
@@ -142,9 +164,44 @@ export class ScannerComponent implements OnInit, OnDestroy {
   async select(e: Event): Promise<void> {
     const files = Array.from((e.target as HTMLInputElement).files ?? []);
     (e.target as HTMLInputElement).value = '';
+    await this.addFiles(files);
+  }
+
+  async onFilesDropped(files: FileList): Promise<void> {
+    await this.addFiles(Array.from(files));
+  }
+
+  private async addFiles(files: File[]): Promise<void> {
     if (files.length === 0) return;
-    this.uploadQueue = files.slice(1);
-    await this.openImageFile(files[0]);
+
+    const remainingSlots = Math.max(0, MAX_PAGES - this.pages().length - this.uploadQueue.length);
+    const toProcess = files.slice(0, remainingSlots);
+    const truncated = files.length > remainingSlots;
+
+    const accepted: File[] = [];
+    const errors: string[] = [];
+    for (const f of toProcess) {
+      const errKey = this.validateFile(f);
+      if (errKey) {
+        errors.push(this.t.instant(errKey, { max: MAX_IMAGE_MB, name: f.name }));
+      } else {
+        accepted.push(f);
+      }
+    }
+    if (truncated) errors.push(this.t.instant('scanner.err_too_many_pages', { max: MAX_PAGES }));
+    if (errors.length > 0) this.msg.set(`❌ ${errors.join(' ')}`);
+
+    if (accepted.length === 0) return;
+    this.uploadQueue.push(...accepted.slice(1));
+    await this.openImageFile(accepted[0]);
+  }
+
+  private validateFile(f: File): string | null {
+    const isAcceptedType = ACCEPTED_IMAGE_TYPES.includes(f.type)
+      || /\.(png|jpe?g|webp)$/i.test(f.name);
+    if (!isAcceptedType) return 'scanner.err_file_type';
+    if (f.size > MAX_IMAGE_BYTES) return 'scanner.err_file_too_large';
+    return null;
   }
 
   // ── Editor (crop + filtri) ───────────────────────────────────────────
@@ -228,6 +285,57 @@ export class ScannerComponent implements OnInit, OnDestroy {
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   }
 
+  /** Alternativa da tastiera al crop col mouse: Invio avvia una selezione centrata, le frecce la spostano, Maiusc+frecce la ridimensionano, Esc la annulla. */
+  cropKeydown(e: KeyboardEvent): void {
+    if (!this.baseCanvas) return;
+    const canvas = this.editRef.nativeElement;
+    const step = e.shiftKey || e.altKey ? CROP_KEY_STEP_FINE : CROP_KEY_STEP;
+    let c = this.crop();
+
+    if (!c) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      const w = Math.round(canvas.width * 0.8);
+      const h = Math.round(canvas.height * 0.8);
+      this.crop.set({ x: Math.round((canvas.width - w) / 2), y: Math.round((canvas.height - h) / 2), w, h });
+      this.redraw();
+      return;
+    }
+
+    const resize = e.shiftKey;
+    switch (e.key) {
+      case 'ArrowLeft':
+        c = resize
+          ? { ...c, w: Math.max(24, c.w - step) }
+          : { ...c, x: Math.max(0, c.x - step) };
+        break;
+      case 'ArrowRight':
+        c = resize
+          ? { ...c, w: Math.min(canvas.width - c.x, c.w + step) }
+          : { ...c, x: Math.min(canvas.width - c.w, c.x + step) };
+        break;
+      case 'ArrowUp':
+        c = resize
+          ? { ...c, h: Math.max(24, c.h - step) }
+          : { ...c, y: Math.max(0, c.y - step) };
+        break;
+      case 'ArrowDown':
+        c = resize
+          ? { ...c, h: Math.min(canvas.height - c.y, c.h + step) }
+          : { ...c, y: Math.min(canvas.height - c.h, c.y + step) };
+        break;
+      case 'Escape':
+        this.crop.set(null);
+        this.redraw();
+        return;
+      default:
+        return;
+    }
+    e.preventDefault();
+    this.crop.set(c);
+    this.redraw();
+  }
+
   // ── Pagine + export ──────────────────────────────────────────────────
 
   move(i: number, dir: -1 | 1): void {
@@ -241,12 +349,14 @@ export class ScannerComponent implements OnInit, OnDestroy {
   }
 
   remove(i: number): void {
+    if (!confirm(this.t.instant('scanner.confirm_delete_page', { n: i + 1 }))) return;
     this.pages.update((p) => p.filter((_, idx) => idx !== i));
     this.resetOcrState();
     this.lastPdf.set(null);
   }
 
   clearPages(): void {
+    if (!confirm(this.t.instant('scanner.confirm_clear', { count: this.pages().length }))) return;
     this.pages.set([]);
     this.msg.set('');
     this.resetOcrState();
@@ -256,15 +366,23 @@ export class ScannerComponent implements OnInit, OnDestroy {
   exportPdf(): void {
     const pages = this.pages();
     if (pages.length === 0 || this.exporting()) return;
+    if (!navigator.onLine) {
+      this.msg.set(`❌ ${this.t.instant('scanner.err_offline')}`);
+      return;
+    }
     this.exporting.set(true);
+    this.exportPct.set(0);
     this.msg.set('');
     this.msgOk.set(false);
 
     const files = pages.map((p, i) => new File([p.blob], `scan-${i + 1}.jpg`, { type: 'image/jpeg' }));
     this.conv.convertFiles('image-to-pdf', files).subscribe({
       next: (ev) => {
-        if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
+        if (ev.type === HttpEventType.UploadProgress && ev.total) {
+          this.exportPct.set(Math.round((ev.loaded / ev.total) * 100));
+        } else if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
           this.exporting.set(false);
+          this.exportPct.set(null);
           if (ev.body instanceof Blob) {
             const filename = `scan-${new Date().toISOString().slice(0, 10)}.pdf`;
             const url = URL.createObjectURL(ev.body);
@@ -283,7 +401,8 @@ export class ScannerComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.exporting.set(false);
-        this.msg.set(`❌ ${this.t.instant('scanner.err_failed')}`);
+        this.exportPct.set(null);
+        this.msg.set(`❌ ${this.t.instant(navigator.onLine ? 'scanner.err_failed' : 'scanner.err_offline')}`);
       },
     });
   }
