@@ -30,7 +30,7 @@
     "@angular/service-worker": "^21.2.19",
     "@angular/ssr": "^21.2.19",
     "@ngx-translate/core": "^17.0.0",
-    "@ngx-translate/http-loader": "^17.0.0",
+    "@ngx-translate/http-loader": "^18.0.0",
     "@sentry/angular": "^10.70.0",
     "express": "^5.2.1",
     "http-proxy-middleware": "^4.1.1",
