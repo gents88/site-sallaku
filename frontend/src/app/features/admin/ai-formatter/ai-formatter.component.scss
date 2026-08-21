@@ -673,6 +673,17 @@
   line-height: 1.55;
 }
 
+.truncated-banner {
+  margin: 7px 14px 0;
+  padding: 9px 13px;
+  background: rgba(230, 160, 40, 0.09);
+  border: 1px solid rgba(230, 160, 40, 0.3);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #8b949e);
+  line-height: 1.5;
+}
+
 // ── FORMATTED OUTPUT ─────────────────────────────────────────────────────
 .output-formatted {
   padding: 14px 18px 18px;
