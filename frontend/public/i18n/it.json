@@ -837,7 +837,8 @@
     "workspace_banner_use": "Usa questo testo",
     "workspace_banner_dismiss": "Ignora",
     "workspace_send": "Invia a Workspace",
-    "workspace_sent": "Inviato ✓"
+    "workspace_sent": "Inviato ✓",
+    "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -865,7 +866,8 @@
     "workspace_banner_use": "Usa questo file",
     "workspace_banner_dismiss": "Ignora",
     "btn_send_workspace": "Invia a Workspace",
-    "btn_sent": "Inviato ✓"
+    "btn_sent": "Inviato ✓",
+    "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso."
   },
   "workspace": {
     "badge": "Novità",
@@ -887,14 +889,14 @@
     "badge": "Traduzione PDF AI",
     "hero_title_1": "Traduci Qualsiasi PDF",
     "hero_title_2": "Con Layout Preservato",
-    "hero_subtitle": "Traduzione AI di livello enterprise che mantiene struttura, font, immagini e layout del tuo documento — powered by GPT-4o.",
+    "hero_subtitle": "Traduzione AI di livello enterprise che mantiene numero e formato delle pagine del tuo documento — powered by GPT-4o.",
     "cta_primary": "🌍 Traduci PDF Gratis",
     "stat_languages": "Lingue",
     "stat_scanned": "PDF Scansionati",
     "stat_quality": "Qualità",
     "stat_max_size": "Dimensione Max",
-    "feature_layout_title": "Layout Pixel-Perfect",
-    "feature_layout_desc": "Preserva colonne, font, immagini, intestazioni, piè di pagina e posizioni esatte dei blocchi.",
+    "feature_layout_title": "Pagine Fedeli all'Originale",
+    "feature_layout_desc": "Mantiene lo stesso numero di pagine e le stesse dimensioni dell'originale, pagina per pagina — non i font o le immagini originali.",
     "feature_ai_title": "Traduzione Qualità AI",
     "feature_ai_desc": "Alimentato da GPT-4o, traduzione blocco per blocco con prompt strutturali.",
     "feature_ocr_title": "OCR per PDF Scansionati",
@@ -909,7 +911,7 @@
     "section_subtitle": "Traduzione AI enterprise con preservazione del layout",
     "label_mode": "Modalità di Traduzione",
     "mode_high_fidelity": "Alta Fedeltà",
-    "mode_high_fidelity_desc": "Preserva layout, font e posizionamento esatti",
+    "mode_high_fidelity_desc": "Mantiene numero e dimensione delle pagine originali",
     "mode_standard": "Standard",
     "mode_standard_desc": "Elaborazione più veloce, output testo pulito",
     "label_language": "Lingua di Destinazione",
@@ -946,7 +948,9 @@
     "dl_send_workspace_name": "Invia a Workspace",
     "dl_send_workspace_sub": "Passa il risultato a un altro strumento",
     "dl_sent_name": "Inviato ✓",
-    "guide_link": "Guida: come funziona la traduzione PDF con l'AI"
+    "guide_link": "Guida: come funziona la traduzione PDF con l'AI",
+    "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso.",
+    "pill_clean_layout": "Layout pulito"
   },
   "pdf_search": {
     "title": "Ricerca PDF",
@@ -1153,7 +1157,9 @@
     "workspace_banner_use": "Usa questo file",
     "workspace_banner_dismiss": "Ignora",
     "send_workspace": "Invia a Workspace",
-    "sent": "Inviato ✓"
+    "sent": "Inviato ✓",
+    "save_library": "Salva in libreria",
+    "saved_library": "Salvato in libreria"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1343,6 +1349,8 @@
     "stop_camera": "Ferma fotocamera",
     "upload_image": "Carica immagine",
     "placeholder": "Avvia la fotocamera o carica un'immagine per iniziare",
+    "drop_hint": "Trascina qui un'immagine, oppure usa la fotocamera o carica un file",
+    "limits_hint": "PNG, JPG, WEBP · max {{size}}MB per immagine · fino a {{max}} pagine",
     "filter": "Filtro",
     "filter_none": "Nessuno",
     "filter_grayscale": "Scala di grigi",
@@ -1353,13 +1361,25 @@
     "cancel": "Annulla",
     "add_page": "Aggiungi pagina",
     "crop_hint": "Trascina sull'immagine per ritagliare",
+    "edit_canvas_label": "Area di ritaglio. Trascina per selezionare, oppure usa la tastiera: Invio per selezionare, frecce per spostare, Maiusc+frecce per ridimensionare, Esc per annullare.",
     "pages_title": "Pagine acquisite",
     "clear": "Pulisci",
+    "confirm_clear": "Eliminare tutte le {{count}} pagine acquisite? Non si può annullare.",
+    "confirm_delete_page": "Eliminare la pagina {{n}}?",
     "exporting": "Esportazione…",
+    "uploading": "Caricamento… {{pct}}%",
+    "processing_pdf": "Generazione PDF…",
     "export_pdf": "Esporta PDF",
     "err_camera": "Impossibile accedere alla fotocamera",
+    "err_camera_denied": "Permesso fotocamera negato. Abilitalo nelle impostazioni del browser e riprova.",
+    "err_camera_notfound": "Nessuna fotocamera trovata su questo dispositivo.",
+    "err_camera_inuse": "Fotocamera occupata da un'altra applicazione.",
     "success": "PDF esportato con successo",
     "err_failed": "Operazione non riuscita",
+    "err_file_type": "Formato non supportato: {{name}}",
+    "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}",
+    "err_offline": "Sei offline: controlla la connessione e riprova.",
+    "err_too_many_pages": "Puoi avere al massimo {{max}} pagine: alcuni file non sono stati aggiunti.",
     "run_ocr": "Esegui OCR",
     "ocr_results_title": "Testo estratto (OCR)",
     "trust_badge": "Scatto, ritaglio e filtri restano nel tuo browser — solo OCR ed esportazione PDF vengono inviati al server",

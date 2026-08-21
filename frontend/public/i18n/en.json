@@ -837,7 +837,8 @@
     "workspace_banner_use": "Use this text",
     "workspace_banner_dismiss": "Ignore",
     "workspace_send": "Send to Workspace",
-    "workspace_sent": "Sent ✓"
+    "workspace_sent": "Sent ✓",
+    "truncated_warning": "Very long document: only the first part was processed, the rest is not included."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -865,7 +866,8 @@
     "workspace_banner_use": "Use this file",
     "workspace_banner_dismiss": "Ignore",
     "btn_send_workspace": "Send to Workspace",
-    "btn_sent": "Sent ✓"
+    "btn_sent": "Sent ✓",
+    "truncated_warning": "Very long document: only the first part was processed, the rest is not included."
   },
   "workspace": {
     "badge": "New",
@@ -887,14 +889,14 @@
     "badge": "AI PDF Translation",
     "hero_title_1": "Translate Any PDF",
     "hero_title_2": "With Layout Preserved",
-    "hero_subtitle": "Enterprise-grade AI translation that keeps your document's structure, fonts, images, and layout intact — powered by GPT-4o.",
+    "hero_subtitle": "Enterprise-grade AI translation that keeps your document's page count and page format intact — powered by GPT-4o.",
     "cta_primary": "🌍 Translate PDF Free",
     "stat_languages": "Languages",
     "stat_scanned": "Scanned PDFs",
     "stat_quality": "Quality",
     "stat_max_size": "Max Size",
-    "feature_layout_title": "Pixel-Perfect Layout",
-    "feature_layout_desc": "Preserves columns, fonts, images, headers, footers and exact block positions.",
+    "feature_layout_title": "Page-Accurate Layout",
+    "feature_layout_desc": "Keeps the same page count and page size as the original, page by page — not the original fonts or images.",
     "feature_ai_title": "AI-Quality Translation",
     "feature_ai_desc": "GPT-4o powered, block-by-block translation with structure-aware prompts.",
     "feature_ocr_title": "OCR for Scanned PDFs",
@@ -909,7 +911,7 @@
     "section_subtitle": "Enterprise layout-preserving AI translation",
     "label_mode": "Translation Mode",
     "mode_high_fidelity": "High Fidelity",
-    "mode_high_fidelity_desc": "Preserves exact layout, fonts and positioning",
+    "mode_high_fidelity_desc": "Keeps the original page count and page size",
     "mode_standard": "Standard",
     "mode_standard_desc": "Faster processing, clean text output",
     "label_language": "Target Language",
@@ -946,7 +948,9 @@
     "dl_send_workspace_name": "Send to Workspace",
     "dl_send_workspace_sub": "Hand off the result to another tool",
     "dl_sent_name": "Sent ✓",
-    "guide_link": "Guide: how AI PDF translation works"
+    "guide_link": "Guide: how AI PDF translation works",
+    "truncated_warning": "Very long document: only the first part was processed, the rest is not included.",
+    "pill_clean_layout": "Clean layout"
   },
   "pdf_search": {
     "title": "PDF Search",
@@ -1153,7 +1157,9 @@
     "workspace_banner_use": "Use this file",
     "workspace_banner_dismiss": "Ignore",
     "send_workspace": "Send to Workspace",
-    "sent": "Sent ✓"
+    "sent": "Sent ✓",
+    "save_library": "Save to library",
+    "saved_library": "Saved to library"
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1343,6 +1349,8 @@
     "stop_camera": "Stop camera",
     "upload_image": "Upload image",
     "placeholder": "Start the camera or upload an image to begin",
+    "drop_hint": "Drop an image here, or use the camera or upload a file",
+    "limits_hint": "PNG, JPG, WEBP · max {{size}}MB per image · up to {{max}} pages",
     "filter": "Filter",
     "filter_none": "None",
     "filter_grayscale": "Grayscale",
@@ -1353,13 +1361,25 @@
     "cancel": "Cancel",
     "add_page": "Add page",
     "crop_hint": "Drag over the image to crop",
+    "edit_canvas_label": "Crop area. Drag to select, or use the keyboard: Enter to select, arrow keys to move, Shift+arrows to resize, Esc to cancel.",
     "pages_title": "Captured pages",
     "clear": "Clear",
+    "confirm_clear": "Delete all {{count}} captured pages? This can't be undone.",
+    "confirm_delete_page": "Delete page {{n}}?",
     "exporting": "Exporting…",
+    "uploading": "Uploading… {{pct}}%",
+    "processing_pdf": "Generating PDF…",
     "export_pdf": "Export PDF",
     "err_camera": "Could not access the camera",
+    "err_camera_denied": "Camera permission denied. Enable it in your browser settings and try again.",
+    "err_camera_notfound": "No camera found on this device.",
+    "err_camera_inuse": "Camera is already in use by another app.",
     "success": "PDF exported successfully",
     "err_failed": "Operation failed",
+    "err_file_type": "Unsupported format: {{name}}",
+    "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
+    "err_offline": "You're offline. Check your connection and try again.",
+    "err_too_many_pages": "You can have at most {{max}} pages: some files weren't added.",
     "run_ocr": "Run OCR",
     "ocr_results_title": "Extracted text (OCR)",
     "trust_badge": "Capture, crop and filters stay in your browser — only “Run OCR” and PDF export are sent to the server",
