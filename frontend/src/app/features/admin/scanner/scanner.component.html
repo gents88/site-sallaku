@@ -19,8 +19,22 @@
         </div>
 
         <video #video class="video" [hidden]="!cameraOn()" autoplay playsinline muted></video>
+
+        @if (!cameraOn()) {
+          <div class="dz"
+               appFileDropzone
+               #dz="fileDropzone"
+               (click)="pick.click()"
+               (filesDropped)="onFilesDropped($event)"
+               [class.dz--active]="dz.isDragging">
+            <span class="dz-icon">📄</span>
+            <strong>{{ 'scanner.drop_hint' | translate }}</strong>
+            <small>{{ 'scanner.limits_hint' | translate: limitsHint }}</small>
+          </div>
+        }
+
         @if (camError()) {
-          <p class="msg">{{ camError() }}</p>
+          <p class="msg" role="alert" aria-live="assertive">{{ camError() }}</p>
         }
         @if (!cameraOn() && pages().length === 0) {
           <p class="placeholder">{{ 'scanner.placeholder' | translate }}</p>
@@ -48,9 +62,12 @@
         </div>
         <p class="hint-line">{{ 'scanner.crop_hint' | translate }}</p>
         <canvas #edit class="edit-canvas"
+                tabindex="0"
+                [attr.aria-label]="'scanner.edit_canvas_label' | translate"
                 (pointerdown)="cropStart($event)"
                 (pointermove)="cropMove($event)"
-                (pointerup)="cropEnd($event)"></canvas>
+                (pointerup)="cropEnd($event)"
+                (keydown)="cropKeydown($event)"></canvas>
       </section>
 
       <!-- ── Pagine acquisite ──────────────────────── -->
@@ -91,16 +108,28 @@
               </figure>
             }
           </div>
-          @if (exporting() || ocrBusy()) {
+          @if (exporting()) {
+            <div class="progress-wrap">
+              @if (exportPct() === null) {
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+                <small>{{ 'scanner.processing_pdf' | translate }}</small>
+              } @else {
+                <div class="progress-bar"><div class="progress-fill progress-fill--det" [style.width.%]="exportPct()"></div></div>
+                <small>{{ (exportPct()! < 100 ? 'scanner.uploading' : 'scanner.processing_pdf') | translate: { pct: exportPct() } }}</small>
+              }
+            </div>
+          }
+          @if (ocrBusy()) {
             <div class="progress-wrap">
               <div class="progress-bar"><div class="progress-fill"></div></div>
+              <small>{{ 'ocr.recognizing' | translate }}</small>
             </div>
           }
           @if (msg()) {
-            <p class="msg result-pop" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+            <p class="msg result-pop" role="alert" aria-live="assertive" [class.msg--ok]="msgOk()">{{ msg() }}</p>
           }
           @if (ocrMsg()) {
-            <p class="msg result-pop" [class.msg--ok]="ocrMsgOk()">{{ ocrMsg() }}</p>
+            <p class="msg result-pop" role="alert" aria-live="assertive" [class.msg--ok]="ocrMsgOk()">{{ ocrMsg() }}</p>
           }
           @if (lastPdf()) {
             <div class="workspace-send-row">
