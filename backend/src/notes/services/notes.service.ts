@@ -6,7 +6,8 @@ import { Post, PostDocument } from '../../blog/schemas/post.schema';
 import { CreateNoteDto } from '../dto/create-note.dto';
 import { NoteResponseDto } from '../dto/note-response.dto';
 import { NoteAdminListItemDto } from '../dto/note-admin-list-item.dto';
-import { SpamDetectionService } from './spam-detection.service';
+import { SpamDetectionService } from '../../common/services/spam-detection.service';
+import { TurnstileService } from '../../common/services/turnstile.service';
 import { plainToInstance } from 'class-transformer';
 
 export type NoteModerationStatus = 'pending' | 'approved' | 'spam' | 'all';
@@ -17,6 +18,7 @@ export class NotesService {
     @InjectModel(Note.name) private noteModel: Model<NoteDocument>,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     private spamDetectionService: SpamDetectionService,
+    private turnstile: TurnstileService,
   ) {}
 
   async createNote(
@@ -26,6 +28,10 @@ export class NotesService {
   ): Promise<NoteResponseDto> {
     if (!Types.ObjectId.isValid(articleId)) {
       throw new BadRequestException('Article ID non valido');
+    }
+
+    if (!(await this.turnstile.verify(dto.turnstileToken, userIp))) {
+      throw new BadRequestException('Verifica anti-spam non superata. Riprova.');
     }
 
     const { isSpam, score } = this.spamDetectionService.detectSpam(dto, userIp);

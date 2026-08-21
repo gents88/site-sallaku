@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Project, CreateProjectPayload, UpdateProjectPayload } from '../models/project.model';
 import { ApiCacheService } from './api-cache.service';
+import { SKIP_CACHE_INTERCEPTOR } from '../interceptors/cache.interceptor';
 
 const CACHE_KEY = 'projects:all';
 const TTL = 2 * 60_000; // 2 minutes
@@ -15,7 +16,8 @@ export class ProjectsService {
 
   /** Public: cached for 2 minutes. */
   getAll(): Observable<Project[]> {
-    return this.cache.get(CACHE_KEY, () => this.http.get<Project[]>(this.url), TTL);
+    const context = new HttpContext().set(SKIP_CACHE_INTERCEPTOR, true);
+    return this.cache.get(CACHE_KEY, () => this.http.get<Project[]>(this.url, { context }), TTL);
   }
   getOne(id: string): Observable<Project> { return this.http.get<Project>(`${this.url}/${id}`); }
   create(payload: CreateProjectPayload): Observable<Project> {

@@ -2,16 +2,21 @@
   <!-- Scroll progress bar -->
   <div class="scroll-progress" [style.width.%]="scrollProgress" aria-hidden="true"></div>
   <div class="nav-container">
-    <!-- Drawer toggle (hamburger) -->
+    <!-- Trigger del drawer. Non più un hamburger anonimo: su desktop stretto
+         (901–1199px) l'hamburger accanto a una navbar orizzontale completa
+         legge come residuo mobile e viene ignorato, quindi qui è una pill
+         etichettata. Sopra i 1200px sparisce: c'è la rail agganciata. -->
     <button class="nav-drawer-toggle"
             type="button"
-            (click)="drawer.toggle()"
+            (click)="toggleDrawerFromNavbar()"
             [attr.aria-expanded]="drawer.drawerOpen()"
-            aria-label="Toggle sidebar menu"
+            [attr.aria-label]="'Apri il menu ' + drawerLabel"
             aria-controls="app-sidebar">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span class="drawer-toggle-badge" aria-hidden="true">{{ drawerBadge }}</span>
+      <span class="drawer-toggle-label">{{ drawerLabel }}</span>
+      <svg class="drawer-toggle-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 6l6 6-6 6" />
+      </svg>
     </button>
 
     <!-- Logo -->
@@ -43,6 +48,9 @@
 
     <!-- Right actions -->
     <div class="nav-right">
+      <button mat-icon-button type="button" (click)="openSearch()" [attr.aria-label]="'search.trigger' | translate" [title]="'search.trigger' | translate">
+        <mat-icon>search</mat-icon>
+      </button>
       <app-lang-switcher />
       <app-theme-toggle />
       @if (!auth.isLoggedIn()) {

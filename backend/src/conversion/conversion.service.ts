@@ -11,6 +11,7 @@ import { PdfConverter } from './converters/pdf.converter';
 import { ImageConverter } from './converters/image.converter';
 import { Base64Converter } from './converters/base64.converter';
 import { DataConverter } from './converters/data.converter';
+import { stripUnsafeImages } from './converters/html-image-sanitizer';
 
 interface ConversionResult {
   buffer?: Buffer;
@@ -250,7 +251,10 @@ export class ConversionService {
 
   private async htmlToDocx(buf: Buffer): Promise<ConversionResult> {
     const htmlToDocxFn = (await import('html-to-docx')).default;
-    const out = await htmlToDocxFn(buf.toString('utf-8'), undefined, {
+    // Vedi html-image-sanitizer.ts: senza questo, un <img> remoto è un SSRF
+    // e un formato esotico malformato può bloccare l'intero processo Node.
+    const safeHtml = stripUnsafeImages(buf.toString('utf-8'));
+    const out = await htmlToDocxFn(safeHtml, undefined, {
       orientation: 'portrait',
       title: 'document',
     });

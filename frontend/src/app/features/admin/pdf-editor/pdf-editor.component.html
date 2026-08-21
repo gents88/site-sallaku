@@ -1,0 +1,124 @@
+    <div class="cp-page">
+      <header class="cp-header">
+        <h1 class="cp-title">🖊️ {{ 'pdf_editor.title' | translate }}</h1>
+        <p class="cp-subtitle">{{ 'pdf_editor.subtitle' | translate }}</p>
+      </header>
+
+      @if (workspaceItem()) {
+        <div class="workspace-banner">
+          <span class="workspace-banner-icon">🔗</span>
+          <div class="workspace-banner-text">
+            <strong>{{ 'pdf_editor.workspace_banner_title' | translate }}</strong>
+            <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+          </div>
+          <div class="workspace-banner-actions">
+            <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">
+              {{ 'pdf_editor.workspace_banner_use' | translate }}
+            </button>
+            <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">
+              {{ 'pdf_editor.workspace_banner_dismiss' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- ── Upload / merge ───────────────────────── -->
+      <div class="cp-panel">
+        <div class="dz"
+             appFileDropzone
+             #dz="fileDropzone"
+             (click)="pick.click()"
+             (filesDropped)="onFilesDropped($event)"
+             [class.dz--active]="pages().length > 0 || dz.isDragging">
+          <input #pick type="file" hidden accept=".pdf" multiple (change)="select($event)">
+          @if (pages().length === 0) {
+            <span class="dz-icon">📂</span>
+            <strong>{{ 'pdf_editor.drop_prompt' | translate }}</strong>
+            <small>{{ 'pdf_editor.drop_hint' | translate }}</small>
+          } @else {
+            <span class="dz-icon">➕</span>
+            <strong>{{ 'pdf_editor.add_more' | translate }}</strong>
+            <small>{{ sourceNames() }}</small>
+          }
+        </div>
+        @if (loading()) {
+          <div class="progress-wrap">
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+          </div>
+        }
+        @if (msg()) {
+          <p class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
+        }
+      </div>
+
+      @if (pages().length > 0) {
+        <!-- ── Pagine ───────────────────────────────── -->
+        <section class="cp-panel">
+          <div class="res-head">
+            <h2>{{ 'pdf_editor.pages_title' | translate }} ({{ pages().length }})</h2>
+            <p class="hint-line">{{ 'pdf_editor.pages_hint' | translate }}</p>
+          </div>
+          <span class="sr-only" aria-live="polite">{{ moveAnnouncement() }}</span>
+          <div class="pages-grid">
+            @for (p of pages(); track p.id; let i = $index) {
+              <figure class="page-card"
+                      draggable="true"
+                      [class.page-card--dragging]="dragIndex() === i"
+                      [class.page-card--drag-over]="dragOverIndex() === i && dragIndex() !== i"
+                      (dragstart)="onDragStart($event, i)"
+                      (dragover)="onDragOver($event, i)"
+                      (dragleave)="onDragLeave(i)"
+                      (drop)="onDrop($event, i)"
+                      (dragend)="onDragEnd()"
+                      aria-label="drag to reorder">
+                @if (p.thumb) {
+                  <img [src]="p.thumb" draggable="false" [style.transform]="'rotate(' + p.rot + 'deg)'" alt="p. {{ i + 1 }}">
+                } @else {
+                  <span class="page-ph">{{ i + 1 }}</span>
+                }
+                <figcaption>
+                  <span>{{ i + 1 }}</span>
+                  <span class="page-btns">
+                    <button (click)="rotate(i)" aria-label="rotate">⟳</button>
+                    <button [disabled]="i === 0" (click)="move(i, -1)" aria-label="move left">←</button>
+                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" aria-label="move right">→</button>
+                    <button [disabled]="pages().length === 1" (click)="remove(i)" aria-label="delete">🗑</button>
+                  </span>
+                </figcaption>
+              </figure>
+            }
+          </div>
+        </section>
+
+        <!-- ── Export ───────────────────────────────── -->
+        <section class="cp-panel">
+          <div class="exp-grid">
+            <label class="opt">
+              <small>{{ 'pdf_editor.watermark_label' | translate }}</small>
+              <input class="in" type="text" maxlength="60"
+                     [placeholder]="'pdf_editor.watermark_placeholder' | translate"
+                     [value]="watermark()" (input)="watermark.set($any($event.target).value)">
+            </label>
+            <label class="opt">
+              <small>{{ 'pdf_editor.range_label' | translate }}</small>
+              <input class="in" type="text"
+                     [placeholder]="'pdf_editor.range_placeholder' | translate"
+                     [value]="range()" (input)="range.set($any($event.target).value)">
+            </label>
+            <div class="ac">
+              <button class="btn btn-s" [disabled]="exporting()" (click)="reset()">{{ 'pdf_editor.clear' | translate }}</button>
+              <button class="btn btn-p" [disabled]="exporting()" (click)="exportPdf()">
+                {{ (exporting() ? 'pdf_editor.exporting' : 'pdf_editor.export') | translate }}
+              </button>
+            </div>
+            @if (exportReady()) {
+              <div class="workspace-send-row result-pop">
+                <button type="button" class="workspace-btn primary" (click)="sendToWorkspace()">
+                  {{ justSent() ? ('pdf_editor.workspace_sent' | translate) : ('🔗 ' + ('pdf_editor.workspace_send' | translate)) }}
+                </button>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>

@@ -1,0 +1,121 @@
+// Self-contained copy of the .modal-btn base + the two variants this
+// dialog actually uses (--plain for cancel, --warn for confirm) — the
+// admin dashboard's own contact-detail modal keeps its full set
+// (including --outline/--primary) in dashboard.component.scss, since
+// Angular's per-component style encapsulation means these can't be shared
+// without a global stylesheet change, which is out of scope here.
+.modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.835rem;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, filter 0.18s ease;
+
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &--plain {
+    border: 1px solid var(--color-border, rgba(148,163,184,0.22));
+    background: transparent;
+    color: var(--color-text-muted);
+
+    &:hover:not(:disabled) {
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--color-text);
+    }
+  }
+
+  &--warn {
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+
+    &:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: #ef4444;
+    }
+  }
+}
+
+.confirm-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1300;
+}
+
+.confirm-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1301;
+  width: min(90vw, 400px);
+  padding: 2rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  text-align: center;
+  background: var(--panel-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border, rgba(255,255,255,0.06));
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(2, 6, 23, 0.7);
+
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 1.75rem;
+      width: 1.75rem;
+      height: 1.75rem;
+      color: #ef4444;
+    }
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  &__message {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.4rem;
+  }
+}

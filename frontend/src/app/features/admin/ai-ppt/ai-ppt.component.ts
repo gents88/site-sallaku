@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
   AiPptService,
   PptStyle,
@@ -19,6 +20,7 @@ import {
   PPT_STYLES,
   SLIDE_COUNT_OPTIONS,
 } from '../../../core/services/ai-ppt.service';
+import { WorkspaceService } from '../../../core/services/workspace.service';
 
 type ViewMode = 'carousel' | 'grid';
 
@@ -26,7 +28,7 @@ type ViewMode = 'carousel' | 'grid';
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -34,14 +36,15 @@ export class AiPptComponent implements OnInit {
   @ViewChild('generatorSection') generatorSection!: ElementRef<HTMLElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private readonly service = inject(AiPptService);
-  private readonly seo     = inject(SeoService);
+  private readonly service   = inject(AiPptService);
+  private readonly seo       = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
 
   ngOnInit(): void {
     this.seo.update({
       title: 'AI Slides Generator — Create Presentations with AI',
       description: 'Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online.',
-      url: 'https://gentsallaku.it/dashboard/ai-ppt',
+      url: 'https://gentsallaku.it/lab/ai-ppt',
     });
     this.seo.injectJsonLd([
       {
@@ -49,7 +52,7 @@ export class AiPptComponent implements OnInit {
         '@type': 'WebApplication',
         name: 'AI Slides Generator',
         description: 'Generate professional presentations from any topic using AI. Up to 20 slides, 5 style themes, speaker notes included.',
-        url: 'https://gentsallaku.it/dashboard/ai-ppt',
+        url: 'https://gentsallaku.it/lab/ai-ppt',
         applicationCategory: 'PresentationApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -93,10 +96,12 @@ export class AiPptComponent implements OnInit {
   readonly selectedCount   = signal<number>(10);
   readonly viewMode        = signal<ViewMode>('carousel');
   readonly activeSlideIdx  = signal(0);
-  readonly isDragging      = signal(false);
   readonly contextFile     = signal<File | null>(null);
   readonly isFullscreen    = signal(false);
   readonly copied          = signal(false);
+  readonly exporting       = signal(false);
+  readonly sending         = signal(false);
+  readonly justSent        = signal(false);
 
   readonly styles      = PPT_STYLES;
   readonly slideCounts = SLIDE_COUNT_OPTIONS;
@@ -128,11 +133,8 @@ export class AiPptComponent implements OnInit {
     { icon: '⬇️', titleKey: 'ai_ppt.feature_export_title',  descKey: 'ai_ppt.feature_export_desc' },
   ];
 
-  onDragOver(event: DragEvent): void { event.preventDefault(); this.isDragging.set(true); }
-  onDragLeave(): void { this.isDragging.set(false); }
-  onDrop(event: DragEvent): void {
-    event.preventDefault(); this.isDragging.set(false);
-    const f = event.dataTransfer?.files?.[0];
+  onFilesDropped(files: FileList): void {
+    const f = files[0];
     if (f) this.setContextFile(f);
   }
   onFileSelected(event: Event): void {
@@ -199,8 +201,29 @@ export class AiPptComponent implements OnInit {
 
   exportSlides(): void {
     const r = this.result();
-    if (!r) return;
-    this.service.exportAsPdf(r);
+    if (!r || this.exporting()) return;
+    this.exporting.set(true);
+    this.service.exportAsPdf(r).finally(() => this.exporting.set(false));
+  }
+
+  async sendToWorkspace(): Promise<void> {
+    const r = this.result();
+    if (!r || this.sending()) return;
+    this.sending.set(true);
+    try {
+      const blob = await this.service.buildPdfBlob(r);
+      this.workspace.send({
+        kind: 'file',
+        blob,
+        filename: `${this.service.sanitizeFilename(r.title)}_slides.pdf`,
+        mime: 'application/pdf',
+        fromTool: 'ai_ppt',
+      });
+      this.justSent.set(true);
+      setTimeout(() => this.justSent.set(false), 1500);
+    } finally {
+      this.sending.set(false);
+    }
   }
 
   copySlideContent(): void {

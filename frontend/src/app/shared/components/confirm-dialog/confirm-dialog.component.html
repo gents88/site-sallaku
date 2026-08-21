@@ -1,0 +1,22 @@
+@if (visible) {
+  <div class="confirm-dialog-backdrop" (click)="cancelled.emit()" aria-hidden="true"></div>
+  <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
+    <div class="confirm-dialog__icon">
+      <mat-icon>warning_amber</mat-icon>
+    </div>
+    <h3 id="confirm-dialog-title">{{ titleKey | translate }}</h3>
+    <p class="confirm-dialog__message">
+      {{ messageKey | translate: messageParams }}
+    </p>
+    <div class="confirm-dialog__actions">
+      <button type="button" class="modal-btn modal-btn--plain" (click)="cancelled.emit()">
+        <mat-icon>close</mat-icon>
+        {{ 'common.cancel' | translate }}
+      </button>
+      <button type="button" class="modal-btn modal-btn--warn" (click)="confirmed.emit()">
+        <mat-icon>delete</mat-icon>
+        {{ 'common.confirm' | translate }}
+      </button>
+    </div>
+  </div>
+}

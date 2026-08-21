@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { Request } from 'express';
 import { ContactService } from './contact.service';
 import { ContactDto, BulkDeleteDto, ReplyContactDto } from './dto/contact.dto';
+import { ContactAdminQueryDto } from './dto/contact-admin-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
@@ -62,12 +63,8 @@ export class ContactController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'unreadOnly', required: false, type: Boolean })
-  findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 20,
-    @Query('unreadOnly') unreadOnly?: boolean,
-  ) {
-    return this.contactService.findPaginated({ page: +page, limit: +limit, unreadOnly });
+  findAll(@Query() { page, limit, unreadOnly }: ContactAdminQueryDto) {
+    return this.contactService.findPaginated({ page: page ?? 1, limit: limit ?? 20, unreadOnly });
   }
 
   @Post('bulk-delete')

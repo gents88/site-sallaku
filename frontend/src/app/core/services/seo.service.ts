@@ -128,6 +128,25 @@ export class SeoService {
     });
   }
 
+  /**
+   * Builds a BreadcrumbList JSON-LD node. Combine with the page's own schema
+   * via injectJsonLd([pageSchema, this.seo.breadcrumb([...])]) — each call to
+   * injectJsonLd replaces all previously injected <script> tags, so both
+   * nodes must go out together rather than in separate calls.
+   */
+  breadcrumb(items: { name: string; url: string }[]): object {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: items.map((item, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: item.name,
+        item: item.url,
+      })),
+    };
+  }
+
   /** Track a custom event in Google Analytics 4 (browser only) */
   trackEvent(action: string, params?: Record<string, unknown>): void {
     if (!isPlatformBrowser(this.platformId)) return;

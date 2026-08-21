@@ -1,6 +1,6 @@
 .footer {
   border-top: 1px solid var(--glass-border);
-  padding: 48px 0 32px;
+  padding: 16px 0 12px;
   background: var(--bg-secondary, #0f1424);
   position: relative;
   overflow: hidden;
@@ -9,7 +9,7 @@
      navbar.component.scss): senza questo margine coprirebbe l'ultima
      parte del footer quando la pagina è scrollata fino in fondo. */
   @media (max-width: 900px) {
-    padding-bottom: calc(32px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
   }
 
   &::before {
@@ -28,7 +28,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 10px;
   text-align: center;
 }
 
@@ -37,12 +37,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
 }
 
 .footer-logo {
   font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary, #f0f4ff);
   text-decoration: none;
@@ -55,14 +55,14 @@
 
 .footer-text {
   color: var(--text-secondary, #8892b0);
-  font-size: 0.95rem;
+  font-size: 0.78rem;
   margin: 0;
 }
 
 // Navigation
 .footer-nav {
   display: flex;
-  gap: 24px;
+  gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
 
@@ -80,15 +80,15 @@
 // Social
 .footer-social {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
 }
 
 .social-link {
   display: inline-grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1px solid var(--glass-border);
   color: var(--text-secondary);

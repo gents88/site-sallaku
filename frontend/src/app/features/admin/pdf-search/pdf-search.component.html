@@ -1,0 +1,345 @@
+<div class="page">
+
+  <!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge-pulse"></span>
+        <span>{{ 'pdf_search.badge' | translate }}</span>
+      </div>
+
+      <h1 class="hero-title">
+        {{ 'pdf_search.hero_title_1' | translate }}<br>
+        <span class="gradient-text">{{ 'pdf_search.hero_title_2' | translate }}</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        {{ 'pdf_search.hero_subtitle' | translate }}
+      </p>
+
+      <form class="search-form" (ngSubmit)="search()">
+        <div class="search-box">
+          <span class="search-icon">🔎</span>
+          <input
+            type="search"
+            class="search-input"
+            [(ngModel)]="query"
+            name="query"
+            [placeholder]="'pdf_search.search_placeholder' | translate"
+            [attr.aria-label]="'pdf_search.search_placeholder' | translate"
+          />
+          <button type="submit" class="search-btn" [disabled]="loading() || query().trim().length < 2">
+            @if (loading()) {
+              <span class="spinner"></span>
+            } @else {
+              {{ 'pdf_search.search_button' | translate }}
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ──────────────────────────────────────────────────────────── -->
+  <section class="features">
+    <div class="features-grid">
+      @for (f of features; track f.titleKey) {
+        <div class="feature-card">
+          <div class="feature-icon">{{ f.icon }}</div>
+          <h3>{{ f.titleKey | translate }}</h3>
+          <p>{{ f.descKey | translate }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ── RESULTS ───────────────────────────────────────────────────────────── -->
+  <section class="results-section">
+
+    @if (error()) {
+      <div class="error-banner" role="alert">
+        <span>⚠️</span> {{ error() }}
+      </div>
+    }
+
+    @if (!hasSearched() && !loading()) {
+      <div class="state-panel">
+        <div class="state-icon">📖</div>
+        <h2>{{ 'pdf_search.empty_title' | translate }}</h2>
+        <p>{{ 'pdf_search.empty_subtitle' | translate }}</p>
+      </div>
+
+      @if (recentSearches().length > 0) {
+        <div class="recent-searches">
+          <div class="recent-searches-header">
+            <span>{{ 'pdf_search.recent_searches_title' | translate }}</span>
+            <button type="button" class="recent-clear-btn" (click)="clearRecentSearches()">
+              {{ 'pdf_search.recent_clear' | translate }}
+            </button>
+          </div>
+          <div class="recent-searches-chips">
+            @for (q of recentSearches(); track q) {
+              <button type="button" class="chip" (click)="useRecentSearch(q)">🕓 {{ q }}</button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (favorites().length > 0) {
+        <div class="favorites-section">
+          <h2 class="favorites-title">⭐ {{ 'pdf_search.favorites_title' | translate }}</h2>
+          <div class="results-grid">
+            @for (r of favorites(); track r.id) {
+              <button type="button" class="result-card" [attr.title]="r.title" (click)="select(r)">
+                <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                  @if (r.coverUrl) {
+                    <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" />
+                  } @else {
+                    <span class="cover-fallback" aria-hidden="true">📄</span>
+                  }
+                </div>
+                <div class="result-info">
+                  <h3 class="result-title">{{ r.title }}</h3>
+                  @if (r.author) {
+                    <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
+                  }
+                  <div class="result-meta">
+                    <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                      {{ r.sourceLabel }}
+                    </span>
+                  </div>
+                </div>
+                <span
+                  class="favorite-star active"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-label]="'pdf_search.btn_favorite_remove' | translate"
+                  (click)="toggleFavorite(r, $event)"
+                  (keydown.enter)="toggleFavorite(r, $event)"
+                  (keydown.space)="toggleFavorite(r, $event)"
+                >⭐</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    }
+
+    @if (loading()) {
+      <div class="results-grid" aria-hidden="true">
+        @for (i of skeletonPlaceholders; track $index) {
+          <div class="result-card skeleton-card">
+            <div class="result-cover skeleton-shimmer"></div>
+            <div class="result-info">
+              <div class="skeleton-line skeleton-shimmer"></div>
+              <div class="skeleton-line skeleton-shimmer short"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (hasSearched() && !loading() && results().length === 0 && !error()) {
+      <div class="state-panel">
+        <div class="state-icon">🕵️</div>
+        <h2>{{ 'pdf_search.no_results_title' | translate }}</h2>
+        <p>{{ 'pdf_search.no_results_subtitle' | translate }}</p>
+      </div>
+    }
+
+    @if (results().length > 0 && !loading()) {
+      <div class="results-toolbar">
+        <div class="filter-chips">
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'all'" (click)="setFilter('all')">
+            {{ 'pdf_search.filter_all' | translate }}
+          </button>
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'books'" (click)="setFilter('books')">
+            {{ 'pdf_search.filter_books' | translate }}
+          </button>
+          <button type="button" class="chip" [class.active]="sourceFilter() === 'papers'" (click)="setFilter('papers')">
+            {{ 'pdf_search.filter_papers' | translate }}
+          </button>
+        </div>
+
+        <div class="toolbar-right">
+          <label class="group-toggle">
+            <input type="checkbox" [ngModel]="groupSimilar()" (ngModelChange)="setGroupSimilar($event)" />
+            {{ 'pdf_search.group_similar_label' | translate }}
+          </label>
+
+          <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="setSortBy($event)" [attr.aria-label]="'pdf_search.sort_label' | translate">
+            <option value="relevance">{{ 'pdf_search.sort_relevance' | translate }}</option>
+            <option value="year_desc">{{ 'pdf_search.sort_year_desc' | translate }}</option>
+            <option value="year_asc">{{ 'pdf_search.sort_year_asc' | translate }}</option>
+          </select>
+        </div>
+      </div>
+
+      @if (displayResults().length === 0) {
+        <div class="state-panel">
+          <div class="state-icon">🗂️</div>
+          <p>{{ 'pdf_search.filter_no_results' | translate }}</p>
+        </div>
+      }
+
+      <div class="results-grid">
+        @for (r of displayResults(); track r.id) {
+          <button
+            type="button"
+            class="result-card"
+            [class.active]="selected()?.id === r.id"
+            [attr.title]="r.title"
+            (click)="select(r)"
+          >
+            <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+              @if (r.coverUrl) {
+                <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" />
+              } @else {
+                <span class="cover-fallback" aria-hidden="true">📄</span>
+              }
+              <span class="hover-hint" aria-hidden="true">{{ r.previewable ? '👁️' : '📥' }}</span>
+              @if (!r.previewable) {
+                <span class="no-preview-badge" aria-hidden="true" [attr.title]="'pdf_search.preview_unavailable' | translate">🔒</span>
+              }
+            </div>
+            <div class="result-info">
+              <h3 class="result-title">{{ r.title }}</h3>
+              @if (r.author) {
+                <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
+              }
+              <div class="result-meta">
+                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                  {{ r.sourceLabel }}
+                </span>
+                @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
+                @if (scanQuality(r); as quality) {
+                  <span class="quality-pill" [class.quality-hd]="quality === 'hd'" [class.quality-low]="quality === 'low'">
+                    {{ (quality === 'hd' ? 'pdf_search.quality_hd' : 'pdf_search.quality_low') | translate }}
+                  </span>
+                }
+                @if (r.duplicateCount > 1) {
+                  <span class="duplicate-pill">{{ 'pdf_search.duplicate_count' | translate: { count: r.duplicateCount - 1 } }}</span>
+                }
+              </div>
+            </div>
+            @if (selected()?.id === r.id) {
+              <span class="active-badge" aria-hidden="true">✓</span>
+            }
+            <span
+              class="favorite-star"
+              [class.active]="isFavorite(r)"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="(isFavorite(r) ? 'pdf_search.btn_favorite_remove' : 'pdf_search.btn_favorite_add') | translate"
+              (click)="toggleFavorite(r, $event)"
+              (keydown.enter)="toggleFavorite(r, $event)"
+              (keydown.space)="toggleFavorite(r, $event)"
+            >{{ isFavorite(r) ? '⭐' : '☆' }}</span>
+          </button>
+        }
+      </div>
+
+      <p class="legal-note">{{ 'pdf_search.legal_note' | translate }}</p>
+    }
+
+  </section>
+
+  <!-- ── PREVIEW MODAL ─────────────────────────────────────────────────────── -->
+  @if (selected(); as sel) {
+    <div class="modal-backdrop" (click)="closePreview()">
+      <div class="preview-modal" [class.preview-modal--compact]="useCanvasViewer() && canvasViewerFailed()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()">
+        <div class="preview-header">
+          <div class="preview-header-cover">
+            @if (sel.coverUrl) {
+              <img [src]="sel.coverUrl" [alt]="sel.title" />
+            } @else {
+              <span class="cover-fallback" aria-hidden="true">📄</span>
+            }
+          </div>
+          <div class="preview-header-info">
+            <h3>{{ sel.title }}</h3>
+            @if (sel.author) { <p>{{ 'pdf_search.result_by' | translate }} {{ sel.author }}</p> }
+          </div>
+          <button type="button" class="preview-close" (click)="closePreview()" [attr.aria-label]="'pdf_search.preview_close' | translate">✕</button>
+        </div>
+
+        <div class="preview-body" [class.preview-body--compact]="useCanvasViewer() && canvasViewerFailed()">
+          @if (useCanvasViewer()) {
+            @if (canvasViewerLoading()) {
+              <div class="preview-loading" aria-live="polite">
+                <span class="spinner spinner-lg"></span>
+                <p>{{ 'pdf_search.preview_loading' | translate }}</p>
+              </div>
+            } @else if (canvasViewerFailed()) {
+              <div class="preview-unavailable">
+                <span class="state-icon">🔒</span>
+                <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
+              </div>
+            } @else if (canvasPageUrl(); as src) {
+              <div class="canvas-page-wrap">
+                <img [src]="src" [alt]="sel.title + ' — ' + canvasPageNum()" />
+              </div>
+            }
+          } @else {
+            @if (previewLoading()) {
+              <div class="preview-loading" aria-live="polite">
+                <span class="spinner spinner-lg"></span>
+                <p>{{ 'pdf_search.preview_loading' | translate }}</p>
+              </div>
+            }
+            @if (previewUrl(); as src) {
+              <iframe class="pdf-iframe" [src]="src" title="PDF preview" (load)="onPreviewLoaded()"></iframe>
+            }
+          }
+        </div>
+
+        @if (useCanvasViewer() && canvasNumPages() > 0) {
+          <div class="canvas-page-nav">
+            <button type="button" (click)="prevCanvasPage()" [disabled]="canvasPageNum() <= 1" aria-label="Previous page">‹</button>
+            <span>{{ canvasPageNum() }} / {{ canvasNumPages() }}</span>
+            <button type="button" (click)="nextCanvasPage()" [disabled]="canvasPageNum() >= canvasNumPages()" aria-label="Next page">›</button>
+          </div>
+        }
+
+        <div class="preview-actions">
+          <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener" (click)="trackDownload(sel)">
+            📥 {{ 'pdf_search.btn_download' | translate }}
+          </a>
+          <button type="button" class="btn-library" [disabled]="savingToLibrary()" (click)="saveToLibrary(sel)">
+            @if (savingToLibrary()) {
+              <span class="spinner"></span>
+            } @else if (justSaved() || isInLibrary(sel)) {
+              ✓ {{ 'pdf_search.library_saved' | translate }}
+            } @else {
+              📚 {{ 'pdf_search.btn_save_library' | translate }}
+            }
+          </button>
+          <button type="button" class="btn-workspace" [disabled]="sendingToWorkspace()" (click)="sendToWorkspace(sel)">
+            @if (sendingToWorkspace()) {
+              <span class="spinner"></span>
+            } @else {
+              {{ justSent() ? '✓' : '🔗' }} {{ justSent() ? ('pdf_search.workspace_sent' | translate) : ('pdf_search.btn_send_workspace' | translate) }}
+            }
+          </button>
+          <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener">
+            {{ 'pdf_search.btn_source_page' | translate }} →
+          </a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
+  <section class="faq">
+    <h2 class="faq-title">{{ 'pdf_search.faq_title' | translate }}</h2>
+    <div class="faq-list">
+      @for (item of faqs; track item.qKey) {
+        <details class="faq-item">
+          <summary>{{ item.qKey | translate }}</summary>
+          <p>{{ item.aKey | translate }}</p>
+        </details>
+      }
+    </div>
+  </section>
+
+</div>

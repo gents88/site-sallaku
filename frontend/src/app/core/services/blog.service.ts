@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpEvent, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { SKIP_CACHE_INTERCEPTOR } from '../interceptors/cache.interceptor';
 import {
   Post,
   PostSummary,
@@ -34,7 +35,8 @@ export class BlogService {
     const key = `${CACHE_PREFIX}:p${page}:l${limit}${tag ? ':tag:' + tag : ''}`;
     let params = new HttpParams().set('page', page).set('limit', limit);
     if (tag) params = params.set('tag', tag);
-    return this.cache.get(key, () => this.http.get<PaginatedPosts>(this.publicUrl, { params }), TTL);
+    const context = new HttpContext().set(SKIP_CACHE_INTERCEPTOR, true);
+    return this.cache.get(key, () => this.http.get<PaginatedPosts>(this.publicUrl, { params, context }), TTL);
   }
 
   /** Convenience: get just the first page of posts (backwards compatibility). */
@@ -43,7 +45,8 @@ export class BlogService {
   }
 
   getBySlug(slug: string): Observable<Post> {
-    return this.cache.get(`blog:slug:${slug}`, () => this.http.get<Post>(`${this.publicUrl}/${slug}`), TTL);
+    const context = new HttpContext().set(SKIP_CACHE_INTERCEPTOR, true);
+    return this.cache.get(`blog:slug:${slug}`, () => this.http.get<Post>(`${this.publicUrl}/${slug}`, { context }), TTL);
   }
 
   // Admin

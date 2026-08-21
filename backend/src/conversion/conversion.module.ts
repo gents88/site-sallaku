@@ -15,6 +15,6 @@ import { DataConverter } from './converters/data.converter';
     Base64Converter,
     DataConverter,
   ],
-  exports: [ConversionService],
+  exports: [ConversionService, DataConverter],
 })
 export class ConversionModule {}

@@ -4,12 +4,15 @@ import { RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/ro
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 import { LangSwitcherComponent } from '../lang-switcher/lang-switcher.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { LanguageService, stripLangPrefix } from '../../../core/services/language.service';
 import { DrawerService } from '../../../core/services/drawer.service';
+import { SearchOverlayService } from '../../../core/services/search-overlay.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { filter, Subscription } from 'rxjs';
 
@@ -23,7 +26,7 @@ interface NavLink {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, ThemeToggleComponent, LangSwitcherComponent, LangUrlPipe],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, MatIconModule, MatButtonModule, ThemeToggleComponent, LangSwitcherComponent, LangUrlPipe],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
@@ -49,6 +52,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     { labelKey: 'nav.skills',     route: '/skills' },
     { labelKey: 'nav.contact',    route: '/contact' },
     { labelKey: 'nav.blog',       route: '/blog' },
+    { labelKey: 'nav.testimonials', route: '/testimonials' },
   ];
 
   get desktopNavLinks() {
@@ -70,13 +74,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return 'other';
   }
 
-  // stessa label mostrata nell'header della sidebar (SidebarComponent)
+  // stesse label mostrate nell'header della sidebar (SidebarComponent)
+  get drawerBadge(): string {
+    return this.auth.isLoggedIn() && this.auth.isAdmin() ? '⚙️' : '🧰';
+  }
+
+  get drawerLabel(): string {
+    return this.auth.isLoggedIn() && this.auth.isAdmin() ? 'Admin' : 'AI & Tools';
+  }
+
   get drawerToggleLabel(): string {
-    return this.auth.isLoggedIn() && this.auth.isAdmin() ? '⚙️ Admin' : '🧰 AI & Tools';
+    return `${this.drawerBadge} ${this.drawerLabel}`;
   }
 
   private routerSub: Subscription | null = null;
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly searchOverlay = inject(SearchOverlayService);
 
   constructor(
     public auth: AuthService,
@@ -86,6 +100,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  openSearch(): void {
+    this.searchOverlay.show();
+    this.analytics.trackClick('navbar', 'navbar_search_open');
+  }
 
   @HostListener('window:scroll')
   onScroll(): void {
@@ -167,6 +186,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   openDrawerFromMenu(): void {
     this.closeMenu();
     this.drawer.open();
+    this.analytics.trackClick('sidebar', 'sidebar_open_mobile_menu');
+  }
+
+  /** Trigger etichettato in navbar: visibile solo nella fascia 901–1199px. */
+  toggleDrawerFromNavbar(): void {
+    const willOpen = !this.drawer.drawerOpen();
+    this.drawer.toggle();
+    this.analytics.trackClick('sidebar', willOpen ? 'sidebar_open_navbar' : 'sidebar_close_navbar');
   }
 
   openLoginModal(): void {

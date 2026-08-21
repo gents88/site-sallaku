@@ -346,10 +346,12 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         if (!this.editingId) {
           this.editingId = post._id;
         }
+        this.cdr.markForCheck();
       },
       error: () => {
         this.autoSaving = false;
         this.autosaveStatus = 'error';
+        this.cdr.markForCheck();
       },
     });
   }
@@ -382,12 +384,14 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.saving = false;
         this.showForm = false;
         this.autosaveStatus = 'idle';
+        this.cdr.markForCheck();
         this.snackBar.open(published ? 'Article published!' : 'Draft saved!', 'Close', { duration: 3000 });
         this.load();
         this.destroy$.next();
       },
       error: error => {
         this.saving = false;
+        this.cdr.markForCheck();
         this.snackBar.open(this.resolveSaveError(error), 'Close', { duration: 4500 });
       },
     });
@@ -398,6 +402,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.blogService.remove(id).subscribe({
       next: () => {
         this.posts = this.posts.filter(p => p._id !== id);
+        this.cdr.markForCheck();
         this.snackBar.open('Post deleted.', 'Close', { duration: 3000 });
       },
     });
@@ -466,6 +471,8 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
           const total = event.total || request.file.size || 1;
           this.uploadProgress = Math.min(100, Math.round((event.loaded / total) * 100));
           this.processingDraft = this.uploadProgress >= 100;
+          // Drives the visible upload progress bar.
+          this.cdr.markForCheck();
           return;
         }
         if (event.type === HttpEventType.Response && event.body) {
@@ -473,6 +480,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
           this.processingDraft = false;
           this.generatingDraft = false;
           this.applyGeneratedDraft(event.body);
+          this.cdr.markForCheck();
           this.snackBar.open('Draft generated from PDF.', 'Close', { duration: 3500 });
         }
       },
@@ -480,6 +488,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.generatingDraft = false;
         this.processingDraft = false;
         this.uploadProgress = 0;
+        this.cdr.markForCheck();
         const message = error?.error?.message || 'Failed to process the PDF.';
         this.snackBar.open(Array.isArray(message) ? message.join(', ') : message, 'Close', { duration: 4000 });
       },

@@ -31,6 +31,11 @@ export class ContactDto {
   @IsString()
   @MaxLength(0, { message: 'Bot detected' })
   website?: string;
+
+  @ApiPropertyOptional({ description: 'Cloudflare Turnstile response token' })
+  @IsOptional()
+  @IsString()
+  turnstileToken?: string;
 }
 
 export class ReplyContactDto {

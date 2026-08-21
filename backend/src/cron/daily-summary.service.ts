@@ -4,7 +4,9 @@ import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Cron } from '@nestjs/schedule';
 import { ContactService } from '../contact/contact.service';
-import { AnalyticsService, BreakdownItem } from '../analytics/analytics.service';
+import { AnalyticsQueryService } from '../analytics/services/analytics-query.service';
+import { AnalyticsExportService } from '../analytics/services/analytics-export.service';
+import { BreakdownItem } from '../analytics/analytics.types';
 import { ChatbotService } from '../chatbot/chatbot.service';
 import { MailService } from '../mail/mail.service';
 import { TemplateRendererService } from '../mail/template-renderer.service';
@@ -45,7 +47,8 @@ export class DailySummaryService {
   constructor(
     private cfg: ConfigService,
     private contacts: ContactService,
-    private analytics: AnalyticsService,
+    private analyticsQuery: AnalyticsQueryService,
+    private analyticsExport: AnalyticsExportService,
     private chatbot: ChatbotService,
     private mail: MailService,
     private templates: TemplateRendererService,
@@ -65,7 +68,7 @@ export class DailySummaryService {
   @Cron('0 0 1 * *', { name: 'monthly-analytics-reset', timeZone: 'Europe/Rome' })
   async scheduledMonthlyReset(): Promise<void> {
     this.logger.log('[AnalyticsReset] Monthly reset cron triggered');
-    this.analytics.resetMonthlyStats().catch(err =>
+    this.analyticsExport.resetMonthlyStats().catch(err =>
       this.logger.error('[AnalyticsReset] Monthly reset failed', err as any),
     );
   }
@@ -149,9 +152,9 @@ export class DailySummaryService {
     this.logger.log('[DailySummary] Gathering analytics data…');
     const [todaysContacts, todayStats, advanced, engagement, chatInteractions] = await Promise.all([
       this.contacts.findToday(),
-      this.analytics.getTodayPageViewStats(),
-      this.analytics.getAdvancedAnalytics(),
-      this.analytics.getDailyEngagementReport(),
+      this.analyticsQuery.getTodayPageViewStats(),
+      this.analyticsQuery.getAdvancedAnalytics(),
+      this.analyticsQuery.getDailyEngagementReport(),
       this.chatbot.getTodayInteractionCount(),
     ]);
 
@@ -230,8 +233,8 @@ export class DailySummaryService {
     date: string;
     todaysContacts: any[];
     todayStats: { todayPageViews: number; uniqueVisitorsToday: number; todayBlogViews: number };
-    advanced: Awaited<ReturnType<AnalyticsService['getAdvancedAnalytics']>>;
-    engagement: Awaited<ReturnType<AnalyticsService['getDailyEngagementReport']>>;
+    advanced: Awaited<ReturnType<AnalyticsQueryService['getAdvancedAnalytics']>>;
+    engagement: Awaited<ReturnType<AnalyticsQueryService['getDailyEngagementReport']>>;
     chatInteractions: number;
   }): Record<string, unknown> {
     const { date, todaysContacts, todayStats, advanced, engagement, chatInteractions } = data;
