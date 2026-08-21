@@ -10,6 +10,13 @@ export interface WorkspaceItem {
   mime?: string;
   fromTool: string;
   createdAt: number;
+  /**
+   * Id del documento in Libreria da cui questo elemento proviene, se
+   * proviene da lì. Un tool che estrae testo (l'OCR, tipicamente) può usarlo
+   * per riscrivere il risultato come testo indicizzato dello stesso
+   * documento invece di produrre solo un file scollegato.
+   */
+  libraryDocId?: string;
 }
 
 export interface WorkspaceHistoryEntry {

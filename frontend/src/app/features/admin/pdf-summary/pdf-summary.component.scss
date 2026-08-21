@@ -148,6 +148,16 @@
       padding: 0.2rem 0.55rem; font-size: 0.72rem; font-weight: 600; white-space: nowrap;
     }
 
+    .truncated-banner {
+      margin: 0 0 1.25rem;
+      padding: 9px 13px;
+      background: rgba(230, 160, 40, 0.09);
+      border: 1px solid rgba(230, 160, 40, 0.3);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--text-secondary, #8b949e);
+    }
+
     .result-section {
       border-top: 1px solid var(--border-color, #30363d); padding: 1rem 0;
       h4 { font-size: 0.82rem; font-weight: 600; color: var(--text-secondary, #8b949e); margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }

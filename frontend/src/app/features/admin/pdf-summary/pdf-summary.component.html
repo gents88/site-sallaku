@@ -96,6 +96,10 @@
             <h3>{{ result()!.title }}</h3>
           </div>
 
+          @if (result()!.truncated) {
+            <div class="truncated-banner">⚠️ {{ 'pdf_summary.truncated_warning' | translate }}</div>
+          }
+
           @switch (outputMode()) {
             @case ('short') {
               <div class="result-section">

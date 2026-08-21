@@ -17,6 +17,8 @@ interface FileSummaryResult {
   longSummary: string;
   keywords: string[];
   keyPoints: string[];
+  /** true solo su documenti eccezionalmente lunghi, oltre il tetto di sicurezza a blocchi del backend. */
+  truncated: boolean;
 }
 
 type OutputMode = 'short' | 'detailed' | 'bullets' | 'insights';

@@ -80,6 +80,15 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
   private dragStart: { x: number; y: number } | null = null;
 
+  /**
+   * Testo già estratto per il documento aperto dalla Libreria, letto una
+   * volta sola da IndexedDB invece che ri-parsato pagina per pagina a ogni
+   * ricerca — su un libro lungo la differenza è secondi vs. istantaneo.
+   * null quando il documento non viene dalla Libreria o non è ancora indicizzato:
+   * in quel caso search() torna al parsing diretto via pdf.js, come prima.
+   */
+  private cachedPageTexts: Map<number, string> | null = null;
+
   private renderToken = 0;
 
   ngOnInit(): void {
@@ -145,6 +154,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.annotateMode.set(false);
     this.dragRect.set(null);
     this.dragStart = null;
+    this.cachedPageTexts = null;
     this.thumbs.set([]);
     this.matches.set([]);
     this.query.set('');
@@ -187,18 +197,34 @@ export class ViewerComponent implements OnInit, OnDestroy {
     const needle = q.trim().toLowerCase();
     const found: SearchMatch[] = [];
     let totalChars = 0;
-    for (let i = 1; i <= doc.numPages; i++) {
-      const page = await doc.getPage(i);
-      const content = await page.getTextContent();
-      const raw = content.items.map((it) => ('str' in it ? it.str : '')).join(' ');
-      totalChars += raw.trim().length;
-      const text = raw.toLowerCase();
-      let pos = text.indexOf(needle);
-      while (pos !== -1) {
-        found.push({ page: i });
-        pos = text.indexOf(needle, pos + needle.length);
+
+    if (this.cachedPageTexts) {
+      // Testo già estratto dalla Libreria: nessun giro su pdf.js per cercare.
+      for (const [pageNum, raw] of this.cachedPageTexts) {
+        totalChars += raw.trim().length;
+        const text = raw.toLowerCase();
+        let pos = text.indexOf(needle);
+        while (pos !== -1) {
+          found.push({ page: pageNum });
+          pos = text.indexOf(needle, pos + needle.length);
+        }
+      }
+      found.sort((a, b) => a.page - b.page);
+    } else {
+      for (let i = 1; i <= doc.numPages; i++) {
+        const page = await doc.getPage(i);
+        const content = await page.getTextContent();
+        const raw = content.items.map((it) => ('str' in it ? it.str : '')).join(' ');
+        totalChars += raw.trim().length;
+        const text = raw.toLowerCase();
+        let pos = text.indexOf(needle);
+        while (pos !== -1) {
+          found.push({ page: i });
+          pos = text.indexOf(needle, pos + needle.length);
+        }
       }
     }
+
     this.searching.set(false);
     this.matches.set(found);
     // < 15 caratteri/pagina in media ⇒ quasi certamente un PDF scansionato senza layer di testo
@@ -237,6 +263,10 @@ export class ViewerComponent implements OnInit, OnDestroy {
     // Le annotazioni prima di libraryDoc: è quest'ultimo ad accendere il
     // pannello, che altrimenti apparirebbe un istante come "nessuna nota".
     this.annotations.set(await this.library.annotationsOf(docId));
+    if (meta.indexedAt !== null) {
+      const pages = await this.library.pagesOf(docId);
+      this.cachedPageTexts = new Map(pages.map((p) => [p.page, p.text]));
+    }
     this.libraryDoc.set(meta);
     if (page > 1) this.goTo(page);
   }

@@ -71,6 +71,15 @@
     .btn-p:not(:disabled):hover { background: #5851e5; }
     .btn-s { background: transparent; color: var(--text-primary, #e6edf3); border-color: var(--border-color, #30363d); }
     .btn-s:hover { background: var(--bg-tertiary, #1c2333); }
+    .btn-library { background: rgba(108, 99, 255, .14); border-color: rgba(108, 99, 255, .4); color: #c4b5fd; }
+    .btn-library:not(:disabled):hover { background: rgba(108, 99, 255, .22); }
+
+    .spinner {
+      width: 14px; height: 14px; display: inline-block;
+      border: 2px solid rgba(255, 255, 255, .35); border-top-color: currentColor;
+      border-radius: 50%; animation: ocr-spin .7s linear infinite;
+    }
+    @keyframes ocr-spin { to { transform: rotate(360deg); } }
 
     .progress-wrap { margin: 1rem 0 0; text-align: center; }
     .progress-wrap small { color: var(--text-secondary, #8b949e); }

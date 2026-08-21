@@ -218,15 +218,19 @@
         <div class="meta-pill">🧱 {{ res.blocksTranslated }} blocks</div>
         <div class="meta-pill">⚡ {{ formatMs(res.processingTime) }}</div>
         <div class="meta-pill lang-pill">🌍 {{ res.targetLanguage | titlecase }}</div>
-        @if (res.layoutPreserved) {
-          <div class="meta-pill pill-success">{{ 'pdf_translate.pill_layout_preserved' | translate }}</div>
-        } @else {
+        @if (res.fallback) {
           <div class="meta-pill pill-warn">{{ 'pdf_translate.pill_fallback' | translate }}</div>
+        } @else {
+          <div class="meta-pill pill-success">{{ 'pdf_translate.pill_clean_layout' | translate }}</div>
         }
         @if (res.isScanned) {
           <div class="meta-pill pill-info">🔍 {{ 'pdf_translate.pill_scanned' | translate }}</div>
         }
       </div>
+
+      @if (res.truncated) {
+        <div class="truncated-banner">⚠️ {{ 'pdf_translate.truncated_warning' | translate }}</div>
+      }
 
       <!-- Quick retranslate bar -->
       <div class="retranslate-bar">

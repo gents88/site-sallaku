@@ -136,6 +136,22 @@ export class LibraryService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly idb = inject(IDB_FACTORY);
   private dbPromise: Promise<IDBDatabase> | null = null;
+  private lastAddedAt = 0;
+
+  /**
+   * Timestamp strettamente crescente per `addedAt`. `Date.now()` da solo ha
+   * risoluzione di millisecondo: salvare due documenti in rapida successione
+   * (import multiplo, o due ricerche salvate di fila) può produrre lo stesso
+   * valore, e `getAll()` di IndexedDB non garantisce l'ordine di inserimento
+   * a parità di chiave di ordinamento — l'elenco "più recenti prima" può
+   * uscire nell'ordine sbagliato. Bump esplicito quando l'orologio non è
+   * ancora avanzato risolve alla radice, senza dipendere dalla granularità del clock.
+   */
+  private nextAddedAt(): number {
+    const now = Date.now();
+    this.lastAddedAt = now > this.lastAddedAt ? now : this.lastAddedAt + 1;
+    return this.lastAddedAt;
+  }
 
   /** Elenco documenti in memoria, riallineato dopo ogni scrittura così le viste sono reattive. */
   private readonly _docs = signal<LibraryDoc[]>([]);
@@ -213,7 +229,7 @@ export class LibraryService {
       ...existing,
       ...meta,
       size: blob.size,
-      addedAt: existing?.addedAt ?? Date.now(),
+      addedAt: existing?.addedAt ?? this.nextAddedAt(),
       // Il testo indicizzato si riferiva al blob precedente: va rifatto, non ereditato.
       indexedAt: null,
       textChars: 0,

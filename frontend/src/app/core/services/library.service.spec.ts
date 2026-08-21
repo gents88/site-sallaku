@@ -1,7 +1,7 @@
 // Installa i globali IndexedDB (indexedDB, IDBKeyRange, ...) che jsdom non fornisce.
 import 'fake-indexeddb/auto';
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IDBFactory } from 'fake-indexeddb';
 import { LibraryService, LibraryDoc, IDB_FACTORY, tokenize, HIGHLIGHT_OPEN } from './library.service';
 
@@ -63,6 +63,24 @@ describe('LibraryService', () => {
 
       const reloaded = await service.refresh();
       expect(reloaded.map((d) => d.id)).toEqual(['ia-alice']);
+    });
+
+    it('due add() nello stesso millisecondo restano ordinabili: il più recente resta primo', async () => {
+      const fixedNow = 1_000_000;
+      const spy = vi.spyOn(Date, 'now').mockReturnValue(fixedNow);
+      try {
+        await service.add(meta({ id: 'first' }), blob());
+        await service.add(meta({ id: 'second' }), blob());
+      } finally {
+        spy.mockRestore();
+      }
+
+      // getAll() di IndexedDB restituisce le righe in ordine di chiave primaria
+      // ('first' prima di 'second'), non di inserimento: senza un contatore
+      // monotono per addedAt, dopo un refresh() l'ordinamento "più recenti
+      // prima" tornerebbe a mostrare 'first' per primo nonostante sia più vecchio.
+      const reloaded = await service.refresh();
+      expect(reloaded.map((d) => d.id)).toEqual(['second', 'first']);
     });
 
     it('risalvare lo stesso id aggiorna invece di duplicare, e conserva addedAt', async () => {
