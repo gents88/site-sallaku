@@ -5,6 +5,7 @@ import { MailService } from '../mail/mail.service';
 import { MailQueueService } from '../mail/mail-queue.service';
 import { ContactDto } from './dto/contact.dto';
 import { ContactMessage, ContactMessageDocument } from './schemas/contact-message.schema';
+import { TurnstileService } from '../common/services/turnstile.service';
 
 interface ContactCountByDay {
   date: string;
@@ -20,6 +21,7 @@ export class ContactService {
     private contactModel: Model<ContactMessageDocument>,
     private mailService: MailService,
     private mailQueue: MailQueueService,
+    private turnstile: TurnstileService,
   ) {}
 
   async sendMessage(dto: ContactDto, meta?: { ip?: string; location?: string }): Promise<{ success: boolean }> {
@@ -27,6 +29,11 @@ export class ContactService {
     if (dto.website) {
       this.logger.warn(`[Contact] Honeypot triggered for ${dto.email} — request rejected`);
       throw new BadRequestException('Bot detected');
+    }
+
+    if (!(await this.turnstile.verify(dto.turnstileToken, meta?.ip))) {
+      this.logger.warn(`[Contact] Turnstile verification failed for ${dto.email}`);
+      throw new BadRequestException('Verification failed. Please try again.');
     }
 
     // Prevent obvious duplicates: same email+message within last 60s

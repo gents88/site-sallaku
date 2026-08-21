@@ -1,4 +1,18 @@
-/* ─── Dimmed backdrop behind the drawer ──────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   SIDEBAR — due modalità sullo stesso markup
+   · .is-overlay → drawer off-canvas con backdrop  (< 1200px, invariato)
+   · .is-rail    → colonna agganciata sempre visibile (≥ 1200px)
+   Le larghezze vivono in styles.scss (--sidebar-rail-width*) perché
+   servono anche all'offset globale di main/app-footer.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:host {
+  /* Nessun transform/filter qui: creerebbe un containing block e ritaglierebbe
+     il tooltip position:fixed della rail collassata. */
+  display: contents;
+}
+
+/* ─── Dimmed backdrop behind the drawer (solo overlay) ────────────── */
 .sidebar-backdrop {
   position: fixed;
   inset: 0;
@@ -16,27 +30,32 @@
   }
 }
 
-/* ─── Off-canvas drawer (same on every screen size) ─────────────────
-   The sidebar is always closed by default and toggled via the fixed
-   hamburger button — no permanent open column even on desktop. ──── */
+/* ─── Base comune ────────────────────────────────────────────────── */
 .app-sidebar {
   position: fixed;
-  top: calc(var(--navbar-height, 72px) + 10px);
   left: 0;
-  height: calc(100dvh - var(--navbar-height, 72px) - 20px);
-  z-index: 1501;
-  width: min(85vw, 272px);
+  /* Il reset globale non è border-box: senza questo il padding si somma alle
+     height in calc() e la colonna sfora la viewport di ~30px in fondo. */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   background: var(--bg-secondary, #0f1424);
-  border: 1px solid var(--border-color, #30363d);
+  border: 1px solid var(--border-color, var(--glass-border, #30363d));
   border-left: none;
+  /* Il pannello non scrolla mai: scorre solo .sidebar-nav, così header e CTA
+     restano ancorati e non finiscono sopra le ultime voci dell'elenco. */
+  overflow: hidden;
+}
+
+/* ─── Modalità OVERLAY (< 1200px) — comportamento storico ─────────── */
+.app-sidebar.is-overlay {
+  top: calc(var(--navbar-height, 72px) + 10px);
+  height: calc(100dvh - var(--navbar-height, 72px) - 20px);
+  z-index: 1501;
+  width: min(85vw, 272px);
   border-radius: 0 var(--radius-lg, 16px) var(--radius-lg, 16px) 0;
   box-shadow: var(--shadow-lg, 0 16px 48px rgba(0, 0, 0, 0.5));
   padding: 1.1rem 0.75rem 1.25rem;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-color, #30363d) transparent;
   transform: translateX(-110%);
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -52,47 +71,50 @@
   }
 }
 
-/* iOS/Android: radius & shadow already adapt via --radius-lg/--shadow-lg
-   token overrides (styles/platform/_ios.scss, _android.scss). Only the
-   safe-area inset and touch target sizing need a component-specific rule. */
-:host-context(html[data-os='ios']) .app-sidebar {
-  padding-left: calc(0.75rem + env(safe-area-inset-left, 0px));
-  /* Authentic frosted-glass material in place of the solid panel above —
-     blur + saturate is the classic Apple-material recipe. */
-  background: var(--glass-bg);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-}
+/* ─── Modalità RAIL (≥ 1200px) — dock permanente ──────────────────── */
+.app-sidebar.is-rail {
+  top: var(--navbar-height, 72px);
+  height: calc(100dvh - var(--navbar-height, 72px));
+  /* Sotto la navbar (1000) ma sopra il contenuto: la rail non deve mai
+     coprire header, modali o toast. */
+  z-index: 900;
+  width: var(--sidebar-rail-width, 76px);
+  padding: 0.9rem 0.6rem 1rem;
+  border-top: none;
+  border-bottom: none;
+  border-radius: 0;
+  box-shadow: 1px 0 0 rgba(148, 163, 184, 0.06);
+  transform: none;
+  transition: width 0.26s cubic-bezier(0.16, 1, 0.3, 1);
 
-/* Android: M3 tonal elevated surface — subtler blur and lower opacity
-   than iOS vibrancy, no saturate boost. */
-:host-context(html[data-os='android']) .app-sidebar {
-  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
+  &.expanded {
+    width: var(--sidebar-rail-width-expanded, 268px);
+  }
 
-:host-context(html[data-os='ios']) .nav-item,
-:host-context(html[data-os='android']) .nav-item {
-  min-height: var(--ui-control-height, 44px);
-}
-
-.app-sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-.app-sidebar::-webkit-scrollbar-thumb {
-  background: var(--border-color, #30363d);
-  border-radius: 999px;
+  /* Filo verticale d'accento: dà alla colonna un bordo "vivo" invece del
+     grigio piatto che la faceva sparire nello sfondo. */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(139, 92, 246, 0.35) 22%, rgba(79, 106, 245, 0.28) 72%, transparent);
+    pointer-events: none;
+  }
 }
 
 /* ─── Header ─────────────────────────────────────────────────────── */
 .sidebar-header {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.1rem;
-  padding: 0.15rem 0.25rem 1rem;
-  border-bottom: 1px solid var(--border-color, #30363d);
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.15rem 0.25rem 0.9rem;
+  border-bottom: 1px solid var(--border-color, rgba(148, 163, 184, 0.16));
 }
 
 .sidebar-brand {
@@ -124,32 +146,70 @@
   text-overflow: ellipsis;
 }
 
-.close-btn {
+.close-btn,
+.rail-toggle {
   display: flex;
   width: 30px;
   height: 30px;
   flex-shrink: 0;
-  border: 1px solid var(--border-color, #30363d);
+  border: 1px solid var(--border-color, rgba(148, 163, 184, 0.2));
   border-radius: var(--radius-sm, 8px);
   background: transparent;
   color: var(--text-secondary, #8b949e);
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.22s ease;
 
-  &:hover {
-    background: rgba(248, 81, 73, 0.1);
-    color: #f87171;
-    border-color: #f87171;
+  &:focus-visible {
+    outline: 2px solid var(--primary-500, #4f6af5);
+    outline-offset: 2px;
   }
 }
 
-/* ─── Nav groups ─────────────────────────────────────────────────── */
+.close-btn:hover {
+  background: rgba(248, 81, 73, 0.1);
+  color: #f87171;
+  border-color: #f87171;
+}
+
+.rail-toggle:hover {
+  background: rgba(139, 92, 246, 0.14);
+  color: var(--accent-400, #a78bfa);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+/* La freccia punta verso l'azione: → per espandere, ← per comprimere. */
+.app-sidebar.expanded .rail-toggle svg {
+  transform: rotate(180deg);
+}
+
+.rail-toggle svg {
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Nav ────────────────────────────────────────────────────────── */
+/* Unica area scorrevole. `min-height: 0` è obbligatorio: senza, un flex item
+   non scende sotto la propria altezza di contenuto e l'overflow non parte. */
 .sidebar-nav {
   display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
   flex-direction: column;
   gap: 0.2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color, #30363d) transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: var(--border-color, #30363d);
+  border-radius: 999px;
 }
 
 .nav-group {
@@ -168,7 +228,9 @@
   font-weight: 700;
   letter-spacing: 0.9px;
   text-transform: uppercase;
-  color: var(--text-muted, #6e7681);
+  /* Era --text-muted (#475569): sotto 3:1 sul fondo scuro. --text-tertiary
+     porta l'etichetta di gruppo in area leggibile mantenendo la gerarchia. */
+  color: var(--text-tertiary, #64748b);
   padding: 0.5rem 0.5rem 0.4rem;
 }
 
@@ -177,12 +239,12 @@
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 0.55rem 0.65rem;
-  margin: 0 0 2px;
-  border-radius: var(--radius-sm, 8px);
-  color: var(--text-secondary, #8b949e);
+  padding: 0.5rem 0.6rem;
+  margin: 0 0 3px;
+  border-radius: var(--radius-sm, 10px);
+  color: var(--text-secondary, #94a3b8);
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
   white-space: nowrap;
   overflow: hidden;
@@ -190,45 +252,284 @@
   &:hover {
     background: var(--bg-tertiary, rgba(108, 99, 255, 0.1));
     color: var(--text-primary, #e6edf3);
-    transform: translateX(2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-500, #4f6af5);
+    outline-offset: -2px;
   }
 
   &.active {
-    background: linear-gradient(90deg, rgba(139, 92, 246, 0.18), rgba(139, 92, 246, 0.05));
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.04));
     color: var(--accent-400, #a78bfa);
     font-weight: 600;
 
-    &::before {
-      content: '';
-      position: absolute;
-      left: -0.75rem;
-      top: 20%;
-      bottom: 20%;
-      width: 3px;
-      border-radius: 0 4px 4px 0;
-      background: linear-gradient(180deg, var(--accent-400, #a78bfa), var(--accent-600, #7c3aed));
-    }
-
     .nav-icon {
-      background: rgba(139, 92, 246, 0.18);
+      background: rgba(139, 92, 246, 0.22);
+      box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.3) inset;
     }
   }
+}
+
+/* Barra dell'elemento attivo, ancorata al bordo sinistro del pannello. */
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18%;
+  bottom: 18%;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, var(--accent-400, #a78bfa), var(--accent-600, #7c3aed));
 }
 
 .nav-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
-  border-radius: 7px;
-  font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.04);
-  transition: background 0.15s ease;
+  border-radius: 9px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.045);
+  transition: background 0.15s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.12);
 }
 
 .nav-label {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ─── CTA in fondo ───────────────────────────────────────────────── */
+.sidebar-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  /* Fuori dall'area scorrevole: resta sempre in fondo alla colonna senza
+     sovrapporsi alle ultime voci quando l'elenco eccede l'altezza. */
+  flex-shrink: 0;
+  margin-top: 0.75rem;
+  padding: 0.6rem;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(139, 92, 246, 0.24);
+  background: linear-gradient(135deg, rgba(79, 106, 245, 0.16), rgba(139, 92, 246, 0.1));
+  color: var(--text-primary, #e6edf3);
+  text-decoration: none;
+  overflow: hidden;
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+
+  &:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(79, 106, 245, 0.22);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-500, #4f6af5);
+    outline-offset: 2px;
+  }
+}
+
+.cta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.cta-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+
+  strong {
+    font-size: 0.85rem;
+  }
+
+  small {
+    color: var(--text-secondary, #94a3b8);
+    font-size: 0.72rem;
+  }
+}
+
+/* ─── Rail collassata: solo icone ────────────────────────────────── */
+.app-sidebar.is-rail:not(.expanded) {
+  /* Il chevron resta visibile — è l'unica affordance di apertura quando la
+     colonna è a sole icone — ma scende sotto il badge invece di stringerlo. */
+  .sidebar-header {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .brand-label,
+  .group-title {
+    /* width:0 + opacity invece di display:none: mantiene il testo nell'albero
+       di accessibilità e rende l'apertura una transizione, non un salto. */
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* La CTA è su due righe: azzerarne solo la larghezza ne lascerebbe l'altezza,
+     gonfiando il box. Qui serve il pattern sr-only, che toglie anche l'altezza
+     senza rimuovere il testo dall'albero di accessibilità. */
+  .cta-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Ritmo verticale compresso: senza etichette le voci non hanno bisogno del
+     respiro della modalità espansa, e così tutte e 10 entrano senza scroll
+     anche su un portatile con barra dei segnalibri (~750px di viewport). */
+  .nav-item,
+  .sidebar-cta {
+    justify-content: center;
+    gap: 0;
+    padding: 0.3rem 0;
+  }
+
+  .nav-item {
+    margin-bottom: 2px;
+  }
+
+  .rail-toggle {
+    width: 26px;
+    height: 26px;
+  }
+
+  .nav-label {
+    width: 0;
+    opacity: 0;
+  }
+
+  .nav-group-label {
+    justify-content: center;
+    padding: 0.4rem 0 0.25rem;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+
+  .sidebar-cta {
+    margin-top: 0.5rem;
+  }
+
+  /* Separatore tra gruppi: senza le etichette servirebbe altrimenti un blocco
+     indistinto di 10 icone. */
+  .nav-group + .nav-group {
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    padding-top: 0.35rem;
+  }
+}
+
+/* Le etichette rientrano con un leggero stagger quando la rail si apre:
+   comunica "un elenco", non "un pannello che cambia larghezza".
+   Lo stagger è per posizione nel gruppo (nth-child), non via binding: evita
+   una style-binding per ogni voce e resta interamente in CSS. */
+.app-sidebar.is-rail.expanded .nav-label {
+  animation: railLabelIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.app-sidebar.is-rail.expanded .nav-item {
+  @for $i from 1 through 7 {
+    &:nth-child(#{$i + 1}) .nav-label {
+      animation-delay: #{$i * 22}ms;
+    }
+  }
+}
+
+@keyframes railLabelIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Tooltip della rail collassata ──────────────────────────────── */
+.rail-tooltip {
+  position: fixed;
+  left: calc(var(--sidebar-rail-width, 76px) + 8px);
+  z-index: 1400;
+  transform: translateY(-50%);
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--glass-border, rgba(99, 102, 241, 0.25));
+  background: var(--bg-tertiary, #141a2e);
+  box-shadow: var(--shadow-md, 0 8px 32px rgba(0, 0, 0, 0.4));
+  color: var(--text-primary, #f1f5f9);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: tooltipIn 0.14s ease-out both;
+}
+
+.rail-tooltip::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%) rotate(45deg);
+  border-left: 1px solid var(--glass-border, rgba(99, 102, 241, 0.25));
+  border-bottom: 1px solid var(--glass-border, rgba(99, 102, 241, 0.25));
+  background: var(--bg-tertiary, #141a2e);
+}
+
+@keyframes tooltipIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+/* ─── Tema chiaro ────────────────────────────────────────────────── */
+:host-context(html[data-theme='light']) {
+  .app-sidebar {
+    background: var(--bg-secondary, #f8fafc);
+  }
+
+  .nav-icon {
+    background: rgba(15, 23, 42, 0.05);
+  }
+
+  .rail-tooltip,
+  .rail-tooltip::before {
+    background: var(--bg-secondary, #ffffff);
+  }
+}
+
+/* ─── Piattaforme mobile (solo overlay, la rail non esiste lì) ────── */
+:host-context(html[data-os='ios']) .app-sidebar.is-overlay {
+  padding-left: calc(0.75rem + env(safe-area-inset-left, 0px));
+  /* Authentic frosted-glass material in place of the solid panel above —
+     blur + saturate is the classic Apple-material recipe. */
+  background: var(--glass-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+}
+
+/* Android: M3 tonal elevated surface — subtler blur and lower opacity
+   than iOS vibrancy, no saturate boost. */
+:host-context(html[data-os='android']) .app-sidebar.is-overlay {
+  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+:host-context(html[data-os='ios']) .nav-item,
+:host-context(html[data-os='android']) .nav-item {
+  min-height: var(--ui-control-height, 44px);
 }

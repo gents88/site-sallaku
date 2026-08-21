@@ -58,6 +58,11 @@
   --navbar-height: 72px;
   --bottom-tabbar-height: 60px;
 
+  /* Sidebar agganciata (≥1200px). Vive qui e non nel componente perché serve
+     anche all'offset di main/app-footer più sotto. */
+  --sidebar-rail-width: 76px;
+  --sidebar-rail-width-expanded: 268px;
+
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -755,6 +760,59 @@ html[data-os='android'][data-input='touch'] .btn:active {
 ::-webkit-scrollbar-track { background: var(--color-bg-alt); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
 
+/* ── Sidebar dock: offset del contenuto (≥1200px) ─────────────────
+   `data-sidebar` è scritto da DrawerService sullo stesso <html> che porta
+   già data-theme e data-os. Il media query è la fonte di verità visiva:
+   in SSR l'attributo non esiste ancora e la pagina resta a piena larghezza,
+   quindi non c'è salto di layout in idratazione sotto i 1200px. */
+app-footer {
+  /* Custom element: senza questo resta inline e il padding-left non si applica. */
+  display: block;
+}
+
+/* ── Offset navbar per le pagine /lab/* ───────────────────────────
+   Questi componenti stavano sotto /dashboard/*, dove AdminShellComponent
+   fornisce `padding-top: var(--navbar-height)`. Spostati a /lab/* (2026-08)
+   sono figli diretti del <main> di app-root, che non ha nessun offset: il
+   loro contenuto finiva sotto la navbar fixed, partendo a y=8 su una barra
+   alta 72px. Le altre pagine pubbliche non sono toccate perché gestiscono
+   da sé la spaziatura in cima (l'hero della home, ecc.).
+   Aggiungendo un nuovo tool sotto /lab, aggiungi qui il suo selettore. */
+app-tools,
+app-pdf-summary,
+app-ai-formatter,
+app-pdf-translate,
+app-ai-ppt,
+app-pdf-editor,
+app-viewer,
+app-editor,
+app-convert,
+app-ocr,
+app-scanner {
+  display: block;
+  padding-top: var(--navbar-height, 72px);
+}
+
+/* Il selettore è ancorato a `app-root >`: AdminShellComponent rende un secondo
+   <main class="admin-main"> annidato dentro questo, e un `main` sciolto lo
+   colpirebbe entrambi, sommando l'offset due volte sulle pagine /dashboard. */
+@media (min-width: 1200px) {
+  html[data-sidebar^='rail'] app-root > main,
+  html[data-sidebar^='rail'] app-root > app-footer {
+    transition: padding-left 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html[data-sidebar='rail'] app-root > main,
+  html[data-sidebar='rail'] app-root > app-footer {
+    padding-left: var(--sidebar-rail-width);
+  }
+
+  html[data-sidebar='rail-expanded'] app-root > main,
+  html[data-sidebar='rail-expanded'] app-root > app-footer {
+    padding-left: var(--sidebar-rail-width-expanded);
+  }
+}
+
 /* ── Reduced motion ──────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -789,4 +847,16 @@ html[data-os='android'][data-input='touch'] .btn:active {
   ::view-transition-new(root) {
     animation: none;
   }
+}
+
+/* ── Lab tools: shared "result ready" pop ────────── */
+/* Applied to a result/output container right after it renders, across the
+   /lab/* tools, so completing any of them reads consistently. */
+@keyframes result-pop {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.99); }
+  60%  { opacity: 1; transform: translateY(0) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.result-pop {
+  animation: result-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }

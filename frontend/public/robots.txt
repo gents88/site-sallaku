@@ -1,20 +1,10 @@
 User-agent: *
 Allow: /
 
-# Allow public AI & PDF tool pages
-Allow: /dashboard/tools
-Allow: /dashboard/ai-ppt
-Allow: /dashboard/ai-formatter
-Allow: /dashboard/pdf-translate
-Allow: /dashboard/pdf-summary
-Allow: /dashboard/convert
-Allow: /dashboard/ocr
-Allow: /dashboard/pdf-editor
-Allow: /dashboard/scanner
-Allow: /dashboard/viewer
-Allow: /dashboard/editor
+# AI & PDF tool pages live under /lab/* (moved from /dashboard/*, 2026-08) —
+# no explicit allow-list needed anymore, they're covered by "Allow: /" above.
 
-# Block the rest of the admin dashboard
+# Block the admin dashboard (CMS login/content management)
 Disallow: /dashboard/
 
 # Block backend API endpoints

@@ -3,4 +3,5 @@ export interface ContactPayload {
   email: string;
   subject: string;
   message: string;
+  turnstileToken?: string;
 }

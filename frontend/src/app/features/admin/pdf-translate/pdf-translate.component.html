@@ -60,7 +60,28 @@
             <p>{{ 'pdf_translate.section_subtitle' | translate }}</p>
           </div>
         </div>
+        <a class="guide-link" routerLink="/blog/pdf-ai-translation-guide-2026">
+          📖 {{ 'pdf_translate.guide_link' | translate }}
+        </a>
       </div>
+
+      @if (workspaceItem()) {
+        <div class="workspace-banner">
+          <span class="workspace-banner-icon">🔗</span>
+          <div class="workspace-banner-text">
+            <strong>{{ 'pdf_translate.workspace_banner_title' | translate }}</strong>
+            <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+          </div>
+          <div class="workspace-banner-actions">
+            <button class="workspace-btn primary" (click)="useWorkspaceFile()">
+              {{ 'pdf_translate.workspace_banner_use' | translate }}
+            </button>
+            <button class="workspace-btn" (click)="dismissWorkspaceBanner()">
+              {{ 'pdf_translate.workspace_banner_dismiss' | translate }}
+            </button>
+          </div>
+        </div>
+      }
 
       <!-- Mode Selection -->
       <div class="mode-section">
@@ -106,10 +127,10 @@
       @if (!file()) {
         <div
           class="drop-zone"
-          [class.dragging]="isDragging()"
-          (dragover)="onDragOver($event)"
-          (dragleave)="onDragLeave()"
-          (drop)="onDrop($event)"
+          appFileDropzone
+          #dz="fileDropzone"
+          [class.dragging]="dz.isDragging"
+          (filesDropped)="onFilesDropped($event)"
           (click)="triggerFileInput()"
           role="button"
           tabindex="0"
@@ -156,7 +177,7 @@
       >
         @if (loading()) {
           <span class="spinner"></span>
-          <span>{{ 'pdf_translate.btn_translating' | translate }}</span>
+          <span>{{ currentStepKey() | translate }}</span>
         } @else {
           <span>🌍</span>
           <span>
@@ -168,12 +189,28 @@
         }
       </button>
 
+      @if (loading()) {
+        <div class="progress-wrap" aria-live="polite">
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <ul class="step-list">
+            @for (step of translateStepKeys; track step; let i = $index) {
+              <li class="step-item" [class.is-done]="i < currentStepIndex()" [class.is-active]="i === currentStepIndex()">
+                <span class="step-marker">
+                  @if (i < currentStepIndex()) { ✓ }
+                </span>
+                <span class="step-text">{{ step | translate }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
     </div>
   </section>
 
   <!-- ── RESULT ─────────────────────────────────────────────────────────────── -->
   @if (result(); as res) {
-    <section class="result-section">
+    <section class="result-section result-pop">
 
       <div class="result-meta">
         <div class="meta-pill">📄 {{ res.pageCount }} {{ res.pageCount === 1 ? ('pdf_translate.page' | translate) : ('pdf_translate.pages' | translate) }}</div>
@@ -181,15 +218,19 @@
         <div class="meta-pill">🧱 {{ res.blocksTranslated }} blocks</div>
         <div class="meta-pill">⚡ {{ formatMs(res.processingTime) }}</div>
         <div class="meta-pill lang-pill">🌍 {{ res.targetLanguage | titlecase }}</div>
-        @if (res.layoutPreserved) {
-          <div class="meta-pill pill-success">{{ 'pdf_translate.pill_layout_preserved' | translate }}</div>
-        } @else {
+        @if (res.fallback) {
           <div class="meta-pill pill-warn">{{ 'pdf_translate.pill_fallback' | translate }}</div>
+        } @else {
+          <div class="meta-pill pill-success">{{ 'pdf_translate.pill_clean_layout' | translate }}</div>
         }
         @if (res.isScanned) {
           <div class="meta-pill pill-info">🔍 {{ 'pdf_translate.pill_scanned' | translate }}</div>
         }
       </div>
+
+      @if (res.truncated) {
+        <div class="truncated-banner">⚠️ {{ 'pdf_translate.truncated_warning' | translate }}</div>
+      }
 
       <!-- Quick retranslate bar -->
       <div class="retranslate-bar">
@@ -271,6 +312,14 @@
             <div class="dl-info">
               <span class="dl-name">{{ copied() ? ('pdf_translate.dl_copied_name' | translate) : ('pdf_translate.dl_copy_name' | translate) }}</span>
               <span class="dl-sub">{{ 'pdf_translate.dl_copy_sub' | translate }}</span>
+            </div>
+          </button>
+
+          <button class="download-btn ghost-dl" (click)="sendToWorkspace()">
+            <span class="dl-icon">{{ justSent() ? '✓' : '🔗' }}</span>
+            <div class="dl-info">
+              <span class="dl-name">{{ justSent() ? ('pdf_translate.dl_sent_name' | translate) : ('pdf_translate.dl_send_workspace_name' | translate) }}</span>
+              <span class="dl-sub">{{ 'pdf_translate.dl_send_workspace_sub' | translate }}</span>
             </div>
           </button>
 

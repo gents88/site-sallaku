@@ -6,4 +6,8 @@ export const environment = {
   // Public DSN — safe to expose client-side (Sentry client keys are not secrets).
   // Left empty in dev so Sentry.init() is skipped locally.
   sentryDsn: '',
+  // Cloudflare Turnstile site key (public by design, safe to commit). Left
+  // empty until configured — TurnstileWidgetComponent no-ops when blank,
+  // matching the backend's TurnstileService no-op when the secret is unset.
+  turnstileSiteKey: '',
 };

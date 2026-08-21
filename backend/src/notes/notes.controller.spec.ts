@@ -80,7 +80,7 @@ describe('NotesController', () => {
 
   describe('getNotes', () => {
     it('should return paginated notes', async () => {
-      const result = await controller.getNotes(mockArticleId, '50', '0');
+      const result = await controller.getNotes(mockArticleId, { limit: 50, skip: 0 });
 
       expect(result).toHaveProperty('data');
       expect(result).toHaveProperty('total');
@@ -92,13 +92,13 @@ describe('NotesController', () => {
       );
     });
 
-    it('should limit max results to 100', async () => {
-      await controller.getNotes(mockArticleId, '200', '0');
+    it('should default limit/skip when the query is empty', async () => {
+      await controller.getNotes(mockArticleId, {});
 
       expect(service.getNotes).toHaveBeenCalledWith(
         mockArticleId,
         true,
-        100, // Limited to 100
+        50,
         0,
       );
     });

@@ -4,4 +4,5 @@ export const environment = {
   googleAnalyticsId: '',
   blogPdfUploadEnabled: true,
   sentryDsn: '',
+  turnstileSiteKey: '',
 };

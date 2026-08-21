@@ -1,38 +1,67 @@
-<div class="sidebar-backdrop" [class.open]="drawerOpen()" (click)="closeDrawer()" aria-hidden="true"></div>
+<!-- Backdrop: solo per il drawer overlay (mobile/tablet). In modalità rail la
+     sidebar è parte del layout e non oscura nulla. -->
+@if (mode() === 'overlay') {
+  <div class="sidebar-backdrop" [class.open]="drawerOpen()" (click)="closeDrawer()" aria-hidden="true"></div>
+}
 
 <aside
   id="app-sidebar"
   class="app-sidebar"
+  [class.is-overlay]="mode() === 'overlay'"
+  [class.is-rail]="mode() === 'rail'"
   [class.open]="drawerOpen()"
+  [class.expanded]="expanded()"
   role="navigation"
-  aria-label="Main navigation"
+  [attr.aria-label]="brandLabel()"
 >
   <div class="sidebar-header">
     <div class="sidebar-brand">
-      <span class="brand-badge" aria-hidden="true">{{ isAdminUser() ? '⚙️' : '🧰' }}</span>
-      <span class="brand-label">{{ isAdminUser() ? 'Admin' : 'AI & Tools' }}</span>
+      <span class="brand-badge" aria-hidden="true">{{ brandBadge() }}</span>
+      <span class="brand-label">{{ brandLabel() }}</span>
     </div>
-    <button class="close-btn" type="button" aria-label="Close menu" (click)="closeDrawer()">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M18 6 6 18M6 6l12 12" />
-      </svg>
-    </button>
+
+    @if (mode() === 'rail') {
+      <button
+        class="rail-toggle"
+        type="button"
+        (click)="toggleRail()"
+        [attr.aria-expanded]="expanded()"
+        aria-controls="app-sidebar"
+        [attr.aria-label]="expanded() ? 'Comprimi il menu laterale' : 'Espandi il menu laterale'"
+        [attr.title]="expanded() ? 'Comprimi (icone)' : 'Espandi (icone + testo)'"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </button>
+    } @else {
+      <button class="close-btn" type="button" aria-label="Chiudi il menu" (click)="closeDrawer()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+      </button>
+    }
   </div>
 
   <nav class="sidebar-nav">
     @for (group of navGroups(); track group.id) {
       <div class="nav-group">
         <div class="nav-group-label">
-          <span aria-hidden="true">{{ group.emoji }}</span>
-          <span>{{ group.title }}</span>
+          <span class="group-emoji" aria-hidden="true">{{ group.emoji }}</span>
+          <span class="group-title">{{ group.title }}</span>
         </div>
         @for (item of group.items; track item.route) {
           <a
-            [routerLink]="item.route"
+            [routerLink]="item.route | langUrl"
             routerLinkActive="active"
+            ariaCurrentWhenActive="page"
             [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
             class="nav-item"
-            (click)="closeDrawer()"
+            (click)="onNavigate(item)"
+            (mouseenter)="showTooltip($event, item.label)"
+            (mouseleave)="hideTooltip()"
+            (focus)="showTooltip($event, item.label)"
+            (blur)="hideTooltip()"
           >
             <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
             <span class="nav-label">{{ item.label }}</span>
@@ -41,4 +70,30 @@
       </div>
     }
   </nav>
+
+  <!-- CTA di chiusura: dà alla colonna una destinazione "indice" e riempie il
+       vuoto in fondo, che altrimenti fa leggere la rail come una decorazione. -->
+  <a
+    class="sidebar-cta"
+    [routerLink]="'/lab' | langUrl"
+    routerLinkActive="active"
+    [routerLinkActiveOptions]="{ exact: true }"
+    (click)="onNavigate({ icon: '🚀', label: 'Lab', route: '/lab' })"
+    (mouseenter)="showTooltip($event, 'Vedi tutti gli strumenti')"
+    (mouseleave)="hideTooltip()"
+    (focus)="showTooltip($event, 'Vedi tutti gli strumenti')"
+    (blur)="hideTooltip()"
+  >
+    <span class="cta-icon" aria-hidden="true">🚀</span>
+    <span class="cta-text">
+      <strong>Esplora il Lab</strong>
+      <small>{{ itemCount() }} strumenti disponibili</small>
+    </span>
+  </a>
 </aside>
+
+<!-- Tooltip della rail collassata. Fuori da <aside> perché quello scrolla:
+     un figlio position:fixed verrebbe comunque ritagliato dall'overflow. -->
+@if (tooltip(); as tip) {
+  <div class="rail-tooltip" role="tooltip" [style.top.px]="tip.top">{{ tip.label }}</div>
+}

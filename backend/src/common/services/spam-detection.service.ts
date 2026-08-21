@@ -1,5 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNoteDto } from '../dto/create-note.dto';
+import sanitizeHtml from 'sanitize-html';
+
+export interface SpamCheckInput {
+  content: string;
+  name?: string;
+  email?: string;
+  honeypot?: string;
+  website?: string;
+}
 
 @Injectable()
 export class SpamDetectionService {
@@ -20,14 +28,14 @@ export class SpamDetectionService {
     /[A-Z]{5,}/g,
   ];
 
-  detectSpam(dto: CreateNoteDto, userIp?: string): { isSpam: boolean; score: number } {
+  detectSpam(input: SpamCheckInput, userIp?: string): { isSpam: boolean; score: number } {
     let score = 0;
 
-    if (dto.honeypot) {
+    if (input.honeypot) {
       return { isSpam: true, score: 100 };
     }
 
-    const contentLower = dto.content.toLowerCase();
+    const contentLower = input.content.toLowerCase();
 
     for (const keyword of this.spamKeywords) {
       if (contentLower.includes(keyword)) {
@@ -42,15 +50,15 @@ export class SpamDetectionService {
       }
     }
 
-    if (dto.website && dto.website.length > 0) {
+    if (input.website && input.website.length > 0) {
       score += 25;
     }
 
-    if (dto.content.length > 500) {
+    if (input.content.length > 500) {
       score += 5;
     }
 
-    if (!dto.name && !dto.email) {
+    if (!input.name && !input.email) {
       score += 10;
     }
 
@@ -65,11 +73,13 @@ export class SpamDetectionService {
     return emailRegex.test(email);
   }
 
+  /**
+   * Notes/testimonials content is plain text only — strip any HTML the
+   * submitter tried to inject rather than merely escaping it, using a real
+   * parser (sanitize-html/htmlparser2) instead of the previous naive
+   * character-replace, which could miss malformed/nested markup.
+   */
   sanitizeContent(content: string): string {
-    return content
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;');
+    return sanitizeHtml(content, { allowedTags: [], allowedAttributes: {} }).trim();
   }
 }

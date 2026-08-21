@@ -67,6 +67,19 @@
         "maxAge": "1h",
         "timeout": "5s"
       }
+    },
+    {
+      "name": "pdf-search-covers",
+      "urls": [
+        "https://archive.org/services/img/**",
+        "https://www.gutenberg.org/cache/epub/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "1d",
+        "timeout": "3s"
+      }
     }
   ]
 }

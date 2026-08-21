@@ -8,7 +8,7 @@ import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { PostSummary } from '../../../core/models/post.model';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 
 @Component({
@@ -42,17 +42,30 @@ export class BlogListComponent implements OnInit {
   private readonly langService = inject(LanguageService);
   readonly currentLang = this.langService.current;
 
-  constructor(private blogService: BlogService, private seo: SeoService, private cdr: ChangeDetectorRef) {
+  constructor(
+    private blogService: BlogService,
+    private seo: SeoService,
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef,
+  ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
   }
 
   ngOnInit(): void {
+    const lang = this.currentLang();
+    const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog', lang)}`;
     this.seo.update({
       title: 'Blog',
       description: 'Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern IT development.',
-      url: `${SITE_ORIGIN}${withLangPrefix('/blog', this.currentLang())}`,
+      url: pageUrl,
     });
+    this.seo.injectJsonLd(
+      this.seo.breadcrumb([
+        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: 'Blog', url: pageUrl },
+      ]),
+    );
     this.blogService.getPublishedAll().pipe(
       // No retry() — see blog-detail.component.ts for why: it trades a
       // clean failure for a worse one (page stuck on the loading spinner)

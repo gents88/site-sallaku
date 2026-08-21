@@ -5,6 +5,19 @@
     <title>Gent Sallaku | Senior Front-End &amp; API Developer</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Stato iniziale della sidebar prima del primo paint. DrawerService scrive
+         lo stesso attributo dopo il bootstrap: senza questo, su desktop il
+         contenuto partirebbe a piena larghezza e slitterebbe di 76px appena
+         Angular idrata. Tenere soglia e chiave allineate a drawer.service.ts. -->
+    <script>
+      (function () {
+        try {
+          if (!window.matchMedia('(min-width: 1200px)').matches) return;
+          var expanded = localStorage.getItem('gs-sidebar-expanded') === '1';
+          document.documentElement.setAttribute('data-sidebar', expanded ? 'rail-expanded' : 'rail');
+        } catch (e) { /* storage/matchMedia non disponibili: nessun offset iniziale */ }
+      })();
+    </script>
     <meta name="description" content="Gent Sallaku - Senior Front-End Developer e API Developer. Sviluppo web e applicazioni enterprise con Angular, JavaScript, TypeScript, .NET e Django." />
     <meta name="author" content="Gent Sallaku" />
     <meta name="theme-color" content="#0b1220" />
@@ -30,14 +43,25 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:creator" content="@gentsallaku" />
     <meta name="twitter:image" content="https://gentsallaku.it/assets/og-image.png" />
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Google Fonts — async, non-render-blocking. Only the Inter/JetBrains
-         Mono text faces still come from Google; the icon fonts below are
-         self-hosted (see comment there for why). -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" /></noscript>
+    <!-- Fonts — all self-hosted, no third-party origins left in the critical
+         path. Inter and JetBrains Mono moved here from Google Fonts for the
+         same three reasons documented below for the icon fonts, plus one
+         specific to Inter: it renders the hero <h1>, which is the LCP
+         element on the homepage. A font blocked by an ad blocker or stalled
+         on a cold cross-origin connection was a visible reflow on exactly
+         the metric that matters most.
+
+         Both are variable fonts: one file each covers the full weight range
+         the site uses (Inter 300-900, all seven weights are in use), instead
+         of seven and three separate static requests.
+
+         Inter is preloaded because it's LCP-critical: without it the browser
+         only discovers the font after parsing the stylesheet. JetBrains Mono
+         is not — it's for code blocks, well below the fold. -->
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter/inter-latin.woff2" crossorigin />
+    <link rel="stylesheet" href="/assets/fonts/inter/inter.css" />
+    <link rel="preload" as="style" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" /></noscript>
     <!-- Material Icons and Font Awesome are self-hosted from /assets/fonts
          instead of Google Fonts / jsdelivr. Three independent bugs traced
          back to those being third-party CDNs: (1) font-display:optional's
@@ -72,14 +96,44 @@
         });
       } catch (e) { /* ignore if gtag not available */ }
     </script>
-    <!-- GA4 library itself: loaded statically (present in prerendered HTML, not
-         just injected client-side) so tools like Search Console's "verify via
-         Google Analytics" can find it. Consent Mode defaults above are already
-         set before this loads, so no tracking/cookies fire until the user
-         grants consent. Keep this ID in sync with environment.prod.ts's
-         googleAnalyticsId. -->
-    <script id="ga-script" async src="https://www.googletagmanager.com/gtag/js?id=G-ENE1XXREY6"></script>
-    <script>gtag('config', 'G-ENE1XXREY6');</script>
+    <!-- GA4 library: 187KB of third-party JavaScript, measured as the single
+         heaviest request on the homepage — heavier than the entire app bundle,
+         and ~680ms of main-thread execution.
+
+         It is no longer loaded here at all. ConsentService pulls it in only
+         after the visitor actually grants analytics consent, so every visitor
+         who declines or ignores the banner — the majority — never pays for it.
+         This was already the effective behaviour: Consent Mode defaults below
+         deny storage, so the library was downloading and executing on every
+         page load to then do nothing.
+
+         The old comment justified loading it statically so Search Console's
+         "verify via Google Analytics" could find it. That reason no longer
+         holds: this site is verified with the HTML-file method instead
+         (public/googleee6031aefa85f68c.html), so nothing depends on the tag
+         being present for a crawler.
+
+         The dataLayer stub, the Consent Mode v2 defaults and the config call
+         stay inline and synchronous, so hits queued before consent replay in
+         order once the library arrives. Keep the ID in sync with
+         environment.prod.ts's googleAnalyticsId. -->
+    <script>
+      (function () {
+        var ID = 'G-ENE1XXREY6';
+        gtag('config', ID);
+
+        // Exposed for ConsentService, which calls it once the visitor grants
+        // analytics consent. Idempotent — repeated calls are no-ops.
+        window.__loadGtag = function () {
+          if (document.getElementById('ga-script')) return;
+          var s = document.createElement('script');
+          s.id = 'ga-script';
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ID;
+          document.head.appendChild(s);
+        };
+      })();
+    </script>
     <!-- Google Tag Manager — disabled. The placeholder ID below was never replaced
          with a real container ID, so every time a user granted analytics/marketing
          consent, consent.service.ts fired a real (failing) request to

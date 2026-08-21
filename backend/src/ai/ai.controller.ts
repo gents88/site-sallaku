@@ -13,6 +13,7 @@ import { memoryStorage } from 'multer';
 import { ApiTags, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AiService } from './ai.service';
+import { AskDocumentDto } from './dto/ask-document.dto';
 
 const ALLOWED_MIMES = new Set([
   'application/pdf',
@@ -54,6 +55,18 @@ export class AiController {
     @Body('mode') mode: string = 'short',
   ) {
     return this.aiService.summarizeFile(validateFile(file, 20), lang || 'en', mode || 'short');
+  }
+
+  // ── POST /ai/ask-document ────────────────────────────────────────────
+  // Chat sui documenti della Libreria. I documenti restano nel browser
+  // dell'utente: il client cerca da sé i passaggi rilevanti e manda solo
+  // quelli, quindi questo endpoint non ha (e non vuole) accesso ai file.
+  @Post('ask-document')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Answer a question grounded in caller-supplied document excerpts' })
+  async askDocument(@Body() dto: AskDocumentDto) {
+    return this.aiService.askDocument(dto.question, dto.passages, dto.lang || 'it');
   }
 
   // ── POST /ai/format-text ─────────────────────────────────────────────

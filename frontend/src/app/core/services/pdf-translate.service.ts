@@ -36,6 +36,8 @@ export interface TranslatePdfResult {
   processingTime: number;
   isScanned: boolean;
   blocksTranslated: number;
+  /** true solo su documenti eccezionalmente lunghi, oltre il tetto di sicurezza a blocchi del backend. */
+  truncated: boolean;
 }
 
 export interface TranslateOptions {

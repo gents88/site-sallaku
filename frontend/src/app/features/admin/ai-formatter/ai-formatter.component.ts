@@ -2,13 +2,16 @@ import {
   Component,
   ChangeDetectionStrategy,
   OnInit,
+  afterNextRender,
   signal,
   computed,
+  effect,
   inject,
+  PLATFORM_ID,
   ElementRef,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
@@ -18,6 +21,8 @@ import {
   DocType,
   FormatTextResult,
 } from '../../../core/services/ai-formatter.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 type ViewMode = 'formatted' | 'raw';
 
@@ -25,22 +30,53 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
 export class AiFormatterComponent implements OnInit {
   @ViewChild('formatterSection') formatterSection!: ElementRef<HTMLElement>;
 
-  private readonly sanitizer = inject(DomSanitizer);
-  private readonly service   = inject(AiFormatterService);
-  private readonly seo       = inject(SeoService);
+  private readonly sanitizer  = inject(DomSanitizer);
+  private readonly service    = inject(AiFormatterService);
+  private readonly seo        = inject(SeoService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly workspace  = inject(WorkspaceService);
+
+  private static readonly DRAFT_KEY = 'ai-formatter-draft';
+  private saveTimer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    // Debounce-persist the draft (input text + last result) to localStorage.
+    effect(() => {
+      const text   = this.text();
+      const result = this.result();
+      if (!isPlatformBrowser(this.platformId)) return;
+      if (this.saveTimer) clearTimeout(this.saveTimer);
+      this.saveTimer = setTimeout(() => this.saveDraft(text, result), 500);
+    });
+
+    // Deferred to right after the initial (hydrated) render, not ngOnInit: this reads
+    // localStorage and flips draftRestored/text/result, which show up as a structural
+    // *ngIf banner and textarea content — doing that during ngOnInit runs before
+    // hydration reconciliation on the client, so it'd diverge from the server's
+    // (always-empty) render and Angular can't reconcile the mismatched DOM.
+    afterNextRender(() => this.restoreDraft());
+  }
 
   ngOnInit(): void {
+    // Workspace handoff: another lab tool may have sent plain text here. Only offer
+    // it for 'text' items — this tool works on raw text, not files. Peek (not take)
+    // so the item survives until the user explicitly confirms loading it.
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'text') {
+      this.workspaceItem.set(pending);
+    }
+
     this.seo.update({
       title: 'AI Text Formatter — Convert Notes to Polished Documents',
       description: 'Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter.',
-      url: 'https://gentsallaku.it/dashboard/ai-formatter',
+      url: 'https://gentsallaku.it/lab/ai-formatter',
     });
     this.seo.injectJsonLd([
       {
@@ -48,7 +84,7 @@ export class AiFormatterComponent implements OnInit {
         '@type': 'WebApplication',
         name: 'AI Document Formatter',
         description: 'Transform raw text and notes into structured professional documents with AI. Supports reports, proposals, résumés and more.',
-        url: 'https://gentsallaku.it/dashboard/ai-formatter',
+        url: 'https://gentsallaku.it/lab/ai-formatter',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -85,9 +121,11 @@ export class AiFormatterComponent implements OnInit {
   readonly result           = signal<FormatTextResult | null>(null);
   readonly error            = signal('');
   readonly viewMode         = signal<ViewMode>('formatted');
-  readonly isDragging       = signal(false);
   readonly selectedDocType  = signal<DocType>('general');
   readonly copied           = signal(false);
+  readonly draftRestored    = signal(false);
+  readonly workspaceItem    = signal<WorkspaceItem | null>(null);
+  readonly justSentToWorkspace = signal(false);
 
   readonly wordCount = computed(() =>
     this.text().trim() ? this.text().trim().split(/\s+/).filter(Boolean).length : 0,
@@ -141,12 +179,8 @@ export class AiFormatterComponent implements OnInit {
     this.formatterSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  onDragOver(event: DragEvent): void { event.preventDefault(); this.isDragging.set(true); }
-  onDragLeave(): void { this.isDragging.set(false); }
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.isDragging.set(false);
-    const file = event.dataTransfer?.files?.[0];
+  onFilesDropped(files: FileList): void {
+    const file = files[0];
     if (file) this.readFileAsText(file);
   }
   onFileSelected(event: Event): void {
@@ -178,10 +212,72 @@ export class AiFormatterComponent implements OnInit {
     });
   }
 
+  useWorkspaceText(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'text' || !item.text) return;
+    this.text.set(item.text);
+    this.error.set('');
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const r = this.result();
+    if (!r) return;
+    this.workspace.send({
+      kind: 'text',
+      text: r.formatted,
+      filename: 'formatted.txt',
+      fromTool: 'ai_formatter',
+    });
+    this.justSentToWorkspace.set(true);
+    setTimeout(() => this.justSentToWorkspace.set(false), 1500);
+  }
+
   clearAll(): void {
     this.text.set('');
     this.result.set(null);
     this.error.set('');
+    this.draftRestored.set(false);
+    if (isPlatformBrowser(this.platformId)) {
+      try { localStorage.removeItem(AiFormatterComponent.DRAFT_KEY); } catch { /* storage unavailable */ }
+    }
+  }
+
+  dismissDraftNotice(): void {
+    this.draftRestored.set(false);
+  }
+
+  private saveDraft(text: string, result: FormatTextResult | null): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      if (!text) {
+        localStorage.removeItem(AiFormatterComponent.DRAFT_KEY);
+        return;
+      }
+      localStorage.setItem(AiFormatterComponent.DRAFT_KEY, JSON.stringify({ text, result }));
+    } catch {
+      // localStorage unavailable (private mode, quota) — silently skip autosave
+    }
+  }
+
+  private restoreDraft(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      const raw = localStorage.getItem(AiFormatterComponent.DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as { text?: string; result?: FormatTextResult | null };
+      if (draft?.text) {
+        this.text.set(draft.text);
+        if (draft.result) this.result.set(draft.result);
+        this.draftRestored.set(true);
+      }
+    } catch {
+      // corrupted draft — ignore and start fresh
+    }
   }
 
   useSampleText(): void {
@@ -231,10 +327,58 @@ Full team offsite planned for April 5-6 in Milan. Q2 targets to be circulated vi
         .replace(/\*(.+?)\*/g,         '<em>$1</em>')
         .replace(/`([^`]+)`/g,         '<code>$1</code>');
 
-    for (const raw of lines) {
-      const t = raw.trim();
-      if (!t) { closeList(); out.push('<br>'); continue; }
-      if      (t.startsWith('#### ')) { closeList(); out.push(`<h4>${inline(t.slice(5))}</h4>`); }
+    // GFM table separator row, e.g. `| --- | :---: | ---: |`
+    const isTableSeparator = (s: string) =>
+      /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?$/.test(s);
+
+    const splitRow = (s: string): string[] => {
+      let row = s.trim();
+      if (row.startsWith('|')) row = row.slice(1);
+      if (row.endsWith('|')) row = row.slice(0, -1);
+      return row.split('|').map((c) => c.trim());
+    };
+
+    let i = 0;
+    while (i < lines.length) {
+      const t = lines[i].trim();
+
+      // Fenced code blocks: ```lang ... ```
+      if (t.startsWith('```')) {
+        closeList();
+        const codeLines: string[] = [];
+        i++;
+        while (i < lines.length && !lines[i].trim().startsWith('```')) {
+          codeLines.push(lines[i]);
+          i++;
+        }
+        if (i < lines.length) i++; // consume closing fence
+        out.push(`<pre><code>${esc(codeLines.join('\n'))}</code></pre>`);
+        continue;
+      }
+
+      // GFM pipe tables: header row followed by a `---` separator row
+      if (t.includes('|') && i + 1 < lines.length && isTableSeparator(lines[i + 1].trim())) {
+        closeList();
+        const headerCells = splitRow(t);
+        i += 2; // skip header + separator rows
+        const bodyRows: string[][] = [];
+        while (i < lines.length && lines[i].trim() !== '' && lines[i].trim().includes('|')) {
+          bodyRows.push(splitRow(lines[i].trim()));
+          i++;
+        }
+        out.push('<table>');
+        out.push('<thead><tr>' + headerCells.map((c) => `<th>${inline(c)}</th>`).join('') + '</tr></thead>');
+        out.push('<tbody>');
+        for (const row of bodyRows) {
+          out.push('<tr>' + row.map((c) => `<td>${inline(c)}</td>`).join('') + '</tr>');
+        }
+        out.push('</tbody>');
+        out.push('</table>');
+        continue;
+      }
+
+      if (!t) { closeList(); out.push('<br>'); }
+      else if (t.startsWith('#### ')) { closeList(); out.push(`<h4>${inline(t.slice(5))}</h4>`); }
       else if (t.startsWith('### '))  { closeList(); out.push(`<h3>${inline(t.slice(4))}</h3>`); }
       else if (t.startsWith('## '))   { closeList(); out.push(`<h2>${inline(t.slice(3))}</h2>`); }
       else if (t.startsWith('# '))    { closeList(); out.push(`<h1>${inline(t.slice(2))}</h1>`); }
@@ -252,6 +396,7 @@ Full team offsite planned for April 5-6 in Milan. Q2 targets to be circulated vi
         closeList();
         out.push(`<p>${inline(t)}</p>`);
       }
+      i++;
     }
 
     closeList();
