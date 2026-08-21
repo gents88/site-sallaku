@@ -15,6 +15,7 @@ export interface FormatTextResult {
   wordCount: number;
   sections: number;
   summary: string;
+  truncated: boolean;
   processingTime: number;
 }
 

@@ -226,6 +226,10 @@
             <span class="meta-pill meta-accent">⚡ {{ result()!.processingTime }}ms</span>
           </div>
 
+          @if (result()!.truncated) {
+            <div class="truncated-banner">⚠️ {{ 'ai_formatter.truncated_warning' | translate }}</div>
+          }
+
           @if (result()!.summary) {
             <div class="result-summary">{{ result()!.summary }}</div>
           }
