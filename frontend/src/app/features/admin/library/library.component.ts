@@ -321,6 +321,7 @@ export class LibraryComponent implements OnInit {
       filename: `${this.safeFilename(doc.title)}.pdf`,
       mime: 'application/pdf',
       fromTool: 'library',
+      libraryDocId: doc.id,
     });
     this.analytics.trackClick('library_send_tool', action.id);
     this.openMenuId.set(null);
