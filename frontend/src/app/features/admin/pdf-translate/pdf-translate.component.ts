@@ -54,8 +54,8 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'AI PDF Translator — Translate PDF with Layout Preserved',
-      description: 'Translate any PDF to 12 languages while keeping fonts, images and layout intact. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
+      title: 'AI PDF Translator — Translate PDF, Pages Preserved',
+      description: 'Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
       url: 'https://gentsallaku.it/lab/pdf-translate',
     });
     this.seo.injectJsonLd([
@@ -63,12 +63,12 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
         name: 'AI PDF Translator',
-        description: 'Translate any PDF to 12 languages while preserving the original layout, fonts and images. Powered by GPT-4o.',
+        description: 'Translate any PDF to 12 languages while keeping the original page count and page format. Powered by GPT-4o.',
         url: 'https://gentsallaku.it/lab/pdf-translate',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-        featureList: ['12 languages', 'Layout preserved', 'OCR for scanned PDFs', 'GPT-4o quality', '50 MB limit'],
+        featureList: ['12 languages', 'Page-accurate layout', 'OCR for scanned PDFs', 'GPT-4o quality', '50 MB limit'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
       {
@@ -83,12 +83,12 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
           {
             '@type': 'Question',
             name: 'Will the translated PDF keep the original layout?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes — High Fidelity mode preserves columns, fonts, images, headers, footers and exact block positions. A faster Standard mode is also available for clean text output.' },
+            acceptedAnswer: { '@type': 'Answer', text: "High Fidelity mode keeps the same page count and page size as the original, page by page — not the original fonts or images, which no online translator can carry over losslessly. A faster Standard mode is also available, reflowing the whole document as clean text." },
           },
           {
             '@type': 'Question',
             name: 'Can it translate scanned PDFs?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, scanned (image-based) PDFs are automatically detected and processed through an OCR pipeline before translation.' },
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes — pages with no extractable text are automatically detected and read via OCR before translation.' },
           },
           {
             '@type': 'Question',

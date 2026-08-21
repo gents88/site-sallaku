@@ -86,7 +86,15 @@ describe('ViewerComponent', () => {
     }
   }
 
-  beforeEach(() => configure());
+  beforeEach(() => {
+    configure();
+    // jsdom non implementa un vero contesto 2D: renderPage()/highlight() lo
+    // usano per evidenziare i match di ricerca. Un contesto finto basta,
+    // qui non verifichiamo i pixel disegnati.
+    HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+      fillStyle: '', fillRect: vi.fn(), clearRect: vi.fn(),
+    }) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+  });
   afterEach(() => vi.restoreAllMocks());
 
   describe('apertura dalla libreria', () => {
@@ -267,6 +275,65 @@ describe('ViewerComponent', () => {
       expect(component.annotations()).toEqual([]);
       expect(component.annotateMode()).toBe(false);
       expect(component.canAnnotate()).toBe(false);
+    });
+  });
+
+  describe('ricerca', () => {
+    it('usa il testo già indicizzato in Libreria, senza ri-analizzare il PDF pagina per pagina', async () => {
+      await library.add(meta(), pdf());
+      await library.indexPages('doc-a', [
+        { page: 1, text: 'niente qui' },
+        { page: 2, text: 'qui si parla di portanza aerodinamica' },
+      ]);
+      queryParams = { doc: 'doc-a' };
+      const component = create();
+      await waitFor(() => component.libraryDoc() !== null);
+
+      // getTextContent del mock restituisce sempre pagina vuota: se la ricerca
+      // trova comunque "portanza", vuol dire che ha letto dalla cache di Libreria,
+      // non dal parsing pdf.js.
+      await component.search('portanza');
+
+      expect(component.matches()).toEqual([{ page: 2 }]);
+      expect(component.pageNum()).toBe(2);
+    });
+
+    it('ricade sul parsing diretto quando il documento non viene dalla Libreria', async () => {
+      const component = create();
+      const file = new File([new Uint8Array(16)], 'sciolto.pdf', { type: 'application/pdf' });
+      await component.open(file);
+
+      await component.search('qualsiasi');
+
+      // Nessun errore né dipendenza dalla Libreria: il fallback ha semplicemente
+      // interrogato le pagine finte, che non contengono il termine.
+      expect(component.matches()).toEqual([]);
+    });
+
+    it('ricade sul parsing diretto quando il documento di Libreria non è ancora indicizzato', async () => {
+      await library.add(meta(), pdf());
+      queryParams = { doc: 'doc-a' };
+      const component = create();
+      await waitFor(() => component.libraryDoc() !== null);
+
+      await component.search('qualsiasi');
+
+      expect(component.matches()).toEqual([]);
+    });
+
+    it('svuota la cache alla chiusura, così un documento successivo non eredita il testo del precedente', async () => {
+      await library.add(meta(), pdf());
+      await library.indexPages('doc-a', [{ page: 1, text: 'termine unico' }]);
+      queryParams = { doc: 'doc-a' };
+      const component = create();
+      await waitFor(() => component.libraryDoc() !== null);
+
+      component.close();
+      const file = new File([new Uint8Array(16)], 'altro.pdf', { type: 'application/pdf' });
+      await component.open(file);
+      await component.search('termine unico');
+
+      expect(component.matches()).toEqual([]);
     });
   });
 

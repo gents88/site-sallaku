@@ -106,6 +106,17 @@
               <small class="res-lang">{{ 'ocr.lang_label' | translate }}: {{ resultLangLabel() }}</small>
             </div>
             <div class="res-actions">
+              @if (canSaveToLibrary()) {
+                <button class="btn btn-s btn-library" [disabled]="savingToLibrary()" (click)="saveToLibrary()">
+                  @if (savingToLibrary()) {
+                    <span class="spinner"></span>
+                  } @else if (savedToLibrary()) {
+                    ✓ {{ 'ocr.saved_library' | translate }}
+                  } @else {
+                    📚 {{ 'ocr.save_library' | translate }}
+                  }
+                </button>
+              }
               <button class="btn btn-s" (click)="copy()">{{ (copied() ? 'ocr.copied' : 'ocr.copy') | translate }}</button>
               @if (allText()) {
                 <button class="btn btn-s" (click)="sendToWorkspace()">

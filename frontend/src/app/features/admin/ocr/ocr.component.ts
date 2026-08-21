@@ -5,6 +5,7 @@ import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { LibraryService } from '../../../core/services/library.service';
 
 type Status = 'idle' | 'preparing' | 'recognizing' | 'done' | 'error';
 
@@ -48,6 +49,7 @@ export class OcrComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
+  private readonly library = inject(LibraryService);
 
   readonly accept = IMG_ACCEPT;
   readonly languages = OCR_LANGUAGES;
@@ -68,6 +70,20 @@ export class OcrComponent implements OnInit {
   readonly copied = signal(false);
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent = signal(false);
+
+  /**
+   * Id del documento di Libreria a cui riscrivere il testo riconosciuto, se il
+   * file in elaborazione viene da lì. Solo mentre l'unico file caricato è
+   * quello: aggiungerne altri renderebbe ambiguo a quale documento appartiene
+   * il risultato, quindi il legame si scioglie (vedi addFiles/removeFile/reset).
+   */
+  readonly libraryDocId = signal<string | null>(null);
+  readonly savingToLibrary = signal(false);
+  readonly savedToLibrary = signal(false);
+
+  readonly canSaveToLibrary = computed(
+    () => this.libraryDocId() !== null && this.status() === 'done' && this.files().length === 1,
+  );
 
   readonly busy = computed(() => this.status() === 'preparing' || this.status() === 'recognizing');
   readonly totalSize = computed(() => this.formatSize(this.files().reduce((sum, f) => sum + f.size, 0)));
@@ -141,6 +157,8 @@ export class OcrComponent implements OnInit {
     this.files.update((all) => all.filter((_, idx) => idx !== i));
     this.fileResults.set([]);
     this.status.set('idle');
+    this.libraryDocId.set(null);
+    this.savedToLibrary.set(false);
   }
 
   onLangChange(code: string): void {
@@ -153,6 +171,8 @@ export class OcrComponent implements OnInit {
     this.fileResults.set([]);
     this.msg.set('');
     this.status.set('idle');
+    this.libraryDocId.set(null);
+    this.savedToLibrary.set(false);
   }
 
   async start(): Promise<void> {
@@ -178,6 +198,9 @@ export class OcrComponent implements OnInit {
     if (!item || item.kind !== 'file' || !item.blob) return;
     const file = new File([item.blob], item.filename, { type: item.mime });
     this.addFiles([file]);
+    // Va impostato dopo addFiles(): quella lo azzera per ogni nuovo file aggiunto,
+    // dato che di norma un file non ha un documento di Libreria associato.
+    if (item.libraryDocId) this.libraryDocId.set(item.libraryDocId);
   }
 
   dismissWorkspaceBanner(): void {
@@ -190,6 +213,41 @@ export class OcrComponent implements OnInit {
     this.workspace.send({ kind: 'text', text, filename: 'ocr-text.txt', fromTool: 'ocr' });
     this.justSent.set(true);
     setTimeout(() => this.justSent.set(false), 1500);
+  }
+
+  /**
+   * Riscrive il testo riconosciuto come pagine indicizzate del documento di
+   * Libreria da cui il PDF proviene — è quello che rende una scansione
+   * cercabile e interrogabile dopo l'OCR, invece di lasciare solo un .txt
+   * scollegato dal documento originale.
+   *
+   * Fa il merge con le pagine già presenti invece di sostituirle tutte: l'OCR
+   * tronca a MAX_PDF_PAGES, quindi su un documento più lungo sovrascrivere
+   * l'intero set cancellerebbe silenziosamente il testo delle pagine oltre il
+   * limite se in futuro venisse indicizzato in un altro modo.
+   */
+  async saveToLibrary(): Promise<void> {
+    const docId = this.libraryDocId();
+    const result = this.fileResults()[0];
+    if (!docId || !result || this.savingToLibrary()) return;
+
+    this.savingToLibrary.set(true);
+    try {
+      const existing = await this.library.pagesOf(docId);
+      const merged = new Map(existing.map((p) => [p.page, p.text]));
+      for (const page of result.pages) {
+        merged.set(page.index + 1, page.text);
+      }
+      const pages = [...merged.entries()]
+        .sort(([a], [b]) => a - b)
+        .map(([page, text]) => ({ page, text }));
+
+      await this.library.indexPages(docId, pages);
+      this.savedToLibrary.set(true);
+      setTimeout(() => this.savedToLibrary.set(false), 2500);
+    } finally {
+      this.savingToLibrary.set(false);
+    }
   }
 
   copy(): void {
@@ -255,6 +313,9 @@ export class OcrComponent implements OnInit {
     this.files.set(combined);
     this.fileResults.set([]);
     this.status.set('idle');
+    // Il legame vale solo finché il file di Libreria resta l'unico caricato.
+    if (this.files().length !== 1) this.libraryDocId.set(null);
+    this.savedToLibrary.set(false);
     this.msg.set(
       tooLarge.length > 0
         ? `❌ ${this.t.instant('ocr.err_file_too_large', { names: tooLarge.join(', '), max: 15 })}`

@@ -68,15 +68,51 @@ ${result.value}
   async textToPdf(text: string): Promise<Buffer> {
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const fontSize = 11;
+    const [width, height] = PageSizes.A4;
+    this.drawWrappedText(pdfDoc, font, text, { width, height });
+    return Buffer.from(await pdfDoc.save());
+  }
+
+  /**
+   * Come textToPdf, ma un documento per pagina invece di un unico flusso: ogni
+   * voce di `pages` diventa (almeno) una pagina del PDF risultante, nella
+   * dimensione originale se nota. Usato dalla traduzione "High Fidelity", che
+   * mantiene numero e formato di pagina dell'originale invece di reimpaginare
+   * tutto il documento come un flusso unico — quando il testo tradotto di una
+   * pagina non ci sta, prosegue su pagine aggiuntive della stessa dimensione
+   * piuttosto che rimpicciolire il carattere all'infinito.
+   */
+  async pagedTextToPdf(pages: { text: string; width?: number; height?: number }[]): Promise<Buffer> {
+    const pdfDoc = await PDFDocument.create();
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const [defaultWidth, defaultHeight] = PageSizes.A4;
+    for (const p of pages) {
+      this.drawWrappedText(pdfDoc, font, p.text, {
+        width: this.clampPageDim(p.width) ?? defaultWidth,
+        height: this.clampPageDim(p.height) ?? defaultHeight,
+      });
+    }
+    return Buffer.from(await pdfDoc.save());
+  }
+
+  /** Tetto di sicurezza sulle dimensioni pagina lette dal PDF originale: valori assurdi (0, NaN, pagine giganti) ricadono sul default A4. */
+  private clampPageDim(v: number | undefined): number | undefined {
+    if (!v || !Number.isFinite(v)) return undefined;
+    return Math.min(3000, Math.max(200, v));
+  }
+
+  /** Scrive `text` andando a capo automaticamente, aggiungendo pagine (tutte di [width, height]) finché serve. */
+  private drawWrappedText(
+    pdfDoc: PDFDocument,
+    font: Awaited<ReturnType<PDFDocument['embedFont']>>,
+    text: string,
+    { width, height, fontSize = 11, margin = 50 }: { width: number; height: number; fontSize?: number; margin?: number },
+  ): void {
     const lineHeight = fontSize + 5;
-    const margin = 50;
-
-    let page = pdfDoc.addPage(PageSizes.A4);
-    let { width, height } = page.getSize();
-    let y = height - margin;
-
     const maxWidth = width - margin * 2;
+
+    let page = pdfDoc.addPage([width, height]);
+    let y = height - margin;
 
     for (const paragraph of text.split('\n')) {
       const words = paragraph.split(' ');
@@ -87,8 +123,7 @@ ${result.value}
         const lineWidth = font.widthOfTextAtSize(candidate, fontSize);
         if (lineWidth > maxWidth && line) {
           if (y < margin + lineHeight) {
-            page = pdfDoc.addPage(PageSizes.A4);
-            ({ width, height } = page.getSize());
+            page = pdfDoc.addPage([width, height]);
             y = height - margin;
           }
           page.drawText(line, { x: margin, y, size: fontSize, font, color: rgb(0, 0, 0) });
@@ -101,8 +136,7 @@ ${result.value}
 
       if (line) {
         if (y < margin + lineHeight) {
-          page = pdfDoc.addPage(PageSizes.A4);
-          ({ width, height } = page.getSize());
+          page = pdfDoc.addPage([width, height]);
           y = height - margin;
         }
         page.drawText(line, { x: margin, y, size: fontSize, font, color: rgb(0, 0, 0) });
@@ -111,8 +145,6 @@ ${result.value}
 
       y -= lineHeight * 0.4;
     }
-
-    return Buffer.from(await pdfDoc.save());
   }
 
   async jsonToPdf(jsonData: unknown): Promise<Buffer> {
