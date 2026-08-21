@@ -1,68 +1,83 @@
-import { Component, HostListener, computed, effect, signal, inject, ElementRef } from '@angular/core';
+import { Component, ElementRef, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 
-interface NavItem {
+export interface NavItem {
   icon: string;
-  labelKey: string;
-  /** Chiave i18n opzionale con una breve spiegazione, mostrata come sottotitolo + tooltip. */
-  descKey?: string;
+  label: string;
   route: string;
 }
 
-interface NavGroup {
+export interface NavGroup {
   id: string;
   emoji: string;
-  titleKey: string;
+  title: string;
   items: NavItem[];
 }
 
-// Le voci AI/Tools riusano le stesse chiavi i18n (tools.*) della pagina pubblica
-// /dashboard/tools, così label e descrizioni restano coerenti e già tradotte.
-const ADMIN_NAV: NavGroup[] = [
+/** Tooltip della rail collassata: posizione calcolata dall'item sotto il puntatore/focus. */
+interface RailTooltip {
+  label: string;
+  top: number;
+}
+
+export const ADMIN_NAV: NavGroup[] = [
   {
     id: 'overview',
     emoji: '📊',
-    titleKey: 'sidebar.group_overview',
+    title: 'Overview',
     items: [
-      { icon: '🏠', labelKey: 'nav.dashboard', route: '/dashboard' },
+      { icon: '🏠', label: 'Dashboard', route: '/dashboard' },
     ],
   },
   {
     id: 'content',
     emoji: '📝',
-    titleKey: 'sidebar.group_content',
+    title: 'Content',
     items: [
-      { icon: '🗂️', labelKey: 'nav.projects',     route: '/dashboard/projects' },
-      { icon: '✍️', labelKey: 'nav.blog',          route: '/dashboard/blog' },
-      { icon: '💼', labelKey: 'admin.experiences', route: '/dashboard/experiences' },
-      { icon: '👤', labelKey: 'nav.about',         route: '/dashboard/about' },
+      { icon: '🗂️', label: 'Projects',    route: '/dashboard/projects' },
+      { icon: '✍️', label: 'Blog',         route: '/dashboard/blog' },
+      { icon: '💼', label: 'Experiences',  route: '/dashboard/experiences' },
+      { icon: '👤', label: 'About',        route: '/dashboard/about' },
+      { icon: '⭐', label: 'Testimonials', route: '/dashboard/testimonials' },
+      { icon: '💬', label: 'Notes',        route: '/dashboard/notes' },
     ],
   },
   {
     id: 'ai',
     emoji: '🧠',
-    titleKey: 'tools.section_ai',
+    title: 'AI',
     items: [
-      { icon: '📋', labelKey: 'tools.pdf_summary_title',   descKey: 'tools.pdf_summary_desc',   route: '/dashboard/pdf-summary' },
-      { icon: '✨', labelKey: 'tools.ai_formatter_title',  descKey: 'tools.ai_formatter_desc',  route: '/dashboard/ai-formatter' },
-      { icon: '🌐', labelKey: 'tools.pdf_translate_title', descKey: 'tools.pdf_translate_desc', route: '/dashboard/pdf-translate' },
-      { icon: '🎞️', labelKey: 'tools.ai_slides_title',    descKey: 'tools.ai_slides_desc',     route: '/dashboard/ai-ppt' },
+      { icon: '🔎', label: 'Ricerca PDF',   route: '/lab/pdf-search' },
+      { icon: '📚', label: 'Libreria',      route: '/lab/library' },
+      { icon: '📋', label: 'PDF Summary',   route: '/lab/pdf-summary' },
+      { icon: '✨', label: 'AI Formatter',  route: '/lab/ai-formatter' },
+      { icon: '🌐', label: 'PDF Translate', route: '/lab/pdf-translate' },
+      { icon: '🎞️', label: 'AI Slides',    route: '/lab/ai-ppt' },
+    ],
+  },
+  {
+    id: 'workspace',
+    emoji: '🔗',
+    title: 'Flusso di lavoro',
+    items: [
+      { icon: '🧩', label: 'Workspace', route: '/lab/workspace' },
     ],
   },
   {
     id: 'tools',
     emoji: '🧰',
-    titleKey: 'tools.section_tools',
+    title: 'Tools',
     items: [
-      { icon: '🖊️', labelKey: 'tools.pdf_editor_title', descKey: 'tools.pdf_editor_desc', route: '/dashboard/pdf-editor' },
-      { icon: '👁',  labelKey: 'tools.viewer_title',     descKey: 'tools.viewer_desc',     route: '/dashboard/viewer' },
-      { icon: '✏️', labelKey: 'tools.editor_title',      descKey: 'tools.editor_desc',     route: '/dashboard/editor' },
-      { icon: '🔄', labelKey: 'tools.convert_title',     descKey: 'tools.convert_desc',    route: '/dashboard/convert' },
-      { icon: '🔤', labelKey: 'tools.ocr_title',         descKey: 'tools.ocr_desc',        route: '/dashboard/ocr' },
-      { icon: '📷', labelKey: 'tools.scanner_title',     descKey: 'tools.scanner_desc',    route: '/dashboard/scanner' },
+      { icon: '🖊️', label: 'Pagine PDF',      route: '/lab/pdf-editor' },
+      { icon: '👁',  label: 'Viewer',          route: '/lab/viewer' },
+      { icon: '✏️', label: 'Editor Documenti', route: '/lab/editor' },
+      { icon: '🔄', label: 'Convert',          route: '/lab/convert' },
+      { icon: '🔤', label: 'OCR',              route: '/lab/ocr' },
+      { icon: '📷', label: 'Scanner',          route: '/lab/scanner' },
     ],
   },
 ];
@@ -70,46 +85,46 @@ const ADMIN_NAV: NavGroup[] = [
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslateModule],
+  imports: [RouterLink, RouterLinkActive, LangUrlPipe],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  private readonly t = inject(TranslateService);
+  private readonly auth = inject(AuthService);
+  private readonly drawer = inject(DrawerService);
+  private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
+  readonly mode = this.drawer.mode;
   readonly drawerOpen = this.drawer.drawerOpen;
+  readonly expanded = this.drawer.expanded;
+
+  readonly tooltip = signal<RailTooltip | null>(null);
+
   readonly isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
+  readonly brandLabel = computed(() => (this.isAdminUser() ? 'Admin' : 'AI & Tools'));
+  readonly brandBadge = computed(() => (this.isAdminUser() ? '⚙️' : '🧰'));
   readonly navGroups = computed(() =>
     this.isAdminUser() ? ADMIN_NAV : ADMIN_NAV.filter(group => group.id !== 'overview' && group.id !== 'content'),
   );
 
-  readonly searchQuery = signal('');
+  /** Numero di voci realmente esposte: alimenta il testo del nudge senza hardcodarlo. */
+  readonly itemCount = computed(() => this.navGroups().reduce((total, group) => total + group.items.length, 0));
 
-  // Filtra le voci per label/descrizione TRADOTTE (non per chiave), così la
-  // ricerca funziona nella lingua che l'utente sta effettivamente leggendo.
-  readonly visibleGroups = computed(() => {
-    const q = this.searchQuery().trim().toLowerCase();
-    if (!q) return this.navGroups();
-    return this.navGroups()
-      .map(group => ({
-        ...group,
-        items: group.items.filter(item =>
-          this.t.instant(item.labelKey).toLowerCase().includes(q) ||
-          (item.descKey ? this.t.instant(item.descKey).toLowerCase().includes(q) : false),
-        ),
-      }))
-      .filter(group => group.items.length > 0);
-  });
-
-  constructor(private auth: AuthService, private drawer: DrawerService, private elementRef: ElementRef<HTMLElement>) {
-    // All'apertura il focus tastiera restava sul trigger dietro il backdrop
-    // (quindi "sulla pagina"): lo sposta dentro il drawer, sul close-btn.
+  constructor() {
+    // All'apertura del drawer overlay il focus tastiera restava sul trigger dietro
+    // il backdrop (quindi "sulla pagina"): lo sposta dentro il drawer, sul close-btn.
+    // In modalità rail non c'è nessuna trappola di focus da gestire.
     effect(() => {
-      if (this.drawerOpen()) {
+      if (this.mode() === 'overlay' && this.drawerOpen()) {
         this.elementRef.nativeElement.querySelector<HTMLElement>('.close-btn')?.focus();
-      } else {
-        this.searchQuery.set('');
       }
+    });
+
+    // La rail collassata non mostra etichette: se cambia stato mentre un tooltip
+    // è visibile va scartato, altrimenti resta appeso sopra la colonna espansa.
+    effect(() => {
+      if (this.expanded() || this.mode() !== 'rail') this.tooltip.set(null);
     });
   }
 
@@ -117,19 +132,50 @@ export class SidebarComponent {
     this.drawer.close();
   }
 
+  toggleRail(): void {
+    const next = !this.expanded();
+    this.drawer.toggleRail();
+    this.tooltip.set(null);
+    this.analytics.trackClick('sidebar', next ? 'sidebar_rail_expand' : 'sidebar_rail_collapse');
+  }
+
+  /** Click su una voce: traccia la destinazione e, in overlay, chiude il drawer. */
+  onNavigate(item: NavItem): void {
+    this.analytics.trackClick(
+      'sidebar_nav',
+      `sidebar_${this.mode()}_${item.label.toLowerCase().replace(/\s+/g, '_')}`,
+      item.route,
+    );
+    if (this.mode() === 'overlay') this.drawer.close();
+  }
+
+  showTooltip(event: Event, label: string): void {
+    if (this.mode() !== 'rail' || this.expanded()) return;
+    const target = event.currentTarget as HTMLElement | null;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    this.tooltip.set({ label, top: rect.top + rect.height / 2 });
+  }
+
+  hideTooltip(): void {
+    this.tooltip.set(null);
+  }
+
   @HostListener('window:keydown.escape')
   onEscape(): void {
+    this.tooltip.set(null);
     this.drawer.close();
   }
 
   // Chiude il drawer quando si clicca fuori (backdrop-less click-outside),
   // ignorando i toggle della navbar che gestiscono già l'apertura/chiusura:
-  // .nav-drawer-toggle (icona desktop) e .nav-item-mobile-drawer (voce nel
-  // menu mobile) — senza questo, lo stesso click che apre il drawer da mobile
+  // .nav-drawer-toggle (trigger desktop/tablet) e .nav-item-mobile-drawer (voce
+  // nel menu mobile) — senza questo, lo stesso click che apre il drawer da mobile
   // lo richiude subito in fase di bubbling su document.
+  // In modalità rail non si applica: la colonna è parte del layout, non un overlay.
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.drawerOpen()) return;
+    if (this.mode() !== 'overlay' || !this.drawerOpen()) return;
     const target = event.target as HTMLElement | null;
     if (!target) return;
     if (this.elementRef.nativeElement.contains(target)) return;
@@ -137,10 +183,11 @@ export class SidebarComponent {
     this.drawer.close();
   }
 
-  // Chiude il drawer quando il focus (tastiera) esce dal sidebar.
+  // Chiude il drawer overlay quando il focus (tastiera) ne esce.
   @HostListener('focusout', ['$event'])
   onFocusOut(event: FocusEvent): void {
-    if (!this.drawerOpen()) return;
+    this.tooltip.set(null);
+    if (this.mode() !== 'overlay' || !this.drawerOpen()) return;
     const nextFocus = event.relatedTarget as HTMLElement | null;
     if (nextFocus && this.elementRef.nativeElement.contains(nextFocus)) return;
     this.drawer.close();

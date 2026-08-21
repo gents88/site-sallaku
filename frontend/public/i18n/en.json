@@ -1177,15 +1177,15 @@
     "ai_slides_desc": "Turn any topic into a full presentation deck with speaker notes.",
     "pdf_editor_title": "PDF Editor",
     "pdf_editor_desc": "Merge, split, rotate and delete pages, add watermarks to any PDF.",
-    "viewer_title": "Viewer",
+    "viewer_title": "PDF Viewer",
     "viewer_desc": "View, navigate and search PDF documents in the browser.",
     "editor_title": "Editor",
     "editor_desc": "Rich-text document editor with PDF and DOCX export.",
     "convert_title": "Convert",
     "convert_desc": "Convert between PDF, Word, Excel, images and more.",
-    "ocr_title": "OCR",
+    "ocr_title": "OCR — Text Recognition",
     "ocr_desc": "Extract text from scanned PDFs and images with OCR.",
-    "scanner_title": "Scanner",
+    "scanner_title": "Document Scanner",
     "scanner_desc": "Scan physical documents with your camera and convert to PDF.",
     "pdf_search_title": "PDF Search",
     "pdf_search_desc": "Search public-domain PDF books and documents, with a preview before you download.",
@@ -1443,8 +1443,7 @@
     "chat_error": "The answer failed. Try again."
   },
   "sidebar": {
-    "group_overview": "Overview",
-    "group_content": "Content",
+    "group_admin": "Admin",
     "search_placeholder": "Search a tool…",
     "no_results": "No results for \"{{ query }}\"",
     "clear_search": "Clear search"
