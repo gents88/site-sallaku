@@ -130,10 +130,10 @@
         @if (!contextFile()) {
           <div
             class="context-drop"
-            [class.dragging]="isDragging()"
-            (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave()"
-            (drop)="onDrop($event)"
+            appFileDropzone
+            #dz="fileDropzone"
+            [class.dragging]="dz.isDragging"
+            (filesDropped)="onFilesDropped($event)"
             (click)="triggerFileInput()"
             role="button"
             tabindex="0"
@@ -211,7 +211,7 @@
 
   <!-- ── RESULT ────────────────────────────────────────────────────── -->
   @if (result(); as res) {
-    <section class="result-section">
+    <section class="result-section result-pop">
 
       <div class="result-header">
         <div class="result-title-block">
@@ -227,7 +227,12 @@
             <button [class.active]="viewMode() === 'carousel'" (click)="setViewMode('carousel')">🖥 {{ 'ai_ppt.btn_carousel' | translate }}</button>
             <button [class.active]="viewMode() === 'grid'"     (click)="setViewMode('grid')"   >⊞ {{ 'ai_ppt.btn_grid' | translate }}</button>
           </div>
-          <button class="action-btn" (click)="exportSlides()">⬇ {{ 'ai_ppt.btn_export' | translate }}</button>
+          <button class="action-btn" [disabled]="exporting()" (click)="exportSlides()">
+            {{ exporting() ? '⏳ ' + ('ai_ppt.btn_exporting' | translate) : '⬇ ' + ('ai_ppt.btn_export' | translate) }}
+          </button>
+          <button class="action-btn" [disabled]="sending()" (click)="sendToWorkspace()">
+            {{ justSent() ? ('ai_ppt.workspace_sent' | translate) : ('🔗 ' + ('ai_ppt.workspace_send' | translate)) }}
+          </button>
           <button class="action-btn action-btn-ghost" (click)="reset()">↩ {{ 'ai_ppt.btn_new' | translate }}</button>
         </div>
       </div>

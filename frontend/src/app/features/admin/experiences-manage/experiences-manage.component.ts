@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -53,6 +53,7 @@ export class ExperiencesManageComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private t: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void { this.load(); }
@@ -61,7 +62,7 @@ export class ExperiencesManageComponent implements OnInit {
     this.loading = true;
     this.experiencesService.getAll().pipe(
       timeout(15000),
-      finalize(() => { this.loading = false; }),
+      finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: e => { this.experiences = e; this.loading = false; },
       error: () => {},
@@ -92,11 +93,11 @@ export class ExperiencesManageComponent implements OnInit {
 
     req$.subscribe({
       next: () => {
-        this.saving = false; this.showForm = false;
+        this.saving = false; this.showForm = false; this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('experiences_manage.saved'), this.t.instant('common.close'), { duration: 3000 });
         this.load();
       },
-      error: () => { this.saving = false; this.snackBar.open(this.t.instant('experiences_manage.save_error'), this.t.instant('common.close'), { duration: 3000 }); },
+      error: () => { this.saving = false; this.cdr.markForCheck(); this.snackBar.open(this.t.instant('experiences_manage.save_error'), this.t.instant('common.close'), { duration: 3000 }); },
     });
   }
 
@@ -105,6 +106,7 @@ export class ExperiencesManageComponent implements OnInit {
     this.experiencesService.remove(id).subscribe({
       next: () => {
         this.experiences = this.experiences.filter(e => e._id !== id);
+        this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('experiences_manage.deleted'), this.t.instant('common.close'), { duration: 3000 });
       },
     });

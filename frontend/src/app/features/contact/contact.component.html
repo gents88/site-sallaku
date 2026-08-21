@@ -68,6 +68,8 @@
         }
       </div>
 
+      <app-turnstile-widget (verified)="onTurnstileVerified($event)" />
+
       <div class="form-footer">
         <button class="btn btn-primary submit-btn" type="submit" [disabled]="sending">
           @if (sending) {

@@ -4,7 +4,6 @@ import { Note, NoteSchema } from './schemas/note.schema';
 import { Post, PostSchema } from '../blog/schemas/post.schema';
 import { NotesController } from './notes.controller';
 import { NotesService } from './services/notes.service';
-import { SpamDetectionService } from './services/spam-detection.service';
 
 @Module({
   imports: [
@@ -14,7 +13,7 @@ import { SpamDetectionService } from './services/spam-detection.service';
     ]),
   ],
   controllers: [NotesController],
-  providers: [NotesService, SpamDetectionService],
+  providers: [NotesService],
   exports: [NotesService],
 })
 export class NotesModule {}

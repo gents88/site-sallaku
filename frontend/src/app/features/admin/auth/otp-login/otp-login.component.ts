@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -67,6 +67,7 @@ export class OtpLoginComponent implements OnDestroy {
     private router: Router,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnDestroy(): void {
@@ -106,6 +107,7 @@ export class OtpLoginComponent implements OnDestroy {
     this.auth.requestOtp(id).subscribe({
       next: () => {
         this.loading = false;
+        this.cdr.markForCheck();
         this.identifier = id;
         this.step = 'otp';
         this.otpExpired = false;
@@ -115,6 +117,7 @@ export class OtpLoginComponent implements OnDestroy {
       },
       error: (err) => {
         this.loading = false;
+        this.cdr.markForCheck();
         const msg =
           err?.error?.message ||
           this.translate.instant('auth.otp_send_failed');
@@ -138,6 +141,7 @@ export class OtpLoginComponent implements OnDestroy {
     this.auth.verifyOtp(this.identifier, otp).subscribe({
       next: () => {
         this.loading = false;
+        this.cdr.markForCheck();
         if (this.auth.isAdmin()) {
           this.redirectTimeout = setTimeout(() => {
             this.router.navigate(['/dashboard']);
@@ -153,6 +157,7 @@ export class OtpLoginComponent implements OnDestroy {
       },
       error: (err) => {
         this.loading = false;
+        this.cdr.markForCheck();
         const msg =
           err?.error?.message ||
           this.translate.instant('auth.otp_invalid');
@@ -171,6 +176,7 @@ export class OtpLoginComponent implements OnDestroy {
     this.auth.requestOtp(this.identifier).subscribe({
       next: () => {
         this.loading = false;
+        this.cdr.markForCheck();
         this.otpExpired = false;
         this.otpForm.reset();
         this.startCountdown();
@@ -183,6 +189,7 @@ export class OtpLoginComponent implements OnDestroy {
       },
       error: (err) => {
         this.loading = false;
+        this.cdr.markForCheck();
         const msg =
           err?.error?.message ||
           this.translate.instant('auth.otp_send_failed');
@@ -213,6 +220,9 @@ export class OtpLoginComponent implements OnDestroy {
         this.otpExpired = true;
         this.countdownSub?.unsubscribe();
       }
+      // Drives a visible per-second countdown: without an explicit mark the
+      // timer would freeze on screen under zoneless change detection.
+      this.cdr.markForCheck();
     });
   }
 
@@ -225,6 +235,7 @@ export class OtpLoginComponent implements OnDestroy {
         this.resendCooldownSeconds = 0;
         this.resendSub?.unsubscribe();
       }
+      this.cdr.markForCheck();
     });
   }
 }

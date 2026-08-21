@@ -1,15 +1,21 @@
-import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, afterNextRender, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
   ConversionService, ConversionTypeId, CONVERSION_TYPES, ConversionDef,
 } from '../../../core/services/conversion.service';
 
 type Step = 'preview' | 'convert';
 type Kind = 'pdf' | 'image' | 'text' | 'base64' | 'unknown';
+
+/** Mirrors the backend's FilesInterceptor('files', MAX_FILE_COUNT) cap in conversion.controller.ts. */
+const MULTI_MAX_FILES = 20;
 
 const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: string }> = {
   'Documenti':   { icon: '📄', nameKey: 'convert.group_docs',       descKey: 'convert.group_docs_desc'       },
@@ -24,438 +30,55 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
   selector: 'app-convert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslateModule],
-  template: `
-    <!-- ════════════════ LANDING PAGE ════════════════ -->
-    <div class="cp-page">
-
-      <header class="cp-header">
-        <h1 class="cp-title">{{ 'convert.title' | translate }}</h1>
-        <p class="cp-subtitle">{{ totalCount }} {{ 'convert.subtitle' | translate }}</p>
-        <div class="cp-search-wrap">
-          <span class="cp-search-icon">🔍</span>
-          <input class="cp-search" type="search" [placeholder]="'convert.search_placeholder' | translate"
-                 [value]="searchQuery()"
-                 (input)="searchQuery.set($any($event.target).value)">
-          <button *ngIf="searchQuery()" class="cp-search-clear" (click)="searchQuery.set('')" aria-label="×">✕</button>
-        </div>
-      </header>
-
-      <!-- Preferiti -->
-      <section *ngIf="favoriteItems().length > 0 && !searchQuery()" class="cp-section">
-        <div class="cp-section-header">
-          <span class="cp-group-icon">⭐</span>
-          <div>
-            <h2 class="cp-group-name">{{ 'convert.favorites' | translate }}</h2>
-            <p class="cp-group-desc">{{ 'convert.favorites_desc' | translate }}</p>
-          </div>
-        </div>
-        <div class="cp-grid">
-          <button *ngFor="let item of favoriteItems()" class="cp-card cp-card--fav" (click)="open(item)">
-            <div class="cp-card-badges">
-              <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
-              <span class="cp-arrow">→</span>
-              <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
-            </div>
-            <span class="cp-card-label">{{ item.label | translate }}</span>
-            <button class="cp-fav cp-fav--active" [attr.aria-label]="'convert.remove_fav' | translate"
-                    (click)="toggleFav($event, item.id)">★</button>
-          </button>
-        </div>
-      </section>
-
-      <!-- Nessun risultato -->
-      <div *ngIf="visibleGroups().length === 0" class="cp-empty">
-        <span class="cp-empty-icon">🔍</span>
-        <p>{{ 'convert.no_results' | translate: { query: searchQuery() } }}</p>
-        <button class="cp-btn-ghost" (click)="searchQuery.set('')">{{ 'convert.show_all' | translate }}</button>
-      </div>
-
-      <!-- Categorie -->
-      <section *ngFor="let g of visibleGroups()" class="cp-section">
-        <div class="cp-section-header">
-          <span class="cp-group-icon">{{ g.icon }}</span>
-          <div>
-            <h2 class="cp-group-name">{{ g.nameKey | translate }}</h2>
-            <p class="cp-group-desc">{{ g.descKey | translate }}</p>
-          </div>
-          <span class="cp-count-badge">{{ g.items.length }}</span>
-        </div>
-        <div class="cp-grid">
-          <button *ngFor="let item of g.items"
-                  class="cp-card"
-                  [class.cp-card--fav]="favorites().has(item.id)"
-                  (click)="open(item)">
-            <div class="cp-card-badges">
-              <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
-              <span class="cp-arrow">→</span>
-              <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
-            </div>
-            <span class="cp-card-label">{{ item.label | translate }}</span>
-            <button class="cp-fav"
-                    [class.cp-fav--active]="favorites().has(item.id)"
-                    [attr.aria-label]="(favorites().has(item.id) ? 'convert.remove_fav' : 'convert.add_fav') | translate"
-                    (click)="toggleFav($event, item.id)">
-              {{ favorites().has(item.id) ? '★' : '☆' }}
-            </button>
-          </button>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- ════════════════ MODAL ════════════════ -->
-    <div *ngIf="openModal()" class="ov" (click)="tryClose()">
-      <section class="md" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
-               [attr.aria-label]="'convert.title' | translate">
-
-        <header>
-          <div class="md-title-block">
-            <div class="md-conv-badge" *ngIf="selectedDef()">
-              <span class="cp-badge cp-badge--sm" [attr.data-fmt]="selectedDef()!.from">{{ selectedDef()!.from }}</span>
-              <span class="md-arrow">→</span>
-              <span class="cp-badge cp-badge--sm" [attr.data-fmt]="selectedDef()!.to">{{ selectedDef()!.to }}</span>
-            </div>
-            <h2>{{ selectedDef()?.label | translate }}</h2>
-            <small class="md-step-label">{{ 'convert.step' | translate }} {{ step() === 'preview' ? '1' : '2' }} {{ 'convert.step_of' | translate }} 2</small>
-          </div>
-          <button class="x" (click)="tryClose()" [attr.aria-label]="'convert.close' | translate">✕</button>
-        </header>
-
-        <div class="st">
-          <span [class.a]="step() === 'preview'" [class.done]="step() === 'convert'">
-            <span class="st-num">1</span>&nbsp;{{ 'convert.step1_label' | translate }}
-          </span>
-          <span class="st-sep">›</span>
-          <span [class.a]="step() === 'convert'">
-            <span class="st-num">2</span>&nbsp;{{ 'convert.step2_label' | translate }}
-          </span>
-        </div>
-
-        <main>
-
-          <!-- Step 1 -->
-          <section *ngIf="step() === 'preview'">
-            <div class="dz"
-                 (click)="pick.click()"
-                 (dragover)="$event.preventDefault()"
-                 (drop)="drop($event)"
-                 [class.dz--active]="file()">
-              <input #pick type="file" hidden
-                     (change)="select($event)"
-                     [attr.accept]="selectedDef()?.accept || null"
-                     [attr.multiple]="(selectedDef()?.multi ?? false) ? true : null">
-              <ng-container *ngIf="!file(); else fileLoaded">
-                <span class="dz-icon">📂</span>
-                <strong>{{ 'convert.drop_prompt' | translate }}</strong>
-                <small *ngIf="selectedDef()?.accept">{{ 'convert.accepted_formats' | translate }}:&nbsp;<b>{{ selectedDef()!.accept }}</b></small>
-              </ng-container>
-              <ng-template #fileLoaded>
-                <span class="dz-icon">✅</span>
-                <strong>{{ file()!.name }}</strong>
-                <small>{{ meta()?.size }} · {{ 'convert.change_file' | translate }}</small>
-              </ng-template>
-            </div>
-
-            <div class="meta" *ngIf="meta()">
-              <div><small>{{ 'convert.meta_name' | translate }}</small><b>{{ meta()!.name }}</b></div>
-              <div><small>{{ 'convert.meta_size' | translate }}</small><b>{{ meta()!.size }}</b></div>
-              <div><small>{{ 'convert.meta_type' | translate }}</small><b>{{ meta()!.type }}</b></div>
-              <div><small>{{ 'convert.meta_pages' | translate }}</small><b>{{ meta()!.pages ?? '—' }}</b></div>
-            </div>
-
-            <article class="pv" *ngIf="file()">
-              <h3>{{ 'convert.preview_title' | translate }}</h3>
-              <iframe *ngIf="kind() === 'pdf' && pdf()" [src]="pdf()" class="fr" title="PDF preview"></iframe>
-              <img *ngIf="kind() === 'image' && img()" [src]="img()" class="im" alt="preview">
-              <pre *ngIf="(kind() === 'text' || kind() === 'base64') && txt()" class="tx">{{ txt() }}</pre>
-              <p *ngIf="kind() === 'unknown'" class="pv-unknown">{{ 'convert.preview_unavailable' | translate }}</p>
-              <p *ngIf="hint()" class="hint">{{ hint() }}</p>
-            </article>
-
-            <div class="ac">
-              <button class="btn btn-s" (click)="tryClose()">{{ 'convert.cancel' | translate }}</button>
-              <button class="btn btn-p" [disabled]="!file()" (click)="confirm()">{{ 'convert.continue_btn' | translate }}</button>
-            </div>
-          </section>
-
-          <!-- Step 2 -->
-          <section *ngIf="step() === 'convert'">
-            <div class="conv-summary" *ngIf="selectedDef()">
-              <div class="conv-summary-file">
-                <span class="conv-file-icon">📄</span>
-                <div>
-                  <small>{{ 'convert.selected_file' | translate }}</small>
-                  <b>{{ file()!.name }}</b>
-                </div>
-              </div>
-              <div class="conv-summary-type">
-                <small>{{ 'convert.conversion_label' | translate }}</small>
-                <div class="conv-type-badges">
-                  <span class="cp-badge" [attr.data-fmt]="selectedDef()!.from">{{ selectedDef()!.from }}</span>
-                  <span class="conv-mid-arrow">→</span>
-                  <span class="cp-badge" [attr.data-fmt]="selectedDef()!.to">{{ selectedDef()!.to }}</span>
-                  <span class="conv-label-text">{{ selectedDef()!.label | translate }}</span>
-                </div>
-              </div>
-              <p *ngIf="!canConvert()" class="conv-warn">
-                {{ 'convert.format_warning' | translate: { accept: selectedDef()!.accept } }}
-              </p>
-            </div>
-
-            <p *ngIf="msg()" class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
-
-            <div *ngIf="run()" class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill"></div></div>
-              <small>{{ 'convert.in_progress' | translate }}</small>
-            </div>
-
-            <div class="ac">
-              <button class="btn btn-s" [disabled]="run()" (click)="back()">{{ 'convert.back' | translate }}</button>
-              <button class="btn btn-p" [disabled]="!canConvert() || run()" (click)="convert()">
-                {{ (run() ? 'convert.converting' : 'convert.convert_now') | translate }}
-              </button>
-            </div>
-          </section>
-
-        </main>
-      </section>
-    </div>
-  `,
-  styles: [`
-    :host { display: block; }
-
-    .cp-page { min-height: 100%; padding: 2rem; background: var(--bg-primary, #0d1117); }
-    .cp-header { margin-bottom: 2.5rem; }
-    .cp-title { font-size: 1.75rem; font-weight: 700; color: var(--text-primary, #e6edf3); margin: 0 0 0.25rem; }
-    .cp-subtitle { color: var(--text-secondary, #8b949e); margin: 0 0 1.25rem; font-size: 0.9rem; }
-
-    .cp-search-wrap { position: relative; max-width: 540px; }
-    .cp-search-icon { position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 0.85rem; }
-    .cp-search {
-      width: 100%; padding: 0.65rem 2.25rem 0.65rem 2.5rem;
-      border: 1px solid var(--border-color, #30363d); border-radius: 10px;
-      background: var(--bg-secondary, #161b22); color: var(--text-primary, #e6edf3);
-      font-size: 0.9rem; font-family: inherit; box-sizing: border-box; transition: border-color .18s, box-shadow .18s;
-    }
-    .cp-search::placeholder { color: var(--text-secondary, #8b949e); }
-    .cp-search:focus { outline: none; border-color: var(--accent, #6c63ff); box-shadow: 0 0 0 3px rgba(108,99,255,.15); }
-    .cp-search-clear {
-      position: absolute; right: 0.65rem; top: 50%; transform: translateY(-50%);
-      border: none; background: none; color: var(--text-secondary, #8b949e); cursor: pointer;
-      padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.8rem;
-    }
-    .cp-search-clear:hover { color: var(--text-primary, #e6edf3); background: var(--bg-tertiary, #1c2333); }
-
-    .cp-section { margin-bottom: 2.5rem; }
-    .cp-section-header {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding-bottom: 0.75rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color, #30363d);
-    }
-    .cp-group-icon { font-size: 1.4rem; flex-shrink: 0; }
-    .cp-group-name { font-size: 1rem; font-weight: 600; margin: 0; color: var(--text-primary, #e6edf3); }
-    .cp-group-desc { font-size: 0.78rem; color: var(--text-secondary, #8b949e); margin: 0; }
-    .cp-count-badge {
-      margin-left: auto; background: var(--bg-tertiary, #1c2333); border: 1px solid var(--border-color, #30363d);
-      border-radius: 999px; padding: 0.1rem 0.55rem; font-size: 0.72rem; color: var(--text-secondary, #8b949e);
-    }
-
-    .cp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 0.65rem; }
-
-    .cp-card {
-      position: relative; display: flex; flex-direction: column; gap: 0.45rem;
-      padding: 0.875rem; background: var(--bg-secondary, #161b22);
-      border: 1px solid var(--border-color, #30363d); border-radius: 12px;
-      cursor: pointer; text-align: left; color: inherit; font-family: inherit;
-      transition: border-color .18s, transform .18s, box-shadow .18s;
-    }
-    .cp-card:hover { border-color: var(--accent, #6c63ff); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
-    .cp-card:active { transform: translateY(0); }
-    .cp-card--fav { border-color: rgba(234,179,8,.35); }
-
-    .cp-card-badges { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
-
-    .cp-badge {
-      padding: 0.2rem 0.45rem; border-radius: 5px; font-size: 0.68rem; font-weight: 700;
-      letter-spacing: 0.02em; border: 1px solid transparent;
-    }
-    .cp-badge--sm { font-size: 0.62rem; padding: 0.15rem 0.38rem; }
-
-    .cp-badge[data-fmt="PDF"]  { background: rgba(239,68,68,.15);   color: #fca5a5; border-color: rgba(239,68,68,.35); }
-    .cp-badge[data-fmt="PDF+"] { background: rgba(239,68,68,.15);   color: #fca5a5; border-color: rgba(239,68,68,.35); }
-    .cp-badge[data-fmt="DOCX"] { background: rgba(59,130,246,.15);  color: #93c5fd; border-color: rgba(59,130,246,.35); }
-    .cp-badge[data-fmt="DOC"]  { background: rgba(59,130,246,.15);  color: #93c5fd; border-color: rgba(59,130,246,.35); }
-    .cp-badge[data-fmt="TXT"]  { background: rgba(156,163,175,.12); color: #d1d5db; border-color: rgba(156,163,175,.3); }
-    .cp-badge[data-fmt="HTML"] { background: rgba(249,115,22,.15);  color: #fdba74; border-color: rgba(249,115,22,.35); }
-    .cp-badge[data-fmt="JSON"] { background: rgba(34,197,94,.15);   color: #86efac; border-color: rgba(34,197,94,.35); }
-    .cp-badge[data-fmt="CSV"]  { background: rgba(16,185,129,.15);  color: #6ee7b7; border-color: rgba(16,185,129,.35); }
-    .cp-badge[data-fmt="XLSX"] { background: rgba(16,185,129,.15);  color: #6ee7b7; border-color: rgba(16,185,129,.35); }
-    .cp-badge[data-fmt="PNG"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="JPG"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="WEBP"] { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="IMG"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="ZIP"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="B64"]  { background: rgba(251,191,36,.15);  color: #fde68a; border-color: rgba(251,191,36,.35); }
-    .cp-badge[data-fmt="MD"]   { background: rgba(20,184,166,.15);  color: #99f6e4; border-color: rgba(20,184,166,.35); }
-    .cp-badge[data-fmt="File"] { background: rgba(156,163,175,.12); color: #d1d5db; border-color: rgba(156,163,175,.3); }
-
-    .cp-arrow { color: var(--text-secondary, #8b949e); font-size: 0.8rem; }
-    .cp-card-label { font-size: 0.78rem; color: var(--text-secondary, #8b949e); line-height: 1.35; padding-right: 1.4rem; }
-
-    .cp-fav {
-      position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none;
-      font-size: 0.875rem; cursor: pointer; color: var(--text-secondary, #8b949e);
-      padding: 0.2rem; border-radius: 4px; opacity: 0; transition: opacity .15s, color .15s; line-height: 1;
-    }
-    .cp-card:hover .cp-fav { opacity: 1; }
-    .cp-fav--active { color: #f59e0b !important; opacity: 1 !important; }
-
-    .cp-empty { text-align: center; padding: 4rem 1rem; color: var(--text-secondary, #8b949e); }
-    .cp-empty-icon { display: block; font-size: 2.5rem; margin-bottom: 0.75rem; }
-    .cp-btn-ghost {
-      margin-top: 0.75rem; background: none; border: 1px solid var(--border-color, #30363d);
-      color: var(--text-primary, #e6edf3); padding: 0.5rem 1.25rem; border-radius: 8px;
-      cursor: pointer; font-family: inherit; font-size: 0.875rem; transition: border-color .15s, color .15s;
-    }
-    .cp-btn-ghost:hover { border-color: var(--accent, #6c63ff); color: var(--accent, #6c63ff); }
-
-    /* Modal */
-    .ov {
-      position: fixed; inset: 0; display: grid; place-items: center; padding: 1rem;
-      z-index: 1000; background: rgba(0,0,0,.72); backdrop-filter: blur(8px);
-    }
-    .md {
-      width: min(760px, 100%); max-height: calc(100dvh - 2rem);
-      display: grid; grid-template-rows: auto auto 1fr; overflow: hidden;
-      border-radius: 16px; border: 1px solid var(--border-color, #30363d);
-      background: var(--bg-secondary, #161b22); color: var(--text-primary, #e6edf3);
-      box-shadow: 0 24px 64px rgba(0,0,0,.55); animation: slide-up .22s ease;
-    }
-    @keyframes slide-up { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-    header {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid var(--border-color, #30363d);
-    }
-    .md-title-block { display: flex; flex-direction: column; gap: 0.3rem; }
-    .md-conv-badge { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.15rem; }
-    .md-arrow { color: var(--text-secondary, #8b949e); font-size: 0.85rem; }
-    header h2 { margin: 0; font-size: 1.1rem; font-weight: 600; }
-    .md-step-label { color: var(--text-secondary, #8b949e); font-size: 0.78rem; }
-
-    .x {
-      width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border-color, #30363d);
-      background: var(--bg-tertiary, #1c2333); color: var(--text-secondary, #8b949e); cursor: pointer;
-      font-size: 0.8rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-      transition: background .15s, color .15s;
-    }
-    .x:hover { background: var(--bg-primary, #0d1117); color: var(--text-primary, #e6edf3); }
-
-    .st {
-      display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.25rem;
-      border-bottom: 1px solid var(--border-color, #30363d); background: var(--bg-primary, #0d1117);
-      font-size: 0.82rem; color: var(--text-secondary, #8b949e);
-    }
-    .st span { display: flex; align-items: center; gap: 0.35rem; }
-    .st span.a  { color: var(--accent, #6c63ff); font-weight: 600; }
-    .st span.done { color: var(--success, #34d399); }
-    .st span.a .st-num { background: var(--accent, #6c63ff); color: #fff; border-color: transparent; }
-    .st span.done .st-num { background: var(--success, #34d399); color: #fff; border-color: transparent; }
-    .st-num {
-      width: 20px; height: 20px; border-radius: 50%; background: var(--bg-tertiary, #1c2333);
-      border: 1px solid var(--border-color, #30363d); display: flex; align-items: center;
-      justify-content: center; font-size: 0.7rem; font-weight: 700; transition: background .2s;
-    }
-    .st-sep { color: var(--border-color, #30363d); }
-
-    main { overflow: auto; padding: 1.25rem; }
-
-    .dz {
-      border: 2px dashed var(--border-color, #30363d); border-radius: 12px; padding: 1.5rem 1rem;
-      text-align: center; cursor: pointer; display: grid; gap: 0.3rem; transition: border-color .18s, background .18s;
-    }
-    .dz:hover { border-color: var(--accent, #6c63ff); background: rgba(108,99,255,.04); }
-    .dz--active { border-color: var(--success, #34d399); background: rgba(52,211,153,.04); }
-    .dz-icon { font-size: 1.75rem; line-height: 1; }
-
-    .meta { margin-top: 1rem; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.5rem; }
-    .meta div { border: 1px solid var(--border-color, #30363d); background: var(--bg-primary, #0d1117); border-radius: 8px; padding: 0.55rem 0.75rem; }
-    .meta small { display: block; font-size: 0.7rem; color: var(--text-secondary, #8b949e); margin-bottom: 0.15rem; }
-    .meta b { font-size: 0.82rem; word-break: break-all; }
-
-    .pv { margin-top: 1rem; border: 1px solid var(--border-color, #30363d); border-radius: 12px; padding: 1rem; background: var(--bg-primary, #0d1117); }
-    .pv h3 { margin: 0 0 0.65rem; font-size: 0.9rem; }
-    .fr, .im, .tx { width: 100%; max-height: 260px; border: 1px solid var(--border-color, #30363d); border-radius: 8px; }
-    .im  { object-fit: contain; background: #000; display: block; }
-    .tx  { padding: .7rem; overflow: auto; white-space: pre-wrap; word-break: break-word; font-size: .78rem; background: var(--bg-tertiary,#1c2333); color: var(--text-primary,#e6edf3); }
-    .pv-unknown { color: var(--text-secondary, #8b949e); font-style: italic; font-size: .85rem; }
-    .hint { margin-top: .65rem; padding: .55rem .8rem; border: 1px solid rgba(108,99,255,.4); border-radius: 8px; background: rgba(108,99,255,.08); font-size: .82rem; }
-
-    .conv-summary {
-      display: flex; flex-direction: column; gap: 1rem; padding: 1.1rem;
-      background: var(--bg-primary, #0d1117); border: 1px solid var(--border-color, #30363d);
-      border-radius: 12px; margin-bottom: 1rem;
-    }
-    .conv-summary-file { display: flex; align-items: center; gap: 0.75rem; }
-    .conv-file-icon { font-size: 1.6rem; flex-shrink: 0; }
-    .conv-summary-file small, .conv-summary-type small { display: block; font-size: 0.72rem; color: var(--text-secondary, #8b949e); margin-bottom: 0.2rem; }
-    .conv-summary-file b { font-size: 0.875rem; word-break: break-all; }
-    .conv-type-badges { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-    .conv-mid-arrow { color: var(--text-secondary, #8b949e); }
-    .conv-label-text { font-size: 0.82rem; color: var(--text-secondary, #8b949e); }
-    .conv-warn { color: var(--warning, #fbbf24); background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); border-radius: 8px; padding: .55rem .8rem; font-size: .82rem; margin: 0; }
-
-    .msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); font-size: .85rem; color: var(--warning, #fbbf24); margin: .5rem 0; }
-    .msg--ok { background: rgba(52,211,153,.08); border-color: rgba(52,211,153,.3); color: var(--success, #34d399); }
-
-    .progress-wrap { margin: .75rem 0; text-align: center; }
-    .progress-bar { height: 3px; background: var(--bg-tertiary,#1c2333); border-radius: 2px; overflow: hidden; margin-bottom: .4rem; }
-    .progress-fill {
-      height: 100%; background: linear-gradient(90deg, var(--accent,#6c63ff), #a855f7); border-radius: 2px;
-      animation: prog 1.4s ease-in-out infinite;
-    }
-    @keyframes prog { 0% { width: 0; margin-left: 0; } 50% { width: 60%; margin-left: 20%; } 100% { width: 0; margin-left: 100%; } }
-
-    .ac { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.25rem; }
-    .btn { padding: .55rem 1.1rem; border-radius: 9px; border: 1px solid transparent; font-family: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; transition: opacity .15s, transform .1s; }
-    .btn:disabled { opacity: .45; cursor: not-allowed; }
-    .btn:not(:disabled):active { transform: scale(.97); }
-    .btn-p { background: var(--accent, #6c63ff); color: #fff; font-weight: 600; }
-    .btn-p:not(:disabled):hover { background: #5851e5; }
-    .btn-s { background: transparent; color: var(--text-primary, #e6edf3); border-color: var(--border-color, #30363d); }
-    .btn-s:hover { background: var(--bg-tertiary, #1c2333); }
-
-    @media (max-width: 600px) {
-      .cp-page { padding: 1rem; }
-      .cp-title { font-size: 1.35rem; }
-      .cp-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-      .meta { grid-template-columns: 1fr; }
-      .ac { flex-direction: column; align-items: stretch; }
-    }
-  `],
+  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink],
+  templateUrl: './convert.component.html',
+  styleUrls: ['./convert.component.scss'],
 })
 export class ConvertComponent implements OnInit, OnDestroy {
   private readonly svc = inject(ConversionService);
   private readonly san = inject(DomSanitizer);
   private readonly t   = inject(TranslateService);
   private readonly seo = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
 
   readonly searchQuery = signal('');
-  readonly favorites   = signal<Set<string>>(this.loadFavs());
+  // Starts empty on purpose: reading localStorage here would make this SSR/prerendered
+  // page's initial render diverge from the server's (favorites are inherently
+  // client-only), which breaks Angular hydration with a null DOM-node mismatch the
+  // moment a real visitor has any favorite saved. Populated just after hydration
+  // settles instead — see the afterNextRender() call below.
+  readonly favorites   = signal<Set<string>>(new Set());
   readonly totalCount  = CONVERSION_TYPES.length;
 
+  /** Blog cross-link: real, relevant existing post — see task note in this file's PR. */
+  readonly blogGuideUrl = '/blog/come-convertire-pdf-in-word-senza-perdere-formattazione';
+
+  /** Set once at startup from a pending Workspace hand-off (file kind only); cleared on use/dismiss. */
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+
+  constructor() {
+    // Client-only, runs once right after the initial (hydrated) render is stable —
+    // safe to read localStorage here, unlike a field initializer or ngOnInit, both
+    // of which also execute during SSR/prerendering.
+    afterNextRender(() => this.favorites.set(this.loadFavs()));
+  }
+
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file') {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
       title: 'Free File Converter — PDF, Word, Excel, Images & More',
       description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
-      url: 'https://gentsallaku.it/dashboard/convert',
+      url: 'https://gentsallaku.it/lab/convert',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free File Converter',
       description: `Convert files between PDF, Word, Excel, images and other formats — ${this.totalCount} conversion types, entirely in the browser.`,
-      url: 'https://gentsallaku.it/dashboard/convert',
+      url: 'https://gentsallaku.it/lab/convert',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -500,6 +123,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return (CONVERSION_TYPES as unknown as ConversionDef[]).filter(c => favs.has(c.id));
   });
 
+  trackByFileName = (_: number, f: File): string => f.name;
+
   // Modal state
   readonly openModal   = signal(false);
   readonly selectedDef = signal<ConversionDef | null>(null);
@@ -515,20 +140,53 @@ export class ConvertComponent implements OnInit, OnDestroy {
   readonly hint        = signal('');
   readonly msgOk       = signal(false);
 
+  /** Files staged for a `multi: true` conversion type (e.g. merge-pdf, image-to-pdf). */
+  readonly files       = signal<File[]>([]);
+  /**
+   * Shared status of the batch call. The backend combines every staged file into a
+   * SINGLE output (merged PDF, images bundled into one PDF) — it does not convert
+   * files independently — so this status applies to the whole batch, not per-file.
+   */
+  readonly batchStatus = signal<'pending' | 'running' | 'done' | 'error'>('pending');
+
+  /** Captured on every successful conversion (single, multi-batch and base64 paths all funnel through `download()`). */
+  readonly lastResult  = signal<{ blob: Blob; filename: string; mime: string } | null>(null);
+  readonly justSent    = signal(false);
+
   private url: string | null = null;
   private ext = '';
   private b64: string | null = null;
   private done = false;
 
+  readonly isMulti = computed(() => this.selectedDef()?.multi ?? false);
+
+  readonly hasSelection = computed(() =>
+    this.isMulti() ? this.files().length > 0 : Boolean(this.file()),
+  );
+
   readonly canConvert = computed(() => {
     const def = this.selectedDef();
-    const f   = this.file();
-    if (!def || !f || this.run()) return false;
+    if (!def || this.run()) return false;
+
+    if (def.multi) {
+      const fs = this.files();
+      if (fs.length === 0) return false;
+      if (def.id === 'merge-pdf' && fs.length < 2) return false;
+      return fs.every(f => this.matchesAccept(def, f));
+    }
+
+    const f = this.file();
+    if (!f) return false;
     if (def.id.startsWith('base64-')) return Boolean(this.b64);
+    return this.matchesAccept(def, f);
+  });
+
+  matchesAccept(def: ConversionDef, f: File): boolean {
     if (!def.accept || def.accept === '*') return true;
     const exts = def.accept.split(',').map(a => a.trim().replace('.', '').toLowerCase());
-    return exts.includes(this.ext.toLowerCase()) || exts.some(e => f.type.includes(e));
-  });
+    const ext = this.extOf(f.name);
+    return exts.includes(ext) || exts.some(e => f.type.includes(e));
+  }
 
   ngOnDestroy(): void { this.clean(); }
 
@@ -538,15 +196,57 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.openModal.set(true);
     this.step.set('preview');
     this.file.set(null);
+    this.files.set([]);
     this.meta.set(null);
     this.kind.set('unknown');
     this.txt.set('');
     this.msg.set('');
     this.hint.set('');
     this.msgOk.set(false);
+    this.batchStatus.set('pending');
     this.done = false;
     this.b64  = null;
     this.ext  = '';
+    this.lastResult.set(null);
+    this.justSent.set(false);
+  }
+
+  /** Loads the pending Workspace file into this modal's current selection, per single/multi flow. */
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const f = new File([item.blob], item.filename, { type: item.mime });
+    if (this.isMulti()) {
+      const merged = [...this.files(), f].slice(0, MULTI_MAX_FILES);
+      this.files.set(merged);
+      this.step.set('preview');
+      this.msg.set('');
+      this.msgOk.set(false);
+      this.batchStatus.set('pending');
+      this.done = false;
+    } else {
+      this.load(f);
+    }
+  }
+
+  /** Local-only dismiss — does NOT consume the Workspace item, so another tool can still pick it up. */
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const r = this.lastResult();
+    if (!r) return;
+    this.workspace.send({
+      kind: 'file',
+      blob: r.blob,
+      filename: r.filename,
+      mime: r.mime || undefined,
+      fromTool: 'convert',
+    });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   toggleFav(event: Event, id: string): void {
@@ -561,18 +261,71 @@ export class ConvertComponent implements OnInit, OnDestroy {
 
   tryClose(): void {
     if (this.run()) return;
-    if (this.file() && !this.done && !confirm(this.t.instant('convert.close_confirm'))) return;
+    const hasWork = this.file() !== null || this.files().length > 0;
+    if (hasWork && !this.done && !confirm(this.t.instant('convert.close_confirm'))) return;
     this.openModal.set(false);
   }
 
-  select(e: Event): void { this.load((e.target as HTMLInputElement).files?.[0] ?? null); }
-  drop(e: DragEvent): void { e.preventDefault(); this.load(e.dataTransfer?.files?.[0] ?? null); }
+  select(e: Event): void {
+    const input = e.target as HTMLInputElement;
+    const list = input.files;
+    if (!list || list.length === 0) return;
+    if (this.isMulti()) {
+      this.addFiles(list);
+      input.value = '';
+    } else {
+      this.load(list[0] ?? null);
+    }
+  }
+
+  onFilesDropped(files: FileList): void {
+    if (this.isMulti()) {
+      this.addFiles(files);
+    } else {
+      this.load(files[0] ?? null);
+    }
+  }
+
+  private addFiles(list: FileList): void {
+    const incoming = Array.from(list);
+    const merged = [...this.files(), ...incoming].slice(0, MULTI_MAX_FILES);
+    this.files.set(merged);
+    this.step.set('preview');
+    this.msg.set('');
+    this.msgOk.set(false);
+    this.batchStatus.set('pending');
+    this.done = false;
+  }
+
+  removeFile(i: number): void {
+    const next = this.files().slice();
+    next.splice(i, 1);
+    this.files.set(next);
+  }
 
   confirm(): void {
-    if (!this.file()) return;
+    if (!this.hasSelection()) return;
     this.step.set('convert');
     this.msg.set('');
     this.msgOk.set(false);
+    this.batchStatus.set('pending');
+  }
+
+  batchIcon(): string {
+    switch (this.batchStatus()) {
+      case 'done': return '✅';
+      case 'error': return '❌';
+      default: return '⏳';
+    }
+  }
+
+  batchStatusLabel(): string {
+    switch (this.batchStatus()) {
+      case 'done': return 'convert.batch_done';
+      case 'error': return 'convert.batch_error';
+      case 'running': return 'convert.in_progress';
+      default: return 'convert.batch_pending';
+    }
   }
 
   convert(): void {
@@ -598,6 +351,36 @@ export class ConvertComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (def.multi) {
+      const fs = this.files();
+      if (fs.length === 0) { this.run.set(false); this.msg.set(this.t.instant('convert.no_file')); return; }
+
+      this.batchStatus.set('running');
+      this.svc.convertFiles(def.id as ConversionTypeId, fs).subscribe({
+        next: (ev) => {
+          if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
+            if (ev.body instanceof Blob) {
+              this.download(ev.body, this.outputExt(def), this.batchBaseName(def));
+              this.done = true;
+              this.batchStatus.set('done');
+              this.msg.set(this.t.instant('convert.success'));
+              this.msgOk.set(true);
+            } else {
+              this.batchStatus.set('error');
+              this.msg.set(this.t.instant('convert.payload_not_downloadable'));
+            }
+            this.run.set(false);
+          }
+        },
+        error: (err) => {
+          this.run.set(false);
+          this.batchStatus.set('error');
+          this.msg.set(this.errMsg(err));
+        },
+      });
+      return;
+    }
+
     const f = this.file();
     if (!f) { this.run.set(false); this.msg.set(this.t.instant('convert.no_file')); return; }
 
@@ -617,6 +400,12 @@ export class ConvertComponent implements OnInit, OnDestroy {
       },
       error: (err) => { this.run.set(false); this.msg.set(this.errMsg(err)); },
     });
+  }
+
+  private batchBaseName(def: ConversionDef): string {
+    if (def.id === 'merge-pdf') return 'merged';
+    if (def.id === 'image-to-pdf') return 'images';
+    return 'converted-files';
   }
 
   private errMsg(err: { status?: number; error?: { message?: string } | Blob }): string {
@@ -681,7 +470,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
       this.pdf.set(null);
       this.txt.set('');
     }
-    this.hint.set(this.ai(f.name, k));
+    this.hint.set(this.suggestTip(f.name, k));
   }
 
   private detect(f: File): Kind {
@@ -694,7 +483,13 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return 'unknown';
   }
 
-  private ai(name: string, k: Kind): string {
+  /**
+   * Plain filename/kind keyword matching — NOT an AI/LLM call. Kept honest on purpose:
+   * this only suggests a likely conversion based on the filename and detected file kind,
+   * unlike the genuinely LLM-backed tools elsewhere in AI & Tools (PDF Summary, AI
+   * Formatter, PDF Translate, AI Slides). Do not relabel this as "AI" in the UI.
+   */
+  private suggestTip(name: string, k: Kind): string {
     const n = name.toLowerCase();
     if (n.includes('invoice') || n.includes('fattura'))    return this.t.instant('convert.hint_invoice');
     if (n.includes('contract') || n.includes('contratto')) return this.t.instant('convert.hint_contract');
@@ -721,7 +516,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return /^[A-Za-z0-9+/=]+$/.test(x) ? x : null;
   }
 
-  private bytes(s: number): string {
+  /** Public: also used from the multi-file list template to render each staged file's size. */
+  bytes(s: number): string {
     if (s === 0) return '0 B';
     const u = ['B', 'KB', 'MB', 'GB'];
     const i = Math.min(Math.floor(Math.log(s) / Math.log(1024)), u.length - 1);
@@ -729,12 +525,14 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return `${v.toFixed(v >= 10 || i === 0 ? 0 : 1)} ${u[i]}`;
   }
 
-  private download(b: Blob, e: string): void {
-    const n = this.file()?.name.replace(/\.[^.]+$/, '') || 'converted-file';
+  private download(b: Blob, e: string, baseName?: string): void {
+    const n = baseName ?? (this.file()?.name.replace(/\.[^.]+$/, '') || 'converted-file');
+    const filename = `${n}.${e}`;
+    this.lastResult.set({ blob: b, filename, mime: b.type || '' });
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
     a.href = u;
-    a.download = `${n}.${e}`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(u);
   }

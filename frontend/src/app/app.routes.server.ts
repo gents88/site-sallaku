@@ -1,22 +1,25 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 import { NON_DEFAULT_LANGS } from './core/services/language.service';
 
-// Public AI/PDF tool pages under /dashboard — pre-rendered at build time so
-// the static FileZilla deploy ships real HTML (title/meta/JSON-LD) for
-// crawlers instead of the generic app-shell fallback. See admin.routes.ts
-// for the matching Angular route list.
+// Public AI/PDF tool pages under /lab — pre-rendered at build time so the
+// static FileZilla deploy ships real HTML (title/meta/JSON-LD) for crawlers
+// instead of the generic app-shell fallback. See app.routes.ts for the
+// matching Angular route list. Moved here from /dashboard/* (2026-08); old
+// URLs 301-redirect via frontend/public/.htaccess.
 const PUBLIC_TOOL_PAGES = [
-  'dashboard/tools',
-  'dashboard/pdf-summary',
-  'dashboard/ai-formatter',
-  'dashboard/pdf-translate',
-  'dashboard/ai-ppt',
-  'dashboard/convert',
-  'dashboard/pdf-editor',
-  'dashboard/viewer',
-  'dashboard/editor',
-  'dashboard/ocr',
-  'dashboard/scanner',
+  'lab',
+  'lab/pdf-search',
+  'lab/pdf-summary',
+  'lab/ai-formatter',
+  'lab/pdf-translate',
+  'lab/ai-ppt',
+  'lab/convert',
+  'lab/pdf-editor',
+  'lab/viewer',
+  'lab/editor',
+  'lab/ocr',
+  'lab/scanner',
+  'lab/workspace',
 ];
 
 // Static top-level pages — same static-deploy reasoning as PUBLIC_TOOL_PAGES.
@@ -28,7 +31,7 @@ const PUBLIC_TOOL_PAGES = [
 // (scroll-to-section deep links into the single homepage) — SeoService already
 // gives them the same canonical as '/', but without prerendering they served
 // the empty CSR shell to any crawler/link that hit them directly.
-const STATIC_PUBLIC_PAGES = ['homepage', 'projects', 'blog', 'contact', 'about', 'tech-stack', 'experience', 'skills', 'services'];
+const STATIC_PUBLIC_PAGES = ['homepage', 'projects', 'blog', 'contact', 'testimonials', 'about', 'tech-stack', 'experience', 'skills', 'services'];
 
 // Same API base resolution + pagination + failure fallback as
 // scripts/generate-sitemap.js, so a backend outage at build time degrades

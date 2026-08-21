@@ -19,6 +19,7 @@ import { of } from 'rxjs';
 import { TrackClickDirective } from '../../shared/directives/track-click.directive';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
+import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
 
 interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
@@ -29,7 +30,7 @@ interface ServiceItem { key: string; icon: string; colorClass: string; route?: s
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent, TestimonialsWallComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -164,7 +165,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   readonly services: ServiceItem[] = [
-    { key: 'pdf',      icon: 'picture_as_pdf',  colorClass: 'color-red',    route: '/dashboard/tools' },
+    { key: 'pdf',      icon: 'picture_as_pdf',  colorClass: 'color-red',    route: '/lab' },
     { key: 'frontend', icon: 'web',            colorClass: 'color-blue'   },
     { key: 'web3d',    icon: 'public',          colorClass: 'color-cyan'   },
     { key: 'dataviz',  icon: 'bar_chart',       colorClass: 'color-violet' },

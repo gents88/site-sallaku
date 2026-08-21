@@ -29,6 +29,15 @@ interface ToolCard {
         <p>{{ 'tools.subtitle' | translate }}</p>
       </header>
 
+      <a routerLink="/lab/workspace" class="workspace-banner">
+        <div class="workspace-banner-icon">🔗</div>
+        <div class="workspace-banner-body">
+          <h2>{{ 'workspace.title' | translate }}</h2>
+          <p>{{ 'workspace.subtitle' | translate }}</p>
+        </div>
+        <span class="card-arrow">→</span>
+      </a>
+
       <section class="tools-section">
         <h2 class="section-title">
           <span class="section-emoji">🧠</span> {{ 'tools.section_ai' | translate }}
@@ -106,6 +115,33 @@ interface ToolCard {
     .page-header p {
       font-size: 1.05rem; color: var(--text-secondary, #8b949e);
       line-height: 1.7; margin: 0;
+    }
+
+    /* ─── Workspace banner ─── */
+    .workspace-banner {
+      display: flex; align-items: center; gap: 1.25rem;
+      padding: 1.5rem 1.75rem; margin-bottom: 3rem;
+      background: linear-gradient(120deg, rgba(108,99,255,.12), rgba(99,179,255,.06));
+      border: 1px solid rgba(108,99,255,.35);
+      border-radius: 16px; text-decoration: none;
+      transition: border-color .2s, transform .2s;
+
+      &:hover {
+        border-color: rgba(108,99,255,.6);
+        transform: translateY(-2px);
+        .card-arrow { opacity: 1; transform: translateX(3px); }
+      }
+    }
+    .workspace-banner-icon {
+      font-size: 2rem; flex-shrink: 0;
+      width: 56px; height: 56px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(108,99,255,.15); border-radius: 12px;
+    }
+    .workspace-banner-body {
+      flex: 1; min-width: 0;
+      h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 .3rem; color: var(--text-primary, #e6edf3); background: none; -webkit-text-fill-color: initial; }
+      p { font-size: .85rem; color: var(--text-secondary, #8b949e); margin: 0; line-height: 1.5; }
     }
 
     /* ─── Section ─── */
@@ -197,43 +233,48 @@ export class ToolsComponent implements OnInit {
     this.seo.update({
       title: 'Free AI PDF Tools & Document Utilities',
       description: 'Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools powered by GPT-4o. No signup required.',
-      url: 'https://gentsallaku.it/dashboard/tools',
+      url: 'https://gentsallaku.it/lab',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: 'AI & PDF Tools',
       description: 'Free AI-powered document tools: PDF translator, AI slides generator, text formatter, PDF summarizer.',
-      url: 'https://gentsallaku.it/dashboard/tools',
+      url: 'https://gentsallaku.it/lab',
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       hasPart: [
-        { '@type': 'WebApplication', name: 'AI PDF Translator', url: 'https://gentsallaku.it/dashboard/pdf-translate', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'AI Slides Generator', url: 'https://gentsallaku.it/dashboard/ai-ppt', applicationCategory: 'PresentationApplication' },
-        { '@type': 'WebApplication', name: 'AI Document Formatter', url: 'https://gentsallaku.it/dashboard/ai-formatter', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'AI PDF Summarizer', url: 'https://gentsallaku.it/dashboard/pdf-summary', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'File Converter', url: 'https://gentsallaku.it/dashboard/convert', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'PDF Editor', url: 'https://gentsallaku.it/dashboard/pdf-editor', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'PDF Viewer', url: 'https://gentsallaku.it/dashboard/viewer', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'Document Editor', url: 'https://gentsallaku.it/dashboard/editor', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'OCR — Text Recognition', url: 'https://gentsallaku.it/dashboard/ocr', applicationCategory: 'UtilitiesApplication' },
-        { '@type': 'WebApplication', name: 'Document Scanner', url: 'https://gentsallaku.it/dashboard/scanner', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'AI PDF Translator', url: 'https://gentsallaku.it/lab/pdf-translate', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'AI Slides Generator', url: 'https://gentsallaku.it/lab/ai-ppt', applicationCategory: 'PresentationApplication' },
+        { '@type': 'WebApplication', name: 'AI Document Formatter', url: 'https://gentsallaku.it/lab/ai-formatter', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'AI PDF Summarizer', url: 'https://gentsallaku.it/lab/pdf-summary', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'File Converter', url: 'https://gentsallaku.it/lab/convert', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'PDF Editor', url: 'https://gentsallaku.it/lab/pdf-editor', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'PDF Viewer', url: 'https://gentsallaku.it/lab/viewer', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Document Editor', url: 'https://gentsallaku.it/lab/editor', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'OCR — Text Recognition', url: 'https://gentsallaku.it/lab/ocr', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Document Scanner', url: 'https://gentsallaku.it/lab/scanner', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'PDF Search', url: 'https://gentsallaku.it/lab/pdf-search', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'My PDF Library', url: 'https://gentsallaku.it/lab/library', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Workflow', url: 'https://gentsallaku.it/lab/workspace', applicationCategory: 'UtilitiesApplication' },
       ],
     });
   }
 
   readonly aiCards: ToolCard[] = [
-    { icon: '📋', titleKey: 'tools.pdf_summary_title',  descKey: 'tools.pdf_summary_desc',  route: '/dashboard/pdf-summary',   group: 'ai' },
-    { icon: '✨', titleKey: 'tools.ai_formatter_title', descKey: 'tools.ai_formatter_desc', route: '/dashboard/ai-formatter',  group: 'ai' },
-    { icon: '🌐', titleKey: 'tools.pdf_translate_title',descKey: 'tools.pdf_translate_desc',route: '/dashboard/pdf-translate', group: 'ai' },
-    { icon: '🎞️', titleKey: 'tools.ai_slides_title',   descKey: 'tools.ai_slides_desc',    route: '/dashboard/ai-ppt',        group: 'ai' },
+    { icon: '🔎', titleKey: 'tools.pdf_search_title',   descKey: 'tools.pdf_search_desc',   route: '/lab/pdf-search',    group: 'ai' },
+    { icon: '📚', titleKey: 'tools.library_title',      descKey: 'tools.library_desc',      route: '/lab/library',       group: 'ai' },
+    { icon: '📋', titleKey: 'tools.pdf_summary_title',  descKey: 'tools.pdf_summary_desc',  route: '/lab/pdf-summary',   group: 'ai' },
+    { icon: '✨', titleKey: 'tools.ai_formatter_title', descKey: 'tools.ai_formatter_desc', route: '/lab/ai-formatter',  group: 'ai' },
+    { icon: '🌐', titleKey: 'tools.pdf_translate_title',descKey: 'tools.pdf_translate_desc',route: '/lab/pdf-translate', group: 'ai' },
+    { icon: '🎞️', titleKey: 'tools.ai_slides_title',   descKey: 'tools.ai_slides_desc',    route: '/lab/ai-ppt',        group: 'ai' },
   ];
 
   readonly toolCards: ToolCard[] = [
-    { icon: '🖊️', titleKey: 'tools.pdf_editor_title', descKey: 'tools.pdf_editor_desc', route: '/dashboard/pdf-editor', group: 'tools' },
-    { icon: '👁',  titleKey: 'tools.viewer_title',     descKey: 'tools.viewer_desc',     route: '/dashboard/viewer',     group: 'tools' },
-    { icon: '✏️', titleKey: 'tools.editor_title',      descKey: 'tools.editor_desc',     route: '/dashboard/editor',     group: 'tools' },
-    { icon: '🔄', titleKey: 'tools.convert_title',     descKey: 'tools.convert_desc',    route: '/dashboard/convert',    group: 'tools' },
-    { icon: '🔤', titleKey: 'tools.ocr_title',         descKey: 'tools.ocr_desc',        route: '/dashboard/ocr',        group: 'tools' },
-    { icon: '📷', titleKey: 'tools.scanner_title',     descKey: 'tools.scanner_desc',    route: '/dashboard/scanner',    group: 'tools' },
+    { icon: '🖊️', titleKey: 'tools.pdf_editor_title', descKey: 'tools.pdf_editor_desc', route: '/lab/pdf-editor', group: 'tools' },
+    { icon: '👁',  titleKey: 'tools.viewer_title',     descKey: 'tools.viewer_desc',     route: '/lab/viewer',     group: 'tools' },
+    { icon: '✏️', titleKey: 'tools.editor_title',      descKey: 'tools.editor_desc',     route: '/lab/editor',     group: 'tools' },
+    { icon: '🔄', titleKey: 'tools.convert_title',     descKey: 'tools.convert_desc',    route: '/lab/convert',    group: 'tools' },
+    { icon: '🔤', titleKey: 'tools.ocr_title',         descKey: 'tools.ocr_desc',        route: '/lab/ocr',        group: 'tools' },
+    { icon: '📷', titleKey: 'tools.scanner_title',     descKey: 'tools.scanner_desc',    route: '/lab/scanner',    group: 'tools' },
   ];
 }

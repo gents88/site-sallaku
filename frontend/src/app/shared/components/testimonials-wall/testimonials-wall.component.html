@@ -1,0 +1,34 @@
+@if (testimonials().length > 0) {
+  <div class="wall-header">
+    <span class="section-tag">{{ 'testimonials.wall.tag' | translate }}</span>
+    <h2 class="section-title text-gradient">{{ 'testimonials.wall.title' | translate }}</h2>
+  </div>
+
+  <div class="wall-grid">
+    @for (t of testimonials(); track t.id) {
+      <article class="wall-card glass-card">
+        <app-rating-stars [value]="t.rating" [readonly]="true" [ariaLabel]="'testimonials.rating' | translate" />
+        <p class="wall-content">&ldquo;{{ t.content }}&rdquo;</p>
+        <div class="wall-author">
+          @if (t.avatarUrl) {
+            <img class="wall-avatar" [src]="t.avatarUrl" [alt]="t.authorName" loading="lazy" />
+          } @else {
+            <span class="wall-avatar wall-avatar--fallback" aria-hidden="true">{{ initials(t.authorName) }}</span>
+          }
+          <div class="wall-author-meta">
+            <strong>{{ t.authorName }}</strong>
+            @if (t.role) {
+              <span>{{ t.role }}</span>
+            }
+          </div>
+        </div>
+      </article>
+    }
+  </div>
+
+  <div class="wall-cta">
+    <a class="btn btn-outline" [routerLink]="'/testimonials' | langUrl">
+      {{ 'testimonials.wall.cta' | translate }}
+    </a>
+  </div>
+}

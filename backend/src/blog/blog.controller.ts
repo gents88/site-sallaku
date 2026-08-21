@@ -21,6 +21,8 @@ import { TranslationService } from './services/translation.service';
 import { BLOG_LANGUAGES, MAX_PDF_UPLOAD_SIZE } from './blog.constants';
 import { CacheControlInterceptor } from '../common/interceptors/cache-control.interceptor';
 import { AuditInterceptor } from '../audit/interceptors/audit.interceptor';
+import { BlogPublishedQueryDto } from './dto/blog-published-query.dto';
+import { PageLimitDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Blog')
 @Controller('blog')
@@ -46,12 +48,8 @@ export class BlogController {
   @ApiQuery({ name: 'tag', required: false })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
-  findPublished(
-    @Query('tag') tag?: string,
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-  ) {
-    return this.blogService.findPublished(tag, +page, +limit);
+  findPublished(@Query() { tag, page, limit }: BlogPublishedQueryDto) {
+    return this.blogService.findPublished(tag, page ?? 1, limit ?? 10);
   }
 
   @Get('posts/:slug')
@@ -77,10 +75,9 @@ export class BlogController {
   @ApiOperation({ summary: 'Get all posts including drafts (admin), optionally paginated' })
   @ApiQuery({ name: 'page',  required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
-  findAll(
-    @Query('page')  page?:  number,
-    @Query('limit') limit?: number,
-  ) { return this.blogService.findAll(page ? +page : undefined, limit ? +limit : undefined); }
+  findAll(@Query() { page, limit }: PageLimitDto) {
+    return this.blogService.findAll(page, limit);
+  }
 
   @Get('admin/posts/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)

@@ -3,7 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '../auth/auth.module';
 import { AnalyticsController } from './analytics.controller';
-import { AnalyticsService } from './analytics.service';
+import { AnalyticsTrackingService } from './services/analytics-tracking.service';
+import { AnalyticsQueryService } from './services/analytics-query.service';
+import { AnalyticsExportService } from './services/analytics-export.service';
 import { SearchConsoleService } from './search-console.service';
 import { AdminTrackingBypassInterceptor } from './interceptors/admin-tracking-bypass.interceptor';
 import { PageView, PageViewSchema } from './schemas/page-view.schema';
@@ -23,7 +25,13 @@ import { ClickEvent, ClickEventSchema } from './schemas/click-event.schema';
     ]),
   ],
   controllers: [AnalyticsController],
-  providers: [AnalyticsService, SearchConsoleService, AdminTrackingBypassInterceptor],
-  exports: [AnalyticsService],
+  providers: [
+    AnalyticsTrackingService,
+    AnalyticsQueryService,
+    AnalyticsExportService,
+    SearchConsoleService,
+    AdminTrackingBypassInterceptor,
+  ],
+  exports: [AnalyticsTrackingService, AnalyticsQueryService, AnalyticsExportService],
 })
 export class AnalyticsModule {}

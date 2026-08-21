@@ -1,0 +1,77 @@
+<div class="page">
+  <header class="page-header">
+    <div class="header-badge">
+      <span class="badge-dot"></span>
+      {{ 'workspace.badge' | translate }}
+    </div>
+    <h1>🔗 {{ 'workspace.title' | translate }}</h1>
+    <p>{{ 'workspace.subtitle' | translate }}</p>
+  </header>
+
+  @if (workspace.hasItem()) {
+    <section class="current-card" [class.pop]="justCleared()">
+      <div class="current-icon">{{ workspace.current()!.kind === 'file' ? '📄' : '📝' }}</div>
+      <div class="current-body">
+        <span class="current-kind">{{ kindLabel(workspace.current()!.kind) | translate }}</span>
+        <h3>{{ workspace.current()!.filename }}</h3>
+        <p class="current-source">{{ 'workspace.received_from' | translate: { tool: (workspace.current()!.fromTool + '.title' | translate) } }}</p>
+      </div>
+      <div class="current-actions">
+        <button type="button" class="btn-ghost" (click)="downloadCurrent()">⬇ {{ 'workspace.btn_download' | translate }}</button>
+        <button type="button" class="btn-ghost btn-danger" (click)="clearCurrent()">✕ {{ 'workspace.btn_clear' | translate }}</button>
+      </div>
+    </section>
+
+    <section class="tools-section">
+      <h2 class="section-title">{{ 'workspace.next_steps' | translate }}</h2>
+      <div class="cards-grid">
+        @for (t of nextSteps(); track t.id) {
+          <a [routerLink]="t.route" class="tool-card">
+            <div class="card-icon">{{ t.icon }}</div>
+            <div class="card-body">
+              <h3>{{ (t.id + '.title') | translate }}</h3>
+            </div>
+            <span class="card-arrow">→</span>
+          </a>
+        }
+      </div>
+    </section>
+  } @else {
+    <section class="empty-state">
+      <span class="empty-icon">🧩</span>
+      <h3>{{ 'workspace.empty_title' | translate }}</h3>
+      <p>{{ 'workspace.empty_hint' | translate }}</p>
+    </section>
+
+    <section class="tools-section">
+      <h2 class="section-title">{{ 'workspace.start_here' | translate }}</h2>
+      <div class="cards-grid">
+        @for (t of startingTools; track t.id) {
+          <a [routerLink]="t.route" class="tool-card">
+            <div class="card-icon">{{ t.icon }}</div>
+            <div class="card-body">
+              <h3>{{ (t.id + '.title') | translate }}</h3>
+            </div>
+            <span class="card-arrow">→</span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (workspace.history().length) {
+    <section class="history-section">
+      <h2 class="section-title">{{ 'workspace.history_title' | translate }}</h2>
+      <ul class="history-list">
+        @for (h of workspace.history(); track h.createdAt) {
+          <li>
+            <span class="history-icon">{{ h.kind === 'file' ? '📄' : '📝' }}</span>
+            <span class="history-name">{{ h.filename }}</span>
+            <span class="history-from">{{ (h.fromTool + '.title') | translate }}</span>
+            <span class="history-time">{{ timeAgo(h.createdAt) }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</div>

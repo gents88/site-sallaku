@@ -4,6 +4,7 @@ import { CreateConsentDto } from './dto/create-consent.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
+import { ConsentHistoryQueryDto } from './dto/consent-history-query.dto';
 
 @Controller('consent')
 export class ConsentController {
@@ -24,9 +25,7 @@ export class ConsentController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @Get('history')
-  async history(@Query('limit') limit = '100', @Query('skip') skip = '0') {
-    const l = Math.min(1000, parseInt(limit as string, 10) || 100);
-    const s = parseInt(skip as string, 10) || 0;
-    return this.consentService.history(l, s);
+  async history(@Query() { limit, skip }: ConsentHistoryQueryDto) {
+    return this.consentService.history(limit ?? 100, skip ?? 0);
   }
 }

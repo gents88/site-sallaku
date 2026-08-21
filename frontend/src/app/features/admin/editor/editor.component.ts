@@ -1,13 +1,25 @@
 import {
-  Component, ChangeDetectionStrategy, OnInit, ElementRef, ViewChild,
-  inject, signal,
+  Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef, ViewChild,
+  PLATFORM_ID, afterNextRender, inject, signal,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService, ConversionTypeId } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 type ExportFormat = 'pdf' | 'docx' | 'html';
+
+/** Chiave localStorage per l'autosave della bozza (protegge da refresh/chiusura accidentale). */
+const EDITOR_DRAFT_KEY = 'editor-draft';
+/** Debounce dell'autosave: evita di scrivere su localStorage ad ogni singolo carattere. */
+const DRAFT_SAVE_DEBOUNCE_MS = 1000;
+
+interface EditorDraft {
+  docName: string;
+  html: string;
+}
 
 interface ToolBtn {
   cmd: string;
@@ -45,155 +57,16 @@ const TOOLBAR: ToolBtn[][] = [
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslateModule],
-  template: `
-    <div class="cp-page">
-      <header class="cp-header">
-        <h1 class="cp-title">✏️ {{ 'editor.title' | translate }}</h1>
-        <p class="cp-subtitle">{{ 'editor.subtitle' | translate }}</p>
-      </header>
-
-      <div class="cp-panel">
-        <!-- ── Barra documento ─────────────────────── -->
-        <div class="doc-bar">
-          <input class="in doc-name" type="text" maxlength="80"
-                 [placeholder]="'editor.doc_name_placeholder' | translate"
-                 [value]="docName()" (input)="docName.set($any($event.target).value)">
-          <div class="ac">
-            <button class="btn btn-s" (click)="pick.click()">{{ 'editor.import' | translate }}</button>
-            <input #pick type="file" hidden accept=".docx,.txt,.md,.html,.htm" (change)="importFile($event)">
-            <button class="btn btn-s" [disabled]="exporting()" (click)="exportAs('html')">HTML</button>
-            <button class="btn btn-s" [disabled]="exporting()" (click)="exportAs('docx')">DOCX</button>
-            <button class="btn btn-p" [disabled]="exporting()" (click)="exportAs('pdf')">
-              {{ exporting() ? ('editor.exporting' | translate) : 'PDF' }}
-            </button>
-          </div>
-        </div>
-
-        <!-- ── Toolbar formattazione ────────────────── -->
-        <div class="fmt-bar">
-          <select class="sel" (change)="block($any($event.target).value); $any($event.target).value = ''">
-            <option value="" disabled selected>{{ 'editor.style' | translate }}</option>
-            <option value="p">{{ 'editor.paragraph' | translate }}</option>
-            <option value="h1">H1</option>
-            <option value="h2">H2</option>
-            <option value="h3">H3</option>
-            <option value="pre">{{ 'editor.code' | translate }}</option>
-          </select>
-          @for (group of toolbar; track $index) {
-            <span class="fmt-group">
-              @for (b of group; track b.cmd + (b.arg ?? '')) {
-                <button class="tb" [title]="b.labelKey | translate" (click)="exec(b.cmd, b.arg)">{{ b.icon }}</button>
-              }
-            </span>
-          }
-          <span class="fmt-group">
-            <button class="tb" [title]="'editor.link' | translate" (click)="addLink()">🔗</button>
-          </span>
-          <span class="words">{{ wordCount() }} {{ 'editor.words' | translate }}</span>
-        </div>
-
-        <!-- ── Area di scrittura ────────────────────── -->
-        <div #sheet class="sheet" contenteditable="true"
-             [attr.data-placeholder]="'editor.placeholder' | translate"
-             (input)="onEdit()"></div>
-
-        @if (importing()) {
-          <div class="progress-wrap">
-            <div class="progress-bar"><div class="progress-fill"></div></div>
-          </div>
-        }
-        @if (msg()) {
-          <p class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
-        }
-      </div>
-    </div>
-  `,
-  styles: [`
-    :host { display: block; }
-    .cp-page { min-height: 100%; padding: 2rem; background: var(--bg-primary, #0d1117); max-width: 1000px; margin: 0 auto; }
-    .cp-header { margin-bottom: 1.75rem; }
-    .cp-title { font-size: 1.75rem; font-weight: 700; color: var(--text-primary, #e6edf3); margin: 0 0 0.25rem; }
-    .cp-subtitle { color: var(--text-secondary, #8b949e); margin: 0; font-size: 0.9rem; }
-
-    .cp-panel {
-      background: var(--bg-secondary, #161b22); border: 1px solid var(--border-color, #30363d);
-      border-radius: 14px; padding: 1.25rem; color: var(--text-primary, #e6edf3);
-    }
-
-    .doc-bar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: .75rem; }
-    .doc-name { flex: 1; min-width: 180px; }
-    .in {
-      padding: 0.5rem 0.75rem; border-radius: 9px; border: 1px solid var(--border-color, #30363d);
-      background: var(--bg-primary, #0d1117); color: var(--text-primary, #e6edf3);
-      font-family: inherit; font-size: 0.9rem; box-sizing: border-box;
-    }
-    .in:focus { outline: none; border-color: var(--accent, #6c63ff); }
-
-    .fmt-bar {
-      display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
-      padding: .5rem; border: 1px solid var(--border-color, #30363d); border-radius: 10px;
-      background: var(--bg-primary, #0d1117); margin-bottom: .75rem;
-      position: sticky; top: 0; z-index: 10;
-    }
-    .fmt-group { display: inline-flex; gap: .15rem; padding-right: .6rem; border-right: 1px solid var(--border-color, #30363d); }
-    .fmt-group:last-of-type { border-right: none; }
-    .sel {
-      padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid var(--border-color, #30363d);
-      background: var(--bg-tertiary, #1c2333); color: var(--text-primary, #e6edf3);
-      font-family: inherit; font-size: 0.8rem;
-    }
-    .tb {
-      min-width: 30px; height: 30px; padding: 0 .4rem; border-radius: 7px;
-      border: 1px solid transparent; background: none; color: var(--text-primary, #e6edf3);
-      cursor: pointer; font-size: .85rem; font-family: inherit;
-    }
-    .tb:hover { background: var(--bg-tertiary, #1c2333); border-color: var(--border-color, #30363d); }
-    .words { margin-left: auto; font-size: .72rem; color: var(--text-secondary, #8b949e); white-space: nowrap; }
-
-    .sheet {
-      min-height: 55vh; background: #fff; color: #1f2328; border-radius: 10px;
-      padding: 2.25rem 2.5rem; outline: none; font-size: 1rem; line-height: 1.65;
-      font-family: Georgia, 'Times New Roman', serif; overflow-wrap: break-word;
-      box-shadow: 0 4px 24px rgba(0,0,0,.45);
-    }
-    .sheet:empty::before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; }
-    .sheet :is(h1, h2, h3) { line-height: 1.3; }
-    .sheet blockquote { border-left: 3px solid #d1d5db; margin-left: 0; padding-left: 1rem; color: #4b5563; }
-    .sheet pre { background: #f3f4f6; padding: .75rem; border-radius: 6px; font-size: .85rem; overflow-x: auto; }
-    .sheet a { color: #4338ca; }
-
-    .ac { display: flex; gap: .6rem; flex-wrap: wrap; }
-    .btn { padding: .55rem 1.1rem; border-radius: 9px; border: 1px solid transparent; font-family: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; transition: opacity .15s, transform .1s; }
-    .btn:disabled { opacity: .45; cursor: not-allowed; }
-    .btn:not(:disabled):active { transform: scale(.97); }
-    .btn-p { background: var(--accent, #6c63ff); color: #fff; font-weight: 600; }
-    .btn-p:not(:disabled):hover { background: #5851e5; }
-    .btn-s { background: transparent; color: var(--text-primary, #e6edf3); border-color: var(--border-color, #30363d); }
-    .btn-s:hover { background: var(--bg-tertiary, #1c2333); }
-
-    .progress-wrap { margin-top: 1rem; }
-    .progress-bar { height: 3px; background: var(--bg-tertiary,#1c2333); border-radius: 2px; overflow: hidden; }
-    .progress-fill {
-      height: 100%; background: linear-gradient(90deg, var(--accent,#6c63ff), #a855f7); border-radius: 2px;
-      animation: prog 1.4s ease-in-out infinite;
-    }
-    @keyframes prog { 0% { width: 0; margin-left: 0; } 50% { width: 60%; margin-left: 20%; } 100% { width: 0; margin-left: 100%; } }
-
-    .msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); font-size: .85rem; color: var(--warning, #fbbf24); margin: 1rem 0 0; }
-    .msg--ok { background: rgba(52,211,153,.08); border-color: rgba(52,211,153,.3); color: var(--success, #34d399); }
-
-    @media (max-width: 600px) {
-      .cp-page { padding: 1rem; }
-      .cp-title { font-size: 1.35rem; }
-      .sheet { padding: 1.25rem 1rem; }
-      .words { display: none; }
-    }
-  `],
+  templateUrl: './editor.component.html',
+  styleUrls: ['./editor.component.scss'],
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly workspace = inject(WorkspaceService);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   @ViewChild('sheet', { static: true }) private sheetRef!: ElementRef<HTMLDivElement>;
 
@@ -204,25 +77,61 @@ export class EditorComponent implements OnInit {
   readonly exporting = signal(false);
   readonly msg = signal('');
   readonly msgOk = signal(false);
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  readonly justSent = signal(false);
+
+  private draftSaveTimer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor() {
+    // Deferred to right after the initial (hydrated) render, not ngOnInit: restoring
+    // the draft / offering a Workspace item mutates content that's part of the
+    // template (docName, wordCount, the contenteditable body) during ngOnInit, which
+    // runs before hydration reconciliation on the client — that would make the first
+    // client render diverge from the server's (always-empty) one, and Angular can't
+    // reconcile the resulting DOM mismatch.
+    afterNextRender(() => {
+      // Ripristino della bozza: eseguito solo qui, prima di qualunque interazione
+      // dell'utente (import compreso), quindi è per costruzione un "fresh load".
+      this.restoreDraft();
+
+      // Un item Workspace viene offerto solo se il ripristino bozza non ha già
+      // popolato l'editor — non deve mai sovrascrivere contenuto già presente.
+      if (this.isBrowser && !this.sheetRef.nativeElement.innerText.trim()) {
+        const pending = this.workspace.peek();
+        if (pending && pending.kind === 'text') {
+          this.workspaceItem.set(pending);
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.seo.update({
       title: 'Free Online Document Editor — Export to PDF & DOCX',
       description: 'Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup.',
-      url: 'https://gentsallaku.it/dashboard/editor',
+      url: 'https://gentsallaku.it/lab/editor',
     });
     this.seo.injectJsonLd({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free Online Document Editor',
       description: 'Write and format documents in the browser, import Word files and export to PDF, DOCX or HTML.',
-      url: 'https://gentsallaku.it/dashboard/editor',
+      url: 'https://gentsallaku.it/lab/editor',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+  }
+
+  onDocNameChange(value: string): void {
+    this.docName.set(value);
+    this.scheduleDraftSave();
   }
 
   exec(cmd: string, arg?: string): void {
@@ -243,6 +152,27 @@ export class EditorComponent implements OnInit {
   onEdit(): void {
     const text = this.sheetRef.nativeElement.innerText.trim();
     this.wordCount.set(text ? text.split(/\s+/).length : 0);
+    this.scheduleDraftSave();
+  }
+
+  useWorkspaceText(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'text' || !item.text) return;
+    this.setContent(this.textToHtml(item.text));
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    const text = this.sheetRef.nativeElement.innerText.trim();
+    if (!text) return;
+    const name = this.docName().trim() || 'document';
+    this.workspace.send({ kind: 'text', text, filename: `${name}.txt`, fromTool: 'editor' });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   // ── Import ───────────────────────────────────────────────────────────
@@ -288,6 +218,7 @@ export class EditorComponent implements OnInit {
 
     if (format === 'html') {
       this.download(new Blob([html], { type: 'text/html;charset=utf-8' }), `${name}.html`);
+      this.clearDraft();
       return;
     }
 
@@ -305,6 +236,7 @@ export class EditorComponent implements OnInit {
             this.download(ev.body, `${name}.${format}`);
             this.msg.set(`✅ ${this.t.instant('editor.success')}`);
             this.msgOk.set(true);
+            this.clearDraft();
           } else {
             this.msg.set(`❌ ${this.t.instant('editor.err_export')}`);
           }
@@ -342,6 +274,60 @@ export class EditorComponent implements OnInit {
   private setContent(html: string): void {
     this.sheetRef.nativeElement.innerHTML = html;
     this.onEdit();
+  }
+
+  // ── Autosave bozza (localStorage) ───────────────────────────────────────
+  // Protegge da refresh/chiusura/navigazione accidentale: essendo localStorage
+  // (non sessionStorage) la bozza sopravvive anche alla chiusura del tab/browser,
+  // quindi copre lo stesso scenario per cui servirebbe un prompt beforeunload.
+  // Per questo non aggiungiamo anche il prompt nativo "vuoi uscire?": nagerebbe
+  // l'utente ad ogni uscita dalla pagina pur avendo già il contenuto al sicuro,
+  // senza reale beneficio se non nel caso limite della navigazione privata con
+  // storage cancellato alla chiusura — troppo marginale per giustificare il fastidio.
+
+  /** Ripristina la bozza salvata, se presente, solo al caricamento iniziale del componente. */
+  private restoreDraft(): void {
+    if (!this.isBrowser) return;
+    try {
+      const raw = localStorage.getItem(EDITOR_DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw) as Partial<EditorDraft>;
+      if (!draft.html || !draft.html.trim()) return;
+      this.sheetRef.nativeElement.innerHTML = draft.html;
+      if (draft.docName) this.docName.set(draft.docName);
+      this.onEdit();
+    } catch {
+      // Bozza corrotta o non leggibile: ignora silenziosamente, si riparte da vuoto.
+    }
+  }
+
+  private scheduleDraftSave(): void {
+    if (!this.isBrowser) return;
+    if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+    this.draftSaveTimer = setTimeout(() => this.saveDraft(), DRAFT_SAVE_DEBOUNCE_MS);
+  }
+
+  private saveDraft(): void {
+    if (!this.isBrowser) return;
+    if (!this.sheetRef.nativeElement.innerText.trim()) {
+      // Editor vuoto: non ha senso tenere in giro una bozza vuota.
+      localStorage.removeItem(EDITOR_DRAFT_KEY);
+      return;
+    }
+    const draft: EditorDraft = { docName: this.docName(), html: this.sheetRef.nativeElement.innerHTML };
+    try {
+      localStorage.setItem(EDITOR_DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // Storage pieno o non disponibile (es. navigazione privata): l'autosave
+      // diventa no-op, ma non deve mai bloccare la scrittura nell'editor.
+    }
+  }
+
+  /** Svuota la bozza salvata: chiamato quando "il lavoro è fatto" (export riuscito). */
+  private clearDraft(): void {
+    if (!this.isBrowser) return;
+    if (this.draftSaveTimer) clearTimeout(this.draftSaveTimer);
+    localStorage.removeItem(EDITOR_DRAFT_KEY);
   }
 
   /** Estrae il body e rimuove script/style/eventi inline dall'HTML importato. */

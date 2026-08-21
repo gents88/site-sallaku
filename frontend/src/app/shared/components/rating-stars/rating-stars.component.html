@@ -1,0 +1,22 @@
+<div
+  class="rating-stars"
+  [class.rating-stars--interactive]="!readonly"
+  [attr.role]="readonly ? 'img' : 'group'"
+  [attr.aria-label]="ariaLabel + ': ' + value + ' / ' + max"
+  (mouseleave)="onHover(null)"
+>
+  @for (star of stars; track star) {
+    <button
+      type="button"
+      class="star"
+      [class.star--filled]="displayValue(star)"
+      [disabled]="readonly"
+      [attr.tabindex]="readonly ? -1 : 0"
+      [attr.aria-label]="star + ' / ' + max"
+      (click)="select(star)"
+      (mouseenter)="onHover(star)"
+    >
+      ★
+    </button>
+  }
+</div>

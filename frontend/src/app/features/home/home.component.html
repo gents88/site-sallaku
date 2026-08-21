@@ -57,7 +57,17 @@
     <div class="about-intro reveal">
       <div class="about-photo">
         <figure>
-          <img src="assets/profil.jpeg" alt="Gent Sallaku" class="profile-photo" width="220" height="220" />
+          <!-- Rendered at 220px wide; the sources are 440px for 2x displays.
+               The original 800x765 JPEG was 102KB to fill a 220px box — AVIF
+               at the same visible quality is 8KB. width/height match the real
+               800:765 aspect ratio so the box is reserved before load (CLS).
+               Regenerate with scripts/optimize-images.js. -->
+          <picture>
+            <source srcset="assets/profil.avif" type="image/avif" />
+            <source srcset="assets/profil.webp" type="image/webp" />
+            <img src="assets/profil-440.jpg" alt="Gent Sallaku" class="profile-photo"
+                 width="220" height="210" loading="lazy" decoding="async" />
+          </picture>
         </figure>
       </div>
       <div class="about-body">
@@ -246,6 +256,13 @@
         </div>
       }
     </div>
+  </div>
+</section>
+
+<!-- ══ TESTIMONIALS ════════════════════════════════════ -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <app-testimonials-wall [featuredOnly]="true" [limit]="6" />
   </div>
 </section>
 

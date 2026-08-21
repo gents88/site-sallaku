@@ -91,14 +91,38 @@
           </div>
         </div>
 
+        @if (workspaceItem()) {
+          <div class="workspace-banner">
+            <span class="workspace-banner-icon">🔗</span>
+            <div class="workspace-banner-text">
+              <strong>{{ 'ai_formatter.workspace_banner_title' | translate }}</strong>
+            </div>
+            <div class="workspace-banner-actions">
+              <button type="button" class="workspace-btn primary" (click)="useWorkspaceText()">
+                {{ 'ai_formatter.workspace_banner_use' | translate }}
+              </button>
+              <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">
+                {{ 'ai_formatter.workspace_banner_dismiss' | translate }}
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (draftRestored()) {
+          <div class="draft-banner">
+            <span>💾 {{ 'ai_formatter.draft_restored' | translate }}</span>
+            <button type="button" class="draft-dismiss" (click)="dismissDraftNotice()">✕</button>
+          </div>
+        }
+
         <!-- Drop zone (shown only when textarea is empty) -->
         @if (!text()) {
           <div
             class="dropzone"
-            [class.dragging]="isDragging()"
-            (dragover)="onDragOver($event)"
-            (dragleave)="onDragLeave()"
-            (drop)="onDrop($event)"
+            appFileDropzone
+            #dz="fileDropzone"
+            [class.dragging]="dz.isDragging"
+            (filesDropped)="onFilesDropped($event)"
             (click)="fileInput.click()">
             <input
               #fileInput
@@ -151,7 +175,7 @@
       </div>
 
       <!-- OUTPUT PANEL -->
-      <div class="panel panel-output" [class.has-result]="!!result()">
+      <div class="panel panel-output result-pop" [class.has-result]="!!result()">
         <div class="panel-header">
           <span class="panel-title">{{ 'ai_formatter.panel_output' | translate }}</span>
           @if (result()) {
@@ -170,6 +194,9 @@
               </div>
               <button class="btn-copy" (click)="copyToClipboard()">
                 {{ copied() ? '✓ Copied' : '📋 Copy' }}
+              </button>
+              <button class="btn-copy" [class.is-sent]="justSentToWorkspace()" (click)="sendToWorkspace()">
+                {{ justSentToWorkspace() ? ('ai_formatter.workspace_sent' | translate) : ('🔗 ' + ('ai_formatter.workspace_send' | translate)) }}
               </button>
             </div>
           }
@@ -198,6 +225,10 @@
             <span class="meta-pill meta-accent">💬 {{ result()!.wordCount }} words</span>
             <span class="meta-pill meta-accent">⚡ {{ result()!.processingTime }}ms</span>
           </div>
+
+          @if (result()!.truncated) {
+            <div class="truncated-banner">⚠️ {{ 'ai_formatter.truncated_warning' | translate }}</div>
+          }
 
           @if (result()!.summary) {
             <div class="result-summary">{{ result()!.summary }}</div>

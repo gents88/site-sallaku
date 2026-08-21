@@ -16,10 +16,12 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { NotesService, NoteModerationStatus } from './services/notes.service';
+import { NotesService } from './services/notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { NoteResponseDto } from './dto/note-response.dto';
 import { NoteAdminListItemDto } from './dto/note-admin-list-item.dto';
+import { NotesAdminQueryDto } from './dto/notes-admin-query.dto';
+import { SkipLimitDto } from '../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
@@ -40,13 +42,9 @@ export class NotesController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'skip', required: false, type: Number })
   async getAllForAdmin(
-    @Query('status') status?: NoteModerationStatus,
-    @Query('limit') limit?: string,
-    @Query('skip') skip?: string,
+    @Query() { status, limit, skip }: NotesAdminQueryDto,
   ): Promise<{ data: NoteAdminListItemDto[]; total: number }> {
-    const limitNum = Math.min(parseInt(limit) || 50, 100);
-    const skipNum = Math.max(parseInt(skip) || 0, 0);
-    return this.notesService.getAllForAdmin(status ?? 'pending', limitNum, skipNum);
+    return this.notesService.getAllForAdmin(status ?? 'pending', limit ?? 50, skip ?? 0);
   }
 
   @Post(':articleId')
@@ -73,13 +71,9 @@ export class NotesController {
   @ApiResponse({ status: 200, description: 'Notes retrieved successfully' })
   async getNotes(
     @Param('articleId') articleId: string,
-    @Query('limit') limit?: string,
-    @Query('skip') skip?: string,
+    @Query() { limit, skip }: SkipLimitDto,
   ): Promise<{ data: NoteResponseDto[]; total: number }> {
-    const limitNum = Math.min(parseInt(limit) || 50, 100);
-    const skipNum = Math.max(parseInt(skip) || 0, 0);
-
-    return this.notesService.getNotes(articleId, true, limitNum, skipNum);
+    return this.notesService.getNotes(articleId, true, limit ?? 50, skip ?? 0);
   }
 
   @Get(':articleId/stats')

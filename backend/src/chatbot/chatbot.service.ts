@@ -7,6 +7,7 @@ import { ChatSession, ChatSessionDocument, ChatMessage } from './schemas/chat-se
 import { MailService } from '../mail/mail.service';
 import { AboutService } from '../about/about.service';
 import { AboutDocument } from '../about/schemas/about.schema';
+import { AiProviderService } from '../common/services/ai-provider.service';
 
 const LANG_NAMES: Record<string, string> = {
   it: 'Italian (Italiano)',
@@ -38,21 +39,21 @@ function buildSystemPrompt(lang?: string, about?: Partial<AboutDocument> | null)
 Gent Sallaku is a full-stack developer specialized in Angular, Javascript, NestJS, MongoDB, and modern web technologies.
 He built this portfolio to showcase his projects, experiences, and services.
 ${aboutBlock}
-Gent also built a suite of free tools available on this site, under the "🧰 AI & Tools" menu (base path /dashboard/...). If a visitor asks about tools, document processing, PDFs, or productivity utilities, proactively mention the relevant ones and give their exact path.
+Gent also built a suite of free tools available on this site, under the "🧰 AI & Tools" menu (base path /lab/...). If a visitor asks about tools, document processing, PDFs, or productivity utilities, proactively mention the relevant ones and give their exact path.
 
 AI-powered tools:
-- AI Document Summarizer (/dashboard/pdf-summary): upload a PDF, Word, or TXT file and get an AI-generated summary in seconds.
-- AI Formatter (/dashboard/ai-formatter): turns raw, unformatted notes and text into a polished, well-structured document.
-- AI PDF Translator (/dashboard/pdf-translate): translates any PDF or document into 12 languages with AI quality.
-- AI Slides Generator (/dashboard/ai-ppt): turns any topic into a full presentation with speaker notes.
+- AI Document Summarizer (/lab/pdf-summary): upload a PDF, Word, or TXT file and get an AI-generated summary in seconds.
+- AI Formatter (/lab/ai-formatter): turns raw, unformatted notes and text into a polished, well-structured document.
+- AI PDF Translator (/lab/pdf-translate): translates any PDF or document into 12 languages with AI quality.
+- AI Slides Generator (/lab/ai-ppt): turns any topic into a full presentation with speaker notes.
 
 Other PDF/document utilities (not AI-based):
-- PDF Editor (/dashboard/pdf-editor): merge, split, rotate, delete pages, add watermarks to any PDF.
-- Viewer (/dashboard/viewer): view, navigate, and search inside PDF documents in the browser.
-- Editor (/dashboard/editor): rich text editor with export to PDF and DOCX.
-- Converter (/dashboard/convert): convert between PDF, Word, Excel, images, and more.
-- OCR (/dashboard/ocr): extract text from PDFs and scanned images.
-- Scanner (/dashboard/scanner): scan physical documents with the camera and convert them to PDF.
+- PDF Editor (/lab/pdf-editor): merge, split, rotate, delete pages, add watermarks to any PDF.
+- Viewer (/lab/viewer): view, navigate, and search inside PDF documents in the browser.
+- Editor (/lab/editor): rich text editor with export to PDF and DOCX.
+- Converter (/lab/convert): convert between PDF, Word, Excel, images, and more.
+- OCR (/lab/ocr): extract text from PDFs and scanned images.
+- Scanner (/lab/scanner): scan physical documents with the camera and convert them to PDF.
 
 Your role:
 - Answer questions about Gent's skills, projects, and experience
@@ -121,6 +122,7 @@ export class ChatbotService {
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
     private readonly aboutService: AboutService,
+    private readonly aiProvider: AiProviderService,
   ) {}
 
   async sendMessage(
@@ -259,34 +261,11 @@ export class ChatbotService {
 
     try {
       const about = await this.aboutService.get().catch(() => null);
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
-          messages: [{ role: 'system', content: buildSystemPrompt(lang, about) }, ...messages],
-          max_tokens: 350,
-          temperature: 0.7,
-        }),
-        signal: AbortSignal.timeout(15_000),
-      });
-
-      if (!response.ok) {
-        const err = await response.text();
-        this.logger.warn(`Groq responded with status ${response.status}: ${err}`);
-        return this.getFallbackResponse(messages[messages.length - 1].content);
-      }
-
-      const data = (await response.json()) as {
-        choices: { message: { content: string } }[];
-        model: string;
-        usage: { prompt_tokens: number; completion_tokens: number };
-      };
-      this.logger.log(`Groq [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`);
-      return data.choices?.[0]?.message?.content?.trim() || this.getFallbackResponse(messages[messages.length - 1].content);
+      const content = await this.aiProvider.chatCompletion(
+        [{ role: 'system', content: buildSystemPrompt(lang, about) }, ...messages],
+        { model: 'llama-3.1-8b-instant', maxTokens: 350, timeoutMs: 15_000 },
+      );
+      return content || this.getFallbackResponse(messages[messages.length - 1].content);
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
       return this.getFallbackResponse(messages[messages.length - 1].content);

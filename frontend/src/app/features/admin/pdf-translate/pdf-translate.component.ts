@@ -11,9 +11,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { finalize } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
   PdfTranslateService,
   TranslationLanguage,
@@ -28,7 +32,7 @@ type TranslationMode = 'high_fidelity' | 'standard';
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -39,24 +43,32 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   private readonly service   = inject(PdfTranslateService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo       = inject(SeoService);
+  private readonly workspace = inject(WorkspaceService);
+
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  readonly justSent      = signal(false);
 
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file') {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
-      title: 'AI PDF Translator — Translate PDF with Layout Preserved',
-      description: 'Translate any PDF to 12 languages while keeping fonts, images and layout intact. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
-      url: 'https://gentsallaku.it/dashboard/pdf-translate',
+      title: 'AI PDF Translator — Translate PDF, Pages Preserved',
+      description: 'Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
+      url: 'https://gentsallaku.it/lab/pdf-translate',
     });
     this.seo.injectJsonLd([
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
         name: 'AI PDF Translator',
-        description: 'Translate any PDF to 12 languages while preserving the original layout, fonts and images. Powered by GPT-4o.',
-        url: 'https://gentsallaku.it/dashboard/pdf-translate',
+        description: 'Translate any PDF to 12 languages while keeping the original page count and page format. Powered by GPT-4o.',
+        url: 'https://gentsallaku.it/lab/pdf-translate',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-        featureList: ['12 languages', 'Layout preserved', 'OCR for scanned PDFs', 'GPT-4o quality', '50 MB limit'],
+        featureList: ['12 languages', 'Page-accurate layout', 'OCR for scanned PDFs', 'GPT-4o quality', '50 MB limit'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
       {
@@ -71,12 +83,12 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
           {
             '@type': 'Question',
             name: 'Will the translated PDF keep the original layout?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes — High Fidelity mode preserves columns, fonts, images, headers, footers and exact block positions. A faster Standard mode is also available for clean text output.' },
+            acceptedAnswer: { '@type': 'Answer', text: "High Fidelity mode keeps the same page count and page size as the original, page by page — not the original fonts or images, which no online translator can carry over losslessly. A faster Standard mode is also available, reflowing the whole document as clean text." },
           },
           {
             '@type': 'Question',
             name: 'Can it translate scanned PDFs?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, scanned (image-based) PDFs are automatically detected and processed through an OCR pipeline before translation.' },
+            acceptedAnswer: { '@type': 'Answer', text: 'Yes — pages with no extractable text are automatically detected and read via OCR before translation.' },
           },
           {
             '@type': 'Question',
@@ -93,10 +105,41 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   readonly file             = signal<File | null>(null);
   readonly result           = signal<TranslatePdfResult | null>(null);
   readonly error            = signal('');
-  readonly isDragging       = signal(false);
   readonly selectedLanguage = signal<TranslationLanguage>('english');
   readonly copied           = signal(false);
   readonly mode             = signal<TranslationMode>('high_fidelity');
+
+  // Staged status indicator shown while `loading` is true. The backend call is a
+  // single synchronous POST with no progress channel, so this is an honest
+  // client-side heuristic (time-based step advance) — not real fractional progress.
+  readonly translateStepKeys: string[] = [
+    'pdf_translate.step_extracting',
+    'pdf_translate.step_translating',
+    'pdf_translate.step_rebuilding',
+  ];
+  readonly currentStepIndex = signal(0);
+  readonly currentStepKey   = computed(() => this.translateStepKeys[this.currentStepIndex()] ?? this.translateStepKeys[0]);
+
+  private _stepTimer: ReturnType<typeof setInterval> | null = null;
+
+  private _startStepCycle(fileSizeBytes: number): void {
+    this._stopStepCycle();
+    this.currentStepIndex.set(0);
+    const totalSteps = this.translateStepKeys.length;
+    if (totalSteps <= 1) return;
+    // Rough heuristic: bigger files get more time per step. Not tied to real progress.
+    const mb = fileSizeBytes / (1024 * 1024);
+    const perStepMs = Math.min(9000, Math.max(2200, mb * 900));
+    this._stepTimer = setInterval(() => {
+      const next = this.currentStepIndex() + 1;
+      if (next >= totalSteps) { this._stopStepCycle(); return; }
+      this.currentStepIndex.set(next);
+    }, perStepMs);
+  }
+
+  private _stopStepCycle(): void {
+    if (this._stepTimer) { clearInterval(this._stepTimer); this._stepTimer = null; }
+  }
 
   private _originalBlobUrl:   string | null = null;
   private _translatedBlobUrl: string | null = null;
@@ -105,6 +148,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   readonly translatedPdfUrl = signal<SafeResourceUrl | null>(null);
 
   ngOnDestroy(): void {
+    this._stopStepCycle();
     this._revokeOriginal();
     this._revokeTranslated();
   }
@@ -164,11 +208,8 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     return this.languages.filter((l) => l.value !== current);
   });
 
-  onDragOver(event: DragEvent): void { event.preventDefault(); this.isDragging.set(true); }
-  onDragLeave(): void { this.isDragging.set(false); }
-  onDrop(event: DragEvent): void {
-    event.preventDefault(); this.isDragging.set(false);
-    const f = event.dataTransfer?.files?.[0];
+  onFilesDropped(files: FileList): void {
+    const f = files[0];
     if (f) this.setFile(f);
   }
   onFileSelected(event: Event): void {
@@ -191,6 +232,18 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     this._setOriginalUrl(f);
   }
 
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const file = new File([item.blob], item.filename, { type: item.mime });
+    this.setFile(file);
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
   triggerFileInput(): void { this.fileInput.nativeElement.click(); }
 
   removeFile(): void {
@@ -211,16 +264,20 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
 
     const options: TranslateOptions = { highFidelity: this.mode() === 'high_fidelity' };
 
-    this.service.translate(f, this.selectedLanguage(), options).subscribe({
-      next: (res) => {
-        this.result.set(res);
-        if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
-      },
-      error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? 'Translation failed. Please try again.';
-        this.error.set(msg);
-      },
-    });
+    this._startStepCycle(f.size);
+
+    this.service.translate(f, this.selectedLanguage(), options)
+      .pipe(finalize(() => this._stopStepCycle()))
+      .subscribe({
+        next: (res) => {
+          this.result.set(res);
+          if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
+        },
+        error: (err) => {
+          const msg = err?.error?.message ?? err?.message ?? 'Translation failed. Please try again.';
+          this.error.set(msg);
+        },
+      });
   }
 
   retranslate(lang: TranslationLanguage): void {
@@ -246,6 +303,31 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     const res = this.result();
     if (!res) return;
     this.service.downloadText(text, `translated-${res.targetLanguage}-${Date.now()}.txt`);
+  }
+
+  sendToWorkspace(): void {
+    const res = this.result();
+    if (!res) return;
+    if (res.pdfBase64) {
+      const bytes = Uint8Array.from(atob(res.pdfBase64), (c) => c.charCodeAt(0));
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      this.workspace.send({
+        kind: 'file',
+        blob,
+        filename: `translated-${res.targetLanguage}.pdf`,
+        mime: 'application/pdf',
+        fromTool: 'pdf_translate',
+      });
+    } else {
+      this.workspace.send({
+        kind: 'text',
+        text: res.translatedText,
+        filename: `translated-${res.targetLanguage}.txt`,
+        fromTool: 'pdf_translate',
+      });
+    }
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   reset(): void {

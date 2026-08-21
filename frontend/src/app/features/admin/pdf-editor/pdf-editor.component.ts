@@ -4,6 +4,8 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 interface SourcePdf {
   bytes: Uint8Array; // per pdf-lib (export)
@@ -22,180 +24,15 @@ interface PageEntry {
   selector: 'app-pdf-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
-  template: `
-    <div class="cp-page">
-      <header class="cp-header">
-        <h1 class="cp-title">🖊️ {{ 'pdf_editor.title' | translate }}</h1>
-        <p class="cp-subtitle">{{ 'pdf_editor.subtitle' | translate }}</p>
-      </header>
-
-      <!-- ── Upload / merge ───────────────────────── -->
-      <div class="cp-panel">
-        <div class="dz"
-             (click)="pick.click()"
-             (dragover)="$event.preventDefault()"
-             (drop)="drop($event)"
-             [class.dz--active]="pages().length > 0">
-          <input #pick type="file" hidden accept=".pdf" multiple (change)="select($event)">
-          @if (pages().length === 0) {
-            <span class="dz-icon">📂</span>
-            <strong>{{ 'pdf_editor.drop_prompt' | translate }}</strong>
-            <small>{{ 'pdf_editor.drop_hint' | translate }}</small>
-          } @else {
-            <span class="dz-icon">➕</span>
-            <strong>{{ 'pdf_editor.add_more' | translate }}</strong>
-            <small>{{ sourceNames() }}</small>
-          }
-        </div>
-        @if (loading()) {
-          <div class="progress-wrap">
-            <div class="progress-bar"><div class="progress-fill"></div></div>
-          </div>
-        }
-        @if (msg()) {
-          <p class="msg" [class.msg--ok]="msgOk()">{{ msg() }}</p>
-        }
-      </div>
-
-      @if (pages().length > 0) {
-        <!-- ── Pagine ───────────────────────────────── -->
-        <section class="cp-panel">
-          <div class="res-head">
-            <h2>{{ 'pdf_editor.pages_title' | translate }} ({{ pages().length }})</h2>
-            <p class="hint-line">{{ 'pdf_editor.pages_hint' | translate }}</p>
-          </div>
-          <div class="pages-grid">
-            @for (p of pages(); track p.id; let i = $index) {
-              <figure class="page-card">
-                @if (p.thumb) {
-                  <img [src]="p.thumb" [style.transform]="'rotate(' + p.rot + 'deg)'" alt="p. {{ i + 1 }}">
-                } @else {
-                  <span class="page-ph">{{ i + 1 }}</span>
-                }
-                <figcaption>
-                  <span>{{ i + 1 }}</span>
-                  <span class="page-btns">
-                    <button (click)="rotate(i)" aria-label="rotate">⟳</button>
-                    <button [disabled]="i === 0" (click)="move(i, -1)" aria-label="move left">←</button>
-                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" aria-label="move right">→</button>
-                    <button [disabled]="pages().length === 1" (click)="remove(i)" aria-label="delete">🗑</button>
-                  </span>
-                </figcaption>
-              </figure>
-            }
-          </div>
-        </section>
-
-        <!-- ── Export ───────────────────────────────── -->
-        <section class="cp-panel">
-          <div class="exp-grid">
-            <label class="opt">
-              <small>{{ 'pdf_editor.watermark_label' | translate }}</small>
-              <input class="in" type="text" maxlength="60"
-                     [placeholder]="'pdf_editor.watermark_placeholder' | translate"
-                     [value]="watermark()" (input)="watermark.set($any($event.target).value)">
-            </label>
-            <label class="opt">
-              <small>{{ 'pdf_editor.range_label' | translate }}</small>
-              <input class="in" type="text"
-                     [placeholder]="'pdf_editor.range_placeholder' | translate"
-                     [value]="range()" (input)="range.set($any($event.target).value)">
-            </label>
-            <div class="ac">
-              <button class="btn btn-s" [disabled]="exporting()" (click)="reset()">{{ 'pdf_editor.clear' | translate }}</button>
-              <button class="btn btn-p" [disabled]="exporting()" (click)="exportPdf()">
-                {{ (exporting() ? 'pdf_editor.exporting' : 'pdf_editor.export') | translate }}
-              </button>
-            </div>
-          </div>
-        </section>
-      }
-    </div>
-  `,
-  styles: [`
-    :host { display: block; }
-    .cp-page { min-height: 100%; padding: 2rem; background: var(--bg-primary, #0d1117); max-width: 1100px; margin: 0 auto; }
-    .cp-header { margin-bottom: 1.75rem; }
-    .cp-title { font-size: 1.75rem; font-weight: 700; color: var(--text-primary, #e6edf3); margin: 0 0 0.25rem; }
-    .cp-subtitle { color: var(--text-secondary, #8b949e); margin: 0; font-size: 0.9rem; }
-
-    .cp-panel {
-      background: var(--bg-secondary, #161b22); border: 1px solid var(--border-color, #30363d);
-      border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; color: var(--text-primary, #e6edf3);
-    }
-
-    .dz {
-      border: 2px dashed var(--border-color, #30363d); border-radius: 12px; padding: 1.75rem 1rem;
-      text-align: center; cursor: pointer; display: grid; gap: 0.3rem; transition: border-color .18s, background .18s;
-    }
-    .dz:hover { border-color: var(--accent, #6c63ff); background: rgba(108,99,255,.04); }
-    .dz--active { padding: 1rem; }
-    .dz-icon { font-size: 1.75rem; line-height: 1; }
-    .dz small { color: var(--text-secondary, #8b949e); word-break: break-all; }
-
-    .res-head { margin-bottom: 1rem; }
-    .res-head h2 { margin: 0 0 .25rem; font-size: 1.05rem; }
-    .hint-line { font-size: .78rem; color: var(--text-secondary, #8b949e); margin: 0; }
-
-    .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .75rem; }
-    .page-card { margin: 0; border: 1px solid var(--border-color, #30363d); border-radius: 10px; overflow: hidden; background: var(--bg-primary, #0d1117); }
-    .page-card img { width: 100%; aspect-ratio: 3/4; object-fit: contain; display: block; background: #fff; transition: transform .2s; }
-    .page-ph {
-      width: 100%; aspect-ratio: 3/4; display: grid; place-items: center;
-      background: var(--bg-tertiary, #1c2333); color: var(--text-secondary, #8b949e); font-size: .9rem;
-    }
-    .page-card figcaption { display: flex; align-items: center; justify-content: space-between; padding: .3rem .5rem; font-size: .75rem; color: var(--text-secondary, #8b949e); }
-    .page-btns { display: flex; gap: .1rem; }
-    .page-btns button {
-      background: none; border: none; color: var(--text-secondary, #8b949e); cursor: pointer;
-      font-size: .78rem; padding: .1rem .22rem; border-radius: 4px;
-    }
-    .page-btns button:hover:not(:disabled) { color: var(--text-primary, #e6edf3); background: var(--bg-tertiary, #1c2333); }
-    .page-btns button:disabled { opacity: .35; cursor: not-allowed; }
-
-    .exp-grid { display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
-    .opt { flex: 1; min-width: 200px; }
-    .opt small { display: block; font-size: 0.72rem; color: var(--text-secondary, #8b949e); margin-bottom: 0.3rem; }
-    .in {
-      width: 100%; padding: 0.5rem 0.75rem; border-radius: 9px; border: 1px solid var(--border-color, #30363d);
-      background: var(--bg-primary, #0d1117); color: var(--text-primary, #e6edf3);
-      font-family: inherit; font-size: 0.875rem; box-sizing: border-box;
-    }
-    .in:focus { outline: none; border-color: var(--accent, #6c63ff); }
-
-    .ac { display: flex; gap: .6rem; }
-    .btn { padding: .55rem 1.1rem; border-radius: 9px; border: 1px solid transparent; font-family: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; transition: opacity .15s, transform .1s; }
-    .btn:disabled { opacity: .45; cursor: not-allowed; }
-    .btn:not(:disabled):active { transform: scale(.97); }
-    .btn-p { background: var(--accent, #6c63ff); color: #fff; font-weight: 600; }
-    .btn-p:not(:disabled):hover { background: #5851e5; }
-    .btn-s { background: transparent; color: var(--text-primary, #e6edf3); border-color: var(--border-color, #30363d); }
-    .btn-s:hover { background: var(--bg-tertiary, #1c2333); }
-
-    .progress-wrap { margin-top: 1rem; }
-    .progress-bar { height: 3px; background: var(--bg-tertiary,#1c2333); border-radius: 2px; overflow: hidden; }
-    .progress-fill {
-      height: 100%; background: linear-gradient(90deg, var(--accent,#6c63ff), #a855f7); border-radius: 2px;
-      animation: prog 1.4s ease-in-out infinite;
-    }
-    @keyframes prog { 0% { width: 0; margin-left: 0; } 50% { width: 60%; margin-left: 20%; } 100% { width: 0; margin-left: 100%; } }
-
-    .msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); font-size: .85rem; color: var(--warning, #fbbf24); margin: 1rem 0 0; }
-    .msg--ok { background: rgba(52,211,153,.08); border-color: rgba(52,211,153,.3); color: var(--success, #34d399); }
-
-    @media (max-width: 600px) {
-      .cp-page { padding: 1rem; }
-      .cp-title { font-size: 1.35rem; }
-      .exp-grid { flex-direction: column; align-items: stretch; }
-      .ac { justify-content: flex-end; }
-    }
-  `],
+  imports: [TranslateModule, FileDropzoneDirective],
+  templateUrl: './pdf-editor.component.html',
+  styleUrls: ['./pdf-editor.component.scss'],
 })
 export class PdfEditorComponent implements OnInit {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
+  private readonly workspace = inject(WorkspaceService);
 
   readonly pages = signal<PageEntry[]>([]);
   readonly loading = signal(false);
@@ -204,6 +41,14 @@ export class PdfEditorComponent implements OnInit {
   readonly msgOk = signal(false);
   readonly watermark = signal('');
   readonly range = signal('');
+  readonly dragIndex = signal<number | null>(null);
+  readonly dragOverIndex = signal<number | null>(null);
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  readonly justSent = signal(false);
+  readonly moveAnnouncement = signal('');
+  readonly exportReady = signal(false);
+  private lastExportBlob: Blob | null = null;
+  private lastExportName = '';
 
   readonly sourceNames = computed(() => {
     this.pages(); // ricalcola quando cambiano le pagine
@@ -214,10 +59,14 @@ export class PdfEditorComponent implements OnInit {
   private nextId = 1;
 
   ngOnInit(): void {
+    const pending = this.workspace.peek();
+    if (pending && pending.kind === 'file' && pending.blob) {
+      this.workspaceItem.set(pending);
+    }
     this.seo.update({
       title: 'Free PDF Editor — Merge, Split, Rotate & Watermark',
       description: 'Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.',
-      url: 'https://gentsallaku.it/dashboard/pdf-editor',
+      url: 'https://gentsallaku.it/lab/pdf-editor',
     });
     this.seo.injectJsonLd([
       {
@@ -225,7 +74,7 @@ export class PdfEditorComponent implements OnInit {
         '@type': 'WebApplication',
         name: 'Free PDF Editor',
         description: 'Merge, split, extract, rotate, delete pages and add watermarks to PDF files entirely in the browser.',
-        url: 'https://gentsallaku.it/dashboard/pdf-editor',
+        url: 'https://gentsallaku.it/lab/pdf-editor',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
@@ -267,9 +116,33 @@ export class PdfEditorComponent implements OnInit {
     void this.addFiles(files);
   }
 
-  drop(e: DragEvent): void {
-    e.preventDefault();
-    void this.addFiles(Array.from(e.dataTransfer?.files ?? []));
+  onFilesDropped(files: FileList): void {
+    void this.addFiles(Array.from(files));
+  }
+
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    const file = new File([item.blob], item.filename, { type: item.mime });
+    void this.addFiles([file]);
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
+  sendToWorkspace(): void {
+    if (!this.lastExportBlob) return;
+    this.workspace.send({
+      kind: 'file',
+      blob: this.lastExportBlob,
+      filename: this.lastExportName,
+      mime: 'application/pdf',
+      fromTool: 'pdf_editor',
+    });
+    this.justSent.set(true);
+    setTimeout(() => this.justSent.set(false), 1500);
   }
 
   rotate(i: number): void {
@@ -286,10 +159,52 @@ export class PdfEditorComponent implements OnInit {
       [next[i], next[i + dir]] = [next[i + dir], next[i]];
       return next;
     });
+    this.announceMove(i + dir);
   }
 
   remove(i: number): void {
     this.pages.update((all) => all.filter((_, idx) => idx !== i));
+  }
+
+  onDragStart(event: DragEvent, i: number): void {
+    this.dragIndex.set(i);
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      // richiesto da Firefox per attivare correttamente il drag
+      event.dataTransfer.setData('text/plain', String(i));
+    }
+  }
+
+  onDragOver(event: DragEvent, i: number): void {
+    event.preventDefault(); // necessario per consentire il drop
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    if (this.dragIndex() === null || this.dragIndex() === i) return;
+    this.dragOverIndex.set(i);
+  }
+
+  onDragLeave(i: number): void {
+    if (this.dragOverIndex() === i) this.dragOverIndex.set(null);
+  }
+
+  onDrop(event: DragEvent, i: number): void {
+    event.preventDefault();
+    const from = this.dragIndex();
+    this.dragIndex.set(null);
+    this.dragOverIndex.set(null);
+    if (from === null || from === i) return;
+
+    this.pages.update((all) => {
+      const next = [...all];
+      const [moved] = next.splice(from, 1);
+      next.splice(i, 0, moved);
+      return next;
+    });
+    this.announceMove(i);
+  }
+
+  onDragEnd(): void {
+    this.dragIndex.set(null);
+    this.dragOverIndex.set(null);
   }
 
   reset(): void {
@@ -298,6 +213,9 @@ export class PdfEditorComponent implements OnInit {
     this.watermark.set('');
     this.range.set('');
     this.msg.set('');
+    this.lastExportBlob = null;
+    this.lastExportName = '';
+    this.exportReady.set(false);
   }
 
   async exportPdf(): Promise<void> {
@@ -347,12 +265,16 @@ export class PdfEditorComponent implements OnInit {
       }
 
       const bytes = await out.save();
-      const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: 'application/pdf' }));
+      const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = this.outputName();
       a.click();
       URL.revokeObjectURL(url);
+      this.lastExportBlob = blob;
+      this.lastExportName = this.outputName();
+      this.exportReady.set(true);
       this.msg.set(`✅ ${this.t.instant('pdf_editor.success')}`);
       this.msgOk.set(true);
     } catch {
@@ -363,6 +285,10 @@ export class PdfEditorComponent implements OnInit {
   }
 
   // ── Internals ────────────────────────────────────────────────────────
+
+  private announceMove(newIndex: number): void {
+    this.moveAnnouncement.set(this.t.instant('pdf_editor.page_moved', { position: newIndex + 1 }));
+  }
 
   private async addFiles(files: File[]): Promise<void> {
     const pdfs = files.filter((f) => f.type.includes('pdf') || f.name.toLowerCase().endsWith('.pdf'));

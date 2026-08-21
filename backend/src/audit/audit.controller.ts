@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
 import { AuditService } from './audit.service';
+import { AuditQueryDto } from './dto/audit-query.dto';
 
 @ApiTags('Audit')
 @ApiBearerAuth('access-token')
@@ -18,11 +19,7 @@ export class AuditController {
   @ApiQuery({ name: 'limit',    required: false, type: Number })
   @ApiQuery({ name: 'resource', required: false, type: String })
   @ApiQuery({ name: 'actorId',  required: false, type: String })
-  findRecent(
-    @Query('limit')    limit    = 50,
-    @Query('resource') resource?: string,
-    @Query('actorId')  actorId?: string,
-  ) {
-    return this.auditService.findRecent({ limit: +limit, resource, actorId });
+  findRecent(@Query() { limit, resource, actorId }: AuditQueryDto) {
+    return this.auditService.findRecent({ limit: limit ?? 50, resource, actorId });
   }
 }

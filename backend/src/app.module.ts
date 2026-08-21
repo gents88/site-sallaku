@@ -21,9 +21,12 @@ import { CommonModule } from './common/common.module';
 import { AuditModule } from './audit/audit.module';
 import { ConsentModule } from './consent/consent.module';
 import { AiModule } from './ai/ai.module';
+import { PdfSearchModule } from './pdf-search/pdf-search.module';
 import { ConversionModule } from './conversion/conversion.module';
 import { OcrModule } from './ocr/ocr.module';
 import { NotesModule } from './notes/notes.module';
+import { TestimonialsModule } from './testimonials/testimonials.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -79,9 +82,12 @@ import { NotesModule } from './notes/notes.module';
     AuditModule,
     ConsentModule,
     AiModule,
+    PdfSearchModule,
     ConversionModule,
     OcrModule,
     NotesModule,
+    TestimonialsModule,
+    SearchModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default

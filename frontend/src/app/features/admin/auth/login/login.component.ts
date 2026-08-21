@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -93,6 +94,9 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
 
         this.loading = false;
+        // Zoneless: an HTTP callback mutating a plain property schedules no
+        // change detection on its own, so the spinner would never clear.
+        this.cdr.markForCheck();
         this.auth.logout();
         this.snackBar.open(
           'Questo account non ha accesso alla dashboard admin.',
@@ -102,6 +106,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loading = false;
+        this.cdr.markForCheck();
         const msg = err?.error?.message
           || this.translate.instant('auth.login_error');
         this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 4000 });

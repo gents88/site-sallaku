@@ -22,8 +22,10 @@ import { Otp, OtpSchema } from './schemas/otp.schema';
       imports: [ConfigModule],
       useFactory: (cfg: ConfigService) => ({
         secret: cfg.get<string>('JWT_SECRET'),
-        // Short-lived access tokens — refresh tokens handle re-auth
-        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES_IN', '15m') as StringValue },
+        // Default matches what every .env.*.example documents and what's
+        // actually set in production — only used if JWT_EXPIRES_IN is
+        // missing entirely (e.g. a fresh local setup before copying .env.example).
+        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES_IN', '7d') as StringValue },
       }),
       inject: [ConfigService],
     }),

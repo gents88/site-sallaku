@@ -358,23 +358,30 @@
   }
 }
 
-/* Sidebar drawer toggle (hamburger in navbar header) */
+/* Sidebar drawer trigger — pill etichettata, non hamburger.
+   Visibile solo nella fascia 901–1199px: sotto c'è la voce nel menu mobile,
+   sopra c'è la rail agganciata (vedi drawer.service.ts, RAIL_MIN_WIDTH). */
 .nav-drawer-toggle {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
-  background: none;
-  border: none;
+  gap: 0.45rem;
+  height: 38px;
+  padding: 0 0.7rem;
+  margin-right: 0.5rem;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(79, 106, 245, 0.14), rgba(139, 92, 246, 0.1));
+  color: var(--text-primary, #f0f4ff);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
-  padding: 12px;
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-  transition: background 0.3s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 
   &:hover {
-    background: rgba(79, 106, 245, 0.1);
+    border-color: rgba(139, 92, 246, 0.55);
+    background: linear-gradient(135deg, rgba(79, 106, 245, 0.22), rgba(139, 92, 246, 0.16));
+    transform: translateY(-1px);
   }
 
   &:focus-visible {
@@ -382,18 +389,26 @@
     outline-offset: 2px;
   }
 
-  span {
-    width: 18px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--text-primary, #f0f4ff);
-    display: block;
-    transition: all 0.3s ease;
+  &[aria-expanded='true'] .drawer-toggle-chevron {
+    transform: rotate(180deg);
   }
+}
 
-  /* Sotto i 900px l'accesso al drawer è integrato come voce nel menu mobile
-     esistente (.nav-item-mobile-drawer), quindi l'icona separata sparisce */
-  @media (max-width: 900px) { display: none; }
+.drawer-toggle-badge {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.drawer-toggle-chevron {
+  color: var(--accent-400, #a78bfa);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Sotto i 900px l'accesso al drawer è integrato come voce nel menu mobile
+   esistente (.nav-item-mobile-drawer); sopra i 1200px la sidebar è già
+   agganciata a schermo e un secondo trigger sarebbe rumore. */
+@media (max-width: 900px), (min-width: 1200px) {
+  .nav-drawer-toggle { display: none; }
 }
 
 .nav-item-mobile-drawer {
