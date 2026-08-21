@@ -145,6 +145,77 @@
   }
 }
 
+/* ─── Search ─────────────────────────────────────────────────────── */
+.sidebar-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0 0.25rem 0.9rem;
+  flex-shrink: 0;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.7rem;
+  font-size: 0.8rem;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 2rem;
+  border: 1px solid var(--border-color, #30363d);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.04));
+  color: var(--text-primary, #e6edf3);
+  font-size: 0.82rem;
+
+  &::placeholder {
+    color: var(--text-muted, #6e7681);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--accent-500, #8b5cf6);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  }
+
+  /* Nasconde la "x" nativa del browser per input[type=search]: usiamo il nostro search-clear. */
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.search-clear {
+  position: absolute;
+  right: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted, #6e7681);
+  font-size: 0.7rem;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--bg-tertiary, rgba(255, 255, 255, 0.06));
+    color: var(--text-primary, #e6edf3);
+  }
+}
+
+.nav-no-results {
+  margin: 0.5rem 0.5rem 0;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-muted, #6e7681);
+  text-align: center;
+}
+
 /* ─── Nav groups ─────────────────────────────────────────────────── */
 .sidebar-nav {
   display: flex;
@@ -177,14 +248,13 @@
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  padding: 0.55rem 0.65rem;
+  padding: 0.45rem 0.65rem;
   margin: 0 0 2px;
   border-radius: var(--radius-sm, 8px);
   color: var(--text-secondary, #8b949e);
   text-decoration: none;
   font-size: 0.85rem;
   transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
-  white-space: nowrap;
   overflow: hidden;
 
   &:hover {
@@ -228,7 +298,25 @@
   transition: background 0.15s ease;
 }
 
+.nav-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .nav-label {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted, #6e7681);
+  margin-top: 1px;
 }

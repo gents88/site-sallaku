@@ -1092,5 +1092,12 @@
     "err_camera": "Impossibile accedere alla fotocamera",
     "success": "PDF esportato con successo",
     "err_failed": "Operazione non riuscita"
+  },
+  "sidebar": {
+    "group_overview": "Panoramica",
+    "group_content": "Contenuti",
+    "search_placeholder": "Cerca uno strumento…",
+    "no_results": "Nessun risultato per \"{{ query }}\"",
+    "clear_search": "Cancella ricerca"
   }
 }

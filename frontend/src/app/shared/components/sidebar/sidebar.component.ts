@@ -1,63 +1,68 @@
-import { Component, HostListener, computed, effect, ElementRef } from '@angular/core';
+import { Component, HostListener, computed, effect, signal, inject, ElementRef } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 
 interface NavItem {
   icon: string;
-  label: string;
+  labelKey: string;
+  /** Chiave i18n opzionale con una breve spiegazione, mostrata come sottotitolo + tooltip. */
+  descKey?: string;
   route: string;
 }
 
 interface NavGroup {
   id: string;
   emoji: string;
-  title: string;
+  titleKey: string;
   items: NavItem[];
 }
 
+// Le voci AI/Tools riusano le stesse chiavi i18n (tools.*) della pagina pubblica
+// /dashboard/tools, così label e descrizioni restano coerenti e già tradotte.
 const ADMIN_NAV: NavGroup[] = [
   {
     id: 'overview',
     emoji: '📊',
-    title: 'Overview',
+    titleKey: 'sidebar.group_overview',
     items: [
-      { icon: '🏠', label: 'Dashboard', route: '/dashboard' },
+      { icon: '🏠', labelKey: 'nav.dashboard', route: '/dashboard' },
     ],
   },
   {
     id: 'content',
     emoji: '📝',
-    title: 'Content',
+    titleKey: 'sidebar.group_content',
     items: [
-      { icon: '🗂️', label: 'Projects',    route: '/dashboard/projects' },
-      { icon: '✍️', label: 'Blog',         route: '/dashboard/blog' },
-      { icon: '💼', label: 'Experiences',  route: '/dashboard/experiences' },
-      { icon: '👤', label: 'About',        route: '/dashboard/about' },
+      { icon: '🗂️', labelKey: 'nav.projects',     route: '/dashboard/projects' },
+      { icon: '✍️', labelKey: 'nav.blog',          route: '/dashboard/blog' },
+      { icon: '💼', labelKey: 'admin.experiences', route: '/dashboard/experiences' },
+      { icon: '👤', labelKey: 'nav.about',         route: '/dashboard/about' },
     ],
   },
   {
     id: 'ai',
     emoji: '🧠',
-    title: 'AI',
+    titleKey: 'tools.section_ai',
     items: [
-      { icon: '📋', label: 'PDF Summary',   route: '/dashboard/pdf-summary' },
-      { icon: '✨', label: 'AI Formatter',  route: '/dashboard/ai-formatter' },
-      { icon: '🌐', label: 'PDF Translate', route: '/dashboard/pdf-translate' },
-      { icon: '🎞️', label: 'AI Slides',    route: '/dashboard/ai-ppt' },
+      { icon: '📋', labelKey: 'tools.pdf_summary_title',   descKey: 'tools.pdf_summary_desc',   route: '/dashboard/pdf-summary' },
+      { icon: '✨', labelKey: 'tools.ai_formatter_title',  descKey: 'tools.ai_formatter_desc',  route: '/dashboard/ai-formatter' },
+      { icon: '🌐', labelKey: 'tools.pdf_translate_title', descKey: 'tools.pdf_translate_desc', route: '/dashboard/pdf-translate' },
+      { icon: '🎞️', labelKey: 'tools.ai_slides_title',    descKey: 'tools.ai_slides_desc',     route: '/dashboard/ai-ppt' },
     ],
   },
   {
     id: 'tools',
     emoji: '🧰',
-    title: 'Tools',
+    titleKey: 'tools.section_tools',
     items: [
-      { icon: '🖊️', label: 'PDF Editor', route: '/dashboard/pdf-editor' },
-      { icon: '👁',  label: 'Viewer',     route: '/dashboard/viewer' },
-      { icon: '✏️', label: 'Editor',      route: '/dashboard/editor' },
-      { icon: '🔄', label: 'Convert',     route: '/dashboard/convert' },
-      { icon: '🔤', label: 'OCR',         route: '/dashboard/ocr' },
-      { icon: '📷', label: 'Scanner',     route: '/dashboard/scanner' },
+      { icon: '🖊️', labelKey: 'tools.pdf_editor_title', descKey: 'tools.pdf_editor_desc', route: '/dashboard/pdf-editor' },
+      { icon: '👁',  labelKey: 'tools.viewer_title',     descKey: 'tools.viewer_desc',     route: '/dashboard/viewer' },
+      { icon: '✏️', labelKey: 'tools.editor_title',      descKey: 'tools.editor_desc',     route: '/dashboard/editor' },
+      { icon: '🔄', labelKey: 'tools.convert_title',     descKey: 'tools.convert_desc',    route: '/dashboard/convert' },
+      { icon: '🔤', labelKey: 'tools.ocr_title',         descKey: 'tools.ocr_desc',        route: '/dashboard/ocr' },
+      { icon: '📷', labelKey: 'tools.scanner_title',     descKey: 'tools.scanner_desc',    route: '/dashboard/scanner' },
     ],
   },
 ];
@@ -65,16 +70,36 @@ const ADMIN_NAV: NavGroup[] = [
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
+  private readonly t = inject(TranslateService);
+
   readonly drawerOpen = this.drawer.drawerOpen;
   readonly isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
   readonly navGroups = computed(() =>
     this.isAdminUser() ? ADMIN_NAV : ADMIN_NAV.filter(group => group.id !== 'overview' && group.id !== 'content'),
   );
+
+  readonly searchQuery = signal('');
+
+  // Filtra le voci per label/descrizione TRADOTTE (non per chiave), così la
+  // ricerca funziona nella lingua che l'utente sta effettivamente leggendo.
+  readonly visibleGroups = computed(() => {
+    const q = this.searchQuery().trim().toLowerCase();
+    if (!q) return this.navGroups();
+    return this.navGroups()
+      .map(group => ({
+        ...group,
+        items: group.items.filter(item =>
+          this.t.instant(item.labelKey).toLowerCase().includes(q) ||
+          (item.descKey ? this.t.instant(item.descKey).toLowerCase().includes(q) : false),
+        ),
+      }))
+      .filter(group => group.items.length > 0);
+  });
 
   constructor(private auth: AuthService, private drawer: DrawerService, private elementRef: ElementRef<HTMLElement>) {
     // All'apertura il focus tastiera restava sul trigger dietro il backdrop
@@ -82,6 +107,8 @@ export class SidebarComponent {
     effect(() => {
       if (this.drawerOpen()) {
         this.elementRef.nativeElement.querySelector<HTMLElement>('.close-btn')?.focus();
+      } else {
+        this.searchQuery.set('');
       }
     });
   }

@@ -1092,5 +1092,12 @@
     "err_camera": "Nuk mund të aksesohet kamera",
     "success": "PDF u eksportua me sukses",
     "err_failed": "Operacioni dështoi"
+  },
+  "sidebar": {
+    "group_overview": "Përmbledhje",
+    "group_content": "Përmbajtja",
+    "search_placeholder": "Kërko një mjet…",
+    "no_results": "Asnjë rezultat për \"{{ query }}\"",
+    "clear_search": "Pastro kërkimin"
   }
 }

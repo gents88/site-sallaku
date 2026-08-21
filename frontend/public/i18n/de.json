@@ -1092,5 +1092,12 @@
     "err_camera": "Kein Zugriff auf die Kamera möglich",
     "success": "PDF erfolgreich exportiert",
     "err_failed": "Vorgang fehlgeschlagen"
+  },
+  "sidebar": {
+    "group_overview": "Übersicht",
+    "group_content": "Inhalte",
+    "search_placeholder": "Werkzeug suchen…",
+    "no_results": "Keine Ergebnisse für \"{{ query }}\"",
+    "clear_search": "Suche löschen"
   }
 }

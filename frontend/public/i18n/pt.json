@@ -1092,5 +1092,12 @@
     "err_camera": "Não foi possível aceder à câmara",
     "success": "PDF exportado com sucesso",
     "err_failed": "A operação falhou"
+  },
+  "sidebar": {
+    "group_overview": "Visão geral",
+    "group_content": "Conteúdo",
+    "search_placeholder": "Pesquisar uma ferramenta…",
+    "no_results": "Nenhum resultado para \"{{ query }}\"",
+    "clear_search": "Limpar pesquisa"
   }
 }
