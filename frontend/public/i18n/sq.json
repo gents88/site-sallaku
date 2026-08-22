@@ -1064,7 +1064,11 @@
     "btn_favorite_add": "Shto te të preferuarat",
     "btn_favorite_remove": "Hiq nga të preferuarat",
     "btn_save_library": "Ruaj në bibliotekë",
-    "library_saved": "Në bibliotekë"
+    "library_saved": "Në bibliotekë",
+    "preview_timeout": "Parashikimi po zgjat shumë për t’u ngarkuar. Shkarko PDF-në për ta lexuar.",
+    "err_search": "Kërkimi dështoi. Provo përsëri.",
+    "err_workspace_send": "Dërgimi te Workspace dështoi. Provo përsëri.",
+    "err_library_save": "Ruajtja në Librari dështoi. Provo përsëri."
   },
   "convert": {
     "title": "Konvertues",

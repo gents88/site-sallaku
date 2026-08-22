@@ -1064,7 +1064,11 @@
     "btn_favorite_add": "Add to favorites",
     "btn_favorite_remove": "Remove from favorites",
     "btn_save_library": "Save to library",
-    "library_saved": "In library"
+    "library_saved": "In library",
+    "preview_timeout": "The preview is taking too long to load. Download the PDF to read it.",
+    "err_search": "Search failed. Please try again.",
+    "err_workspace_send": "Sending to Workspace failed. Please try again.",
+    "err_library_save": "Saving to Library failed. Please try again."
   },
   "convert": {
     "title": "Converter",
