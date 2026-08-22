@@ -927,7 +927,8 @@
     "history_title": "Session history",
     "kind_file": "File",
     "kind_text": "Text",
-    "start_here": "Starting tools"
+    "start_here": "Starting tools",
+    "persistence_hint": "Not saved: lost if you reload or close this tab."
   },
   "pdf_translate": {
     "title": "PDF Translation",
