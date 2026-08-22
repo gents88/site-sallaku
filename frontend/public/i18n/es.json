@@ -784,6 +784,27 @@
     "chip_projects": "📁 Muéstrame sus proyectos",
     "chip_contact": "📬 ¿Cómo puedo contactarle?"
   },
+  "live_handoff": {
+    "prompt_title": "¿Quieres hablar directamente con Gent?",
+    "accept": "Sí, contactarlo",
+    "decline": "No, seguir con el asistente",
+    "dismiss": "Cerrar",
+    "pill_label": "Hablar con Gent",
+    "waiting": "Esperando a Gent…",
+    "agent_joining": "Gent se está uniendo…",
+    "live_subtitle": "Estás hablando con Gent",
+    "expired_notice": "Gent no está disponible en este momento, pero ha recibido tu solicitud. Mientras tanto, puedes seguir chateando con el asistente.",
+    "admin_title": "Chat en vivo con el visitante",
+    "admin_connecting": "Conectando…",
+    "admin_joining": "Entrando en el chat…",
+    "admin_live": "Chat en vivo activo",
+    "admin_expired": "Esta solicitud ha caducado.",
+    "admin_closed": "Esta sesión ha sido cerrada.",
+    "admin_error": "No se pudo conectar. Verifica que hayas iniciado sesión como administrador.",
+    "admin_send_placeholder": "Escribe como Gent…",
+    "admin_history_loading": "Cargando conversación…",
+    "admin_back": "Volver al panel"
+  },
   "ai_ppt": {
     "title": "Generador de Diapositivas",
     "badge": "Generador de Diapositivas IA",

@@ -5,7 +5,7 @@ import { tap, finalize } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'agent';
   content: string;
   timestamp: Date;
 }

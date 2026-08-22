@@ -784,6 +784,27 @@
     "chip_projects": "📁 Mostrami i suoi progetti",
     "chip_contact": "📬 Come posso contattarlo?"
   },
+  "live_handoff": {
+    "prompt_title": "Vuoi parlare direttamente con Gent?",
+    "accept": "Sì, contattalo",
+    "decline": "No, continua con l'assistente",
+    "dismiss": "Chiudi",
+    "pill_label": "Parla con Gent",
+    "waiting": "In attesa di Gent…",
+    "agent_joining": "Gent sta entrando…",
+    "live_subtitle": "Stai parlando con Gent",
+    "expired_notice": "Gent non è disponibile in questo momento, ma ha ricevuto la tua richiesta. Nel frattempo continua pure a chattare con l'assistente.",
+    "admin_title": "Chat live con il visitatore",
+    "admin_connecting": "Connessione in corso…",
+    "admin_joining": "Ingresso nella chat…",
+    "admin_live": "Chat live attiva",
+    "admin_expired": "Questa richiesta è scaduta.",
+    "admin_closed": "Questa sessione è stata chiusa.",
+    "admin_error": "Impossibile connettersi. Verifica di aver effettuato l'accesso come admin.",
+    "admin_send_placeholder": "Scrivi come Gent…",
+    "admin_history_loading": "Caricamento conversazione…",
+    "admin_back": "Torna alla dashboard"
+  },
   "ai_ppt": {
     "title": "Generatore di Slide",
     "badge": "Generatore di Slide AI",

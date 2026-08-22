@@ -57,6 +57,12 @@ export const adminRoutes: Routes = [
     loadComponent: () =>
       import('./about-manage/about-manage.component').then(m => m.AboutManageComponent),
   },
+  {
+    path: 'live-chat/:sessionId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./live-chat/live-chat.component').then(m => m.AdminLiveChatComponent),
+  },
 
   // AI & Tools moved to /lab/* (public, no auth) — see app.routes.ts.
   // Kept out of this admin route tree entirely now that they no longer

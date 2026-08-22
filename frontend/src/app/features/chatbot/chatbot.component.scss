@@ -278,6 +278,34 @@
   border-radius: 16px 16px 16px 4px;
 }
 
+/* ── Messaggi di Gent durante la chat live ───────────── */
+.cb-msg--agent .cb-msg__bubble {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(220, 38, 38, 0.1));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 16px 16px 16px 4px;
+}
+
+.cb-msg__avatar--agent {
+  background: linear-gradient(135deg, #f59e0b, #dc2626);
+}
+
+.cb-header__subtitle--live {
+  color: #fbbf24;
+}
+
+.cb-system-notice {
+  align-self: center;
+  max-width: 90%;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid var(--cb-border);
+  color: var(--cb-text-muted);
+  font-size: 0.78rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
 .cb-msg__content {
   margin: 0 0 4px;
   font-size: 0.85rem;

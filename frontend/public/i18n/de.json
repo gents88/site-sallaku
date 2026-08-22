@@ -784,6 +784,27 @@
     "chip_projects": "📁 Zeig mir seine Projekte",
     "chip_contact": "📬 Wie kann ich ihn kontaktieren?"
   },
+  "live_handoff": {
+    "prompt_title": "Möchten Sie direkt mit Gent sprechen?",
+    "accept": "Ja, kontaktieren",
+    "decline": "Nein, mit dem Assistenten fortfahren",
+    "dismiss": "Schließen",
+    "pill_label": "Mit Gent sprechen",
+    "waiting": "Warte auf Gent…",
+    "agent_joining": "Gent tritt bei…",
+    "live_subtitle": "Sie sprechen mit Gent",
+    "expired_notice": "Gent ist gerade nicht verfügbar, hat Ihre Anfrage aber erhalten. In der Zwischenzeit können Sie gerne weiter mit dem Assistenten chatten.",
+    "admin_title": "Live-Chat mit dem Besucher",
+    "admin_connecting": "Verbindung wird hergestellt…",
+    "admin_joining": "Chat wird betreten…",
+    "admin_live": "Live-Chat aktiv",
+    "admin_expired": "Diese Anfrage ist abgelaufen.",
+    "admin_closed": "Diese Sitzung wurde beendet.",
+    "admin_error": "Verbindung fehlgeschlagen. Stellen Sie sicher, dass Sie als Admin angemeldet sind.",
+    "admin_send_placeholder": "Als Gent schreiben…",
+    "admin_history_loading": "Unterhaltung wird geladen…",
+    "admin_back": "Zurück zum Dashboard"
+  },
   "ai_ppt": {
     "title": "KI-Foliengenerator",
     "badge": "KI-Foliengenerator",

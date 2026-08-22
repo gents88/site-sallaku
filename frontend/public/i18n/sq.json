@@ -784,6 +784,27 @@
     "chip_projects": "📁 Trego projektet e tij",
     "chip_contact": "📬 Si mund ta kontaktoj?"
   },
+  "live_handoff": {
+    "prompt_title": "Dëshiron të flasësh drejtpërdrejt me Gent-in?",
+    "accept": "Po, kontaktoje",
+    "decline": "Jo, vazhdo me asistentin",
+    "dismiss": "Mbyll",
+    "pill_label": "Fol me Gent-in",
+    "waiting": "Duke pritur Gent-in…",
+    "agent_joining": "Gent-i po hyn…",
+    "live_subtitle": "Po flet me Gent-in",
+    "expired_notice": "Gent-i nuk është i disponueshëm tani, por e ka marrë kërkesën tënde. Ndërkohë mund të vazhdosh të bisedosh me asistentin.",
+    "admin_title": "Bisedë live me vizitorin",
+    "admin_connecting": "Duke u lidhur…",
+    "admin_joining": "Duke hyrë në bisedë…",
+    "admin_live": "Biseda live është aktive",
+    "admin_expired": "Kjo kërkesë ka skaduar.",
+    "admin_closed": "Ky sesion është mbyllur.",
+    "admin_error": "Lidhja dështoi. Sigurohu që je i kyçur si admin.",
+    "admin_send_placeholder": "Shkruaj si Gent…",
+    "admin_history_loading": "Duke ngarkuar bisedën…",
+    "admin_back": "Kthehu te paneli"
+  },
   "ai_ppt": {
     "title": "Gjenerator Slide",
     "badge": "Gjenerator Slide AI",
