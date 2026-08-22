@@ -1478,7 +1478,12 @@
     "trust_badge": "Capture, crop and filters stay in your browser — only “Run OCR” and PDF export are sent to the server",
     "workspace_send_pdf": "Send PDF to Workspace",
     "workspace_send_text": "Send text to Workspace",
-    "workspace_sent": "Sent ✓"
+    "workspace_sent": "Sent ✓",
+    "move_left": "Move left",
+    "move_right": "Move right",
+    "delete": "Delete",
+    "page_alt": "page {{n}}",
+    "err_camera_unsupported": "Camera unavailable in this browser or insecure connection (HTTPS required). You can still upload an image."
   },
   "library": {
     "badge": "New",
