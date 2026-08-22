@@ -12,7 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -27,6 +27,9 @@ import {
 } from '../../../core/services/pdf-translate.service';
 
 type TranslationMode = 'high_fidelity' | 'standard';
+
+/** Allineato al limite lato backend (validateFile(file, 50) in ai.controller.ts). */
+const MAX_FILE_MB = 50;
 
 @Component({
   selector: 'app-pdf-translate',
@@ -44,6 +47,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo       = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
+  private readonly t         = inject(TranslateService);
 
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent      = signal(false);
@@ -222,7 +226,11 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     const ext = f.name.split('.').pop()?.toLowerCase();
     const allowed = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
     if (!allowed.includes(f.type) && !['pdf', 'docx', 'txt'].includes(ext ?? '')) {
-      this.error.set('Only PDF, DOCX, or TXT files are supported.');
+      this.error.set(this.t.instant('pdf_translate.err_file_type'));
+      return;
+    }
+    if (f.size > MAX_FILE_MB * 1024 * 1024) {
+      this.error.set(this.t.instant('pdf_translate.err_file_too_large', { max: MAX_FILE_MB, name: f.name }));
       return;
     }
     this.file.set(f);
@@ -258,7 +266,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
 
   translate(): void {
     const f = this.file();
-    if (!f) { this.error.set('Please select a file.'); return; }
+    if (!f) { this.error.set(this.t.instant('pdf_translate.err_no_file')); return; }
     this.error.set('');
     this.result.set(null);
 
@@ -274,7 +282,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
           if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
         },
         error: (err) => {
-          const msg = err?.error?.message ?? err?.message ?? 'Translation failed. Please try again.';
+          const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_translate.err_generic');
           this.error.set(msg);
         },
       });

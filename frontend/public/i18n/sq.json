@@ -1007,7 +1007,13 @@
     "dl_sent_name": "U dërgua ✓",
     "guide_link": "Udhëzues: si funksionon përkthimi i PDF me AI",
     "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet.",
-    "pill_clean_layout": "Skemë e pastër"
+    "pill_clean_layout": "Skemë e pastër",
+    "err_file_type": "Mbështeten vetëm skedarë PDF, DOCX ose TXT.",
+    "err_file_too_large": "Skedari shumë i madh (max {{max}}MB): {{name}}",
+    "err_no_file": "Zgjidh një skedar.",
+    "err_generic": "Përkthimi dështoi. Provo përsëri.",
+    "upload_aria": "Ngarko një skedar PDF",
+    "remove_file": "Hiq skedarin"
   },
   "pdf_search": {
     "title": "Kërko PDF",

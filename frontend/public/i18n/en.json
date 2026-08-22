@@ -1007,7 +1007,13 @@
     "dl_sent_name": "Sent ✓",
     "guide_link": "Guide: how AI PDF translation works",
     "truncated_warning": "Very long document: only the first part was processed, the rest is not included.",
-    "pill_clean_layout": "Clean layout"
+    "pill_clean_layout": "Clean layout",
+    "err_file_type": "Only PDF, DOCX, or TXT files are supported.",
+    "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
+    "err_no_file": "Please select a file.",
+    "err_generic": "Translation failed. Please try again.",
+    "upload_aria": "Upload a PDF file",
+    "remove_file": "Remove file"
   },
   "pdf_search": {
     "title": "PDF Search",

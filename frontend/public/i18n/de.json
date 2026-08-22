@@ -1007,7 +1007,13 @@
     "dl_sent_name": "Gesendet ✓",
     "guide_link": "Leitfaden: Wie funktioniert die KI-PDF-Übersetzung",
     "truncated_warning": "Sehr langes Dokument: Nur der erste Teil wurde verarbeitet, der Rest ist nicht enthalten.",
-    "pill_clean_layout": "Sauberes Layout"
+    "pill_clean_layout": "Sauberes Layout",
+    "err_file_type": "Es werden nur PDF-, DOCX- oder TXT-Dateien unterstützt.",
+    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
+    "err_no_file": "Bitte wähle eine Datei aus.",
+    "err_generic": "Übersetzung fehlgeschlagen. Bitte versuche es erneut.",
+    "upload_aria": "Eine PDF-Datei hochladen",
+    "remove_file": "Datei entfernen"
   },
   "pdf_search": {
     "title": "PDF-Suche",
