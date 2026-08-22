@@ -113,12 +113,22 @@ describe('LiveHandoffService', () => {
       await expect(service.markAgentJoining('missing-session')).rejects.toThrow(NotFoundException);
     });
 
-    it('throws ConflictException when the request is no longer active', async () => {
+    it('throws ConflictException only when the request was explicitly closed', async () => {
       mockModel.findOne.mockReturnValue({
         sort: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue({ status: 'expired', save: jest.fn() }),
+        exec: jest.fn().mockResolvedValue({ status: 'closed', save: jest.fn() }),
       });
       await expect(service.markAgentJoining('session-1')).rejects.toThrow(ConflictException);
+    });
+
+    it('revives an expired request instead of blocking Gent when he shows up late', async () => {
+      const doc = { _id: 'req-id', sessionId: 'session-1', status: 'expired', save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(doc) });
+
+      const result = await service.markAgentJoining('session-1');
+
+      expect(doc.status).toBe('agent_joining');
+      expect(result.status).toBe('agent_joining');
     });
 
     it('transitions an active request to agent_joining and notifies via the gateway', async () => {

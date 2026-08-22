@@ -118,8 +118,11 @@ export class LiveHandoffService {
   async markAgentJoining(sessionId: string): Promise<LiveHandoffStatusDto> {
     const doc = await this.model.findOne({ sessionId }).sort({ createdAt: -1 }).exec();
     if (!doc) throw new NotFoundException('Richiesta non trovata');
-    if (!ACTIVE_LIVE_HANDOFF_STATUSES.includes(doc.status)) {
-      throw new ConflictException('Questa richiesta non è più attiva.');
+    // "expired" è solo un timeout passivo (nessuno ha risposto entro la scadenza):
+    // se Gent si presenta comunque, la richiesta va riattivata invece di bloccarlo.
+    // "closed" resta l'unico stato davvero terminale (chiusura intenzionale).
+    if (doc.status === 'closed') {
+      throw new ConflictException('Questa richiesta è stata chiusa.');
     }
 
     doc.status = 'agent_joining';
