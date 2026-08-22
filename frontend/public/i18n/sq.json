@@ -1142,7 +1142,7 @@
     "hint_csv": "💡 Të dhëna tabelore u zbuluan. Rekomandohet: CSV → raport PDF.",
     "hint_json": "💡 JSON u zbulua. Rekomandohet: JSON → raport PDF.",
     "err_unauthorized": "Nuk jeni i autorizuar.",
-    "err_too_large": "Skedari shumë i madh (maks. 50 MB).",
+    "err_too_large": "Skedari shumë i madh: limiti është {{max}}MB.",
     "err_unsupported": "Formati i skedarit nuk mbështetet.",
     "err_invalid": "Kërkesë e pavlefshme. Kontrolloni skedarin.",
     "err_failed": "Konvertimi dështoi. Provoni sërish.",

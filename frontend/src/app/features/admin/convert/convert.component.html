@@ -204,8 +204,8 @@
 
               <div class="file-list" *ngIf="files().length > 0">
                 <div class="file-row" *ngFor="let f of files(); let i = index; trackBy: trackByFileName"
-                     [class.file-row--invalid]="!matchesAccept(selectedDef()!, f)">
-                  <span class="file-row-icon">{{ matchesAccept(selectedDef()!, f) ? '📄' : '⚠️' }}</span>
+                     [class.file-row--invalid]="!matchesAccept(selectedDef()!, f) || !matchesSize(f)">
+                  <span class="file-row-icon">{{ (matchesAccept(selectedDef()!, f) && matchesSize(f)) ? '📄' : '⚠️' }}</span>
                   <div class="file-row-info">
                     <b>{{ f.name }}</b>
                     <small>{{ bytes(f.size) }}</small>
@@ -216,6 +216,9 @@
                 <p class="file-list-count">{{ 'convert.files_selected_count' | translate: { count: files().length } }}</p>
                 <p *ngIf="selectedDef()?.id === 'merge-pdf' && files().length < 2" class="conv-warn">
                   {{ 'convert.merge_min_files' | translate }}
+                </p>
+                <p *ngIf="hasOversizedFile()" class="conv-warn">
+                  {{ 'convert.err_too_large' | translate: { max: maxFileMb } }}
                 </p>
               </div>
             </ng-container>
@@ -246,7 +249,10 @@
                   <span class="conv-label-text">{{ selectedDef()!.label | translate }}</span>
                 </div>
               </div>
-              <p *ngIf="!canConvert()" class="conv-warn">
+              <p *ngIf="!canConvert() && hasOversizedFile()" class="conv-warn">
+                {{ 'convert.err_too_large' | translate: { max: maxFileMb } }}
+              </p>
+              <p *ngIf="!canConvert() && !hasOversizedFile()" class="conv-warn">
                 {{ 'convert.format_warning' | translate: { accept: selectedDef()!.accept } }}
               </p>
             </div>

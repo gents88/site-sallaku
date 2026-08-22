@@ -1142,7 +1142,7 @@
     "hint_csv": "💡 Dati tabulari rilevati. Consigliato: CSV → PDF report.",
     "hint_json": "💡 Payload JSON rilevato. Consigliato: JSON → PDF report.",
     "err_unauthorized": "Non autorizzato.",
-    "err_too_large": "File troppo grande (max 50 MB).",
+    "err_too_large": "File troppo grande: il limite è {{max}}MB.",
     "err_unsupported": "Formato file non supportato.",
     "err_invalid": "Richiesta non valida. Controlla il file.",
     "err_failed": "Conversione fallita. Riprova.",

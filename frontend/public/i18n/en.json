@@ -1142,7 +1142,7 @@
     "hint_csv": "💡 Tabular data detected. Recommended: CSV → PDF report.",
     "hint_json": "💡 JSON payload detected. Recommended: JSON → PDF report.",
     "err_unauthorized": "Unauthorized.",
-    "err_too_large": "File too large (max 50 MB).",
+    "err_too_large": "File too large: the limit is {{max}}MB.",
     "err_unsupported": "File format not supported.",
     "err_invalid": "Invalid request. Check the file.",
     "err_failed": "Conversion failed. Please retry.",
