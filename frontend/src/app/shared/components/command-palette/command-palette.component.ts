@@ -1,28 +1,32 @@
 import { Component, ElementRef, HostListener, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { ADMIN_NAV, NavItem } from '../sidebar/sidebar.component';
 
 interface PaletteItem extends NavItem {
+  label: string;
   group: string;
 }
 
 @Component({
   selector: 'app-command-palette',
   standalone: true,
+  imports: [TranslateModule],
   template: `
     @if (open()) {
       <div class="cp-backdrop" (click)="close()"></div>
-      <div class="cp-panel" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="cp-panel" role="dialog" aria-modal="true" [attr.aria-label]="'sidebar.command_palette_aria' | translate">
         <div class="cp-input-row">
           <span class="cp-input-icon">🔎</span>
           <input
             #input
             type="text"
             class="cp-input"
-            placeholder="Vai a..."
             [value]="query()"
+            [placeholder]="'sidebar.command_palette_placeholder' | translate"
             (input)="onQuery($event)"
             (keydown.arrowdown)="move(1); $event.preventDefault()"
             (keydown.arrowup)="move(-1); $event.preventDefault()"
@@ -49,7 +53,7 @@ interface PaletteItem extends NavItem {
             }
           </ul>
         } @else {
-          <div class="cp-empty">Nessun risultato</div>
+          <div class="cp-empty">{{ 'sidebar.command_palette_no_results' | translate }}</div>
         }
       </div>
     }
@@ -101,6 +105,8 @@ export class CommandPaletteComponent {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly translate = inject(TranslateService);
+  private readonly langService = inject(LanguageService);
 
   readonly open = signal(false);
   readonly query = signal('');
@@ -108,8 +114,11 @@ export class CommandPaletteComponent {
 
   private readonly items = computed<PaletteItem[]>(() => {
     const isAdmin = this.auth.isLoggedIn() && this.auth.isAdmin();
+    this.langService.current(); // dipendenza: ricalcola le label tradotte al cambio lingua
     const groups = isAdmin ? ADMIN_NAV : ADMIN_NAV.filter((g) => g.id !== 'overview' && g.id !== 'content');
-    return groups.flatMap((g) => g.items.map((it) => ({ ...it, group: g.title })));
+    return groups.flatMap((g) =>
+      g.items.map((it) => ({ ...it, label: this.translate.instant(it.labelKey), group: this.translate.instant(g.titleKey) })),
+    );
   });
 
   readonly filtered = computed<PaletteItem[]>(() => {
