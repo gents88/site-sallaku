@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, of, switchMap, catchError } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
@@ -20,6 +20,10 @@ const RECENT_SEARCHES_KEY = 'pdf-search-recent-queries';
 const MAX_RECENT_SEARCHES = 8;
 const FAVORITES_KEY = 'pdf-search-favorites';
 const MAX_FAVORITES = 100;
+// Alcune fonti (es. sorgenti lente o che bloccano il framing in modo non
+// esplicito) non emettono mai l'evento (load) dell'iframe: senza un limite
+// di tempo lo spinner resterebbe visibile a tempo indefinito.
+const PREVIEW_TIMEOUT_MS = 10000;
 // Typical library scanning runs 300-600 ppi; below ~150 is usually a rough
 // phone/camera capture rather than a proper scan. Anything in between is
 // unremarkable — no badge, to keep the signal meaningful.
@@ -61,6 +65,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly translate = inject(TranslateService);
 
   readonly loading = this.service.isLoading;
 
@@ -129,6 +134,8 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private _previewBlobUrl: string | null = null;
   readonly previewUrl = signal<SafeResourceUrl | null>(null);
   readonly previewLoading = signal(false);
+  readonly previewFailed = signal(false);
+  private previewTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
   // ── Preview: pdf.js canvas path — used whenever the iframe path can't work:
   // mobile (native in-iframe PDF viewers commonly render only the first page)
@@ -175,7 +182,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
         switchMap((q) =>
           this.service.search(q).pipe(
             catchError((err) => {
-              const msg = err?.error?.message ?? 'La ricerca non è riuscita. Riprova.';
+              const msg = err?.error?.message ?? this.translate.instant('pdf_search.err_search');
               this.error.set(msg);
               this.results.set([]);
               return of(null);
@@ -300,6 +307,15 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     // just clear the sanitized reference so a stale iframe never lingers.
     this._previewBlobUrl = null;
     this.previewUrl.set(null);
+    this.previewFailed.set(false);
+    this.clearPreviewTimeout();
+  }
+
+  private clearPreviewTimeout(): void {
+    if (this.previewTimeoutId) {
+      clearTimeout(this.previewTimeoutId);
+      this.previewTimeoutId = undefined;
+    }
   }
 
   private _revokeCanvasPage(): void {
@@ -432,13 +448,20 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
     if (result.previewable && !this.isMobile()) {
       this.previewLoading.set(true);
+      this.previewFailed.set(false);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(result.pdfUrl));
+      this.clearPreviewTimeout();
+      this.previewTimeoutId = setTimeout(() => {
+        this.previewLoading.set(false);
+        this.previewFailed.set(true);
+      }, PREVIEW_TIMEOUT_MS);
     } else {
       this.loadCanvasPreview(result);
     }
   }
 
   onPreviewLoaded(): void {
+    this.clearPreviewTimeout();
     this.previewLoading.set(false);
   }
 
@@ -530,7 +553,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       },
       error: () => {
         this.sendingToWorkspace.set(false);
-        this.error.set('Invio a Workspace non riuscito. Riprova.');
+        this.error.set(this.translate.instant('pdf_search.err_workspace_send'));
       },
     });
   }
@@ -568,14 +591,14 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
           this.justSaved.set(true);
           setTimeout(() => this.justSaved.set(false), 2000);
         } catch {
-          this.error.set('Salvataggio in libreria non riuscito. Riprova.');
+          this.error.set(this.translate.instant('pdf_search.err_library_save'));
         } finally {
           this.savingToLibrary.set(false);
         }
       },
       error: () => {
         this.savingToLibrary.set(false);
-        this.error.set('Salvataggio in libreria non riuscito. Riprova.');
+        this.error.set(this.translate.instant('pdf_search.err_library_save'));
       },
     });
   }

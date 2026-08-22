@@ -1064,7 +1064,11 @@
     "btn_favorite_add": "Aggiungi ai preferiti",
     "btn_favorite_remove": "Rimuovi dai preferiti",
     "btn_save_library": "Salva in libreria",
-    "library_saved": "In libreria"
+    "library_saved": "In libreria",
+    "preview_timeout": "L'anteprima sta impiegando troppo tempo a caricarsi. Scarica il PDF per leggerlo.",
+    "err_search": "La ricerca non è riuscita. Riprova.",
+    "err_workspace_send": "Invio a Workspace non riuscito. Riprova.",
+    "err_library_save": "Salvataggio in libreria non riuscito. Riprova."
   },
   "convert": {
     "title": "Convertitore",
