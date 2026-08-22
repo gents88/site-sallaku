@@ -1384,7 +1384,10 @@
     "export_annotations": "Notizen exportieren",
     "from_library": "Aus der Bibliothek",
     "err_load_doc": "Das Dokument aus deiner Bibliothek konnte nicht geöffnet werden.",
-    "save_to_library": "In Bibliothek speichern"
+    "save_to_library": "In Bibliothek speichern",
+    "workspace_banner_title": "Datei von Workspace empfangen",
+    "workspace_banner_use": "Diese Datei verwenden",
+    "workspace_banner_dismiss": "Ignorieren"
   },
   "scanner": {
     "title": "Dokumentenscanner",

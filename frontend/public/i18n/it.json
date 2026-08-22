@@ -44,7 +44,7 @@
       "projects": "Progetti",
       "blog": "Blog",
       "experiences": "Esperienze",
-      "about": "About",
+      "about": "Profilo",
       "testimonials": "Testimonianze",
       "notes": "Note",
       "pdf_search": "Ricerca PDF",
@@ -1384,7 +1384,10 @@
     "export_annotations": "Esporta note",
     "from_library": "Dalla libreria",
     "err_load_doc": "Impossibile aprire il documento dalla libreria.",
-    "save_to_library": "Salva in libreria"
+    "save_to_library": "Salva in libreria",
+    "workspace_banner_title": "File ricevuto da Workspace",
+    "workspace_banner_use": "Usa questo file",
+    "workspace_banner_dismiss": "Ignora"
   },
   "scanner": {
     "title": "Scanner Documenti",

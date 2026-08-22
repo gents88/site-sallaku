@@ -7,7 +7,7 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
-import { WorkspaceService } from '../../../core/services/workspace.service';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService, LibraryAnnotation, LibraryDoc } from '../../../core/services/library.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
@@ -53,6 +53,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
   readonly matchIdx = signal(0);
   /** true se l'ultima ricerca ha rilevato pochissimo testo estraibile (probabile PDF scansionato) */
   readonly docSparseText = signal(false);
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
 
   readonly zoomPct = computed(() => Math.round(this.scale() * 100));
   readonly showOcrHint = computed(() =>
@@ -96,6 +97,11 @@ export class ViewerComponent implements OnInit, OnDestroy {
     if (docId) {
       const page = Number(this.route.snapshot.queryParamMap.get('page')) || 1;
       void this.openFromLibrary(docId, page);
+    } else {
+      const pending = this.workspace.peek();
+      if (pending && pending.kind === 'file' && pending.blob) {
+        this.workspaceItem.set(pending);
+      }
     }
 
     this.seo.update({
@@ -121,6 +127,17 @@ export class ViewerComponent implements OnInit, OnDestroy {
 
   select(e: Event): void { void this.open((e.target as HTMLInputElement).files?.[0] ?? null); }
   onFilesDropped(files: FileList): void { void this.open(files[0] ?? null); }
+
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    void this.open(new File([item.blob], item.filename, { type: item.mime }));
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
 
   async open(f: File | null): Promise<void> {
     if (!f) return;
