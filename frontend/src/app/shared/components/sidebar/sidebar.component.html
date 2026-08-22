@@ -12,12 +12,12 @@
   [class.open]="drawerOpen()"
   [class.expanded]="expanded()"
   role="navigation"
-  [attr.aria-label]="brandLabel()"
+  [attr.aria-label]="brandLabelKey() | translate"
 >
   <div class="sidebar-header">
     <div class="sidebar-brand">
       <span class="brand-badge" aria-hidden="true">{{ brandBadge() }}</span>
-      <span class="brand-label">{{ brandLabel() }}</span>
+      <span class="brand-label">{{ brandLabelKey() | translate }}</span>
     </div>
 
     @if (mode() === 'rail') {
@@ -27,15 +27,15 @@
         (click)="toggleRail()"
         [attr.aria-expanded]="expanded()"
         aria-controls="app-sidebar"
-        [attr.aria-label]="expanded() ? 'Comprimi il menu laterale' : 'Espandi il menu laterale'"
-        [attr.title]="expanded() ? 'Comprimi (icone)' : 'Espandi (icone + testo)'"
+        [attr.aria-label]="(expanded() ? 'sidebar.collapse_menu' : 'sidebar.expand_menu') | translate"
+        [attr.title]="(expanded() ? 'sidebar.collapse_icons' : 'sidebar.expand_icons') | translate"
       >
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9 6l6 6-6 6" />
         </svg>
       </button>
     } @else {
-      <button class="close-btn" type="button" aria-label="Chiudi il menu" (click)="closeDrawer()">
+      <button class="close-btn" type="button" [attr.aria-label]="'sidebar.close_menu' | translate" (click)="closeDrawer()">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <path d="M18 6 6 18M6 6l12 12" />
         </svg>
@@ -48,7 +48,7 @@
       <div class="nav-group">
         <div class="nav-group-label">
           <span class="group-emoji" aria-hidden="true">{{ group.emoji }}</span>
-          <span class="group-title">{{ group.title }}</span>
+          <span class="group-title">{{ group.titleKey | translate }}</span>
         </div>
         @for (item of group.items; track item.route) {
           <a
@@ -58,13 +58,13 @@
             [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
             class="nav-item"
             (click)="onNavigate(item)"
-            (mouseenter)="showTooltip($event, item.label)"
+            (mouseenter)="showTooltip($event, item.labelKey)"
             (mouseleave)="hideTooltip()"
-            (focus)="showTooltip($event, item.label)"
+            (focus)="showTooltip($event, item.labelKey)"
             (blur)="hideTooltip()"
           >
             <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
-            <span class="nav-label">{{ item.label }}</span>
+            <span class="nav-label">{{ item.labelKey | translate }}</span>
           </a>
         }
       </div>
@@ -78,16 +78,16 @@
     [routerLink]="'/lab' | langUrl"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
-    (click)="onNavigate({ icon: '🚀', label: 'Lab', route: '/lab' })"
-    (mouseenter)="showTooltip($event, 'Vedi tutti gli strumenti')"
+    (click)="onNavigate({ icon: '🚀', labelKey: 'sidebar.lab', route: '/lab' })"
+    (mouseenter)="showTooltip($event, 'sidebar.view_all_tools')"
     (mouseleave)="hideTooltip()"
-    (focus)="showTooltip($event, 'Vedi tutti gli strumenti')"
+    (focus)="showTooltip($event, 'sidebar.view_all_tools')"
     (blur)="hideTooltip()"
   >
     <span class="cta-icon" aria-hidden="true">🚀</span>
     <span class="cta-text">
-      <strong>Esplora il Lab</strong>
-      <small>{{ itemCount() }} strumenti disponibili</small>
+      <strong>{{ 'sidebar.explore_lab' | translate }}</strong>
+      <small>{{ 'sidebar.items_available' | translate: { count: itemCount() } }}</small>
     </span>
   </a>
 </aside>
@@ -95,5 +95,5 @@
 <!-- Tooltip della rail collassata. Fuori da <aside> perché quello scrolla:
      un figlio position:fixed verrebbe comunque ritagliato dall'overflow. -->
 @if (tooltip(); as tip) {
-  <div class="rail-tooltip" role="tooltip" [style.top.px]="tip.top">{{ tip.label }}</div>
+  <div class="rail-tooltip" role="tooltip" [style.top.px]="tip.top">{{ tip.labelKey | translate }}</div>
 }
