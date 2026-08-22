@@ -223,9 +223,10 @@ export class LibraryComponent implements OnInit {
     if (!files?.length) return;
     this.importing.set(true);
     this.error.set('');
+    let skipped = 0;
     try {
       for (const file of Array.from(files)) {
-        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) continue;
+        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) { skipped++; continue; }
         const doc = await this.library.add(
           {
             id: `upload-${file.name}-${file.size}`,
@@ -242,6 +243,9 @@ export class LibraryComponent implements OnInit {
         await this.indexDoc(doc.id);
       }
       this.analytics.trackClick('library_import', String(files.length));
+      // Non un errore: alcuni file semplicemente non erano PDF. Senza questo
+      // messaggio l'utente non capisce perché un file "sparisce" dall'import.
+      if (skipped > 0) this.error.set(this.translate.instant('library.import_skipped', { count: skipped }));
     } catch {
       this.error.set(this.translate.instant('library.err_import'));
     } finally {

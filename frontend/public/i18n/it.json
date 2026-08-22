@@ -1527,7 +1527,8 @@
     "chat_placeholder": "Fai una domanda…",
     "chat_send": "Invia",
     "chat_no_context": "Non ho trovato nulla di pertinente nei documenti indicizzati.",
-    "chat_error": "Risposta non riuscita. Riprova."
+    "chat_error": "Risposta non riuscita. Riprova.",
+    "import_skipped": "{{count}} file ignorati: solo i PDF possono essere importati in Libreria."
   },
   "blog_manage": {
     "title": "Articoli del blog",

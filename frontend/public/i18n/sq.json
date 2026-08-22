@@ -1527,7 +1527,8 @@
     "chat_placeholder": "Bëj një pyetje…",
     "chat_send": "Dërgo",
     "chat_no_context": "Nuk gjeta asgjë përkatëse në dokumentet e indeksuara.",
-    "chat_error": "Përgjigjja dështoi. Provo përsëri."
+    "chat_error": "Përgjigjja dështoi. Provo përsëri.",
+    "import_skipped": "{{count}} skedarë u anashkaluan: në Librari mund të importohen vetëm PDF."
   },
   "blog_manage": {
     "title": "Artikujt e blogut",

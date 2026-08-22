@@ -1527,7 +1527,8 @@
     "chat_placeholder": "Haz una pregunta…",
     "chat_send": "Enviar",
     "chat_no_context": "No he encontrado nada pertinente en los documentos indexados.",
-    "chat_error": "La respuesta ha fallado. Inténtalo de nuevo."
+    "chat_error": "La respuesta ha fallado. Inténtalo de nuevo.",
+    "import_skipped": "{{count}} archivo(s) omitido(s): solo se pueden importar PDF a la Biblioteca."
   },
   "blog_manage": {
     "title": "Artículos del blog",
