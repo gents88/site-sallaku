@@ -1527,7 +1527,8 @@
     "chat_placeholder": "Ask a question…",
     "chat_send": "Send",
     "chat_no_context": "I found nothing relevant in the indexed documents.",
-    "chat_error": "The answer failed. Try again."
+    "chat_error": "The answer failed. Try again.",
+    "import_skipped": "{{count}} file(s) skipped: only PDFs can be imported into the Library."
   },
   "blog_manage": {
     "title": "Blog Posts",

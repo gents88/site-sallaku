@@ -1527,7 +1527,8 @@
     "chat_placeholder": "Posez une question…",
     "chat_send": "Envoyer",
     "chat_no_context": "Je n'ai rien trouvé de pertinent dans les documents indexés.",
-    "chat_error": "La réponse a échoué. Réessayez."
+    "chat_error": "La réponse a échoué. Réessayez.",
+    "import_skipped": "{{count}} fichier(s) ignoré(s) : seuls les PDF peuvent être importés dans la Bibliothèque."
   },
   "blog_manage": {
     "title": "Articles du blog",

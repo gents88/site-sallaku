@@ -1527,7 +1527,8 @@
     "chat_placeholder": "Stell eine Frage…",
     "chat_send": "Senden",
     "chat_no_context": "In den indexierten Dokumenten habe ich nichts Passendes gefunden.",
-    "chat_error": "Die Antwort ist fehlgeschlagen. Versuch es erneut."
+    "chat_error": "Die Antwort ist fehlgeschlagen. Versuch es erneut.",
+    "import_skipped": "{{count}} Datei(en) übersprungen: In die Bibliothek können nur PDFs importiert werden."
   },
   "blog_manage": {
     "title": "Blogbeiträge",
