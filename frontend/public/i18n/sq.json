@@ -1373,7 +1373,8 @@
     "workspace_banner_use": "Përdor këtë tekst",
     "workspace_banner_dismiss": "Injoro",
     "workspace_send": "Dërgo te Workspace",
-    "workspace_sent": "U dërgua ✓"
+    "workspace_sent": "U dërgua ✓",
+    "err_file_too_large": "Skedari shumë i madh (max {{max}}MB): {{name}}"
   },
   "pdf_editor": {
     "title": "Editor PDF",
@@ -1405,7 +1406,8 @@
     "rotate": "Rrotullo",
     "move_left": "Lëviz majtas",
     "move_right": "Lëviz djathtas",
-    "delete": "Fshi"
+    "delete": "Fshi",
+    "persistence_hint": "Ndryshimet nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë."
   },
   "viewer": {
     "title": "Shikues PDF",
@@ -1490,7 +1492,8 @@
     "move_right": "Lëviz djathtas",
     "delete": "Fshi",
     "page_alt": "faqja {{n}}",
-    "err_camera_unsupported": "Kamera nuk është e disponueshme në këtë shfletues ose lidhja nuk është e sigurt (nevojitet HTTPS). Mund të ngarkosh gjithsesi një imazh."
+    "err_camera_unsupported": "Kamera nuk është e disponueshme në këtë shfletues ose lidhja nuk është e sigurt (nevojitet HTTPS). Mund të ngarkosh gjithsesi një imazh.",
+    "persistence_hint": "Faqet e kapura nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë."
   },
   "library": {
     "badge": "E re",
