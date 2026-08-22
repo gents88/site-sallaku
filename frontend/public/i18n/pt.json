@@ -1527,7 +1527,8 @@
     "chat_placeholder": "Faz uma pergunta…",
     "chat_send": "Enviar",
     "chat_no_context": "Não encontrei nada relevante nos documentos indexados.",
-    "chat_error": "A resposta falhou. Tenta de novo."
+    "chat_error": "A resposta falhou. Tenta de novo.",
+    "import_skipped": "{{count}} ficheiro(s) ignorado(s): só é possível importar PDFs para a Biblioteca."
   },
   "blog_manage": {
     "title": "Artigos do blog",
