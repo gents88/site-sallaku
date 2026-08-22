@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Subject } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
@@ -43,6 +44,7 @@ interface PdfPreview {
     MatButtonModule, MatIconModule, MatInputModule, MatFormFieldModule,
     MatSnackBarModule, MatChipsModule, LoadingSpinnerComponent,
     MatSelectModule, BlogPdfUploadComponent, MatTooltipModule, MatProgressBarModule,
+    TranslateModule,
   ],
   templateUrl: './blog-manage.component.html',
   styleUrls: ['./blog-manage.component.scss'],
@@ -207,6 +209,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private prismService: PrismService,
+    private t: TranslateService,
   ) {}
 
   ngOnInit(): void { this.load(); }
@@ -364,12 +367,16 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.form.get('title')?.markAsTouched();
       this.form.get('content')?.markAsTouched();
       this.activeTab = 'it';
-      this.snackBar.open('Italian title and content are required.', 'Close', { duration: 3000 });
+      this.snackBar.open(this.t.instant('blog_manage.err_it_required'), this.t.instant('common.close'), { duration: 3000 });
       return;
     }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snackBar.open(`Excerpt/subtitle/meta fields too long (max ${this.EXCERPT_MAX} chars for excerpt).`, 'Close', { duration: 4000 });
+      this.snackBar.open(
+        this.t.instant('blog_manage.err_fields_too_long', { max: this.EXCERPT_MAX }),
+        this.t.instant('common.close'),
+        { duration: 4000 },
+      );
       return;
     }
 
@@ -385,25 +392,29 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.showForm = false;
         this.autosaveStatus = 'idle';
         this.cdr.markForCheck();
-        this.snackBar.open(published ? 'Article published!' : 'Draft saved!', 'Close', { duration: 3000 });
+        this.snackBar.open(
+          this.t.instant(published ? 'blog_manage.published_msg' : 'blog_manage.draft_saved_msg'),
+          this.t.instant('common.close'),
+          { duration: 3000 },
+        );
         this.load();
         this.destroy$.next();
       },
       error: error => {
         this.saving = false;
         this.cdr.markForCheck();
-        this.snackBar.open(this.resolveSaveError(error), 'Close', { duration: 4500 });
+        this.snackBar.open(this.resolveSaveError(error), this.t.instant('common.close'), { duration: 4500 });
       },
     });
   }
 
   delete(id: string): void {
-    if (!confirm('Delete this post?')) return;
+    if (!confirm(this.t.instant('blog_manage.confirm_delete'))) return;
     this.blogService.remove(id).subscribe({
       next: () => {
         this.posts = this.posts.filter(p => p._id !== id);
         this.cdr.markForCheck();
-        this.snackBar.open('Post deleted.', 'Close', { duration: 3000 });
+        this.snackBar.open(this.t.instant('blog_manage.deleted_msg'), this.t.instant('common.close'), { duration: 3000 });
       },
     });
   }
@@ -481,7 +492,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
           this.generatingDraft = false;
           this.applyGeneratedDraft(event.body);
           this.cdr.markForCheck();
-          this.snackBar.open('Draft generated from PDF.', 'Close', { duration: 3500 });
+          this.snackBar.open(this.t.instant('blog_manage.draft_generated'), this.t.instant('common.close'), { duration: 3500 });
         }
       },
       error: error => {
@@ -489,8 +500,8 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.processingDraft = false;
         this.uploadProgress = 0;
         this.cdr.markForCheck();
-        const message = error?.error?.message || 'Failed to process the PDF.';
-        this.snackBar.open(Array.isArray(message) ? message.join(', ') : message, 'Close', { duration: 4000 });
+        const message = error?.error?.message || this.t.instant('blog_manage.generate_failed_default');
+        this.snackBar.open(Array.isArray(message) ? message.join(', ') : message, this.t.instant('common.close'), { duration: 4000 });
       },
     });
   }
@@ -609,7 +620,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     const cleaned = this.cleanOptional(value);
     if (!cleaned) return undefined;
     if (cleaned.startsWith('data:')) {
-      this.snackBar.open('Use an image URL for cover. Direct file upload is not supported.', 'Close', { duration: 5000 });
+      this.snackBar.open(this.t.instant('blog_manage.cover_data_url_unsupported'), this.t.instant('common.close'), { duration: 5000 });
       return undefined;
     }
     return cleaned;
@@ -620,9 +631,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     const message = error?.error?.message;
     if (Array.isArray(message) && message.length) return message.join(', ');
     if (typeof message === 'string' && message.trim()) return message;
-    if (status === 413) return 'Payload too large. Remove inline images and use image URLs instead.';
-    if (status === 401 || status === 403) return 'Session expired. Please log in again.';
-    return 'Save failed. Check title, content and slug.';
+    if (status === 413) return this.t.instant('blog_manage.err_payload_too_large');
+    if (status === 401 || status === 403) return this.t.instant('blog_manage.err_session_expired');
+    return this.t.instant('blog_manage.err_save_failed_default');
   }
 
   // ── PDF extract (simple, no AI) ─────────────────────────────────────
@@ -635,11 +646,11 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
 
     const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
     if (!isPdf) {
-      this.snackBar.open('Only PDF files are allowed.', 'Close', { duration: 3000 });
+      this.snackBar.open(this.t.instant('blog_manage.only_pdf_allowed'), this.t.instant('common.close'), { duration: 3000 });
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      this.snackBar.open('PDF must be smaller than 10 MB.', 'Close', { duration: 3000 });
+      this.snackBar.open(this.t.instant('blog_manage.pdf_too_large'), this.t.instant('common.close'), { duration: 3000 });
       return;
     }
 
@@ -654,8 +665,8 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       },
       error: err => {
         this.extractingPdf = false;
-        const msg = err?.error?.message || 'Could not extract text from this PDF.';
-        this.snackBar.open(Array.isArray(msg) ? msg.join(', ') : msg, 'Close', { duration: 4000 });
+        const msg = err?.error?.message || this.t.instant('blog_manage.extract_failed_default');
+        this.snackBar.open(Array.isArray(msg) ? msg.join(', ') : msg, this.t.instant('common.close'), { duration: 4000 });
         this.cdr.detectChanges();
       },
     });
@@ -677,7 +688,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     });
     this.slugManuallyEdited = false;
     this.activeTab = 'it';
-    this.snackBar.open('Content applied. Review and translate when ready.', 'Close', { duration: 3500 });
+    this.snackBar.open(this.t.instant('blog_manage.content_applied'), this.t.instant('common.close'), { duration: 3500 });
   }
 
   clearPdfPreview(): void {
@@ -692,7 +703,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     const excerpt = (this.form.get('excerpt')?.value || '').trim();
 
     if (!title) {
-      this.snackBar.open('Add Italian title first.', 'Close', { duration: 3000 });
+      this.snackBar.open(this.t.instant('blog_manage.add_it_title_first'), this.t.instant('common.close'), { duration: 3000 });
       return;
     }
 
@@ -766,9 +777,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         excerpt_de: this.truncate(excerptDe, this.EXCERPT_MAX),
       });
 
-      this.snackBar.open('Translated to EN, SQ, PT, ES, FR, DE. Review before publishing.', 'Close', { duration: 4000 });
+      this.snackBar.open(this.t.instant('blog_manage.translated_success'), this.t.instant('common.close'), { duration: 4000 });
     } catch {
-      this.snackBar.open('Translation failed. Check your connection and try again.', 'Close', { duration: 4000 });
+      this.snackBar.open(this.t.instant('blog_manage.translation_failed'), this.t.instant('common.close'), { duration: 4000 });
     } finally {
       this.translating = false;
       this.cdr.detectChanges();
