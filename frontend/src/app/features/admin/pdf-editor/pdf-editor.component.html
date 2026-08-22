@@ -70,7 +70,7 @@
                       (dragleave)="onDragLeave(i)"
                       (drop)="onDrop($event, i)"
                       (dragend)="onDragEnd()"
-                      aria-label="drag to reorder">
+                      [attr.aria-label]="'pdf_editor.drag_to_reorder' | translate">
                 @if (p.thumb) {
                   <img [src]="p.thumb" draggable="false" [style.transform]="'rotate(' + p.rot + 'deg)'" alt="p. {{ i + 1 }}">
                 } @else {
@@ -79,10 +79,10 @@
                 <figcaption>
                   <span>{{ i + 1 }}</span>
                   <span class="page-btns">
-                    <button (click)="rotate(i)" aria-label="rotate">⟳</button>
-                    <button [disabled]="i === 0" (click)="move(i, -1)" aria-label="move left">←</button>
-                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" aria-label="move right">→</button>
-                    <button [disabled]="pages().length === 1" (click)="remove(i)" aria-label="delete">🗑</button>
+                    <button (click)="rotate(i)" [attr.aria-label]="'pdf_editor.rotate' | translate">⟳</button>
+                    <button [disabled]="i === 0" (click)="move(i, -1)" [attr.aria-label]="'pdf_editor.move_left' | translate">←</button>
+                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" [attr.aria-label]="'pdf_editor.move_right' | translate">→</button>
+                    <button [disabled]="pages().length === 1" (click)="remove(i)" [attr.aria-label]="'pdf_editor.delete' | translate">🗑</button>
                   </span>
                 </figcaption>
               </figure>

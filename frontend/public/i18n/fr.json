@@ -1392,7 +1392,13 @@
     "workspace_banner_dismiss": "Ignorer",
     "workspace_send": "Envoyer vers Workspace",
     "workspace_sent": "Envoyé ✓",
-    "page_moved": "Page déplacée à la position {{position}}"
+    "page_moved": "Page déplacée à la position {{position}}",
+    "err_no_valid_pdf": "Aucun PDF valide trouvé parmi les fichiers déposés.",
+    "drag_to_reorder": "Glisser pour réorganiser",
+    "rotate": "Pivoter",
+    "move_left": "Déplacer à gauche",
+    "move_right": "Déplacer à droite",
+    "delete": "Supprimer"
   },
   "viewer": {
     "title": "Visionneuse PDF",

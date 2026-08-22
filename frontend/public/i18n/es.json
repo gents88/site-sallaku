@@ -1392,7 +1392,13 @@
     "workspace_banner_dismiss": "Ignorar",
     "workspace_send": "Enviar a Workspace",
     "workspace_sent": "Enviado ✓",
-    "page_moved": "Página movida a la posición {{position}}"
+    "page_moved": "Página movida a la posición {{position}}",
+    "err_no_valid_pdf": "No se ha encontrado ningún PDF válido entre los archivos soltados.",
+    "drag_to_reorder": "Arrastra para reordenar",
+    "rotate": "Girar",
+    "move_left": "Mover a la izquierda",
+    "move_right": "Mover a la derecha",
+    "delete": "Eliminar"
   },
   "viewer": {
     "title": "Visor de PDF",
