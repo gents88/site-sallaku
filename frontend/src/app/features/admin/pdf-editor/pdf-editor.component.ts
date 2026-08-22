@@ -292,7 +292,10 @@ export class PdfEditorComponent implements OnInit {
 
   private async addFiles(files: File[]): Promise<void> {
     const pdfs = files.filter((f) => f.type.includes('pdf') || f.name.toLowerCase().endsWith('.pdf'));
-    if (pdfs.length === 0) return;
+    if (pdfs.length === 0) {
+      if (files.length > 0) this.msg.set(`❌ ${this.t.instant('pdf_editor.err_no_valid_pdf')}`);
+      return;
+    }
     this.loading.set(true);
     this.msg.set('');
 
