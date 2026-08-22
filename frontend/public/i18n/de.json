@@ -1142,7 +1142,7 @@
     "hint_csv": "💡 Tabellendaten erkannt. Empfohlen: CSV → PDF-Bericht.",
     "hint_json": "💡 JSON erkannt. Empfohlen: JSON → PDF-Bericht.",
     "err_unauthorized": "Nicht autorisiert.",
-    "err_too_large": "Datei zu groß (max. 50 MB).",
+    "err_too_large": "Datei zu groß: das Limit liegt bei {{max}}MB.",
     "err_unsupported": "Dateiformat nicht unterstützt.",
     "err_invalid": "Ungültige Anfrage. Datei prüfen.",
     "err_failed": "Konvertierung fehlgeschlagen. Erneut versuchen.",

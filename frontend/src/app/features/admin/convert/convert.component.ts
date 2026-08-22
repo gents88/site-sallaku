@@ -16,6 +16,8 @@ type Kind = 'pdf' | 'image' | 'text' | 'base64' | 'unknown';
 
 /** Mirrors the backend's FilesInterceptor('files', MAX_FILE_COUNT) cap in conversion.controller.ts. */
 const MULTI_MAX_FILES = 20;
+/** Mirrors the backend's `limits: { fileSize: MAX_FILE_SIZE }` in conversion.controller.ts. */
+const MAX_FILE_MB = 50;
 
 const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: string }> = {
   'Documenti':   { icon: '📄', nameKey: 'convert.group_docs',       descKey: 'convert.group_docs_desc'       },
@@ -164,6 +166,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.isMulti() ? this.files().length > 0 : Boolean(this.file()),
   );
 
+  readonly maxFileMb = MAX_FILE_MB;
+
   readonly canConvert = computed(() => {
     const def = this.selectedDef();
     if (!def || this.run()) return false;
@@ -172,13 +176,21 @@ export class ConvertComponent implements OnInit, OnDestroy {
       const fs = this.files();
       if (fs.length === 0) return false;
       if (def.id === 'merge-pdf' && fs.length < 2) return false;
-      return fs.every(f => this.matchesAccept(def, f));
+      return fs.every(f => this.matchesAccept(def, f) && this.matchesSize(f));
     }
 
     const f = this.file();
     if (!f) return false;
+    if (!this.matchesSize(f)) return false;
     if (def.id.startsWith('base64-')) return Boolean(this.b64);
     return this.matchesAccept(def, f);
+  });
+
+  /** true se almeno un file selezionato supera il limite di dimensione lato backend. */
+  readonly hasOversizedFile = computed(() => {
+    if (this.isMulti()) return this.files().some((f) => !this.matchesSize(f));
+    const f = this.file();
+    return f ? !this.matchesSize(f) : false;
   });
 
   matchesAccept(def: ConversionDef, f: File): boolean {
@@ -186,6 +198,10 @@ export class ConvertComponent implements OnInit, OnDestroy {
     const exts = def.accept.split(',').map(a => a.trim().replace('.', '').toLowerCase());
     const ext = this.extOf(f.name);
     return exts.includes(ext) || exts.some(e => f.type.includes(e));
+  }
+
+  matchesSize(f: File): boolean {
+    return f.size <= MAX_FILE_MB * 1024 * 1024;
   }
 
   ngOnDestroy(): void { this.clean(); }
