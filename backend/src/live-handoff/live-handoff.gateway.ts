@@ -85,7 +85,16 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
       return;
     }
 
-    const status = await this.liveHandoffService.markAgentJoining(body.sessionId);
+    let status;
+    try {
+      status = await this.liveHandoffService.markAgentJoining(body.sessionId);
+    } catch (err) {
+      client.emit('error', {
+        message: err instanceof Error ? err.message : 'Impossibile entrare in questa chat.',
+      });
+      return;
+    }
+
     await client.join(this.room(status.sessionId));
     this.server.to(this.room(status.sessionId)).emit('agent_joined', {
       sessionId: status.sessionId,
@@ -103,6 +112,9 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     const payload = this.verifyAdminToken(body?.token);
     const text = body?.text?.trim().slice(0, 2000);
     if (!payload || !body?.sessionId || !text) return;
+
+    const status = await this.liveHandoffService.getStatus(body.sessionId);
+    if (status.status !== 'live') return;
 
     const message = await this.chatbotService.appendLiveMessage(body.sessionId, 'agent', text);
     this.server.to(this.room(body.sessionId)).emit('chat_message', {

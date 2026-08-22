@@ -85,9 +85,29 @@ describe('LiveHandoffGateway', () => {
       expect(mockServer.emit).toHaveBeenCalledWith('agent_joined', expect.objectContaining({ sessionId: 's1' }));
       expect(mockLiveHandoffService.markLive).toHaveBeenCalledWith('s1');
     });
+
+    it('emits an error to the admin instead of hanging when the request can no longer be joined', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1', role: 'admin' });
+      mockLiveHandoffService.markAgentJoining.mockRejectedValue(new Error('Questa richiesta è stata chiusa.'));
+
+      await gateway.onAdminJoin(mockClient, { sessionId: 's1', token: 'good' });
+
+      expect(mockClient.emit).toHaveBeenCalledWith('error', { message: 'Questa richiesta è stata chiusa.' });
+      expect(mockClient.join).not.toHaveBeenCalled();
+      expect(mockServer.emit).not.toHaveBeenCalledWith('agent_joined', expect.anything());
+    });
   });
 
   describe('onAdminMessage', () => {
+    it('drops the message when the handoff is not live yet, even with a valid admin token', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+      mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'agent_joining' });
+
+      await gateway.onAdminMessage(mockClient, { sessionId: 's1', text: 'ciao', token: 'good' });
+
+      expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
+    });
+
     it('drops the message when the admin token does not verify', async () => {
       mockJwtService.verify.mockImplementation(() => {
         throw new Error('invalid');
@@ -98,8 +118,9 @@ describe('LiveHandoffGateway', () => {
       expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
     });
 
-    it('persists and broadcasts an authenticated admin message', async () => {
+    it('persists and broadcasts an authenticated admin message once the handoff is live', async () => {
       mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+      mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'live' });
       mockChatbotService.appendLiveMessage.mockResolvedValue({ timestamp: new Date('2026-01-01') });
 
       await gateway.onAdminMessage(mockClient, { sessionId: 's1', text: 'ciao, sono Gent', token: 'good' });
