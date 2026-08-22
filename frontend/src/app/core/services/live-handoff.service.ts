@@ -105,7 +105,11 @@ export class LiveHandoffService {
   }
 
   private connectSocket(sessionId: string): void {
-    this.socket = io(`${this.wsOrigin}/live-chat`, { transports: ['websocket'] });
+    // Niente `transports: ['websocket']`: forzare solo WS salta l'handshake di polling
+    // e su alcuni proxy/edge che parlano HTTP/2 (Railway compreso) l'upgrade diretto a
+    // WS fallisce con 400 Bad Request. Il default (polling → tentativo di upgrade a WS)
+    // funziona sempre almeno via polling, con eventuale upgrade opportunistico.
+    this.socket = io(`${this.wsOrigin}/live-chat`);
 
     this.socket.on('connect', () => {
       this.socket?.emit('join_session', { sessionId });

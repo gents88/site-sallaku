@@ -235,7 +235,7 @@ textarea.field-input { resize: vertical; min-height: 120px; line-height: 1.65; }
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* @keyframes spin → styles.scss (globale, identico) */
 
 .empty-state {
   text-align: center;

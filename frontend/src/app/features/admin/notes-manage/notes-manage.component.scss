@@ -1,6 +1,5 @@
-.admin-page { padding-top: 5rem; padding-bottom: 4rem; }
-.admin-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; }
-.back-link { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--color-text-muted); font-size: 0.85rem; margin-bottom: 0.25rem; &:hover { color: var(--color-primary); } }
+/* .admin-page, .back-link → styles.scss (globali) */
+.admin-header { margin-bottom: 1.5rem; } /* scarto dal default globale (2rem) */
 
 // ── Status tabs ──────────────────────────────────────────────
 .status-tabs {
@@ -45,7 +44,7 @@
 }
 
 // ── Note rows ────────────────────────────────────────────────
-.list { display: flex; flex-direction: column; gap: 1rem; }
+/* .list → styles.scss (globale, identico) */
 
 .note-row {
   display: flex;
@@ -103,18 +102,9 @@
 .badge--approved { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.35); }
 .badge--spam     { color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.35); }
 
-// ── Pagination ───────────────────────────────────────────────
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
+/* .pagination → styles.scss (globale, identico) */
 
-  &__info { font-size: 0.85rem; color: var(--color-text-muted); }
-}
-
-.empty-state { text-align: center; color: var(--color-text-muted); margin-top: 3rem; }
+/* .empty-state → styles.scss (globale, identico) */
 
 @media (max-width: 640px) {
   .note-row { flex-direction: column; }
