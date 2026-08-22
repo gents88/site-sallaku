@@ -96,13 +96,13 @@
           <div class="pages-grid">
             @for (p of pages(); track p.id; let i = $index) {
               <figure class="page-card">
-                <img [src]="p.thumb" alt="page {{ i + 1 }}">
+                <img [src]="p.thumb" [attr.alt]="('scanner.page_alt' | translate: { n: i + 1 })">
                 <figcaption>
                   <span>{{ i + 1 }}</span>
                   <span class="page-btns">
-                    <button [disabled]="i === 0" (click)="move(i, -1)" aria-label="move left">←</button>
-                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" aria-label="move right">→</button>
-                    <button (click)="remove(i)" aria-label="delete">🗑</button>
+                    <button [disabled]="i === 0" (click)="move(i, -1)" [attr.aria-label]="'scanner.move_left' | translate">←</button>
+                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" [attr.aria-label]="'scanner.move_right' | translate">→</button>
+                    <button (click)="remove(i)" [attr.aria-label]="'scanner.delete' | translate">🗑</button>
                   </span>
                 </figcaption>
               </figure>

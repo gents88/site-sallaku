@@ -1478,7 +1478,12 @@
     "trust_badge": "Captura, recorte e filtros permanecem no seu navegador — apenas o OCR e a exportação para PDF são enviados ao servidor",
     "workspace_send_pdf": "Enviar PDF para o Workspace",
     "workspace_send_text": "Enviar texto para o Workspace",
-    "workspace_sent": "Enviado ✓"
+    "workspace_sent": "Enviado ✓",
+    "move_left": "Mover para a esquerda",
+    "move_right": "Mover para a direita",
+    "delete": "Eliminar",
+    "page_alt": "página {{n}}",
+    "err_camera_unsupported": "Câmara indisponível neste navegador ou ligação insegura (é necessário HTTPS). Ainda pode carregar uma imagem."
   },
   "library": {
     "badge": "Novo",
