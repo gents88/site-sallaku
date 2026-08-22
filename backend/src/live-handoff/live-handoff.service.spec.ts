@@ -152,13 +152,21 @@ describe('LiveHandoffService', () => {
       await expect(service.markAgentJoining('missing-session')).rejects.toThrow(NotFoundException);
     });
 
-    it('throws ConflictException only when the request was explicitly closed', async () => {
-      mockModel.findOne.mockReturnValue({
-        sort: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue({ status: 'closed', save: jest.fn() }),
-      });
-      await expect(service.markAgentJoining('session-1')).rejects.toThrow(ConflictException);
-    });
+    // Nessuno stato deve poter escludere Gent dalla sua stessa conversazione:
+    // "closed" scatta anche solo navigando via dalla pagina admin, quindi bloccarlo
+    // significherebbe che un "torna alla dashboard" gli impedisce di rientrare.
+    it.each(['closed', 'expired', 'requested', 'notified', 'agent_joining', 'live'])(
+      'lascia rientrare Gent anche da uno stato "%s"',
+      async (status) => {
+        const doc = { _id: 'req-id', sessionId: 'session-1', status, save: jest.fn().mockResolvedValue(undefined) };
+        mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(doc) });
+
+        const result = await service.markAgentJoining('session-1');
+
+        expect(result.status).toBe('agent_joining');
+        expect(doc.status).toBe('agent_joining');
+      },
+    );
 
     it('revives an expired request instead of blocking Gent when he shows up late', async () => {
       const doc = { _id: 'req-id', sessionId: 'session-1', status: 'expired', save: jest.fn().mockResolvedValue(undefined) };
