@@ -564,14 +564,7 @@
     "close": "Cerrar",
     "confirm": "Confirmar",
     "yes": "Sí",
-    "no": "No",
-    "http_errors": {
-      "network": "Sin conexión a internet. Comprueba la red e inténtalo de nuevo.",
-      "invalid_request": "Solicitud no válida. Comprueba los datos introducidos.",
-      "forbidden": "Acceso denegado. No tienes permiso para esta acción.",
-      "too_many_requests": "Demasiadas solicitudes. Espera un momento e inténtalo de nuevo.",
-      "server_error": "Se ha producido un error del servidor. Inténtalo de nuevo más tarde."
-    }
+    "no": "No"
   },
   "services": {
     "tag": "services",
