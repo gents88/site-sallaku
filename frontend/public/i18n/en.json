@@ -564,14 +564,7 @@
     "close": "Close",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No",
-    "http_errors": {
-      "network": "No internet connection. Check your network and try again.",
-      "invalid_request": "Invalid request. Please check your input.",
-      "forbidden": "Access denied. You do not have permission for this action.",
-      "too_many_requests": "Too many requests. Please wait a moment and try again.",
-      "server_error": "A server error occurred. Please try again later."
-    }
+    "no": "No"
   },
   "services": {
     "tag": "services",
