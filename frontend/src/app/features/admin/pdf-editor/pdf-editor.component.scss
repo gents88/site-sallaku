@@ -21,6 +21,7 @@
     .res-head { margin-bottom: 1rem; }
     .res-head h2 { margin: 0 0 .25rem; font-size: 1.05rem; }
     .hint-line { font-size: .78rem; color: var(--text-secondary, #8b949e); margin: 0; }
+    .persistence-hint { font-size: .78rem; color: #f0b429; margin: .35rem 0 0; }
 
     .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .75rem; }
     .page-card {
