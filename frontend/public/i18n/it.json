@@ -1478,7 +1478,12 @@
     "trust_badge": "Scatto, ritaglio e filtri restano nel tuo browser — solo OCR ed esportazione PDF vengono inviati al server",
     "workspace_send_pdf": "Invia PDF a Workspace",
     "workspace_send_text": "Invia testo a Workspace",
-    "workspace_sent": "Inviato ✓"
+    "workspace_sent": "Inviato ✓",
+    "move_left": "Sposta a sinistra",
+    "move_right": "Sposta a destra",
+    "delete": "Elimina",
+    "page_alt": "pagina {{n}}",
+    "err_camera_unsupported": "Fotocamera non disponibile su questo browser o connessione non sicura (serve HTTPS). Puoi comunque caricare un'immagine."
   },
   "library": {
     "badge": "Nuovo",

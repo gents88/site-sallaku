@@ -1478,7 +1478,12 @@
     "trust_badge": "Aufnahme, Zuschnitt und Filter bleiben in deinem Browser — nur OCR und PDF-Export werden an den Server gesendet",
     "workspace_send_pdf": "PDF an Workspace senden",
     "workspace_send_text": "Text an Workspace senden",
-    "workspace_sent": "Gesendet ✓"
+    "workspace_sent": "Gesendet ✓",
+    "move_left": "Nach links verschieben",
+    "move_right": "Nach rechts verschieben",
+    "delete": "Löschen",
+    "page_alt": "Seite {{n}}",
+    "err_camera_unsupported": "Kamera in diesem Browser nicht verfügbar oder unsichere Verbindung (HTTPS erforderlich). Du kannst trotzdem ein Bild hochladen."
   },
   "library": {
     "badge": "Neu",

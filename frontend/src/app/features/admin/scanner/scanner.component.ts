@@ -123,6 +123,12 @@ export class ScannerComponent implements OnInit, OnDestroy {
 
   async startCamera(): Promise<void> {
     this.camError.set('');
+    if (!navigator.mediaDevices?.getUserMedia) {
+      // Contesto non sicuro (http non-localhost) o browser senza supporto: getUserMedia
+      // non esiste proprio, quindi il try/catch sotto non intercetterebbe nulla di utile.
+      this.camError.set(`❌ ${this.t.instant('scanner.err_camera_unsupported')}`);
+      return;
+    }
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },

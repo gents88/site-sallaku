@@ -1478,7 +1478,12 @@
     "trust_badge": "Kapja, prerja dhe filtrat qëndrojnë në shfletuesin tënd — vetëm OCR-i dhe eksportimi në PDF dërgohen te serveri",
     "workspace_send_pdf": "Dërgo PDF-në te Workspace",
     "workspace_send_text": "Dërgo tekstin te Workspace",
-    "workspace_sent": "U dërgua ✓"
+    "workspace_sent": "U dërgua ✓",
+    "move_left": "Lëviz majtas",
+    "move_right": "Lëviz djathtas",
+    "delete": "Fshi",
+    "page_alt": "faqja {{n}}",
+    "err_camera_unsupported": "Kamera nuk është e disponueshme në këtë shfletues ose lidhja nuk është e sigurt (nevojitet HTTPS). Mund të ngarkosh gjithsesi një imazh."
   },
   "library": {
     "badge": "E re",
