@@ -838,7 +838,12 @@
     "style_pitch_deck_label": "Pitch Deck",
     "style_pitch_deck_desc": "Deck prêt pour les investisseurs startup",
     "workspace_send": "Envoyer vers Workspace",
-    "workspace_sent": "Envoyé ✓"
+    "workspace_sent": "Envoyé ✓",
+    "err_topic_short": "Saisissez un sujet d’au moins 3 caractères.",
+    "err_file_type": "Seuls les fichiers PDF, TXT ou DOCX sont pris en charge comme contexte.",
+    "err_file_too_large": "Fichier trop volumineux (max {{max}}Mo) : {{name}}",
+    "err_generic": "Une erreur est survenue. Veuillez réessayer.",
+    "err_truncated": "Le contenu de certaines diapositives a été tronqué par manque de place lors de l’export du PDF. Essayez de raccourcir le texte et régénérez."
   },
   "ai_formatter": {
     "title": "Formateur IA",
