@@ -13,13 +13,34 @@ import { Server, Socket } from 'socket.io';
 import { LiveHandoffService } from './live-handoff.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
 
-const corsOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean)
-  : true;
+// Stessa logica di validazione dell'Origin usata dal CORS HTTP in main.ts, così il
+// comportamento è identico e verificato: nessuna cookie/credenziale sul socket (l'auth
+// admin viaggia nel payload del messaggio), quindi niente `credentials: true` — che
+// tra l'altro va in conflitto con un origin non esplicito e fa fallire l'handshake WS
+// nel browser reale (visto solo lì, mai in un client Node "nudo" senza Origin header).
+function corsOriginValidator(
+  origin: string | undefined,
+  callback: (err: Error | null, allow?: boolean) => void,
+): void {
+  if (!origin) {
+    callback(null, true);
+    return;
+  }
+  const allowedOrigins = (process.env.CORS_ORIGIN ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  if (process.env.NODE_ENV !== 'production' && allowedOrigins.length === 0) {
+    callback(null, true);
+    return;
+  }
+  callback(null, allowedOrigins.includes(origin));
+}
 
 @WebSocketGateway({
   namespace: '/live-chat',
-  cors: { origin: corsOrigins, credentials: true },
+  cors: { origin: corsOriginValidator },
 })
 export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
