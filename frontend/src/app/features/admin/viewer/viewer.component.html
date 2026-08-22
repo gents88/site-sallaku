@@ -7,6 +7,23 @@
 
       <!-- ── Upload ─────────────────────────────── -->
       @if (!doc()) {
+        @if (workspaceItem()) {
+          <div class="workspace-banner">
+            <span class="workspace-banner-icon">🔗</span>
+            <div class="workspace-banner-text">
+              <strong>{{ 'viewer.workspace_banner_title' | translate }}</strong>
+              <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+            </div>
+            <div class="workspace-banner-actions">
+              <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">
+                {{ 'viewer.workspace_banner_use' | translate }}
+              </button>
+              <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">
+                {{ 'viewer.workspace_banner_dismiss' | translate }}
+              </button>
+            </div>
+          </div>
+        }
         <div class="cp-panel">
           <div class="dz"
                appFileDropzone

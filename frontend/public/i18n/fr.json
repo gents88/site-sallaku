@@ -1384,7 +1384,10 @@
     "export_annotations": "Exporter les notes",
     "from_library": "De la bibliothèque",
     "err_load_doc": "Impossible d'ouvrir le document de votre bibliothèque.",
-    "save_to_library": "Enregistrer dans la bibliothèque"
+    "save_to_library": "Enregistrer dans la bibliothèque",
+    "workspace_banner_title": "Fichier reçu de Workspace",
+    "workspace_banner_use": "Utiliser ce fichier",
+    "workspace_banner_dismiss": "Ignorer"
   },
   "scanner": {
     "title": "Scanner de Documents",
