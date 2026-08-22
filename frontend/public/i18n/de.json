@@ -838,7 +838,12 @@
     "style_pitch_deck_label": "Pitch Deck",
     "style_pitch_deck_desc": "Deck für Startup-Investoren",
     "workspace_send": "An Workspace senden",
-    "workspace_sent": "Gesendet ✓"
+    "workspace_sent": "Gesendet ✓",
+    "err_topic_short": "Gib ein Thema mit mindestens 3 Zeichen ein.",
+    "err_file_type": "Als Kontext werden nur PDF-, TXT- oder DOCX-Dateien unterstützt.",
+    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
+    "err_generic": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+    "err_truncated": "Der Inhalt einiger Folien wurde beim PDF-Export aus Platzgründen abgeschnitten. Kürze den Text und erstelle die Folien erneut."
   },
   "ai_formatter": {
     "title": "KI-Formatierer",

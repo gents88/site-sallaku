@@ -838,7 +838,12 @@
     "style_pitch_deck_label": "Pitch Deck",
     "style_pitch_deck_desc": "Deck listo para inversores startup",
     "workspace_send": "Enviar a Workspace",
-    "workspace_sent": "Enviado ✓"
+    "workspace_sent": "Enviado ✓",
+    "err_topic_short": "Introduce un tema de al menos 3 caracteres.",
+    "err_file_type": "Solo se admiten archivos PDF, TXT o DOCX como contexto.",
+    "err_file_too_large": "Archivo demasiado grande (máx {{max}}MB): {{name}}",
+    "err_generic": "Se ha producido un error. Inténtalo de nuevo.",
+    "err_truncated": "El contenido de algunas diapositivas se recortó por falta de espacio al exportar el PDF. Prueba a acortar el texto y regenerar."
   },
   "ai_formatter": {
     "title": "Formateador IA",

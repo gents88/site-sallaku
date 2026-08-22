@@ -838,7 +838,12 @@
     "style_pitch_deck_label": "Pitch Deck",
     "style_pitch_deck_desc": "Startup investor-ready deck",
     "workspace_send": "Send to Workspace",
-    "workspace_sent": "Sent ✓"
+    "workspace_sent": "Sent ✓",
+    "err_topic_short": "Enter a topic of at least 3 characters.",
+    "err_file_type": "Only PDF, TXT, or DOCX files are supported as context.",
+    "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
+    "err_generic": "An error occurred. Please try again.",
+    "err_truncated": "Some slide content was cut off due to space when exporting the PDF. Try shortening the text and regenerate."
   },
   "ai_formatter": {
     "title": "AI Formatter",

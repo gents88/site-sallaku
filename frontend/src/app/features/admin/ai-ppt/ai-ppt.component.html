@@ -237,6 +237,10 @@
         </div>
       </div>
 
+      @if (truncatedWarning()) {
+        <p class="truncated-warning" role="alert">⚠️ {{ 'ai_ppt.err_truncated' | translate }}</p>
+      }
+
       @if (viewMode() === 'carousel') {
         <div class="carousel-wrapper" [class.is-fullscreen]="isFullscreen()">
 

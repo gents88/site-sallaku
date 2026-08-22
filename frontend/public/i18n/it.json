@@ -838,7 +838,12 @@
     "style_pitch_deck_label": "Pitch Deck",
     "style_pitch_deck_desc": "Deck pronto per investitori startup",
     "workspace_send": "Invia a Workspace",
-    "workspace_sent": "Inviato ✓"
+    "workspace_sent": "Inviato ✓",
+    "err_topic_short": "Inserisci un argomento di almeno 3 caratteri.",
+    "err_file_type": "Sono supportati solo file PDF, TXT o DOCX come contesto.",
+    "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}",
+    "err_generic": "Si è verificato un errore. Riprova.",
+    "err_truncated": "Il contenuto di alcune slide è stato troncato per motivi di spazio nel PDF esportato. Prova ad accorciare il testo e rigenera."
   },
   "ai_formatter": {
     "title": "Formattatore AI",
