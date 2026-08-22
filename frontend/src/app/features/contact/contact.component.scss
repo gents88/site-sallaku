@@ -296,5 +296,5 @@ textarea.field-input {
 }
 
 /* ── Animations ──────────────────────────────────── */
-@keyframes spin { to { transform: rotate(360deg); } }
+/* @keyframes spin → styles.scss (globale, identico) */
 .spin { animation: spin 1s linear infinite; display: inline-block; }

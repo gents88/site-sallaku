@@ -1256,9 +1256,7 @@
 
 
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin → styles.scss (globale, identico) */
 
 @media (max-width: 960px) {
   .visit-summary {

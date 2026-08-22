@@ -463,7 +463,7 @@
 }
 
 .spin { display: inline-block; animation: spin 1.2s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+/* @keyframes spin → styles.scss (globale, identico) */
 
 .loading-bar-track {
   height: 4px;

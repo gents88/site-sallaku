@@ -530,6 +530,81 @@ html[data-os='android'][data-input='touch'] .btn:active {
   &:hover { box-shadow: var(--shadow-md); }
 }
 
+/* ── Pagination ───────────────────────────────────────
+   Ex-duplicato identico in notes-manage e testimonials-manage.
+   search-results ha una variante (BEM __label invece di __info,
+   margin-top diverso): lasciata locale, non è una duplicazione
+   sicura da unificare senza toccare anche il suo template. */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+
+  &__info { font-size: 0.85rem; color: var(--color-text-muted); }
+}
+
+/* ── Admin CRUD pages (scheletro condiviso) ──────────
+   .admin-page e .back-link: identici in about-manage, blog-manage,
+   experiences-manage, notes-manage, projects-manage, testimonials-manage.
+   .admin-header ha due varianti di margin-bottom (2rem vs 1.5rem):
+   qui la maggioranza (4/6 file), lo scarto resta come override locale
+   di una riga nei due file che divergono. */
+.admin-page { padding-top: 5rem; padding-bottom: 4rem; }
+
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  &:hover { color: var(--color-primary); }
+}
+
+/* .list: contenitore verticale della lista elementi in gestione.
+   Identico (gap:1rem) in experiences-manage, projects-manage,
+   notes-manage, testimonials-manage; blog-manage diverge (gap:0.75rem)
+   e tiene un override locale di una riga.
+   .list-item resta locale: la sua struttura (thumbnail o meno,
+   padding) varia davvero da pagina a pagina, non è un duplicato. */
+.list { display: flex; flex-direction: column; gap: 1rem; }
+
+/* .form-row e .full-width: identici in about-manage, experiences-manage,
+   projects-manage, blog-manage. blog-manage tiene ".form-row--slim"
+   in locale (unico a quel file) e uno scarto di una riga su .full-width
+   (nessun margin-bottom lì). .form-actions NON è unificato: le varianti
+   divergono davvero in struttura (border-top, space-between, contenuto
+   extra in blog-manage) — non è una duplicazione sicura. */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.full-width { width: 100%; margin-bottom: 0.5rem; }
+
+/* ── Empty state (testo semplice) ────────────────────
+   Ex-duplicato identico in blog-manage, experiences-manage,
+   notes-manage, projects-manage, testimonials-manage, blog-list.
+   Le varianti "boxed" (bordo tratteggiato + padding) restano locali
+   ai rispettivi componenti: sono selettori scoped da Angular, quindi
+   più specifici di questa regola globale e non vengono toccati. */
+.empty-state {
+  text-align: center;
+  color: var(--color-text-muted);
+  margin-top: 3rem;
+}
+
 /* ── Reveal Animations ─────────────────────────────── */
 .reveal {
   opacity: 0;
@@ -733,6 +808,17 @@ html[data-os='android'][data-input='touch'] .btn:active {
     }
   }
 }
+
+/* ── Spinner rotation ───────────────────────────────
+   Ex-duplicato: dichiarato identico in 10 componenti (ai-formatter,
+   ai-ppt, pdf-search, pdf-translate, testimonials, article-notes,
+   login, otp-login, contact, dashboard). I nomi dei @keyframes non
+   sono scopati dalla view encapsulation di Angular, quindi erano già
+   una singola risorsa globale de facto: le dichiarazioni locali sono
+   state rimosse, le classi .spinner/.spin (dimensioni/colori propri
+   per componente) restano invariate e continuano a referenziare
+   "spin" per nome. */
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Tech bar animation ──────────────────────────── */
 @keyframes barFill { from { width: 0; } }
