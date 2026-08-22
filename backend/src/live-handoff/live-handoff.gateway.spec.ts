@@ -38,6 +38,20 @@ describe('LiveHandoffGateway', () => {
     mockClient = { id: 'socket-1', join: jest.fn().mockResolvedValue(undefined), emit: jest.fn() };
   });
 
+  describe('onJoinSession', () => {
+    it('joins the session room when a sessionId is provided', async () => {
+      await gateway.onJoinSession(mockClient, { sessionId: 's1' });
+
+      expect(mockClient.join).toHaveBeenCalledWith('live-handoff:s1');
+    });
+
+    it('does nothing when sessionId is missing', async () => {
+      await gateway.onJoinSession(mockClient, {});
+
+      expect(mockClient.join).not.toHaveBeenCalled();
+    });
+  });
+
   describe('onVisitorMessage', () => {
     it('ignores the message when the handoff is not live', async () => {
       mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'requested' });
@@ -46,6 +60,19 @@ describe('LiveHandoffGateway', () => {
 
       expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
       expect(mockServer.emit).not.toHaveBeenCalled();
+    });
+
+    it('ignores the message when text is missing or blank, without even checking status', async () => {
+      await gateway.onVisitorMessage(mockClient, { sessionId: 's1', text: '   ' });
+
+      expect(mockLiveHandoffService.getStatus).not.toHaveBeenCalled();
+      expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
+    });
+
+    it('ignores the message when sessionId is missing', async () => {
+      await gateway.onVisitorMessage(mockClient, { text: 'ciao' });
+
+      expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
     });
 
     it('persists and broadcasts the message once the handoff is live', async () => {
@@ -70,6 +97,15 @@ describe('LiveHandoffGateway', () => {
       });
 
       await gateway.onAdminJoin(mockClient, { sessionId: 's1', token: 'bad' });
+
+      expect(mockClient.emit).toHaveBeenCalledWith('error', expect.any(Object));
+      expect(mockLiveHandoffService.markAgentJoining).not.toHaveBeenCalled();
+    });
+
+    it('rejects a valid token that is missing the sessionId', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1', role: 'admin' });
+
+      await gateway.onAdminJoin(mockClient, { token: 'good' });
 
       expect(mockClient.emit).toHaveBeenCalledWith('error', expect.any(Object));
       expect(mockLiveHandoffService.markAgentJoining).not.toHaveBeenCalled();
@@ -130,6 +166,51 @@ describe('LiveHandoffGateway', () => {
         'chat_message',
         expect.objectContaining({ sessionId: 's1', from: 'agent' }),
       );
+    });
+
+    it('drops the message when text is missing or blank, even with a valid live handoff', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+      mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'live' });
+
+      await gateway.onAdminMessage(mockClient, { sessionId: 's1', text: '   ', token: 'good' });
+
+      expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
+    });
+
+    it('drops the message when sessionId is missing', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+
+      await gateway.onAdminMessage(mockClient, { text: 'ciao', token: 'good' });
+
+      expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onAdminClose', () => {
+    it('closes the session for a valid admin token', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+
+      await gateway.onAdminClose(mockClient, { sessionId: 's1', token: 'good' });
+
+      expect(mockLiveHandoffService.closeSession).toHaveBeenCalledWith('s1');
+    });
+
+    it('does not close the session when the token is invalid', async () => {
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('invalid');
+      });
+
+      await gateway.onAdminClose(mockClient, { sessionId: 's1', token: 'bad' });
+
+      expect(mockLiveHandoffService.closeSession).not.toHaveBeenCalled();
+    });
+
+    it('does not close the session when sessionId is missing', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+
+      await gateway.onAdminClose(mockClient, { token: 'good' });
+
+      expect(mockLiveHandoffService.closeSession).not.toHaveBeenCalled();
     });
   });
 
