@@ -1332,6 +1332,7 @@
     "err_import": "Import failed",
     "err_empty": "The document is empty",
     "err_export": "Export failed",
+    "err_timeout": "This is taking too long. Try a smaller file or check your connection.",
     "success": "Document exported successfully",
     "workspace_banner_title": "Text received from Workspace",
     "workspace_banner_use": "Use this text",
