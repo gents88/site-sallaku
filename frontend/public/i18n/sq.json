@@ -1384,7 +1384,10 @@
     "export_annotations": "Eksporto shënimet",
     "from_library": "Nga biblioteka",
     "err_load_doc": "Dokumenti nuk u hap dot nga biblioteka jote.",
-    "save_to_library": "Ruaj në bibliotekë"
+    "save_to_library": "Ruaj në bibliotekë",
+    "workspace_banner_title": "Skedar i marrë nga Workspace",
+    "workspace_banner_use": "Përdor këtë skedar",
+    "workspace_banner_dismiss": "Injoro"
   },
   "scanner": {
     "title": "Skaner Dokumentesh",
