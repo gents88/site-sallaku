@@ -118,13 +118,12 @@ export class LiveHandoffService {
   async markAgentJoining(sessionId: string): Promise<LiveHandoffStatusDto> {
     const doc = await this.model.findOne({ sessionId }).sort({ createdAt: -1 }).exec();
     if (!doc) throw new NotFoundException('Richiesta non trovata');
-    // "expired" è solo un timeout passivo (nessuno ha risposto entro la scadenza):
-    // se Gent si presenta comunque, la richiesta va riattivata invece di bloccarlo.
-    // "closed" resta l'unico stato davvero terminale (chiusura intenzionale).
-    if (doc.status === 'closed') {
-      throw new ConflictException('Questa richiesta è stata chiusa.');
-    }
 
+    // Nessuno stato blocca l'ingresso di Gent: né "expired" (timeout passivo, nessuno
+    // ha risposto in tempo) né "closed" (la pagina admin chiude la sessione anche solo
+    // navigando via, quindi un semplice "torna alla dashboard" lo escluderebbe dalla
+    // sua stessa conversazione). L'unico caso legittimo di rifiuto è una richiesta
+    // inesistente. L'endpoint è già protetto: ci si arriva solo con un JWT admin valido.
     doc.status = 'agent_joining';
     doc.respondedAt = new Date();
     await doc.save();
