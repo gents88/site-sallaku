@@ -17,6 +17,8 @@ type ExportFormat = 'pdf' | 'docx' | 'html';
 const EDITOR_DRAFT_KEY = 'editor-draft';
 /** Debounce dell'autosave: evita di scrivere su localStorage ad ogni singolo carattere. */
 const DRAFT_SAVE_DEBOUNCE_MS = 1000;
+/** Allineato al limite del backend condiviso con Convert (MAX_FILE_SIZE in conversion.controller.ts). */
+const MAX_IMPORT_FILE_MB = 50;
 
 interface EditorDraft {
   docName: string;
@@ -185,6 +187,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (!f) return;
 
     this.msg.set('');
+    if (f.size > MAX_IMPORT_FILE_MB * 1024 * 1024) {
+      this.msg.set(`❌ ${this.t.instant('editor.err_file_too_large', { max: MAX_IMPORT_FILE_MB, name: f.name })}`);
+      return;
+    }
     const ext = f.name.toLowerCase().split('.').pop() ?? '';
     if (!this.docName()) this.docName.set(f.name.replace(/\.[^.]+$/, ''));
 

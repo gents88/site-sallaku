@@ -1373,7 +1373,8 @@
     "workspace_banner_use": "Usa questo testo",
     "workspace_banner_dismiss": "Ignora",
     "workspace_send": "Invia a Workspace",
-    "workspace_sent": "Inviato ✓"
+    "workspace_sent": "Inviato ✓",
+    "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}"
   },
   "pdf_editor": {
     "title": "Editor PDF",
@@ -1405,7 +1406,8 @@
     "rotate": "Ruota",
     "move_left": "Sposta a sinistra",
     "move_right": "Sposta a destra",
-    "delete": "Elimina"
+    "delete": "Elimina",
+    "persistence_hint": "Le modifiche non vengono salvate: si perdono ricaricando o chiudendo questa scheda."
   },
   "viewer": {
     "title": "Visualizzatore PDF",
@@ -1490,7 +1492,8 @@
     "move_right": "Sposta a destra",
     "delete": "Elimina",
     "page_alt": "pagina {{n}}",
-    "err_camera_unsupported": "Fotocamera non disponibile su questo browser o connessione non sicura (serve HTTPS). Puoi comunque caricare un'immagine."
+    "err_camera_unsupported": "Fotocamera non disponibile su questo browser o connessione non sicura (serve HTTPS). Puoi comunque caricare un'immagine.",
+    "persistence_hint": "Le pagine acquisite non vengono salvate: si perdono ricaricando o chiudendo questa scheda."
   },
   "library": {
     "badge": "Nuovo",

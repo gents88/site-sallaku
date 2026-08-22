@@ -1373,7 +1373,8 @@
     "workspace_banner_use": "Diesen Text verwenden",
     "workspace_banner_dismiss": "Ignorieren",
     "workspace_send": "An Workspace senden",
-    "workspace_sent": "Gesendet ✓"
+    "workspace_sent": "Gesendet ✓",
+    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}"
   },
   "pdf_editor": {
     "title": "PDF-Editor",
@@ -1405,7 +1406,8 @@
     "rotate": "Drehen",
     "move_left": "Nach links verschieben",
     "move_right": "Nach rechts verschieben",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren."
   },
   "viewer": {
     "title": "PDF-Betrachter",
@@ -1490,7 +1492,8 @@
     "move_right": "Nach rechts verschieben",
     "delete": "Löschen",
     "page_alt": "Seite {{n}}",
-    "err_camera_unsupported": "Kamera in diesem Browser nicht verfügbar oder unsichere Verbindung (HTTPS erforderlich). Du kannst trotzdem ein Bild hochladen."
+    "err_camera_unsupported": "Kamera in diesem Browser nicht verfügbar oder unsichere Verbindung (HTTPS erforderlich). Du kannst trotzdem ein Bild hochladen.",
+    "persistence_hint": "Erfasste Seiten werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren."
   },
   "library": {
     "badge": "Neu",
