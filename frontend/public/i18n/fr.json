@@ -1142,7 +1142,7 @@
     "hint_csv": "💡 Données tabulaires détectées. Recommandé : CSV → rapport PDF.",
     "hint_json": "💡 JSON détecté. Recommandé : JSON → rapport PDF.",
     "err_unauthorized": "Non autorisé.",
-    "err_too_large": "Fichier trop volumineux (max 50 Mo).",
+    "err_too_large": "Fichier trop volumineux : la limite est de {{max}}Mo.",
     "err_unsupported": "Format de fichier non supporté.",
     "err_invalid": "Requête invalide. Vérifiez le fichier.",
     "err_failed": "Conversion échouée. Réessayez.",
