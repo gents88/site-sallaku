@@ -1,6 +1,7 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '../services/snackbar.service';
 
 /**
@@ -18,6 +19,7 @@ import { SnackbarService } from '../services/snackbar.service';
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const snackbar = inject(SnackbarService);
+  const translate = inject(TranslateService);
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
@@ -29,16 +31,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       const message = extractMessage(err);
 
       if (err.status === 0) {
-        snackbar.show('No internet connection. Check your network and try again.', 'error');
+        snackbar.show(translate.instant('common.http_errors.network'), 'error');
       } else if (err.status === 400) {
         // Show validation error if present; otherwise generic message
-        snackbar.show(message ?? 'Invalid request. Please check your input.', 'error');
+        snackbar.show(message ?? translate.instant('common.http_errors.invalid_request'), 'error');
       } else if (err.status === 403) {
-        snackbar.show('Access denied. You do not have permission for this action.', 'error');
+        snackbar.show(translate.instant('common.http_errors.forbidden'), 'error');
       } else if (err.status === 429) {
-        snackbar.show('Too many requests. Please wait a moment and try again.', 'error');
+        snackbar.show(translate.instant('common.http_errors.too_many_requests'), 'error');
       } else if (err.status >= 500) {
-        snackbar.show('A server error occurred. Please try again later.', 'error');
+        snackbar.show(translate.instant('common.http_errors.server_error'), 'error');
       }
       // 404s are silently passed through — components handle their own "not found" state
 
