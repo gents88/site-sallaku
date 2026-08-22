@@ -30,6 +30,21 @@ h1 {
   line-height: 1.7; margin: 0 auto; max-width: 560px;
 }
 
+.feedback-toast {
+  display: flex; align-items: center; gap: .5rem;
+  justify-content: center;
+  margin: 0 0 1.25rem;
+  padding: .6rem 1rem;
+  background: rgba(52,211,153,.1);
+  border: 1px solid rgba(52,211,153,.3);
+  border-radius: 10px;
+  color: #34d399;
+  font-size: .85rem;
+  font-weight: 600;
+  animation: feedback-in .2s ease;
+}
+@keyframes feedback-in { 0% { opacity: 0; transform: translateY(-4px); } 100% { opacity: 1; transform: translateY(0); } }
+
 /* ─── Current item card ─── */
 .current-card {
   display: flex; align-items: center; gap: 1.25rem;

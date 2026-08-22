@@ -946,7 +946,9 @@
     "kind_file": "Fichier",
     "kind_text": "Texte",
     "start_here": "Outils de départ",
-    "persistence_hint": "Non enregistré : perdu si vous rechargez ou fermez cet onglet."
+    "persistence_hint": "Non enregistré : perdu si vous rechargez ou fermez cet onglet.",
+    "feedback_cleared": "Supprimé de Workspace",
+    "feedback_downloaded": "Téléchargement commencé"
   },
   "pdf_translate": {
     "title": "Traduction de PDF",

@@ -50,6 +50,14 @@ export class WorkspaceComponent implements OnInit {
 
   readonly startingTools = STARTING_TOOLS;
   readonly justCleared = signal(false);
+  /**
+   * Conferma testuale per download/rimozione. Non basta l'animazione "pop" sulla
+   * current-card: quella vive dentro @if (workspace.hasItem()), che diventa false
+   * nello stesso ciclo in cui si chiama clear() — la card (e l'animazione con essa)
+   * sparisce dal DOM prima ancora di poter essere vista.
+   */
+  readonly feedback = signal<'cleared' | 'downloaded' | null>(null);
+  private feedbackTimer: ReturnType<typeof setTimeout> | undefined;
 
   readonly nextSteps = computed<ToolLink[]>(() => {
     const item = this.workspace.current();
@@ -88,13 +96,23 @@ export class WorkspaceComponent implements OnInit {
       });
       a.click();
       URL.revokeObjectURL(a.href);
+    } else {
+      return;
     }
+    this.showFeedback('downloaded');
   }
 
   clearCurrent(): void {
     this.workspace.clear();
     this.justCleared.set(true);
     setTimeout(() => this.justCleared.set(false), 1500);
+    this.showFeedback('cleared');
+  }
+
+  private showFeedback(kind: 'cleared' | 'downloaded'): void {
+    if (this.feedbackTimer) clearTimeout(this.feedbackTimer);
+    this.feedback.set(kind);
+    this.feedbackTimer = setTimeout(() => this.feedback.set(null), 2000);
   }
 
   timeAgo(ts: number): string {

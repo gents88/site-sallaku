@@ -8,6 +8,12 @@
     <p>{{ 'workspace.subtitle' | translate }}</p>
   </header>
 
+  @if (feedback(); as f) {
+    <div class="feedback-toast" role="status" aria-live="polite">
+      ✓ {{ (f === 'cleared' ? 'workspace.feedback_cleared' : 'workspace.feedback_downloaded') | translate }}
+    </div>
+  }
+
   @if (workspace.hasItem()) {
     <section class="current-card" [class.pop]="justCleared()">
       <div class="current-icon">{{ workspace.current()!.kind === 'file' ? '📄' : '📝' }}</div>
