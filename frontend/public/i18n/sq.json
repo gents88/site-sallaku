@@ -1400,7 +1400,14 @@
     "save_to_library": "Ruaj në bibliotekë",
     "workspace_banner_title": "Skedar i marrë nga Workspace",
     "workspace_banner_use": "Përdor këtë skedar",
-    "workspace_banner_dismiss": "Injoro"
+    "workspace_banner_dismiss": "Injoro",
+    "opening": "Duke hapur dokumentin…",
+    "prev_page": "Faqja e mëparshme",
+    "next_page": "Faqja tjetër",
+    "zoom_out": "Zvogëlo zoom",
+    "zoom_in": "Rrit zoom",
+    "prev_match": "Përputhja e mëparshme",
+    "next_match": "Përputhja tjetër"
   },
   "scanner": {
     "title": "Skaner Dokumentesh",

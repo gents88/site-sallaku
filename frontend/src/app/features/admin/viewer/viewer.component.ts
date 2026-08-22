@@ -47,8 +47,10 @@ export class ViewerComponent implements OnInit, OnDestroy {
   readonly scale = signal(1);
   readonly thumbs = signal<(string | null)[]>([]);
   readonly msg = signal('');
+  readonly opening = signal(false);
   readonly query = signal('');
   readonly searching = signal(false);
+  readonly searchProgress = signal<{ current: number; total: number } | null>(null);
   readonly matches = signal<SearchMatch[]>([]);
   readonly matchIdx = signal(0);
   /** true se l'ultima ricerca ha rilevato pochissimo testo estraibile (probabile PDF scansionato) */
@@ -142,6 +144,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
   async open(f: File | null): Promise<void> {
     if (!f) return;
     this.msg.set('');
+    this.opening.set(true);
     try {
       const doc = await this.pdfjs.openDocument(await f.arrayBuffer());
       this.close();
@@ -158,6 +161,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
       void this.renderThumbs(doc);
     } catch {
       this.msg.set(`❌ ${this.t.instant('viewer.err_open')}`);
+    } finally {
+      this.opening.set(false);
     }
   }
 
@@ -211,6 +216,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     if (!doc || !q.trim()) { void this.renderPage(); return; }
 
     this.searching.set(true);
+    this.searchProgress.set(null);
     const needle = q.trim().toLowerCase();
     const found: SearchMatch[] = [];
     let totalChars = 0;
@@ -228,7 +234,11 @@ export class ViewerComponent implements OnInit, OnDestroy {
       }
       found.sort((a, b) => a.page - b.page);
     } else {
+      // Nessun testo pre-estratto (documento non da Libreria): si passa pagina per
+      // pagina via pdf.js, potenzialmente lento su documenti lunghi — da qui il
+      // progresso reale, non un semplice "…" indeterminato.
       for (let i = 1; i <= doc.numPages; i++) {
+        this.searchProgress.set({ current: i, total: doc.numPages });
         const page = await doc.getPage(i);
         const content = await page.getTextContent();
         const raw = content.items.map((it) => ('str' in it ? it.str : '')).join(' ');
@@ -243,6 +253,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     }
 
     this.searching.set(false);
+    this.searchProgress.set(null);
     this.matches.set(found);
     // < 15 caratteri/pagina in media ⇒ quasi certamente un PDF scansionato senza layer di testo
     this.docSparseText.set(totalChars / doc.numPages < 15);
