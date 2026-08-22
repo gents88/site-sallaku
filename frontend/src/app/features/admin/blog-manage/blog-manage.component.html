@@ -1,11 +1,11 @@
 <div class="admin-page container">
   <header class="admin-header">
     <div>
-      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
-      <h1>Blog Posts</h1>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'blog_manage.title' | translate }}</h1>
     </div>
     <button mat-raised-button color="primary" (click)="openCreate()">
-      <mat-icon>add</mat-icon> New Post
+      <mat-icon>add</mat-icon> {{ 'blog_manage.new_post' | translate }}
     </button>
   </header>
 
@@ -15,26 +15,26 @@
       <!-- Form header -->
       <div class="form-panel__header">
         <div>
-          <h2>{{ editingId ? 'Edit' : 'New' }} Post</h2>
-          <p class="helper-copy">Italian content is required. Translations are optional — use the Translate button to fill them automatically.</p>
+          <h2>{{ (editingId ? 'blog_manage.form_title_edit' : 'blog_manage.form_title_new') | translate }}</h2>
+          <p class="helper-copy">{{ 'blog_manage.helper_copy' | translate }}</p>
         </div>
         <div class="form-panel__header-actions">
           @if (autosaveStatus === 'saving') {
             <span class="autosave-indicator autosave-indicator--saving">
-              <mat-icon>sync</mat-icon> Saving draft…
+              <mat-icon>sync</mat-icon> {{ 'blog_manage.autosave_saving' | translate }}
             </span>
           } @else if (autosaveStatus === 'saved') {
             <span class="autosave-indicator autosave-indicator--saved">
-              <mat-icon>check_circle</mat-icon> Saved {{ autosaveTime | date:'HH:mm' }}
+              <mat-icon>check_circle</mat-icon> {{ 'blog_manage.autosave_saved' | translate }} {{ autosaveTime | date:'HH:mm' }}
             </span>
           } @else if (autosaveStatus === 'error') {
             <span class="autosave-indicator autosave-indicator--error">
-              <mat-icon>error</mat-icon> Auto-save failed
+              <mat-icon>error</mat-icon> {{ 'blog_manage.autosave_error' | translate }}
             </span>
           }
           <button mat-icon-button type="button"
                   (click)="togglePreview()"
-                  [matTooltip]="showPreview ? 'Hide preview' : 'Show preview'">
+                  [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
             <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
@@ -43,8 +43,8 @@
       <!-- PDF import (simple extract — no AI required) -->
       <div class="pdf-section">
         <div class="pdf-section__header">
-          <span class="pdf-section__label"><mat-icon>picture_as_pdf</mat-icon> Import from PDF</span>
-          <span class="pdf-section__hint">Extract text, review, then translate</span>
+          <span class="pdf-section__label"><mat-icon>picture_as_pdf</mat-icon> {{ 'blog_manage.pdf_import_label' | translate }}</span>
+          <span class="pdf-section__hint">{{ 'blog_manage.pdf_import_hint' | translate }}</span>
         </div>
 
         @if (!pdfPreview) {
@@ -52,7 +52,7 @@
             <input type="file" accept=".pdf,application/pdf" hidden #pdfFileInput (change)="onPdfFileSelected($event)" />
             <button mat-stroked-button type="button" (click)="pdfFileInput.click()" [disabled]="extractingPdf">
               <mat-icon>upload_file</mat-icon>
-              {{ extractingPdf ? 'Extracting text…' : 'Upload PDF' }}
+              {{ (extractingPdf ? 'blog_manage.extracting_text' : 'blog_manage.upload_pdf') | translate }}
             </button>
             @if (extractingPdf) {
               <mat-progress-bar mode="indeterminate" class="pdf-progress"></mat-progress-bar>
@@ -63,8 +63,8 @@
             <div class="pdf-preview__meta">
               <mat-icon>description</mat-icon>
               <strong>{{ pdfPreview.fileName }}</strong>
-              <span class="text-muted">{{ pdfPreview.pageCount }} pages · {{ pdfPreview.wordCount }} words</span>
-              <button mat-icon-button type="button" (click)="clearPdfPreview()" matTooltip="Remove PDF preview">
+              <span class="text-muted">{{ 'blog_manage.pages_words' | translate: { pages: pdfPreview.pageCount, words: pdfPreview.wordCount } }}</span>
+              <button mat-icon-button type="button" (click)="clearPdfPreview()" [matTooltip]="'blog_manage.remove_pdf_preview' | translate">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
@@ -75,7 +75,7 @@
               }
             </div>
             <button mat-stroked-button type="button" color="primary" (click)="applyPdfContent()">
-              <mat-icon>text_snippet</mat-icon> Use as Italian content
+              <mat-icon>text_snippet</mat-icon> {{ 'blog_manage.use_as_italian' | translate }}
             </button>
           </div>
         }
@@ -127,67 +127,67 @@
           <button mat-stroked-button type="button" class="translate-btn"
                   (click)="translateAll()" [disabled]="translating">
             <mat-icon>translate</mat-icon>
-            {{ translating ? 'Translating…' : 'Translate IT → ALL' }}
+            {{ (translating ? 'blog_manage.translating' : 'blog_manage.translate_all') | translate }}
           </button>
         </div>
 
         <!-- ── Title for active language ──────────────────────────────── -->
         <mat-form-field appearance="outline" class="full-width title-field">
-          <mat-label>Title {{ activeTab === 'it' ? '(IT) *' : '(' + activeTab.toUpperCase() + ')' }}</mat-label>
-          <input matInput [formControl]="activeTitleControl" [maxlength]="TITLE_MAX" placeholder="Article title…" />
+          <mat-label>{{ 'blog_manage.title_label' | translate }} {{ activeTab === 'it' ? '(IT) *' : '(' + activeTab.toUpperCase() + ')' }}</mat-label>
+          <input matInput [formControl]="activeTitleControl" [maxlength]="TITLE_MAX" [placeholder]="'blog_manage.title_placeholder' | translate" />
           @if (activeTab === 'it' && form.get('title')?.invalid && form.get('title')?.touched) {
-            <mat-error>Title is required (min 3 characters)</mat-error>
+            <mat-error>{{ 'blog_manage.title_required_error' | translate }}</mat-error>
           }
         </mat-form-field>
 
         <!-- ── Editor toolbar + Content for active language ───────────── -->
         <div class="editor-wrapper">
-          <div class="editor-toolbar" role="toolbar" aria-label="Formatting options">
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('bold')" matTooltip="Bold">
+          <div class="editor-toolbar" role="toolbar" [attr.aria-label]="'blog_manage.toolbar_aria_label' | translate">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('bold')" [matTooltip]="'blog_manage.toolbar_bold' | translate">
               <mat-icon>format_bold</mat-icon>
             </button>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('italic')" matTooltip="Italic">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('italic')" [matTooltip]="'blog_manage.toolbar_italic' | translate">
               <mat-icon>format_italic</mat-icon>
             </button>
             <span class="toolbar-sep"></span>
-            <button type="button" class="toolbar-btn toolbar-btn--text" (click)="insertFormat('h2')" matTooltip="Heading 2">H2</button>
-            <button type="button" class="toolbar-btn toolbar-btn--text" (click)="insertFormat('h3')" matTooltip="Heading 3">H3</button>
+            <button type="button" class="toolbar-btn toolbar-btn--text" (click)="insertFormat('h2')" [matTooltip]="'blog_manage.toolbar_h2' | translate">H2</button>
+            <button type="button" class="toolbar-btn toolbar-btn--text" (click)="insertFormat('h3')" [matTooltip]="'blog_manage.toolbar_h3' | translate">H3</button>
             <span class="toolbar-sep"></span>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('ul')" matTooltip="Bullet list">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('ul')" [matTooltip]="'blog_manage.toolbar_bullet_list' | translate">
               <mat-icon>format_list_bulleted</mat-icon>
             </button>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('ol')" matTooltip="Numbered list">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('ol')" [matTooltip]="'blog_manage.toolbar_numbered_list' | translate">
               <mat-icon>format_list_numbered</mat-icon>
             </button>
             <span class="toolbar-sep"></span>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('code')" matTooltip="Inline code">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('code')" [matTooltip]="'blog_manage.toolbar_inline_code' | translate">
               <mat-icon>code</mat-icon>
             </button>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('pre')" matTooltip="Code block">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('pre')" [matTooltip]="'blog_manage.toolbar_code_block' | translate">
               <mat-icon>terminal</mat-icon>
             </button>
             <span class="toolbar-sep"></span>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('blockquote')" matTooltip="Blockquote">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('blockquote')" [matTooltip]="'blog_manage.toolbar_blockquote' | translate">
               <mat-icon>format_quote</mat-icon>
             </button>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('link')" matTooltip="Link">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('link')" [matTooltip]="'blog_manage.toolbar_link' | translate">
               <mat-icon>link</mat-icon>
             </button>
-            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('hr')" matTooltip="Divider">
+            <button type="button" mat-icon-button class="toolbar-btn" (click)="insertFormat('hr')" [matTooltip]="'blog_manage.toolbar_divider' | translate">
               <mat-icon>horizontal_rule</mat-icon>
             </button>
           </div>
 
           <mat-form-field appearance="outline" class="full-width editor-field">
-            <mat-label>Content {{ activeTab === 'it' ? '(IT) *' : '(' + activeTab.toUpperCase() + ')' }}</mat-label>
+            <mat-label>{{ 'blog_manage.content_label' | translate }} {{ activeTab === 'it' ? '(IT) *' : '(' + activeTab.toUpperCase() + ')' }}</mat-label>
             <textarea matInput [formControl]="activeContentControl" rows="18"
                       #contentTextarea
-                      placeholder="<p>Start writing…</p>">
+                      [placeholder]="'blog_manage.content_placeholder' | translate">
             </textarea>
             @if (activeTab === 'it' && form.get('content')?.invalid && form.get('content')?.touched) {
-              <mat-error>Content is required (min 10 characters)</mat-error>
+              <mat-error>{{ 'blog_manage.content_required_error' | translate }}</mat-error>
             }
-            <mat-hint>HTML content — use the toolbar above for formatting</mat-hint>
+            <mat-hint>{{ 'blog_manage.content_hint' | translate }}</mat-hint>
           </mat-form-field>
         </div>
 
@@ -199,16 +199,16 @@
                 <span class="preview-lang-badge preview-lang-badge--{{ activeTab }}">
                   {{ previewLangInfo.flag }} {{ previewLangInfo.name }}
                 </span>
-                Preview
+                {{ 'blog_manage.preview_label' | translate }}
               </h3>
-              <button mat-icon-button type="button" (click)="togglePreview()" matTooltip="Close preview">
+              <button mat-icon-button type="button" (click)="togglePreview()" [matTooltip]="'blog_manage.close_preview' | translate">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
             @if (form.get('coverImage')?.value) {
               <img class="preview-panel__image"
                    [src]="form.get('coverImage')?.value"
-                   [alt]="activeTitleControl.value || 'Cover image'" />
+                   [alt]="activeTitleControl.value || ('blog_manage.cover_image_alt' | translate)" />
             }
             <h1 class="preview-panel__title">{{ activeTitleControl.value }}</h1>
             <div class="preview-panel__content" #previewContent [innerHTML]="activeContentControl.value"></div>
@@ -217,9 +217,9 @@
 
         <!-- Excerpt for active language -->
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Excerpt ({{ activeTab.toUpperCase() }})</mat-label>
+          <mat-label>{{ 'blog_manage.excerpt_label' | translate }} ({{ activeTab.toUpperCase() }})</mat-label>
           <textarea matInput [formControl]="activeExcerptControl" rows="2" [maxlength]="EXCERPT_MAX"
-                    placeholder="Auto-generated from content if left empty"></textarea>
+                    [placeholder]="'blog_manage.excerpt_placeholder' | translate"></textarea>
           <mat-hint align="end">{{ activeExcerptControl.value?.length || 0 }}/{{ EXCERPT_MAX }}</mat-hint>
         </mat-form-field>
 
@@ -227,13 +227,13 @@
         <details class="form-advanced">
           <summary>
             <mat-icon class="summary-icon">tune</mat-icon>
-            Advanced options
-            <span class="hint">— optional, auto-filled if empty</span>
+            {{ 'blog_manage.advanced_options' | translate }}
+            <span class="hint">— {{ 'blog_manage.advanced_hint' | translate }}</span>
           </summary>
 
           <!-- Tags -->
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Tags</mat-label>
+            <mat-label>{{ 'blog_manage.tags_label' | translate }}</mat-label>
             <mat-chip-grid #tagGrid>
               @for (tag of tags; track tag) {
                 <mat-chip [removable]="true" (removed)="removeTag(tag)">
@@ -244,67 +244,67 @@
             <input [matChipInputFor]="tagGrid"
                    [matChipInputSeparatorKeyCodes]="separatorKeys"
                    (matChipInputTokenEnd)="addTag($event)"
-                   placeholder="e.g. typescript, nestjs… (Enter or comma)" />
-            <mat-hint>Press Enter or comma to add a tag</mat-hint>
+                   [placeholder]="'blog_manage.tags_placeholder' | translate" />
+            <mat-hint>{{ 'blog_manage.tags_hint' | translate }}</mat-hint>
           </mat-form-field>
 
           <!-- Cover Image -->
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Cover Image URL</mat-label>
-            <input matInput formControlName="coverImage" placeholder="https://example.com/cover.jpg" />
+            <mat-label>{{ 'blog_manage.cover_image_label' | translate }}</mat-label>
+            <input matInput formControlName="coverImage" [placeholder]="'blog_manage.cover_image_placeholder' | translate" />
           </mat-form-field>
 
           <!-- Subtitle + Slug -->
           <div class="form-row">
             <mat-form-field appearance="outline">
-              <mat-label>Subtitle</mat-label>
-              <textarea matInput formControlName="subtitle" rows="2" [maxlength]="SUBTITLE_MAX" placeholder="Optional subtitle"></textarea>
+              <mat-label>{{ 'blog_manage.subtitle_label' | translate }}</mat-label>
+              <textarea matInput formControlName="subtitle" rows="2" [maxlength]="SUBTITLE_MAX" [placeholder]="'blog_manage.subtitle_placeholder' | translate"></textarea>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>URL Slug</mat-label>
+              <mat-label>{{ 'blog_manage.slug_label' | translate }}</mat-label>
               <input matInput formControlName="slug"
                      (input)="onSlugManualEdit()"
-                     placeholder="auto-generated-from-title" />
-              <mat-hint>Auto-generated from title</mat-hint>
+                     [placeholder]="'blog_manage.slug_placeholder' | translate" />
+              <mat-hint>{{ 'blog_manage.slug_hint' | translate }}</mat-hint>
             </mat-form-field>
           </div>
 
           <!-- SEO -->
           <div class="form-row">
             <mat-form-field appearance="outline">
-              <mat-label>Meta Title (SEO)</mat-label>
-              <input matInput formControlName="metaTitle" [maxlength]="META_TITLE_MAX" placeholder="Defaults to post title" />
+              <mat-label>{{ 'blog_manage.meta_title_label' | translate }}</mat-label>
+              <input matInput formControlName="metaTitle" [maxlength]="META_TITLE_MAX" [placeholder]="'blog_manage.meta_title_placeholder' | translate" />
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Meta Description (SEO)</mat-label>
-              <input matInput formControlName="metaDescription" [maxlength]="META_DESCRIPTION_MAX" placeholder="Defaults to excerpt" />
+              <mat-label>{{ 'blog_manage.meta_description_label' | translate }}</mat-label>
+              <input matInput formControlName="metaDescription" [maxlength]="META_DESCRIPTION_MAX" [placeholder]="'blog_manage.meta_description_placeholder' | translate" />
             </mat-form-field>
           </div>
 
           @if (featuredImagePrompt) {
             <p class="helper-copy">
               <mat-icon style="font-size:1rem;vertical-align:middle;margin-right:0.25rem">auto_awesome</mat-icon>
-              Image suggestion: {{ featuredImagePrompt }}
+              {{ 'blog_manage.image_suggestion_label' | translate }} {{ featuredImagePrompt }}
             </p>
           }
         </details>
 
         <!-- ── Actions ─────────────────────────────────────────────── -->
         <div class="form-actions">
-          <button mat-button type="button" (click)="closeForm()">Cancel</button>
+          <button mat-button type="button" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
           <div class="form-actions__right">
             <button mat-icon-button type="button"
                     (click)="togglePreview()"
-                    [matTooltip]="showPreview ? 'Hide preview' : 'Show preview'">
+                    [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
               <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             <button mat-stroked-button type="button" (click)="saveDraft()" [disabled]="saving">
               <mat-icon>save</mat-icon>
-              {{ (saving && !form.get('published')?.value) ? 'Saving…' : 'Save Draft' }}
+              {{ ((saving && !form.get('published')?.value) ? 'blog_manage.saving' : 'blog_manage.save_draft') | translate }}
             </button>
             <button mat-raised-button color="primary" type="button" (click)="publish()" [disabled]="saving">
               <mat-icon>publish</mat-icon>
-              {{ saving ? 'Publishing…' : 'Publish' }}
+              {{ (saving ? 'blog_manage.publishing' : 'blog_manage.publish') | translate }}
             </button>
           </div>
         </div>
@@ -318,7 +318,7 @@
   @if (loading) {
     <app-loading-spinner />
   } @else if (!posts.length) {
-    <p class="empty-state">No posts yet. Write your first one!</p>
+    <p class="empty-state">{{ 'blog_manage.empty' | translate }}</p>
   } @else {
     <div class="list">
       @for (post of posts; track post._id) {
@@ -336,7 +336,7 @@
               <span class="status-badge"
                     [class.status-badge--published]="post.published"
                     [class.status-badge--draft]="!post.published">
-                {{ post.published ? 'Published' : 'Draft' }}
+                {{ (post.published ? 'blog_manage.published' : 'blog_manage.draft') | translate }}
               </span>
               <span class="badge badge--language">{{ (post.language || 'it').toUpperCase() }}</span>
               <span class="badge badge--views">
@@ -345,9 +345,9 @@
             </div>
           </div>
           <div class="list-item__actions">
-            <a mat-icon-button [routerLink]="['/dashboard/blog/preview', post._id]" target="_blank" matTooltip="Anteprima"><mat-icon>visibility</mat-icon></a>
-            <button mat-icon-button (click)="openEdit(post)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
-            <button mat-icon-button color="warn" (click)="delete(post._id)" matTooltip="Delete"><mat-icon>delete</mat-icon></button>
+            <a mat-icon-button [routerLink]="['/dashboard/blog/preview', post._id]" target="_blank" [matTooltip]="'blog_manage.action_preview' | translate"><mat-icon>visibility</mat-icon></a>
+            <button mat-icon-button (click)="openEdit(post)" [matTooltip]="'common.edit' | translate"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(post._id)" [matTooltip]="'common.delete' | translate"><mat-icon>delete</mat-icon></button>
           </div>
         </div>
       }
