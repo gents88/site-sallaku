@@ -927,7 +927,8 @@
     "history_title": "Historiku i sesionit",
     "kind_file": "Skedar",
     "kind_text": "Tekst",
-    "start_here": "Veglat e fillimit"
+    "start_here": "Veglat e fillimit",
+    "persistence_hint": "Nuk ruhet: humbet nëse rifreskon ose mbyll këtë skedë."
   },
   "pdf_translate": {
     "title": "Përkthim PDF",

@@ -58,6 +58,7 @@ h1 {
   color: #a78bfa;
 }
 .current-source { font-size: .82rem; color: var(--text-secondary, #8b949e); margin: 0; }
+.current-persistence-hint { font-size: .78rem; color: #f0b429; margin: .35rem 0 0; }
 
 .current-actions { display: flex; gap: .5rem; flex-shrink: 0; }
 .btn-ghost {
