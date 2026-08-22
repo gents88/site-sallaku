@@ -111,7 +111,7 @@
         @if (draftRestored()) {
           <div class="draft-banner">
             <span>💾 {{ 'ai_formatter.draft_restored' | translate }}</span>
-            <button type="button" class="draft-dismiss" (click)="dismissDraftNotice()">✕</button>
+            <button type="button" class="draft-dismiss" (click)="dismissDraftNotice()" [attr.aria-label]="'ai_formatter.dismiss_draft' | translate">✕</button>
           </div>
         }
 
@@ -141,7 +141,7 @@
         <textarea
           class="text-input"
           [class.has-content]="text().length > 0"
-          placeholder="Paste your unformatted text here...&#10;&#10;✦ Meeting notes, raw content, AI output, emails...&#10;✦ Or click 'Use Sample' to see a demo"
+          [attr.placeholder]="'ai_formatter.textarea_placeholder' | translate"
           [ngModel]="text()"
           (ngModelChange)="text.set($event)"
           [disabled]="loading()">
@@ -193,7 +193,7 @@
                 </button>
               </div>
               <button class="btn-copy" (click)="copyToClipboard()">
-                {{ copied() ? '✓ Copied' : '📋 Copy' }}
+                {{ copied() ? ('✓ ' + ('ai_formatter.copied' | translate)) : ('📋 ' + ('ai_formatter.copy' | translate)) }}
               </button>
               <button class="btn-copy" [class.is-sent]="justSentToWorkspace()" (click)="sendToWorkspace()">
                 {{ justSentToWorkspace() ? ('ai_formatter.workspace_sent' | translate) : ('🔗 ' + ('ai_formatter.workspace_send' | translate)) }}

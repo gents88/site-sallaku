@@ -890,7 +890,14 @@
     "workspace_banner_dismiss": "Ignorieren",
     "workspace_send": "An Workspace senden",
     "workspace_sent": "Gesendet ✓",
-    "truncated_warning": "Sehr langes Dokument: Nur der erste Teil wurde verarbeitet, der Rest ist nicht enthalten."
+    "truncated_warning": "Sehr langes Dokument: Nur der erste Teil wurde verarbeitet, der Rest ist nicht enthalten.",
+    "err_too_short": "Gib mindestens 10 Zeichen Text zum Formatieren ein.",
+    "err_generic": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+    "err_file_type": "Für schnelles Einfügen werden nur .txt- oder .md-Dateien unterstützt.",
+    "dismiss_draft": "Entwurf verwerfen",
+    "textarea_placeholder": "Füge hier deinen unformatierten Text ein...\n\n✦ Besprechungsnotizen, Rohinhalt, KI-Ausgabe, E-Mails...\n✦ Oder klicke auf „Beispiel verwenden“ für eine Demo",
+    "copied": "Kopiert",
+    "copy": "Kopieren"
   },
   "pdf_summary": {
     "title": "AI Summarizer",

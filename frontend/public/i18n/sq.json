@@ -890,7 +890,14 @@
     "workspace_banner_dismiss": "Injoro",
     "workspace_send": "Dërgo te Workspace",
     "workspace_sent": "U dërgua ✓",
-    "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet."
+    "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet.",
+    "err_too_short": "Shkruaj të paktën 10 karaktere tekst për ta formatuar.",
+    "err_generic": "Ndodhi një gabim. Provo përsëri.",
+    "err_file_type": "Mbështeten vetëm skedarë .txt ose .md.",
+    "dismiss_draft": "Injoro skicën",
+    "textarea_placeholder": "Ngjit këtu tekstin e paformatuar...\n\n✦ Shënime takimi, përmbajtje e papërpunuar, output AI, email...\n✦ Ose kliko \"Përdor shembull\" për një demo",
+    "copied": "U kopjua",
+    "copy": "Kopjo"
   },
   "pdf_summary": {
     "title": "AI Summarizer",

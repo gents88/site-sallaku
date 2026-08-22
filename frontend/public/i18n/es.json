@@ -890,7 +890,14 @@
     "workspace_banner_dismiss": "Ignorar",
     "workspace_send": "Enviar a Workspace",
     "workspace_sent": "Enviado ✓",
-    "truncated_warning": "Documento muy largo: solo se procesó la primera parte, el resto no está incluido."
+    "truncated_warning": "Documento muy largo: solo se procesó la primera parte, el resto no está incluido.",
+    "err_too_short": "Introduce al menos 10 caracteres de texto para formatear.",
+    "err_generic": "Se ha producido un error. Inténtalo de nuevo.",
+    "err_file_type": "Solo se admiten archivos .txt o .md para pegado rápido.",
+    "dismiss_draft": "Descartar borrador",
+    "textarea_placeholder": "Pega aquí el texto sin formato...\n\n✦ Notas de reunión, contenido en bruto, salida de IA, correos...\n✦ O haz clic en \"Usar ejemplo\" para ver una demo",
+    "copied": "Copiado",
+    "copy": "Copiar"
   },
   "pdf_summary": {
     "title": "AI Summarizer",

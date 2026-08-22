@@ -890,7 +890,14 @@
     "workspace_banner_dismiss": "Ignora",
     "workspace_send": "Invia a Workspace",
     "workspace_sent": "Inviato ✓",
-    "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso."
+    "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso.",
+    "err_too_short": "Inserisci almeno 10 caratteri di testo da formattare.",
+    "err_generic": "Si è verificato un errore. Riprova.",
+    "err_file_type": "Sono supportati solo file .txt o .md.",
+    "dismiss_draft": "Ignora bozza",
+    "textarea_placeholder": "Incolla qui il testo non formattato...\n\n✦ Appunti riunione, contenuto grezzo, output AI, email...\n✦ Oppure clicca \"Usa esempio\" per una demo",
+    "copied": "Copiato",
+    "copy": "Copia"
   },
   "pdf_summary": {
     "title": "AI Summarizer",
