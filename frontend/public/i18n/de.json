@@ -1177,6 +1177,7 @@
     "type_pdf_to_txt": "PDF → Text",
     "type_pdf_to_html": "PDF → HTML",
     "type_html_to_pdf": "HTML → PDF",
+    "type_html_to_docx": "HTML → Word",
     "type_docx_to_txt": "Word → Text",
     "type_docx_to_html": "Word → HTML",
     "type_txt_to_pdf": "Text → PDF",

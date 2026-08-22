@@ -80,6 +80,57 @@ describe('LiveHandoffService', () => {
       service.notifyTyping('s1', true);
       expect(service.state).toBe('idle');
     });
+
+    it('non fa nulla se il banner è già mostrato (niente doppio timer)', () => {
+      service.notifyTyping('s1', true);
+      service.notifyTyping('s1', true);
+      expect(service.state).toBe('prompt_shown');
+    });
+
+    it('si auto-minimizza in una pillola dopo 8s se ignorato', () => {
+      vi.useFakeTimers();
+      try {
+        service.notifyTyping('s1', true);
+        let minimized: boolean | undefined;
+        service.minimized$.subscribe((m) => (minimized = m));
+        expect(minimized).toBe(false);
+
+        vi.advanceTimersByTime(8000);
+        expect(minimized).toBe(true);
+        expect(service.state).toBe('prompt_shown');
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
+  describe('reopenPrompt', () => {
+    it('annulla la minimizzazione quando il banner è ancora mostrato', () => {
+      service.notifyTyping('s1', true);
+      let minimized: boolean | undefined;
+      service.minimized$.subscribe((m) => (minimized = m));
+
+      service.reopenPrompt();
+      expect(minimized).toBe(false);
+      expect(service.state).toBe('prompt_shown');
+    });
+
+    it('non fa nulla se il banner non è più mostrato', () => {
+      service.reopenPrompt();
+      expect(service.state).toBe('idle');
+    });
+  });
+
+  describe('dismissPrompt su uno stato non "prompt_shown"', () => {
+    it('registra comunque il cooldown senza cambiare stato', () => {
+      // Nessun notifyTyping prima: lo stato resta idle.
+      service.dismissPrompt('s1');
+      expect(service.state).toBe('idle');
+
+      // Il cooldown deve comunque essere stato registrato.
+      service.notifyTyping('s1', true);
+      expect(service.state).toBe('idle');
+    });
   });
 
   describe('requestHandoff', () => {
@@ -143,6 +194,19 @@ describe('LiveHandoffService', () => {
 
       expect(service.state).toBe('expired');
       expect(lastSocket!.disconnect).toHaveBeenCalled();
+    });
+
+    it('passa a "closed" e disconnette il socket quando Gent chiude la sessione', () => {
+      lastSocket!.trigger('handoff_status_changed', { status: 'closed' });
+
+      expect(service.state).toBe('closed');
+      expect(lastSocket!.disconnect).toHaveBeenCalled();
+    });
+
+    it('ignora uno status "notified" sconosciuto al client senza cambiare stato', () => {
+      lastSocket!.trigger('handoff_status_changed', { status: 'notified' });
+
+      expect(service.state).toBe('request_sent');
     });
   });
 
