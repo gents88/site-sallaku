@@ -216,7 +216,7 @@ $error-clr:     #f87171;
   border-top-color: $accent;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* @keyframes spin → styles.scss (globale, identico) */
 
 // ── RESULTS TOOLBAR (filter + sort) ─────────────────────────────────────────
 .results-toolbar {

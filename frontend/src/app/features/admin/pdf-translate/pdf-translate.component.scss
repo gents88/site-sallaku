@@ -521,7 +521,7 @@ $error-clr:     #f87171;
   flex-shrink: 0;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* @keyframes spin → styles.scss (globale, identico) */
 
 // ── STAGED PROGRESS INDICATOR (client-side heuristic, no real % available) ────
 .progress-wrap {
