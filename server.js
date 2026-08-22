@@ -83,7 +83,7 @@ app.use((req, res, next) => {
       // Images: self, data URIs, and any HTTPS (covers CDN images in blog posts)
       "img-src 'self' data: https:",
       // GA4 analytics endpoints
-      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com",
+      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com https://ipwho.is",
       "object-src 'none'",
       "frame-src 'none'",
       "base-uri 'self'",
