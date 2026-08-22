@@ -51,8 +51,24 @@
       text-align: center; cursor: pointer; display: grid; gap: 0.3rem; transition: border-color .18s, background .18s;
     }
     .dz:hover, .dz--active { border-color: var(--accent, #6c63ff); background: rgba(108,99,255,.04); }
+    .dz--loading { cursor: default; justify-items: center; &:hover { border-color: var(--border-color, #30363d); background: none; } }
     .dz-icon { font-size: 1.75rem; line-height: 1; }
     .dz small { color: var(--text-secondary, #8b949e); }
+
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      animation: vw-spin 0.7s linear infinite;
+    }
+    .spinner-lg {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border-color, #30363d);
+      border-top-color: var(--accent, #6c63ff);
+    }
+    @keyframes vw-spin { to { transform: rotate(360deg); } }
     .msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.3); font-size: .85rem; color: var(--warning, #fbbf24); margin: 1rem 0 0; }
 
     .vw-toolbar {
