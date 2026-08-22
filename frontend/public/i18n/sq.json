@@ -1392,7 +1392,13 @@
     "workspace_banner_dismiss": "Injoro",
     "workspace_send": "Dërgo te Workspace",
     "workspace_sent": "U dërgua ✓",
-    "page_moved": "Faqja u zhvendos në pozicionin {{position}}"
+    "page_moved": "Faqja u zhvendos në pozicionin {{position}}",
+    "err_no_valid_pdf": "Nuk u gjet asnjë PDF i vlefshëm mes skedarëve të lëshuar.",
+    "drag_to_reorder": "Tërhiq për ta rirenditur",
+    "rotate": "Rrotullo",
+    "move_left": "Lëviz majtas",
+    "move_right": "Lëviz djathtas",
+    "delete": "Fshi"
   },
   "viewer": {
     "title": "Shikues PDF",
