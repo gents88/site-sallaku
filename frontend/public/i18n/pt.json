@@ -1373,7 +1373,8 @@
     "workspace_banner_use": "Usar este texto",
     "workspace_banner_dismiss": "Ignorar",
     "workspace_send": "Enviar para o Workspace",
-    "workspace_sent": "Enviado ✓"
+    "workspace_sent": "Enviado ✓",
+    "err_file_too_large": "Ficheiro demasiado grande (máx {{max}}MB): {{name}}"
   },
   "pdf_editor": {
     "title": "Editor de PDF",
@@ -1405,7 +1406,8 @@
     "rotate": "Rodar",
     "move_left": "Mover para a esquerda",
     "move_right": "Mover para a direita",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "persistence_hint": "As alterações não são guardadas: perdem-se ao recarregar ou fechar este separador."
   },
   "viewer": {
     "title": "Visualizador de PDF",
@@ -1490,7 +1492,8 @@
     "move_right": "Mover para a direita",
     "delete": "Eliminar",
     "page_alt": "página {{n}}",
-    "err_camera_unsupported": "Câmara indisponível neste navegador ou ligação insegura (é necessário HTTPS). Ainda pode carregar uma imagem."
+    "err_camera_unsupported": "Câmara indisponível neste navegador ou ligação insegura (é necessário HTTPS). Ainda pode carregar uma imagem.",
+    "persistence_hint": "As páginas capturadas não são guardadas: perdem-se ao recarregar ou fechar este separador."
   },
   "library": {
     "badge": "Novo",
