@@ -4,7 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '@env/environment';
 import { SeoService } from '../../../core/services/seo.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
@@ -24,6 +24,10 @@ interface FileSummaryResult {
 type OutputMode = 'short' | 'detailed' | 'bullets' | 'insights';
 type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
 
+/** Allineato al limite lato backend (validateFile(file, 20) in ai.controller.ts). */
+const MAX_FILE_MB = 20;
+const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
+
 @Component({
   selector: 'app-pdf-summary',
   standalone: true,
@@ -38,6 +42,7 @@ export class PdfSummaryComponent implements OnInit {
   private http       = inject(HttpClient);
   private readonly seo = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
+  private readonly t = inject(TranslateService);
   private readonly api = `${environment.apiUrl}/ai/summarize-file`;
 
   workspaceItem = signal<WorkspaceItem | null>(null);
@@ -203,7 +208,7 @@ export class PdfSummaryComponent implements OnInit {
     this.http.post<FileSummaryResult>(this.api, form).subscribe({
       next: (res) => { this.result.set(res); this.loading.set(false); },
       error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? 'Error during file analysis.';
+        const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_summary.err_generic');
         this.error.set(msg); this.loading.set(false);
       },
     });
@@ -212,6 +217,15 @@ export class PdfSummaryComponent implements OnInit {
   reset(): void { this.selectedFile.set(null); this.result.set(null); this.error.set(null); }
 
   private setFile(file: File): void {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      this.error.set(this.t.instant('pdf_summary.err_file_type'));
+      return;
+    }
+    if (file.size > MAX_FILE_MB * 1024 * 1024) {
+      this.error.set(this.t.instant('pdf_summary.err_file_too_large', { max: MAX_FILE_MB, name: file.name }));
+      return;
+    }
     this.result.set(null); this.error.set(null); this.selectedFile.set(file);
   }
 

@@ -63,7 +63,7 @@
               <strong>{{ selectedFile()!.name }}</strong>
               <span class="file-size">{{ formatSize(selectedFile()!.size) }}</span>
             </div>
-            <button class="remove-btn" (click)="removeFile($event)">✕</button>
+            <button class="remove-btn" (click)="removeFile($event)" [attr.aria-label]="'pdf_summary.remove_file' | translate">✕</button>
           </div>
         }
       </div>

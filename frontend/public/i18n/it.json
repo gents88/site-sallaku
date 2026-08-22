@@ -919,7 +919,11 @@
     "workspace_banner_dismiss": "Ignora",
     "btn_send_workspace": "Invia a Workspace",
     "btn_sent": "Inviato ✓",
-    "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso."
+    "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso.",
+    "err_file_type": "Formato non supportato. Sono ammessi PDF, Word (.docx/.doc), TXT e HTML.",
+    "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}",
+    "err_generic": "Si è verificato un errore durante l'analisi del file.",
+    "remove_file": "Rimuovi file"
   },
   "workspace": {
     "badge": "Novità",

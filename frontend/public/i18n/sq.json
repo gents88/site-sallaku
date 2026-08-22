@@ -919,7 +919,11 @@
     "workspace_banner_dismiss": "Injoro",
     "btn_send_workspace": "Dërgo te Workspace",
     "btn_sent": "U dërgua ✓",
-    "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet."
+    "truncated_warning": "Dokument shumë i gjatë: u përpunua vetëm pjesa e parë, pjesa tjetër nuk përfshihet.",
+    "err_file_type": "Format i pambështetur. Lejohen PDF, Word (.docx/.doc), TXT dhe HTML.",
+    "err_file_too_large": "Skedari shumë i madh (max {{max}}MB): {{name}}",
+    "err_generic": "Ndodhi një gabim gjatë analizës së skedarit.",
+    "remove_file": "Hiq skedarin"
   },
   "workspace": {
     "badge": "E re",
