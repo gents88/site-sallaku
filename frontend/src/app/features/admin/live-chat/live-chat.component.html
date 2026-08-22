@@ -1,0 +1,58 @@
+<div class="admin-page container alc-page">
+  <a routerLink="/dashboard" class="alc-back">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'live_handoff.admin_back' | translate }}
+  </a>
+
+  <div class="card alc-card">
+    <header class="alc-header">
+      <div>
+        <h1 class="alc-title">{{ 'live_handoff.admin_title' | translate }}</h1>
+        <p class="alc-session">{{ sessionId }}</p>
+      </div>
+      <span class="alc-status" [class]="'alc-status--' + status">
+        @switch (status) {
+          @case ('connecting') { {{ 'live_handoff.admin_connecting' | translate }} }
+          @case ('joining') { {{ 'live_handoff.admin_joining' | translate }} }
+          @case ('live') { {{ 'live_handoff.admin_live' | translate }} }
+          @case ('expired') { {{ 'live_handoff.admin_expired' | translate }} }
+          @case ('closed') { {{ 'live_handoff.admin_closed' | translate }} }
+          @case ('error') { {{ 'live_handoff.admin_error' | translate }} }
+        }
+      </span>
+    </header>
+
+    <div class="alc-log" #log role="log" aria-live="polite">
+      @if (loadingHistory) {
+        <p class="alc-loading">{{ 'live_handoff.admin_history_loading' | translate }}</p>
+      }
+
+      @for (msg of messages; track msg.timestamp) {
+        <div class="alc-msg" [class.alc-msg--visitor]="msg.role === 'user'" [class.alc-msg--agent]="msg.role === 'agent'" [class.alc-msg--bot]="msg.role === 'assistant'">
+          <span class="alc-msg__label">
+            @if (msg.role === 'user') { Visitatore }
+            @else if (msg.role === 'agent') { Gent }
+            @else { AI }
+          </span>
+          <p class="alc-msg__content">{{ msg.content }}</p>
+          <span class="alc-msg__time">{{ msg.timestamp | date:'HH:mm' }}</span>
+        </div>
+      }
+    </div>
+
+    <form class="alc-input-area" (ngSubmit)="send()">
+      <input
+        type="text"
+        class="alc-input"
+        [(ngModel)]="inputText"
+        name="adminMessage"
+        [placeholder]="'live_handoff.admin_send_placeholder' | translate"
+        [disabled]="status !== 'live'"
+        autocomplete="off"
+      />
+      <button type="submit" class="alc-send-btn" [disabled]="!inputText.trim() || status !== 'live'">
+        <mat-icon>send</mat-icon>
+      </button>
+    </form>
+  </div>
+</div>

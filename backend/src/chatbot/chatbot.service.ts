@@ -243,6 +243,22 @@ export class ChatbotService {
     return { totalSessions, totalMessages, interactionsToday, sessionsThisMonth };
   }
 
+  /** Appends a message written live (visitor or Gent) once a live handoff session is active */
+  async appendLiveMessage(
+    sessionId: string,
+    role: 'user' | 'agent',
+    content: string,
+  ): Promise<ChatMessage> {
+    const session = await this.chatSessionModel.findOne({ sessionId }).exec();
+    if (!session) throw new NotFoundException('Session not found');
+
+    const message: ChatMessage = { role, content, timestamp: new Date() };
+    session.messages.push(message);
+    session.lastActivity = new Date();
+    await session.save();
+    return message;
+  }
+
   async sendTranscript(sessionId: string, email: string): Promise<{ success: boolean }> {
     const session = await this.chatSessionModel.findOne({ sessionId }).exec();
     if (!session || session.messages.length === 0) {
