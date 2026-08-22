@@ -564,14 +564,7 @@
     "close": "Mbyll",
     "confirm": "Konfirmo",
     "yes": "Po",
-    "no": "Jo",
-    "http_errors": {
-      "network": "Nuk ka lidhje interneti. Kontrollo rrjetin dhe provo përsëri.",
-      "invalid_request": "Kërkesë e pavlefshme. Kontrollo të dhënat e futura.",
-      "forbidden": "Qasje e refuzuar. Nuk ke lejet për këtë veprim.",
-      "too_many_requests": "Shumë kërkesa. Prit një moment dhe provo përsëri.",
-      "server_error": "Ndodhi një gabim i serverit. Provo përsëri më vonë."
-    }
+    "no": "Jo"
   },
   "services": {
     "tag": "shërbime",

@@ -564,14 +564,7 @@
     "close": "Fechar",
     "confirm": "Confirmar",
     "yes": "Sim",
-    "no": "Não",
-    "http_errors": {
-      "network": "Sem ligação à internet. Verifique a rede e tente novamente.",
-      "invalid_request": "Pedido inválido. Verifique os dados introduzidos.",
-      "forbidden": "Acesso negado. Não tem permissão para esta ação.",
-      "too_many_requests": "Demasiados pedidos. Aguarde um momento e tente novamente.",
-      "server_error": "Ocorreu um erro do servidor. Tente novamente mais tarde."
-    }
+    "no": "Não"
   },
   "services": {
     "tag": "services",
