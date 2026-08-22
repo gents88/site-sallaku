@@ -51,6 +51,7 @@ export class AdminLiveChatComponent implements OnInit, OnDestroy {
   inputText = '';
 
   private socket: Socket | null = null;
+  private connectErrorCount = 0;
 
   ngOnInit(): void {
     this.sessionId = this.route.snapshot.paramMap.get('sessionId') ?? '';
@@ -99,9 +100,20 @@ export class AdminLiveChatComponent implements OnInit, OnDestroy {
     this.socket = io(`${wsOrigin}/live-chat`, { transports: ['websocket'] });
 
     this.socket.on('connect', () => {
+      this.connectErrorCount = 0;
       this.status = 'joining';
       this.cdr.markForCheck();
       this.socket?.emit('admin_join', { sessionId: this.sessionId, token });
+    });
+
+    // Se il WS non riesce proprio a connettersi (rete/proxy), non deve restare bloccato
+    // in silenzio su "Connessione in corso": dopo qualche tentativo mostra un errore.
+    this.socket.on('connect_error', () => {
+      this.connectErrorCount += 1;
+      if (this.connectErrorCount >= 3) {
+        this.status = 'error';
+        this.cdr.markForCheck();
+      }
     });
 
     this.socket.on('agent_joined', () => {

@@ -32,6 +32,7 @@ export class LiveHandoffService {
   private socket: Socket | null = null;
   private sessionId: string | null = null;
   private minimizeTimer?: ReturnType<typeof setTimeout>;
+  private pollTimer?: ReturnType<typeof setInterval>;
 
   private readonly _state = new BehaviorSubject<LiveHandoffState>('idle');
   readonly state$: Observable<LiveHandoffState> = this._state.asObservable();
@@ -110,6 +111,14 @@ export class LiveHandoffService {
       this.socket?.emit('join_session', { sessionId });
     });
 
+    // Se il WebSocket non riesce a connettersi (rete/proxy/CORS), non deve restare
+    // tutto bloccato in silenzio: il polling di stato avviato sotto resta la rete
+    // di sicurezza che permette comunque di scoprire quando Gent entra in chat.
+    this.socket.on('connect_error', () => {
+      this.socket?.disconnect();
+      this.socket = null;
+    });
+
     this.socket.on('handoff_status_changed', (payload: { status: LiveHandoffState | 'notified' | 'none' }) => {
       this.applyStatus(payload.status);
     });
@@ -124,6 +133,24 @@ export class LiveHandoffService {
         { from: payload.from, text: payload.text, sentAt: new Date(payload.sentAt) },
       ]);
     });
+
+    // Rete di sicurezza indipendente dal socket: se il WS non arriva mai a connettersi
+    // (o cade), il polling REST rileva comunque i cambi di stato (non i singoli messaggi).
+    this.startStatusPolling(sessionId);
+  }
+
+  private startStatusPolling(sessionId: string): void {
+    this.stopStatusPolling();
+    this.pollTimer = setInterval(() => {
+      this.http
+        .get<{ status: string }>(`${this.apiUrl}/${sessionId}/live-handoff/status`)
+        .subscribe({ next: (res) => this.applyStatus(res.status), error: () => undefined });
+    }, 4000);
+  }
+
+  private stopStatusPolling(): void {
+    if (this.pollTimer) clearInterval(this.pollTimer);
+    this.pollTimer = undefined;
   }
 
   private applyStatus(status: string): void {
@@ -150,6 +177,7 @@ export class LiveHandoffService {
   private disconnectSocket(): void {
     this.socket?.disconnect();
     this.socket = null;
+    this.stopStatusPolling();
   }
 
   private armAutoMinimize(): void {
