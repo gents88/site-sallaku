@@ -7,7 +7,7 @@ import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { PrismService } from '../../../shared/services/prism.service';
 import { TrackClickDirective } from '../../../shared/directives/track-click.directive';
@@ -19,7 +19,7 @@ import { ArticleNotesComponent } from '../../../shared/components/article-notes/
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

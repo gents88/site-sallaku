@@ -57,9 +57,17 @@
             </h2>
             <p class="text-muted post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
             <div class="post-card__footer">
-              <time [dateTime]="post.publishedAt ?? ''" class="text-muted post-card__date">
-                {{ post.publishedAt | date:'mediumDate' }}
-              </time>
+              <div class="post-card__meta">
+                <time [dateTime]="post.publishedAt ?? ''" class="text-muted post-card__date">
+                  {{ post.publishedAt | date:'mediumDate' }}
+                </time>
+                @if (post.viewCount != null) {
+                  <span class="text-muted post-card__views">
+                    <mat-icon aria-hidden="true">visibility</mat-icon>
+                    {{ (post.viewCount === 1 ? 'blog.views_singular' : 'blog.views_plural') | translate: { count: post.viewCount } }}
+                  </span>
+                }
+              </div>
               <a [routerLink]="('/blog/' + post.slug) | langUrl" class="btn btn-ghost btn-sm">
                 {{ 'blog.readMore' | translate }} <mat-icon>arrow_forward</mat-icon>
               </a>

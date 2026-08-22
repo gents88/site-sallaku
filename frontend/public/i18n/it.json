@@ -621,6 +621,8 @@
   "blog": {
     "readMore": "Leggi di più",
     "loadMore": "Carica altri",
+    "views_singular": "{{count}} lettura",
+    "views_plural": "{{count}} letture",
     "empty": {
       "title": "Nessun articolo trovato",
       "message": "Prova con parole chiave diverse o sfoglia tutti gli articoli.",

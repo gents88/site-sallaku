@@ -621,6 +621,8 @@
   "blog": {
     "readMore": "Lexo më shumë",
     "loadMore": "Ngarko më shumë",
+    "views_singular": "{{count}} lexim",
+    "views_plural": "{{count}} lexime",
     "empty": {
       "title": "Nuk u gjëtën artikuj",
       "message": "Provo fjalë kyfe të ndryshme ose shfleto të gjithë artikujt.",

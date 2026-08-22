@@ -33,11 +33,17 @@
         }
       </div>
       <h1>{{ localizedTitle }}</h1>
-      <p class="text-muted">
+      <p class="text-muted post-article__meta">
         @if (post.publishedAt) {
           <time [dateTime]="post.publishedAt">{{ post.publishedAt | date:'longDate' }}</time>
         } @else {
           <time [dateTime]="post.updatedAt">Bozza — ultimo salvataggio {{ post.updatedAt | date:'longDate' }}</time>
+        }
+        @if (post.viewCount != null) {
+          <span class="post-article__views">
+            <mat-icon aria-hidden="true">visibility</mat-icon>
+            {{ (post.viewCount === 1 ? 'blog.views_singular' : 'blog.views_plural') | translate: { count: post.viewCount } }}
+          </span>
         }
       </p>
     </header>
