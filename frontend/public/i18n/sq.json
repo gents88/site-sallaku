@@ -838,7 +838,12 @@
     "style_pitch_deck_label": "Pitch Deck",
     "style_pitch_deck_desc": "Deck gati për investitorë startup",
     "workspace_send": "Dërgo te Workspace",
-    "workspace_sent": "U dërgua ✓"
+    "workspace_sent": "U dërgua ✓",
+    "err_topic_short": "Shkruaj një temë me të paktën 3 karaktere.",
+    "err_file_type": "Mbështeten vetëm skedarë PDF, TXT ose DOCX si kontekst.",
+    "err_file_too_large": "Skedari shumë i madh (max {{max}}MB): {{name}}",
+    "err_generic": "Ndodhi një gabim. Provo përsëri.",
+    "err_truncated": "Përmbajtja e disa slajdeve u pre për mungesë hapësire gjatë eksportimit të PDF-së. Provo ta shkurtosh tekstin dhe rigjenero."
   },
   "ai_formatter": {
     "title": "Formatues AI",

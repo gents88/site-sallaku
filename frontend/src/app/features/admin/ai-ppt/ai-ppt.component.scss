@@ -374,6 +374,19 @@
   font-size: .85rem;
 }
 
+.truncated-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 10px 16px;
+  background: rgba(251,191,36,.1);
+  border: 1px solid rgba(251,191,36,.3);
+  border-radius: 10px;
+  color: #fbbf24;
+  font-size: .85rem;
+}
+
 // ── GENERATE BUTTON ───────────────────────────────────────────────────────────
 .btn-generate {
   display: flex;

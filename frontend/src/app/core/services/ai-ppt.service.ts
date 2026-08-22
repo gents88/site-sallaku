@@ -69,18 +69,25 @@ export class AiPptService {
       );
   }
 
-  async exportAsPdf(result: GeneratePptResult): Promise<void> {
-    const blob = await this.buildPdfBlob(result);
+  /** @returns whether the exported PDF had to cut off content on any slide (space ran out on the page). */
+  async exportAsPdf(result: GeneratePptResult): Promise<boolean> {
+    const { blob, truncated } = await this.buildPdfBlob(result);
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `${this.sanitizeFilename(result.title)}_slides.pdf`;
     a.click();
     URL.revokeObjectURL(url);
+    return truncated;
   }
 
-  /** Builds the multi-page PDF and returns its Blob without triggering a download — used to hand the deck off to another lab tool (Workspace). */
-  async buildPdfBlob(result: GeneratePptResult): Promise<Blob> {
+  /**
+   * Builds the multi-page PDF without triggering a download — used to hand the deck off to
+   * another lab tool (Workspace). Also reports whether any slide's content had to be cut off
+   * because it didn't fit on the page, so callers can warn the user instead of silently
+   * handing them a PDF with missing text.
+   */
+  async buildPdfBlob(result: GeneratePptResult): Promise<{ blob: Blob; truncated: boolean }> {
     const { PDFDocument, StandardFonts, rgb } = await import('pdf-lib');
     const doc = await PDFDocument.create();
     const titleFont  = await doc.embedFont(StandardFonts.HelveticaBold);
@@ -91,6 +98,8 @@ export class AiPptService {
     const pageHeight   = 612;  // 8.5in
     const margin       = 56;
     const contentWidth = pageWidth - margin * 2;
+
+    let truncated = false;
 
     result.slides.forEach((slide, i) => {
       const page = doc.addPage([pageWidth, pageHeight]);
@@ -107,7 +116,9 @@ export class AiPptService {
 
       const bodySize = 15;
       const items = this.bulletLines(slide.content);
-      for (const item of items.length ? items : [slide.content.trim()]) {
+      const itemsToRender = items.length ? items : [slide.content.trim()];
+      for (let idx2 = 0; idx2 < itemsToRender.length; idx2++) {
+        const item = itemsToRender[idx2];
         const lines = this.wrapText(item, bodyFont, bodySize, contentWidth - 20);
         lines.forEach((line, idx) => {
           page.drawText((idx === 0 ? '•  ' : '   ') + line, {
@@ -116,7 +127,11 @@ export class AiPptService {
           y -= bodySize * 1.55;
         });
         y -= 6;
-        if (y < 90) break;
+        if (y < 90) {
+          // Spazio esaurito sulla pagina: gli item restanti di questa slide non entrano.
+          if (idx2 < itemsToRender.length - 1) truncated = true;
+          break;
+        }
       }
 
       if (slide.notes) {
@@ -135,7 +150,7 @@ export class AiPptService {
     });
 
     const bytes = await doc.save();
-    return new Blob([bytes as BlobPart], { type: 'application/pdf' });
+    return { blob: new Blob([bytes as BlobPart], { type: 'application/pdf' }), truncated };
   }
 
   private bulletLines(content: string): string[] {
