@@ -287,7 +287,12 @@
                 <p>{{ 'pdf_search.preview_loading' | translate }}</p>
               </div>
             }
-            @if (previewUrl(); as src) {
+            @if (previewFailed()) {
+              <div class="preview-state" role="alert">
+                <span class="state-icon">⚠️</span>
+                <p>{{ 'pdf_search.preview_timeout' | translate }}</p>
+              </div>
+            } @else if (previewUrl(); as src) {
               <iframe class="pdf-iframe" [src]="src" title="PDF preview" (load)="onPreviewLoaded()"></iframe>
             }
           }

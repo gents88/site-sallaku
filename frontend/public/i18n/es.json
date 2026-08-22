@@ -1064,7 +1064,11 @@
     "btn_favorite_add": "Añadir a favoritos",
     "btn_favorite_remove": "Quitar de favoritos",
     "btn_save_library": "Guardar en la biblioteca",
-    "library_saved": "En la biblioteca"
+    "library_saved": "En la biblioteca",
+    "preview_timeout": "La vista previa está tardando demasiado en cargar. Descarga el PDF para leerlo.",
+    "err_search": "La búsqueda ha fallado. Inténtalo de nuevo.",
+    "err_workspace_send": "Error al enviar a Workspace. Inténtalo de nuevo.",
+    "err_library_save": "Error al guardar en la Biblioteca. Inténtalo de nuevo."
   },
   "convert": {
     "title": "Convertidor",

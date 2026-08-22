@@ -1064,7 +1064,11 @@
     "btn_favorite_add": "Zu Favoriten hinzufügen",
     "btn_favorite_remove": "Aus Favoriten entfernen",
     "btn_save_library": "In Bibliothek speichern",
-    "library_saved": "In der Bibliothek"
+    "library_saved": "In der Bibliothek",
+    "preview_timeout": "Die Vorschau lädt zu lange. Lade die PDF herunter, um sie zu lesen.",
+    "err_search": "Die Suche ist fehlgeschlagen. Bitte versuche es erneut.",
+    "err_workspace_send": "Senden an Workspace fehlgeschlagen. Bitte versuche es erneut.",
+    "err_library_save": "Speichern in der Bibliothek fehlgeschlagen. Bitte versuche es erneut."
   },
   "convert": {
     "title": "Konverter",

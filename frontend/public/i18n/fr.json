@@ -1064,7 +1064,11 @@
     "btn_favorite_add": "Ajouter aux favoris",
     "btn_favorite_remove": "Retirer des favoris",
     "btn_save_library": "Enregistrer dans la bibliothèque",
-    "library_saved": "Dans la bibliothèque"
+    "library_saved": "Dans la bibliothèque",
+    "preview_timeout": "L'aperçu met trop de temps à charger. Téléchargez le PDF pour le lire.",
+    "err_search": "La recherche a échoué. Veuillez réessayer.",
+    "err_workspace_send": "L'envoi vers Workspace a échoué. Veuillez réessayer.",
+    "err_library_save": "L'enregistrement dans la Bibliothèque a échoué. Veuillez réessayer."
   },
   "convert": {
     "title": "Convertisseur",
