@@ -18,6 +18,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@ne
 import { TestimonialsService } from './services/testimonials.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import { SetFeaturedDto } from './dto/set-featured.dto';
+import { UpdateTestimonialContentDto } from './dto/update-testimonial-content.dto';
 import { TestimonialResponseDto } from './dto/testimonial-response.dto';
 import { TestimonialAdminItemDto } from './dto/testimonial-admin-item.dto';
 import { TestimonialsAdminQueryDto } from './dto/testimonials-admin-query.dto';
@@ -130,6 +131,19 @@ export class TestimonialsController {
   @ApiOperation({ summary: 'Mark a testimonial as spam (admin only)' })
   async markAsSpam(@Param('id') id: string): Promise<TestimonialAdminItemDto> {
     return this.testimonialsService.markAsSpam(id);
+  }
+
+  @Patch(':id/content')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Edit testimonial text before approval (admin only)' })
+  async updateContent(
+    @Param('id') id: string,
+    @Body() dto: UpdateTestimonialContentDto,
+  ): Promise<TestimonialAdminItemDto> {
+    return this.testimonialsService.updateContent(id, dto.content);
   }
 
   @Patch(':id/feature')
