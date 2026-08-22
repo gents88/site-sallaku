@@ -1400,7 +1400,14 @@
     "save_to_library": "Save to library",
     "workspace_banner_title": "File received from Workspace",
     "workspace_banner_use": "Use this file",
-    "workspace_banner_dismiss": "Ignore"
+    "workspace_banner_dismiss": "Ignore",
+    "opening": "Opening document…",
+    "prev_page": "Previous page",
+    "next_page": "Next page",
+    "zoom_out": "Zoom out",
+    "zoom_in": "Zoom in",
+    "prev_match": "Previous match",
+    "next_match": "Next match"
   },
   "scanner": {
     "title": "Document Scanner",
