@@ -69,7 +69,15 @@
     overflow: hidden;
   }
   &__footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+  &__meta { display: flex; flex-direction: column; gap: 0.15rem; }
   &__date { font-size: 0.8rem; }
+  &__views {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+  }
 }
 
 /* Skeleton loader */
