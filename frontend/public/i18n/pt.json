@@ -1332,6 +1332,7 @@
     "err_import": "Falha na importação",
     "err_empty": "O documento está vazio",
     "err_export": "Falha na exportação",
+    "err_timeout": "Isto está a demorar muito. Tente um ficheiro mais pequeno ou verifique a ligação.",
     "success": "Documento exportado com sucesso",
     "workspace_banner_title": "Texto recebido do Workspace",
     "workspace_banner_use": "Usar este texto",

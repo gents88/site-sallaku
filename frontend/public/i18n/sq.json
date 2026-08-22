@@ -1332,6 +1332,7 @@
     "err_import": "Importimi dështoi",
     "err_empty": "Dokumenti është bosh",
     "err_export": "Eksportimi dështoi",
+    "err_timeout": "Operacioni po zgjat shumë. Provo me një skedar më të vogël ose kontrollo lidhjen.",
     "success": "Dokumenti u eksportua me sukses",
     "workspace_banner_title": "Tekst i marrë nga Workspace",
     "workspace_banner_use": "Përdor këtë tekst",

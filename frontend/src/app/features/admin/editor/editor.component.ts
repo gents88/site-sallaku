@@ -5,6 +5,8 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { timeout, TimeoutError } from 'rxjs';
+import DOMPurify from 'dompurify';
 import { ConversionService, ConversionTypeId } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
@@ -228,7 +230,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.exporting.set(true);
     this.msg.set('');
     this.msgOk.set(false);
-    this.conv.convertFiles(type, [file]).subscribe({
+    this.conv.convertFiles(type, [file]).pipe(timeout(60000)).subscribe({
       next: (ev) => {
         if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
           this.exporting.set(false);
@@ -242,9 +244,10 @@ export class EditorComponent implements OnInit, OnDestroy {
           }
         }
       },
-      error: () => {
+      error: (err) => {
         this.exporting.set(false);
-        this.msg.set(`❌ ${this.t.instant('editor.err_export')}`);
+        const key = err instanceof TimeoutError ? 'editor.err_timeout' : 'editor.err_export';
+        this.msg.set(`❌ ${this.t.instant(key)}`);
       },
     });
   }
@@ -253,7 +256,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   private async importViaConversion(f: File, type: ConversionTypeId): Promise<void> {
     this.importing.set(true);
-    this.conv.convertFiles(type, [f]).subscribe({
+    this.conv.convertFiles(type, [f]).pipe(timeout(60000)).subscribe({
       next: async (ev) => {
         if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
           this.importing.set(false);
@@ -264,9 +267,10 @@ export class EditorComponent implements OnInit, OnDestroy {
           }
         }
       },
-      error: () => {
+      error: (err) => {
         this.importing.set(false);
-        this.msg.set(`❌ ${this.t.instant('editor.err_import')}`);
+        const key = err instanceof TimeoutError ? 'editor.err_timeout' : 'editor.err_import';
+        this.msg.set(`❌ ${this.t.instant(key)}`);
       },
     });
   }
@@ -330,18 +334,16 @@ export class EditorComponent implements OnInit, OnDestroy {
     localStorage.removeItem(EDITOR_DRAFT_KEY);
   }
 
-  /** Estrae il body e rimuove script/style/eventi inline dall'HTML importato. */
+  /**
+   * Sanitizza l'HTML importato prima di iniettarlo nel contenteditable.
+   * Usa DOMPurify (libreria matura, non una sanitizzazione manuale ad hoc) perché
+   * l'assegnazione è diretta a innerHTML, fuori dal binding template di Angular:
+   * il DomSanitizer di Angular non entra in gioco su questo percorso.
+   */
   private sanitizeHtml(raw: string): string {
-    const doc = new DOMParser().parseFromString(raw, 'text/html');
-    doc.querySelectorAll('script, style, link, meta, iframe, object, embed').forEach((el) => el.remove());
-    for (const el of Array.from(doc.body.querySelectorAll('*'))) {
-      for (const attr of Array.from(el.attributes)) {
-        if (attr.name.startsWith('on') || (attr.name === 'href' && attr.value.trim().toLowerCase().startsWith('javascript:'))) {
-          el.removeAttribute(attr.name);
-        }
-      }
-    }
-    return doc.body.innerHTML;
+    return DOMPurify.sanitize(raw, {
+      FORBID_TAGS: ['script', 'style', 'link', 'meta', 'iframe', 'object', 'embed'],
+    });
   }
 
   private textToHtml(text: string): string {

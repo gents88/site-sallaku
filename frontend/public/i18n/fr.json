@@ -1332,6 +1332,7 @@
     "err_import": "Échec de l'importation",
     "err_empty": "Le document est vide",
     "err_export": "Échec de l'exportation",
+    "err_timeout": "Cela prend trop de temps. Essayez un fichier plus petit ou vérifiez votre connexion.",
     "success": "Document exporté avec succès",
     "workspace_banner_title": "Texte reçu de Workspace",
     "workspace_banner_use": "Utiliser ce texte",
