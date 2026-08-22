@@ -64,10 +64,33 @@
                 {{ 'testimonials_manage.spam_score' | translate }}: {{ item.spamScore }}
               </span>
             </div>
-            <p class="testimonial-row__content">{{ item.content }}</p>
+            @if (editingId === item.id) {
+              <div class="testimonial-row__edit">
+                <textarea class="testimonial-row__edit-input" rows="3" minlength="10" maxlength="600"
+                          [(ngModel)]="editDraft"></textarea>
+                <div class="testimonial-row__edit-actions">
+                  <button mat-button [disabled]="actioningId === item.id" (click)="cancelEdit()">
+                    {{ 'common.cancel' | translate }}
+                  </button>
+                  <button mat-flat-button color="primary"
+                          [disabled]="actioningId === item.id || editDraft.trim().length < 10"
+                          (click)="saveEdit(item)">
+                    {{ 'common.save' | translate }}
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <p class="testimonial-row__content">{{ item.content }}</p>
+            }
           </div>
 
           <div class="testimonial-row__actions">
+            @if (!item.isSpam && editingId !== item.id) {
+              <button mat-icon-button [disabled]="actioningId === item.id"
+                      (click)="startEdit(item)" [attr.title]="'testimonials_manage.edit_content' | translate">
+                <mat-icon>edit</mat-icon>
+              </button>
+            }
             @if (!item.isApproved || item.isSpam) {
               <button mat-icon-button color="primary" [disabled]="actioningId === item.id"
                       (click)="approve(item)" [attr.title]="'testimonials_manage.approve' | translate">

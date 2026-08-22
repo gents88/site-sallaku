@@ -750,7 +750,9 @@
     "spam_score": "Spam-Bewertung",
     "spam_score_tooltip": "Automatische Spam-Erkennungsbewertung (0-100, höher = verdächtiger)",
     "prev_page": "Zurück",
-    "next_page": "Weiter"
+    "next_page": "Weiter",
+    "edit_content": "Text bearbeiten",
+    "content_updated": "Text aktualisiert."
   },
   "chatbot_ui": {
     "title": "KI-Assistent",

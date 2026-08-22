@@ -750,7 +750,9 @@
     "spam_score": "Puntuación de spam",
     "spam_score_tooltip": "Puntuación automática de detección de spam (0-100, más alto = más sospechoso)",
     "prev_page": "Anterior",
-    "next_page": "Siguiente"
+    "next_page": "Siguiente",
+    "edit_content": "Editar texto",
+    "content_updated": "Texto actualizado."
   },
   "chatbot_ui": {
     "title": "Asistente AI",

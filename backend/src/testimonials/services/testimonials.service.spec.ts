@@ -150,6 +150,37 @@ describe('TestimonialsService', () => {
     });
   });
 
+  describe('updateContent', () => {
+    it('sanitizes and updates the content', async () => {
+      const updated = { _id: mockId, authorName: 'Mario Rossi', content: 'Testo corretto.' };
+      mockTestimonialModel.findByIdAndUpdate.mockResolvedValue(updated);
+      mockSpamDetectionService.sanitizeContent.mockReturnValue('Testo corretto.');
+
+      const result = await service.updateContent(mockId.toString(), 'Testo corretto.');
+
+      expect(result.id).toBe(mockId.toString());
+      expect(mockSpamDetectionService.sanitizeContent).toHaveBeenCalledWith('Testo corretto.');
+      expect(mockTestimonialModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        mockId.toString(),
+        expect.objectContaining({ content: 'Testo corretto.' }),
+        { new: true },
+      );
+    });
+
+    it('throws NotFoundException if the testimonial does not exist', async () => {
+      mockTestimonialModel.findByIdAndUpdate.mockResolvedValue(null);
+      await expect(service.updateContent(mockId.toString(), 'Testo corretto.')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('throws BadRequestException for an invalid id', async () => {
+      await expect(service.updateContent('not-an-id', 'Testo corretto.')).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+  });
+
   describe('delete', () => {
     it('throws NotFoundException if the testimonial does not exist', async () => {
       mockTestimonialModel.findByIdAndDelete.mockResolvedValue(null);

@@ -750,7 +750,9 @@
     "spam_score": "Pikët e spam-it",
     "spam_score_tooltip": "Pikë automatike të zbulimit të spam-it (0-100, sa më lart aq më dyshimtë)",
     "prev_page": "Mbrapa",
-    "next_page": "Përpara"
+    "next_page": "Përpara",
+    "edit_content": "Modifiko tekstin",
+    "content_updated": "Teksti u përditësua."
   },
   "chatbot_ui": {
     "title": "AI Assistant",

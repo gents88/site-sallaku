@@ -40,6 +40,10 @@ export class TestimonialsAdminService {
     return this.http.patch<AdminTestimonial>(`${this.url}/${id}/feature`, { featured });
   }
 
+  updateContent(id: string, content: string): Observable<AdminTestimonial> {
+    return this.http.patch<AdminTestimonial>(`${this.url}/${id}/content`, { content });
+  }
+
   remove(id: string): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);
   }
