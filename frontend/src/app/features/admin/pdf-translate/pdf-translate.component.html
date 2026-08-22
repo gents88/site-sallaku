@@ -135,7 +135,7 @@
           role="button"
           tabindex="0"
           (keydown.enter)="triggerFileInput()"
-          aria-label="Upload PDF file"
+          [attr.aria-label]="'pdf_translate.upload_aria' | translate"
         >
           <div class="drop-icon-wrap">
             <div class="drop-icon">📄</div>
@@ -151,7 +151,7 @@
             <span class="file-name">{{ fileInfo()!.name }}</span>
             <span class="file-size">{{ fileInfo()!.size }}</span>
           </div>
-          <button class="file-remove-btn" (click)="removeFile()" aria-label="Remove file">✕</button>
+          <button class="file-remove-btn" (click)="removeFile()" [attr.aria-label]="'pdf_translate.remove_file' | translate">✕</button>
         </div>
       }
 

@@ -1007,7 +1007,13 @@
     "dl_sent_name": "Enviado ✓",
     "guide_link": "Guia: como funciona a tradução de PDF com IA",
     "truncated_warning": "Documento muito longo: apenas a primeira parte foi processada, o resto não está incluído.",
-    "pill_clean_layout": "Esquema limpo"
+    "pill_clean_layout": "Esquema limpo",
+    "err_file_type": "Apenas ficheiros PDF, DOCX ou TXT são suportados.",
+    "err_file_too_large": "Ficheiro demasiado grande (máx {{max}}MB): {{name}}",
+    "err_no_file": "Selecione um ficheiro.",
+    "err_generic": "Falha na tradução. Tente novamente.",
+    "upload_aria": "Carregar um ficheiro PDF",
+    "remove_file": "Remover ficheiro"
   },
   "pdf_search": {
     "title": "Pesquisa de PDF",
