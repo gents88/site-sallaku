@@ -946,7 +946,9 @@
     "kind_file": "File",
     "kind_text": "Text",
     "start_here": "Starting tools",
-    "persistence_hint": "Not saved: lost if you reload or close this tab."
+    "persistence_hint": "Not saved: lost if you reload or close this tab.",
+    "feedback_cleared": "Removed from Workspace",
+    "feedback_downloaded": "Download started"
   },
   "pdf_translate": {
     "title": "PDF Translation",

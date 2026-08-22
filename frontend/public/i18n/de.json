@@ -946,7 +946,9 @@
     "kind_file": "Datei",
     "kind_text": "Text",
     "start_here": "Start-Tools",
-    "persistence_hint": "Nicht gespeichert: geht beim Neuladen oder Schließen dieses Tabs verloren."
+    "persistence_hint": "Nicht gespeichert: geht beim Neuladen oder Schließen dieses Tabs verloren.",
+    "feedback_cleared": "Aus Workspace entfernt",
+    "feedback_downloaded": "Download gestartet"
   },
   "pdf_translate": {
     "title": "PDF-Übersetzung",
