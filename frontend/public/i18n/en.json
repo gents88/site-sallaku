@@ -890,7 +890,14 @@
     "workspace_banner_dismiss": "Ignore",
     "workspace_send": "Send to Workspace",
     "workspace_sent": "Sent ✓",
-    "truncated_warning": "Very long document: only the first part was processed, the rest is not included."
+    "truncated_warning": "Very long document: only the first part was processed, the rest is not included.",
+    "err_too_short": "Please enter at least 10 characters of text to format.",
+    "err_generic": "An error occurred. Please try again.",
+    "err_file_type": "Only .txt or .md files are supported for quick paste.",
+    "dismiss_draft": "Dismiss draft",
+    "textarea_placeholder": "Paste your unformatted text here...\n\n✦ Meeting notes, raw content, AI output, emails...\n✦ Or click 'Use Sample' to see a demo",
+    "copied": "Copied",
+    "copy": "Copy"
   },
   "pdf_summary": {
     "title": "AI Summarizer",
