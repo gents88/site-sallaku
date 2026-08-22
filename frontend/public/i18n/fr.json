@@ -564,7 +564,14 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "http_errors": {
+      "network": "Pas de connexion internet. Vérifiez votre réseau et réessayez.",
+      "invalid_request": "Requête invalide. Vérifiez les données saisies.",
+      "forbidden": "Accès refusé. Vous n'avez pas la permission pour cette action.",
+      "too_many_requests": "Trop de requêtes. Veuillez patienter un instant et réessayer.",
+      "server_error": "Une erreur serveur est survenue. Veuillez réessayer plus tard."
+    }
   },
   "services": {
     "tag": "services",

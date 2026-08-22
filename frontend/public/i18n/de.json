@@ -564,7 +564,14 @@
     "close": "Schließen",
     "confirm": "Bestätigen",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "http_errors": {
+      "network": "Keine Internetverbindung. Überprüfe dein Netzwerk und versuche es erneut.",
+      "invalid_request": "Ungültige Anfrage. Überprüfe deine Eingaben.",
+      "forbidden": "Zugriff verweigert. Du hast keine Berechtigung für diese Aktion.",
+      "too_many_requests": "Zu viele Anfragen. Bitte warte einen Moment und versuche es erneut.",
+      "server_error": "Es ist ein Serverfehler aufgetreten. Bitte versuche es später erneut."
+    }
   },
   "services": {
     "tag": "services",
