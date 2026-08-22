@@ -59,6 +59,7 @@
 
     .res-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
     .res-head h2 { margin: 0; font-size: 1.05rem; }
+    .persistence-hint { flex-basis: 100%; font-size: .78rem; color: #f0b429; margin: 0; }
 
     .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: .75rem; }
     .page-card { margin: 0; border: 1px solid var(--border-color, #30363d); border-radius: 10px; overflow: hidden; background: var(--bg-primary, #0d1117); }
