@@ -784,6 +784,27 @@
     "chip_projects": "📁 Show me his projects",
     "chip_contact": "📬 How can I contact him?"
   },
+  "live_handoff": {
+    "prompt_title": "Want to talk to Gent directly?",
+    "accept": "Yes, contact him",
+    "decline": "No, continue with the assistant",
+    "dismiss": "Close",
+    "pill_label": "Talk to Gent",
+    "waiting": "Waiting for Gent…",
+    "agent_joining": "Gent is joining…",
+    "live_subtitle": "You're talking to Gent",
+    "expired_notice": "Gent isn't available right now, but he's received your request. Feel free to keep chatting with the assistant in the meantime.",
+    "admin_title": "Live chat with the visitor",
+    "admin_connecting": "Connecting…",
+    "admin_joining": "Joining the chat…",
+    "admin_live": "Live chat active",
+    "admin_expired": "This request has expired.",
+    "admin_closed": "This session has been closed.",
+    "admin_error": "Couldn't connect. Make sure you're logged in as admin.",
+    "admin_send_placeholder": "Write as Gent…",
+    "admin_history_loading": "Loading conversation…",
+    "admin_back": "Back to dashboard"
+  },
   "ai_ppt": {
     "title": "AI Slides",
     "badge": "AI Slides Generator",
