@@ -73,6 +73,31 @@ describe('LiveHandoffService', () => {
       expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('session-1', 'notified');
     });
 
+    it('still moves the request to "notified" even when the email fails to send', async () => {
+      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+      mockModel.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(0) });
+      mockMailService.sendLiveHandoffRequest.mockResolvedValue({ success: false, accepted: [], rejected: ['x'] });
+
+      await service.createRequest('session-1', {}, '1.2.3.4');
+      await flush();
+
+      expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('session-1', 'notified');
+    });
+
+    it('does not blow up when fetching the chat session for the email context throws', async () => {
+      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+      mockModel.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(0) });
+      mockChatbotService.getSession.mockRejectedValue(new Error('session vanished'));
+
+      await service.createRequest('session-1', {}, '1.2.3.4');
+      await flush();
+
+      expect(mockMailService.sendLiveHandoffRequest).toHaveBeenCalledWith(
+        expect.objectContaining({ recentMessages: [] }),
+      );
+      expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('session-1', 'notified');
+    });
+
     it('returns the existing request instead of creating a duplicate when one is already active', async () => {
       const existing = { _id: 'existing-id', sessionId: 'session-1', status: 'notified', expiresAt: new Date() };
       mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
@@ -104,6 +129,20 @@ describe('LiveHandoffService', () => {
 
       const result = await service.getStatus('unknown-session');
       expect(result.status).toBe('none');
+    });
+
+    it('returns the current status when a request exists', async () => {
+      const doc = { _id: 'req-id', sessionId: 'session-1', status: 'live', expiresAt: new Date('2026-01-01') };
+      mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(doc) });
+
+      const result = await service.getStatus('session-1');
+
+      expect(result).toEqual({
+        requestId: 'req-id',
+        sessionId: 'session-1',
+        status: 'live',
+        expiresAt: doc.expiresAt,
+      });
     });
   });
 
@@ -141,6 +180,55 @@ describe('LiveHandoffService', () => {
       expect(result.status).toBe('agent_joining');
       expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('session-1', 'agent_joining');
     });
+
+    it('allows re-joining a request that is already live (second tab / reconnect)', async () => {
+      const doc = { _id: 'req-id', sessionId: 'session-1', status: 'live', save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(doc) });
+
+      const result = await service.markAgentJoining('session-1');
+
+      expect(result.status).toBe('agent_joining');
+    });
+  });
+
+  describe('markLive', () => {
+    it('transitions agent_joining to live and notifies via the gateway', async () => {
+      const doc = { sessionId: 'session-1', status: 'agent_joining', save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(doc) });
+
+      await service.markLive('session-1');
+
+      expect(doc.status).toBe('live');
+      expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('session-1', 'live');
+    });
+
+    it('does nothing when there is no request in agent_joining/notified for the session', async () => {
+      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+
+      await service.markLive('session-1');
+
+      expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('closeSession', () => {
+    it('closes an active session and notifies via the gateway', async () => {
+      const doc = { sessionId: 'session-1', status: 'live', save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(doc) });
+
+      await service.closeSession('session-1');
+
+      expect(doc.status).toBe('closed');
+      expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('session-1', 'closed');
+    });
+
+    it('does nothing when there is no active session to close', async () => {
+      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+
+      await service.closeSession('session-1');
+
+      expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
+    });
   });
 
   describe('expireStaleRequests', () => {
@@ -156,6 +244,15 @@ describe('LiveHandoffService', () => {
       expect(stale2.status).toBe('expired');
       expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('a', 'expired');
       expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('b', 'expired');
+    });
+
+    it('does nothing and notifies no one when no request is overdue', async () => {
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+
+      const count = await service.expireStaleRequests();
+
+      expect(count).toBe(0);
+      expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
     });
   });
 });
