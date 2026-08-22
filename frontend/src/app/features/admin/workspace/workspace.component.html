@@ -15,6 +15,7 @@
         <span class="current-kind">{{ kindLabel(workspace.current()!.kind) | translate }}</span>
         <h3>{{ workspace.current()!.filename }}</h3>
         <p class="current-source">{{ 'workspace.received_from' | translate: { tool: (workspace.current()!.fromTool + '.title' | translate) } }}</p>
+        <p class="current-persistence-hint">⚠️ {{ 'workspace.persistence_hint' | translate }}</p>
       </div>
       <div class="current-actions">
         <button type="button" class="btn-ghost" (click)="downloadCurrent()">⬇ {{ 'workspace.btn_download' | translate }}</button>

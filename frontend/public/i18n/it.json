@@ -927,7 +927,8 @@
     "history_title": "Cronologia sessione",
     "kind_file": "File",
     "kind_text": "Testo",
-    "start_here": "Strumenti di partenza"
+    "start_here": "Strumenti di partenza",
+    "persistence_hint": "Non salvato: si perde ricaricando o chiudendo questa scheda."
   },
   "pdf_translate": {
     "title": "Traduzione PDF",

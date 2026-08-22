@@ -927,7 +927,8 @@
     "history_title": "Historique de la session",
     "kind_file": "Fichier",
     "kind_text": "Texte",
-    "start_here": "Outils de départ"
+    "start_here": "Outils de départ",
+    "persistence_hint": "Non enregistré : perdu si vous rechargez ou fermez cet onglet."
   },
   "pdf_translate": {
     "title": "Traduction de PDF",
