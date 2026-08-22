@@ -1007,7 +1007,13 @@
     "dl_sent_name": "Inviato ✓",
     "guide_link": "Guida: come funziona la traduzione PDF con l'AI",
     "truncated_warning": "Documento molto lungo: solo la prima parte è stata elaborata, il resto non è incluso.",
-    "pill_clean_layout": "Layout pulito"
+    "pill_clean_layout": "Layout pulito",
+    "err_file_type": "Sono supportati solo file PDF, DOCX o TXT.",
+    "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}",
+    "err_no_file": "Seleziona un file.",
+    "err_generic": "Traduzione non riuscita. Riprova.",
+    "upload_aria": "Carica un file PDF",
+    "remove_file": "Rimuovi file"
   },
   "pdf_search": {
     "title": "Ricerca PDF",
