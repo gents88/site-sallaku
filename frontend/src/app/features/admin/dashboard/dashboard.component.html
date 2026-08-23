@@ -50,6 +50,50 @@
       }
     </div>
 
+    <!-- ── Chat live: rientro nelle sessioni aperte ────────────────────────
+         Senza questa card l'unico modo per tornare in una chat da cui si è
+         usciti sarebbe ritrovare la vecchia email di notifica. -->
+    <section class="card live-chat-card" [class.live-chat-card--empty]="liveHandoffs.length === 0">
+      <div class="live-chat-card__header">
+        <div class="live-chat-card__title">
+          <mat-icon>support_agent</mat-icon>
+          <h2>{{ 'live_handoff.card_title' | translate }}</h2>
+        </div>
+        @if (liveHandoffActive.length > 0) {
+          <span class="live-chat-badge live-chat-badge--live">
+            {{ liveHandoffActive.length }} {{ 'live_handoff.card_badge_active' | translate }}
+          </span>
+        }
+        @if (liveHandoffWaiting.length > 0) {
+          <span class="live-chat-badge live-chat-badge--waiting">
+            {{ liveHandoffWaiting.length }} {{ 'live_handoff.card_badge_waiting' | translate }}
+          </span>
+        }
+      </div>
+
+      @if (liveHandoffs.length === 0) {
+        <p class="live-chat-card__empty text-muted">{{ 'live_handoff.card_empty' | translate }}</p>
+      } @else {
+        <ul class="live-chat-list">
+          @for (session of liveHandoffs; track session.requestId) {
+            <li class="live-chat-item" [class.live-chat-item--live]="session.status === 'live'">
+              <div class="live-chat-item__main">
+                <span class="live-chat-item__status">{{ liveHandoffStatusKey(session) | translate }}</span>
+                @if (session.lastUserMessage) {
+                  <p class="live-chat-item__msg">{{ session.lastUserMessage }}</p>
+                }
+                <span class="live-chat-item__time text-muted">{{ session.requestedAt | date:'dd/MM HH:mm' }}</span>
+              </div>
+              <a class="live-chat-item__cta" [routerLink]="liveHandoffRoute(session)">
+                {{ 'live_handoff.card_open' | translate }}
+                <mat-icon>arrow_forward</mat-icon>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
     <div class="analytics-grid">
       <section class="analytics-card card">
         <div class="analytics-card__header">
