@@ -134,6 +134,16 @@ const publicPages: Route[] = [
     path: 'lab/library',
     loadComponent: () => import('./features/admin/library/library.component').then(m => m.LibraryComponent),
   },
+
+  // ── Legal ─────────────────────────────────────────
+  {
+    path: 'privacy-policy',
+    loadComponent: () => import('./features/legal/privacy-policy/privacy-policy.component').then(m => m.PrivacyPolicyComponent),
+  },
+  {
+    path: 'cookie-policy',
+    loadComponent: () => import('./features/legal/cookie-policy/cookie-policy.component').then(m => m.CookiePolicyComponent),
+  },
 ];
 
 export const routes: Routes = [
