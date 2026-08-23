@@ -764,7 +764,7 @@
     "typing": "En train de taper…",
     "placeholder": "Tapez un message…",
     "welcome_title": "Bonjour ! 👋",
-    "welcome_text": "Je suis l'assistant AI sur le portfolio de <strong>Gent Sallaku</strong>. Posez-moi des questions sur ses projets, compétences ou services !",
+    "welcome_text": "Je suis l'assistant AI sur le portfolio de <strong>Gent Sallaku</strong>. Posez-moi des questions sur ses projets, compétences ou services ! Si vous voulez lui parler en direct, écrivez-moi quelques messages ici : il recevra la demande (il ne sait pas encore qui vous êtes, alors présentez-vous).",
     "info_banner": "Gent lit les messages envoyés via le chatbot. Si vous souhaitez une réponse, veuillez utiliser la section 'Envoyer un Email'.",
     "info_cta": "Aller à la section Email →",
     "close": "Fermer le chat",
