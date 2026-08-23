@@ -20,15 +20,20 @@ import { ChatbotService, ChatMessage } from '../../core/services/chatbot.service
 import { LanguageService } from '../../core/services/language.service';
 import { LiveHandoffService, LiveHandoffState } from '../../core/services/live-handoff.service';
 import { LiveHandoffPromptComponent } from '../../shared/components/live-handoff-prompt/live-handoff-prompt.component';
+import {
+  ExitConfirmStep,
+  LiveChatExitConfirmComponent,
+} from '../../shared/components/live-chat-exit-confirm/live-chat-exit-confirm.component';
 
 type PanelView = 'chat' | 'transcript';
+type PendingExitAction = 'close' | 'clear' | null;
 
 const TYPING_DEBOUNCE_MS = 1200;
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, LiveHandoffPromptComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, LiveHandoffPromptComponent, LiveChatExitConfirmComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss'],
@@ -51,6 +56,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   liveState: LiveHandoffState = 'idle';
   liveMinimized = false;
+  exitConfirmStep: ExitConfirmStep = 'none';
+  private pendingExitAction: PendingExitAction = null;
 
   private readonly typing$ = new Subject<void>();
 
@@ -213,6 +220,46 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.chatbot.clearSession();
     this.liveHandoff.reset();
     this.panelView = 'chat';
+  }
+
+  // ── Chiusura/cancellazione durante una chat live con Gent ────────────────
+  // Chiudere il pannello o cancellare la conversazione mentre si sta parlando
+  // con una persona vera non può essere un gesto a caso: si chiede conferma
+  // invece di eseguire subito.
+  requestClose(): void {
+    if (this.liveState === 'live') {
+      this.pendingExitAction = 'close';
+      this.exitConfirmStep = 'ask_resolved';
+    } else {
+      this.chatbot.close();
+    }
+  }
+
+  requestClear(): void {
+    if (this.liveState === 'live') {
+      this.pendingExitAction = 'clear';
+      this.exitConfirmStep = 'ask_resolved';
+    } else {
+      this.clearChat();
+    }
+  }
+
+  onExitAdvance(): void {
+    this.exitConfirmStep = 'ask_close';
+  }
+
+  onExitCancel(): void {
+    this.exitConfirmStep = 'none';
+    this.pendingExitAction = null;
+  }
+
+  onExitConfirm(): void {
+    this.liveHandoff.closeByVisitor();
+    this.exitConfirmStep = 'none';
+    const action = this.pendingExitAction;
+    this.pendingExitAction = null;
+    if (action === 'close') this.chatbot.close();
+    else if (action === 'clear') this.clearChat();
   }
 
   showTranscriptPanel(): void {

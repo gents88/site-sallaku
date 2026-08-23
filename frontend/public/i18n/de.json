@@ -809,7 +809,15 @@
     "card_badge_waiting": "wartend",
     "card_waiting": "Wartet auf Antwort",
     "card_open": "Beitreten",
-    "card_empty": "Derzeit keine Live-Chat-Anfragen."
+    "card_empty": "Derzeit keine Live-Chat-Anfragen.",
+    "exit_ask_resolved_title": "Haben Sie Ihr Problem gelöst?",
+    "exit_ask_resolved_yes": "Ja",
+    "exit_ask_resolved_no": "Nein, weiter",
+    "exit_ask_close_title": "Möchten Sie die Sitzung mit Gent beenden?",
+    "exit_ask_close_yes": "Ja, beenden",
+    "exit_ask_close_no": "Nein, zurück zum Chat",
+    "closed_notice": "Das Gespräch mit Gent ist beendet. Sie können gerne mit dem Assistenten weiterchatten.",
+    "admin_close_chat": "Chat schließen"
   },
   "ai_ppt": {
     "title": "KI-Foliengenerator",

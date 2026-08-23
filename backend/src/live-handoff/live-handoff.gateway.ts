@@ -169,6 +169,20 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     await this.liveHandoffService.closeSession(body.sessionId);
   }
 
+  /**
+   * Chiusura deliberata da parte del visitatore (dopo conferma in UI). Nessuna auth:
+   * stesso modello di fiducia di `visitor_message`/`join_session` — il sessionId stesso
+   * è già la capability, non esiste un token lato visitatore.
+   */
+  @SubscribeMessage('visitor_close')
+  async onVisitorClose(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { sessionId?: string },
+  ): Promise<void> {
+    if (!body?.sessionId) return;
+    await this.liveHandoffService.closeSession(body.sessionId);
+  }
+
   private verifyAdminToken(token?: string): unknown | null {
     if (!token) return null;
     try {

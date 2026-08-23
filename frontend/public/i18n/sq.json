@@ -809,7 +809,15 @@
     "card_badge_waiting": "në pritje",
     "card_waiting": "Në pritje të përgjigjes",
     "card_open": "Hyr",
-    "card_empty": "Asnjë kërkesë për bisedë live për momentin."
+    "card_empty": "Asnjë kërkesë për bisedë live për momentin.",
+    "exit_ask_resolved_title": "E zgjidhe problemin?",
+    "exit_ask_resolved_yes": "Po",
+    "exit_ask_resolved_no": "Jo, vazhdo",
+    "exit_ask_close_title": "Dëshiron ta mbyllësh bisedën me Gent-in?",
+    "exit_ask_close_yes": "Po, mbylle",
+    "exit_ask_close_no": "Jo, kthehu te biseda",
+    "closed_notice": "Biseda me Gent-in ka përfunduar. Mund të vazhdosh të bisedosh me asistentin.",
+    "admin_close_chat": "Mbyll bisedën"
   },
   "ai_ppt": {
     "title": "Gjenerator Slide",

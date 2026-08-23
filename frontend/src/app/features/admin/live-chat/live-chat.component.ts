@@ -64,12 +64,22 @@ export class AdminLiveChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Navigare via (es. "Torna alla dashboard") NON chiude più la chat: prima lo
+    // faceva, e vanificava la card di rientro in dashboard — bastava dare
+    // un'occhiata altrove per perdere la sessione. Chiudere è ora una scelta
+    // esplicita, vedi closeChat().
+    this.socket?.disconnect();
+    this.socket = null;
+  }
+
+  /** Solo Gent può chiudere, e lo fa quando vuole: nessuna conferma richiesta. */
+  closeChat(): void {
     const token = this.auth.getToken();
     if (this.socket && token) {
       this.socket.emit('admin_close', { sessionId: this.sessionId, token });
     }
-    this.socket?.disconnect();
-    this.socket = null;
+    this.status = 'closed';
+    this.cdr.markForCheck();
   }
 
   private loadHistory(): void {

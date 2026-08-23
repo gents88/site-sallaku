@@ -36,6 +36,37 @@
   flex-shrink: 0;
 }
 
+.alc-header__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.alc-close-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  &:hover { background: rgba(248, 113, 113, 0.18); }
+}
+
+@media (max-width: 640px) {
+  .alc-close-btn span,
+  .alc-close-btn { font-size: 0.8rem; }
+}
+
 .alc-title {
   margin: 0;
   font-size: 1.05rem;

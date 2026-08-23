@@ -241,6 +241,20 @@ describe('LiveHandoffGateway', () => {
     });
   });
 
+  describe('onVisitorClose', () => {
+    it('closes the session — nessuna auth richiesta: il visitatore non ha un token, il sessionId stesso è la capability', async () => {
+      await gateway.onVisitorClose(mockClient, { sessionId: 's1' });
+
+      expect(mockLiveHandoffService.closeSession).toHaveBeenCalledWith('s1');
+    });
+
+    it('does not close anything when sessionId is missing', async () => {
+      await gateway.onVisitorClose(mockClient, {});
+
+      expect(mockLiveHandoffService.closeSession).not.toHaveBeenCalled();
+    });
+  });
+
   describe('emitStatusChanged', () => {
     it('broadcasts the new status to the session room', () => {
       gateway.emitStatusChanged('s1', 'expired');
