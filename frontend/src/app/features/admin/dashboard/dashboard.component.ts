@@ -122,7 +122,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   topPages: TopPage[] = [];
   monthlyHistory: MonthlyHistoryEntry[] = [];
   auditLogs: AuditLogEntry[] = [];
-  chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 };
+  chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0, fallbackRepliesToday: 0 };
   systemHealth: SystemHealth | null = null;
   systemDetails: SystemDetails | null = null;
   systemOps: OperationsInfo | null = null;

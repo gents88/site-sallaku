@@ -495,6 +495,8 @@
     },
     "chatbot_today": "Hoje",
     "chatbot_this_month": "Este mês",
+    "chatbot_fallback_today": "Fallback hoje",
+    "chatbot_fallback_desc": "Respostas de reserva usadas hoje porque a IA não respondeu corretamente",
     "top_pages": "Páginas Principais",
     "top_pages_desc": "Páginas mais visitadas por visualizações totais",
     "seo_title": "SEO – Search Console",

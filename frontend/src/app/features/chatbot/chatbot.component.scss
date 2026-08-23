@@ -228,6 +228,11 @@
   color: #a5b4fc;
 }
 
+.cb-chips--followup {
+  justify-content: flex-start;
+  margin: -4px 0 4px 34px; /* aligns under assistant bubbles, past the avatar */
+}
+
 /* ── Message bubbles ─────────────────────────────── */
 .cb-msg {
   display: flex;

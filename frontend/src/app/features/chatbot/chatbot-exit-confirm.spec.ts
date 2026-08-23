@@ -25,6 +25,7 @@ describe('ChatbotComponent — conferma di chiusura durante una chat live', () =
       messages$: new BehaviorSubject([]),
       isLoading$: new BehaviorSubject(false),
       isOpen$: new BehaviorSubject(true),
+      suggestions$: new BehaviorSubject([]),
       currentSessionId: 's1',
       hasMessages: true,
       close: vi.fn(),

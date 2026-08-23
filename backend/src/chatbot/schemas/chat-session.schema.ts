@@ -7,6 +7,8 @@ export interface ChatMessage {
   role: 'user' | 'assistant' | 'agent';
   content: string;
   timestamp: Date;
+  /** true when this assistant reply came from the static canned fallback (AI call failed/unavailable) */
+  usedFallback?: boolean;
 }
 
 @Schema({ timestamps: true })
@@ -20,6 +22,7 @@ export class ChatSession {
         role: { type: String, enum: ['user', 'assistant', 'agent'], required: true },
         content: { type: String, required: true },
         timestamp: { type: Date, default: () => new Date() },
+        usedFallback: { type: Boolean, default: false },
       },
     ],
     default: [],
