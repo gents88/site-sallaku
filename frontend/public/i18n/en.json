@@ -764,7 +764,7 @@
     "typing": "Typing…",
     "placeholder": "Type a message…",
     "welcome_title": "Hi there! 👋",
-    "welcome_text": "I'm the AI assistant on <strong>Gent Sallaku's</strong> portfolio. Ask me anything about his projects, skills, or services!",
+    "welcome_text": "I'm the AI assistant on <strong>Gent Sallaku's</strong> portfolio. Ask me anything about his projects, skills, or services! If you'd like to chat with him live, send me a couple of messages here: he'll get the request (he doesn't know who you are yet, so feel free to introduce yourself).",
     "info_banner": "Gent reads messages sent through the chatbot. If you would like a response, please use the 'Send Email' section.",
     "info_cta": "Go to the Email section →",
     "close": "Close chat",
