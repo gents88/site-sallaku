@@ -1,0 +1,88 @@
+/* Sopra il pannello chat (z-index 1499) e il FAB (1500): è una conferma bloccante,
+   deve stare sopra tutto il widget, non solo dentro l'area messaggi. */
+.lec-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 1690;
+  animation: lecFadeIn 0.15s ease-out;
+}
+
+.lec-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1700;
+  width: min(320px, calc(100vw - 48px));
+  background: #0f1729;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(2, 6, 23, 0.6);
+  padding: 22px 20px;
+  animation: lecPopIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes lecFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes lecPopIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.lec-title {
+  margin: 0 0 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.lec-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.lec-btn {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.lec-btn:active { transform: scale(0.97); }
+
+.lec-btn--primary {
+  background: linear-gradient(135deg, #4f6af5, #8b5cf6);
+  color: #fff;
+}
+
+.lec-btn--danger {
+  background: linear-gradient(135deg, #f59e0b, #dc2626);
+  color: #fff;
+}
+
+.lec-btn--secondary {
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+}
+
+.lec-btn:hover { opacity: 0.9; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lec-backdrop, .lec-dialog { animation: none; }
+}
+
+/* font-size 16px sui bottoni non serve (non sono input), ma il target di tocco sì */
+@media (max-width: 640px) {
+  .lec-btn { padding: 14px; font-size: 0.88rem; }
+}

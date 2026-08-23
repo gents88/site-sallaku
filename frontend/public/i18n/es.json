@@ -809,7 +809,15 @@
     "card_badge_waiting": "en espera",
     "card_waiting": "Esperando respuesta",
     "card_open": "Entrar",
-    "card_empty": "No hay solicitudes de chat en vivo en este momento."
+    "card_empty": "No hay solicitudes de chat en vivo en este momento.",
+    "exit_ask_resolved_title": "¿Has resuelto tu problema?",
+    "exit_ask_resolved_yes": "Sí",
+    "exit_ask_resolved_no": "No, continuar",
+    "exit_ask_close_title": "¿Quieres cerrar la sesión con Gent?",
+    "exit_ask_close_yes": "Sí, cerrar",
+    "exit_ask_close_no": "No, volver al chat",
+    "closed_notice": "La conversación con Gent ha terminado. Puedes seguir chateando con el asistente.",
+    "admin_close_chat": "Cerrar chat"
   },
   "ai_ppt": {
     "title": "Generador de Diapositivas",

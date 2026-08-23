@@ -60,13 +60,13 @@
           </button>
         }
         @if (chatbot.hasMessages) {
-          <button class="cb-icon-btn" (click)="clearChat()" [title]="'chatbot_ui.clear' | translate" [attr.aria-label]="'chatbot_ui.clear' | translate">
+          <button class="cb-icon-btn" (click)="requestClear()" [title]="'chatbot_ui.clear' | translate" [attr.aria-label]="'chatbot_ui.clear' | translate">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="17" height="17" aria-hidden="true">
               <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/>
             </svg>
           </button>
         }
-        <button class="cb-icon-btn" (click)="chatbot.close()" [attr.aria-label]="'chatbot_ui.close' | translate">
+        <button class="cb-icon-btn" (click)="requestClose()" [attr.aria-label]="'chatbot_ui.close' | translate">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd"/>
           </svg>
@@ -130,6 +130,12 @@
         @if (liveState === 'expired') {
           <div class="cb-system-notice" role="status">
             {{ 'live_handoff.expired_notice' | translate }}
+          </div>
+        }
+
+        @if (liveState === 'closed') {
+          <div class="cb-system-notice" role="status">
+            {{ 'live_handoff.closed_notice' | translate }}
           </div>
         }
 
@@ -239,5 +245,13 @@
         </form>
       </div>
     }
+
+    <!-- ── Conferma prima di chiudere/cancellare mentre si parla con Gent ── -->
+    <app-live-chat-exit-confirm
+      [step]="exitConfirmStep"
+      (advance)="onExitAdvance()"
+      (confirm)="onExitConfirm()"
+      (cancel)="onExitCancel()"
+    ></app-live-chat-exit-confirm>
   </div>
 }
