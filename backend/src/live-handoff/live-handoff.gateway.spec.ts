@@ -62,6 +62,15 @@ describe('LiveHandoffGateway', () => {
       expect(mockServer.emit).not.toHaveBeenCalled();
     });
 
+    it('accetta il messaggio del visitatore anche durante "agent_joining"', async () => {
+      mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'agent_joining' });
+      mockChatbotService.appendLiveMessage.mockResolvedValue({ timestamp: new Date('2026-01-01') });
+
+      await gateway.onVisitorMessage(mockClient, { sessionId: 's1', text: 'ciao' });
+
+      expect(mockChatbotService.appendLiveMessage).toHaveBeenCalledWith('s1', 'user', 'ciao');
+    });
+
     it('ignores the message when text is missing or blank, without even checking status', async () => {
       await gateway.onVisitorMessage(mockClient, { sessionId: 's1', text: '   ' });
 
@@ -135,14 +144,32 @@ describe('LiveHandoffGateway', () => {
   });
 
   describe('onAdminMessage', () => {
-    it('drops the message when the handoff is not live yet, even with a valid admin token', async () => {
+    // Regressione: accettare solo "live" scartava in silenzio i messaggi scritti nella
+    // finestra fra l'ingresso di Gent e il passaggio a "live" — sintomo per l'utente:
+    // "rispondo ma il visitatore non riceve nulla", senza alcun errore.
+    it('accetta il messaggio anche mentre lo stato è ancora "agent_joining"', async () => {
       mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
       mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'agent_joining' });
+      mockChatbotService.appendLiveMessage.mockResolvedValue({ timestamp: new Date('2026-01-01') });
 
       await gateway.onAdminMessage(mockClient, { sessionId: 's1', text: 'ciao', token: 'good' });
 
-      expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
+      expect(mockChatbotService.appendLiveMessage).toHaveBeenCalledWith('s1', 'agent', 'ciao');
+      expect(mockServer.emit).toHaveBeenCalledWith('chat_message', expect.objectContaining({ from: 'agent' }));
     });
+
+    it.each(['expired', 'closed', 'requested', 'notified', 'none'])(
+      'con stato "%s" avvisa Gent invece di scartare il messaggio in silenzio',
+      async (status) => {
+        mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+        mockLiveHandoffService.getStatus.mockResolvedValue({ status });
+
+        await gateway.onAdminMessage(mockClient, { sessionId: 's1', text: 'ciao', token: 'good' });
+
+        expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
+        expect(mockClient.emit).toHaveBeenCalledWith('error', expect.objectContaining({ message: expect.any(String) }));
+      },
+    );
 
     it('drops the message when the admin token does not verify', async () => {
       mockJwtService.verify.mockImplementation(() => {

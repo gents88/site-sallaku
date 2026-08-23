@@ -13,6 +13,14 @@ import { Server, Socket } from 'socket.io';
 import { LiveHandoffService } from './live-handoff.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
 
+/**
+ * Stati in cui la chat accetta messaggi. Include "agent_joining" di proposito: fra
+ * l'ingresso di Gent e il passaggio a "live" c'è una finestra di pochi millisecondi,
+ * e accettare solo "live" significava scartare in silenzio i messaggi scritti in quel
+ * momento — o dopo qualunque disallineamento di stato.
+ */
+const CHATTABLE_STATUSES = ['agent_joining', 'live'];
+
 // Stessa logica di validazione dell'Origin usata dal CORS HTTP in main.ts, così il
 // comportamento è identico e verificato: nessuna cookie/credenziale sul socket (l'auth
 // admin viaggia nel payload del messaggio), quindi niente `credentials: true` — che
@@ -84,7 +92,7 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     if (!body?.sessionId || !text) return;
 
     const status = await this.liveHandoffService.getStatus(body.sessionId);
-    if (status.status !== 'live') return;
+    if (!CHATTABLE_STATUSES.includes(status.status)) return;
 
     const message = await this.chatbotService.appendLiveMessage(body.sessionId, 'user', text);
     this.server.to(this.room(body.sessionId)).emit('chat_message', {
@@ -135,7 +143,12 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     if (!payload || !body?.sessionId || !text) return;
 
     const status = await this.liveHandoffService.getStatus(body.sessionId);
-    if (status.status !== 'live') return;
+    if (!CHATTABLE_STATUSES.includes(status.status)) {
+      // Meglio dirlo che sparire: un messaggio scartato in silenzio si manifesta come
+      // "ho risposto ma il visitatore non riceve nulla", senza alcun indizio.
+      client.emit('error', { message: 'La chat non è più attiva: il messaggio non è stato inviato.' });
+      return;
+    }
 
     const message = await this.chatbotService.appendLiveMessage(body.sessionId, 'agent', text);
     this.server.to(this.room(body.sessionId)).emit('chat_message', {

@@ -803,7 +803,13 @@
     "admin_error": "Lidhja dështoi. Sigurohu që je i kyçur si admin.",
     "admin_send_placeholder": "Shkruaj si Gent…",
     "admin_history_loading": "Duke ngarkuar bisedën…",
-    "admin_back": "Kthehu te paneli"
+    "admin_back": "Kthehu te paneli",
+    "card_title": "Bisedë live",
+    "card_badge_active": "në vazhdim",
+    "card_badge_waiting": "në pritje",
+    "card_waiting": "Në pritje të përgjigjes",
+    "card_open": "Hyr",
+    "card_empty": "Asnjë kërkesë për bisedë live për momentin."
   },
   "ai_ppt": {
     "title": "Gjenerator Slide",

@@ -37,12 +37,14 @@ export class LiveHandoffController {
 export class LiveHandoffAdminController {
   constructor(private readonly liveHandoffService: LiveHandoffService) {}
 
-  @Get('pending')
+  @Get('active')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiBearerAuth('access-token')
-  @ApiOperation({ summary: 'List pending live handoff requests (admin only)' })
-  listPending() {
-    return this.liveHandoffService.listPending();
+  @ApiOperation({
+    summary: 'List live handoff sessions Gent can still open — pending AND already in progress (admin only)',
+  })
+  listActive() {
+    return this.liveHandoffService.listActive();
   }
 }
