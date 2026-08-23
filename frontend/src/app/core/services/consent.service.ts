@@ -36,6 +36,18 @@ export class ConsentService {
   /** True once the user has made an explicit choice (accept, reject, or custom) */
   readonly hasDecided = computed(() => this._state() !== null);
 
+  /**
+   * Bumped by openPreferences() to signal ConsentBannerComponent to reopen its
+   * settings modal (e.g. from the footer's "manage cookie consent" link),
+   * even after the user already made their initial choice and the banner
+   * itself is gone. A plain counter rather than a boolean so the same value
+   * fired twice in a row still triggers the effect.
+   */
+  readonly reopenRequested = signal(0);
+  openPreferences(): void {
+    this.reopenRequested.update(v => v + 1);
+  }
+
   constructor(private http: HttpClient, private auth: AuthService) {
     // gtag's consent mode defaults to 'denied' on every fresh script load —
     // a returning visitor's earlier choice has to be re-applied each session.

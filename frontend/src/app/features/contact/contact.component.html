@@ -70,6 +70,19 @@
 
       <app-turnstile-widget (verified)="onTurnstileVerified($event)" />
 
+      <div class="field-group field-group--checkbox">
+        <label class="field-checkbox">
+          <input type="checkbox" formControlName="privacyAccepted" />
+          <span>
+            {{ 'contact.form.privacy_checkbox' | translate }}
+            <a [routerLink]="'/privacy-policy' | langUrl" target="_blank" rel="noopener">{{ 'contact.form.privacy_link_text' | translate }}</a>
+          </span>
+        </label>
+        @if (form.get('privacyAccepted')?.invalid && form.get('privacyAccepted')?.touched) {
+          <span class="field-error">{{ 'contact.form.privacy_err' | translate }}</span>
+        }
+      </div>
+
       <div class="form-footer">
         <button class="btn btn-primary submit-btn" type="submit" [disabled]="sending">
           @if (sending) {

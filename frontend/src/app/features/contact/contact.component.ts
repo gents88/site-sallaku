@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterLink } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { ContactService } from '../../core/services/contact.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
@@ -11,6 +12,7 @@ import { LanguageService, withLangPrefix } from '../../core/services/language.se
 import { loadStylesheetOnce } from '../../core/utils/load-stylesheet';
 import { MATERIAL_CSS } from '../../core/utils/vendor-css.generated';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
+import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 
 @Component({
   selector: 'app-contact',
@@ -18,6 +20,7 @@ import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widg
   imports: [
     CommonModule, ReactiveFormsModule, TranslateModule,
     MatIconModule, MatSnackBarModule, TurnstileWidgetComponent,
+    RouterLink, LangUrlPipe,
   ],
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
@@ -28,6 +31,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
     email:   ['', [Validators.required, Validators.email]],
     subject: ['', [Validators.required, Validators.maxLength(150)]],
     message: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
+    privacyAccepted: [false, [Validators.requiredTrue]],
   });
 
   sending = false;
@@ -103,7 +107,8 @@ export class ContactComponent implements OnInit, AfterViewInit {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
     this.sending = true;
-    this.contactService.send({ ...(this.form.value as any), turnstileToken: this.turnstileToken }).subscribe({
+    const { privacyAccepted, ...payload } = this.form.value as any;
+    this.contactService.send({ ...payload, turnstileToken: this.turnstileToken }).subscribe({
       next: () => {
         this.sent = true;
         this.sending = false;

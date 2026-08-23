@@ -1,5 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ConsentService } from '../../../core/services/consent.service';
@@ -86,7 +86,29 @@ export class ConsentBannerComponent implements OnInit {
   marketing = false;
   preferences = false;
 
-  constructor(private consent: ConsentService) {}
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly document = inject(DOCUMENT);
+
+  constructor(private consent: ConsentService) {
+    // reopenRequested starts at 0 and this only fires on increments (footer's
+    // "manage cookie consent" link), so it never opens the modal on load —
+    // ngOnInit's `visible` already handles the first-visit banner.
+    effect(() => {
+      if (this.consent.reopenRequested() > 0) this.openPreferences();
+    });
+
+    // While shown, this fixed banner sits directly over whatever content is
+    // at the true bottom of a short page (e.g. the footer's legal links) —
+    // same overlap problem as the mobile tab bar/nav-menu cases described
+    // below, just for the page's own last elements instead of another fixed
+    // UI. Mirrors data-sidebar/data-theme: an attribute on <html> that other
+    // components' SCSS can key off via :host-context (footer reserves extra
+    // bottom padding only while this is set).
+    effect(() => {
+      if (!isPlatformBrowser(this.platformId)) return;
+      this.document.documentElement.toggleAttribute('data-cookie-banner-open', this.visible());
+    });
+  }
 
   ngOnInit(): void {
     // ConsentService re-applies a stored choice to gtag at construction time —
@@ -96,7 +118,16 @@ export class ConsentBannerComponent implements OnInit {
 
   acceptAll(): void { this.save({ analytics: true, marketing: true, preferences: true }); }
   rejectAll(): void { this.save({ analytics: false, marketing: false, preferences: false }); }
-  openPreferences(): void { this.analytics = false; this.marketing = false; this.preferences = false; this.modalVisible.set(true); }
+  openPreferences(): void {
+    // Prefill from the current stored choice (if any) rather than always
+    // false, so reopening to "manage" preferences shows what's actually
+    // active instead of looking like everything was rejected.
+    const state = this.consent.state();
+    this.analytics = state?.analytics ?? false;
+    this.marketing = state?.marketing ?? false;
+    this.preferences = state?.preferences ?? false;
+    this.modalVisible.set(true);
+  }
   closeModal(): void { this.modalVisible.set(false); }
 
   savePreferences(): void { this.save({ analytics: this.analytics, marketing: this.marketing, preferences: this.preferences }); this.closeModal(); }
