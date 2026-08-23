@@ -48,7 +48,11 @@
   RewriteCond %{REQUEST_FILENAME}/index.html -f
   RewriteRule ^ - [L]
 
-  RewriteRule ^ index.html [L]
+  # Generic CSR shell for routes with no prerendered index.html of their own
+  # (e.g. /dashboard/*). Angular names this index.csr.html instead of
+  # index.html once SSR/prerendering is active, specifically so hosts don't
+  # serve this empty shell in place of a real prerendered page at /.
+  RewriteRule ^ index.csr.html [L]
 </IfModule>
 
 # Brotli first: when the client advertises `br`, Apache prefers this filter
@@ -99,7 +103,7 @@
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  <FilesMatch "^index\.html\.(br|gz)$">
+  <FilesMatch "^index\.(html|csr\.html)\.(br|gz)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
 </IfModule>
@@ -109,7 +113,7 @@
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  <FilesMatch "^(index\.html)$">
+  <FilesMatch "^(index\.html|index\.csr\.html)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
 
