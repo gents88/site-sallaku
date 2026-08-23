@@ -809,7 +809,15 @@
     "card_badge_waiting": "waiting",
     "card_waiting": "Waiting for a reply",
     "card_open": "Join",
-    "card_empty": "No live chat requests right now."
+    "card_empty": "No live chat requests right now.",
+    "exit_ask_resolved_title": "Did you solve your problem?",
+    "exit_ask_resolved_yes": "Yes",
+    "exit_ask_resolved_no": "No, keep going",
+    "exit_ask_close_title": "Do you want to close the session with Gent?",
+    "exit_ask_close_yes": "Yes, close it",
+    "exit_ask_close_no": "No, back to chat",
+    "closed_notice": "The conversation with Gent has ended. Feel free to keep chatting with the assistant.",
+    "admin_close_chat": "Close chat"
   },
   "ai_ppt": {
     "title": "AI Slides",

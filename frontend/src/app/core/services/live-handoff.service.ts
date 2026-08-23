@@ -95,6 +95,39 @@ export class LiveHandoffService {
     this.socket.emit('visitor_message', { sessionId: this.sessionId, text: trimmed });
   }
 
+  /**
+   * Chiusura deliberata da parte del visitatore, dopo conferma esplicita in UI (non un
+   * semplice chiudi/pulisci: qui l'utente ha confermato di voler terminare la
+   * conversazione con Gent). Notifica il backend prima di disconnettersi, così anche
+   * lato admin risulta chiusa invece di restare "live" a vuoto.
+   *
+   * `reset()` chiama `disconnect()` nello stesso istante: su socket.io un `disconnect()`
+   * lanciato subito dopo un `emit()` può tagliare il pacchetto prima che parta davvero
+   * (soprattutto sul transport polling, che richiede un round-trip HTTP a parte) —
+   * verificato: il server segnava il client disconnesso senza mai processare
+   * `visitor_close`. Lo stato locale si azzera comunque subito (l'utente non deve
+   * aspettare un giro di rete per vedere il pannello chiudersi), ma il socket vero e
+   * proprio si stacca con un margine.
+   */
+  closeByVisitor(): void {
+    const socket = this.socket;
+    const sessionId = this.sessionId;
+    if (socket && sessionId) {
+      socket.emit('visitor_close', { sessionId });
+    }
+
+    this.socket = null;
+    this.sessionId = null;
+    this.stopStatusPolling();
+    this._state.next('idle');
+    this._minimized.next(false);
+    this._liveMessages.next([]);
+
+    if (socket) {
+      setTimeout(() => socket.disconnect(), 300);
+    }
+  }
+
   /** Torna allo stato "idle": usato quando l'utente cancella la conversazione */
   reset(): void {
     this.disconnectSocket();

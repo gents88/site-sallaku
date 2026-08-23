@@ -246,4 +246,54 @@ describe('LiveHandoffService', () => {
       expect(lastSocket!.disconnect).toHaveBeenCalled();
     });
   });
+
+  describe('closeByVisitor', () => {
+    it('emette visitor_close e torna a "idle" subito, senza aspettare la disconnessione', () => {
+      service.requestHandoff('s1', 'ciao', 'it');
+      flushSuccessfulRequest(httpMock);
+      lastSocket!.trigger('handoff_status_changed', { status: 'live' });
+
+      service.closeByVisitor();
+
+      expect(lastSocket!.emitted).toContainEqual({ event: 'visitor_close', payload: { sessionId: 's1' } });
+      expect(service.state).toBe('idle');
+    });
+
+    // Regressione: disconnettere nello stesso istante dell'emit tagliava il pacchetto
+    // prima che raggiungesse il server (verificato dal vivo: il server registrava il
+    // client disconnesso senza mai processare "visitor_close"). Il socket deve restare
+    // vivo un momento in più per lasciare che l'emit parta davvero.
+    it('NON disconnette il socket nello stesso istante dell’emit — servirebbe a tagliare il pacchetto', () => {
+      service.requestHandoff('s1', 'ciao', 'it');
+      flushSuccessfulRequest(httpMock);
+      lastSocket!.trigger('handoff_status_changed', { status: 'live' });
+      const socket = lastSocket!;
+
+      service.closeByVisitor();
+
+      expect(socket.disconnect).not.toHaveBeenCalled();
+    });
+
+    it('disconnette comunque il socket, solo con un margine di tempo', () => {
+      vi.useFakeTimers();
+      try {
+        service.requestHandoff('s1', 'ciao', 'it');
+        flushSuccessfulRequest(httpMock);
+        lastSocket!.trigger('handoff_status_changed', { status: 'live' });
+        const socket = lastSocket!;
+
+        service.closeByVisitor();
+        vi.advanceTimersByTime(300);
+
+        expect(socket.disconnect).toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('non emette nulla se non c’è mai stata una sessione (nessun socket)', () => {
+      expect(() => service.closeByVisitor()).not.toThrow();
+      expect(service.state).toBe('idle');
+    });
+  });
 });
