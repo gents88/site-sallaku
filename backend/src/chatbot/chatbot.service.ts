@@ -9,21 +9,7 @@ import { AboutService } from '../about/about.service';
 import { AboutDocument } from '../about/schemas/about.schema';
 import { AiProviderService } from '../common/services/ai-provider.service';
 
-const LANG_NAMES: Record<string, string> = {
-  it: 'Italian (Italiano)',
-  en: 'English',
-  sq: 'Albanian (Shqip)',
-  es: 'Spanish (Español)',
-  pt: 'Portuguese (Português)',
-  fr: 'French (Français)',
-  de: 'German (Deutsch)',
-};
-
-function buildSystemPrompt(lang?: string, about?: Partial<AboutDocument> | null): string {
-  const uiLangHint = lang && LANG_NAMES[lang]
-    ? `The visitor's interface language is set to ${LANG_NAMES[lang]} (code: ${lang}) — use this only as a fallback guess when the message itself gives no clear signal about the language.`
-    : '';
-
+function buildSystemPrompt(about?: Partial<AboutDocument> | null): string {
   const aboutLines = [
     about?.headline && `Headline: ${about.headline}`,
     about?.bio && `Bio: ${about.bio}`,
@@ -65,10 +51,11 @@ Keep responses under 150 words unless asked for more detail.
 If you don't know something specific about Gent (not covered above), suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section — but this only applies to questions about Gent himself, not to general questions.
 
 Language rules:
-- Always reply in the same language the visitor's latest message is written in — this takes priority over any interface-language setting below.
-- ${uiLangHint}
+- Always reply in the same language the visitor's latest message is written in. Detect the language from the message itself before composing the answer; this takes priority over any interface-language setting below.
+- Never reply in English to an Italian message just because the interface language is English.
 - Pay close attention to correctly recognizing Albanian (Shqip) and never confuse it with similar-sounding Balkan languages (Serbian, Bosnian, Croatian, Macedonian) — if the visitor writes in Albanian, reply in Albanian.
-- If you are genuinely unsure which language the visitor is writing in, don't guess: ask them (briefly, in simple neutral wording) which language they'd like to continue in, and reply in that language from then on.`;
+- If you cannot confidently identify the language, reply in English.
+Do not use the website interface language to choose the response language.`;
 }
 
 const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
@@ -111,6 +98,30 @@ const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
 
 const DEFAULT_FALLBACK =
   "I'm the AI assistant for this portfolio. I can answer questions about Gent's projects, skills, and services. You're also welcome to use the **Contact** section to get in touch with him directly!";
+const DEFAULT_ITALIAN_FALLBACK =
+  'Sono l’assistente AI di questo portfolio. Posso rispondere a domande sui progetti, sulle competenze e sui servizi di Gent. Puoi anche usare la sezione **Contact** per contattarlo direttamente!';
+const DEFAULT_ALBANIAN_FALLBACK =
+  'Jam asistenti AI i këtij portofoli. Mund t’u përgjigjem pyetjeve për projektet, aftësitë dhe shërbimet e Gentit. Mund të përdorësh edhe seksionin **Contact** për ta kontaktuar drejtpërdrejt!';
+const DEFAULT_LOCALIZED_FALLBACKS: Record<string, string> = {
+  it: DEFAULT_ITALIAN_FALLBACK,
+  sq: DEFAULT_ALBANIAN_FALLBACK,
+  es: 'Soy el asistente de IA de este portfolio. Puedo responder preguntas sobre los proyectos, las habilidades y los servicios de Gent. También puedes usar la sección **Contact** para contactarlo directamente.',
+  pt: 'Sou o assistente de IA deste portfólio. Posso responder a perguntas sobre os projetos, as competências e os serviços do Gent. Também podes usar a secção **Contact** para contactá-lo diretamente.',
+  fr: "Je suis l'assistant IA de ce portfolio. Je peux répondre aux questions sur les projets, les compétences et les services de Gent. Vous pouvez aussi utiliser la section **Contact** pour le contacter directement.",
+  de: 'Ich bin der KI-Assistent dieses Portfolios. Ich kann Fragen zu Gents Projekten, Fähigkeiten und Dienstleistungen beantworten. Du kannst ihn auch direkt über den Bereich **Contact** kontaktieren.',
+};
+
+function detectLanguage(message: string): string | undefined {
+  if (/(^|\s)(dhe|është|eshte|për|çfarë|cfare|shqip|ju lutem|faleminderit|përshëndetje)(\s|$)/i.test(message)) {
+    return 'sq';
+  }
+  if (/(^|\s)(sono|ciao|grazie|perché|perche|come|posso|vorrei|buongiorno|buonasera|progetto|progetti)(\s|$)/i.test(message)) return 'it';
+  if (/(^|\s)(hola|gracias|cómo|como|puedo|quiero|proyecto|proyectos|buenos)(\s|$)/i.test(message)) return 'es';
+  if (/(^|\s)(olá|obrigado|obrigada|como|posso|quero|projeto|projetos|bom)(\s|$)/i.test(message)) return 'pt';
+  if (/(^|\s)(bonjour|merci|comment|peux|voudrais|projet|projets|salut)(\s|$)/i.test(message)) return 'fr';
+  if (/(^|\s)(hallo|danke|wie|kann|möchte|projekt|projekte|guten)(\s|$)/i.test(message)) return 'de';
+  return undefined;
+}
 
 @Injectable()
 export class ChatbotService {
@@ -145,7 +156,7 @@ export class ChatbotService {
       .slice(-20) // last 20 messages for context window
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const reply = await this.callAI(historyForAI, lang);
+    const reply = await this.callAI(historyForAI);
 
     const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date() };
     session.messages.push(assistantMsg);
@@ -269,7 +280,7 @@ export class ChatbotService {
   }
 
   // Provider attivo: Groq.
-  private async callAI(messages: { role: string; content: string }[], lang?: string): Promise<string> {
+  private async callAI(messages: { role: string; content: string }[]): Promise<string> {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
     if (!apiKey) {
       return this.getFallbackResponse(messages[messages.length - 1].content);
@@ -278,7 +289,7 @@ export class ChatbotService {
     try {
       const about = await this.aboutService.get().catch(() => null);
       const content = await this.aiProvider.chatCompletion(
-        [{ role: 'system', content: buildSystemPrompt(lang, about) }, ...messages],
+        [{ role: 'system', content: buildSystemPrompt(about) }, ...messages],
         { model: 'llama-3.1-8b-instant', maxTokens: 350, timeoutMs: 15_000 },
       );
       return content || this.getFallbackResponse(messages[messages.length - 1].content);
@@ -334,6 +345,9 @@ export class ChatbotService {
   // }
 
   private getFallbackResponse(userMessage: string): string {
+    const language = detectLanguage(userMessage);
+    if (language && DEFAULT_LOCALIZED_FALLBACKS[language]) return DEFAULT_LOCALIZED_FALLBACKS[language];
+
     for (const { pattern, response } of FALLBACK_RESPONSES) {
       if (pattern.test(userMessage)) return response;
     }
