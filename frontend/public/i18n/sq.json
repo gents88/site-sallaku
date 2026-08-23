@@ -495,6 +495,8 @@
     },
     "chatbot_today": "Sot",
     "chatbot_this_month": "Këtë muaj",
+    "chatbot_fallback_today": "Fallback sot",
+    "chatbot_fallback_desc": "Përgjigje rezervë të përdorura sot sepse AI nuk u përgjigj si duhet",
     "top_pages": "Faqet kryesore",
     "top_pages_desc": "Faqet me më shumë vizita",
     "seo_title": "SEO – Search Console",

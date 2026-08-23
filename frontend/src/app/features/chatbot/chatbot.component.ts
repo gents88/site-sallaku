@@ -49,6 +49,7 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   messages: ChatMessage[] = [];
   liveMessages: ChatMessage[] = [];
+  followUpSuggestions: string[] = [];
   isLoading = false;
   isOpen = false;
   inputText = '';
@@ -100,6 +101,12 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatbot.messages$.subscribe((msgs: ChatMessage[]) => {
         this.messages = msgs;
         this.shouldScroll = true;
+        this.cdr.markForCheck();
+      }),
+    );
+    this.subs.add(
+      this.chatbot.suggestions$.subscribe((suggestions: string[]) => {
+        this.followUpSuggestions = suggestions;
         this.cdr.markForCheck();
       }),
     );

@@ -96,6 +96,7 @@ export interface ChatbotStats {
   totalMessages: number;
   interactionsToday: number;
   sessionsThisMonth: number;
+  fallbackRepliesToday: number;
 }
 
 export interface SystemHealth {
@@ -185,7 +186,7 @@ const EMPTY_ANALYTICS_STATS: AnalyticsStats = {
 };
 
 const EMPTY_CHATBOT_STATS: ChatbotStats = {
-  totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0,
+  totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0, fallbackRepliesToday: 0,
 };
 
 const EMPTY_GSC: SearchConsoleSummary = {

@@ -127,6 +127,14 @@
           </div>
         }
 
+        @if (followUpSuggestions.length > 0 && !isLoading && liveState !== 'live') {
+          <div class="cb-chips cb-chips--followup" role="list" [attr.aria-label]="'chatbot_ui.title' | translate">
+            @for (chip of followUpSuggestions; track chip) {
+              <button class="cb-chip" role="listitem" (click)="sendChip(chip)">{{ chip }}</button>
+            }
+          </div>
+        }
+
         @if (liveState === 'expired') {
           <div class="cb-system-notice" role="status">
             {{ 'live_handoff.expired_notice' | translate }}

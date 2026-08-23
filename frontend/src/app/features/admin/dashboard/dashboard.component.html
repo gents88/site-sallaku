@@ -553,6 +553,10 @@
             <strong>{{ chatbotStats.sessionsThisMonth }}</strong>
             <span class="text-muted">{{ 'admin.chatbot_this_month' | translate }}</span>
           </div>
+          <div class="visitor-overview__item" [class.visitor-overview__item--warn]="chatbotStats.fallbackRepliesToday > 0" [title]="'admin.chatbot_fallback_desc' | translate">
+            <strong>{{ chatbotStats.fallbackRepliesToday }}</strong>
+            <span class="text-muted">{{ 'admin.chatbot_fallback_today' | translate }}</span>
+          </div>
         </div>
       </section>
     </div>

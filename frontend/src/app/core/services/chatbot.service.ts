@@ -14,6 +14,7 @@ interface SendMessageResponse {
   sessionId: string;
   reply: string;
   timestamp: string;
+  suggestions?: string[];
 }
 
 interface TranscriptResponse {
@@ -29,10 +30,12 @@ export class ChatbotService {
   private readonly _messages = new BehaviorSubject<ChatMessage[]>([]);
   private readonly _isLoading = new BehaviorSubject<boolean>(false);
   private readonly _isOpen = new BehaviorSubject<boolean>(false);
+  private readonly _suggestions = new BehaviorSubject<string[]>([]);
 
   readonly messages$: Observable<ChatMessage[]> = this._messages.asObservable();
   readonly isLoading$: Observable<boolean> = this._isLoading.asObservable();
   readonly isOpen$: Observable<boolean> = this._isOpen.asObservable();
+  readonly suggestions$: Observable<string[]> = this._suggestions.asObservable();
 
   private sessionId: string | null = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_STORAGE_KEY) : null;
 
@@ -64,6 +67,7 @@ export class ChatbotService {
       timestamp: new Date(),
     };
     this._messages.next([...this._messages.getValue(), userMsg]);
+    this._suggestions.next([]);
     this._isLoading.next(true);
 
     this.http
@@ -83,6 +87,7 @@ export class ChatbotService {
             timestamp: new Date(res.timestamp),
           };
           this._messages.next([...this._messages.getValue(), assistantMsg]);
+          this._suggestions.next(res.suggestions ?? []);
         }),
         finalize(() => this._isLoading.next(false)),
       )
@@ -107,6 +112,7 @@ export class ChatbotService {
 
   clearSession(): void {
     this._messages.next([]);
+    this._suggestions.next([]);
     this.sessionId = null;
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
   }
