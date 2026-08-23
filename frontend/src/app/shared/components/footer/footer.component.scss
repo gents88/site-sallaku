@@ -24,6 +24,27 @@
   }
 }
 
+/* Same overlap problem as the tab-bar padding above, but for the cookie
+   consent banner (consent-banner.component.ts) instead of another fixed UI
+   element: on a page short enough that the footer sits flush with the
+   viewport bottom, the fixed banner covered .footer-legal's links entirely —
+   clicks landed on the banner, not the link, until the visitor dismissed it.
+   consent-banner.component.ts toggles [data-cookie-banner-open] on <html>
+   while it's shown; reserve extra bottom space only then, sized to match
+   its own breakpoints (row layout, then column layout under 480px which
+   roughly doubles its height). */
+:host-context([data-cookie-banner-open]) .footer {
+  padding-bottom: calc(12px + 130px);
+
+  @media (max-width: 900px) {
+    padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 140px);
+  }
+
+  @media (max-width: 480px) {
+    padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 260px);
+  }
+}
+
 .footer-content {
   display: flex;
   flex-direction: column;
@@ -74,6 +95,33 @@
     transition: color var(--transition-fast);
 
     &:hover { color: var(--primary-400); }
+  }
+}
+
+// Legal
+.footer-legal {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
+  a, &__cookie-btn {
+    color: var(--text-tertiary, #4a5568);
+    text-decoration: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    transition: color var(--transition-fast);
+
+    &:hover { color: var(--primary-400); }
+  }
+
+  &__cookie-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
   }
 }
 

@@ -34,6 +34,15 @@
         </a>
       </div>
 
+      <!-- Legal -->
+      <nav class="footer-legal" aria-label="Legal">
+        <a [routerLink]="'/privacy-policy' | langUrl">{{ 'footer.privacy_link' | translate }}</a>
+        <a [routerLink]="'/cookie-policy' | langUrl">{{ 'footer.cookie_link' | translate }}</a>
+        <button type="button" class="footer-legal__cookie-btn" (click)="manageCookies()">
+          {{ 'footer.manage_cookies' | translate }}
+        </button>
+      </nav>
+
       <!-- Copyright -->
       <p class="footer-copy">&copy; {{ year }} Gent Sallaku. All rights reserved.</p>
 

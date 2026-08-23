@@ -293,7 +293,10 @@
       "name_placeholder": "Geben Sie Ihren Namen ein",
       "email_placeholder": "Geben Sie Ihre E-Mail ein, damit ich Sie kontaktieren kann",
       "submit": "Nachricht senden",
-      "note": "Die Nachricht wird direkt von der Website gesendet, ohne externe Apps zu öffnen."
+      "note": "Die Nachricht wird direkt von der Website gesendet, ohne externe Apps zu öffnen.",
+      "privacy_checkbox": "Ich habe die Datenschutzerklärung zur Verarbeitung meiner Daten gelesen und akzeptiere sie.",
+      "privacy_link_text": "Datenschutzerklärung",
+      "privacy_err": "Sie müssen die Datenschutzerklärung akzeptieren, um die Nachricht zu senden"
     },
     "info": {
       "title": "Lassen Sie uns vernetzen",
@@ -335,7 +338,11 @@
   },
   "footer": {
     "designed": "Gestaltet & Entwickelt von",
-    "rights": "Alle Rechte vorbehalten."
+    "rights": "Alle Rechte vorbehalten.",
+    "privacy_link": "Datenschutzerklärung",
+    "cookie_link": "Cookie-Richtlinie",
+    "manage_cookies": "Cookie-Einwilligung verwalten",
+    "legal": "Rechtliches"
   },
   "auth": {
     "login_title": "Beim Dashboard anmelden",
@@ -1672,5 +1679,61 @@
     "err_payload_too_large": "Inhalt zu groß. Eingebettete Bilder entfernen und Bild-URLs verwenden.",
     "err_session_expired": "Sitzung abgelaufen. Bitte erneut anmelden.",
     "err_save_failed_default": "Speichern fehlgeschlagen. Titel, Inhalt und Slug prüfen."
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "meta_description": "Datenschutzerklärung zur Verarbeitung personenbezogener Daten auf gentsallaku.it.",
+    "updated_label": "Letzte Aktualisierung",
+    "updated_date": "23/08/2026",
+    "intro": "Diese Erklärung beschreibt, wie die personenbezogenen Daten der Nutzer von gentsallaku.it gemäß der Verordnung (EU) 2016/679 (DSGVO) verarbeitet werden.",
+    "see_cookie_policy": "Zur Cookie-Richtlinie →",
+    "s1_title": "Verantwortlicher für die Datenverarbeitung",
+    "s1_body": "Verantwortlicher für die über diese Website erhobenen Daten ist Gent Sallaku, erreichbar unter gentsallaku@gmail.com. Da diese Website nicht mit einer eingetragenen Geschäftstätigkeit verbunden ist, werden keine Steuerdaten oder ein Firmensitz angegeben.",
+    "s2_title": "Über das Kontaktformular erhobene Daten",
+    "s2_body": "Wenn Sie das Formular „Kontakt\" nutzen, erheben wir Ihren Namen, Ihre E-Mail-Adresse, den Betreff und den Text der Nachricht. Diese Daten werden ausschließlich zur Beantwortung Ihrer Anfrage verarbeitet und ohne Ihre ausdrückliche Einwilligung nicht zu Marketingzwecken genutzt. Das Absenden des Formulars ist durch Cloudflare Turnstile geschützt, einen Anti-Spam-Dienst, der die Interaktion mit der Seite automatisch analysiert.",
+    "s3_title": "Chatbot und KI-Assistent",
+    "s3_body": "Nachrichten, die Sie an den Chatbot der Website senden, werden von einem von Google bereitgestellten KI-Modell (Gemini API) verarbeitet, ausschließlich um eine passende Antwort zu erzeugen. Der Nachrichtentext wird dabei an Google-Server übermittelt, das für diesen speziellen Zweck als Auftragsverarbeiter fungiert. Bitte teilen Sie im Chat keine sensiblen oder nicht erforderlichen personenbezogenen Daten mit.",
+    "s4_title": "Live-Chat mit dem Betreiber",
+    "s4_body": "Wenn Sie ein Live-Gespräch anfordern, werden Ihre E-Mail-Adresse (falls angegeben) und die ausgetauschten Nachrichten in unserer Datenbank gespeichert, um die Fortsetzung des Gesprächs sowie Support-Zwecke zu ermöglichen. Diese Daten werden nicht an Dritte weitergegeben.",
+    "s5_title": "Cookies und ähnliche Technologien",
+    "s5_body": "Die Website verwendet technisch notwendige Cookies sowie, vorbehaltlich Ihrer Einwilligung, Analyse-Cookies. Die vollständige Liste der verwendeten Cookies, deren Zweck und Speicherdauer finden Sie in unserer Cookie-Richtlinie.",
+    "s6_title": "Google Analytics",
+    "s6_body": "Wenn Sie der Kategorie „Analytics\" im Cookie-Banner zustimmen, lädt die Website Google Analytics 4, um aggregierte, anonyme Statistiken zum Nutzungsverhalten zu erfassen (besuchte Seiten, Traffic-Quelle, Gerät). Dieser Dienst wird von Google Ireland Limited/Google LLC bereitgestellt; die Daten können im Rahmen der Standardvertragsklauseln der Europäischen Kommission auf Server in den USA übertragen werden. Sie können Ihre Einwilligung jederzeit widerrufen.",
+    "s7_title": "„Lab\"-Tools (PDF, Übersetzung, OCR und weitere KI-basierte Tools)",
+    "s7_body": "Die im Bereich „Lab\" verfügbaren Tools verarbeiten die von Ihnen hochgeladenen Dateien (PDF, Bilder, Text) ausschließlich, um Ihnen das angeforderte Ergebnis zu liefern (z. B. Zusammenfassung, Übersetzung, Konvertierung). Die Dateien werden auf unseren Servern verarbeitet und/oder zur Verarbeitung an externe KI-Anbieter (Google Gemini) weitergeleitet und nicht länger als für den Vorgang erforderlich gespeichert, es sei denn, Sie entscheiden sich, sie in einem persönlichen Bereich der Website zu speichern.",
+    "s8_title": "Empfänger und Datenübermittlung",
+    "s8_body": "Die erhobenen Daten können von folgenden Drittanbietern als Auftragsverarbeiter verarbeitet werden: Railway (Hosting von Backend und Datenbank, Cloud-Infrastruktur), Google LLC (Gemini AI, Analytics, E-Mail-Versand über Gmail SMTP), Cloudflare Inc. (Turnstile-Spamschutz). Einige dieser Anbieter können Daten außerhalb des Europäischen Wirtschaftsraums verarbeiten; in diesem Fall erfolgt die Übermittlung auf Grundlage von Standardvertragsklauseln oder anderer gesetzlich vorgesehener angemessener Garantien.",
+    "s9_title": "Speicherdauer",
+    "s9_body": "Daten aus dem Kontaktformular und aus Live-Chat-Gesprächen werden so lange gespeichert, wie es zur Bearbeitung Ihrer Anfrage erforderlich ist, in jedem Fall jedoch nicht länger als 24 Monate, sofern gesetzlich keine andere Frist vorgeschrieben ist. Cookie-Einstellungen werden gespeichert, bis der Nutzer sie widerruft.",
+    "s10_title": "Ihre Rechte",
+    "s10_body": "Als betroffene Person haben Sie das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch gemäß Art. 15-22 der Verordnung (EU) 2016/679 (DSGVO). Sie können diese Rechte durch eine Nachricht an gentsallaku@gmail.com ausüben. Sie haben zudem das Recht, sich bei der zuständigen Datenschutzaufsichtsbehörde zu beschweren.",
+    "s11_title": "Datensicherheit",
+    "s11_body": "Wir setzen angemessene technische und organisatorische Maßnahmen ein (HTTPS-Verschlüsselung, Authentifizierung, eingeschränkter Datenzugriff), um Ihre Daten vor unbefugtem Zugriff, Verlust oder Offenlegung zu schützen.",
+    "s12_title": "Änderungen dieser Erklärung",
+    "s12_body": "Diese Erklärung kann im Laufe der Zeit aktualisiert werden, um rechtliche oder technische Änderungen der Website widerzuspiegeln. Das Datum der letzten Aktualisierung finden Sie oben auf der Seite."
+  },
+  "cookie_policy": {
+    "title": "Cookie-Richtlinie",
+    "meta_description": "Liste der von gentsallaku.it verwendeten Cookies, ihr Zweck und wie Sie Ihre Einstellungen verwalten können.",
+    "updated_label": "Letzte Aktualisierung",
+    "updated_date": "23/08/2026",
+    "intro": "Diese Seite beschreibt die von gentsallaku.it verwendeten Cookies und ähnlichen Technologien in Übereinstimmung mit der Verordnung (EU) 2016/679 (DSGVO) und den geltenden Cookie-Richtlinien.",
+    "what_title": "Was sind Cookies",
+    "what_body": "Cookies sind kleine Textdateien, die besuchte Websites an Ihr Gerät senden, wo sie gespeichert und bei Ihrem nächsten Besuch an dieselben Websites zurückgesendet werden.",
+    "categories_title": "Verwendete Cookie-Kategorien",
+    "necessary_title": "Notwendige Cookies",
+    "necessary_body": "Unverzichtbar für den Betrieb der Website (z. B. Speicherung der gewählten Sprache, des Sidebar-Zustands, der Authentifizierungssitzung im geschützten Bereich sowie Ihrer Cookie-Einwilligung). Sie erfordern keine Einwilligung und können nicht deaktiviert werden.",
+    "analytics_title": "Analyse-Cookies",
+    "analytics_body": "Werden nur mit Ihrer Einwilligung von Google Analytics 4 (_ga, _ga_*) verwendet, um aggregierte, anonyme Nutzungsstatistiken zu erfassen. Dauer: bis zu 13 Monate. Werden erst geladen, nachdem Sie diese Kategorie im Banner akzeptiert haben.",
+    "marketing_title": "Marketing-Cookies",
+    "marketing_body": "Derzeit verwenden wir keine Marketing-/Werbe-Cookies: Google Tag Manager und Google AdSense sind im Code vorhanden, aber deaktiviert. Bei künftiger Aktivierung wird eine neue, gesonderte Einwilligung eingeholt.",
+    "preferences_title": "Präferenz-Cookies",
+    "preferences_body": "Werden verwendet, um einige Ihrer Anzeigeeinstellungen zu speichern (z. B. helles/dunkles Design), vorbehaltlich Ihrer Einwilligung.",
+    "third_party_title": "Dienste von Drittanbietern",
+    "third_party_body": "Cloudflare Turnstile wird in den Formularen der Website geladen, um automatisierten Spam zu verhindern, und gilt als technisch notwendig für die Sicherheit des Dienstes; Cloudflare kann gemäß eigener Richtlinie eigene technische Cookies setzen.",
+    "manage_title": "So verwalten Sie Ihre Einstellungen",
+    "manage_body": "Sie können Ihre Einwilligung jederzeit über den Link „Cookie-Einwilligung verwalten\" in der Fußzeile der Website ändern oder widerrufen, oder indem Sie Cookies in Ihrem Browser löschen.",
+    "browser_title": "Browser-Einstellungen",
+    "browser_body": "Sie können Cookies auch direkt über die Einstellungen Ihres Browsers verwalten oder löschen (Chrome, Firefox, Safari, Edge)."
   }
 }
