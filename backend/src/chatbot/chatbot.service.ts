@@ -112,14 +112,14 @@ const DEFAULT_LOCALIZED_FALLBACKS: Record<string, string> = {
 };
 
 function detectLanguage(message: string): string | undefined {
-  if (/(^|\s)(dhe|është|eshte|për|çfarë|cfare|shqip|ju lutem|faleminderit|përshëndetje)(\s|$)/i.test(message)) {
+  if (/\b(dhe|është|eshte|për|çfarë|cfare|shqip|ju lutem|faleminderit|përshëndetje)\b/i.test(message)) {
     return 'sq';
   }
-  if (/(^|\s)(sono|ciao|grazie|perché|perche|come|posso|vorrei|buongiorno|buonasera|progetto|progetti)(\s|$)/i.test(message)) return 'it';
-  if (/(^|\s)(hola|gracias|cómo|como|puedo|quiero|proyecto|proyectos|buenos)(\s|$)/i.test(message)) return 'es';
-  if (/(^|\s)(olá|obrigado|obrigada|como|posso|quero|projeto|projetos|bom)(\s|$)/i.test(message)) return 'pt';
-  if (/(^|\s)(bonjour|merci|comment|peux|voudrais|projet|projets|salut)(\s|$)/i.test(message)) return 'fr';
-  if (/(^|\s)(hallo|danke|wie|kann|möchte|projekt|projekte|guten)(\s|$)/i.test(message)) return 'de';
+  if (/\b(sono|ciao|grazie|perché|perche|come|posso|vorrei|buongiorno|buonasera|progetto|progetti)\b/i.test(message)) return 'it';
+  if (/\b(hola|gracias|cómo|como|puedo|quiero|proyecto|proyectos|buenos)\b/i.test(message)) return 'es';
+  if (/\b(olá|obrigado|obrigada|como|posso|quero|projeto|projetos|bom)\b/i.test(message)) return 'pt';
+  if (/\b(bonjour|merci|comment|peux|voudrais|projet|projets|salut)\b/i.test(message)) return 'fr';
+  if (/\b(hallo|danke|wie|kann|möchte|projekt|projekte|guten)\b/i.test(message)) return 'de';
   return undefined;
 }
 
@@ -290,7 +290,7 @@ export class ChatbotService {
       const about = await this.aboutService.get().catch(() => null);
       const content = await this.aiProvider.chatCompletion(
         [{ role: 'system', content: buildSystemPrompt(about) }, ...messages],
-        { model: 'llama-3.1-8b-instant', maxTokens: 350, timeoutMs: 15_000 },
+        { model: 'openai/gpt-oss-120b', maxTokens: 350, timeoutMs: 15_000 },
       );
       return content || this.getFallbackResponse(messages[messages.length - 1].content);
     } catch (err) {
