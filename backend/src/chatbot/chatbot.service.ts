@@ -8,8 +8,26 @@ import { MailService } from '../mail/mail.service';
 import { AboutService } from '../about/about.service';
 import { AboutDocument } from '../about/schemas/about.schema';
 import { AiProviderService } from '../common/services/ai-provider.service';
+import { ProjectsService } from '../projects/projects.service';
+import { BlogService } from '../blog/blog.service';
 
-function buildSystemPrompt(about?: Partial<AboutDocument> | null): string {
+interface PromptProject {
+  title?: string;
+  description?: string;
+  technologies?: string[];
+}
+
+interface PromptPost {
+  title?: string;
+  slug?: string;
+  excerpt?: string;
+}
+
+function buildSystemPrompt(
+  about?: Partial<AboutDocument> | null,
+  projects?: PromptProject[],
+  posts?: PromptPost[],
+): string {
   const aboutLines = [
     about?.headline && `Headline: ${about.headline}`,
     about?.bio && `Bio: ${about.bio}`,
@@ -21,10 +39,24 @@ function buildSystemPrompt(about?: Partial<AboutDocument> | null): string {
     ? `\nHere is real, up-to-date information about Gent — use it to answer questions about him accurately:\n${aboutLines.join('\n')}\n`
     : '';
 
+  const projectsBlock = projects?.length
+    ? `\nGent's real projects (use these exact names/details when asked about his work — don't invent projects):\n${projects
+        .slice(0, 12)
+        .map((p) => `- ${p.title}: ${p.description}${p.technologies?.length ? ` [${p.technologies.join(', ')}]` : ''}`)
+        .join('\n')}\n`
+    : '';
+
+  const blogBlock = posts?.length
+    ? `\nGent's recent blog posts (mention and link these — path is /blog/<slug> — when relevant to the visitor's question):\n${posts
+        .slice(0, 8)
+        .map((p) => `- "${p.title}" (/blog/${p.slug})${p.excerpt ? `: ${p.excerpt}` : ''}`)
+        .join('\n')}\n`
+    : '';
+
   return `You are an AI assistant embedded in Gent Sallaku's developer portfolio website.
 Gent Sallaku is a full-stack developer specialized in Angular, Javascript, NestJS, MongoDB, and modern web technologies.
 He built this portfolio to showcase his projects, experiences, and services.
-${aboutBlock}
+${aboutBlock}${projectsBlock}${blogBlock}
 Gent also built a suite of free tools available on this site, under the "🧰 AI & Tools" menu (base path /lab/...). If a visitor asks about tools, document processing, PDFs, or productivity utilities, proactively mention the relevant ones and give their exact path.
 
 AI-powered tools:
@@ -55,7 +87,13 @@ Language rules:
 - Never reply in English to an Italian message just because the interface language is English.
 - Pay close attention to correctly recognizing Albanian (Shqip) and never confuse it with similar-sounding Balkan languages (Serbian, Bosnian, Croatian, Macedonian) — if the visitor writes in Albanian, reply in Albanian.
 - If you cannot confidently identify the language, reply in English.
-Do not use the website interface language to choose the response language.`;
+Do not use the website interface language to choose the response language.
+
+Follow-up suggestions (required):
+After your reply, on its own final line, add exactly:
+SUGGESTIONS: question one? | question two? | question three?
+- Three short, natural follow-up questions the visitor might ask next, in the same language as your reply, each under 8 words.
+- This must be the last line of your output, must not be mentioned anywhere else in the reply, and must always be present.`;
 }
 
 const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
@@ -123,6 +161,21 @@ function detectLanguage(message: string): string | undefined {
   return undefined;
 }
 
+/** Splits the model's raw output into the visible reply and the trailing `SUGGESTIONS: a | b | c` line. */
+function parseSuggestions(raw: string): { content: string; suggestions?: string[] } {
+  const match = raw.match(/\n?SUGGESTIONS:\s*(.+?)\s*$/i);
+  if (!match) return { content: raw.trim() };
+
+  const suggestions = match[1]
+    .split('|')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const content = raw.slice(0, match.index).trim();
+  return { content: content || raw.trim(), suggestions: suggestions.length ? suggestions : undefined };
+}
+
 @Injectable()
 export class ChatbotService {
   private readonly logger = new Logger(ChatbotService.name);
@@ -134,6 +187,8 @@ export class ChatbotService {
     private readonly configService: ConfigService,
     private readonly aboutService: AboutService,
     private readonly aiProvider: AiProviderService,
+    private readonly projectsService: ProjectsService,
+    private readonly blogService: BlogService,
   ) {}
 
   async sendMessage(
@@ -141,7 +196,7 @@ export class ChatbotService {
     sessionId?: string,
     meta?: { ip?: string; userAgent?: string },
     lang?: string,
-  ): Promise<{ sessionId: string; reply: string; timestamp: Date }> {
+  ): Promise<{ sessionId: string; reply: string; timestamp: Date; suggestions?: string[] }> {
     const sid = sessionId && sessionId.length > 0 ? sessionId : randomUUID();
 
     let session = await this.chatSessionModel.findOne({ sessionId: sid }).exec();
@@ -156,15 +211,15 @@ export class ChatbotService {
       .slice(-20) // last 20 messages for context window
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const reply = await this.callAI(historyForAI);
+    const { content: reply, suggestions, usedFallback } = await this.callAI(historyForAI);
 
-    const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date() };
+    const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date(), usedFallback };
     session.messages.push(assistantMsg);
     session.lastActivity = new Date();
 
     await session.save();
 
-    return { sessionId: sid, reply, timestamp: assistantMsg.timestamp };
+    return { sessionId: sid, reply, timestamp: assistantMsg.timestamp, suggestions };
   }
 
   async getSession(sessionId: string): Promise<ChatSession> {
@@ -231,27 +286,43 @@ export class ChatbotService {
     };
   }
 
+  /** Counts assistant replies served today from the static canned fallback (AI call failed/unavailable) — surfaces AI provider outages that would otherwise go unnoticed. */
+  async getTodayFallbackCount(): Promise<number> {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const sessions = await this.chatSessionModel
+      .find({ lastActivity: { $gte: start } })
+      .exec();
+    return sessions.reduce((total, s) => {
+      return total + s.messages.filter(
+        m => m.role === 'assistant' && m.usedFallback && new Date(m.timestamp) >= start,
+      ).length;
+    }, 0);
+  }
+
   async getChatbotStats(): Promise<{
     totalSessions: number;
     totalMessages: number;
     interactionsToday: number;
     sessionsThisMonth: number;
+    fallbackRepliesToday: number;
   }> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [totalSessions, allSessions, sessionsThisMonth, interactionsToday] = await Promise.all([
+    const [totalSessions, allSessions, sessionsThisMonth, interactionsToday, fallbackRepliesToday] = await Promise.all([
       this.chatSessionModel.countDocuments().exec(),
       this.chatSessionModel.find({}, 'messages').lean().exec(),
       this.chatSessionModel.countDocuments({ createdAt: { $gte: startOfMonth } }).exec(),
       this.getTodayInteractionCount(),
+      this.getTodayFallbackCount(),
     ]);
 
     const totalMessages = (allSessions as Array<{ messages: unknown[] }>).reduce(
       (sum, s) => sum + (s.messages?.length ?? 0), 0,
     );
 
-    return { totalSessions, totalMessages, interactionsToday, sessionsThisMonth };
+    return { totalSessions, totalMessages, interactionsToday, sessionsThisMonth, fallbackRepliesToday };
   }
 
   /** Appends a message written live (visitor or Gent) once a live handoff session is active */
@@ -280,22 +351,29 @@ export class ChatbotService {
   }
 
   // Provider attivo: Groq.
-  private async callAI(messages: { role: string; content: string }[]): Promise<string> {
+  private async callAI(
+    messages: { role: string; content: string }[],
+  ): Promise<{ content: string; suggestions?: string[]; usedFallback: boolean }> {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
     if (!apiKey) {
-      return this.getFallbackResponse(messages[messages.length - 1].content);
+      return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
     }
 
     try {
-      const about = await this.aboutService.get().catch(() => null);
-      const content = await this.aiProvider.chatCompletion(
-        [{ role: 'system', content: buildSystemPrompt(about) }, ...messages],
-        { model: 'openai/gpt-oss-120b', maxTokens: 350, timeoutMs: 15_000 },
+      const [about, projects, postsPage] = await Promise.all([
+        this.aboutService.get().catch(() => null),
+        this.projectsService.findAll().catch(() => []) as Promise<PromptProject[]>,
+        this.blogService.findPublished(undefined, 1, 8).catch(() => ({ data: [] as PromptPost[] })),
+      ]);
+      const raw = await this.aiProvider.chatCompletion(
+        [{ role: 'system', content: buildSystemPrompt(about, projects, postsPage.data) }, ...messages],
+        { model: 'openai/gpt-oss-120b', maxTokens: 400, timeoutMs: 15_000 },
       );
-      return content || this.getFallbackResponse(messages[messages.length - 1].content);
+      if (!raw) return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      return { ...parseSuggestions(raw), usedFallback: false };
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
-      return this.getFallbackResponse(messages[messages.length - 1].content);
+      return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
     }
   }
 
