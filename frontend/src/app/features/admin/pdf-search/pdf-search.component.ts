@@ -168,6 +168,21 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly onMobileQueryChange = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
   readonly isMobile = signal(false);
 
+  // Cover thumbnails come straight from third-party services (archive.org,
+  // Gutenberg) with no proxy — they occasionally time out or 404 under load.
+  // Track failures so the template can fall back to the 📄 icon instead of
+  // leaving a permanently broken <img>.
+  readonly failedCovers = signal<ReadonlySet<string>>(new Set());
+
+  coverFailed(id: string): boolean {
+    return this.failedCovers().has(id);
+  }
+
+  onCoverError(id: string): void {
+    if (this.failedCovers().has(id)) return;
+    this.failedCovers.update((prev) => new Set(prev).add(id));
+  }
+
   // Search only fires on an explicit trigger (submit button / Enter / a saved
   // recent search) — no search-as-you-type, to avoid hammering the external
   // APIs (and their rate limits) on every keystroke. switchMap still cancels
