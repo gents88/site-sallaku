@@ -803,7 +803,13 @@
     "admin_error": "Não foi possível conectar. Verifique se você está autenticado como admin.",
     "admin_send_placeholder": "Escrever como Gent…",
     "admin_history_loading": "Carregando conversa…",
-    "admin_back": "Voltar ao painel"
+    "admin_back": "Voltar ao painel",
+    "card_title": "Chat ao vivo",
+    "card_badge_active": "em andamento",
+    "card_badge_waiting": "aguardando",
+    "card_waiting": "Aguardando resposta",
+    "card_open": "Entrar",
+    "card_empty": "Nenhum pedido de chat ao vivo no momento."
   },
   "ai_ppt": {
     "title": "Gerador de Slides",

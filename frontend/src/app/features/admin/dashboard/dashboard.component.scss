@@ -1601,3 +1601,155 @@
   justify-content: flex-end;
   gap: 0.5rem;
 }
+
+/* ── Chat live: card di rientro nelle sessioni aperte ─────────────────────── */
+.live-chat-card {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.live-chat-card--empty {
+  opacity: 0.75;
+}
+
+.live-chat-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.live-chat-card__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  mat-icon {
+    color: #f59e0b;
+  }
+}
+
+.live-chat-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.live-chat-badge--live {
+  background: rgba(52, 211, 153, 0.16);
+  color: #34d399;
+}
+
+.live-chat-badge--waiting {
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+}
+
+.live-chat-card__empty {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.live-chat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.live-chat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--panel-surface-soft, rgba(255, 255, 255, 0.03));
+}
+
+.live-chat-item--live {
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.live-chat-item__main {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.live-chat-item__status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.live-chat-item__msg {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-chat-item__time {
+  font-size: 0.72rem;
+}
+
+.live-chat-item__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f59e0b, #dc2626);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.9; }
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .live-chat-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .live-chat-item__cta {
+    justify-content: center;
+    /* 12px sopra/sotto portano il pulsante a ~44px, la soglia minima per un
+       target di tocco comodo (min-height non va: qui si somma al padding). */
+    padding: 12px 14px;
+  }
+
+  .live-chat-item__msg {
+    white-space: normal;
+  }
+}

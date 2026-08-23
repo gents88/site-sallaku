@@ -21,6 +21,16 @@ export interface LiveHandoffStatusDto {
   expiresAt: Date | null;
 }
 
+export interface ActiveLiveHandoffDto {
+  requestId: string;
+  sessionId: string;
+  status: LiveHandoffRequestDocument['status'];
+  lastUserMessage: string | null;
+  locale: string | null;
+  requestedAt: Date;
+  expiresAt: Date;
+}
+
 @Injectable()
 export class LiveHandoffService {
   private readonly logger = new Logger(LiveHandoffService.name);
@@ -107,12 +117,29 @@ export class LiveHandoffService {
     return this.toStatusDto(doc);
   }
 
-  async listPending() {
-    return this.model
-      .find({ status: { $in: ['requested', 'notified'] } })
+  /**
+   * Sessioni che Gent può ancora aprire dalla dashboard. Include di proposito anche
+   * quelle già attive (agent_joining/live): serve esattamente a rientrare in una chat
+   * da cui si è usciti per sbaglio, altrimenti l'unico modo per tornarci sarebbe
+   * ritrovare la vecchia email di notifica.
+   */
+  async listActive(): Promise<ActiveLiveHandoffDto[]> {
+    const docs = await this.model
+      .find({ status: { $in: ACTIVE_LIVE_HANDOFF_STATUSES } })
       .sort({ createdAt: -1 })
+      .limit(20)
       .lean()
       .exec();
+
+    return docs.map((doc: any) => ({
+      requestId: String(doc._id),
+      sessionId: doc.sessionId,
+      status: doc.status,
+      lastUserMessage: doc.lastUserMessage ?? null,
+      locale: doc.locale ?? null,
+      requestedAt: doc.createdAt,
+      expiresAt: doc.expiresAt,
+    }));
   }
 
   async markAgentJoining(sessionId: string): Promise<LiveHandoffStatusDto> {
@@ -132,10 +159,14 @@ export class LiveHandoffService {
   }
 
   async markLive(sessionId: string): Promise<void> {
-    const doc = await this.model
-      .findOne({ sessionId, status: { $in: ['agent_joining', 'notified'] } })
-      .exec();
-    if (!doc) return;
+    // DEVE puntare allo stesso documento su cui ha agito markAgentJoining, cioè il più
+    // recente. Una sessione può avere più richieste (una scaduta e una nuova, o riaperte
+    // più volte): senza `sort` questa findOne poteva portare a "live" un documento
+    // vecchio, lasciando il più recente su "agent_joining". Da lì getStatus non diceva
+    // mai "live" e il gateway scartava in silenzio ogni messaggio di Gent — il
+    // visitatore non riceveva più nulla senza alcun errore visibile.
+    const doc = await this.model.findOne({ sessionId }).sort({ createdAt: -1 }).exec();
+    if (!doc || !['agent_joining', 'notified'].includes(doc.status)) return;
 
     doc.status = 'live';
     await doc.save();
@@ -170,6 +201,32 @@ export class LiveHandoffService {
       this.logger.log(`Expired ${stale.length} stale live handoff request(s)`);
     }
     return stale.length;
+  }
+
+  /**
+   * Chiude le chat che Gent ha aperto ma non ha mai chiuso esplicitamente (basta
+   * chiudere la scheda del browser). Senza questo restano "live" per sempre e si
+   * accumulano nella card della dashboard, nascondendo le richieste vere.
+   */
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async closeAbandonedSessions(): Promise<number> {
+    const maxHours = this.config.get<number>('LIVE_HANDOFF_SESSION_MAX_HOURS', 2);
+    const cutoff = new Date(Date.now() - maxHours * 3600_000);
+
+    const abandoned = await this.model
+      .find({ status: { $in: ['agent_joining', 'live'] }, createdAt: { $lt: cutoff } })
+      .exec();
+
+    for (const doc of abandoned) {
+      doc.status = 'closed';
+      doc.closedAt = new Date();
+      await doc.save();
+      this.gateway.emitStatusChanged(doc.sessionId, doc.status);
+    }
+    if (abandoned.length > 0) {
+      this.logger.log(`Closed ${abandoned.length} abandoned live chat session(s)`);
+    }
+    return abandoned.length;
   }
 
   private toStatusDto(doc: LiveHandoffRequestDocument): LiveHandoffStatusDto {

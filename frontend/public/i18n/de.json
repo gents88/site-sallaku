@@ -803,7 +803,13 @@
     "admin_error": "Verbindung fehlgeschlagen. Stellen Sie sicher, dass Sie als Admin angemeldet sind.",
     "admin_send_placeholder": "Als Gent schreiben…",
     "admin_history_loading": "Unterhaltung wird geladen…",
-    "admin_back": "Zurück zum Dashboard"
+    "admin_back": "Zurück zum Dashboard",
+    "card_title": "Live-Chat",
+    "card_badge_active": "laufend",
+    "card_badge_waiting": "wartend",
+    "card_waiting": "Wartet auf Antwort",
+    "card_open": "Beitreten",
+    "card_empty": "Derzeit keine Live-Chat-Anfragen."
   },
   "ai_ppt": {
     "title": "KI-Foliengenerator",

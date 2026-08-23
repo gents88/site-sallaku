@@ -803,7 +803,13 @@
     "admin_error": "Impossibile connettersi. Verifica di aver effettuato l'accesso come admin.",
     "admin_send_placeholder": "Scrivi come Gent…",
     "admin_history_loading": "Caricamento conversazione…",
-    "admin_back": "Torna alla dashboard"
+    "admin_back": "Torna alla dashboard",
+    "card_title": "Chat live",
+    "card_badge_active": "in corso",
+    "card_badge_waiting": "in attesa",
+    "card_waiting": "In attesa di risposta",
+    "card_open": "Entra",
+    "card_empty": "Nessuna richiesta di chat live al momento."
   },
   "ai_ppt": {
     "title": "Generatore di Slide",

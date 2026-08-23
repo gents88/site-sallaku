@@ -803,7 +803,13 @@
     "admin_error": "No se pudo conectar. Verifica que hayas iniciado sesión como administrador.",
     "admin_send_placeholder": "Escribe como Gent…",
     "admin_history_loading": "Cargando conversación…",
-    "admin_back": "Volver al panel"
+    "admin_back": "Volver al panel",
+    "card_title": "Chat en vivo",
+    "card_badge_active": "en curso",
+    "card_badge_waiting": "en espera",
+    "card_waiting": "Esperando respuesta",
+    "card_open": "Entrar",
+    "card_empty": "No hay solicitudes de chat en vivo en este momento."
   },
   "ai_ppt": {
     "title": "Generador de Diapositivas",

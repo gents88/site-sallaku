@@ -803,7 +803,13 @@
     "admin_error": "Couldn't connect. Make sure you're logged in as admin.",
     "admin_send_placeholder": "Write as Gent…",
     "admin_history_loading": "Loading conversation…",
-    "admin_back": "Back to dashboard"
+    "admin_back": "Back to dashboard",
+    "card_title": "Live chat",
+    "card_badge_active": "in progress",
+    "card_badge_waiting": "waiting",
+    "card_waiting": "Waiting for a reply",
+    "card_open": "Join",
+    "card_empty": "No live chat requests right now."
   },
   "ai_ppt": {
     "title": "AI Slides",

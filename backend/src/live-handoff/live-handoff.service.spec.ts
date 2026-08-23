@@ -146,6 +146,84 @@ describe('LiveHandoffService', () => {
     });
   });
 
+  describe('listActive', () => {
+    function mockFind(docs: any[]) {
+      const chain: any = {
+        sort: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(docs),
+      };
+      mockModel.find.mockReturnValue(chain);
+      return chain;
+    }
+
+    it('interroga TUTTI gli stati attivi, non solo quelli in attesa (serve per rientrare in una chat già avviata)', async () => {
+      mockFind([]);
+
+      await service.listActive();
+
+      expect(mockModel.find).toHaveBeenCalledWith({
+        status: { $in: ['requested', 'notified', 'agent_joining', 'live'] },
+      });
+    });
+
+    it('mappa i documenti nel DTO esposto alla dashboard', async () => {
+      const requestedAt = new Date('2026-08-23T10:00:00Z');
+      const expiresAt = new Date('2026-08-23T10:15:00Z');
+      mockFind([
+        {
+          _id: 'req-1',
+          sessionId: 'sess-1',
+          status: 'live',
+          lastUserMessage: 'ciao Gent',
+          locale: 'it',
+          createdAt: requestedAt,
+          expiresAt,
+        },
+      ]);
+
+      const result = await service.listActive();
+
+      expect(result).toEqual([
+        {
+          requestId: 'req-1',
+          sessionId: 'sess-1',
+          status: 'live',
+          lastUserMessage: 'ciao Gent',
+          locale: 'it',
+          requestedAt,
+          expiresAt,
+        },
+      ]);
+    });
+
+    it('normalizza a null i campi opzionali mancanti invece di restituire undefined', async () => {
+      mockFind([
+        { _id: 'req-2', sessionId: 'sess-2', status: 'requested', createdAt: new Date(), expiresAt: new Date() },
+      ]);
+
+      const [row] = await service.listActive();
+
+      expect(row.lastUserMessage).toBeNull();
+      expect(row.locale).toBeNull();
+    });
+
+    it('restituisce lista vuota quando non c’è nessuna sessione attiva', async () => {
+      mockFind([]);
+      expect(await service.listActive()).toEqual([]);
+    });
+
+    it('ordina dalla più recente e limita il numero di risultati', async () => {
+      const chain = mockFind([]);
+
+      await service.listActive();
+
+      expect(chain.sort).toHaveBeenCalledWith({ createdAt: -1 });
+      expect(chain.limit).toHaveBeenCalledWith(20);
+    });
+  });
+
   describe('markAgentJoining', () => {
     it('throws NotFoundException when the request does not exist', async () => {
       mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(null) });
@@ -202,7 +280,7 @@ describe('LiveHandoffService', () => {
   describe('markLive', () => {
     it('transitions agent_joining to live and notifies via the gateway', async () => {
       const doc = { sessionId: 'session-1', status: 'agent_joining', save: jest.fn().mockResolvedValue(undefined) };
-      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(doc) });
+      mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(doc) });
 
       await service.markLive('session-1');
 
@@ -210,8 +288,35 @@ describe('LiveHandoffService', () => {
       expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('session-1', 'live');
     });
 
-    it('does nothing when there is no request in agent_joining/notified for the session', async () => {
-      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+    // Regressione: una sessione può avere PIÙ richieste (una scaduta e una nuova).
+    // Se markLive non ordina per data, porta a "live" un documento vecchio e lascia il
+    // più recente su "agent_joining": da lì getStatus non dice mai "live" e ogni
+    // messaggio di Gent viene scartato in silenzio.
+    it('agisce sulla richiesta PIÙ RECENTE, la stessa su cui ha agito markAgentJoining', async () => {
+      const sort = jest.fn().mockReturnThis();
+      const doc = { sessionId: 'session-1', status: 'agent_joining', save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.findOne.mockReturnValue({ sort, exec: jest.fn().mockResolvedValue(doc) });
+
+      await service.markLive('session-1');
+
+      expect(mockModel.findOne).toHaveBeenCalledWith({ sessionId: 'session-1' });
+      expect(sort).toHaveBeenCalledWith({ createdAt: -1 });
+      expect(doc.status).toBe('live');
+    });
+
+    it('non tocca la richiesta più recente se non è in uno stato di ingresso', async () => {
+      const doc = { sessionId: 'session-1', status: 'expired', save: jest.fn() };
+      mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(doc) });
+
+      await service.markLive('session-1');
+
+      expect(doc.status).toBe('expired');
+      expect(doc.save).not.toHaveBeenCalled();
+      expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
+    });
+
+    it('does nothing when there is no request for the session', async () => {
+      mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(null) });
 
       await service.markLive('session-1');
 
@@ -260,6 +365,43 @@ describe('LiveHandoffService', () => {
       const count = await service.expireStaleRequests();
 
       expect(count).toBe(0);
+      expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('closeAbandonedSessions', () => {
+    it('chiude le chat aperte e mai chiuse, così non restano "live" per sempre nella dashboard', async () => {
+      const abandoned = { sessionId: 'a', status: 'live', save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([abandoned]) });
+
+      const count = await service.closeAbandonedSessions();
+
+      expect(count).toBe(1);
+      expect(abandoned.status).toBe('closed');
+      expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('a', 'closed');
+    });
+
+    it('cerca solo le sessioni già avviate e più vecchie della soglia', async () => {
+      mockConfig.get.mockImplementation((key: string, fallback?: unknown) =>
+        key === 'LIVE_HANDOFF_SESSION_MAX_HOURS' ? 2 : fallback,
+      );
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+      const before = Date.now();
+
+      await service.closeAbandonedSessions();
+
+      const filter = mockModel.find.mock.calls[0][0];
+      expect(filter.status).toEqual({ $in: ['agent_joining', 'live'] });
+      const cutoff = filter.createdAt.$lt as Date;
+      // ~2 ore nel passato (tolleranza per il tempo di esecuzione del test)
+      expect(before - cutoff.getTime()).toBeGreaterThanOrEqual(2 * 3600_000 - 5_000);
+      expect(before - cutoff.getTime()).toBeLessThanOrEqual(2 * 3600_000 + 5_000);
+    });
+
+    it('non tocca nulla quando non ci sono sessioni abbandonate', async () => {
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+
+      expect(await service.closeAbandonedSessions()).toBe(0);
       expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
     });
   });

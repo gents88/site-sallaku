@@ -803,7 +803,13 @@
     "admin_error": "Connexion impossible. Vérifiez que vous êtes connecté en tant qu'administrateur.",
     "admin_send_placeholder": "Écrire en tant que Gent…",
     "admin_history_loading": "Chargement de la conversation…",
-    "admin_back": "Retour au tableau de bord"
+    "admin_back": "Retour au tableau de bord",
+    "card_title": "Chat en direct",
+    "card_badge_active": "en cours",
+    "card_badge_waiting": "en attente",
+    "card_waiting": "En attente d'une réponse",
+    "card_open": "Rejoindre",
+    "card_empty": "Aucune demande de chat en direct pour le moment."
   },
   "ai_ppt": {
     "title": "Générateur de Diapositives",
