@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 interface ProjectItem {
   icon: string;
@@ -16,7 +17,7 @@ interface ProjectItem {
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslateModule],
+  imports: [CommonModule, MatIconModule, TranslateModule, BreadcrumbComponent],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +28,7 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly seo = inject(SeoService);
   private readonly langService = inject(LanguageService);
   private readonly translate = inject(TranslateService);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   readonly staticProjects: ProjectItem[] = [
     {
@@ -76,6 +78,7 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
       description,
       url: pageUrl,
     });
+    const homeLabel = this.translate.instant('nav.home');
     this.seo.injectJsonLd([
       {
         '@context': 'https://schema.org',
@@ -92,10 +95,14 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
         })),
       },
       this.seo.breadcrumb([
-        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: homeLabel, url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
         { name: title, url: pageUrl },
       ]),
     ]);
+    this.breadcrumbItems = [
+      { label: homeLabel, path: '/' },
+      { label: title },
+    ];
   }
 
   ngAfterViewInit(): void {

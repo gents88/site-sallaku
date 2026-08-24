@@ -869,12 +869,15 @@ app-pdf-summary,
 app-ai-formatter,
 app-pdf-translate,
 app-ai-ppt,
+app-pdf-search,
 app-pdf-editor,
 app-viewer,
 app-editor,
 app-convert,
 app-ocr,
-app-scanner {
+app-scanner,
+app-workspace,
+app-library {
   display: block;
   padding-top: var(--navbar-height, 72px);
 }

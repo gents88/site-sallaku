@@ -5,6 +5,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
@@ -32,7 +33,7 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
   selector: 'app-convert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink],
+  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink, BreadcrumbComponent],
   templateUrl: './convert.component.html',
   styleUrls: ['./convert.component.scss'],
 })
@@ -58,6 +59,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
   /** Set once at startup from a pending Workspace hand-off (file kind only); cleared on use/dismiss. */
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
 
+  breadcrumbItems: BreadcrumbItem[] = [];
+
   constructor() {
     // Client-only, runs once right after the initial (hydrated) render is stable —
     // safe to read localStorage here, unlike a field initializer or ngOnInit, both
@@ -75,7 +78,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
       description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
       url: 'https://gentsallaku.it/lab/convert',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free File Converter',
@@ -86,7 +89,18 @@ export class ConvertComponent implements OnInit, OnDestroy {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['PDF to Word/Text/HTML', 'Word to PDF', 'Excel/CSV conversion', 'Image format conversion', 'Base64 encode/decode', 'Favorites & instant search'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.t.instant('sidebar.items.convert'), url: 'https://gentsallaku.it/lab/convert' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.convert') },
+    ];
   }
 
   private readonly allGroups = (() => {

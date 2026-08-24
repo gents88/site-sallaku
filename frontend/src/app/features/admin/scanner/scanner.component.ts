@@ -6,6 +6,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
@@ -46,7 +47,7 @@ const CROP_KEY_STEP_FINE = 4;
   selector: 'app-scanner',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective],
+  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './scanner.component.html',
   styleUrls: ['./scanner.component.scss'],
 })
@@ -85,6 +86,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
   readonly ocrMsg = signal('');
   readonly ocrMsgOk = signal(false);
   readonly ocrCopied = signal(false);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   private stream: MediaStream | null = null;
   private baseCanvas: HTMLCanvasElement | null = null; // immagine di lavoro a piena risoluzione
@@ -103,7 +105,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
       description: 'Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup.',
       url: 'https://gentsallaku.it/lab/scanner',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free Document Scanner',
@@ -114,7 +116,18 @@ export class ScannerComponent implements OnInit, OnDestroy {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Camera capture', 'Auto crop & enhance', 'Multi-page scan', 'Export as PDF'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.t.instant('sidebar.items.scanner'), url: 'https://gentsallaku.it/lab/scanner' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.scanner') },
+    ];
   }
 
   ngOnDestroy(): void { this.stopCamera(); }

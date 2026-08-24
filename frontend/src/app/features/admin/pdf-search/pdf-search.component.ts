@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, of, switchMap, catchError } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
@@ -50,7 +51,7 @@ function normalizeTitle(title: string): string {
   selector: 'app-pdf-search',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, BreadcrumbComponent],
   templateUrl: './pdf-search.component.html',
   styleUrls: ['./pdf-search.component.scss'],
 })
@@ -68,6 +69,8 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly translate = inject(TranslateService);
 
   readonly loading = this.service.isLoading;
+
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   readonly query = signal('');
   readonly results = signal<PdfSearchResult[]>([]);
@@ -308,7 +311,17 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.translate.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.translate.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.translate.instant('sidebar.items.pdf_search'), url: 'https://gentsallaku.it/lab/pdf-search' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.translate.instant('nav.home'), path: '/' },
+      { label: this.translate.instant('sidebar.lab'), path: '/lab' },
+      { label: this.translate.instant('sidebar.items.pdf_search') },
+    ];
   }
 
   ngOnDestroy(): void {

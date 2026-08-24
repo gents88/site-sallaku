@@ -16,6 +16,7 @@
   }
 
   <article class="container section post-article">
+    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
     @if (isPreview) {
       <a routerLink="/dashboard/blog" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
     } @else {
