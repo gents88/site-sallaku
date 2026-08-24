@@ -28,6 +28,7 @@ describe('LiveHandoffService', () => {
     mockModel.countDocuments = jest.fn();
     mockModel.findById = jest.fn();
     mockModel.find = jest.fn();
+    mockModel.updateOne = jest.fn().mockReturnValue({ exec: jest.fn().mockResolvedValue(undefined) });
 
     mockChatbotService = {
       getSession: jest.fn().mockResolvedValue({ messages: [] }),
@@ -322,6 +323,30 @@ describe('LiveHandoffService', () => {
 
       expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
     });
+
+    // Senza questo, una chat che diventa "live" dopo che Gent ha impiegato qualche
+    // minuto a entrare erediterebbe un lastActivityAt vecchio e il cron di inattività
+    // la chiuderebbe subito, prima ancora che i due si scambino un messaggio.
+    it('resetta lastActivityAt al momento in cui la chat diventa live', async () => {
+      const doc = { sessionId: 'session-1', status: 'agent_joining', lastActivityAt: new Date('2020-01-01'), save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(doc) });
+      const before = Date.now();
+
+      await service.markLive('session-1');
+
+      expect(doc.lastActivityAt.getTime()).toBeGreaterThanOrEqual(before);
+    });
+  });
+
+  describe('touchActivity', () => {
+    it('aggiorna lastActivityAt solo per la richiesta live della sessione', async () => {
+      await service.touchActivity('session-1');
+
+      expect(mockModel.updateOne).toHaveBeenCalledWith(
+        { sessionId: 'session-1', status: 'live' },
+        { $set: { lastActivityAt: expect.any(Date) } },
+      );
+    });
   });
 
   describe('closeSession', () => {
@@ -365,6 +390,54 @@ describe('LiveHandoffService', () => {
       const count = await service.expireStaleRequests();
 
       expect(count).toBe(0);
+      expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('closeInactiveLiveSessions', () => {
+    it('chiude le chat live senza attività da più della soglia di inattività', async () => {
+      const inactive = { sessionId: 'a', status: 'live', save: jest.fn().mockResolvedValue(undefined) };
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([inactive]) });
+
+      const count = await service.closeInactiveLiveSessions();
+
+      expect(count).toBe(1);
+      expect(inactive.status).toBe('closed');
+      expect(mockGateway.emitStatusChanged).toHaveBeenCalledWith('a', 'closed');
+    });
+
+    it('cerca solo le sessioni "live" più vecchie della soglia configurata (default 5 minuti)', async () => {
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+      const before = Date.now();
+
+      await service.closeInactiveLiveSessions();
+
+      const filter = mockModel.find.mock.calls[0][0];
+      expect(filter.status).toBe('live');
+      const cutoff = filter.lastActivityAt.$lt as Date;
+      expect(before - cutoff.getTime()).toBeGreaterThanOrEqual(5 * 60_000 - 5_000);
+      expect(before - cutoff.getTime()).toBeLessThanOrEqual(5 * 60_000 + 5_000);
+    });
+
+    it('rispetta LIVE_HANDOFF_INACTIVITY_MINUTES quando configurato', async () => {
+      mockConfig.get.mockImplementation((key: string, fallback?: unknown) =>
+        key === 'LIVE_HANDOFF_INACTIVITY_MINUTES' ? 10 : fallback,
+      );
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+      const before = Date.now();
+
+      await service.closeInactiveLiveSessions();
+
+      const filter = mockModel.find.mock.calls[0][0];
+      const cutoff = filter.lastActivityAt.$lt as Date;
+      expect(before - cutoff.getTime()).toBeGreaterThanOrEqual(10 * 60_000 - 5_000);
+      expect(before - cutoff.getTime()).toBeLessThanOrEqual(10 * 60_000 + 5_000);
+    });
+
+    it('non tocca nulla quando non ci sono sessioni live inattive', async () => {
+      mockModel.find.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+
+      expect(await service.closeInactiveLiveSessions()).toBe(0);
       expect(mockGateway.emitStatusChanged).not.toHaveBeenCalled();
     });
   });
