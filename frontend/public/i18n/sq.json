@@ -342,7 +342,8 @@
     "privacy_link": "Politika e Privatësisë",
     "cookie_link": "Politika e Cookies",
     "manage_cookies": "Menaxho pëlqimin e cookies",
-    "legal": "Ligjore"
+    "legal": "Ligjore",
+    "navigation": "Navigimi i footer-it"
   },
   "auth": {
     "login_title": "Hyrje në Dashboard",

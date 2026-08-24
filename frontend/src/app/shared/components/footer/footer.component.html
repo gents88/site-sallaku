@@ -8,17 +8,17 @@
           <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
         </a>
         <p class="footer-text">
-          Progettato &amp; Sviluppato da <span class="text-gradient">Gent Sallaku</span>
+          {{ 'footer.designed' | translate }} <span class="text-gradient">Gent Sallaku</span>
         </p>
       </div>
 
       <!-- Navigation -->
-      <nav class="footer-nav" aria-label="Footer navigation">
-        <a [routerLink]="'/about' | langUrl">About</a>
-        <a [routerLink]="'/projects' | langUrl">Projects</a>
-        <a [routerLink]="'/services' | langUrl">Services</a>
-        <a [routerLink]="'/blog' | langUrl">Blog</a>
-        <a [routerLink]="'/contact' | langUrl">Contact</a>
+      <nav class="footer-nav" [attr.aria-label]="'footer.navigation' | translate">
+        <a [routerLink]="'/about' | langUrl">{{ 'nav.about' | translate }}</a>
+        <a [routerLink]="'/projects' | langUrl">{{ 'nav.projects' | translate }}</a>
+        <a [routerLink]="'/services' | langUrl">{{ 'nav.services' | translate }}</a>
+        <a [routerLink]="'/blog' | langUrl">{{ 'nav.blog' | translate }}</a>
+        <a [routerLink]="'/contact' | langUrl">{{ 'nav.contact' | translate }}</a>
       </nav>
 
       <!-- Social links -->
@@ -35,7 +35,7 @@
       </div>
 
       <!-- Legal -->
-      <nav class="footer-legal" aria-label="Legal">
+      <nav class="footer-legal" [attr.aria-label]="'footer.legal' | translate">
         <a [routerLink]="'/privacy-policy' | langUrl">{{ 'footer.privacy_link' | translate }}</a>
         <a [routerLink]="'/cookie-policy' | langUrl">{{ 'footer.cookie_link' | translate }}</a>
         <button type="button" class="footer-legal__cookie-btn" (click)="manageCookies()">
@@ -44,7 +44,7 @@
       </nav>
 
       <!-- Copyright -->
-      <p class="footer-copy">&copy; {{ year }} Gent Sallaku. All rights reserved.</p>
+      <p class="footer-copy">&copy; {{ year }} Gent Sallaku. {{ 'footer.rights' | translate }}</p>
 
     </div>
   </div>
