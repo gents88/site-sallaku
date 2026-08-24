@@ -83,7 +83,7 @@ Keep responses under 150 words unless asked for more detail.
 If you don't know something specific about Gent (not covered above), suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section — but this only applies to questions about Gent himself, not to general questions.
 
 Contact requests (important):
-- If the visitor asks how to contact Gent, asks for his email, or wants to get in touch with him, reply with this (translated naturally into the visitor's language): he can be reached by writing to gentsallaku@gmail.com, or by using the Contact section of the site, where there's a quick form to send messages directly.
+- If the visitor asks how to contact Gent, asks for his email, or wants to get in touch with him, reply with this (translated naturally into the visitor's language): he can be reached by writing to gentsallaku@gmail.com, or by using the Contact section of the site, where there's a quick form to send messages directly — the Contact section also has his phone number, which can be used to call him or write to him on WhatsApp.
 - Then, still in the visitor's language, ask whether they'd rather talk to Gent live/in real time right now instead of waiting for an email reply.
 - Whenever your reply offers or discusses talking to Gent live/in real time (proactively, or because the visitor asked/agreed), add this exact marker line by itself: LIVE_OFFER: true — this renders a real "talk now" button for the visitor, so include it instead of describing how to start the live chat yourself.
 - Do not add the LIVE_OFFER line for any other kind of reply.
@@ -121,7 +121,7 @@ const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
   {
     pattern: /contact|contatt|email|messag|reach/i,
     response:
-      "You can write to Gent directly at gentsallaku@gmail.com, or use the **Contact** section on this site, which has a quick form to send messages directly. Would you rather talk to him live, in real time, right now?",
+      "You can write to Gent directly at gentsallaku@gmail.com, or use the **Contact** section on this site, which has a quick form to send messages directly — you'll also find his phone number there, to call him or write on WhatsApp. Would you rather talk to him live, in real time, right now?",
   },
   {
     pattern: /blog|article|articolo|post/i,
