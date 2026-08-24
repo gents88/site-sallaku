@@ -13,6 +13,7 @@ import { loadStylesheetOnce } from '../../core/utils/load-stylesheet';
 import { MATERIAL_CSS } from '../../core/utils/vendor-css.generated';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-contact',
@@ -20,12 +21,14 @@ import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
   imports: [
     CommonModule, ReactiveFormsModule, TranslateModule,
     MatIconModule, MatSnackBarModule, TurnstileWidgetComponent,
-    RouterLink, LangUrlPipe,
+    RouterLink, LangUrlPipe, BreadcrumbComponent,
   ],
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
 })
 export class ContactComponent implements OnInit, AfterViewInit {
+  breadcrumbItems: BreadcrumbItem[] = [];
+
   form = this.fb.group({
     name:    ['', [Validators.required, Validators.maxLength(80)]],
     email:   ['', [Validators.required, Validators.email]],
@@ -70,6 +73,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
       description,
       url: pageUrl,
     });
+    const homeLabel = this.translate.instant('nav.home');
     this.seo.injectJsonLd([
       {
         '@context': 'https://schema.org',
@@ -84,10 +88,14 @@ export class ContactComponent implements OnInit, AfterViewInit {
         },
       },
       this.seo.breadcrumb([
-        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: homeLabel, url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
         { name: title, url: pageUrl },
       ]),
     ]);
+    this.breadcrumbItems = [
+      { label: homeLabel, path: '/' },
+      { label: title },
+    ];
   }
 
   ngAfterViewInit(): void {
