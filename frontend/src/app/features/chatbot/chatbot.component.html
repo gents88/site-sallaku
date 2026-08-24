@@ -122,6 +122,11 @@
             }
             <div class="cb-msg__bubble">
               <p class="cb-msg__content" [innerHTML]="formatMessage(msg.content)"></p>
+              @if (msg.liveOffer && (liveState === 'idle' || liveState === 'prompt_shown')) {
+                <button type="button" class="cb-msg__live-cta" (click)="acceptLiveHandoff()">
+                  {{ 'chatbot_ui.live_offer_cta' | translate }}
+                </button>
+              }
               <span class="cb-msg__time">{{ msg.timestamp | date:'HH:mm' }}</span>
             </div>
           </div>

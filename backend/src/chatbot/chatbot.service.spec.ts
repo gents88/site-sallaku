@@ -106,6 +106,39 @@ describe('ChatbotService', () => {
       expect(result.suggestions).toBeUndefined();
     });
 
+    it('estrae LIVE_OFFER: true e lo rimuove dal testo mostrato, mantenendo le suggestions', async () => {
+      mockAiProvider.chatCompletion.mockResolvedValue(
+        'Puoi scrivergli a gentsallaku@gmail.com. Vuoi parlare con lui in tempo reale?\nLIVE_OFFER: true\nSUGGESTIONS: Va bene? | Altro?',
+      );
+
+      const result = await service.sendMessage('come posso contattarlo?');
+
+      expect(result.reply).toBe('Puoi scrivergli a gentsallaku@gmail.com. Vuoi parlare con lui in tempo reale?');
+      expect(result.reply).not.toContain('LIVE_OFFER');
+      expect(result.liveOffer).toBe(true);
+      expect(result.suggestions).toEqual(['Va bene?', 'Altro?']);
+    });
+
+    it('estrae LIVE_OFFER anche quando precede la riga SUGGESTIONS in ordine inverso', async () => {
+      mockAiProvider.chatCompletion.mockResolvedValue(
+        'Risposta.\nSUGGESTIONS: a? | b?\nLIVE_OFFER: true',
+      );
+
+      const result = await service.sendMessage('domanda');
+
+      expect(result.reply).toBe('Risposta.');
+      expect(result.liveOffer).toBe(true);
+      expect(result.suggestions).toEqual(['a?', 'b?']);
+    });
+
+    it('non imposta liveOffer quando il modello non include la riga LIVE_OFFER', async () => {
+      mockAiProvider.chatCompletion.mockResolvedValue('Risposta normale.\nSUGGESTIONS: a? | b?');
+
+      const result = await service.sendMessage('domanda');
+
+      expect(result.liveOffer).toBeUndefined();
+    });
+
     it('salva il messaggio assistant con usedFallback=false', async () => {
       mockAiProvider.chatCompletion.mockResolvedValue('Risposta ok.\nSUGGESTIONS: a? | b?');
 
@@ -147,6 +180,22 @@ describe('ChatbotService', () => {
       const result = await service.sendMessage('xyzabc123');
 
       expect(result.reply).toContain("I'm the AI assistant");
+    });
+
+    it('imposta liveOffer=true nel fallback quando il messaggio esprime intento di contatto (anche senza GROQ_API_KEY)', async () => {
+      mockConfig.get.mockReturnValue(undefined);
+
+      const result = await service.sendMessage('How can I contact Gent?');
+
+      expect(result.liveOffer).toBe(true);
+    });
+
+    it('non imposta liveOffer nel fallback quando il messaggio non riguarda il contatto', async () => {
+      mockAiProvider.chatCompletion.mockRejectedValue(new Error('boom'));
+
+      const result = await service.sendMessage('Che tempo fa oggi?');
+
+      expect(result.liveOffer).toBeUndefined();
     });
   });
 

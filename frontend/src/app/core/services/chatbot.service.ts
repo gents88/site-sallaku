@@ -8,6 +8,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant' | 'agent';
   content: string;
   timestamp: Date;
+  liveOffer?: boolean;
 }
 
 interface SendMessageResponse {
@@ -15,6 +16,7 @@ interface SendMessageResponse {
   reply: string;
   timestamp: string;
   suggestions?: string[];
+  liveOffer?: boolean;
 }
 
 interface TranscriptResponse {
@@ -85,6 +87,7 @@ export class ChatbotService {
             role: 'assistant',
             content: res.reply,
             timestamp: new Date(res.timestamp),
+            liveOffer: res.liveOffer,
           };
           this._messages.next([...this._messages.getValue(), assistantMsg]);
           this._suggestions.next(res.suggestions ?? []);

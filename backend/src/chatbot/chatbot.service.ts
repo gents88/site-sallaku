@@ -82,6 +82,12 @@ Your role:
 Keep responses under 150 words unless asked for more detail.
 If you don't know something specific about Gent (not covered above), suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section — but this only applies to questions about Gent himself, not to general questions.
 
+Contact requests (important):
+- If the visitor asks how to contact Gent, asks for his email, or wants to get in touch with him, reply with this (translated naturally into the visitor's language): he can be reached by writing to gentsallaku@gmail.com, or by using the Contact section of the site, where there's a quick form to send messages directly.
+- Then, still in the visitor's language, ask whether they'd rather talk to Gent live/in real time right now instead of waiting for an email reply.
+- Whenever your reply offers or discusses talking to Gent live/in real time (proactively, or because the visitor asked/agreed), add this exact marker line by itself: LIVE_OFFER: true — this renders a real "talk now" button for the visitor, so include it instead of describing how to start the live chat yourself.
+- Do not add the LIVE_OFFER line for any other kind of reply.
+
 Language rules:
 - Always reply in the same language the visitor's latest message is written in. Detect the language from the message itself before composing the answer; this takes priority over any interface-language setting below.
 - Never reply in English to an Italian message just because the interface language is English.
@@ -90,7 +96,7 @@ Language rules:
 Do not use the website interface language to choose the response language.
 
 Follow-up suggestions (required):
-After your reply, on its own final line, add exactly:
+After your reply (and after the LIVE_OFFER line, when present), on its own final line, add exactly:
 SUGGESTIONS: question one? | question two? | question three?
 - Three short, natural follow-up questions the visitor might ask next, in the same language as your reply, each under 8 words.
 - This must be the last line of your output, must not be mentioned anywhere else in the reply, and must always be present.`;
@@ -115,7 +121,7 @@ const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
   {
     pattern: /contact|contatt|email|messag|reach/i,
     response:
-      "You can contact Gent directly via the **Contact** section on this site, or send him an email at gentsallaku@gmail.com. He usually responds within 24–48 working hours.",
+      "You can write to Gent directly at gentsallaku@gmail.com, or use the **Contact** section on this site, which has a quick form to send messages directly. Would you rather talk to him live, in real time, right now?",
   },
   {
     pattern: /blog|article|articolo|post/i,
@@ -161,19 +167,42 @@ function detectLanguage(message: string): string | undefined {
   return undefined;
 }
 
-/** Splits the model's raw output into the visible reply and the trailing `SUGGESTIONS: a | b | c` line. */
-function parseSuggestions(raw: string): { content: string; suggestions?: string[] } {
-  const match = raw.match(/\n?SUGGESTIONS:\s*(.+?)\s*$/i);
-  if (!match) return { content: raw.trim() };
+/** Matches the visitor asking to contact Gent, in any of the site's supported languages — used to offer live chat from the static fallback replies. */
+const CONTACT_INTENT_PATTERN =
+  /contact|contatt|reach\s+him|reach\s+out|get in touch|kontakt|contacto|contactar|kontaktoj|kontakto/i;
 
-  const suggestions = match[1]
-    .split('|')
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .slice(0, 3);
+/** Splits the model's raw output into the visible reply and the trailing `LIVE_OFFER:` / `SUGGESTIONS:` marker lines (either order). */
+function parseAIReply(raw: string): { content: string; suggestions?: string[]; liveOffer?: boolean } {
+  const lines = raw.trim().split('\n');
+  let suggestions: string[] | undefined;
+  let liveOffer: boolean | undefined;
 
-  const content = raw.slice(0, match.index).trim();
-  return { content: content || raw.trim(), suggestions: suggestions.length ? suggestions : undefined };
+  while (lines.length) {
+    const last = lines[lines.length - 1].trim();
+
+    const suggMatch = last.match(/^SUGGESTIONS:\s*(.+)$/i);
+    if (suggMatch) {
+      suggestions = suggMatch[1].split('|').map((s) => s.trim()).filter(Boolean).slice(0, 3);
+      lines.pop();
+      continue;
+    }
+
+    const offerMatch = last.match(/^LIVE_OFFER:\s*(true|false)$/i);
+    if (offerMatch) {
+      liveOffer = offerMatch[1].toLowerCase() === 'true';
+      lines.pop();
+      continue;
+    }
+
+    break;
+  }
+
+  const content = lines.join('\n').trim();
+  return {
+    content: content || raw.trim(),
+    suggestions: suggestions?.length ? suggestions : undefined,
+    liveOffer,
+  };
 }
 
 @Injectable()
@@ -196,7 +225,7 @@ export class ChatbotService {
     sessionId?: string,
     meta?: { ip?: string; userAgent?: string },
     lang?: string,
-  ): Promise<{ sessionId: string; reply: string; timestamp: Date; suggestions?: string[] }> {
+  ): Promise<{ sessionId: string; reply: string; timestamp: Date; suggestions?: string[]; liveOffer?: boolean }> {
     const sid = sessionId && sessionId.length > 0 ? sessionId : randomUUID();
 
     let session = await this.chatSessionModel.findOne({ sessionId: sid }).exec();
@@ -211,7 +240,7 @@ export class ChatbotService {
       .slice(-20) // last 20 messages for context window
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const { content: reply, suggestions, usedFallback } = await this.callAI(historyForAI);
+    const { content: reply, suggestions, liveOffer, usedFallback } = await this.callAI(historyForAI);
 
     const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date(), usedFallback };
     session.messages.push(assistantMsg);
@@ -219,7 +248,7 @@ export class ChatbotService {
 
     await session.save();
 
-    return { sessionId: sid, reply, timestamp: assistantMsg.timestamp, suggestions };
+    return { sessionId: sid, reply, timestamp: assistantMsg.timestamp, suggestions, liveOffer };
   }
 
   async getSession(sessionId: string): Promise<ChatSession> {
@@ -353,10 +382,10 @@ export class ChatbotService {
   // Provider attivo: Groq.
   private async callAI(
     messages: { role: string; content: string }[],
-  ): Promise<{ content: string; suggestions?: string[]; usedFallback: boolean }> {
+  ): Promise<{ content: string; suggestions?: string[]; liveOffer?: boolean; usedFallback: boolean }> {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
     if (!apiKey) {
-      return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
     }
 
     try {
@@ -369,11 +398,11 @@ export class ChatbotService {
         [{ role: 'system', content: buildSystemPrompt(about, projects, postsPage.data) }, ...messages],
         { model: 'openai/gpt-oss-120b', maxTokens: 900, timeoutMs: 20_000 },
       );
-      if (!raw) return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
-      return { ...parseSuggestions(raw), usedFallback: false };
+      if (!raw) return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      return { ...parseAIReply(raw), usedFallback: false };
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
-      return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
     }
   }
 
@@ -422,13 +451,17 @@ export class ChatbotService {
   //   }
   // }
 
-  private getFallbackResponse(userMessage: string): string {
+  private getFallbackResponse(userMessage: string): { content: string; liveOffer?: boolean } {
+    const liveOffer = CONTACT_INTENT_PATTERN.test(userMessage) || undefined;
+
     const language = detectLanguage(userMessage);
-    if (language && DEFAULT_LOCALIZED_FALLBACKS[language]) return DEFAULT_LOCALIZED_FALLBACKS[language];
+    if (language && DEFAULT_LOCALIZED_FALLBACKS[language]) {
+      return { content: DEFAULT_LOCALIZED_FALLBACKS[language], liveOffer };
+    }
 
     for (const { pattern, response } of FALLBACK_RESPONSES) {
-      if (pattern.test(userMessage)) return response;
+      if (pattern.test(userMessage)) return { content: response, liveOffer };
     }
-    return DEFAULT_FALLBACK;
+    return { content: DEFAULT_FALLBACK, liveOffer };
   }
 }
