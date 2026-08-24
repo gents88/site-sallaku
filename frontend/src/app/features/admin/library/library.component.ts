@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
@@ -50,7 +51,7 @@ export type SortOrder = 'recent' | 'title' | 'size';
   selector: 'app-library',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, BreadcrumbComponent],
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.scss'],
 })
@@ -66,6 +67,7 @@ export class LibraryComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly toolActions = TOOL_ACTIONS;
+  breadcrumbItems: BreadcrumbItem[] = [];
   /**
    * Array stabile, non un letterale nel template: un `[1,2,3,4]` scritto inline
    * viene ricreato a ogni ciclo di change detection e impedisce all'app di
@@ -141,7 +143,7 @@ export class LibraryComponent implements OnInit {
         'Salva i PDF trovati, cercali per contenuto pagina per pagina, annotali e fai domande ai tuoi documenti. Tutto resta nel tuo browser, nessun caricamento sul server.',
       url: 'https://gentsallaku.it/lab/library',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Libreria PDF personale',
@@ -158,7 +160,18 @@ export class LibraryComponent implements OnInit {
         'Domande ai propri documenti',
       ],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.translate.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.translate.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.translate.instant('sidebar.items.library'), url: 'https://gentsallaku.it/lab/library' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.translate.instant('nav.home'), path: '/' },
+      { label: this.translate.instant('sidebar.lab'), path: '/lab' },
+      { label: this.translate.instant('sidebar.items.library') },
+    ];
   }
 
   private async init(): Promise<void> {

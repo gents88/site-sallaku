@@ -9,6 +9,7 @@ import { timeout, TimeoutError } from 'rxjs';
 import DOMPurify from 'dompurify';
 import { ConversionService, ConversionTypeId } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 type ExportFormat = 'pdf' | 'docx' | 'html';
@@ -60,7 +61,7 @@ const TOOLBAR: ToolBtn[][] = [
   selector: 'app-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
+  imports: [TranslateModule, BreadcrumbComponent],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
@@ -83,6 +84,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly msgOk = signal(false);
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent = signal(false);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   private draftSaveTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -115,7 +117,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       description: 'Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup.',
       url: 'https://gentsallaku.it/lab/editor',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free Online Document Editor',
@@ -126,7 +128,18 @@ export class EditorComponent implements OnInit, OnDestroy {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.t.instant('sidebar.items.editor'), url: 'https://gentsallaku.it/lab/editor' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.editor') },
+    ];
   }
 
   ngOnDestroy(): void {

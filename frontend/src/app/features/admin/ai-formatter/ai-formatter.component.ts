@@ -15,6 +15,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   AiFormatterService,
@@ -30,7 +31,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
@@ -43,6 +44,8 @@ export class AiFormatterComponent implements OnInit {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly workspace  = inject(WorkspaceService);
   private readonly t          = inject(TranslateService);
+
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   private static readonly DRAFT_KEY = 'ai-formatter-draft';
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -113,7 +116,17 @@ export class AiFormatterComponent implements OnInit {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.ai_formatter'), url: 'https://gentsallaku.it/lab/ai-formatter' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.ai_formatter') },
+    ];
   }
 
   readonly loading = this.service.isLoading;

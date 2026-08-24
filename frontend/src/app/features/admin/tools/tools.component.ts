@@ -1,8 +1,9 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 interface ToolCard {
   icon: string;
@@ -17,9 +18,10 @@ interface ToolCard {
   selector: 'app-tools',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, TranslateModule],
+  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent],
   template: `
     <div class="page">
+      <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
       <header class="page-header">
         <div class="header-badge">
           <span class="badge-dot"></span>
@@ -84,7 +86,7 @@ interface ToolCard {
   styles: [`
     :host { display: block; min-height: 100vh; background: var(--bg-primary, #0d1117); }
 
-    .page { padding: 3rem 2rem; max-width: 1100px; margin: 0 auto; }
+    .page { padding: 2rem; max-width: 1100px; margin: 0 auto; }
 
     /* ─── Header ─── */
     .page-header {
@@ -228,6 +230,9 @@ interface ToolCard {
 })
 export class ToolsComponent implements OnInit {
   private readonly seo = inject(SeoService);
+  private readonly translate = inject(TranslateService);
+
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     this.seo.update({
@@ -235,7 +240,11 @@ export class ToolsComponent implements OnInit {
       description: 'Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools powered by GPT-4o. No signup required.',
       url: 'https://gentsallaku.it/lab',
     });
-    this.seo.injectJsonLd({
+    this.breadcrumbItems = [
+      { label: this.translate.instant('nav.home'), path: '/' },
+      { label: this.translate.instant('sidebar.lab') },
+    ];
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: 'AI & PDF Tools',
@@ -257,7 +266,12 @@ export class ToolsComponent implements OnInit {
         { '@type': 'WebApplication', name: 'My PDF Library', url: 'https://gentsallaku.it/lab/library', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'Workflow', url: 'https://gentsallaku.it/lab/workspace', applicationCategory: 'UtilitiesApplication' },
       ],
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.translate.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.translate.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+    ]),
+    ]);
   }
 
   readonly aiCards: ToolCard[] = [

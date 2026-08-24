@@ -1,0 +1,44 @@
+<section class="legal-page">
+  <div class="container legal-page__inner">
+    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+    <span class="section-tag">{{ 'footer.legal' | translate }}</span>
+    <h1 class="section-title text-gradient">{{ 'cookie_policy.title' | translate }}</h1>
+    <p class="legal-page__updated">
+      {{ 'cookie_policy.updated_label' | translate }}: {{ 'cookie_policy.updated_date' | translate }}
+    </p>
+    <p class="legal-page__intro">{{ 'cookie_policy.intro' | translate }}</p>
+
+    <h2 class="legal-page__h2">{{ 'cookie_policy.what_title' | translate }}</h2>
+    <p class="legal-page__body">{{ 'cookie_policy.what_body' | translate }}</p>
+
+    <h2 class="legal-page__h2">{{ 'cookie_policy.categories_title' | translate }}</h2>
+
+    <h3 class="legal-page__h3">{{ 'cookie_policy.necessary_title' | translate }}</h3>
+    <p class="legal-page__body">{{ 'cookie_policy.necessary_body' | translate }}</p>
+
+    <h3 class="legal-page__h3">{{ 'cookie_policy.analytics_title' | translate }}</h3>
+    <p class="legal-page__body">{{ 'cookie_policy.analytics_body' | translate }}</p>
+
+    <h3 class="legal-page__h3">{{ 'cookie_policy.marketing_title' | translate }}</h3>
+    <p class="legal-page__body">{{ 'cookie_policy.marketing_body' | translate }}</p>
+
+    <h3 class="legal-page__h3">{{ 'cookie_policy.preferences_title' | translate }}</h3>
+    <p class="legal-page__body">{{ 'cookie_policy.preferences_body' | translate }}</p>
+
+    <h2 class="legal-page__h2">{{ 'cookie_policy.third_party_title' | translate }}</h2>
+    <p class="legal-page__body">{{ 'cookie_policy.third_party_body' | translate }}</p>
+
+    <h2 class="legal-page__h2">{{ 'cookie_policy.manage_title' | translate }}</h2>
+    <p class="legal-page__body">{{ 'cookie_policy.manage_body' | translate }}</p>
+    <button type="button" class="btn btn-secondary legal-page__manage-btn" (click)="openPreferences()">
+      {{ 'footer.manage_cookies' | translate }}
+    </button>
+
+    <h2 class="legal-page__h2">{{ 'cookie_policy.browser_title' | translate }}</h2>
+    <p class="legal-page__body">{{ 'cookie_policy.browser_body' | translate }}</p>
+
+    <p class="legal-page__body">
+      <a [routerLink]="'/privacy-policy' | langUrl">{{ 'footer.privacy_link' | translate }} →</a>
+    </p>
+  </div>
+</section>

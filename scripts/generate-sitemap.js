@@ -15,6 +15,8 @@ const routes = [
   { loc: '/blog', changefreq: 'weekly', priority: '0.9' },
   { loc: '/testimonials', changefreq: 'weekly', priority: '0.85' },
   { loc: '/contact', changefreq: 'yearly', priority: '0.7' },
+  { loc: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
+  { loc: '/cookie-policy', changefreq: 'yearly', priority: '0.3' },
 
   // ── AI & PDF Tools — public pages under /lab (moved from /dashboard/*, 2026-08) ──
   { loc: '/lab', changefreq: 'monthly', priority: '0.9' },
