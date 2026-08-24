@@ -95,6 +95,7 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     if (!CHATTABLE_STATUSES.includes(status.status)) return;
 
     const message = await this.chatbotService.appendLiveMessage(body.sessionId, 'user', text);
+    await this.liveHandoffService.touchActivity(body.sessionId);
     this.server.to(this.room(body.sessionId)).emit('chat_message', {
       sessionId: body.sessionId,
       from: 'visitor',
@@ -151,6 +152,7 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     }
 
     const message = await this.chatbotService.appendLiveMessage(body.sessionId, 'agent', text);
+    await this.liveHandoffService.touchActivity(body.sessionId);
     this.server.to(this.room(body.sessionId)).emit('chat_message', {
       sessionId: body.sessionId,
       from: 'agent',
