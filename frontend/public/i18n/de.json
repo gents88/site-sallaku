@@ -342,7 +342,8 @@
     "privacy_link": "Datenschutzerklärung",
     "cookie_link": "Cookie-Richtlinie",
     "manage_cookies": "Cookie-Einwilligung verwalten",
-    "legal": "Rechtliches"
+    "legal": "Rechtliches",
+    "navigation": "Footer-Navigation"
   },
   "auth": {
     "login_title": "Beim Dashboard anmelden",

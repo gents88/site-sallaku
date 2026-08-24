@@ -342,7 +342,8 @@
     "privacy_link": "Política de Privacidade",
     "cookie_link": "Política de Cookies",
     "manage_cookies": "Gerir consentimento de cookies",
-    "legal": "Legal"
+    "legal": "Legal",
+    "navigation": "Navegação do rodapé"
   },
   "auth": {
     "login_title": "Entrar no Dashboard",

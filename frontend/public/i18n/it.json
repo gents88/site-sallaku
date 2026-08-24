@@ -338,11 +338,12 @@
   },
   "footer": {
     "designed": "Progettato & Sviluppato da",
-    "rights": "All rights reserved.",
+    "rights": "Tutti i diritti riservati.",
     "privacy_link": "Privacy Policy",
     "cookie_link": "Cookie Policy",
     "manage_cookies": "Gestisci consenso cookie",
-    "legal": "Legale"
+    "legal": "Legale",
+    "navigation": "Navigazione footer"
   },
   "auth": {
     "login_title": "Accedi al Dashboard",
