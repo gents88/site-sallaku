@@ -293,7 +293,10 @@
       "name_placeholder": "Shkruaj emrin tënd",
       "email_placeholder": "Shkruaj email-in tënd që të të kontaktoj",
       "submit": "Dërgo mesazhin",
-      "note": "Mesazhi dërgohet direkt nga faqja, pa hapur aplikacione të jashtme."
+      "note": "Mesazhi dërgohet direkt nga faqja, pa hapur aplikacione të jashtme.",
+      "privacy_checkbox": "Kam lexuar dhe pranoj politikën e privatësisë për trajtimin e të dhënave të mia.",
+      "privacy_link_text": "Politika e Privatësisë",
+      "privacy_err": "Duhet të pranoni politikën e privatësisë për të dërguar mesazhin"
     },
     "info": {
       "title": "Le të lidhemi",
@@ -335,7 +338,12 @@
   },
   "footer": {
     "designed": "Projektuar & Zhvilluar nga",
-    "rights": "Të gjitha të drejtat e rezervuara."
+    "rights": "Të gjitha të drejtat e rezervuara.",
+    "privacy_link": "Politika e Privatësisë",
+    "cookie_link": "Politika e Cookies",
+    "manage_cookies": "Menaxho pëlqimin e cookies",
+    "legal": "Ligjore",
+    "navigation": "Navigimi i footer-it"
   },
   "auth": {
     "login_title": "Hyrje në Dashboard",
@@ -1672,5 +1680,61 @@
     "err_payload_too_large": "Përmbajtja shumë e madhe. Hiq imazhet e ngulitura dhe përdor URL imazhesh.",
     "err_session_expired": "Sesioni skadoi. Identifikohu përsëri.",
     "err_save_failed_default": "Ruajtja dështoi. Kontrollo titullin, përmbajtjen dhe slug-un."
+  },
+  "privacy": {
+    "title": "Politika e Privatësisë",
+    "meta_description": "Njoftimi mbi privatësinë dhe trajtimin e të dhënave personale në gentsallaku.it.",
+    "updated_label": "Përditësimi i fundit",
+    "updated_date": "23/08/2026",
+    "intro": "Ky njoftim përshkruan si trajtohen të dhënat personale të përdoruesve të gentsallaku.it, në përputhje me Rregulloren (BE) 2016/679 (GDPR).",
+    "see_cookie_policy": "Shko te Politika e Cookies →",
+    "s1_title": "Titullari i trajtimit",
+    "s1_body": "Titullari i trajtimit të të dhënave të mbledhura përmes këtij faqeje interneti është Gent Sallaku, i kontaktueshëm në adresën gentsallaku@gmail.com. Meqenëse ky sajt nuk lidhet me një aktivitet biznesi të regjistruar, nuk jepen të dhëna fiskale apo seli ligjore.",
+    "s2_title": "Të dhënat e mbledhura përmes formularit të kontaktit",
+    "s2_body": "Nëse përdorni formularin \"Kontakt\", mbledhim emrin, adresën e email-it, temën dhe tekstin e mesazhit tuaj. Këto të dhëna trajtohen ekskluzivisht për t'iu përgjigjur kërkesës suaj dhe nuk përdoren për qëllime marketingu pa pëlqimin tuaj të shprehur qartë. Dërgimi i formularit është i mbrojtur nga Cloudflare Turnstile, një shërbim anti-spam që analizon automatikisht ndërveprimin me faqen.",
+    "s3_title": "Chatbot dhe asistenti me inteligjencë artificiale",
+    "s3_body": "Mesazhet që i dërgoni chatbot-it të sajtit përpunohen nga një model inteligjence artificiale i ofruar nga Google (Gemini API), me qëllimin e vetëm për të gjeneruar një përgjigje të përshtatshme. Teksti i mesazhit transmetohet kështu te serverat e Google, i cili vepron si përpunues i të dhënave për këtë qëllim specifik. Ju këshillojmë të mos ndani në bisedë të dhëna të ndjeshme apo jo të nevojshme.",
+    "s4_title": "Bisedë e drejtpërdrejtë (live chat) me operatorin",
+    "s4_body": "Nëse kërkoni një bisedë të drejtpërdrejtë, adresa juaj e email-it (nëse jepet) dhe mesazhet e shkëmbyera ruhen në bazën tonë të të dhënave për të mundësuar vazhdimin e bisedës dhe për qëllime asistence. Këto të dhëna nuk i kalohen palëve të treta.",
+    "s5_title": "Cookies dhe teknologji të ngjashme",
+    "s5_body": "Sajti përdor cookies teknike të nevojshme për funksionimin dhe, me pëlqimin tuaj, cookies analitike. Për listën e plotë të cookies të përdorura, qëllimin dhe kohëzgjatjen e tyre, konsultoni Politikën e Cookies.",
+    "s6_title": "Google Analytics",
+    "s6_body": "Nëse jepni pëlqimin për kategorinë \"analitikë\" në banerin e cookies, sajti ngarkon Google Analytics 4 për të mbledhur statistika të agreguara dhe anonime mbi navigimin (faqet e vizituara, burimi i trafikut, pajisja). Ky shërbim ofrohet nga Google Ireland Limited/Google LLC dhe të dhënat mund të transferohen në serverat në Shtetet e Bashkuara, në kuadër të garancive të parashikuara nga klauzolat kontraktuale standarde të Komisionit Evropian. Mund ta tërhiqni pëlqimin tuaj në çdo moment.",
+    "s7_title": "Mjetet \"Lab\" (PDF, përkthim, OCR dhe mjete të tjera me IA)",
+    "s7_body": "Mjetet e disponueshme në seksionin \"Lab\" përpunojnë skedarët që ngarkoni (PDF, imazhe, tekst) ekskluzivisht për t'ju siguruar rezultatin e kërkuar (p.sh. përmbledhje, përkthim, konvertim). Skedarët përpunohen në serverat tanë dhe/ose dërgohen te ofrues të palëve të treta të IA-së (Google Gemini) për përpunim, dhe nuk ruhen përtej kohës së nevojshme për të përfunduar veprimin, përveçse nëse zgjidhni vetë t'i ruani në një zonë personale të sajtit.",
+    "s8_title": "Marrësit dhe transferimi i të dhënave",
+    "s8_body": "Të dhënat e mbledhura mund të trajtohen nga ofruesit e mëposhtëm të palëve të treta, në cilësinë e përpunuesve: Railway (hosting i backend-it dhe bazës së të dhënave, infrastrukturë cloud), Google LLC (Gemini AI, Analytics, dërgim email-esh përmes Gmail SMTP), Cloudflare Inc. (mbrojtje anti-spam Turnstile). Disa nga këta ofrues mund të trajtojnë të dhëna jashtë Zonës Ekonomike Evropiane; në atë rast, transferimi bazohet në klauzola kontraktuale standarde ose garanci të tjera të përshtatshme të parashikuara nga ligji.",
+    "s9_title": "Afati i ruajtjes",
+    "s9_body": "Të dhënat e formularit të kontaktit dhe të bisedave live chat ruhen për kohën e nevojshme për të trajtuar kërkesën tuaj, dhe në çdo rast jo më shumë se 24 muaj, përveçse nëse ligji kërkon një afat tjetër. Preferencat e cookies ruhen deri sa përdoruesi t'i revokojë.",
+    "s10_title": "Të drejtat tuaja",
+    "s10_body": "Si subjekt i të dhënave, keni të drejtën e aksesit, korrigjimit, fshirjes, kufizimit të përpunimit, transferueshmërisë dhe kundërshtimit, sipas neneve 15-22 të Rregullores (BE) 2016/679 (GDPR). Mund t'i ushtroni këto të drejta duke shkruar në gentsallaku@gmail.com. Keni gjithashtu të drejtën të paraqisni një ankesë pranë autoritetit kompetent për mbrojtjen e të dhënave.",
+    "s11_title": "Siguria e të dhënave",
+    "s11_body": "Ne miratojmë masa të përshtatshme teknike dhe organizative (lidhje të koduara HTTPS, autentikim, akses i kufizuar në të dhëna) për të mbrojtur të dhënat tuaja nga aksesi i paautorizuar, humbja apo shpërndarja.",
+    "s12_title": "Ndryshime në këtë politikë",
+    "s12_body": "Kjo politikë mund të përditësohet me kalimin e kohës për të reflektuar ndryshime normative apo të sajtit. Data e përditësimit të fundit tregohet në krye të faqes."
+  },
+  "cookie_policy": {
+    "title": "Politika e Cookies",
+    "meta_description": "Lista e cookies të përdorura nga gentsallaku.it, qëllimi i tyre dhe si të menaxhoni preferencat tuaja.",
+    "updated_label": "Përditësimi i fundit",
+    "updated_date": "23/08/2026",
+    "intro": "Kjo faqe përshkruan cookies dhe teknologjitë e ngjashme të përdorura nga gentsallaku.it, në përputhje me Rregulloren (BE) 2016/679 (GDPR) dhe udhëzimet përkatëse mbi cookies.",
+    "what_title": "Çfarë janë cookies",
+    "what_body": "Cookies janë skedarë të vegjël teksti që sajtet e vizituara i dërgojnë pajisjes tuaj, ku ruhen për t'iu ridërguar të njëjtave sajte në vizitën tuaj të radhës.",
+    "categories_title": "Kategoritë e cookies të përdorura",
+    "necessary_title": "Cookies të nevojshme",
+    "necessary_body": "Të domosdoshme për funksionimin e sajtit (p.sh. ruajtja e gjuhës së zgjedhur, gjendjes së shiritit anësor, sesionit të autentikimit në zonën e rezervuar, dhe zgjedhjes suaj të pëlqimit për cookies). Nuk kërkojnë pëlqim dhe nuk mund të çaktivizohen.",
+    "analytics_title": "Cookies analitike",
+    "analytics_body": "Përdoren, vetëm me pëlqimin tuaj, nga Google Analytics 4 (_ga, _ga_*) për të mbledhur statistika të agreguara dhe anonime mbi navigimin. Kohëzgjatja: deri në 13 muaj. Ngarkohen vetëm pasi të pranoni këtë kategori në baner.",
+    "marketing_title": "Cookies marketingu",
+    "marketing_body": "Aktualisht nuk përdorim cookies marketingu/reklamimi: Google Tag Manager dhe Google AdSense janë të pranishme në kod por të çaktivizuara. Nëse aktivizohen në të ardhmen, do të kërkohet një pëlqim i ri specifik.",
+    "preferences_title": "Cookies preferencash",
+    "preferences_body": "Përdoren për të mbajtur mend disa nga preferencat tuaja të shfaqjes (p.sh. tema e çelët/e errët), me pëlqimin tuaj.",
+    "third_party_title": "Shërbime të palëve të treta",
+    "third_party_body": "Cloudflare Turnstile ngarkohet në formularët e sajtit për të parandaluar spam-in e automatizuar dhe konsiderohet teknikisht i nevojshëm për sigurinë e shërbimit; Cloudflare mund të vendosë cookies e veta teknike sipas politikës së vet.",
+    "manage_title": "Si të menaxhoni preferencat tuaja",
+    "manage_body": "Mund të ndryshoni ose të revokoni pëlqimin tuaj në çdo moment përmes lidhjes \"Menaxho pëlqimin e cookies\" në fund të faqes (footer), ose duke fshirë cookies nga shfletuesi juaj.",
+    "browser_title": "Cilësimet e shfletuesit",
+    "browser_body": "Mund të menaxhoni ose fshini cookies edhe direkt nga cilësimet e shfletuesit tuaj (Chrome, Firefox, Safari, Edge)."
   }
 }

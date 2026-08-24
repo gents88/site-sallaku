@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
   AiPptService,
@@ -31,7 +32,7 @@ const MAX_CONTEXT_FILE_MB = 20;
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -43,6 +44,8 @@ export class AiPptComponent implements OnInit {
   private readonly seo       = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
   private readonly t         = inject(TranslateService);
+
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     this.seo.update({
@@ -89,7 +92,17 @@ export class AiPptComponent implements OnInit {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.ai_ppt'), url: 'https://gentsallaku.it/lab/ai-ppt' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.ai_ppt') },
+    ];
   }
 
   readonly loading         = this.service.isLoading;

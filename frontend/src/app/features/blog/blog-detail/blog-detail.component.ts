@@ -15,11 +15,12 @@ import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.comp
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +32,7 @@ export class BlogDetailComponent implements OnInit {
   post: Post | null = null;
   loading = true;
   notFound = false;
+  breadcrumbItems: BreadcrumbItem[] = [];
   /** Self-referencing canonical URL for the current language — also fed to app-social-share. */
   pageUrl = '';
 
@@ -193,6 +195,12 @@ export class BlogDetailComponent implements OnInit {
             { name: this.localizedMetaTitle, url: pageUrl },
           ]),
         ]);
+        const homeLabel = this.translate.instant('nav.home');
+        this.breadcrumbItems = [
+          { label: homeLabel, path: '/' },
+          { label: this.translate.instant('nav.blog'), path: '/blog' },
+          { label: this.localizedMetaTitle },
+        ];
       },
       error: () => { this.notFound = true; this.cdr.markForCheck(); },
     });

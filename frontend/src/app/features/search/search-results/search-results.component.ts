@@ -1,18 +1,19 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize } from 'rxjs';
 import { SearchHit, SearchHitType, SearchService } from '../../../core/services/search.service';
 import { SiteSearchService } from '../../../core/services/site-search.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-search-results',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, MatIconModule],
+  imports: [CommonModule, RouterLink, TranslateModule, MatIconModule, BreadcrumbComponent],
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,11 +34,14 @@ export class SearchResultsComponent implements OnInit {
   private readonly siteSearchSvc = inject(SiteSearchService);
   readonly currentLang = this.langService.current;
 
+  breadcrumbItems: BreadcrumbItem[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private searchSvc: SearchService,
     private seo: SeoService,
+    private translate: TranslateService,
     private cdr: ChangeDetectorRef,
   ) {
     // Re-render when UI language changes (OnPush requires explicit trigger) —
@@ -54,11 +58,24 @@ export class SearchResultsComponent implements OnInit {
       this.query = params.get('q') ?? '';
       this.activeType = (params.get('type') as SearchHitType | null) ?? null;
       this.page = Number(params.get('page')) || 1;
+      const homeUrl = `${SITE_ORIGIN}${withLangPrefix('/', this.currentLang())}`;
+      const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/search', this.currentLang())}`;
+      const searchLabel = this.translate.instant('nav.search');
       this.seo.update({
         title: this.query ? `${this.query} — Search` : 'Search',
         description: 'Search results across blog posts and projects.',
-        url: `${SITE_ORIGIN}${withLangPrefix('/search', this.currentLang())}`,
+        url: pageUrl,
       });
+      this.seo.injectJsonLd([
+        this.seo.breadcrumb([
+          { name: this.translate.instant('nav.home'), url: homeUrl },
+          { name: searchLabel, url: pageUrl },
+        ]),
+      ]);
+      this.breadcrumbItems = [
+        { label: this.translate.instant('nav.home'), path: '/' },
+        { label: searchLabel },
+      ];
       this.runSearch();
     });
   }

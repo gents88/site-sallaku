@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
@@ -35,7 +36,7 @@ const MAX_FILE_MB = 50;
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -51,6 +52,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
 
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent      = signal(false);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     const pending = this.workspace.peek();
@@ -101,7 +103,17 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.pdf_translate'), url: 'https://gentsallaku.it/lab/pdf-translate' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.pdf_translate') },
+    ];
   }
 
   readonly loading = this.service.isLoading;
