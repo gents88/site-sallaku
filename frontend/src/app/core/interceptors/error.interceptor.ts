@@ -15,6 +15,15 @@ import { SnackbarService } from '../services/snackbar.service';
  *
  * 401 errors are handled upstream by the authInterceptor (token refresh flow).
  * This interceptor runs *after* authInterceptor in the chain.
+ *
+ * IMPORTANT: do not inject TranslateService here to translate these messages.
+ * This interceptor runs on every HttpClient request, including the one
+ * TranslateHttpLoader itself uses to fetch the translation JSON files —
+ * injecting TranslateService into this path breaks translation loading for
+ * the entire app (verified: every `| translate` in the app falls back to
+ * showing raw keys, e.g. "nav.about", instead of translated text). Keep
+ * these 5 messages in English as a last-resort fallback for genuine network/
+ * server failures, which is what they're for.
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const snackbar = inject(SnackbarService);

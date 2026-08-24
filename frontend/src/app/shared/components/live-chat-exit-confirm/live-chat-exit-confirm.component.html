@@ -1,0 +1,26 @@
+@if (step !== 'none') {
+  <div class="lec-backdrop" (click)="cancel.emit()"></div>
+  <div class="lec-dialog" role="alertdialog" aria-modal="true" [attr.aria-label]="'live_handoff.exit_ask_resolved_title' | translate">
+    @if (step === 'ask_resolved') {
+      <p class="lec-title">{{ 'live_handoff.exit_ask_resolved_title' | translate }}</p>
+      <div class="lec-actions">
+        <button class="lec-btn lec-btn--secondary" (click)="cancel.emit()">
+          {{ 'live_handoff.exit_ask_resolved_no' | translate }}
+        </button>
+        <button class="lec-btn lec-btn--primary" (click)="advance.emit()">
+          {{ 'live_handoff.exit_ask_resolved_yes' | translate }}
+        </button>
+      </div>
+    } @else if (step === 'ask_close') {
+      <p class="lec-title">{{ 'live_handoff.exit_ask_close_title' | translate }}</p>
+      <div class="lec-actions">
+        <button class="lec-btn lec-btn--secondary" (click)="cancel.emit()">
+          {{ 'live_handoff.exit_ask_close_no' | translate }}
+        </button>
+        <button class="lec-btn lec-btn--danger" (click)="confirm.emit()">
+          {{ 'live_handoff.exit_ask_close_yes' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+}

@@ -6,6 +6,11 @@
   color: var(--text-primary, #e6edf3);
 }
 
+app-breadcrumb {
+  display: block;
+  padding: 2rem 2rem 0;
+}
+
 $accent:        #10b981;
 $accent-dark:   #059669;
 $accent-glow:   rgba(16, 185, 129, 0.14);
@@ -216,7 +221,7 @@ $error-clr:     #f87171;
   border-top-color: $accent;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* @keyframes spin → styles.scss (globale, identico) */
 
 // ── RESULTS TOOLBAR (filter + sort) ─────────────────────────────────────────
 .results-toolbar {

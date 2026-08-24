@@ -5,8 +5,11 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { timeout, TimeoutError } from 'rxjs';
+import DOMPurify from 'dompurify';
 import { ConversionService, ConversionTypeId } from '../../../core/services/conversion.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
 type ExportFormat = 'pdf' | 'docx' | 'html';
@@ -15,6 +18,8 @@ type ExportFormat = 'pdf' | 'docx' | 'html';
 const EDITOR_DRAFT_KEY = 'editor-draft';
 /** Debounce dell'autosave: evita di scrivere su localStorage ad ogni singolo carattere. */
 const DRAFT_SAVE_DEBOUNCE_MS = 1000;
+/** Allineato al limite del backend condiviso con Convert (MAX_FILE_SIZE in conversion.controller.ts). */
+const MAX_IMPORT_FILE_MB = 50;
 
 interface EditorDraft {
   docName: string;
@@ -56,7 +61,7 @@ const TOOLBAR: ToolBtn[][] = [
   selector: 'app-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule],
+  imports: [TranslateModule, BreadcrumbComponent],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
@@ -79,6 +84,7 @@ export class EditorComponent implements OnInit, OnDestroy {
   readonly msgOk = signal(false);
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent = signal(false);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   private draftSaveTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -111,7 +117,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       description: 'Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup.',
       url: 'https://gentsallaku.it/lab/editor',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free Online Document Editor',
@@ -122,7 +128,18 @@ export class EditorComponent implements OnInit, OnDestroy {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.t.instant('sidebar.items.editor'), url: 'https://gentsallaku.it/lab/editor' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.editor') },
+    ];
   }
 
   ngOnDestroy(): void {
@@ -183,6 +200,10 @@ export class EditorComponent implements OnInit, OnDestroy {
     if (!f) return;
 
     this.msg.set('');
+    if (f.size > MAX_IMPORT_FILE_MB * 1024 * 1024) {
+      this.msg.set(`❌ ${this.t.instant('editor.err_file_too_large', { max: MAX_IMPORT_FILE_MB, name: f.name })}`);
+      return;
+    }
     const ext = f.name.toLowerCase().split('.').pop() ?? '';
     if (!this.docName()) this.docName.set(f.name.replace(/\.[^.]+$/, ''));
 
@@ -228,7 +249,7 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.exporting.set(true);
     this.msg.set('');
     this.msgOk.set(false);
-    this.conv.convertFiles(type, [file]).subscribe({
+    this.conv.convertFiles(type, [file]).pipe(timeout(60000)).subscribe({
       next: (ev) => {
         if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
           this.exporting.set(false);
@@ -242,9 +263,10 @@ export class EditorComponent implements OnInit, OnDestroy {
           }
         }
       },
-      error: () => {
+      error: (err) => {
         this.exporting.set(false);
-        this.msg.set(`❌ ${this.t.instant('editor.err_export')}`);
+        const key = err instanceof TimeoutError ? 'editor.err_timeout' : 'editor.err_export';
+        this.msg.set(`❌ ${this.t.instant(key)}`);
       },
     });
   }
@@ -253,7 +275,7 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   private async importViaConversion(f: File, type: ConversionTypeId): Promise<void> {
     this.importing.set(true);
-    this.conv.convertFiles(type, [f]).subscribe({
+    this.conv.convertFiles(type, [f]).pipe(timeout(60000)).subscribe({
       next: async (ev) => {
         if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
           this.importing.set(false);
@@ -264,9 +286,10 @@ export class EditorComponent implements OnInit, OnDestroy {
           }
         }
       },
-      error: () => {
+      error: (err) => {
         this.importing.set(false);
-        this.msg.set(`❌ ${this.t.instant('editor.err_import')}`);
+        const key = err instanceof TimeoutError ? 'editor.err_timeout' : 'editor.err_import';
+        this.msg.set(`❌ ${this.t.instant(key)}`);
       },
     });
   }
@@ -330,18 +353,16 @@ export class EditorComponent implements OnInit, OnDestroy {
     localStorage.removeItem(EDITOR_DRAFT_KEY);
   }
 
-  /** Estrae il body e rimuove script/style/eventi inline dall'HTML importato. */
+  /**
+   * Sanitizza l'HTML importato prima di iniettarlo nel contenteditable.
+   * Usa DOMPurify (libreria matura, non una sanitizzazione manuale ad hoc) perché
+   * l'assegnazione è diretta a innerHTML, fuori dal binding template di Angular:
+   * il DomSanitizer di Angular non entra in gioco su questo percorso.
+   */
   private sanitizeHtml(raw: string): string {
-    const doc = new DOMParser().parseFromString(raw, 'text/html');
-    doc.querySelectorAll('script, style, link, meta, iframe, object, embed').forEach((el) => el.remove());
-    for (const el of Array.from(doc.body.querySelectorAll('*'))) {
-      for (const attr of Array.from(el.attributes)) {
-        if (attr.name.startsWith('on') || (attr.name === 'href' && attr.value.trim().toLowerCase().startsWith('javascript:'))) {
-          el.removeAttribute(attr.name);
-        }
-      }
-    }
-    return doc.body.innerHTML;
+    return DOMPurify.sanitize(raw, {
+      FORBID_TAGS: ['script', 'style', 'link', 'meta', 'iframe', 'object', 'embed'],
+    });
   }
 
   private textToHtml(text: string): string {

@@ -13,17 +13,27 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotService, ChatMessage } from '../../core/services/chatbot.service';
 import { LanguageService } from '../../core/services/language.service';
+import { LiveHandoffService, LiveHandoffState } from '../../core/services/live-handoff.service';
+import { LiveHandoffPromptComponent } from '../../shared/components/live-handoff-prompt/live-handoff-prompt.component';
+import {
+  ExitConfirmStep,
+  LiveChatExitConfirmComponent,
+} from '../../shared/components/live-chat-exit-confirm/live-chat-exit-confirm.component';
 
 type PanelView = 'chat' | 'transcript';
+type PendingExitAction = 'close' | 'clear' | null;
+
+const TYPING_DEBOUNCE_MS = 1200;
 
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, LiveHandoffPromptComponent, LiveChatExitConfirmComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.scss'],
@@ -32,15 +42,25 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLElement>;
 
   readonly chatbot: ChatbotService = inject(ChatbotService);
+  readonly liveHandoff: LiveHandoffService = inject(LiveHandoffService);
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly langService: LanguageService = inject(LanguageService);
   private readonly translate: TranslateService = inject(TranslateService);
 
   messages: ChatMessage[] = [];
+  liveMessages: ChatMessage[] = [];
+  followUpSuggestions: string[] = [];
   isLoading = false;
   isOpen = false;
   inputText = '';
   panelView: PanelView = 'chat';
+
+  liveState: LiveHandoffState = 'idle';
+  liveMinimized = false;
+  exitConfirmStep: ExitConfirmStep = 'none';
+  private pendingExitAction: PendingExitAction = null;
+
+  private readonly typing$ = new Subject<void>();
 
   transcriptEmail = '';
   transcriptSending = false;
@@ -85,6 +105,12 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
       }),
     );
     this.subs.add(
+      this.chatbot.suggestions$.subscribe((suggestions: string[]) => {
+        this.followUpSuggestions = suggestions;
+        this.cdr.markForCheck();
+      }),
+    );
+    this.subs.add(
       this.chatbot.isLoading$.subscribe((loading: boolean) => {
         this.isLoading = loading;
         this.shouldScroll = true;
@@ -98,6 +124,41 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.cdr.markForCheck();
       }),
     );
+    this.subs.add(
+      this.liveHandoff.state$.subscribe((state: LiveHandoffState) => {
+        this.liveState = state;
+        this.cdr.markForCheck();
+      }),
+    );
+    this.subs.add(
+      this.liveHandoff.minimized$.subscribe((minimized: boolean) => {
+        this.liveMinimized = minimized;
+        this.cdr.markForCheck();
+      }),
+    );
+    this.subs.add(
+      this.liveHandoff.liveMessages$.subscribe((msgs) => {
+        this.liveMessages = msgs.map((m) => ({
+          role: m.from === 'visitor' ? 'user' : 'agent',
+          content: m.text,
+          timestamp: m.sentAt,
+        }));
+        this.shouldScroll = true;
+        this.cdr.markForCheck();
+      }),
+    );
+    this.subs.add(
+      this.typing$.pipe(debounceTime(TYPING_DEBOUNCE_MS)).subscribe(() => {
+        const sessionId = this.chatbot.currentSessionId;
+        if (sessionId) {
+          this.liveHandoff.notifyTyping(sessionId, this.chatbot.hasMessages);
+        }
+      }),
+    );
+  }
+
+  get displayMessages(): ChatMessage[] {
+    return this.liveMessages.length > 0 ? [...this.messages, ...this.liveMessages] : this.messages;
   }
 
   ngAfterViewChecked(): void {
@@ -113,7 +174,11 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   send(): void {
     if (!this.inputText.trim() || this.isLoading) return;
-    this.chatbot.sendMessage(this.inputText, this.langService.current());
+    if (this.liveState === 'live') {
+      this.liveHandoff.sendLiveMessage(this.inputText);
+    } else {
+      this.chatbot.sendMessage(this.inputText, this.langService.current());
+    }
     this.inputText = '';
   }
 
@@ -135,9 +200,73 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
   }
 
+  onInputChange(event: Event): void {
+    this.autoResize(event);
+    if (this.liveState === 'idle' || this.liveState === 'prompt_shown') {
+      this.typing$.next();
+    }
+  }
+
+  acceptLiveHandoff(): void {
+    const sessionId = this.chatbot.currentSessionId;
+    if (!sessionId) return;
+    const lastUserMessage = [...this.messages].reverse().find((m) => m.role === 'user')?.content ?? '';
+    this.liveHandoff.requestHandoff(sessionId, lastUserMessage, this.langService.current());
+  }
+
+  declineLiveHandoff(): void {
+    const sessionId = this.chatbot.currentSessionId;
+    if (sessionId) this.liveHandoff.dismissPrompt(sessionId);
+  }
+
+  reopenLiveHandoffPrompt(): void {
+    this.liveHandoff.reopenPrompt();
+  }
+
   clearChat(): void {
     this.chatbot.clearSession();
+    this.liveHandoff.reset();
     this.panelView = 'chat';
+  }
+
+  // ── Chiusura/cancellazione durante una chat live con Gent ────────────────
+  // Chiudere il pannello o cancellare la conversazione mentre si sta parlando
+  // con una persona vera non può essere un gesto a caso: si chiede conferma
+  // invece di eseguire subito.
+  requestClose(): void {
+    if (this.liveState === 'live') {
+      this.pendingExitAction = 'close';
+      this.exitConfirmStep = 'ask_resolved';
+    } else {
+      this.chatbot.close();
+    }
+  }
+
+  requestClear(): void {
+    if (this.liveState === 'live') {
+      this.pendingExitAction = 'clear';
+      this.exitConfirmStep = 'ask_resolved';
+    } else {
+      this.clearChat();
+    }
+  }
+
+  onExitAdvance(): void {
+    this.exitConfirmStep = 'ask_close';
+  }
+
+  onExitCancel(): void {
+    this.exitConfirmStep = 'none';
+    this.pendingExitAction = null;
+  }
+
+  onExitConfirm(): void {
+    this.liveHandoff.closeByVisitor();
+    this.exitConfirmStep = 'none';
+    const action = this.pendingExitAction;
+    this.pendingExitAction = null;
+    if (action === 'close') this.chatbot.close();
+    else if (action === 'clear') this.clearChat();
   }
 
   showTranscriptPanel(): void {

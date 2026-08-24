@@ -4,6 +4,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
@@ -24,7 +25,7 @@ interface PageEntry {
   selector: 'app-pdf-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective],
+  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './pdf-editor.component.html',
   styleUrls: ['./pdf-editor.component.scss'],
 })
@@ -47,6 +48,7 @@ export class PdfEditorComponent implements OnInit {
   readonly justSent = signal(false);
   readonly moveAnnouncement = signal('');
   readonly exportReady = signal(false);
+  breadcrumbItems: BreadcrumbItem[] = [];
   private lastExportBlob: Blob | null = null;
   private lastExportName = '';
 
@@ -107,7 +109,17 @@ export class PdfEditorComponent implements OnInit {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.pdf_editor'), url: 'https://gentsallaku.it/lab/pdf-editor' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.pdf_editor') },
+    ];
   }
 
   select(e: Event): void {
@@ -292,7 +304,10 @@ export class PdfEditorComponent implements OnInit {
 
   private async addFiles(files: File[]): Promise<void> {
     const pdfs = files.filter((f) => f.type.includes('pdf') || f.name.toLowerCase().endsWith('.pdf'));
-    if (pdfs.length === 0) return;
+    if (pdfs.length === 0) {
+      if (files.length > 0) this.msg.set(`❌ ${this.t.instant('pdf_editor.err_no_valid_pdf')}`);
+      return;
+    }
     this.loading.set(true);
     this.msg.set('');
 

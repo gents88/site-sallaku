@@ -4,9 +4,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '@env/environment';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
@@ -24,11 +25,15 @@ interface FileSummaryResult {
 type OutputMode = 'short' | 'detailed' | 'bullets' | 'insights';
 type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
 
+/** Allineato al limite lato backend (validateFile(file, 20) in ai.controller.ts). */
+const MAX_FILE_MB = 20;
+const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
+
 @Component({
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })
@@ -38,9 +43,11 @@ export class PdfSummaryComponent implements OnInit {
   private http       = inject(HttpClient);
   private readonly seo = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
+  private readonly t = inject(TranslateService);
   private readonly api = `${environment.apiUrl}/ai/summarize-file`;
 
   workspaceItem = signal<WorkspaceItem | null>(null);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     const pending = this.workspace.peek();
@@ -86,7 +93,17 @@ export class PdfSummaryComponent implements OnInit {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.pdf_summary'), url: 'https://gentsallaku.it/lab/pdf-summary' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.pdf_summary') },
+    ];
   }
 
   selectedFile   = signal<File | null>(null);
@@ -203,7 +220,7 @@ export class PdfSummaryComponent implements OnInit {
     this.http.post<FileSummaryResult>(this.api, form).subscribe({
       next: (res) => { this.result.set(res); this.loading.set(false); },
       error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? 'Error during file analysis.';
+        const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_summary.err_generic');
         this.error.set(msg); this.loading.set(false);
       },
     });
@@ -212,6 +229,15 @@ export class PdfSummaryComponent implements OnInit {
   reset(): void { this.selectedFile.set(null); this.result.set(null); this.error.set(null); }
 
   private setFile(file: File): void {
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      this.error.set(this.t.instant('pdf_summary.err_file_type'));
+      return;
+    }
+    if (file.size > MAX_FILE_MB * 1024 * 1024) {
+      this.error.set(this.t.instant('pdf_summary.err_file_too_large', { max: MAX_FILE_MB, name: file.name }));
+      return;
+    }
     this.result.set(null); this.error.set(null); this.selectedFile.set(file);
   }
 

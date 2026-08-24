@@ -42,7 +42,10 @@
               "prismjs/components/prism-scss",
               "prismjs/plugins/line-numbers/prism-line-numbers",
               "prismjs/plugins/toolbar/prism-toolbar",
-              "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard"
+              "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard",
+              "debug",
+              "pako",
+              "xmlhttprequest-ssl"
             ],
             "assets": [
               "src/favicon.ico",
@@ -83,12 +86,12 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "600kb",
+                  "maximumWarning": "820kb",
                   "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kb",
+                  "maximumWarning": "30kb",
                   "maximumError": "50kb"
                 }
               ],

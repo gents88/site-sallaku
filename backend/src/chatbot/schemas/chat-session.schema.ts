@@ -4,9 +4,11 @@ import { Document } from 'mongoose';
 export type ChatSessionDocument = ChatSession & Document;
 
 export interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'agent';
   content: string;
   timestamp: Date;
+  /** true when this assistant reply came from the static canned fallback (AI call failed/unavailable) */
+  usedFallback?: boolean;
 }
 
 @Schema({ timestamps: true })
@@ -17,9 +19,10 @@ export class ChatSession {
   @Prop({
     type: [
       {
-        role: { type: String, enum: ['user', 'assistant'], required: true },
+        role: { type: String, enum: ['user', 'assistant', 'agent'], required: true },
         content: { type: String, required: true },
         timestamp: { type: Date, default: () => new Date() },
+        usedFallback: { type: Boolean, default: false },
       },
     ],
     default: [],

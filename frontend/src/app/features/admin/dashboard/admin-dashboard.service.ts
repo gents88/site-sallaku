@@ -19,6 +19,17 @@ export interface RecentContact {
   read?: boolean;
 }
 
+/** Sessione di chat live che Gent può (ri)aprire dalla dashboard. */
+export interface LiveHandoffSession {
+  requestId: string;
+  sessionId: string;
+  status: 'requested' | 'notified' | 'agent_joining' | 'live';
+  lastUserMessage: string | null;
+  locale: string | null;
+  requestedAt: string;
+  expiresAt: string;
+}
+
 interface AdminStatsResponse {
   users: number;
   contacts: number;
@@ -85,6 +96,7 @@ export interface ChatbotStats {
   totalMessages: number;
   interactionsToday: number;
   sessionsThisMonth: number;
+  fallbackRepliesToday: number;
 }
 
 export interface SystemHealth {
@@ -174,7 +186,7 @@ const EMPTY_ANALYTICS_STATS: AnalyticsStats = {
 };
 
 const EMPTY_CHATBOT_STATS: ChatbotStats = {
-  totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0,
+  totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0, fallbackRepliesToday: 0,
 };
 
 const EMPTY_GSC: SearchConsoleSummary = {
@@ -231,6 +243,9 @@ export class AdminDashboardService {
       ),
       gsc: this.http.get<SearchConsoleSummary>(`${this.api}/analytics/search-console`).pipe(
         catchError(() => of(EMPTY_GSC)), startWith(EMPTY_GSC),
+      ),
+      liveHandoffs: this.http.get<LiveHandoffSession[]>(`${this.api}/admin/live-handoff/active`).pipe(
+        catchError(() => of([] as LiveHandoffSession[])), startWith([] as LiveHandoffSession[]),
       ),
       consentStats: this.http.get<ConsentStats>(`${this.api}/consent/stats`).pipe(
         catchError(() => of({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats)), startWith({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats),

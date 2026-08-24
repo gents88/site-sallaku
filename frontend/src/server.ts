@@ -140,7 +140,7 @@ export function app(): ReturnType<typeof express> {
   });
 
   // ── Angular SSR for all public routes ────────────────────────────────────────
-  server.use('/**', (req, res, next) => {
+  server.use('/*splat', (req, res, next) => {
     angularApp
       .handle(req)
       .then(response => {
@@ -163,4 +163,4 @@ if (isMainModule(import.meta.url)) {
   );
 }
 
-export const reqHandler = createNodeRequestHandler(app);
+export const reqHandler = createNodeRequestHandler(app());

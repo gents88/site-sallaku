@@ -166,6 +166,18 @@ export class TestimonialsService {
     return this.mapToAdminDto(testimonial);
   }
 
+  async updateContent(id: string, content: string): Promise<TestimonialAdminItemDto> {
+    this.assertValidId(id);
+    const sanitized = this.spamDetectionService.sanitizeContent(content);
+    const testimonial = await this.testimonialModel.findByIdAndUpdate(
+      id,
+      { content: sanitized, updatedAt: new Date() },
+      { new: true },
+    );
+    if (!testimonial) throw new NotFoundException('Testimonianza non trovata');
+    return this.mapToAdminDto(testimonial);
+  }
+
   async setFeatured(id: string, featured: boolean): Promise<TestimonialAdminItemDto> {
     this.assertValidId(id);
     const testimonial = await this.testimonialModel.findByIdAndUpdate(

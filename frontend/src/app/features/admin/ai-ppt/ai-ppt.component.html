@@ -1,4 +1,5 @@
 <div class="page" [class.fullscreen-active]="isFullscreen()">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 
   <!-- ── HERO ──────────────────────────────────────────────────────── -->
   <section class="hero">
@@ -236,6 +237,10 @@
           <button class="action-btn action-btn-ghost" (click)="reset()">↩ {{ 'ai_ppt.btn_new' | translate }}</button>
         </div>
       </div>
+
+      @if (truncatedWarning()) {
+        <p class="truncated-warning" role="alert">⚠️ {{ 'ai_ppt.err_truncated' | translate }}</p>
+      }
 
       @if (viewMode() === 'carousel') {
         <div class="carousel-wrapper" [class.is-fullscreen]="isFullscreen()">

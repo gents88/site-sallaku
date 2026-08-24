@@ -48,7 +48,11 @@
   RewriteCond %{REQUEST_FILENAME}/index.html -f
   RewriteRule ^ - [L]
 
-  RewriteRule ^ index.html [L]
+  # Generic CSR shell for routes with no prerendered index.html of their own
+  # (e.g. /dashboard/*). Angular names this index.csr.html instead of
+  # index.html once SSR/prerendering is active, specifically so hosts don't
+  # serve this empty shell in place of a real prerendered page at /.
+  RewriteRule ^ index.csr.html [L]
 </IfModule>
 
 # Brotli first: when the client advertises `br`, Apache prefers this filter
@@ -99,7 +103,7 @@
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  <FilesMatch "^index\.html\.(br|gz)$">
+  <FilesMatch "^index\.(html|csr\.html)\.(br|gz)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
 </IfModule>
@@ -109,7 +113,7 @@
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  <FilesMatch "^(index\.html)$">
+  <FilesMatch "^(index\.html|index\.csr\.html)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
 
@@ -144,5 +148,12 @@
   # to PDF on the fly by our own API (no PDF format exists on gutenberg.org
   # itself), so that preview loads from portfolio-backend-*, not archive.org.
   # arxiv.org is the third PDF Search source — serves its own PDFs directly.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com; frame-src 'self' blob: https://archive.org https://*.archive.org https://arxiv.org https://portfolio-backend-production-e76d.up.railway.app; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  #
+  # connect-src elenca il backend Railway DUE volte, con schemi diversi:
+  # https:// per le chiamate REST + il transport polling di Socket.IO, e wss://
+  # per il WebSocket della chat live. Non è una ridondanza: la CSP confronta
+  # anche lo schema, quindi `https://host` NON autorizza `wss://host` — senza la
+  # riga wss:// il browser blocca il socket con una violazione connect-src e la
+  # chat live resta bloccata su "Connessione in corso" per sempre.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app wss://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com https://ipwho.is; frame-src 'self' blob: https://archive.org https://*.archive.org https://arxiv.org https://portfolio-backend-production-e76d.up.railway.app; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
 </IfModule>

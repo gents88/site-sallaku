@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +19,7 @@ const PAGE_SIZE = 50;
   selector: 'app-testimonials-manage',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, TranslateModule,
+    CommonModule, FormsModule, RouterLink, TranslateModule,
     MatButtonModule, MatIconModule, MatSnackBarModule, MatTooltipModule,
     LoadingSpinnerComponent, RatingStarsComponent,
   ],
@@ -32,6 +33,8 @@ export class TestimonialsManageComponent implements OnInit {
   status: TestimonialModerationStatus = 'pending';
   skip = 0;
   actioningId: string | null = null;
+  editingId: string | null = null;
+  editDraft = '';
 
   readonly statuses: TestimonialModerationStatus[] = ['pending', 'approved', 'spam', 'all'];
 
@@ -93,6 +96,34 @@ export class TestimonialsManageComponent implements OnInit {
   toggleFeatured(item: AdminTestimonial): void {
     const successKey = item.featured ? 'testimonials_manage.featured_off' : 'testimonials_manage.featured_on';
     this.runAction(item, this.testimonialsAdminService.setFeatured(item.id, !item.featured), successKey);
+  }
+
+  startEdit(item: AdminTestimonial): void {
+    this.editingId = item.id;
+    this.editDraft = item.content;
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.editDraft = '';
+  }
+
+  saveEdit(item: AdminTestimonial): void {
+    const content = this.editDraft.trim();
+    if (content.length < 10 || content.length > 600) return;
+    this.actioningId = item.id;
+    this.testimonialsAdminService.updateContent(item.id, content).pipe(
+      finalize(() => { this.actioningId = null; this.cdr.markForCheck(); }),
+    ).subscribe({
+      next: () => {
+        this.editingId = null;
+        this.snackBar.open(this.t.instant('testimonials_manage.content_updated'), this.t.instant('common.close'), { duration: 2500 });
+        this.load();
+      },
+      error: () => {
+        this.snackBar.open(this.t.instant('testimonials_manage.action_error'), this.t.instant('common.close'), { duration: 3000 });
+      },
+    });
   }
 
   delete(item: AdminTestimonial): void {
