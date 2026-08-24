@@ -6,6 +6,11 @@
   color: var(--text-primary, #e6edf3);
 }
 
+app-breadcrumb {
+  display: block;
+  padding: 2rem 2rem 0;
+}
+
 // ── HERO ────────────────────────────────────────────────────────────────
 .hero {
   padding: 72px 24px 56px;

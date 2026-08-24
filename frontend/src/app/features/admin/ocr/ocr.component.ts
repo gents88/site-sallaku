@@ -3,6 +3,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { OcrService, OcrResult, OcrPageResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService } from '../../../core/services/library.service';
@@ -39,7 +40,7 @@ const UI_TO_OCR_LANG: Record<string, string> = {
   selector: 'app-ocr',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective],
+  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './ocr.component.html',
   styleUrls: ['./ocr.component.scss'],
 })
@@ -70,6 +71,7 @@ export class OcrComponent implements OnInit {
   readonly copied = signal(false);
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent = signal(false);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   /**
    * Id del documento di Libreria a cui riscrivere il testo riconosciuto, se il
@@ -141,7 +143,17 @@ export class OcrComponent implements OnInit {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.ocr'), url: 'https://gentsallaku.it/lab/ocr' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.ocr') },
+    ];
   }
 
   select(e: Event): void {
