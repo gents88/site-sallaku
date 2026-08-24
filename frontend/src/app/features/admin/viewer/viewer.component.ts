@@ -7,6 +7,7 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService, LibraryAnnotation, LibraryDoc } from '../../../core/services/library.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
@@ -22,7 +23,7 @@ const MAX_THUMBS = 200;
   selector: 'app-viewer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule],
+  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule, BreadcrumbComponent],
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],
 })
@@ -56,6 +57,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
   /** true se l'ultima ricerca ha rilevato pochissimo testo estraibile (probabile PDF scansionato) */
   readonly docSparseText = signal(false);
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   readonly zoomPct = computed(() => Math.round(this.scale() * 100));
   readonly showOcrHint = computed(() =>
@@ -111,7 +113,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
       description: 'View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload.',
       url: 'https://gentsallaku.it/lab/viewer',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free PDF Viewer',
@@ -122,7 +124,18 @@ export class ViewerComponent implements OnInit, OnDestroy {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Page navigation', 'Zoom', 'Full-text search', 'Thumbnail preview', 'Private, no upload'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.t.instant('sidebar.items.viewer'), url: 'https://gentsallaku.it/lab/viewer' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.viewer') },
+    ];
   }
 
   ngOnDestroy(): void { this.close(); }

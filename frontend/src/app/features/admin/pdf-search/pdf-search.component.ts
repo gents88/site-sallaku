@@ -7,6 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, of, switchMap, catchError } from 'rxjs';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
@@ -50,7 +51,7 @@ function normalizeTitle(title: string): string {
   selector: 'app-pdf-search',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, BreadcrumbComponent],
   templateUrl: './pdf-search.component.html',
   styleUrls: ['./pdf-search.component.scss'],
 })
@@ -68,6 +69,8 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly translate = inject(TranslateService);
 
   readonly loading = this.service.isLoading;
+
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   readonly query = signal('');
   readonly results = signal<PdfSearchResult[]>([]);
@@ -167,6 +170,21 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private mobileQuery: MediaQueryList | null = null;
   private readonly onMobileQueryChange = (e: MediaQueryListEvent) => this.isMobile.set(e.matches);
   readonly isMobile = signal(false);
+
+  // Cover thumbnails come straight from third-party services (archive.org,
+  // Gutenberg) with no proxy — they occasionally time out or 404 under load.
+  // Track failures so the template can fall back to the 📄 icon instead of
+  // leaving a permanently broken <img>.
+  readonly failedCovers = signal<ReadonlySet<string>>(new Set());
+
+  coverFailed(id: string): boolean {
+    return this.failedCovers().has(id);
+  }
+
+  onCoverError(id: string): void {
+    if (this.failedCovers().has(id)) return;
+    this.failedCovers.update((prev) => new Set(prev).add(id));
+  }
 
   // Search only fires on an explicit trigger (submit button / Enter / a saved
   // recent search) — no search-as-you-type, to avoid hammering the external
@@ -293,7 +311,17 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.translate.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.translate.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.translate.instant('sidebar.items.pdf_search'), url: 'https://gentsallaku.it/lab/pdf-search' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.translate.instant('nav.home'), path: '/' },
+      { label: this.translate.instant('sidebar.lab'), path: '/lab' },
+      { label: this.translate.instant('sidebar.items.pdf_search') },
+    ];
   }
 
   ngOnDestroy(): void {

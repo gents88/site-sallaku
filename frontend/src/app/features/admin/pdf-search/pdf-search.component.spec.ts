@@ -216,6 +216,38 @@ describe('PdfSearchComponent', () => {
     });
   });
 
+  describe('cover fallback', () => {
+    it('coverFailed() è false finché l immagine non ha segnalato un errore di caricamento', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      const component = fixture.componentInstance;
+
+      expect(component.coverFailed('ia-x')).toBe(false);
+    });
+
+    it('onCoverError() marca la cover come fallita, così il template mostra l icona di fallback invece di un immagine rotta', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      const component = fixture.componentInstance;
+
+      component.onCoverError('ia-x');
+
+      expect(component.coverFailed('ia-x')).toBe(true);
+      expect(component.coverFailed('ia-y')).toBe(false);
+    });
+
+    it('onCoverError() è idempotente per lo stesso id', () => {
+      configure();
+      const fixture = TestBed.createComponent(PdfSearchComponent);
+      const component = fixture.componentInstance;
+
+      component.onCoverError('ia-x');
+      component.onCoverError('ia-x');
+
+      expect(component.coverFailed('ia-x')).toBe(true);
+    });
+  });
+
   describe('recent searches (localStorage)', () => {
     it('loads previously saved searches on init', () => {
       localStorage.setItem('pdf-search-recent-queries', JSON.stringify(['dante', 'shakespeare']));

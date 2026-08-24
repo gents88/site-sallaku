@@ -1,0 +1,22 @@
+<section class="legal-page">
+  <div class="container legal-page__inner">
+    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+    <span class="section-tag">{{ 'footer.legal' | translate }}</span>
+    <h1 class="section-title text-gradient">{{ 'privacy.title' | translate }}</h1>
+    <p class="legal-page__updated">
+      {{ 'privacy.updated_label' | translate }}: {{ 'privacy.updated_date' | translate }}
+    </p>
+    <p class="legal-page__intro">{{ 'privacy.intro' | translate }}</p>
+
+    @for (s of sections; track s) {
+      <h2 class="legal-page__h2">{{ ('privacy.' + s + '_title') | translate }}</h2>
+      <p class="legal-page__body">{{ ('privacy.' + s + '_body') | translate }}</p>
+
+      @if (s === 's5') {
+        <p class="legal-page__body">
+          <a [routerLink]="'/cookie-policy' | langUrl">{{ 'privacy.see_cookie_policy' | translate }}</a>
+        </p>
+      }
+    }
+  </div>
+</section>

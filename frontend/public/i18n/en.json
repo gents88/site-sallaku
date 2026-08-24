@@ -293,7 +293,10 @@
       "name_placeholder": "Write your name",
       "email_placeholder": "Write your email so I can contact you",
       "submit": "Send message",
-      "note": "The message is sent directly from the website, without opening external apps."
+      "note": "The message is sent directly from the website, without opening external apps.",
+      "privacy_checkbox": "I have read and accept the privacy policy for the processing of my data.",
+      "privacy_link_text": "Privacy Policy",
+      "privacy_err": "You must accept the privacy policy to send the message"
     },
     "info": {
       "title": "Let’s connect",
@@ -335,7 +338,12 @@
   },
   "footer": {
     "designed": "Designed & Developed by",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "privacy_link": "Privacy Policy",
+    "cookie_link": "Cookie Policy",
+    "manage_cookies": "Manage cookie consent",
+    "legal": "Legal",
+    "navigation": "Footer navigation"
   },
   "auth": {
     "login_title": "Sign In to Dashboard",
@@ -1672,5 +1680,61 @@
     "err_payload_too_large": "Payload too large. Remove inline images and use image URLs instead.",
     "err_session_expired": "Session expired. Please log in again.",
     "err_save_failed_default": "Save failed. Check title, content and slug."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "meta_description": "Privacy notice on the processing of personal data on gentsallaku.it.",
+    "updated_label": "Last updated",
+    "updated_date": "23/08/2026",
+    "intro": "This notice describes how the personal data of gentsallaku.it's users is processed, in accordance with Regulation (EU) 2016/679 (GDPR).",
+    "see_cookie_policy": "Go to the Cookie Policy →",
+    "s1_title": "Data controller",
+    "s1_body": "The controller of the data collected through this website is Gent Sallaku, reachable at gentsallaku@gmail.com. As this site is not linked to a registered business, no tax details or registered office are listed.",
+    "s2_title": "Data collected via the contact form",
+    "s2_body": "If you use the \"Contact\" form, we collect your name, email address, subject and message text. This data is processed solely to reply to your request and is never used for marketing purposes without your explicit consent. Form submission is protected by Cloudflare Turnstile, an anti-spam service that automatically analyses interaction with the page.",
+    "s3_title": "Chatbot and AI assistant",
+    "s3_body": "Messages you send to the site's chatbot are processed by an AI model provided by Google (Gemini API) for the sole purpose of generating a relevant reply. The message text is therefore transmitted to Google's servers, which acts as a data processor for this specific purpose. Please avoid sharing sensitive or unnecessary personal data in the chat.",
+    "s4_title": "Live chat with the operator",
+    "s4_body": "If you request a live conversation, your email address (if provided) and the exchanged messages are stored in our database to allow the conversation to continue and for support purposes. This data is not shared with third parties.",
+    "s5_title": "Cookies and similar technologies",
+    "s5_body": "The site uses technical cookies necessary for its operation and, subject to your consent, analytics cookies. For the full list of cookies used, their purpose and duration, see our Cookie Policy.",
+    "s6_title": "Google Analytics",
+    "s6_body": "If you consent to the \"analytics\" category in the cookie banner, the site loads Google Analytics 4 to collect aggregated, anonymous statistics on browsing (pages visited, traffic source, device). This service is provided by Google Ireland Limited/Google LLC and data may be transferred to servers in the United States, under the safeguards of the European Commission's standard contractual clauses. You can withdraw your consent at any time.",
+    "s7_title": "\"Lab\" tools (PDF, translation, OCR and other AI-based tools)",
+    "s7_body": "The tools available in the \"Lab\" section process the files you upload (PDF, images, text) solely to provide the requested result (e.g. summary, translation, conversion). Files are processed on our servers and/or forwarded to third-party AI providers (Google Gemini) for processing, and are not retained beyond the time needed to complete the operation, unless you choose to save them in a personal area of the site.",
+    "s8_title": "Recipients and data transfers",
+    "s8_body": "The data collected may be processed by the following third-party providers, acting as data processors: Railway (backend and database hosting, cloud infrastructure), Google LLC (Gemini AI, Analytics, email sending via Gmail SMTP), Cloudflare Inc. (Turnstile anti-spam protection). Some of these providers may process data outside the European Economic Area; in that case, the transfer relies on standard contractual clauses or other adequate safeguards required by law.",
+    "s9_title": "Retention period",
+    "s9_body": "Contact form and live chat data are kept for as long as necessary to handle your request, and in any case no longer than 24 months, unless a different retention period is required by law. Cookie preferences are kept until you revoke them.",
+    "s10_title": "Your rights",
+    "s10_body": "As a data subject, you have the right to access, rectify, erase, restrict the processing of, port, and object to the processing of your data, under Articles 15-22 of Regulation (EU) 2016/679 (GDPR). You can exercise these rights by writing to gentsallaku@gmail.com. You also have the right to lodge a complaint with your national data protection authority.",
+    "s11_title": "Data security",
+    "s11_body": "We adopt appropriate technical and organisational measures (HTTPS encryption, authentication, restricted data access) to protect your data from unauthorised access, loss or disclosure.",
+    "s12_title": "Changes to this policy",
+    "s12_body": "This policy may be updated over time to reflect regulatory or site changes. The last update date is shown at the top of the page."
+  },
+  "cookie_policy": {
+    "title": "Cookie Policy",
+    "meta_description": "List of cookies used by gentsallaku.it, their purpose, and how to manage your preferences.",
+    "updated_label": "Last updated",
+    "updated_date": "23/08/2026",
+    "intro": "This page describes the cookies and similar technologies used by gentsallaku.it, in compliance with Regulation (EU) 2016/679 (GDPR) and applicable cookie guidelines.",
+    "what_title": "What cookies are",
+    "what_body": "Cookies are small text files that visited websites send to your device, where they are stored and then sent back to the same websites on your next visit.",
+    "categories_title": "Cookie categories used",
+    "necessary_title": "Necessary cookies",
+    "necessary_body": "Essential for the site to function (e.g. storing your chosen language, sidebar state, the authentication session in the reserved area, and your cookie consent choice). They do not require consent and cannot be disabled.",
+    "analytics_title": "Analytics cookies",
+    "analytics_body": "Used, only with your consent, by Google Analytics 4 (_ga, _ga_*) to collect aggregated, anonymous browsing statistics. Duration: up to 13 months. Loaded only after you accept this category in the banner.",
+    "marketing_title": "Marketing cookies",
+    "marketing_body": "We currently do not use marketing/advertising cookies: Google Tag Manager and Google AdSense are present in the code but disabled. If activated in the future, a new specific consent will be requested.",
+    "preferences_title": "Preference cookies",
+    "preferences_body": "Used to remember some of your display preferences (e.g. light/dark theme), subject to your consent.",
+    "third_party_title": "Third-party services",
+    "third_party_body": "Cloudflare Turnstile is loaded on the site's forms to prevent automated spam and is considered technically necessary for the service's security; Cloudflare may set its own technical cookies according to its own policy.",
+    "manage_title": "How to manage your preferences",
+    "manage_body": "You can change or withdraw your consent at any time via the \"Manage cookie consent\" link in the site footer, or by clearing cookies from your browser.",
+    "browser_title": "Browser settings",
+    "browser_body": "You can also manage or delete cookies directly from your browser settings (Chrome, Firefox, Safari, Edge)."
   }
 }
