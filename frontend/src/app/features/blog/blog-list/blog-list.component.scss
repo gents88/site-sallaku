@@ -69,7 +69,15 @@
     overflow: hidden;
   }
   &__footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+  &__meta { display: flex; flex-direction: column; gap: 0.15rem; }
   &__date { font-size: 0.8rem; }
+  &__views {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.78rem;
+    mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+  }
 }
 
 /* Skeleton loader */
@@ -149,5 +157,5 @@
 
 .text-muted { color: var(--color-text-muted); font-size: 0.9rem; }
 .btn-sm { padding: 0.35rem 0.9rem; font-size: 0.8rem; }
-.empty-state { text-align: center; color: var(--color-text-muted); margin-top: 3rem; }
+/* .empty-state → styles.scss (globale, identico) */
 

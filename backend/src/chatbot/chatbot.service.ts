@@ -8,22 +8,26 @@ import { MailService } from '../mail/mail.service';
 import { AboutService } from '../about/about.service';
 import { AboutDocument } from '../about/schemas/about.schema';
 import { AiProviderService } from '../common/services/ai-provider.service';
+import { ProjectsService } from '../projects/projects.service';
+import { BlogService } from '../blog/blog.service';
 
-const LANG_NAMES: Record<string, string> = {
-  it: 'Italian (Italiano)',
-  en: 'English',
-  sq: 'Albanian (Shqip)',
-  es: 'Spanish (Español)',
-  pt: 'Portuguese (Português)',
-  fr: 'French (Français)',
-  de: 'German (Deutsch)',
-};
+interface PromptProject {
+  title?: string;
+  description?: string;
+  technologies?: string[];
+}
 
-function buildSystemPrompt(lang?: string, about?: Partial<AboutDocument> | null): string {
-  const uiLangHint = lang && LANG_NAMES[lang]
-    ? `The visitor's interface language is set to ${LANG_NAMES[lang]} (code: ${lang}) — use this only as a fallback guess when the message itself gives no clear signal about the language.`
-    : '';
+interface PromptPost {
+  title?: string;
+  slug?: string;
+  excerpt?: string;
+}
 
+function buildSystemPrompt(
+  about?: Partial<AboutDocument> | null,
+  projects?: PromptProject[],
+  posts?: PromptPost[],
+): string {
   const aboutLines = [
     about?.headline && `Headline: ${about.headline}`,
     about?.bio && `Bio: ${about.bio}`,
@@ -35,10 +39,24 @@ function buildSystemPrompt(lang?: string, about?: Partial<AboutDocument> | null)
     ? `\nHere is real, up-to-date information about Gent — use it to answer questions about him accurately:\n${aboutLines.join('\n')}\n`
     : '';
 
+  const projectsBlock = projects?.length
+    ? `\nGent's real projects (use these exact names/details when asked about his work — don't invent projects):\n${projects
+        .slice(0, 12)
+        .map((p) => `- ${p.title}: ${p.description}${p.technologies?.length ? ` [${p.technologies.join(', ')}]` : ''}`)
+        .join('\n')}\n`
+    : '';
+
+  const blogBlock = posts?.length
+    ? `\nGent's recent blog posts (mention and link these — path is /blog/<slug> — when relevant to the visitor's question):\n${posts
+        .slice(0, 8)
+        .map((p) => `- "${p.title}" (/blog/${p.slug})${p.excerpt ? `: ${p.excerpt}` : ''}`)
+        .join('\n')}\n`
+    : '';
+
   return `You are an AI assistant embedded in Gent Sallaku's developer portfolio website.
 Gent Sallaku is a full-stack developer specialized in Angular, Javascript, NestJS, MongoDB, and modern web technologies.
 He built this portfolio to showcase his projects, experiences, and services.
-${aboutBlock}
+${aboutBlock}${projectsBlock}${blogBlock}
 Gent also built a suite of free tools available on this site, under the "🧰 AI & Tools" menu (base path /lab/...). If a visitor asks about tools, document processing, PDFs, or productivity utilities, proactively mention the relevant ones and give their exact path.
 
 AI-powered tools:
@@ -65,10 +83,17 @@ Keep responses under 150 words unless asked for more detail.
 If you don't know something specific about Gent (not covered above), suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section — but this only applies to questions about Gent himself, not to general questions.
 
 Language rules:
-- Always reply in the same language the visitor's latest message is written in — this takes priority over any interface-language setting below.
-- ${uiLangHint}
+- Always reply in the same language the visitor's latest message is written in. Detect the language from the message itself before composing the answer; this takes priority over any interface-language setting below.
+- Never reply in English to an Italian message just because the interface language is English.
 - Pay close attention to correctly recognizing Albanian (Shqip) and never confuse it with similar-sounding Balkan languages (Serbian, Bosnian, Croatian, Macedonian) — if the visitor writes in Albanian, reply in Albanian.
-- If you are genuinely unsure which language the visitor is writing in, don't guess: ask them (briefly, in simple neutral wording) which language they'd like to continue in, and reply in that language from then on.`;
+- If you cannot confidently identify the language, reply in English.
+Do not use the website interface language to choose the response language.
+
+Follow-up suggestions (required):
+After your reply, on its own final line, add exactly:
+SUGGESTIONS: question one? | question two? | question three?
+- Three short, natural follow-up questions the visitor might ask next, in the same language as your reply, each under 8 words.
+- This must be the last line of your output, must not be mentioned anywhere else in the reply, and must always be present.`;
 }
 
 const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
@@ -111,6 +136,45 @@ const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
 
 const DEFAULT_FALLBACK =
   "I'm the AI assistant for this portfolio. I can answer questions about Gent's projects, skills, and services. You're also welcome to use the **Contact** section to get in touch with him directly!";
+const DEFAULT_ITALIAN_FALLBACK =
+  'Sono l’assistente AI di questo portfolio. Posso rispondere a domande sui progetti, sulle competenze e sui servizi di Gent. Puoi anche usare la sezione **Contact** per contattarlo direttamente!';
+const DEFAULT_ALBANIAN_FALLBACK =
+  'Jam asistenti AI i këtij portofoli. Mund t’u përgjigjem pyetjeve për projektet, aftësitë dhe shërbimet e Gentit. Mund të përdorësh edhe seksionin **Contact** për ta kontaktuar drejtpërdrejt!';
+const DEFAULT_LOCALIZED_FALLBACKS: Record<string, string> = {
+  it: DEFAULT_ITALIAN_FALLBACK,
+  sq: DEFAULT_ALBANIAN_FALLBACK,
+  es: 'Soy el asistente de IA de este portfolio. Puedo responder preguntas sobre los proyectos, las habilidades y los servicios de Gent. También puedes usar la sección **Contact** para contactarlo directamente.',
+  pt: 'Sou o assistente de IA deste portfólio. Posso responder a perguntas sobre os projetos, as competências e os serviços do Gent. Também podes usar a secção **Contact** para contactá-lo diretamente.',
+  fr: "Je suis l'assistant IA de ce portfolio. Je peux répondre aux questions sur les projets, les compétences et les services de Gent. Vous pouvez aussi utiliser la section **Contact** pour le contacter directement.",
+  de: 'Ich bin der KI-Assistent dieses Portfolios. Ich kann Fragen zu Gents Projekten, Fähigkeiten und Dienstleistungen beantworten. Du kannst ihn auch direkt über den Bereich **Contact** kontaktieren.',
+};
+
+function detectLanguage(message: string): string | undefined {
+  if (/\b(dhe|është|eshte|për|çfarë|cfare|shqip|ju lutem|faleminderit|përshëndetje)\b/i.test(message)) {
+    return 'sq';
+  }
+  if (/\b(sono|ciao|grazie|perché|perche|come|posso|vorrei|buongiorno|buonasera|progetto|progetti)\b/i.test(message)) return 'it';
+  if (/\b(hola|gracias|cómo|como|puedo|quiero|proyecto|proyectos|buenos)\b/i.test(message)) return 'es';
+  if (/\b(olá|obrigado|obrigada|como|posso|quero|projeto|projetos|bom)\b/i.test(message)) return 'pt';
+  if (/\b(bonjour|merci|comment|peux|voudrais|projet|projets|salut)\b/i.test(message)) return 'fr';
+  if (/\b(hallo|danke|wie|kann|möchte|projekt|projekte|guten)\b/i.test(message)) return 'de';
+  return undefined;
+}
+
+/** Splits the model's raw output into the visible reply and the trailing `SUGGESTIONS: a | b | c` line. */
+function parseSuggestions(raw: string): { content: string; suggestions?: string[] } {
+  const match = raw.match(/\n?SUGGESTIONS:\s*(.+?)\s*$/i);
+  if (!match) return { content: raw.trim() };
+
+  const suggestions = match[1]
+    .split('|')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+
+  const content = raw.slice(0, match.index).trim();
+  return { content: content || raw.trim(), suggestions: suggestions.length ? suggestions : undefined };
+}
 
 @Injectable()
 export class ChatbotService {
@@ -123,6 +187,8 @@ export class ChatbotService {
     private readonly configService: ConfigService,
     private readonly aboutService: AboutService,
     private readonly aiProvider: AiProviderService,
+    private readonly projectsService: ProjectsService,
+    private readonly blogService: BlogService,
   ) {}
 
   async sendMessage(
@@ -130,7 +196,7 @@ export class ChatbotService {
     sessionId?: string,
     meta?: { ip?: string; userAgent?: string },
     lang?: string,
-  ): Promise<{ sessionId: string; reply: string; timestamp: Date }> {
+  ): Promise<{ sessionId: string; reply: string; timestamp: Date; suggestions?: string[] }> {
     const sid = sessionId && sessionId.length > 0 ? sessionId : randomUUID();
 
     let session = await this.chatSessionModel.findOne({ sessionId: sid }).exec();
@@ -145,15 +211,15 @@ export class ChatbotService {
       .slice(-20) // last 20 messages for context window
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const reply = await this.callAI(historyForAI, lang);
+    const { content: reply, suggestions, usedFallback } = await this.callAI(historyForAI);
 
-    const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date() };
+    const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date(), usedFallback };
     session.messages.push(assistantMsg);
     session.lastActivity = new Date();
 
     await session.save();
 
-    return { sessionId: sid, reply, timestamp: assistantMsg.timestamp };
+    return { sessionId: sid, reply, timestamp: assistantMsg.timestamp, suggestions };
   }
 
   async getSession(sessionId: string): Promise<ChatSession> {
@@ -220,27 +286,59 @@ export class ChatbotService {
     };
   }
 
+  /** Counts assistant replies served today from the static canned fallback (AI call failed/unavailable) — surfaces AI provider outages that would otherwise go unnoticed. */
+  async getTodayFallbackCount(): Promise<number> {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const sessions = await this.chatSessionModel
+      .find({ lastActivity: { $gte: start } })
+      .exec();
+    return sessions.reduce((total, s) => {
+      return total + s.messages.filter(
+        m => m.role === 'assistant' && m.usedFallback && new Date(m.timestamp) >= start,
+      ).length;
+    }, 0);
+  }
+
   async getChatbotStats(): Promise<{
     totalSessions: number;
     totalMessages: number;
     interactionsToday: number;
     sessionsThisMonth: number;
+    fallbackRepliesToday: number;
   }> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [totalSessions, allSessions, sessionsThisMonth, interactionsToday] = await Promise.all([
+    const [totalSessions, allSessions, sessionsThisMonth, interactionsToday, fallbackRepliesToday] = await Promise.all([
       this.chatSessionModel.countDocuments().exec(),
       this.chatSessionModel.find({}, 'messages').lean().exec(),
       this.chatSessionModel.countDocuments({ createdAt: { $gte: startOfMonth } }).exec(),
       this.getTodayInteractionCount(),
+      this.getTodayFallbackCount(),
     ]);
 
     const totalMessages = (allSessions as Array<{ messages: unknown[] }>).reduce(
       (sum, s) => sum + (s.messages?.length ?? 0), 0,
     );
 
-    return { totalSessions, totalMessages, interactionsToday, sessionsThisMonth };
+    return { totalSessions, totalMessages, interactionsToday, sessionsThisMonth, fallbackRepliesToday };
+  }
+
+  /** Appends a message written live (visitor or Gent) once a live handoff session is active */
+  async appendLiveMessage(
+    sessionId: string,
+    role: 'user' | 'agent',
+    content: string,
+  ): Promise<ChatMessage> {
+    const session = await this.chatSessionModel.findOne({ sessionId }).exec();
+    if (!session) throw new NotFoundException('Session not found');
+
+    const message: ChatMessage = { role, content, timestamp: new Date() };
+    session.messages.push(message);
+    session.lastActivity = new Date();
+    await session.save();
+    return message;
   }
 
   async sendTranscript(sessionId: string, email: string): Promise<{ success: boolean }> {
@@ -253,22 +351,29 @@ export class ChatbotService {
   }
 
   // Provider attivo: Groq.
-  private async callAI(messages: { role: string; content: string }[], lang?: string): Promise<string> {
+  private async callAI(
+    messages: { role: string; content: string }[],
+  ): Promise<{ content: string; suggestions?: string[]; usedFallback: boolean }> {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
     if (!apiKey) {
-      return this.getFallbackResponse(messages[messages.length - 1].content);
+      return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
     }
 
     try {
-      const about = await this.aboutService.get().catch(() => null);
-      const content = await this.aiProvider.chatCompletion(
-        [{ role: 'system', content: buildSystemPrompt(lang, about) }, ...messages],
-        { model: 'llama-3.1-8b-instant', maxTokens: 350, timeoutMs: 15_000 },
+      const [about, projects, postsPage] = await Promise.all([
+        this.aboutService.get().catch(() => null),
+        this.projectsService.findAll().catch(() => []) as Promise<PromptProject[]>,
+        this.blogService.findPublished(undefined, 1, 8).catch(() => ({ data: [] as PromptPost[] })),
+      ]);
+      const raw = await this.aiProvider.chatCompletion(
+        [{ role: 'system', content: buildSystemPrompt(about, projects, postsPage.data) }, ...messages],
+        { model: 'openai/gpt-oss-120b', maxTokens: 900, timeoutMs: 20_000 },
       );
-      return content || this.getFallbackResponse(messages[messages.length - 1].content);
+      if (!raw) return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      return { ...parseSuggestions(raw), usedFallback: false };
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
-      return this.getFallbackResponse(messages[messages.length - 1].content);
+      return { content: this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
     }
   }
 
@@ -318,6 +423,9 @@ export class ChatbotService {
   // }
 
   private getFallbackResponse(userMessage: string): string {
+    const language = detectLanguage(userMessage);
+    if (language && DEFAULT_LOCALIZED_FALLBACKS[language]) return DEFAULT_LOCALIZED_FALLBACKS[language];
+
     for (const { pattern, response } of FALLBACK_RESPONSES) {
       if (pattern.test(userMessage)) return response;
     }

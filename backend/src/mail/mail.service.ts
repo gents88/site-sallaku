@@ -428,6 +428,77 @@ export class MailService {
     });
   }
 
+  /** Sent to Gent when a visitor asks to talk to him live from the chatbot */
+  sendLiveHandoffRequest(opts: {
+    requestId: string;
+    sessionId: string;
+    lastUserMessage?: string;
+    locale?: string;
+    recentMessages: { role: string; content: string; timestamp: Date }[];
+    expiresAt: Date;
+  }): Promise<MailDeliveryResult> {
+    const adminEmail = this.getAdminInbox();
+    const frontendUrl = this.config.get<string>('FRONTEND_URL', 'https://gentsallaku.it');
+    const joinUrl = `${frontendUrl}/dashboard/live-chat/${opts.sessionId}`;
+    const timestamp = new Date().toLocaleString('it-IT', {
+      year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+    const expiryTime = opts.expiresAt.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+
+    const historyHtml = opts.recentMessages
+      .map((m) => {
+        const isUser = m.role === 'user';
+        const label = isUser ? 'Visitatore' : 'Assistente AI';
+        const labelColor = isUser ? '#fbbf24' : '#34d399';
+        return `
+          <div style="margin-bottom:10px;padding:10px 14px;background:${isUser ? '#1e2a4a' : '#0f1424'};border-radius:8px;border-left:3px solid ${labelColor};">
+            <strong style="color:${labelColor};font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;">${label}</strong>
+            <p style="margin:4px 0 0;line-height:1.6;color:#e2e8f0;font-size:0.9rem;">${m.content.replace(/\n/g, '<br/>')}</p>
+          </div>`;
+      })
+      .join('');
+
+    return this.send({
+      to: adminEmail,
+      subject: `🔴 Un visitatore vuole parlare con te ora — ${timestamp}`,
+      text: `Un visitatore della chat vuole parlarti in tempo reale.\n\nSessione: ${opts.sessionId}\nRichiesto alle: ${timestamp}${opts.lastUserMessage ? `\nUltimo messaggio: ${opts.lastUserMessage}` : ''}\n\nEntra in chat entro le ${expiryTime}: ${joinUrl}\n\nSe non rispondi entro quell'orario la richiesta scade automaticamente, ma il visitatore continua a essere assistito dal bot.`,
+      html: `
+        <div style="font-family:Inter,sans-serif;max-width:600px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#b45309,#dc2626);padding:24px 32px;">
+            <div style="color:rgba(255,255,255,0.75);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;">Portfolio Chatbot · Richiesta urgente</div>
+            <h1 style="color:#fff;margin:6px 0 0;font-size:1.2rem;">🔴 Un visitatore vuole parlare con te ora</h1>
+          </div>
+          <div style="padding:28px 32px;">
+            <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(251,191,36,0.25);overflow:hidden;margin-bottom:20px;">
+              <table style="width:100%;border-collapse:collapse;">
+                <tr><td style="padding:8px 16px;color:#64748b;white-space:nowrap;width:110px;">Sessione</td><td style="padding:8px 16px;font-family:monospace;font-size:0.8rem;color:#94a3b8;">${opts.sessionId}</td></tr>
+                <tr style="background:rgba(255,255,255,0.02);"><td style="padding:8px 16px;color:#64748b;">Richiesto</td><td style="padding:8px 16px;color:#e2e8f0;">${timestamp}</td></tr>
+                <tr><td style="padding:8px 16px;color:#64748b;">Scade alle</td><td style="padding:8px 16px;color:#fbbf24;">${expiryTime}</td></tr>
+              </table>
+            </div>
+            ${historyHtml ? `
+            <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(148,163,184,0.12);margin-bottom:24px;">
+              <div style="background:#0f1424;padding:10px 16px;border-bottom:1px solid rgba(148,163,184,0.12);">
+                <strong style="color:#94a3b8;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.05em;">Ultimi messaggi</strong>
+              </div>
+              <div style="padding:14px;">${historyHtml}</div>
+            </div>` : ''}
+            <div style="text-align:center;">
+              <a href="${joinUrl}"
+                 style="background:linear-gradient(135deg,#b45309,#dc2626);color:#fff;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">
+                Entra in chat ora
+              </a>
+            </div>
+            <p style="color:#64748b;font-size:0.82rem;text-align:center;margin-top:16px;">Se non entri entro l'orario indicato, la richiesta scade e il visitatore resta con l'assistente AI.</p>
+          </div>
+          <div style="background:#070b15;padding:14px;text-align:center;font-size:0.78rem;color:#475569;">
+            © ${new Date().getFullYear()} Gent Sallaku · <a href="https://gentsallaku.it" style="color:#818cf8;">gentsallaku.it</a>
+          </div>
+        </div>
+      `,
+    });
+  }
+
   /** OTP email for passwordless login */
   sendOtpEmail(email: string, code: string): Promise<MailDeliveryResult> {
     return this.send({

@@ -1,4 +1,5 @@
     <div class="cp-page">
+      <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
       <header class="cp-header">
         <h1 class="cp-title">✏️ {{ 'editor.title' | translate }}</h1>
         <p class="cp-subtitle">{{ 'editor.subtitle' | translate }}</p>
@@ -54,12 +55,12 @@
           @for (group of toolbar; track $index) {
             <span class="fmt-group">
               @for (b of group; track b.cmd + (b.arg ?? '')) {
-                <button class="tb" [title]="b.labelKey | translate" (click)="exec(b.cmd, b.arg)">{{ b.icon }}</button>
+                <button class="tb" [title]="b.labelKey | translate" [attr.aria-label]="b.labelKey | translate" (click)="exec(b.cmd, b.arg)">{{ b.icon }}</button>
               }
             </span>
           }
           <span class="fmt-group">
-            <button class="tb" [title]="'editor.link' | translate" (click)="addLink()">🔗</button>
+            <button class="tb" [title]="'editor.link' | translate" [attr.aria-label]="'editor.link' | translate" (click)="addLink()">🔗</button>
           </span>
           <span class="words">{{ wordCount() }} {{ 'editor.words' | translate }}</span>
         </div>

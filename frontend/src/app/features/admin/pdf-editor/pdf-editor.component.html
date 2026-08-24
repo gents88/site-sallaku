@@ -1,4 +1,5 @@
     <div class="cp-page">
+      <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
       <header class="cp-header">
         <h1 class="cp-title">🖊️ {{ 'pdf_editor.title' | translate }}</h1>
         <p class="cp-subtitle">{{ 'pdf_editor.subtitle' | translate }}</p>
@@ -57,6 +58,7 @@
           <div class="res-head">
             <h2>{{ 'pdf_editor.pages_title' | translate }} ({{ pages().length }})</h2>
             <p class="hint-line">{{ 'pdf_editor.pages_hint' | translate }}</p>
+            <p class="persistence-hint">⚠️ {{ 'pdf_editor.persistence_hint' | translate }}</p>
           </div>
           <span class="sr-only" aria-live="polite">{{ moveAnnouncement() }}</span>
           <div class="pages-grid">
@@ -70,7 +72,7 @@
                       (dragleave)="onDragLeave(i)"
                       (drop)="onDrop($event, i)"
                       (dragend)="onDragEnd()"
-                      aria-label="drag to reorder">
+                      [attr.aria-label]="'pdf_editor.drag_to_reorder' | translate">
                 @if (p.thumb) {
                   <img [src]="p.thumb" draggable="false" [style.transform]="'rotate(' + p.rot + 'deg)'" alt="p. {{ i + 1 }}">
                 } @else {
@@ -79,10 +81,10 @@
                 <figcaption>
                   <span>{{ i + 1 }}</span>
                   <span class="page-btns">
-                    <button (click)="rotate(i)" aria-label="rotate">⟳</button>
-                    <button [disabled]="i === 0" (click)="move(i, -1)" aria-label="move left">←</button>
-                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" aria-label="move right">→</button>
-                    <button [disabled]="pages().length === 1" (click)="remove(i)" aria-label="delete">🗑</button>
+                    <button (click)="rotate(i)" [attr.aria-label]="'pdf_editor.rotate' | translate">⟳</button>
+                    <button [disabled]="i === 0" (click)="move(i, -1)" [attr.aria-label]="'pdf_editor.move_left' | translate">←</button>
+                    <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" [attr.aria-label]="'pdf_editor.move_right' | translate">→</button>
+                    <button [disabled]="pages().length === 1" (click)="remove(i)" [attr.aria-label]="'pdf_editor.delete' | translate">🗑</button>
                   </span>
                 </figcaption>
               </figure>

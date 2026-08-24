@@ -6,6 +6,7 @@
 <section class="contact-hero" aria-labelledby="contact-title">
   <div class="contact-hero__glow" aria-hidden="true"></div>
   <div class="container contact-hero__inner">
+    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
     <span class="section-tag animate-fade-up">{{ 'contact.tag' | translate }}</span>
     <h1 id="contact-title" class="section-title text-gradient animate-fade-up delay-1">
       {{ 'contact.title' | translate }}
@@ -69,6 +70,19 @@
       </div>
 
       <app-turnstile-widget (verified)="onTurnstileVerified($event)" />
+
+      <div class="field-group field-group--checkbox">
+        <label class="field-checkbox">
+          <input type="checkbox" formControlName="privacyAccepted" />
+          <span>
+            {{ 'contact.form.privacy_checkbox' | translate }}
+            <a [routerLink]="'/privacy-policy' | langUrl" target="_blank" rel="noopener">{{ 'contact.form.privacy_link_text' | translate }}</a>
+          </span>
+        </label>
+        @if (form.get('privacyAccepted')?.invalid && form.get('privacyAccepted')?.touched) {
+          <span class="field-error">{{ 'contact.form.privacy_err' | translate }}</span>
+        }
+      </div>
 
       <div class="form-footer">
         <button class="btn btn-primary submit-btn" type="submit" [disabled]="sending">

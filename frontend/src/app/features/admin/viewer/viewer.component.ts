@@ -7,7 +7,8 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
-import { WorkspaceService } from '../../../core/services/workspace.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService, LibraryAnnotation, LibraryDoc } from '../../../core/services/library.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
@@ -22,7 +23,7 @@ const MAX_THUMBS = 200;
   selector: 'app-viewer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule],
+  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule, BreadcrumbComponent],
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],
 })
@@ -47,12 +48,16 @@ export class ViewerComponent implements OnInit, OnDestroy {
   readonly scale = signal(1);
   readonly thumbs = signal<(string | null)[]>([]);
   readonly msg = signal('');
+  readonly opening = signal(false);
   readonly query = signal('');
   readonly searching = signal(false);
+  readonly searchProgress = signal<{ current: number; total: number } | null>(null);
   readonly matches = signal<SearchMatch[]>([]);
   readonly matchIdx = signal(0);
   /** true se l'ultima ricerca ha rilevato pochissimo testo estraibile (probabile PDF scansionato) */
   readonly docSparseText = signal(false);
+  readonly workspaceItem = signal<WorkspaceItem | null>(null);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   readonly zoomPct = computed(() => Math.round(this.scale() * 100));
   readonly showOcrHint = computed(() =>
@@ -96,6 +101,11 @@ export class ViewerComponent implements OnInit, OnDestroy {
     if (docId) {
       const page = Number(this.route.snapshot.queryParamMap.get('page')) || 1;
       void this.openFromLibrary(docId, page);
+    } else {
+      const pending = this.workspace.peek();
+      if (pending && pending.kind === 'file' && pending.blob) {
+        this.workspaceItem.set(pending);
+      }
     }
 
     this.seo.update({
@@ -103,7 +113,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
       description: 'View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload.',
       url: 'https://gentsallaku.it/lab/viewer',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free PDF Viewer',
@@ -114,7 +124,18 @@ export class ViewerComponent implements OnInit, OnDestroy {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Page navigation', 'Zoom', 'Full-text search', 'Thumbnail preview', 'Private, no upload'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.t.instant('sidebar.items.viewer'), url: 'https://gentsallaku.it/lab/viewer' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.viewer') },
+    ];
   }
 
   ngOnDestroy(): void { this.close(); }
@@ -122,9 +143,21 @@ export class ViewerComponent implements OnInit, OnDestroy {
   select(e: Event): void { void this.open((e.target as HTMLInputElement).files?.[0] ?? null); }
   onFilesDropped(files: FileList): void { void this.open(files[0] ?? null); }
 
+  useWorkspaceFile(): void {
+    const item = this.workspace.take();
+    this.workspaceItem.set(null);
+    if (!item || item.kind !== 'file' || !item.blob) return;
+    void this.open(new File([item.blob], item.filename, { type: item.mime }));
+  }
+
+  dismissWorkspaceBanner(): void {
+    this.workspaceItem.set(null);
+  }
+
   async open(f: File | null): Promise<void> {
     if (!f) return;
     this.msg.set('');
+    this.opening.set(true);
     try {
       const doc = await this.pdfjs.openDocument(await f.arrayBuffer());
       this.close();
@@ -141,6 +174,8 @@ export class ViewerComponent implements OnInit, OnDestroy {
       void this.renderThumbs(doc);
     } catch {
       this.msg.set(`❌ ${this.t.instant('viewer.err_open')}`);
+    } finally {
+      this.opening.set(false);
     }
   }
 
@@ -194,6 +229,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     if (!doc || !q.trim()) { void this.renderPage(); return; }
 
     this.searching.set(true);
+    this.searchProgress.set(null);
     const needle = q.trim().toLowerCase();
     const found: SearchMatch[] = [];
     let totalChars = 0;
@@ -211,7 +247,11 @@ export class ViewerComponent implements OnInit, OnDestroy {
       }
       found.sort((a, b) => a.page - b.page);
     } else {
+      // Nessun testo pre-estratto (documento non da Libreria): si passa pagina per
+      // pagina via pdf.js, potenzialmente lento su documenti lunghi — da qui il
+      // progresso reale, non un semplice "…" indeterminato.
       for (let i = 1; i <= doc.numPages; i++) {
+        this.searchProgress.set({ current: i, total: doc.numPages });
         const page = await doc.getPage(i);
         const content = await page.getTextContent();
         const raw = content.items.map((it) => ('str' in it ? it.str : '')).join(' ');
@@ -226,6 +266,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
     }
 
     this.searching.set(false);
+    this.searchProgress.set(null);
     this.matches.set(found);
     // < 15 caratteri/pagina in media ⇒ quasi certamente un PDF scansionato senza layer di testo
     this.docSparseText.set(totalChars / doc.numPages < 15);

@@ -82,8 +82,10 @@ app.use((req, res, next) => {
       "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
       // Images: self, data URIs, and any HTTPS (covers CDN images in blog posts)
       "img-src 'self' data: https:",
-      // GA4 analytics endpoints
-      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com",
+      // GA4 analytics endpoints + backend API (REST/polling su https, WebSocket
+      // della chat live su wss: la CSP confronta anche lo schema, quindi https://
+      // NON copre wss:// sullo stesso host e va elencato a parte).
+      "connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app wss://portfolio-backend-production-e76d.up.railway.app https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://region1.analytics.google.com https://ipwho.is",
       "object-src 'none'",
       "frame-src 'none'",
       "base-uri 'self'",

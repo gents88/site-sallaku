@@ -1,4 +1,5 @@
 <div class="page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
   <header class="page-header">
     <div class="header-badge">
       <span class="badge-dot"></span>
@@ -8,6 +9,12 @@
     <p>{{ 'workspace.subtitle' | translate }}</p>
   </header>
 
+  @if (feedback(); as f) {
+    <div class="feedback-toast" role="status" aria-live="polite">
+      ✓ {{ (f === 'cleared' ? 'workspace.feedback_cleared' : 'workspace.feedback_downloaded') | translate }}
+    </div>
+  }
+
   @if (workspace.hasItem()) {
     <section class="current-card" [class.pop]="justCleared()">
       <div class="current-icon">{{ workspace.current()!.kind === 'file' ? '📄' : '📝' }}</div>
@@ -15,6 +22,7 @@
         <span class="current-kind">{{ kindLabel(workspace.current()!.kind) | translate }}</span>
         <h3>{{ workspace.current()!.filename }}</h3>
         <p class="current-source">{{ 'workspace.received_from' | translate: { tool: (workspace.current()!.fromTool + '.title' | translate) } }}</p>
+        <p class="current-persistence-hint">⚠️ {{ 'workspace.persistence_hint' | translate }}</p>
       </div>
       <div class="current-actions">
         <button type="button" class="btn-ghost" (click)="downloadCurrent()">⬇ {{ 'workspace.btn_download' | translate }}</button>

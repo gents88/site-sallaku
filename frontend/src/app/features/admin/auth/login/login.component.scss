@@ -169,7 +169,7 @@
 
 .text-muted { color: var(--color-text-muted); }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* @keyframes spin → styles.scss (globale, identico) */
 .spin { animation: spin 1s linear infinite; }
 
 @media (max-width: 900px) {

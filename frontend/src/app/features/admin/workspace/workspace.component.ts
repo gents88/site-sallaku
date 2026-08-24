@@ -1,8 +1,9 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceKind } from '../../../core/services/workspace.service';
 
 interface ToolLink {
@@ -40,16 +41,26 @@ const STARTING_TOOLS: ToolLink[] = [
   selector: 'app-workspace',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, TranslateModule],
+  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss'],
 })
 export class WorkspaceComponent implements OnInit {
   private readonly seo = inject(SeoService);
+  private readonly translate = inject(TranslateService);
   readonly workspace = inject(WorkspaceService);
 
   readonly startingTools = STARTING_TOOLS;
+  breadcrumbItems: BreadcrumbItem[] = [];
   readonly justCleared = signal(false);
+  /**
+   * Conferma testuale per download/rimozione. Non basta l'animazione "pop" sulla
+   * current-card: quella vive dentro @if (workspace.hasItem()), che diventa false
+   * nello stesso ciclo in cui si chiama clear() — la card (e l'animazione con essa)
+   * sparisce dal DOM prima ancora di poter essere vista.
+   */
+  readonly feedback = signal<'cleared' | 'downloaded' | null>(null);
+  private feedbackTimer: ReturnType<typeof setTimeout> | undefined;
 
   readonly nextSteps = computed<ToolLink[]>(() => {
     const item = this.workspace.current();
@@ -64,6 +75,18 @@ export class WorkspaceComponent implements OnInit {
       description: 'Send a file or text from one tool to the next without re-uploading. Scan, extract, translate and summarize in one connected flow.',
       url: 'https://gentsallaku.it/lab/workspace',
     });
+    this.seo.injectJsonLd([
+      this.seo.breadcrumb([
+        { name: this.translate.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.translate.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.translate.instant('sidebar.items.workspace'), url: 'https://gentsallaku.it/lab/workspace' },
+      ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.translate.instant('nav.home'), path: '/' },
+      { label: this.translate.instant('sidebar.lab'), path: '/lab' },
+      { label: this.translate.instant('sidebar.items.workspace') },
+    ];
   }
 
   kindLabel(kind: WorkspaceKind): string {
@@ -88,13 +111,23 @@ export class WorkspaceComponent implements OnInit {
       });
       a.click();
       URL.revokeObjectURL(a.href);
+    } else {
+      return;
     }
+    this.showFeedback('downloaded');
   }
 
   clearCurrent(): void {
     this.workspace.clear();
     this.justCleared.set(true);
     setTimeout(() => this.justCleared.set(false), 1500);
+    this.showFeedback('cleared');
+  }
+
+  private showFeedback(kind: 'cleared' | 'downloaded'): void {
+    if (this.feedbackTimer) clearTimeout(this.feedbackTimer);
+    this.feedback.set(kind);
+    this.feedbackTimer = setTimeout(() => this.feedback.set(null), 2000);
   }
 
   timeAgo(ts: number): string {

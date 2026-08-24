@@ -5,6 +5,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import {
@@ -16,6 +17,8 @@ type Kind = 'pdf' | 'image' | 'text' | 'base64' | 'unknown';
 
 /** Mirrors the backend's FilesInterceptor('files', MAX_FILE_COUNT) cap in conversion.controller.ts. */
 const MULTI_MAX_FILES = 20;
+/** Mirrors the backend's `limits: { fileSize: MAX_FILE_SIZE }` in conversion.controller.ts. */
+const MAX_FILE_MB = 50;
 
 const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: string }> = {
   'Documenti':   { icon: '📄', nameKey: 'convert.group_docs',       descKey: 'convert.group_docs_desc'       },
@@ -30,7 +33,7 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
   selector: 'app-convert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink],
+  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink, BreadcrumbComponent],
   templateUrl: './convert.component.html',
   styleUrls: ['./convert.component.scss'],
 })
@@ -56,6 +59,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
   /** Set once at startup from a pending Workspace hand-off (file kind only); cleared on use/dismiss. */
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
 
+  breadcrumbItems: BreadcrumbItem[] = [];
+
   constructor() {
     // Client-only, runs once right after the initial (hydrated) render is stable —
     // safe to read localStorage here, unlike a field initializer or ngOnInit, both
@@ -73,7 +78,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
       description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
       url: 'https://gentsallaku.it/lab/convert',
     });
-    this.seo.injectJsonLd({
+    this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Free File Converter',
@@ -84,7 +89,18 @@ export class ConvertComponent implements OnInit, OnDestroy {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['PDF to Word/Text/HTML', 'Word to PDF', 'Excel/CSV conversion', 'Image format conversion', 'Base64 encode/decode', 'Favorites & instant search'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-    });
+    },
+    this.seo.breadcrumb([
+      { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+      { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+      { name: this.t.instant('sidebar.items.convert'), url: 'https://gentsallaku.it/lab/convert' },
+    ]),
+    ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.convert') },
+    ];
   }
 
   private readonly allGroups = (() => {
@@ -164,6 +180,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.isMulti() ? this.files().length > 0 : Boolean(this.file()),
   );
 
+  readonly maxFileMb = MAX_FILE_MB;
+
   readonly canConvert = computed(() => {
     const def = this.selectedDef();
     if (!def || this.run()) return false;
@@ -172,13 +190,21 @@ export class ConvertComponent implements OnInit, OnDestroy {
       const fs = this.files();
       if (fs.length === 0) return false;
       if (def.id === 'merge-pdf' && fs.length < 2) return false;
-      return fs.every(f => this.matchesAccept(def, f));
+      return fs.every(f => this.matchesAccept(def, f) && this.matchesSize(f));
     }
 
     const f = this.file();
     if (!f) return false;
+    if (!this.matchesSize(f)) return false;
     if (def.id.startsWith('base64-')) return Boolean(this.b64);
     return this.matchesAccept(def, f);
+  });
+
+  /** true se almeno un file selezionato supera il limite di dimensione lato backend. */
+  readonly hasOversizedFile = computed(() => {
+    if (this.isMulti()) return this.files().some((f) => !this.matchesSize(f));
+    const f = this.file();
+    return f ? !this.matchesSize(f) : false;
   });
 
   matchesAccept(def: ConversionDef, f: File): boolean {
@@ -186,6 +212,10 @@ export class ConvertComponent implements OnInit, OnDestroy {
     const exts = def.accept.split(',').map(a => a.trim().replace('.', '').toLowerCase());
     const ext = this.extOf(f.name);
     return exts.includes(ext) || exts.some(e => f.type.includes(e));
+  }
+
+  matchesSize(f: File): boolean {
+    return f.size <= MAX_FILE_MB * 1024 * 1024;
   }
 
   ngOnDestroy(): void { this.clean(); }

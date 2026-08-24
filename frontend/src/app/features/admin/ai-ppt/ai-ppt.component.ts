@@ -10,8 +10,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
   AiPptService,
@@ -24,11 +25,14 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
 
 type ViewMode = 'carousel' | 'grid';
 
+/** Allineato al limite lato backend per il file di contesto opzionale. */
+const MAX_CONTEXT_FILE_MB = 20;
+
 @Component({
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -39,6 +43,9 @@ export class AiPptComponent implements OnInit {
   private readonly service   = inject(AiPptService);
   private readonly seo       = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
+  private readonly t         = inject(TranslateService);
+
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     this.seo.update({
@@ -85,7 +92,17 @@ export class AiPptComponent implements OnInit {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.ai_ppt'), url: 'https://gentsallaku.it/lab/ai-ppt' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.ai_ppt') },
+    ];
   }
 
   readonly loading         = this.service.isLoading;
@@ -102,6 +119,7 @@ export class AiPptComponent implements OnInit {
   readonly exporting       = signal(false);
   readonly sending         = signal(false);
   readonly justSent        = signal(false);
+  readonly truncatedWarning = signal(false);
 
   readonly styles      = PPT_STYLES;
   readonly slideCounts = SLIDE_COUNT_OPTIONS;
@@ -145,7 +163,11 @@ export class AiPptComponent implements OnInit {
   private setContextFile(f: File): void {
     const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
     if (!['pdf', 'txt', 'docx'].includes(ext)) {
-      this.error.set('Only PDF, TXT, or DOCX files are supported as context.');
+      this.error.set(this.t.instant('ai_ppt.err_file_type'));
+      return;
+    }
+    if (f.size > MAX_CONTEXT_FILE_MB * 1024 * 1024) {
+      this.error.set(this.t.instant('ai_ppt.err_file_too_large', { max: MAX_CONTEXT_FILE_MB, name: f.name }));
       return;
     }
     this.contextFile.set(f);
@@ -160,7 +182,7 @@ export class AiPptComponent implements OnInit {
   generate(): void {
     const t = this.topic().trim();
     if (!t || t.length < 3) {
-      this.error.set('Please enter a topic of at least 3 characters.');
+      this.error.set(this.t.instant('ai_ppt.err_topic_short'));
       return;
     }
     this.error.set('');
@@ -179,7 +201,7 @@ export class AiPptComponent implements OnInit {
         setTimeout(() => this.generatorSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
       },
       error: (err) => {
-        const msg = err?.error?.message ?? 'An error occurred. Please try again.';
+        const msg = err?.error?.message ?? this.t.instant('ai_ppt.err_generic');
         this.error.set(Array.isArray(msg) ? msg.join(' ') : msg);
       },
     });
@@ -188,6 +210,7 @@ export class AiPptComponent implements OnInit {
   reset(): void {
     this.result.set(null); this.error.set(''); this.activeSlideIdx.set(0);
     this.topic.set(''); this.contextFile.set(null); this.viewMode.set('carousel');
+    this.truncatedWarning.set(false);
   }
 
   prevSlide(): void { this.activeSlideIdx.update((i) => Math.max(0, i - 1)); }
@@ -203,7 +226,10 @@ export class AiPptComponent implements OnInit {
     const r = this.result();
     if (!r || this.exporting()) return;
     this.exporting.set(true);
-    this.service.exportAsPdf(r).finally(() => this.exporting.set(false));
+    this.truncatedWarning.set(false);
+    this.service.exportAsPdf(r)
+      .then((truncated) => this.truncatedWarning.set(truncated))
+      .finally(() => this.exporting.set(false));
   }
 
   async sendToWorkspace(): Promise<void> {
@@ -211,7 +237,8 @@ export class AiPptComponent implements OnInit {
     if (!r || this.sending()) return;
     this.sending.set(true);
     try {
-      const blob = await this.service.buildPdfBlob(r);
+      const { blob, truncated } = await this.service.buildPdfBlob(r);
+      this.truncatedWarning.set(truncated);
       this.workspace.send({
         kind: 'file',
         blob,

@@ -17,6 +17,7 @@ import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { RatingStarsComponent } from '../../shared/components/rating-stars/rating-stars.component';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
 
 const DATE_LOCALES: Record<string, string> = {
   it: 'it-IT',
@@ -31,12 +32,13 @@ const DATE_LOCALES: Record<string, string> = {
 @Component({
   selector: 'app-testimonials',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent],
   templateUrl: './testimonials.component.html',
   styleUrls: ['./testimonials.component.scss'],
 })
 export class TestimonialsComponent implements OnInit, AfterViewInit {
   private readonly platformId = inject(PLATFORM_ID);
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   form = this.fb.group({
     authorName: ['', [Validators.required, Validators.maxLength(100)]],
@@ -109,6 +111,7 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
     const lang = this.langService.current();
     const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/testimonials', lang)}`;
     const title = this.translate.instant('testimonials.title');
+    const homeLabel = this.translate.instant('nav.home');
     const nodes: object[] = [
       {
         '@context': 'https://schema.org',
@@ -118,7 +121,7 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
         description: this.translate.instant('testimonials.subtitle'),
       },
       this.seo.breadcrumb([
-        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: homeLabel, url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
         { name: title, url: pageUrl },
       ]),
       ...testimonials.map((t) => ({
@@ -131,6 +134,10 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
       })),
     ];
     this.seo.injectJsonLd(nodes);
+    this.breadcrumbItems = [
+      { label: homeLabel, path: '/' },
+      { label: title },
+    ];
   }
 
   submit(): void {

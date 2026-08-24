@@ -16,6 +16,7 @@ import { StatsModule } from './stats/stats.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SystemModule } from './system/system.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { LiveHandoffModule } from './live-handoff/live-handoff.module';
 import { CronModule } from './cron/cron.module';
 import { CommonModule } from './common/common.module';
 import { AuditModule } from './audit/audit.module';
@@ -78,6 +79,7 @@ import { SearchModule } from './search/search.module';
     StatsModule,
     SystemModule,
     ChatbotModule,
+    LiveHandoffModule,
     CronModule,
     AuditModule,
     ConsentModule,

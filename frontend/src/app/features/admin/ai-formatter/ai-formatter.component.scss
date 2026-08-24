@@ -6,6 +6,11 @@
   color: var(--text-primary, #e6edf3);
 }
 
+app-breadcrumb {
+  display: block;
+  padding: 2rem 2rem 0;
+}
+
 // ── HERO ────────────────────────────────────────────────────────────────
 .hero {
   padding: 72px 24px 56px;
@@ -558,9 +563,7 @@
   flex-shrink: 0;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* @keyframes spin → styles.scss (globale, identico) */
 
 // ── OUTPUT CONTROLS ──────────────────────────────────────────────────────
 .output-controls {

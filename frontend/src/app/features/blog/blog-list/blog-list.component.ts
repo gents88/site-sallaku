@@ -10,16 +10,18 @@ import { PostSummary } from '../../../core/models/post.model';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BlogListComponent implements OnInit {
+  breadcrumbItems: BreadcrumbItem[] = [];
   posts: PostSummary[] = [];
   filteredPosts: PostSummary[] = [];
   allTags: string[] = [];
@@ -60,12 +62,18 @@ export class BlogListComponent implements OnInit {
       description: 'Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern IT development.',
       url: pageUrl,
     });
+    const homeLabel = this.translate.instant('nav.home');
+    const blogLabel = this.translate.instant('nav.blog');
     this.seo.injectJsonLd(
       this.seo.breadcrumb([
-        { name: this.translate.instant('nav.home'), url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
-        { name: 'Blog', url: pageUrl },
+        { name: homeLabel, url: `${SITE_ORIGIN}${withLangPrefix('/', lang)}` },
+        { name: blogLabel, url: pageUrl },
       ]),
     );
+    this.breadcrumbItems = [
+      { label: homeLabel, path: '/' },
+      { label: blogLabel },
+    ];
     this.blogService.getPublishedAll().pipe(
       // No retry() — see blog-detail.component.ts for why: it trades a
       // clean failure for a worse one (page stuck on the loading spinner)

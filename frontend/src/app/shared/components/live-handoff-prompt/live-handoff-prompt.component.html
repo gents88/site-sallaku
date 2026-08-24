@@ -1,0 +1,47 @@
+@if (showBanner) {
+  <div class="lhp-banner" role="region" [attr.aria-label]="'live_handoff.prompt_title' | translate">
+    <button
+      class="lhp-banner__close"
+      (click)="decline.emit()"
+      [attr.aria-label]="'live_handoff.dismiss' | translate"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd"/>
+      </svg>
+    </button>
+    <div class="lhp-banner__avatar" aria-hidden="true">G</div>
+    <div class="lhp-banner__body">
+      <p class="lhp-banner__text">{{ 'live_handoff.prompt_title' | translate }}</p>
+      <div class="lhp-banner__actions">
+        <button class="lhp-btn lhp-btn--primary" (click)="accept.emit()">
+          {{ 'live_handoff.accept' | translate }}
+        </button>
+        <button class="lhp-btn lhp-btn--secondary" (click)="decline.emit()">
+          {{ 'live_handoff.decline' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showPill) {
+  <button
+    class="lhp-pill"
+    [class.lhp-pill--waiting]="isWaiting"
+    (click)="onPillClick()"
+    [attr.aria-label]="'live_handoff.prompt_title' | translate"
+  >
+    @if (isWaiting) {
+      <span class="lhp-pill__spinner" aria-hidden="true"></span>
+    } @else {
+      <span class="lhp-pill__avatar" aria-hidden="true">G</span>
+    }
+    <span class="lhp-pill__text">
+      @switch (state) {
+        @case ('request_sent') { {{ 'live_handoff.waiting' | translate }} }
+        @case ('agent_joining') { {{ 'live_handoff.agent_joining' | translate }} }
+        @default { {{ 'live_handoff.pill_label' | translate }} }
+      }
+    </span>
+  </button>
+}

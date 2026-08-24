@@ -27,7 +27,14 @@ import {
   OperationsInfo,
   ChatbotSession,
   RecentContact,
+  LiveHandoffSession,
 } from './admin-dashboard.service';
+import {
+  activeLiveHandoffs,
+  waitingLiveHandoffs,
+  liveHandoffStatusKey,
+  liveHandoffRoute,
+} from './live-handoff-card.util';
 
 interface StatCard {
   labelKey: string;
@@ -53,6 +60,8 @@ interface ChartBar {
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   stats: StatCard[] = [];
+  /** Chat live aperte o in attesa — permette di rientrare in una sessione lasciata a metà. */
+  liveHandoffs: LiveHandoffSession[] = [];
   recentContacts: RecentContact[] = [];
   contactBars: ChartBar[] = [];
   visitBars: ChartBar[] = [];
@@ -113,7 +122,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   topPages: TopPage[] = [];
   monthlyHistory: MonthlyHistoryEntry[] = [];
   auditLogs: AuditLogEntry[] = [];
-  chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0 };
+  chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0, fallbackRepliesToday: 0 };
   systemHealth: SystemHealth | null = null;
   systemDetails: SystemDetails | null = null;
   systemOps: OperationsInfo | null = null;
@@ -189,7 +198,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.blogService.getAll(),
     ).subscribe({
       next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts,
-              topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth, systemDetails, systemOps, gsc, consentStats }) => {
+              topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth, systemDetails, systemOps, gsc, consentStats,
+              liveHandoffs }) => {
+        this.liveHandoffs = liveHandoffs;
         const totalPosts = adminStats.content.total;
         const publishedPosts = adminStats.content.published;
         const totalValues = [
@@ -648,6 +659,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   cancelConfirmDialog(): void {
     this.confirmDialog = { visible: false, messageKey: '', messageParams: {}, onConfirm: null };
+  }
+
+  // ── Chat live (logica in live-handoff-card.util.ts, testata a parte) ─────
+  get liveHandoffActive(): LiveHandoffSession[] {
+    return activeLiveHandoffs(this.liveHandoffs);
+  }
+
+  get liveHandoffWaiting(): LiveHandoffSession[] {
+    return waitingLiveHandoffs(this.liveHandoffs);
+  }
+
+  liveHandoffStatusKey(session: LiveHandoffSession): string {
+    return liveHandoffStatusKey(session);
+  }
+
+  liveHandoffRoute(session: LiveHandoffSession): (string | number)[] {
+    return liveHandoffRoute(session);
   }
 
   private buildMiniBars(value: number, maxValue: number, seed: number): number[] {

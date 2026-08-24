@@ -1,4 +1,5 @@
     <div class="cp-page">
+      <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
       <header class="cp-header">
         <h1 class="cp-title">👁 {{ 'viewer.title' | translate }}</h1>
         <p class="cp-subtitle">{{ 'viewer.subtitle' | translate }}</p>
@@ -7,18 +8,42 @@
 
       <!-- ── Upload ─────────────────────────────── -->
       @if (!doc()) {
-        <div class="cp-panel">
-          <div class="dz"
-               appFileDropzone
-               #dz="fileDropzone"
-               (click)="pick.click()"
-               (filesDropped)="onFilesDropped($event)"
-               [class.dz--active]="dz.isDragging">
-            <input #pick type="file" hidden accept=".pdf" (change)="select($event)">
-            <span class="dz-icon">📂</span>
-            <strong>{{ 'viewer.drop_prompt' | translate }}</strong>
-            <small>PDF</small>
+        @if (workspaceItem()) {
+          <div class="workspace-banner">
+            <span class="workspace-banner-icon">🔗</span>
+            <div class="workspace-banner-text">
+              <strong>{{ 'viewer.workspace_banner_title' | translate }}</strong>
+              <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+            </div>
+            <div class="workspace-banner-actions">
+              <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">
+                {{ 'viewer.workspace_banner_use' | translate }}
+              </button>
+              <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">
+                {{ 'viewer.workspace_banner_dismiss' | translate }}
+              </button>
+            </div>
           </div>
+        }
+        <div class="cp-panel">
+          @if (opening()) {
+            <div class="dz dz--loading" aria-live="polite">
+              <span class="spinner spinner-lg"></span>
+              <strong>{{ 'viewer.opening' | translate }}</strong>
+            </div>
+          } @else {
+            <div class="dz"
+                 appFileDropzone
+                 #dz="fileDropzone"
+                 (click)="pick.click()"
+                 (filesDropped)="onFilesDropped($event)"
+                 [class.dz--active]="dz.isDragging">
+              <input #pick type="file" hidden accept=".pdf" (change)="select($event)">
+              <span class="dz-icon">📂</span>
+              <strong>{{ 'viewer.drop_prompt' | translate }}</strong>
+              <small>PDF</small>
+            </div>
+          }
           @if (msg()) {
             <p class="msg">{{ msg() }}</p>
           }
@@ -27,19 +52,19 @@
         <!-- ── Toolbar ──────────────────────────── -->
         <div class="vw-toolbar">
           <div class="vw-group">
-            <button class="tb" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" aria-label="prev">‹</button>
+            <button class="tb" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" [attr.aria-label]="'viewer.prev_page' | translate">‹</button>
             <span class="vw-pageinfo">
               <input class="vw-pagein" type="number" min="1" [max]="numPages()"
                      [value]="pageNum()" (change)="goTo(+$any($event.target).value)">
               / {{ numPages() }}
             </span>
-            <button class="tb" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" aria-label="next">›</button>
+            <button class="tb" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" [attr.aria-label]="'viewer.next_page' | translate">›</button>
           </div>
 
           <div class="vw-group">
-            <button class="tb" (click)="zoomBy(-0.25)" [disabled]="scale() <= 0.5" aria-label="zoom out">−</button>
+            <button class="tb" (click)="zoomBy(-0.25)" [disabled]="scale() <= 0.5" [attr.aria-label]="'viewer.zoom_out' | translate">−</button>
             <span class="vw-zoom">{{ zoomPct() }}%</span>
-            <button class="tb" (click)="zoomBy(0.25)" [disabled]="scale() >= 4" aria-label="zoom in">+</button>
+            <button class="tb" (click)="zoomBy(0.25)" [disabled]="scale() >= 4" [attr.aria-label]="'viewer.zoom_in' | translate">+</button>
             <button class="tb tb--wide" (click)="fitWidth()">{{ 'viewer.fit_width' | translate }}</button>
           </div>
 
@@ -51,12 +76,18 @@
                    (keydown.enter)="search($any($event.target).value)">
             @if (query()) {
               <span class="vw-matches">
-                @if (searching()) { … } @else {
+                @if (searching()) {
+                  @if (searchProgress(); as p) {
+                    {{ p.current }}/{{ p.total }}
+                  } @else {
+                    …
+                  }
+                } @else {
                   {{ matches().length === 0 ? ('viewer.no_matches' | translate) : (matchIdx() + 1) + '/' + matches().length }}
                 }
               </span>
-              <button class="tb" (click)="nextMatch(-1)" [disabled]="matches().length === 0" aria-label="prev match">↑</button>
-              <button class="tb" (click)="nextMatch(1)" [disabled]="matches().length === 0" aria-label="next match">↓</button>
+              <button class="tb" (click)="nextMatch(-1)" [disabled]="matches().length === 0" [attr.aria-label]="'viewer.prev_match' | translate">↑</button>
+              <button class="tb" (click)="nextMatch(1)" [disabled]="matches().length === 0" [attr.aria-label]="'viewer.next_match' | translate">↓</button>
             }
           </div>
 
@@ -204,11 +235,11 @@
 
         <!-- ── Navigazione pagina mobile (sostituisce la sidebar thumb sotto i 700px) ── -->
         <div class="vw-mobile-nav">
-          <button class="tb" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" aria-label="prev page">‹</button>
+          <button class="tb" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" [attr.aria-label]="'viewer.prev_page' | translate">‹</button>
           <input class="vw-pagein" type="number" min="1" [max]="numPages()"
                  [value]="pageNum()" (change)="goTo(+$any($event.target).value)">
           <span class="vw-mobile-nav-total">/ {{ numPages() }}</span>
-          <button class="tb" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" aria-label="next page">›</button>
+          <button class="tb" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" [attr.aria-label]="'viewer.next_page' | translate">›</button>
         </div>
       }
     </div>

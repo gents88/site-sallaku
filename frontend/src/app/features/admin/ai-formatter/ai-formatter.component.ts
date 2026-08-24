@@ -13,8 +13,9 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   AiFormatterService,
@@ -30,7 +31,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
@@ -42,6 +43,9 @@ export class AiFormatterComponent implements OnInit {
   private readonly seo        = inject(SeoService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly workspace  = inject(WorkspaceService);
+  private readonly t          = inject(TranslateService);
+
+  breadcrumbItems: BreadcrumbItem[] = [];
 
   private static readonly DRAFT_KEY = 'ai-formatter-draft';
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -112,7 +116,17 @@ export class AiFormatterComponent implements OnInit {
           },
         ],
       },
+      this.seo.breadcrumb([
+        { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
+        { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
+        { name: this.t.instant('sidebar.items.ai_formatter'), url: 'https://gentsallaku.it/lab/ai-formatter' },
+      ]),
     ]);
+    this.breadcrumbItems = [
+      { label: this.t.instant('nav.home'), path: '/' },
+      { label: this.t.instant('sidebar.lab'), path: '/lab' },
+      { label: this.t.instant('sidebar.items.ai_formatter') },
+    ];
   }
 
   readonly loading = this.service.isLoading;
@@ -157,7 +171,7 @@ export class AiFormatterComponent implements OnInit {
   format(): void {
     const rawText = this.text().trim();
     if (!rawText || rawText.length < 10) {
-      this.error.set('Please enter at least 10 characters of text to format.');
+      this.error.set(this.t.instant('ai_formatter.err_too_short'));
       return;
     }
     this.error.set('');
@@ -166,7 +180,7 @@ export class AiFormatterComponent implements OnInit {
     this.service.formatText({ text: rawText, docType: this.selectedDocType() }).subscribe({
       next: (res) => this.result.set(res),
       error: (err) => {
-        const msg = err?.error?.message ?? 'An error occurred. Please try again.';
+        const msg = err?.error?.message ?? this.t.instant('ai_formatter.err_generic');
         this.error.set(Array.isArray(msg) ? msg.join(' ') : msg);
       },
     });
@@ -192,7 +206,7 @@ export class AiFormatterComponent implements OnInit {
   private readFileAsText(file: File): void {
     const ok = ['text/plain', 'text/markdown', 'text/csv'];
     if (!ok.includes(file.type) && !file.name.endsWith('.txt') && !file.name.endsWith('.md')) {
-      this.error.set('Only .txt or .md files are supported for quick paste.');
+      this.error.set(this.t.instant('ai_formatter.err_file_type'));
       return;
     }
     const reader = new FileReader();
