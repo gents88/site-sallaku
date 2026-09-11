@@ -44,6 +44,10 @@ export class LiveHandoffRequest {
   @Prop({ required: true })
   expiresAt: Date;
 
+  /** Bumped on every visitor/agent message once the chat is live — the clock behind the inactivity auto-close. */
+  @Prop({ default: Date.now })
+  lastActivityAt: Date;
+
   @Prop()
   notifiedAt?: Date;
 
