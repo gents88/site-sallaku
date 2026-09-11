@@ -22,6 +22,7 @@ import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspac
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import {
   PdfTranslateService,
   TranslationLanguage,
@@ -53,6 +54,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   private readonly workspace    = inject(WorkspaceService);
   private readonly t            = inject(TranslateService);
   private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics    = inject(AnalyticsTrackingService);
   readonly auth                 = inject(AuthService);
   readonly authModal            = inject(AuthModalService);
 
@@ -301,6 +303,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.result.set(res);
           if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
+          this.analytics.trackClick('lab_tool', 'pdf_translate');
         },
         error: (err) => {
           const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_translate.err_generic');

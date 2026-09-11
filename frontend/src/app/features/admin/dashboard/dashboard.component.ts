@@ -28,6 +28,7 @@ import {
   ChatbotSession,
   RecentContact,
   LiveHandoffSession,
+  ToolConversionRow,
 } from './admin-dashboard.service';
 import {
   activeLiveHandoffs,
@@ -120,6 +121,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Additional dashboard sections
   topPages: TopPage[] = [];
+  toolConversion: ToolConversionRow[] = [];
   monthlyHistory: MonthlyHistoryEntry[] = [];
   auditLogs: AuditLogEntry[] = [];
   chatbotStats: ChatbotStats = { totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0, fallbackRepliesToday: 0 };
@@ -191,6 +193,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.loading = true;
     this.dataSubscription?.unsubscribe();
+
+    this.adminDashboard.getToolConversion(30).subscribe({
+      next: (rows) => { this.toolConversion = rows; this.cdr.markForCheck(); },
+      error: () => { this.toolConversion = []; },
+    });
 
     this.dataSubscription = this.adminDashboard.loadAll(
       this.projectsService.getAll(),

@@ -10,6 +10,7 @@ import { LibraryService } from '../../../core/services/library.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 type Status = 'idle' | 'preparing' | 'recognizing' | 'done' | 'error';
 
@@ -55,6 +56,7 @@ export class OcrComponent implements OnInit {
   private readonly workspace = inject(WorkspaceService);
   private readonly library = inject(LibraryService);
   private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics = inject(AnalyticsTrackingService);
   readonly auth = inject(AuthService);
   readonly authModal = inject(AuthModalService);
 
@@ -429,6 +431,7 @@ export class OcrComponent implements OnInit {
     this.status.set('done');
     if (truncatedAny) this.msg.set(this.t.instant('ocr.pages_truncated', { max: MAX_PDF_PAGES }));
     if (!this.msg()) this.msg.set(`✅ ${this.t.instant('ocr.success')}`);
+    if (results.some((r) => r.text)) this.analytics.trackClick('lab_tool', 'ocr');
   }
 
   /** Estrae il testo layer o accoda per OCR le pagine di un singolo PDF. Ritorna true se il PDF è stato troncato a MAX_PDF_PAGES. */

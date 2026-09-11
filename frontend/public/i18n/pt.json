@@ -555,7 +555,13 @@
     "export_csv": "Exportar CSV",
     "no_chart_data": "Sem dados para este período.",
     "refresh_data": "Atualizar",
-    "last_updated": "Atualizado"
+    "last_updated": "Atualizado",
+    "tool_conversion": "Ferramentas IA → Leads",
+    "tool_conversion_desc": "Visitantes únicos por ferramenta nos últimos 30 dias e quantos depois se tornaram um contacto ou chat ao vivo",
+    "tool_conversion_col_tool": "Ferramenta",
+    "tool_conversion_col_visitors": "Visitantes",
+    "tool_conversion_col_leads": "Tornaram-se lead",
+    "tool_conversion_col_rate": "Taxa"
   },
   "session": {
     "warning_title": "A sessão está prestes a expirar",

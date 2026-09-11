@@ -555,7 +555,13 @@
     "export_csv": "Eksporto CSV",
     "no_chart_data": "Nuk ka të dhëna për këtë periudhë.",
     "refresh_data": "Rifresko",
-    "last_updated": "Përditësuar"
+    "last_updated": "Përditësuar",
+    "tool_conversion": "Mjetet AI → Lead",
+    "tool_conversion_desc": "Vizitorë unikë për çdo mjet në 30 ditët e fundit dhe sa prej tyre u bënë më pas kontakt ose chat live",
+    "tool_conversion_col_tool": "Mjeti",
+    "tool_conversion_col_visitors": "Vizitorë",
+    "tool_conversion_col_leads": "U bënë lead",
+    "tool_conversion_col_rate": "Përqindja"
   },
   "session": {
     "warning_title": "Sesioni po skadon",

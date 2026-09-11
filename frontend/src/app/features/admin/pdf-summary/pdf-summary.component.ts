@@ -13,6 +13,7 @@ import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspac
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 interface FileSummaryResult {
   title: string;
@@ -48,6 +49,7 @@ export class PdfSummaryComponent implements OnInit {
   private readonly workspace = inject(WorkspaceService);
   private readonly t = inject(TranslateService);
   private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics = inject(AnalyticsTrackingService);
   readonly auth = inject(AuthService);
   readonly authModal = inject(AuthModalService);
   private readonly api = `${environment.apiUrl}/ai/summarize-file`;
@@ -258,7 +260,11 @@ export class PdfSummaryComponent implements OnInit {
     form.append('lang', this.selectedLang);
     form.append('mode', this.outputMode());
     this.http.post<FileSummaryResult>(this.api, form).subscribe({
-      next: (res) => { this.result.set(res); this.loading.set(false); },
+      next: (res) => {
+        this.result.set(res);
+        this.loading.set(false);
+        this.analytics.trackClick('lab_tool', 'pdf_summary');
+      },
       error: (err) => {
         const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_summary.err_generic');
         this.error.set(msg); this.loading.set(false);

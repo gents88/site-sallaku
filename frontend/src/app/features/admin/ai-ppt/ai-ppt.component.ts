@@ -25,6 +25,7 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 type ViewMode = 'carousel' | 'grid';
 
@@ -48,6 +49,7 @@ export class AiPptComponent implements OnInit {
   private readonly workspace    = inject(WorkspaceService);
   private readonly t            = inject(TranslateService);
   private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics    = inject(AnalyticsTrackingService);
   readonly auth                 = inject(AuthService);
   readonly authModal            = inject(AuthModalService);
 
@@ -208,6 +210,7 @@ export class AiPptComponent implements OnInit {
         this.result.set(res);
         this.activeSlideIdx.set(0);
         setTimeout(() => this.generatorSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+        this.analytics.trackClick('lab_tool', 'ai_ppt');
       },
       error: (err) => {
         const msg = err?.error?.message ?? this.t.instant('ai_ppt.err_generic');

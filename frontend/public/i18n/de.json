@@ -555,7 +555,13 @@
     "export_csv": "CSV exportieren",
     "no_chart_data": "Keine Daten für diesen Zeitraum.",
     "refresh_data": "Aktualisieren",
-    "last_updated": "Aktualisiert"
+    "last_updated": "Aktualisiert",
+    "tool_conversion": "KI-Tools → Leads",
+    "tool_conversion_desc": "Eindeutige Besucher pro Tool in den letzten 30 Tagen und wie viele danach zu einem Kontakt oder Live-Chat wurden",
+    "tool_conversion_col_tool": "Tool",
+    "tool_conversion_col_visitors": "Besucher",
+    "tool_conversion_col_leads": "Zu Lead geworden",
+    "tool_conversion_col_rate": "Quote"
   },
   "session": {
     "warning_title": "Sitzung läuft bald ab",

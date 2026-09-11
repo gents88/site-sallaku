@@ -7,6 +7,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { take } from 'rxjs/operators';
 import { ContactService } from '../../core/services/contact.service';
+import { AnalyticsTrackingService } from '../../core/services/analytics-tracking.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { loadStylesheetOnce } from '../../core/utils/load-stylesheet';
@@ -45,6 +46,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private el: ElementRef,
     private contactService: ContactService,
+    private analytics: AnalyticsTrackingService,
     private snackBar: MatSnackBar,
     private seo: SeoService,
     private langService: LanguageService,
@@ -126,6 +128,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
         // reach the template without this.
         this.cdr.markForCheck();
         this.snackBar.open('Message sent! I\'ll get back to you soon.', 'Close', { duration: 5000 });
+        this.analytics.trackClick('lead', 'contact_form');
       },
       error: () => {
         this.sending = false;
