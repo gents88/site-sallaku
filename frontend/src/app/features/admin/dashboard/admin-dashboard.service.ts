@@ -61,6 +61,13 @@ interface AnalyticsStats {
 }
 
 export interface TopPage { label: string; count: number; }
+
+export interface ToolConversionRow {
+  tool: string;
+  uniqueVisitors: number;
+  becameLead: number;
+  conversionRate: number;
+}
 export interface MonthlyHistoryEntry { month: string; views: number; }
 
 export interface AuditLogEntry {
@@ -293,5 +300,9 @@ export class AdminDashboardService {
 
   exportAnalyticsCsv(): Observable<Blob> {
     return this.http.get(`${this.api}/analytics/export/csv`, { responseType: 'blob' });
+  }
+
+  getToolConversion(days = 30): Observable<ToolConversionRow[]> {
+    return this.http.get<ToolConversionRow[]>(`${this.api}/analytics/tool-conversion?days=${days}`);
   }
 }

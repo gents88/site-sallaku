@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
+import { AnalyticsTrackingService } from './analytics-tracking.service';
 
 export type LiveHandoffState =
   | 'idle'
@@ -26,6 +27,7 @@ const DISMISS_KEY_PREFIX = 'live_handoff_dismissed_';
 @Injectable({ providedIn: 'root' })
 export class LiveHandoffService {
   private readonly http = inject(HttpClient);
+  private readonly analytics = inject(AnalyticsTrackingService);
   private readonly apiUrl = `${environment.apiUrl}/chatbot`;
   private readonly wsOrigin = environment.apiUrl.replace(/\/api\/v\d+\/?$/, '');
 
@@ -84,7 +86,10 @@ export class LiveHandoffService {
         lastUserMessage: lastUserMessage?.slice(0, 500),
       })
       .subscribe({
-        next: () => this.connectSocket(sessionId),
+        next: () => {
+          this.analytics.trackClick('lead', 'live_handoff');
+          this.connectSocket(sessionId);
+        },
         error: () => this._state.next('idle'),
       });
   }

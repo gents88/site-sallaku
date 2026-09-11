@@ -12,6 +12,7 @@ import {
   AdvancedAnalytics,
   DailyEngagementReport,
   PageEngagement,
+  ToolConversionRow,
 } from '../analytics.types';
 
 /**
@@ -210,6 +211,44 @@ export class AnalyticsQueryService {
 
       return { topLabels, topEventTypes, topDestinations, totalClicks };
     }, 60_000);
+  }
+
+  /**
+   * Per-tool funnel: quanti visitatori unici hanno usato un tool /lab (eventType
+   * 'lab_tool') e quanti di quegli stessi visitorId compaiono anche come lead
+   * (eventType 'lead' — form contatti o richiesta di chat live) nella stessa
+   * finestra di `days` giorni. Attribuzione approssimata per finestra temporale,
+   * non per ordine cronologico esatto uso→lead — sufficiente per una metrica di
+   * business, non un motore di attribuzione legale-grade.
+   */
+  async getToolConversionFunnel(days = 30): Promise<ToolConversionRow[]> {
+    const since = new Date(Date.now() - days * 86_400_000);
+
+    const [leadVisitorIds, toolUsage] = await Promise.all([
+      this.clickEventModel.distinct('visitorId', { eventType: 'lead', createdAt: { $gte: since } }).exec(),
+      this.clickEventModel
+        .aggregate<{ _id: string; visitorIds: string[] }>([
+          { $match: { eventType: 'lab_tool', createdAt: { $gte: since } } },
+          { $group: { _id: { tool: '$label', visitorId: '$visitorId' } } },
+          { $group: { _id: '$_id.tool', visitorIds: { $push: '$_id.visitorId' } } },
+        ])
+        .exec(),
+    ]);
+
+    const leadSet = new Set<string>(leadVisitorIds as unknown as string[]);
+
+    return toolUsage
+      .map((row) => {
+        const uniqueVisitors = row.visitorIds.length;
+        const becameLead = row.visitorIds.filter((id) => leadSet.has(id)).length;
+        return {
+          tool: row._id,
+          uniqueVisitors,
+          becameLead,
+          conversionRate: uniqueVisitors > 0 ? Math.round((becameLead / uniqueVisitors) * 1000) / 10 : 0,
+        };
+      })
+      .sort((a, b) => b.uniqueVisitors - a.uniqueVisitors);
   }
 
   /** Per-page views, unique visitors, repeat-visit ratio and average dwell time since `start`. */

@@ -7,6 +7,7 @@ import { finalize, forkJoin, catchError } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
 import { ContactService } from '../../core/services/contact.service';
+import { AnalyticsTrackingService } from '../../core/services/analytics-tracking.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ExperiencesService } from '../../core/services/experiences.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
@@ -200,6 +201,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private aboutService: AboutService,
     private contactService: ContactService,
+    private analytics: AnalyticsTrackingService,
     private projectsService: ProjectsService,
     private experiencesService: ExperiencesService,
     private seo: SeoService,
@@ -430,6 +432,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.contactInvalid = false;
         this.cdr.markForCheck();
         this.snackbar.show('Messaggio inviato — grazie!', 'success');
+        this.analytics.trackClick('lead', 'contact_form');
       },
       error: () => {
         // rollback optimistic state

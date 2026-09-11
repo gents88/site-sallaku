@@ -3,6 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LiveHandoffService } from './live-handoff.service';
+import { AnalyticsTrackingService } from './analytics-tracking.service';
 import { environment } from '@env/environment';
 
 type Handler = (payload?: unknown) => void;
@@ -51,7 +52,11 @@ describe('LiveHandoffService', () => {
     lastSocket = undefined;
     sessionStorage.clear();
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
+      ],
     });
     service = TestBed.inject(LiveHandoffService);
     httpMock = TestBed.inject(HttpTestingController);

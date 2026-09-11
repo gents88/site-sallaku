@@ -555,7 +555,13 @@
     "export_csv": "Export CSV",
     "no_chart_data": "No data for this period.",
     "refresh_data": "Refresh",
-    "last_updated": "Updated"
+    "last_updated": "Updated",
+    "tool_conversion": "AI Tools → Leads",
+    "tool_conversion_desc": "Unique visitors per tool in the last 30 days, and how many later became a contact or live chat",
+    "tool_conversion_col_tool": "Tool",
+    "tool_conversion_col_visitors": "Visitors",
+    "tool_conversion_col_leads": "Became lead",
+    "tool_conversion_col_rate": "Rate"
   },
   "session": {
     "warning_title": "Session is about to expire",
