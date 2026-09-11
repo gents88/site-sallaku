@@ -1,0 +1,62 @@
+<div class="page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+  <header class="page-header">
+    <h1>{{ 'saved_results.page_title' | translate }}</h1>
+    <p>{{ 'saved_results.page_subtitle' | translate }}</p>
+  </header>
+
+  @if (!auth.isLoggedIn()) {
+    <div class="empty-state">
+      <span class="empty-icon">🔒</span>
+      <h3>{{ 'saved_results.login_required_title' | translate }}</h3>
+      <p>{{ 'saved_results.login_required_body' | translate }}</p>
+      <button class="btn-primary" (click)="authModal.openLogin()">
+        {{ 'saved_results.login_button' | translate }}
+      </button>
+    </div>
+  } @else if (loading()) {
+    <div class="empty-state">
+      <p>{{ 'common.loading' | translate }}</p>
+    </div>
+  } @else if (items().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">🗂️</span>
+      <h3>{{ 'saved_results.empty_title' | translate }}</h3>
+      <p>{{ 'saved_results.empty_body' | translate }}</p>
+    </div>
+  } @else {
+    <ul class="results-list">
+      @for (item of items(); track item.id) {
+        <li class="result-item" [class.expanded]="expandedId() === item.id">
+          <button class="result-summary" (click)="toggle(item)">
+            <span class="result-icon">{{ toolIcon[item.toolType] }}</span>
+            <span class="result-info">
+              <span class="result-title">{{ item.title }}</span>
+              <span class="result-meta">{{ formatDate(item.createdAt) }}</span>
+            </span>
+            <button class="btn-icon-danger" (click)="remove(item, $event)" [title]="'saved_results.delete' | translate">
+              🗑️
+            </button>
+            <span class="result-chevron">{{ expandedId() === item.id ? '▲' : '▼' }}</span>
+          </button>
+
+          @if (expandedId() === item.id) {
+            <div class="result-detail">
+              @if (detailLoading()) {
+                <p class="detail-loading">{{ 'common.loading' | translate }}</p>
+              } @else if (expandedDetail()) {
+                @if (hasPdf(expandedDetail())) {
+                  <button class="btn-ghost" (click)="downloadPdf(expandedDetail()!, $event)">
+                    📥 PDF
+                  </button>
+                }
+                <pre class="detail-text">{{ resultText(expandedDetail()) }}</pre>
+              }
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -2,6 +2,9 @@
 import 'fake-indexeddb/auto';
 import { PLATFORM_ID, importProvidersFrom } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -63,6 +66,9 @@ describe('OcrComponent — collegamento con la Libreria', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: Router, useValue: { url: '/lab/ocr', navigateByUrl: vi.fn() } },
         { provide: IDB_FACTORY, useValue: new IDBFactory() },
         { provide: OcrService, useValue: ocrSvc },
         { provide: PdfjsService, useValue: pdfjs },

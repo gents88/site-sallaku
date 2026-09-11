@@ -37,7 +37,8 @@
       "content": "Contenu",
       "ai": "IA",
       "workspace": "Flux de travail",
-      "tools": "Outils"
+      "tools": "Outils",
+      "account": "Compte"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -59,7 +60,8 @@
       "editor": "Éditeur de texte",
       "convert": "Convertisseur de fichiers",
       "ocr": "Texte depuis image (OCR)",
-      "scanner": "Scanner de documents"
+      "scanner": "Scanner de documents",
+      "my_files": "Mes fichiers"
     }
   },
   "lang": {
@@ -1315,7 +1317,9 @@
     "pdf_search_title": "Recherche PDF",
     "pdf_search_desc": "Recherchez des livres et documents PDF du domaine public, avec aperçu avant téléchargement.",
     "library_title": "Ma bibliothèque",
-    "library_desc": "Gardez vos PDF dans le navigateur, cherchez dans leur contenu, annotez-les et interrogez vos documents."
+    "library_desc": "Gardez vos PDF dans le navigateur, cherchez dans leur contenu, annotez-les et interrogez vos documents.",
+    "my_files_title": "Mes fichiers",
+    "my_files_desc": "Retrouve les résultats que tu as enregistrés depuis les outils IA"
   },
   "about_manage": {
     "title": "Section À propos",
@@ -1737,5 +1741,25 @@
     "manage_body": "Vous pouvez modifier ou retirer votre consentement à tout moment via le lien « Gérer le consentement aux cookies » dans le pied de page du site, ou en supprimant les cookies depuis votre navigateur.",
     "browser_title": "Paramètres du navigateur",
     "browser_body": "Vous pouvez également gérer ou supprimer les cookies directement depuis les paramètres de votre navigateur (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Enregistrer dans ton compte",
+    "save_cta_short": "Enregistrer",
+    "saving_cta": "Enregistrement...",
+    "saved_cta": "Enregistré ✓",
+    "save_sub": "Retrouve-le dans « Mes fichiers »",
+    "save_error": "Échec de l'enregistrement. Réessaie.",
+    "login_prompt_title": "Connecte-toi pour enregistrer tes résultats",
+    "login_prompt_body": "Crée un compte gratuit pour retrouver tes fichiers générés quand tu veux.",
+    "page_title": "Mes fichiers",
+    "page_subtitle": "Résultats que tu as enregistrés depuis les outils IA",
+    "empty_title": "Aucun fichier enregistré",
+    "empty_body": "Les résultats que tu enregistres depuis les outils IA apparaîtront ici.",
+    "login_required_title": "Connecte-toi pour voir tes fichiers",
+    "login_required_body": "Les fichiers enregistrés restent liés à ton compte.",
+    "login_button": "Se connecter",
+    "open": "Ouvrir",
+    "delete": "Supprimer",
+    "confirm_delete": "Supprimer ce fichier enregistré ?"
   }
 }

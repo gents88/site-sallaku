@@ -37,7 +37,8 @@
       "content": "Content",
       "ai": "AI",
       "workspace": "Workflow",
-      "tools": "Tools"
+      "tools": "Tools",
+      "account": "Account"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -59,7 +60,8 @@
       "editor": "Text Editor",
       "convert": "File Converter",
       "ocr": "Text from Image (OCR)",
-      "scanner": "Document Scanner"
+      "scanner": "Document Scanner",
+      "my_files": "My files"
     }
   },
   "lang": {
@@ -1315,7 +1317,9 @@
     "pdf_search_title": "PDF Search",
     "pdf_search_desc": "Search public-domain PDF books and documents, with a preview before you download.",
     "library_title": "My library",
-    "library_desc": "Keep PDFs in your browser, search their contents, annotate them and ask your documents questions."
+    "library_desc": "Keep PDFs in your browser, search their contents, annotate them and ask your documents questions.",
+    "my_files_title": "My files",
+    "my_files_desc": "Find the results you have saved from the AI tools"
   },
   "about_manage": {
     "title": "About Section",
@@ -1737,5 +1741,25 @@
     "manage_body": "You can change or withdraw your consent at any time via the \"Manage cookie consent\" link in the site footer, or by clearing cookies from your browser.",
     "browser_title": "Browser settings",
     "browser_body": "You can also manage or delete cookies directly from your browser settings (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Save to your account",
+    "save_cta_short": "Save",
+    "saving_cta": "Saving...",
+    "saved_cta": "Saved ✓",
+    "save_sub": "Find it later in \"My files\"",
+    "save_error": "Couldn't save. Please try again.",
+    "login_prompt_title": "Sign in to save your results",
+    "login_prompt_body": "Create a free account to find your generated files whenever you need them.",
+    "page_title": "My files",
+    "page_subtitle": "Results you've saved from the AI tools",
+    "empty_title": "No saved files yet",
+    "empty_body": "Results you save from the AI tools will show up here.",
+    "login_required_title": "Sign in to see your files",
+    "login_required_body": "Files you save from the AI tools stay linked to your account.",
+    "login_button": "Sign in",
+    "open": "Open",
+    "delete": "Delete",
+    "confirm_delete": "Delete this saved file?"
   }
 }

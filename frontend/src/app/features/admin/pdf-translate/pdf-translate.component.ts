@@ -19,6 +19,9 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
 import {
   PdfTranslateService,
   TranslationLanguage,
@@ -44,14 +47,20 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   @ViewChild('uploadSection') uploadSection!: ElementRef<HTMLElement>;
   @ViewChild('fileInput')     fileInput!: ElementRef<HTMLInputElement>;
 
-  private readonly service   = inject(PdfTranslateService);
-  private readonly sanitizer = inject(DomSanitizer);
-  private readonly seo       = inject(SeoService);
-  private readonly workspace = inject(WorkspaceService);
-  private readonly t         = inject(TranslateService);
+  private readonly service      = inject(PdfTranslateService);
+  private readonly sanitizer    = inject(DomSanitizer);
+  private readonly seo          = inject(SeoService);
+  private readonly workspace    = inject(WorkspaceService);
+  private readonly t            = inject(TranslateService);
+  private readonly savedResults = inject(SavedResultsService);
+  readonly auth                 = inject(AuthService);
+  readonly authModal            = inject(AuthModalService);
 
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent      = signal(false);
+  readonly saving        = signal(false);
+  readonly justSaved     = signal(false);
+  readonly saveError     = signal('');
   breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
@@ -348,6 +357,37 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     }
     this.justSent.set(true);
     setTimeout(() => this.justSent.set(false), 1500);
+  }
+
+  saveToAccount(): void {
+    const res = this.result();
+    if (!res) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults
+      .save({
+        toolType: 'pdf-translate',
+        title: `${this.file()?.name ?? 'Documento'} → ${res.targetLanguage}`,
+        payload: res as unknown as Record<string, unknown>,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          this.saveError.set(err?.error?.message ?? this.t.instant('saved_results.save_error'));
+          setTimeout(() => this.saveError.set(''), 3000);
+        },
+      });
   }
 
   reset(): void {

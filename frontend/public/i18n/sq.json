@@ -37,7 +37,8 @@
       "content": "Përmbajtja",
       "ai": "AI",
       "workspace": "Rrjedha e punës",
-      "tools": "Mjete"
+      "tools": "Mjete",
+      "account": "Llogaria"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -59,7 +60,8 @@
       "editor": "Editor Teksti",
       "convert": "Konvertues Skedarësh",
       "ocr": "Tekst nga Imazhi (OCR)",
-      "scanner": "Skaner Dokumentesh"
+      "scanner": "Skaner Dokumentesh",
+      "my_files": "Skedarët e mi"
     }
   },
   "lang": {
@@ -1315,7 +1317,9 @@
     "pdf_search_title": "Kërko PDF",
     "pdf_search_desc": "Kërko libra dhe dokumente PDF në pronësi publike, me parashikim para shkarkimit.",
     "library_title": "Biblioteka ime",
-    "library_desc": "Mban PDF-të në shfletues, kërko brenda tyre, shëno mbi to dhe bëj pyetje dokumenteve të tua."
+    "library_desc": "Mban PDF-të në shfletues, kërko brenda tyre, shëno mbi to dhe bëj pyetje dokumenteve të tua.",
+    "my_files_title": "Skedarët e mi",
+    "my_files_desc": "Gjej rezultatet që ke ruajtur nga mjetet AI"
   },
   "about_manage": {
     "title": "Seksioni About",
@@ -1737,5 +1741,25 @@
     "manage_body": "Mund të ndryshoni ose të revokoni pëlqimin tuaj në çdo moment përmes lidhjes \"Menaxho pëlqimin e cookies\" në fund të faqes (footer), ose duke fshirë cookies nga shfletuesi juaj.",
     "browser_title": "Cilësimet e shfletuesit",
     "browser_body": "Mund të menaxhoni ose fshini cookies edhe direkt nga cilësimet e shfletuesit tuaj (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Ruaje në llogarinë tënde",
+    "save_cta_short": "Ruaj",
+    "saving_cta": "Duke ruajtur...",
+    "saved_cta": "U ruajt ✓",
+    "save_sub": "Gjeje më vonë tek \"Skedarët e mi\"",
+    "save_error": "Ruajtja dështoi. Provo përsëri.",
+    "login_prompt_title": "Identifikohu për të ruajtur rezultatet",
+    "login_prompt_body": "Krijo një llogari falas për të gjetur skedarët e krijuar sa herë të duash.",
+    "page_title": "Skedarët e mi",
+    "page_subtitle": "Rezultatet që ke ruajtur nga mjetet AI",
+    "empty_title": "Ende s’ka skedarë të ruajtur",
+    "empty_body": "Rezultatet që ruan nga mjetet AI do të shfaqen këtu.",
+    "login_required_title": "Identifikohu për të parë skedarët",
+    "login_required_body": "Skedarët që ruan mbeten të lidhur me llogarinë tënde.",
+    "login_button": "Identifikohu",
+    "open": "Hap",
+    "delete": "Fshi",
+    "confirm_delete": "Të fshihet ky skedar i ruajtur?"
   }
 }
