@@ -27,6 +27,7 @@ import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspac
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 type ViewMode = 'formatted' | 'raw';
 
@@ -48,6 +49,7 @@ export class AiFormatterComponent implements OnInit {
   private readonly workspace     = inject(WorkspaceService);
   private readonly t             = inject(TranslateService);
   private readonly savedResults  = inject(SavedResultsService);
+  private readonly analytics     = inject(AnalyticsTrackingService);
   readonly auth                  = inject(AuthService);
   readonly authModal             = inject(AuthModalService);
 
@@ -187,7 +189,10 @@ export class AiFormatterComponent implements OnInit {
     this.result.set(null);
 
     this.service.formatText({ text: rawText, docType: this.selectedDocType() }).subscribe({
-      next: (res) => this.result.set(res),
+      next: (res) => {
+        this.result.set(res);
+        this.analytics.trackClick('lab_tool', 'ai_formatter');
+      },
       error: (err) => {
         const msg = err?.error?.message ?? this.t.instant('ai_formatter.err_generic');
         this.error.set(Array.isArray(msg) ? msg.join(' ') : msg);

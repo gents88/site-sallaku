@@ -555,7 +555,13 @@
     "export_csv": "Esporta CSV",
     "no_chart_data": "Nessun dato per questo periodo.",
     "refresh_data": "Aggiorna",
-    "last_updated": "Aggiornato"
+    "last_updated": "Aggiornato",
+    "tool_conversion": "Tool AI → Lead",
+    "tool_conversion_desc": "Visitatori unici per tool negli ultimi 30 giorni e quanti sono poi diventati un contatto o una chat live",
+    "tool_conversion_col_tool": "Tool",
+    "tool_conversion_col_visitors": "Utilizzatori",
+    "tool_conversion_col_leads": "Diventati lead",
+    "tool_conversion_col_rate": "Tasso"
   },
   "session": {
     "warning_title": "La sessione sta per scadere",
