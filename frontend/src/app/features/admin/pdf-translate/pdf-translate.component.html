@@ -324,7 +324,22 @@
             </div>
           </button>
 
+          <button class="download-btn ghost-dl" (click)="saveToAccount()" [disabled]="saving()">
+            <span class="dl-icon">{{ justSaved() ? '✓' : '💾' }}</span>
+            <div class="dl-info">
+              <span class="dl-name">
+                {{ saving() ? ('saved_results.saving_cta' | translate)
+                  : justSaved() ? ('saved_results.saved_cta' | translate)
+                  : ('saved_results.save_cta_short' | translate) }}
+              </span>
+              <span class="dl-sub">{{ 'saved_results.save_sub' | translate }}</span>
+            </div>
+          </button>
+
         </div>
+        @if (saveError()) {
+          <p class="save-error">{{ saveError() }}</p>
+        }
       </div>
 
       <div class="result-footer">

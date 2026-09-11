@@ -37,7 +37,8 @@
       "content": "Contenido",
       "ai": "IA",
       "workspace": "Flujo de trabajo",
-      "tools": "Herramientas"
+      "tools": "Herramientas",
+      "account": "Cuenta"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -59,7 +60,8 @@
       "editor": "Editor de Texto",
       "convert": "Convertidor de Archivos",
       "ocr": "Texto desde Imagen (OCR)",
-      "scanner": "Escáner de Documentos"
+      "scanner": "Escáner de Documentos",
+      "my_files": "Mis archivos"
     }
   },
   "lang": {
@@ -1315,7 +1317,9 @@
     "pdf_search_title": "Buscar PDF",
     "pdf_search_desc": "Busca libros y documentos en PDF de dominio público, con vista previa antes de descargar.",
     "library_title": "Mi biblioteca",
-    "library_desc": "Guarda los PDF en el navegador, busca en su contenido, anótalos y haz preguntas a tus documentos."
+    "library_desc": "Guarda los PDF en el navegador, busca en su contenido, anótalos y haz preguntas a tus documentos.",
+    "my_files_title": "Mis archivos",
+    "my_files_desc": "Encuentra los resultados que has guardado de las herramientas de IA"
   },
   "about_manage": {
     "title": "Sección About",
@@ -1737,5 +1741,25 @@
     "manage_body": "Puedes cambiar o revocar tu consentimiento en cualquier momento a través del enlace \"Gestionar consentimiento de cookies\" en el pie de página del sitio, o eliminando las cookies desde tu navegador.",
     "browser_title": "Configuración del navegador",
     "browser_body": "También puedes gestionar o eliminar las cookies directamente desde la configuración de tu navegador (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Guardar en tu cuenta",
+    "save_cta_short": "Guardar",
+    "saving_cta": "Guardando...",
+    "saved_cta": "Guardado ✓",
+    "save_sub": "Encuéntralo luego en \"Mis archivos\"",
+    "save_error": "No se pudo guardar. Inténtalo de nuevo.",
+    "login_prompt_title": "Inicia sesión para guardar tus resultados",
+    "login_prompt_body": "Crea una cuenta gratuita para encontrar tus archivos generados cuando quieras.",
+    "page_title": "Mis archivos",
+    "page_subtitle": "Resultados que has guardado de las herramientas de IA",
+    "empty_title": "Aún no hay archivos guardados",
+    "empty_body": "Los resultados que guardes desde las herramientas de IA aparecerán aquí.",
+    "login_required_title": "Inicia sesión para ver tus archivos",
+    "login_required_body": "Los archivos que guardas quedan vinculados a tu cuenta.",
+    "login_button": "Iniciar sesión",
+    "open": "Abrir",
+    "delete": "Eliminar",
+    "confirm_delete": "¿Eliminar este archivo guardado?"
   }
 }

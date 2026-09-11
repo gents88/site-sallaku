@@ -69,6 +69,14 @@ export const ADMIN_NAV: NavGroup[] = [
     ],
   },
   {
+    id: 'account',
+    emoji: '💾',
+    titleKey: 'sidebar.groups.account',
+    items: [
+      { icon: '💾', labelKey: 'sidebar.items.my_files', route: '/lab/i-miei-file' },
+    ],
+  },
+  {
     id: 'tools',
     emoji: '🧰',
     titleKey: 'sidebar.groups.tools',

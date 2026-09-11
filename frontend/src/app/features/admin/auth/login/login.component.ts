@@ -45,13 +45,21 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (this.auth.isLoggedIn() && this.auth.isAdmin()) {
+    if (!this.auth.isLoggedIn()) {
+      return;
+    }
+
+    if (this.auth.isAdmin()) {
       this.scheduleAdminRedirect();
       return;
     }
 
-    if (this.auth.isLoggedIn() && !this.auth.isAdmin()) {
-      this.auth.logout();
+    // Already logged in as a plain 'user' account: nothing to reject anymore,
+    // just get out of the way of whatever triggered the login UI.
+    if (this.embedded) {
+      this.authModal.closeLogin();
+    } else {
+      this.router.navigate(['/']);
     }
   }
 
@@ -97,12 +105,15 @@ export class LoginComponent implements OnInit, OnDestroy {
         // Zoneless: an HTTP callback mutating a plain property schedules no
         // change detection on its own, so the spinner would never clear.
         this.cdr.markForCheck();
-        this.auth.logout();
-        this.snackBar.open(
-          'Questo account non ha accesso alla dashboard admin.',
-          this.translate.instant('common.close'),
-          { duration: 4000 },
-        );
+
+        if (this.embedded) {
+          // Opened from a public /lab tool to unlock saving results — just
+          // close the modal, the caller re-checks auth state on its own.
+          this.authModal.closeLogin();
+        } else {
+          // A plain 'user' account has nothing to do in /dashboard.
+          this.router.navigate(['/']);
+        }
       },
       error: (err) => {
         this.loading = false;

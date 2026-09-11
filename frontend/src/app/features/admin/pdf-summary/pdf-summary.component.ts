@@ -10,6 +10,9 @@ import { SeoService } from '../../../core/services/seo.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
 
 interface FileSummaryResult {
   title: string;
@@ -44,6 +47,9 @@ export class PdfSummaryComponent implements OnInit {
   private readonly seo = inject(SeoService);
   private readonly workspace = inject(WorkspaceService);
   private readonly t = inject(TranslateService);
+  private readonly savedResults = inject(SavedResultsService);
+  readonly auth = inject(AuthService);
+  readonly authModal = inject(AuthModalService);
   private readonly api = `${environment.apiUrl}/ai/summarize-file`;
 
   workspaceItem = signal<WorkspaceItem | null>(null);
@@ -112,6 +118,9 @@ export class PdfSummaryComponent implements OnInit {
   error          = signal<string | null>(null);
   justCopied     = signal(false);
   justSent       = signal(false);
+  saving         = signal(false);
+  justSaved      = signal(false);
+  saveError      = signal('');
 
   selectedLang: SummaryLang = 'en';
   outputMode     = signal<OutputMode>('short');
@@ -181,6 +190,37 @@ export class PdfSummaryComponent implements OnInit {
       this.justCopied.set(true);
       setTimeout(() => this.justCopied.set(false), 2000);
     });
+  }
+
+  saveToAccount(): void {
+    const r = this.result();
+    if (!r) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults
+      .save({
+        toolType: 'pdf-summary',
+        title: r.title || this.selectedFile()?.name || 'Riassunto',
+        payload: r as unknown as Record<string, unknown>,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          this.saveError.set(err?.error?.message ?? this.t.instant('saved_results.save_error'));
+          setTimeout(() => this.saveError.set(''), 3000);
+        },
+      });
   }
 
   downloadSummary(): void {

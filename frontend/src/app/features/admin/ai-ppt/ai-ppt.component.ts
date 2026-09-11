@@ -22,6 +22,9 @@ import {
   SLIDE_COUNT_OPTIONS,
 } from '../../../core/services/ai-ppt.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
 
 type ViewMode = 'carousel' | 'grid';
 
@@ -40,10 +43,13 @@ export class AiPptComponent implements OnInit {
   @ViewChild('generatorSection') generatorSection!: ElementRef<HTMLElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private readonly service   = inject(AiPptService);
-  private readonly seo       = inject(SeoService);
-  private readonly workspace = inject(WorkspaceService);
-  private readonly t         = inject(TranslateService);
+  private readonly service      = inject(AiPptService);
+  private readonly seo          = inject(SeoService);
+  private readonly workspace    = inject(WorkspaceService);
+  private readonly t            = inject(TranslateService);
+  private readonly savedResults = inject(SavedResultsService);
+  readonly auth                 = inject(AuthService);
+  readonly authModal            = inject(AuthModalService);
 
   breadcrumbItems: BreadcrumbItem[] = [];
 
@@ -120,6 +126,9 @@ export class AiPptComponent implements OnInit {
   readonly sending         = signal(false);
   readonly justSent        = signal(false);
   readonly truncatedWarning = signal(false);
+  readonly saving          = signal(false);
+  readonly justSaved       = signal(false);
+  readonly saveError       = signal('');
 
   readonly styles      = PPT_STYLES;
   readonly slideCounts = SLIDE_COUNT_OPTIONS;
@@ -251,6 +260,37 @@ export class AiPptComponent implements OnInit {
     } finally {
       this.sending.set(false);
     }
+  }
+
+  saveToAccount(): void {
+    const r = this.result();
+    if (!r) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults
+      .save({
+        toolType: 'ai-ppt',
+        title: r.title || this.topic(),
+        payload: r as unknown as Record<string, unknown>,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          this.saveError.set(err?.error?.message ?? this.t.instant('saved_results.save_error'));
+          setTimeout(() => this.saveError.set(''), 3000);
+        },
+      });
   }
 
   copySlideContent(): void {

@@ -234,12 +234,20 @@
           <button class="action-btn" [disabled]="sending()" (click)="sendToWorkspace()">
             {{ justSent() ? ('ai_ppt.workspace_sent' | translate) : ('🔗 ' + ('ai_ppt.workspace_send' | translate)) }}
           </button>
+          <button class="action-btn" [disabled]="saving()" (click)="saveToAccount()">
+            {{ saving() ? ('💾 ' + ('saved_results.saving_cta' | translate))
+              : justSaved() ? ('saved_results.saved_cta' | translate)
+              : ('💾 ' + ('saved_results.save_cta_short' | translate)) }}
+          </button>
           <button class="action-btn action-btn-ghost" (click)="reset()">↩ {{ 'ai_ppt.btn_new' | translate }}</button>
         </div>
       </div>
 
       @if (truncatedWarning()) {
         <p class="truncated-warning" role="alert">⚠️ {{ 'ai_ppt.err_truncated' | translate }}</p>
+      }
+      @if (saveError()) {
+        <p class="truncated-warning" role="alert">{{ saveError() }}</p>
       }
 
       @if (viewMode() === 'carousel') {
