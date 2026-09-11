@@ -169,8 +169,21 @@ export class LiveHandoffService {
     if (!doc || !['agent_joining', 'notified'].includes(doc.status)) return;
 
     doc.status = 'live';
+    // Il conto alla rovescia dell'inattività riparte da qui: senza questo, una chat che
+    // "va live" dopo che Gent ha impiegato qualche minuto a entrare erediterebbe come
+    // lastActivityAt il timestamp della richiesta iniziale, magari già più vecchio della
+    // soglia di inattività — e il cron la chiuderebbe subito, ancora prima che i due si
+    // scambino un messaggio.
+    doc.lastActivityAt = new Date();
     await doc.save();
     this.gateway.emitStatusChanged(doc.sessionId, doc.status);
+  }
+
+  /** Bumps the inactivity clock — chiamato ad ogni messaggio scambiato in una chat live. */
+  async touchActivity(sessionId: string): Promise<void> {
+    await this.model
+      .updateOne({ sessionId, status: 'live' }, { $set: { lastActivityAt: new Date() } })
+      .exec();
   }
 
   async closeSession(sessionId: string): Promise<void> {
@@ -201,6 +214,33 @@ export class LiveHandoffService {
       this.logger.log(`Expired ${stale.length} stale live handoff request(s)`);
     }
     return stale.length;
+  }
+
+  /**
+   * Chiude una chat live senza messaggi da un po': senza questo, due schede lasciate
+   * aperte senza scriversi (o chiuse senza cliccare "Chiudi") restano "live" fino al
+   * fallback di 2 ore in `closeAbandonedSessions` qui sotto, occupando per ore la card
+   * della dashboard di Gent come se fosse una conversazione ancora in corso.
+   */
+  @Cron(CronExpression.EVERY_MINUTE)
+  async closeInactiveLiveSessions(): Promise<number> {
+    const inactivityMinutes = this.config.get<number>('LIVE_HANDOFF_INACTIVITY_MINUTES', 5);
+    const cutoff = new Date(Date.now() - inactivityMinutes * 60_000);
+
+    const inactive = await this.model
+      .find({ status: 'live', lastActivityAt: { $lt: cutoff } })
+      .exec();
+
+    for (const doc of inactive) {
+      doc.status = 'closed';
+      doc.closedAt = new Date();
+      await doc.save();
+      this.gateway.emitStatusChanged(doc.sessionId, doc.status);
+    }
+    if (inactive.length > 0) {
+      this.logger.log(`Closed ${inactive.length} live chat session(s) after ${inactivityMinutes} minutes of inactivity`);
+    }
+    return inactive.length;
   }
 
   /**

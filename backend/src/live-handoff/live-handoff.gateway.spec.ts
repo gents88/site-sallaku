@@ -18,6 +18,7 @@ describe('LiveHandoffGateway', () => {
       markAgentJoining: jest.fn(),
       markLive: jest.fn().mockResolvedValue(undefined),
       closeSession: jest.fn().mockResolvedValue(undefined),
+      touchActivity: jest.fn().mockResolvedValue(undefined),
     };
     mockChatbotService = { appendLiveMessage: jest.fn() };
     mockJwtService = { verify: jest.fn() };
@@ -91,11 +92,20 @@ describe('LiveHandoffGateway', () => {
       await gateway.onVisitorMessage(mockClient, { sessionId: 's1', text: 'ciao Gent' });
 
       expect(mockChatbotService.appendLiveMessage).toHaveBeenCalledWith('s1', 'user', 'ciao Gent');
+      expect(mockLiveHandoffService.touchActivity).toHaveBeenCalledWith('s1');
       expect(mockServer.to).toHaveBeenCalledWith('live-handoff:s1');
       expect(mockServer.emit).toHaveBeenCalledWith(
         'chat_message',
         expect.objectContaining({ sessionId: 's1', from: 'visitor', text: 'ciao Gent' }),
       );
+    });
+
+    it('non tocca il clock di inattività quando il messaggio viene scartato', async () => {
+      mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'requested' });
+
+      await gateway.onVisitorMessage(mockClient, { sessionId: 's1', text: 'ciao' });
+
+      expect(mockLiveHandoffService.touchActivity).not.toHaveBeenCalled();
     });
   });
 
@@ -189,6 +199,7 @@ describe('LiveHandoffGateway', () => {
       await gateway.onAdminMessage(mockClient, { sessionId: 's1', text: 'ciao, sono Gent', token: 'good' });
 
       expect(mockChatbotService.appendLiveMessage).toHaveBeenCalledWith('s1', 'agent', 'ciao, sono Gent');
+      expect(mockLiveHandoffService.touchActivity).toHaveBeenCalledWith('s1');
       expect(mockServer.emit).toHaveBeenCalledWith(
         'chat_message',
         expect.objectContaining({ sessionId: 's1', from: 'agent' }),

@@ -792,7 +792,8 @@
     "chip_who": "👋 ¿Quién es Gent?",
     "chip_skills": "🛠 ¿Cuáles son sus habilidades?",
     "chip_projects": "📁 Muéstrame sus proyectos",
-    "chip_contact": "📬 ¿Cómo puedo contactarle?"
+    "chip_contact": "📬 ¿Cómo puedo contactarle?",
+    "live_offer_cta": "💬 Habla con Gent ahora"
   },
   "live_handoff": {
     "prompt_title": "¿Quieres hablar directamente con Gent?",

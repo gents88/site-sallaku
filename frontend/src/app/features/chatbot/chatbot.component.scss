@@ -329,6 +329,27 @@
   text-align: right;
 }
 
+.cb-msg__live-cta {
+  display: block;
+  width: 100%;
+  margin: 2px 0 6px;
+  padding: 8px 12px;
+  border: 1px solid rgba(79,106,245,0.4);
+  border-radius: 10px;
+  background: rgba(79,106,245,0.12);
+  color: #a5b4fc;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.cb-msg__live-cta:hover {
+  background: rgba(79,106,245,0.22);
+  border-color: rgba(79,106,245,0.6);
+}
+
 /* ── Typing indicator ────────────────────────────── */
 .cb-typing-bubble {
   display: flex;
