@@ -134,6 +134,10 @@ const publicPages: Route[] = [
     path: 'lab/library',
     loadComponent: () => import('./features/admin/library/library.component').then(m => m.LibraryComponent),
   },
+  {
+    path: 'lab/i-miei-file',
+    loadComponent: () => import('./features/admin/my-saved-results/my-saved-results.component').then(m => m.MySavedResultsComponent),
+  },
 
   // ── Legal ─────────────────────────────────────────
   {

@@ -37,7 +37,8 @@
       "content": "Inhalt",
       "ai": "KI",
       "workspace": "Workflow",
-      "tools": "Tools"
+      "tools": "Tools",
+      "account": "Konto"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -59,7 +60,8 @@
       "editor": "Text-Editor",
       "convert": "Dateikonverter",
       "ocr": "Text aus Bild (OCR)",
-      "scanner": "Dokumentenscanner"
+      "scanner": "Dokumentenscanner",
+      "my_files": "Meine Dateien"
     }
   },
   "lang": {
@@ -1315,7 +1317,9 @@
     "pdf_search_title": "PDF-Suche",
     "pdf_search_desc": "Suche gemeinfreie PDF-Bücher und -Dokumente mit Vorschau vor dem Download.",
     "library_title": "Meine Bibliothek",
-    "library_desc": "PDFs im Browser behalten, ihren Inhalt durchsuchen, Anmerkungen setzen und den Dokumenten Fragen stellen."
+    "library_desc": "PDFs im Browser behalten, ihren Inhalt durchsuchen, Anmerkungen setzen und den Dokumenten Fragen stellen.",
+    "my_files_title": "Meine Dateien",
+    "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast"
   },
   "about_manage": {
     "title": "About-Bereich",
@@ -1737,5 +1741,25 @@
     "manage_body": "Sie können Ihre Einwilligung jederzeit über den Link „Cookie-Einwilligung verwalten\" in der Fußzeile der Website ändern oder widerrufen, oder indem Sie Cookies in Ihrem Browser löschen.",
     "browser_title": "Browser-Einstellungen",
     "browser_body": "Sie können Cookies auch direkt über die Einstellungen Ihres Browsers verwalten oder löschen (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Im Konto speichern",
+    "save_cta_short": "Speichern",
+    "saving_cta": "Wird gespeichert...",
+    "saved_cta": "Gespeichert ✓",
+    "save_sub": "Später unter „Meine Dateien\" wiederfinden",
+    "save_error": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "login_prompt_title": "Anmelden, um Ergebnisse zu speichern",
+    "login_prompt_body": "Erstelle ein kostenloses Konto, um deine generierten Dateien jederzeit wiederzufinden.",
+    "page_title": "Meine Dateien",
+    "page_subtitle": "Ergebnisse, die du aus den KI-Tools gespeichert hast",
+    "empty_title": "Noch keine gespeicherten Dateien",
+    "empty_body": "Ergebnisse, die du aus den KI-Tools speicherst, erscheinen hier.",
+    "login_required_title": "Anmelden, um deine Dateien zu sehen",
+    "login_required_body": "Dateien, die du speicherst, bleiben mit deinem Konto verknüpft.",
+    "login_button": "Anmelden",
+    "open": "Öffnen",
+    "delete": "Löschen",
+    "confirm_delete": "Diese gespeicherte Datei löschen?"
   }
 }

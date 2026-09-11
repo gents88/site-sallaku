@@ -127,9 +127,21 @@
                     🔗 {{ 'ocr.send_workspace' | translate }}
                   }
                 </button>
+                <button class="btn btn-s" [disabled]="saving()" (click)="saveToAccount()">
+                  @if (saving()) {
+                    💾 {{ 'saved_results.saving_cta' | translate }}
+                  } @else if (justSaved()) {
+                    {{ 'saved_results.saved_cta' | translate }}
+                  } @else {
+                    💾 {{ 'saved_results.save_cta_short' | translate }}
+                  }
+                </button>
               }
               <button class="btn btn-p" (click)="downloadTxt()">{{ 'ocr.download_txt' | translate }}</button>
             </div>
+            @if (saveError()) {
+              <p class="cp-subtitle">{{ saveError() }}</p>
+            }
           </div>
           @if (!allText()) {
             <p class="cp-subtitle">{{ 'ocr.no_text' | translate }}</p>

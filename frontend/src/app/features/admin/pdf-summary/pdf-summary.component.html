@@ -156,11 +156,23 @@
                 🔗 {{ 'pdf_summary.btn_send_workspace' | translate }}
               }
             </button>
+            <button class="action-btn" [disabled]="saving()" (click)="saveToAccount()" [class.copied]="justSaved()">
+              @if (saving()) {
+                💾 {{ 'saved_results.saving_cta' | translate }}
+              } @else if (justSaved()) {
+                {{ 'saved_results.saved_cta' | translate }}
+              } @else {
+                💾 {{ 'saved_results.save_cta_short' | translate }}
+              }
+            </button>
             <button class="action-btn" (click)="summarize()" [disabled]="loading()">
               🔄 {{ 'pdf_summary.btn_regenerate' | translate }}
             </button>
             <button class="action-btn danger" (click)="reset()">✕ {{ 'pdf_summary.btn_new_file' | translate }}</button>
           </div>
+          @if (saveError()) {
+            <div class="error-box">⚠️ {{ saveError() }}</div>
+          }
         </div>
       }
     </div>

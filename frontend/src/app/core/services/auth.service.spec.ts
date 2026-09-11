@@ -12,7 +12,7 @@ import { AuthResponse, User } from '../models/user.model';
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
-  let router: { navigateByUrl: ReturnType<typeof vi.fn> };
+  let router: { navigateByUrl: ReturnType<typeof vi.fn>; url: string };
 
   const apiUrl = `${environment.apiUrl}/auth`;
   const user: User = { _id: 'u1', name: 'Test', email: 'test@example.com', role: 'user' };
@@ -23,7 +23,7 @@ describe('AuthService', () => {
   };
 
   beforeEach(() => {
-    router = { navigateByUrl: vi.fn().mockResolvedValue(true) };
+    router = { navigateByUrl: vi.fn().mockResolvedValue(true), url: '/' };
 
     TestBed.configureTestingModule({
       providers: [
@@ -88,7 +88,8 @@ describe('AuthService', () => {
     req.flush({ message: 'sent' });
   });
 
-  it('clears the session and redirects to login on logout', () => {
+  it('clears the session and redirects to login on logout from within /dashboard', () => {
+    router.url = '/dashboard/projects';
     service.login({ email: 'test@example.com', password: 'pw' }).subscribe();
     httpMock.expectOne(`${apiUrl}/login`).flush(authResponse);
 
@@ -99,6 +100,29 @@ describe('AuthService', () => {
     expect(service.getToken()).toBeNull();
     expect(localStorage.getItem('portfolio_token')).toBeNull();
     expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard/login', { replaceUrl: true });
+  });
+
+  it('clears the session without redirecting when logout happens outside /dashboard', () => {
+    router.url = '/lab/pdf-translate';
+    service.login({ email: 'test@example.com', password: 'pw' }).subscribe();
+    httpMock.expectOne(`${apiUrl}/login`).flush(authResponse);
+
+    service.logout();
+    httpMock.expectOne(`${apiUrl}/logout`).flush({});
+
+    expect(service.isLoggedIn()).toBe(false);
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('always redirects to an explicit target regardless of current route', () => {
+    router.url = '/lab/pdf-translate';
+    service.login({ email: 'test@example.com', password: 'pw' }).subscribe();
+    httpMock.expectOne(`${apiUrl}/login`).flush(authResponse);
+
+    service.logout('/');
+    httpMock.expectOne(`${apiUrl}/logout`).flush({});
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/', { replaceUrl: true });
   });
 
   it('rejects doRefresh immediately when there is no stored refresh token', async () => {

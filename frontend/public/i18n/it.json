@@ -37,7 +37,8 @@
       "content": "Contenuti",
       "ai": "AI",
       "workspace": "Flusso di lavoro",
-      "tools": "Strumenti"
+      "tools": "Strumenti",
+      "account": "Account"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -59,7 +60,8 @@
       "editor": "Editor di Testo",
       "convert": "Convertitore File",
       "ocr": "Testo da Immagine (OCR)",
-      "scanner": "Scanner Documenti"
+      "scanner": "Scanner Documenti",
+      "my_files": "I miei file"
     }
   },
   "lang": {
@@ -1315,7 +1317,9 @@
     "pdf_search_title": "Ricerca PDF",
     "pdf_search_desc": "Cerca libri e documenti in PDF di pubblico dominio, con anteprima prima del download.",
     "library_title": "La mia libreria",
-    "library_desc": "Archivia i PDF nel browser, cercali per contenuto, annotali e fai domande ai tuoi documenti."
+    "library_desc": "Archivia i PDF nel browser, cercali per contenuto, annotali e fai domande ai tuoi documenti.",
+    "my_files_title": "I miei file",
+    "my_files_desc": "Ritrova i risultati che hai salvato dai tool AI"
   },
   "about_manage": {
     "title": "Sezione About",
@@ -1737,5 +1741,25 @@
     "manage_body": "Puoi modificare o revocare il consenso in qualsiasi momento tramite il link \"Gestisci consenso cookie\" nel footer del sito, oppure cancellando i cookie dal tuo browser.",
     "browser_title": "Gestione dai browser",
     "browser_body": "Puoi inoltre gestire o eliminare i cookie direttamente dalle impostazioni del tuo browser (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Salva nel tuo account",
+    "save_cta_short": "Salva",
+    "saving_cta": "Salvataggio...",
+    "saved_cta": "Salvato ✓",
+    "save_sub": "Ritrovalo in \"I miei file\"",
+    "save_error": "Salvataggio non riuscito. Riprova.",
+    "login_prompt_title": "Accedi per salvare i tuoi risultati",
+    "login_prompt_body": "Crea un account gratuito per ritrovare i file generati quando vuoi.",
+    "page_title": "I miei file",
+    "page_subtitle": "I risultati che hai salvato dai tool AI",
+    "empty_title": "Nessun file salvato",
+    "empty_body": "I risultati che salvi dai tool AI compariranno qui.",
+    "login_required_title": "Accedi per vedere i tuoi file",
+    "login_required_body": "I file che salvi dai tool AI restano legati al tuo account.",
+    "login_button": "Accedi",
+    "open": "Apri",
+    "delete": "Elimina",
+    "confirm_delete": "Eliminare questo file salvato?"
   }
 }

@@ -199,7 +199,15 @@
               <button class="btn-copy" [class.is-sent]="justSentToWorkspace()" (click)="sendToWorkspace()">
                 {{ justSentToWorkspace() ? ('ai_formatter.workspace_sent' | translate) : ('🔗 ' + ('ai_formatter.workspace_send' | translate)) }}
               </button>
+              <button class="btn-copy" [class.is-sent]="justSaved()" [disabled]="saving()" (click)="saveToAccount()">
+                {{ saving() ? ('💾 ' + ('saved_results.saving_cta' | translate))
+                  : justSaved() ? ('saved_results.saved_cta' | translate)
+                  : ('💾 ' + ('saved_results.save_cta_short' | translate)) }}
+              </button>
             </div>
+            @if (saveError()) {
+              <p class="error-msg">{{ saveError() }}</p>
+            }
           }
         </div>
 

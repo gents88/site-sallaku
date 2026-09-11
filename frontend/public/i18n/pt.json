@@ -37,7 +37,8 @@
       "content": "Conteúdo",
       "ai": "IA",
       "workspace": "Fluxo de trabalho",
-      "tools": "Ferramentas"
+      "tools": "Ferramentas",
+      "account": "Conta"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -59,7 +60,8 @@
       "editor": "Editor de Texto",
       "convert": "Conversor de Arquivos",
       "ocr": "Texto de Imagem (OCR)",
-      "scanner": "Scanner de Documentos"
+      "scanner": "Scanner de Documentos",
+      "my_files": "Os meus ficheiros"
     }
   },
   "lang": {
@@ -1315,7 +1317,9 @@
     "pdf_search_title": "Pesquisa de PDF",
     "pdf_search_desc": "Pesquise livros e documentos PDF de domínio público, com pré-visualização antes de baixar.",
     "library_title": "A minha biblioteca",
-    "library_desc": "Guarda os PDF no navegador, procura no conteúdo, anota-os e faz perguntas aos teus documentos."
+    "library_desc": "Guarda os PDF no navegador, procura no conteúdo, anota-os e faz perguntas aos teus documentos.",
+    "my_files_title": "Os meus ficheiros",
+    "my_files_desc": "Encontra os resultados que guardaste das ferramentas de IA"
   },
   "about_manage": {
     "title": "Secção About",
@@ -1737,5 +1741,25 @@
     "manage_body": "Pode alterar ou revogar o seu consentimento a qualquer momento através do link \"Gerir consentimento de cookies\" no rodapé do site, ou eliminando os cookies do seu navegador.",
     "browser_title": "Definições do navegador",
     "browser_body": "Também pode gerir ou eliminar cookies diretamente nas definições do seu navegador (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Guardar na tua conta",
+    "save_cta_short": "Guardar",
+    "saving_cta": "A guardar...",
+    "saved_cta": "Guardado ✓",
+    "save_sub": "Encontra-o depois em \"Os meus ficheiros\"",
+    "save_error": "Não foi possível guardar. Tenta novamente.",
+    "login_prompt_title": "Inicia sessão para guardar os teus resultados",
+    "login_prompt_body": "Cria uma conta gratuita para encontrares os teus ficheiros gerados quando quiseres.",
+    "page_title": "Os meus ficheiros",
+    "page_subtitle": "Resultados que guardaste das ferramentas de IA",
+    "empty_title": "Ainda não há ficheiros guardados",
+    "empty_body": "Os resultados que guardares das ferramentas de IA vão aparecer aqui.",
+    "login_required_title": "Inicia sessão para veres os teus ficheiros",
+    "login_required_body": "Os ficheiros que guardas ficam ligados à tua conta.",
+    "login_button": "Iniciar sessão",
+    "open": "Abrir",
+    "delete": "Eliminar",
+    "confirm_delete": "Eliminar este ficheiro guardado?"
   }
 }

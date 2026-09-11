@@ -7,6 +7,9 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService } from '../../../core/services/library.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
 
 type Status = 'idle' | 'preparing' | 'recognizing' | 'done' | 'error';
 
@@ -51,6 +54,9 @@ export class OcrComponent implements OnInit {
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
   private readonly library = inject(LibraryService);
+  private readonly savedResults = inject(SavedResultsService);
+  readonly auth = inject(AuthService);
+  readonly authModal = inject(AuthModalService);
 
   readonly accept = IMG_ACCEPT;
   readonly languages = OCR_LANGUAGES;
@@ -71,6 +77,9 @@ export class OcrComponent implements OnInit {
   readonly copied = signal(false);
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent = signal(false);
+  readonly saving = signal(false);
+  readonly justSaved = signal(false);
+  readonly saveError = signal('');
   breadcrumbItems: BreadcrumbItem[] = [];
 
   /**
@@ -260,6 +269,34 @@ export class OcrComponent implements OnInit {
     } finally {
       this.savingToLibrary.set(false);
     }
+  }
+
+  saveToAccount(): void {
+    const text = this.allText();
+    if (!text) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    const fs = this.files();
+    const title = fs.length === 1 ? fs[0].name : `OCR (${fs.length} file)`;
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults.save({ toolType: 'ocr', title, payload: { text } }).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.justSaved.set(true);
+        setTimeout(() => this.justSaved.set(false), 2000);
+      },
+      error: (err) => {
+        this.saving.set(false);
+        this.saveError.set(err?.error?.message ?? this.t.instant('saved_results.save_error'));
+        setTimeout(() => this.saveError.set(''), 3000);
+      },
+    });
   }
 
   copy(): void {

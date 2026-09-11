@@ -131,14 +131,23 @@ export class AuthService implements OnDestroy {
       );
   }
 
-  logout(redirectUrl = '/dashboard/login'): void {
+  logout(redirectUrl?: string): void {
     const token = this._token();
     if (token) {
       // Best-effort server-side revocation — don't block the UI on this
       this.http.post(`${this.apiUrl}/logout`, {}).subscribe({ error: () => {} });
     }
     this.clearSession();
-    void this.router.navigateByUrl(redirectUrl, { replaceUrl: true });
+
+    // Explicit target always wins. Otherwise, only bounce to the admin login
+    // when we were actually in /dashboard — a plain 'user' account logged out
+    // (e.g. by the inactivity timer) while browsing /lab should just lose its
+    // session in place, not get yanked to the admin login screen.
+    if (redirectUrl) {
+      void this.router.navigateByUrl(redirectUrl, { replaceUrl: true });
+    } else if (this.router.url.startsWith('/dashboard')) {
+      void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });
+    }
   }
 
   getToken(): string | null {
