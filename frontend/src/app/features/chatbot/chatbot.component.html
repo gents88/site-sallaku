@@ -11,8 +11,8 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="26" height="26" aria-hidden="true">
       <path d="M12 2C6.477 2 2 6.115 2 11.188c0 2.756 1.274 5.226 3.294 6.934L4 22l4.832-2.118A11.08 11.08 0 0 0 12 20.375c5.523 0 10-4.115 10-9.187S17.523 2 12 2Z"/>
     </svg>
-    @if (messages.length > 0) {
-      <span class="cb-fab__badge" aria-label="Unread messages">{{ messages.length }}</span>
+    @if (unreadCount > 0) {
+      <span class="cb-fab__badge" [attr.aria-label]="'chatbot_ui.unread_badge' | translate:{count: unreadCount}">{{ unreadCount }}</span>
     }
   } @else {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true">
@@ -28,6 +28,7 @@
     role="dialog"
     aria-modal="true"
     [attr.aria-label]="'chatbot_ui.title' | translate"
+    (keydown.tab)="onPanelTabKey($event)"
   >
     <!-- Header -->
     <div class="cb-header">
@@ -91,7 +92,7 @@
 
     <!-- ── Chat View ───────────────────────────────── -->
     @if (panelView === 'chat') {
-      <div class="cb-messages" #messagesContainer role="log" aria-live="polite" [attr.aria-label]="'chatbot_ui.title' | translate">
+      <div class="cb-messages" #messagesContainer (scroll)="onMessagesScroll()" role="log" aria-live="polite" [attr.aria-label]="'chatbot_ui.title' | translate">
         @if (messages.length === 0 && !isLoading) {
           <div class="cb-welcome">
             <div class="cb-welcome__icon" aria-hidden="true">
@@ -162,6 +163,12 @@
             </div>
           </div>
         }
+
+        @if (showJumpToBottom) {
+          <button type="button" class="cb-jump-bottom" (click)="jumpToBottom()">
+            ↓ {{ 'chatbot_ui.new_messages' | translate }}
+          </button>
+        }
       </div>
 
       <!-- ── Chat Live Handoff: banner "Vuoi parlare con Gent?" / pillola di stato ── -->
@@ -175,18 +182,24 @@
 
       <!-- Input area -->
       <form class="cb-input-area" (ngSubmit)="send()" [attr.aria-label]="'chatbot_ui.send' | translate">
-        <textarea
-          class="cb-input"
-          [placeholder]="'chatbot_ui.placeholder' | translate"
-          [(ngModel)]="inputText"
-          name="chatInput"
-          rows="1"
-          [disabled]="isLoading"
-          (keydown.enter)="handleEnter($event)"
-          (input)="onInputChange($event)"
-          [attr.aria-label]="'chatbot_ui.placeholder' | translate"
-          maxlength="1000"
-        ></textarea>
+        <div class="cb-input-wrap">
+          <textarea
+            #chatInput
+            class="cb-input"
+            [placeholder]="'chatbot_ui.placeholder' | translate"
+            [(ngModel)]="inputText"
+            name="chatInput"
+            rows="1"
+            [disabled]="isLoading"
+            (keydown.enter)="handleEnter($event)"
+            (input)="onInputChange($event)"
+            [attr.aria-label]="'chatbot_ui.placeholder' | translate"
+            maxlength="1000"
+          ></textarea>
+          @if (inputText.length > 800) {
+            <span class="cb-char-counter" [class.cb-char-counter--limit]="inputText.length >= 1000">{{ inputText.length }}/1000</span>
+          }
+        </div>
         <button
           type="submit"
           class="cb-send-btn"
