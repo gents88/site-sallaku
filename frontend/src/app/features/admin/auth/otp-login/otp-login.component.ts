@@ -118,9 +118,10 @@ export class OtpLoginComponent implements OnDestroy {
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg =
-          err?.error?.message ||
-          this.translate.instant('auth.otp_send_failed');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg)
+          ? rawMsg.join(' ')
+          : rawMsg || this.translate.instant('auth.otp_send_failed');
         this.snackBar.open(msg, this.translate.instant('common.close'), {
           duration: 5000,
         });
@@ -158,9 +159,10 @@ export class OtpLoginComponent implements OnDestroy {
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg =
-          err?.error?.message ||
-          this.translate.instant('auth.otp_invalid');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg)
+          ? rawMsg.join(' ')
+          : rawMsg || this.translate.instant('auth.otp_invalid');
         this.snackBar.open(msg, this.translate.instant('common.close'), {
           duration: 5000,
         });
@@ -190,9 +192,10 @@ export class OtpLoginComponent implements OnDestroy {
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg =
-          err?.error?.message ||
-          this.translate.instant('auth.otp_send_failed');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg)
+          ? rawMsg.join(' ')
+          : rawMsg || this.translate.instant('auth.otp_send_failed');
         this.snackBar.open(msg, this.translate.instant('common.close'), {
           duration: 5000,
         });

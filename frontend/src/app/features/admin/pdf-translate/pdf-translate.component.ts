@@ -306,8 +306,8 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
           this.analytics.trackClick('lab_tool', 'pdf_translate');
         },
         error: (err) => {
-          const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_translate.err_generic');
-          this.error.set(msg);
+          const rawMsg = err?.error?.message ?? err?.message;
+          this.error.set(Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('pdf_translate.err_generic'));
         },
       });
   }
@@ -387,7 +387,10 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.saving.set(false);
-          this.saveError.set(err?.error?.message ?? this.t.instant('saved_results.save_error'));
+          const rawMsg = err?.error?.message;
+          this.saveError.set(
+            Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+          );
           setTimeout(() => this.saveError.set(''), 3000);
         },
       });

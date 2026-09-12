@@ -200,7 +200,8 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
         switchMap((q) =>
           this.service.search(q).pipe(
             catchError((err) => {
-              const msg = err?.error?.message ?? this.translate.instant('pdf_search.err_search');
+              const rawMsg = err?.error?.message;
+              const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.translate.instant('pdf_search.err_search');
               this.error.set(msg);
               this.results.set([]);
               return of(null);

@@ -144,9 +144,10 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
           }, 5000);
         },
         error: (error) => {
-          this.submitError =
-            error.error?.message ||
-            this.translate.instant('notes.form.error_generic');
+          const rawMsg = error.error?.message;
+          this.submitError = Array.isArray(rawMsg)
+            ? rawMsg.join(' ')
+            : rawMsg || this.translate.instant('notes.form.error_generic');
           this.isSubmittingNote = false;
           this.cdr.markForCheck();
         },

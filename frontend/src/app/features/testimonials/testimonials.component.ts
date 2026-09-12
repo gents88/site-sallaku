@@ -169,7 +169,10 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
         },
         error: (error) => {
           this.submitting.set(false);
-          const message = error.error?.message || this.translate.instant('testimonials.form.error_generic');
+          const rawMsg = error.error?.message;
+          const message = Array.isArray(rawMsg)
+            ? rawMsg.join(' ')
+            : rawMsg || this.translate.instant('testimonials.form.error_generic');
           this.snackbar.show(message, 'error');
         },
       });

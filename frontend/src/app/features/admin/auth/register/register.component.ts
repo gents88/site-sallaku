@@ -124,7 +124,8 @@ export class RegisterComponent {
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg = err?.error?.message || this.translate.instant('common.error');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.translate.instant('common.error');
         this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 4000 });
       },
     });
