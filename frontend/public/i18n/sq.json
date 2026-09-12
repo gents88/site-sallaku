@@ -395,7 +395,9 @@
     "not_admin": "Ky llogari nuk ka akses admin.",
     "login_error": "Email ose fjalëkalim i pavlefshëm.",
     "login_with_email_password": "Hyrje me email dhe fjalëkalim",
-    "or": "ose"
+    "or": "ose",
+    "show_password": "Shfaq fjalëkalimin",
+    "hide_password": "Fshih fjalëkalimin"
   },
   "admin": {
     "dashboard": "Dashboard",
