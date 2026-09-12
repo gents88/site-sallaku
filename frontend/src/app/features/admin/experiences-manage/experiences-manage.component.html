@@ -96,8 +96,8 @@
             <p>{{ exp.description | slice:0:120 }}…</p>
           </div>
           <div class="list-item__actions">
-            <button mat-icon-button (click)="openEdit(exp)"><mat-icon>edit</mat-icon></button>
-            <button mat-icon-button color="warn" (click)="delete(exp._id)"><mat-icon>delete</mat-icon></button>
+            <button mat-icon-button (click)="openEdit(exp)" [attr.aria-label]="'common.edit' | translate"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(exp._id)" [attr.aria-label]="'common.delete' | translate"><mat-icon>delete</mat-icon></button>
           </div>
         </div>
       }
