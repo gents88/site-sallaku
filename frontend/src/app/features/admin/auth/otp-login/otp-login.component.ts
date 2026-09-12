@@ -178,12 +178,9 @@ export class OtpLoginComponent implements AfterViewInit, OnDestroy {
             this.router.navigate(['/dashboard']);
           }, 80);
         } else {
-          this.auth.logout();
-          this.snackBar.open(
-            this.translate.instant('auth.not_admin'),
-            this.translate.instant('common.close'),
-            { duration: 4000 },
-          );
+          // Un account 'user' non ha nulla da fare in /dashboard, ma la sessione
+          // è comunque valida — niente logout né rifiuto, si torna alla home.
+          this.router.navigate(['/']);
         }
       },
       error: (err) => {

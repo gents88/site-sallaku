@@ -120,7 +120,10 @@ export class RegisterComponent {
 
     const { name, email, password } = this.form.value as any;
     this.auth.register({ name, email, password }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      // La registrazione pubblica crea sempre un account 'user' (mai admin — quello
+      // è unico ed esiste già), quindi /dashboard sarebbe un vicolo cieco bloccato
+      // dal RolesGuard: si torna alla home, non nel pannello che non è mai per loro.
+      next: () => this.router.navigate(['/']),
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
