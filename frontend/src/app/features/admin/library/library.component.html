@@ -242,7 +242,13 @@
 <!-- ─── Pannello chat ─────────────────────────────────────────── -->
 @if (chatOpen()) {
   <div class="chat-backdrop" (click)="closeChat()"></div>
-  <aside class="chat-panel" role="dialog" [attr.aria-label]="'library.chat_title' | translate">
+  <aside
+    class="chat-panel"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'library.chat_title' | translate"
+    (keydown.tab)="onChatPanelTabKey($event)"
+  >
     <header class="chat-header">
       <div>
         <h2>💬 {{ 'library.chat_title' | translate }}</h2>
@@ -288,6 +294,7 @@
         <button type="button" class="btn-mini" (click)="clearChat()" [title]="'library.chat_clear' | translate">🗑</button>
       }
       <input
+        #chatInputEl
         type="text"
         [ngModel]="chatInput()"
         (ngModelChange)="chatInput.set($event)"
