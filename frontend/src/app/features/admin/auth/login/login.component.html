@@ -3,7 +3,7 @@
     class="auth-card card fade-in-up"
     role="dialog"
     aria-modal="true"
-    [attr.aria-label]="'auth.login_subtitle' | translate"
+    [attr.aria-label]="(embedded ? 'auth.login_title_generic' : 'auth.login_subtitle') | translate"
     (click)="$event.stopPropagation()"
     (keydown.tab)="onModalTabKey($event)"
   >
@@ -14,9 +14,14 @@
     <div class="auth-card__header">
       <div class="auth-avatar" aria-hidden="true">GS</div>
       <div class="auth-card__header-copy">
-        <span class="auth-chip">Admin Access</span>
-        <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
-        <p class="text-muted">{{ 'auth.login_subtitle' | translate }}</p>
+        @if (!embedded) {
+          <span class="auth-chip">{{ 'auth.login_chip_admin' | translate }}</span>
+          <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
+          <p class="text-muted">{{ 'auth.login_subtitle' | translate }}</p>
+        } @else {
+          <h1 class="logo">{{ 'auth.login_title_generic' | translate }}</h1>
+          <p class="text-muted">{{ 'saved_results.login_prompt_title' | translate }}</p>
+        }
       </div>
     </div>
 
