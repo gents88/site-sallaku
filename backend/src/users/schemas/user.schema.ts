@@ -21,6 +21,17 @@ export class User {
   @Prop({ default: 'user', enum: ['admin', 'user'] })
   role: string;
 
+  /**
+   * True once this account's email has been proven to belong to the person
+   * who registered it — via the registration OTP step, or any successful
+   * OTP-email login (both prove ownership the same way). A password-created
+   * account can't log in with its password until this flips true, which
+   * also stops the welcome email from being fired at an address the
+   * registrant may not actually control.
+   */
+  @Prop({ default: false })
+  emailVerified: boolean;
+
   /** Bcrypt hash of the latest issued refresh token — null when logged out */
   @Prop({ select: false, default: null })
   refreshTokenHash?: string | null;

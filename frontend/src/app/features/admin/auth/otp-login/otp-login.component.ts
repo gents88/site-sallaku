@@ -1,7 +1,7 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,7 +40,7 @@ function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | nul
   templateUrl: './otp-login.component.html',
   styleUrls: ['./otp-login.component.scss'],
 })
-export class OtpLoginComponent implements AfterViewInit, OnDestroy {
+export class OtpLoginComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('identifierInput') private identifierInputRef?: ElementRef<HTMLInputElement>;
   @ViewChild('otpInput') private otpInputRef?: ElementRef<HTMLInputElement>;
 
@@ -68,12 +68,32 @@ export class OtpLoginComponent implements AfterViewInit, OnDestroy {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
   ) {}
 
+  ngOnInit(): void {
+    // Arriving here right after registration: the backend already sent the
+    // verification OTP as part of /auth/register, so land straight on step 2
+    // with that email pre-filled instead of making the user re-request it.
+    const params = this.route.snapshot.queryParamMap;
+    const email = params.get('email');
+    if (email && params.get('sent') === '1') {
+      this.identifierForm.patchValue({ identifier: email });
+      this.identifier = email;
+      this.step = 'otp';
+      this.startCountdown();
+      this.startResendCooldown();
+    }
+  }
+
   ngAfterViewInit(): void {
+    if (this.step === 'otp') {
+      setTimeout(() => this.otpInputRef?.nativeElement.focus(), 0);
+      return;
+    }
     setTimeout(() => this.identifierInputRef?.nativeElement.focus(), 0);
   }
 

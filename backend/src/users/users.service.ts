@@ -61,6 +61,11 @@ export class UsersService {
     await this.userModel.findByIdAndUpdate(userId, { refreshTokenHash: hash }).exec();
   }
 
+  /** Marks an account's email as verified — call only after proving ownership (e.g. a successful email OTP check). */
+  async markEmailVerified(userId: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(userId, { emailVerified: true }).exec();
+  }
+
   async upsertAdmin(data: Partial<User> & { email: string; passwordHash: string }): Promise<UserDocument> {
     return this.userModel.findOneAndUpdate(
       { email: data.email.toLowerCase() },
@@ -70,6 +75,9 @@ export class UsersService {
           email: data.email.toLowerCase(),
           passwordHash: data.passwordHash,
           role: 'admin',
+          // The bootstrapped admin is provisioned from trusted server-side
+          // env vars, not a public form — there's no ownership to prove.
+          emailVerified: true,
         },
       },
       { new: true, upsert: true, setDefaultsOnInsert: true },
