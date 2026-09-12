@@ -801,7 +801,9 @@
     "chip_skills": "🛠 Quelles sont ses compétences ?",
     "chip_projects": "📁 Montrez-moi ses projets",
     "chip_contact": "📬 Comment le contacter ?",
-    "live_offer_cta": "💬 Parler à Gent maintenant"
+    "live_offer_cta": "💬 Parler à Gent maintenant",
+    "unread_badge": "{{count}} messages non lus",
+    "new_messages": "Nouveaux messages"
   },
   "live_handoff": {
     "prompt_title": "Souhaitez-vous parler directement à Gent ?",
