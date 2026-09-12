@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnDestroy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -40,7 +40,10 @@ function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | nul
   templateUrl: './otp-login.component.html',
   styleUrls: ['./otp-login.component.scss'],
 })
-export class OtpLoginComponent implements OnDestroy {
+export class OtpLoginComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('identifierInput') private identifierInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('otpInput') private otpInputRef?: ElementRef<HTMLInputElement>;
+
   step: 'identifier' | 'otp' = 'identifier';
   identifier = '';
   loading = false;
@@ -70,6 +73,10 @@ export class OtpLoginComponent implements OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {}
 
+  ngAfterViewInit(): void {
+    setTimeout(() => this.identifierInputRef?.nativeElement.focus(), 0);
+  }
+
   ngOnDestroy(): void {
     this.countdownSub?.unsubscribe();
     this.resendSub?.unsubscribe();
@@ -79,6 +86,27 @@ export class OtpLoginComponent implements OnDestroy {
   @HostListener('document:keydown.escape')
   onEscapePressed(): void {
     if (!this.loading) this.router.navigate(['/']);
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro la card finché è aperta come dialog. */
+  onModalTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const card = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      card.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
   }
 
   get isEmail(): boolean {
@@ -114,6 +142,8 @@ export class OtpLoginComponent implements OnDestroy {
         this.otpForm.reset();
         this.startCountdown();
         this.startResendCooldown();
+        // Il campo OTP esiste solo dopo che l'@if dello step 2 lo renderizza.
+        setTimeout(() => this.otpInputRef?.nativeElement.focus(), 0);
       },
       error: (err) => {
         this.loading = false;
