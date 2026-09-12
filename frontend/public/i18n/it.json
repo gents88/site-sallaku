@@ -15,7 +15,9 @@
     "dashboard": "Dashboard",
     "ai_tools": "AI & Strumenti",
     "testimonials": "Testimonianze",
-    "search": "Cerca"
+    "search": "Cerca",
+    "open_menu": "Apri il menu",
+    "back_to_top": "Torna su"
   },
   "sidebar": {
     "collapse_menu": "Comprimi il menu laterale",
@@ -906,7 +908,10 @@
     "err_file_type": "Sono supportati solo file PDF, TXT o DOCX come contesto.",
     "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}",
     "err_generic": "Si è verificato un errore. Riprova.",
-    "err_truncated": "Il contenuto di alcune slide è stato troncato per motivi di spazio nel PDF esportato. Prova ad accorciare il testo e rigenera."
+    "err_truncated": "Il contenuto di alcune slide è stato troncato per motivi di spazio nel PDF esportato. Prova ad accorciare il testo e rigenera.",
+    "remove_context_file": "Rimuovi file",
+    "prev_slide": "Slide precedente",
+    "next_slide": "Slide successiva"
   },
   "ai_formatter": {
     "title": "Formattatore AI",
@@ -1150,7 +1155,9 @@
     "preview_timeout": "L'anteprima sta impiegando troppo tempo a caricarsi. Scarica il PDF per leggerlo.",
     "err_search": "La ricerca non è riuscita. Riprova.",
     "err_workspace_send": "Invio a Workspace non riuscito. Riprova.",
-    "err_library_save": "Salvataggio in libreria non riuscito. Riprova."
+    "err_library_save": "Salvataggio in libreria non riuscito. Riprova.",
+    "preview_prev_page": "Pagina precedente",
+    "preview_next_page": "Pagina successiva"
   },
   "convert": {
     "title": "Convertitore",
@@ -1782,5 +1789,16 @@
     "role_label": "Ruolo",
     "role_admin": "Amministratore",
     "role_user": "Utente"
+  },
+  "ai_assistant": {
+    "clear_chat": "Cancella conversazione",
+    "messages_log": "Messaggi",
+    "suggested_prompts": "Domande suggerite",
+    "copy": "Copia",
+    "copied": "Copiato!",
+    "copy_message": "Copia messaggio",
+    "typing": "L'AI sta scrivendo",
+    "message_input": "Campo messaggio",
+    "send_message": "Invia messaggio"
   }
 }
