@@ -44,6 +44,7 @@ export const ADMIN_NAV: NavGroup[] = [
       { icon: '💼', labelKey: 'sidebar.items.experiences',   route: '/dashboard/experiences' },
       { icon: '👤', labelKey: 'sidebar.items.about',         route: '/dashboard/about' },
       { icon: '⭐', labelKey: 'sidebar.items.testimonials',  route: '/dashboard/testimonials' },
+      { icon: '📧', labelKey: 'sidebar.items.newsletter',    route: '/dashboard/newsletter' },
       { icon: '💬', labelKey: 'sidebar.items.notes',         route: '/dashboard/notes' },
     ],
   },

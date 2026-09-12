@@ -1,0 +1,22 @@
+<div class="container section newsletter-result">
+  <div class="newsletter-result__card card">
+    @switch (state) {
+      @case ('loading') {
+        <mat-icon class="spin" aria-hidden="true">sync</mat-icon>
+        <p>{{ 'newsletter.confirm_loading' | translate }}</p>
+      }
+      @case ('success') {
+        <mat-icon class="newsletter-result__icon newsletter-result__icon--ok" aria-hidden="true">check_circle</mat-icon>
+        <h1>{{ 'newsletter.confirm_success_title' | translate }}</h1>
+        <p>{{ 'newsletter.confirm_success_message' | translate }}</p>
+        <a [routerLink]="'/blog' | langUrl" class="btn btn-primary">{{ 'newsletter.back_to_blog' | translate }}</a>
+      }
+      @case ('error') {
+        <mat-icon class="newsletter-result__icon newsletter-result__icon--error" aria-hidden="true">error_outline</mat-icon>
+        <h1>{{ 'newsletter.confirm_error_title' | translate }}</h1>
+        <p>{{ 'newsletter.confirm_error_message' | translate }}</p>
+        <a [routerLink]="'/blog' | langUrl" class="btn btn-outline">{{ 'newsletter.back_to_blog' | translate }}</a>
+      }
+    }
+  </div>
+</div>

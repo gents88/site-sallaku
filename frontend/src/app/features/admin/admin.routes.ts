@@ -52,6 +52,12 @@ export const adminRoutes: Routes = [
       import('./testimonials-manage/testimonials-manage.component').then(m => m.TestimonialsManageComponent),
   },
   {
+    path: 'newsletter',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./newsletter-manage/newsletter-manage.component').then(m => m.NewsletterManageComponent),
+  },
+  {
     path: 'about',
     canActivate: [authGuard],
     loadComponent: () =>
