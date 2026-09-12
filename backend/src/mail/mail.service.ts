@@ -194,6 +194,38 @@ export class MailService {
     }).catch(() => ({ success: false, accepted: [], rejected: [email] }));
   }
 
+  /** Double opt-in confirmation link for a newsletter subscription request. */
+  sendNewsletterConfirm(email: string, token: string): Promise<MailDeliveryResult> {
+    const confirmUrl = `${this.config.get('FRONTEND_URL', 'https://gentsallaku.it')}/newsletter/confirm?token=${token}`;
+
+    return this.send({
+      to: email,
+      subject: 'Conferma la tua iscrizione alla newsletter',
+      text: `Conferma la tua iscrizione visitando: ${confirmUrl}\n\nSe non hai richiesto questa iscrizione, ignora questa email — il link scade tra 48 ore.`,
+      html: `
+        <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:12px;overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);padding:28px 32px;text-align:center;">
+            <span style="font-family:monospace;font-size:2rem;font-weight:700;color:#fff">&lt;GS /&gt;</span>
+            <h1 style="color:#fff;margin:10px 0 0;font-size:1.2rem;">Conferma la tua iscrizione</h1>
+          </div>
+          <div style="padding:32px;text-align:center;">
+            <p style="color:#94a3b8;">Un ultimo passo: conferma che questa email è tua per iniziare a ricevere i nuovi articoli del blog.</p>
+            <div style="margin:28px 0;">
+              <a href="${confirmUrl}"
+                 style="background:linear-gradient(135deg,#4f6af5,#8b5cf6);color:#fff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">
+                Conferma iscrizione
+              </a>
+            </div>
+            <p style="color:#64748b;font-size:0.82rem;">Il link scade tra 48 ore. Se non hai richiesto questa iscrizione, ignora questa email.</p>
+          </div>
+          <div style="background:#0f1424;padding:16px;text-align:center;font-size:0.8rem;color:#64748b;">
+            © ${new Date().getFullYear()} Gent Sallaku · <a href="https://gentsallaku.it" style="color:#818cf8;">gentsallaku.it</a>
+          </div>
+        </div>
+      `,
+    });
+  }
+
   /** Notification sent to admin when a contact form is submitted */
   sendContactNotification(opts: {
     name: string;

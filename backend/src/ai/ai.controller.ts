@@ -17,13 +17,7 @@ import { Request } from 'express';
 import { AiService } from './ai.service';
 import { AiQuotaService } from '../common/services/ai-quota.service';
 import { AskDocumentDto } from './dto/ask-document.dto';
-
-function clientIp(req: Request): string {
-  if (req.ip) return req.ip;
-  const forwarded = req.headers['x-forwarded-for'];
-  const first = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(',')[0];
-  return first?.trim() || req.socket?.remoteAddress || '';
-}
+import { clientIp } from '../common/utils/request-ip.util';
 
 const ALLOWED_MIMES = new Set([
   'application/pdf',

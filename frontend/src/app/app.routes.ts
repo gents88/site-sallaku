@@ -139,6 +139,18 @@ const publicPages: Route[] = [
     loadComponent: () => import('./features/admin/my-saved-results/my-saved-results.component').then(m => m.MySavedResultsComponent),
   },
 
+  // ── Newsletter: confirm/unsubscribe landing pages ──
+  {
+    path: 'newsletter/confirm',
+    loadComponent: () =>
+      import('./features/newsletter/newsletter-confirm/newsletter-confirm.component').then(m => m.NewsletterConfirmComponent),
+  },
+  {
+    path: 'newsletter/unsubscribe',
+    loadComponent: () =>
+      import('./features/newsletter/newsletter-unsubscribe/newsletter-unsubscribe.component').then(m => m.NewsletterUnsubscribeComponent),
+  },
+
   // ── Legal ─────────────────────────────────────────
   {
     path: 'privacy-policy',

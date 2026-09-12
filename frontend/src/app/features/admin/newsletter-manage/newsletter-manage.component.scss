@@ -1,0 +1,78 @@
+/* .admin-page, .admin-header, .back-link, .pagination, .empty-state, .badge → styles.scss (globali) */
+
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.newsletter-counts {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+
+  strong { color: var(--color-text); }
+}
+
+// ── Status tabs (same pattern as testimonials-manage) ──────────
+.status-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg-alt, rgba(248, 250, 252, 0.8));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+}
+
+.status-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover { background: rgba(37, 99, 235, 0.06); border-color: rgba(37, 99, 235, 0.3); color: var(--color-primary); }
+
+  &.active {
+    background: var(--color-primary, #2563eb);
+    border-color: var(--color-primary, #2563eb);
+    color: #fff;
+  }
+}
+
+.list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.subscriber-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 1.1rem;
+
+  &__icon { color: var(--color-primary); opacity: 0.7; flex-shrink: 0; }
+  &__main { display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0; }
+  &__email { font-weight: 600; word-break: break-all; }
+  &__meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: var(--color-text-muted); }
+  &__dot { opacity: 0.5; }
+}
+
+.badge--pending      { color: #f59e0b; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.35); }
+.badge--confirmed    { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.35); }
+.badge--unsubscribed { color: #94a3b8; background: rgba(148, 163, 184, 0.1); border-color: rgba(148, 163, 184, 0.35); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }

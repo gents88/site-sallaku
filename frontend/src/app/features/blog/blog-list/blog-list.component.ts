@@ -11,11 +11,12 @@ import { LanguageService, withLangPrefix } from '../../../core/services/language
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, NewsletterSignupComponent],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

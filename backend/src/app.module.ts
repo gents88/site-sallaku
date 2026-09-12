@@ -29,6 +29,7 @@ import { NotesModule } from './notes/notes.module';
 import { TestimonialsModule } from './testimonials/testimonials.module';
 import { SearchModule } from './search/search.module';
 import { SavedResultsModule } from './saved-results/saved-results.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { SavedResultsModule } from './saved-results/saved-results.module';
     TestimonialsModule,
     SearchModule,
     SavedResultsModule,
+    NewsletterModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default

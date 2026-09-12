@@ -1,0 +1,41 @@
+<div class="newsletter-signup card">
+  @if (state === 'success') {
+    <div class="newsletter-signup__success">
+      <mat-icon aria-hidden="true">mark_email_read</mat-icon>
+      <p>{{ 'newsletter.subscribe_success' | translate }}</p>
+    </div>
+  } @else {
+    <div class="newsletter-signup__intro">
+      <mat-icon aria-hidden="true">mail</mat-icon>
+      <div>
+        <p class="newsletter-signup__title">{{ 'newsletter.title' | translate }}</p>
+        <p class="newsletter-signup__subtitle">{{ 'newsletter.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <form class="newsletter-signup__form" (ngSubmit)="submit()" novalidate>
+      <input
+        type="email"
+        name="email"
+        required
+        [(ngModel)]="email"
+        [placeholder]="'newsletter.email_placeholder' | translate"
+        [attr.aria-label]="'newsletter.email_placeholder' | translate"
+        [disabled]="loading"
+      />
+      <button mat-raised-button color="primary" type="submit" [disabled]="loading || !email.trim()">
+        @if (loading) {
+          <mat-icon class="spin">sync</mat-icon>
+        } @else {
+          {{ 'newsletter.subscribe_btn' | translate }}
+        }
+      </button>
+    </form>
+
+    <app-turnstile-widget (verified)="onTurnstileVerified($event)"></app-turnstile-widget>
+
+    @if (state === 'error') {
+      <p class="newsletter-signup__error" role="alert">{{ errorMessage }}</p>
+    }
+  }
+</div>
