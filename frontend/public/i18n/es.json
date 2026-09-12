@@ -394,7 +394,6 @@
     "otp_resent": "¡Nuevo código enviado!",
     "otp_send_failed": "Error al enviar el código. Inténtalo de nuevo.",
     "otp_invalid": "Código inválido o expirado.",
-    "not_admin": "Esta cuenta no tiene acceso de administrador.",
     "login_error": "Email o contraseña inválidos.",
     "login_with_email_password": "Acceder con email y contraseña",
     "or": "o",
