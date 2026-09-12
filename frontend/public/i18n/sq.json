@@ -572,7 +572,8 @@
     "warning_body": "Për siguri, sesioni admin do të mbyllet së shpejti nëse nuk konfirmoni që jeni ende aktiv.",
     "seconds_remaining": "sekonda të mbetura",
     "stay_logged_in": "Qëndro i kyçur",
-    "logout_now": "Dil tani"
+    "logout_now": "Dil tani",
+    "eyebrow": "Skadim sigurie"
   },
   "common": {
     "loading": "Duke ngarkuar…",
