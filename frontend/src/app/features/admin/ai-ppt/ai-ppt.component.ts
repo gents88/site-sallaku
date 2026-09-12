@@ -290,7 +290,10 @@ export class AiPptComponent implements OnInit {
         },
         error: (err) => {
           this.saving.set(false);
-          this.saveError.set(err?.error?.message ?? this.t.instant('saved_results.save_error'));
+          const rawMsg = err?.error?.message;
+          this.saveError.set(
+            Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+          );
           setTimeout(() => this.saveError.set(''), 3000);
         },
       });

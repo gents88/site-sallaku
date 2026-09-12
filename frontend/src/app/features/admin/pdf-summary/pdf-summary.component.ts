@@ -219,7 +219,10 @@ export class PdfSummaryComponent implements OnInit {
         },
         error: (err) => {
           this.saving.set(false);
-          this.saveError.set(err?.error?.message ?? this.t.instant('saved_results.save_error'));
+          const rawMsg = err?.error?.message;
+          this.saveError.set(
+            Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+          );
           setTimeout(() => this.saveError.set(''), 3000);
         },
       });
@@ -266,7 +269,8 @@ export class PdfSummaryComponent implements OnInit {
         this.analytics.trackClick('lab_tool', 'pdf_summary');
       },
       error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_summary.err_generic');
+        const rawMsg = err?.error?.message ?? err?.message;
+        const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('pdf_summary.err_generic');
         this.error.set(msg); this.loading.set(false);
       },
     });
