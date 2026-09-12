@@ -1773,5 +1773,13 @@
     "open": "Hap",
     "delete": "Fshi",
     "confirm_delete": "Të fshihet ky skedar i ruajtur?"
+  },
+  "account_modal": {
+    "badge_admin": "Admin",
+    "status_label": "Statusi",
+    "status_active": "Sesion aktive",
+    "role_label": "Roli",
+    "role_admin": "Administrator",
+    "role_user": "Përdorues"
   }
 }

@@ -1773,5 +1773,13 @@
     "open": "Open",
     "delete": "Delete",
     "confirm_delete": "Delete this saved file?"
+  },
+  "account_modal": {
+    "badge_admin": "Admin",
+    "status_label": "Status",
+    "status_active": "Active session",
+    "role_label": "Role",
+    "role_admin": "Administrator",
+    "role_user": "User"
   }
 }

@@ -1773,5 +1773,13 @@
     "open": "Abrir",
     "delete": "Eliminar",
     "confirm_delete": "Eliminar este ficheiro guardado?"
+  },
+  "account_modal": {
+    "badge_admin": "Admin",
+    "status_label": "Estado",
+    "status_active": "Sessão ativa",
+    "role_label": "Função",
+    "role_admin": "Administrador",
+    "role_user": "Utilizador"
   }
 }
