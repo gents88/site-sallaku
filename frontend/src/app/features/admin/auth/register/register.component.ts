@@ -120,10 +120,18 @@ export class RegisterComponent {
 
     const { name, email, password } = this.form.value as any;
     this.auth.register({ name, email, password }).subscribe({
-      // La registrazione pubblica crea sempre un account 'user' (mai admin — quello
-      // è unico ed esiste già), quindi /dashboard sarebbe un vicolo cieco bloccato
-      // dal RolesGuard: si torna alla home, non nel pannello che non è mai per loro.
-      next: () => this.router.navigate(['/']),
+      // La registrazione non fa più login automatico: il backend manda un
+      // OTP per verificare che l'email sia davvero del richiedente, quindi
+      // si passa allo step 2 della pagina OTP (già inviato lato server, non
+      // richiederlo di nuovo) invece di tornare subito alla home.
+      next: () => {
+        this.snackBar.open(
+          this.translate.instant('auth.register_verify_sent'),
+          this.translate.instant('common.close'),
+          { duration: 6000 },
+        );
+        this.router.navigate(['/dashboard/login/otp'], { queryParams: { email, sent: 1 } });
+      },
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();

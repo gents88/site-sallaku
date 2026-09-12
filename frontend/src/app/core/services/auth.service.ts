@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { tap, catchError, map } from 'rxjs/operators';
 import { Observable, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginPayload, OtpRequestResponse, RegisterPayload, User } from '../models/user.model';
+import { AuthResponse, LoginPayload, OtpRequestResponse, RegisterPayload, RegisterResponse, User } from '../models/user.model';
 import { LAST_ACTIVITY_KEY } from './inactivity.service';
 
 const TOKEN_KEY = 'portfolio_token';
@@ -70,10 +70,14 @@ export class AuthService implements OnDestroy {
     );
   }
 
-  register(payload: RegisterPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, payload).pipe(
-      tap(res => this.saveSession(res)),
-    );
+  /**
+   * Creates the account but does not log it in: the backend requires the
+   * registrant to prove they own the email address first (an OTP is sent
+   * as a side effect), so no session is saved here — the caller sends the
+   * user to the OTP-verify step, which is what actually logs them in.
+   */
+  register(payload: RegisterPayload): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, payload);
   }
 
   /** Request an OTP sent via SMS (phone) or email. Pass whichever the user entered. */

@@ -364,6 +364,7 @@
     "confirm_password": "Confirmar contraseña",
     "register_btn": "Registrarse",
     "registering": "Registrando…",
+    "register_verify_sent": "¡Cuenta creada! Revisa tu email: te hemos enviado un código para confirmarlo.",
     "have_account": "¿Ya tienes cuenta?",
     "sign_in": "Acceder",
     "email_required": "Email válido requerido",
