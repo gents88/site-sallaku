@@ -364,6 +364,7 @@
     "confirm_password": "Konfirmo fjalëkalimin",
     "register_btn": "Regjistrohu",
     "registering": "Duke u regjistruar…",
+    "register_verify_sent": "Llogaria u krijua! Kontrollo emailin tënd — të kemi dërguar një kod për ta konfirmuar.",
     "have_account": "Keni llogari?",
     "sign_in": "Hyni",
     "email_required": "Kërkohet email i vlefshëm",

@@ -65,6 +65,18 @@ describe('AuthService', () => {
     expect(localStorage.getItem('portfolio_refresh_token')).toBe('refresh-token');
   });
 
+  it('does not start a session on register — the account still needs email verification', () => {
+    service.register({ name: 'Test', email: 'test@example.com', password: 'Pass123!' }).subscribe();
+
+    const req = httpMock.expectOne(`${apiUrl}/register`);
+    expect(req.request.method).toBe('POST');
+    req.flush({ message: 'Check your email', email: 'test@example.com' });
+
+    expect(service.isLoggedIn()).toBe(false);
+    expect(service.getToken()).toBeNull();
+    expect(localStorage.getItem('portfolio_token')).toBeNull();
+  });
+
   it('computes isAdmin from the stored user role', () => {
     service.login({ email: 'admin@example.com', password: 'pw' }).subscribe();
     httpMock.expectOne(`${apiUrl}/login`).flush({ ...authResponse, user: { ...user, role: 'admin' } });
