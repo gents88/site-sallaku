@@ -801,7 +801,9 @@
     "chip_skills": "🛠 Cilat janë aftësitë e tij?",
     "chip_projects": "📁 Trego projektet e tij",
     "chip_contact": "📬 Si mund ta kontaktoj?",
-    "live_offer_cta": "💬 Bisedo me Gent tani"
+    "live_offer_cta": "💬 Bisedo me Gent tani",
+    "unread_badge": "{{count}} mesazhe të palexuara",
+    "new_messages": "Mesazhe të reja"
   },
   "live_handoff": {
     "prompt_title": "Dëshiron të flasësh drejtpërdrejt me Gent-in?",

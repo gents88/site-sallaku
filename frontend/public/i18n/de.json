@@ -801,7 +801,9 @@
     "chip_skills": "🛠 Was sind seine Fähigkeiten?",
     "chip_projects": "📁 Zeig mir seine Projekte",
     "chip_contact": "📬 Wie kann ich ihn kontaktieren?",
-    "live_offer_cta": "💬 Jetzt mit Gent chatten"
+    "live_offer_cta": "💬 Jetzt mit Gent chatten",
+    "unread_badge": "{{count}} ungelesene Nachrichten",
+    "new_messages": "Neue Nachrichten"
   },
   "live_handoff": {
     "prompt_title": "Möchten Sie direkt mit Gent sprechen?",

@@ -801,7 +801,9 @@
     "chip_skills": "🛠 What are his skills?",
     "chip_projects": "📁 Show me his projects",
     "chip_contact": "📬 How can I contact him?",
-    "live_offer_cta": "💬 Talk to Gent now"
+    "live_offer_cta": "💬 Talk to Gent now",
+    "unread_badge": "{{count}} unread messages",
+    "new_messages": "New messages"
   },
   "live_handoff": {
     "prompt_title": "Want to talk to Gent directly?",
