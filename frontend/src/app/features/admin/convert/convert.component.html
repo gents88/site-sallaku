@@ -101,7 +101,7 @@
     <!-- ════════════════ MODAL ════════════════ -->
     <div *ngIf="openModal()" class="ov" (click)="tryClose()">
       <section class="md" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
-               [attr.aria-label]="'convert.title' | translate">
+               [attr.aria-label]="'convert.title' | translate" (keydown.tab)="onModalTabKey($event)">
 
         <header>
           <div class="md-title-block">
@@ -113,7 +113,7 @@
             <h2>{{ selectedDef()?.label | translate }}</h2>
             <small class="md-step-label">{{ 'convert.step' | translate }} {{ step() === 'preview' ? '1' : '2' }} {{ 'convert.step_of' | translate }} 2</small>
           </div>
-          <button class="x" (click)="tryClose()" [attr.aria-label]="'convert.close' | translate">✕</button>
+          <button #modalCloseBtn class="x" (click)="tryClose()" [attr.aria-label]="'convert.close' | translate">✕</button>
         </header>
 
         <div class="st">

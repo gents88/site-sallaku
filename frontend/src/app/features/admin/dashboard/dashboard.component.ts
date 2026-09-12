@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -476,8 +476,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  @ViewChild('contactModalCloseBtn') private contactModalCloseBtnRef?: ElementRef<HTMLButtonElement>;
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    if (this.selectedContact) this.closeContact();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro la modale finché è aperta. */
+  onContactModalTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const modal = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(modal.querySelectorAll<HTMLElement>('button:not([disabled])'));
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
+  }
+
   openContact(contact: RecentContact): void {
     this.selectedContact = contact;
+    setTimeout(() => this.contactModalCloseBtnRef?.nativeElement.focus(), 0);
 
     if (!contact._id || contact.read) {
       return;

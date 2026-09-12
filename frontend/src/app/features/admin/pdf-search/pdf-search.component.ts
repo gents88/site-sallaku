@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, PLATFORM_ID, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef, HostListener, PLATFORM_ID, ViewChild, effect, signal, computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -194,7 +194,15 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   // the first failed search.
   private readonly searchTrigger$ = new Subject<string>();
 
+  @ViewChild('previewCloseBtn') private previewCloseBtnRef?: ElementRef<HTMLButtonElement>;
+
   constructor() {
+    effect(() => {
+      if (this.selected()) {
+        setTimeout(() => this.previewCloseBtnRef?.nativeElement.focus(), 0);
+      }
+    });
+
     this.searchTrigger$
       .pipe(
         switchMap((q) =>
@@ -646,5 +654,24 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   @HostListener('window:keydown.escape')
   onEscape(): void {
     if (this.selected()) this.closePreview();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro la preview finché è aperta. */
+  onPreviewTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const modal = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      modal.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled])'),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
   }
 }
