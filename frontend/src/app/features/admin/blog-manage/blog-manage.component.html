@@ -34,7 +34,8 @@
           }
           <button mat-icon-button type="button"
                   (click)="togglePreview()"
-                  [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
+                  [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate"
+                  [attr.aria-label]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
             <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
@@ -201,7 +202,7 @@
                 </span>
                 {{ 'blog_manage.preview_label' | translate }}
               </h3>
-              <button mat-icon-button type="button" (click)="togglePreview()" [matTooltip]="'blog_manage.close_preview' | translate">
+              <button mat-icon-button type="button" (click)="togglePreview()" [matTooltip]="'blog_manage.close_preview' | translate" [attr.aria-label]="'blog_manage.close_preview' | translate">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
@@ -295,7 +296,8 @@
           <div class="form-actions__right">
             <button mat-icon-button type="button"
                     (click)="togglePreview()"
-                    [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
+                    [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate"
+                    [attr.aria-label]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
               <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             <button mat-stroked-button type="button" (click)="saveDraft()" [disabled]="saving">
