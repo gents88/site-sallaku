@@ -639,9 +639,7 @@
   },
   "blog": {
     "readMore": "Leer más",
-    "loadMore": "Cargar más",
-    "rss_feed": "Feed RSS",
-    "views_singular": "{{count}} visita",
+    "loadMore": "Cargar más",    "views_singular": "{{count}} visita",
     "views_plural": "{{count}} visitas",
     "empty": {
       "title": "No se encontraron artículos",

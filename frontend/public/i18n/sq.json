@@ -639,9 +639,7 @@
   },
   "blog": {
     "readMore": "Lexo më shumë",
-    "loadMore": "Ngarko më shumë",
-    "rss_feed": "Feed RSS",
-    "views_singular": "{{count}} lexim",
+    "loadMore": "Ngarko më shumë",    "views_singular": "{{count}} lexim",
     "views_plural": "{{count}} lexime",
     "empty": {
       "title": "Nuk u gjëtën artikuj",
