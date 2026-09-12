@@ -15,7 +15,9 @@
     "dashboard": "Dashboard",
     "ai_tools": "IA & Outils",
     "testimonials": "Témoignages",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "open_menu": "Ouvrir le menu",
+    "back_to_top": "Retour en haut"
   },
   "sidebar": {
     "collapse_menu": "Réduire le menu latéral",
@@ -906,7 +908,10 @@
     "err_file_type": "Seuls les fichiers PDF, TXT ou DOCX sont pris en charge comme contexte.",
     "err_file_too_large": "Fichier trop volumineux (max {{max}}Mo) : {{name}}",
     "err_generic": "Une erreur est survenue. Veuillez réessayer.",
-    "err_truncated": "Le contenu de certaines diapositives a été tronqué par manque de place lors de l’export du PDF. Essayez de raccourcir le texte et régénérez."
+    "err_truncated": "Le contenu de certaines diapositives a été tronqué par manque de place lors de l’export du PDF. Essayez de raccourcir le texte et régénérez.",
+    "remove_context_file": "Supprimer le fichier",
+    "prev_slide": "Diapositive précédente",
+    "next_slide": "Diapositive suivante"
   },
   "ai_formatter": {
     "title": "Formateur IA",
@@ -1150,7 +1155,9 @@
     "preview_timeout": "L'aperçu met trop de temps à charger. Téléchargez le PDF pour le lire.",
     "err_search": "La recherche a échoué. Veuillez réessayer.",
     "err_workspace_send": "L'envoi vers Workspace a échoué. Veuillez réessayer.",
-    "err_library_save": "L'enregistrement dans la Bibliothèque a échoué. Veuillez réessayer."
+    "err_library_save": "L'enregistrement dans la Bibliothèque a échoué. Veuillez réessayer.",
+    "preview_prev_page": "Page précédente",
+    "preview_next_page": "Page suivante"
   },
   "convert": {
     "title": "Convertisseur",
@@ -1782,5 +1789,16 @@
     "role_label": "Rôle",
     "role_admin": "Administrateur",
     "role_user": "Utilisateur"
+  },
+  "ai_assistant": {
+    "clear_chat": "Effacer la conversation",
+    "messages_log": "Messages",
+    "suggested_prompts": "Questions suggérées",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "copy_message": "Copier le message",
+    "typing": "L'IA est en train d'écrire",
+    "message_input": "Champ de message",
+    "send_message": "Envoyer le message"
   }
 }

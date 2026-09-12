@@ -15,7 +15,9 @@
     "dashboard": "Dashboard",
     "ai_tools": "AI & Mjetet",
     "testimonials": "Dëshmi",
-    "search": "Kërko"
+    "search": "Kërko",
+    "open_menu": "Hap menynë",
+    "back_to_top": "Kthehu lart"
   },
   "sidebar": {
     "collapse_menu": "Ngushto menynë anësore",
@@ -906,7 +908,10 @@
     "err_file_type": "Mbështeten vetëm skedarë PDF, TXT ose DOCX si kontekst.",
     "err_file_too_large": "Skedari shumë i madh (max {{max}}MB): {{name}}",
     "err_generic": "Ndodhi një gabim. Provo përsëri.",
-    "err_truncated": "Përmbajtja e disa slajdeve u pre për mungesë hapësire gjatë eksportimit të PDF-së. Provo ta shkurtosh tekstin dhe rigjenero."
+    "err_truncated": "Përmbajtja e disa slajdeve u pre për mungesë hapësire gjatë eksportimit të PDF-së. Provo ta shkurtosh tekstin dhe rigjenero.",
+    "remove_context_file": "Hiq skedarin",
+    "prev_slide": "Slajdi i mëparshëm",
+    "next_slide": "Slajdi tjetër"
   },
   "ai_formatter": {
     "title": "Formatues AI",
@@ -1150,7 +1155,9 @@
     "preview_timeout": "Parashikimi po zgjat shumë për t’u ngarkuar. Shkarko PDF-në për ta lexuar.",
     "err_search": "Kërkimi dështoi. Provo përsëri.",
     "err_workspace_send": "Dërgimi te Workspace dështoi. Provo përsëri.",
-    "err_library_save": "Ruajtja në Librari dështoi. Provo përsëri."
+    "err_library_save": "Ruajtja në Librari dështoi. Provo përsëri.",
+    "preview_prev_page": "Faqja e mëparshme",
+    "preview_next_page": "Faqja tjetër"
   },
   "convert": {
     "title": "Konvertues",
@@ -1782,5 +1789,16 @@
     "role_label": "Roli",
     "role_admin": "Administrator",
     "role_user": "Përdorues"
+  },
+  "ai_assistant": {
+    "clear_chat": "Fshi bisedën",
+    "messages_log": "Mesazhet",
+    "suggested_prompts": "Pyetje të sugjeruara",
+    "copy": "Kopjo",
+    "copied": "U kopjua!",
+    "copy_message": "Kopjo mesazhin",
+    "typing": "AI po shkruan",
+    "message_input": "Fusha e mesazhit",
+    "send_message": "Dërgo mesazhin"
   }
 }

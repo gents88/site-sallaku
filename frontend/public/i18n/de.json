@@ -15,7 +15,9 @@
     "dashboard": "Dashboard",
     "ai_tools": "KI & Tools",
     "testimonials": "Referenzen",
-    "search": "Suche"
+    "search": "Suche",
+    "open_menu": "Menü öffnen",
+    "back_to_top": "Nach oben"
   },
   "sidebar": {
     "collapse_menu": "Seitenleiste einklappen",
@@ -906,7 +908,10 @@
     "err_file_type": "Als Kontext werden nur PDF-, TXT- oder DOCX-Dateien unterstützt.",
     "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
     "err_generic": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
-    "err_truncated": "Der Inhalt einiger Folien wurde beim PDF-Export aus Platzgründen abgeschnitten. Kürze den Text und erstelle die Folien erneut."
+    "err_truncated": "Der Inhalt einiger Folien wurde beim PDF-Export aus Platzgründen abgeschnitten. Kürze den Text und erstelle die Folien erneut.",
+    "remove_context_file": "Datei entfernen",
+    "prev_slide": "Vorherige Folie",
+    "next_slide": "Nächste Folie"
   },
   "ai_formatter": {
     "title": "KI-Formatierer",
@@ -1150,7 +1155,9 @@
     "preview_timeout": "Die Vorschau lädt zu lange. Lade die PDF herunter, um sie zu lesen.",
     "err_search": "Die Suche ist fehlgeschlagen. Bitte versuche es erneut.",
     "err_workspace_send": "Senden an Workspace fehlgeschlagen. Bitte versuche es erneut.",
-    "err_library_save": "Speichern in der Bibliothek fehlgeschlagen. Bitte versuche es erneut."
+    "err_library_save": "Speichern in der Bibliothek fehlgeschlagen. Bitte versuche es erneut.",
+    "preview_prev_page": "Vorherige Seite",
+    "preview_next_page": "Nächste Seite"
   },
   "convert": {
     "title": "Konverter",
@@ -1782,5 +1789,16 @@
     "role_label": "Rolle",
     "role_admin": "Administrator",
     "role_user": "Benutzer"
+  },
+  "ai_assistant": {
+    "clear_chat": "Unterhaltung löschen",
+    "messages_log": "Nachrichten",
+    "suggested_prompts": "Vorgeschlagene Fragen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "copy_message": "Nachricht kopieren",
+    "typing": "Die KI schreibt",
+    "message_input": "Nachrichtenfeld",
+    "send_message": "Nachricht senden"
   }
 }

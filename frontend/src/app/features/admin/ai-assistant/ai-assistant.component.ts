@@ -75,21 +75,21 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
                 class="icon-btn"
                 type="button"
                 (click)="clearChat()"
-                title="Cancella conversazione"
-                aria-label="Cancella conversazione"
+                [attr.title]="'ai_assistant.clear_chat' | translate"
+                [attr.aria-label]="'ai_assistant.clear_chat' | translate"
               >🗑</button>
             }
           </div>
         </header>
 
         <!-- Messages -->
-        <div class="messages-wrap" #msgContainer role="log" aria-live="polite" aria-label="Messaggi">
+        <div class="messages-wrap" #msgContainer role="log" aria-live="polite" [attr.aria-label]="'ai_assistant.messages_log' | translate">
           @if (!hasMessages && !isLoading) {
             <div class="welcome">
               <div class="welcome-icon" aria-hidden="true">✦</div>
               <h2>Ciao! Sono il tuo AI Assistant</h2>
               <p>Chiedimi qualsiasi cosa su Gent Sallaku, i suoi progetti e le sue competenze.</p>
-              <div class="prompt-chips" role="list" aria-label="Domande suggerite">
+              <div class="prompt-chips" role="list" [attr.aria-label]="'ai_assistant.suggested_prompts' | translate">
                 @for (prompt of suggestedPrompts; track prompt) {
                   <button class="chip" type="button" role="listitem" (click)="usePrompt(prompt)">
                     {{ prompt }}
@@ -123,8 +123,8 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
                     class="bubble-btn"
                     type="button"
                     (click)="copyMessage(msg)"
-                    [title]="copiedTimestamp === msg.timestamp ? 'Copiato!' : 'Copia'"
-                    [attr.aria-label]="copiedTimestamp === msg.timestamp ? 'Copiato!' : 'Copia messaggio'"
+                    [attr.title]="(copiedTimestamp === msg.timestamp ? 'ai_assistant.copied' : 'ai_assistant.copy') | translate"
+                    [attr.aria-label]="(copiedTimestamp === msg.timestamp ? 'ai_assistant.copied' : 'ai_assistant.copy_message') | translate"
                   >
                     {{ copiedTimestamp === msg.timestamp ? '✓' : '⎘' }}
                   </button>
@@ -137,7 +137,7 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
           }
 
           @if (isLoading) {
-            <div class="msg-row ai-row" aria-label="L'AI sta scrivendo">
+            <div class="msg-row ai-row" [attr.aria-label]="'ai_assistant.typing' | translate">
               <div class="avatar ai-avatar" aria-hidden="true">✦</div>
               <div class="bubble ai-bubble">
                 <div class="typing-dots" aria-hidden="true">
@@ -158,7 +158,7 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
               placeholder="Scrivi un messaggio…"
               [disabled]="isLoading"
               rows="1"
-              aria-label="Campo messaggio"
+              [attr.aria-label]="'ai_assistant.message_input' | translate"
               (keydown)="onKeydown($event)"
               (input)="autoResize($event)"
             ></textarea>
@@ -167,7 +167,7 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
               type="button"
               (click)="send()"
               [disabled]="!inputText.trim() || isLoading"
-              aria-label="Invia messaggio"
+              [attr.aria-label]="'ai_assistant.send_message' | translate"
             >↑</button>
           </div>
           <p class="input-hint">Premi Invio per inviare, Shift+Invio per andare a capo</p>

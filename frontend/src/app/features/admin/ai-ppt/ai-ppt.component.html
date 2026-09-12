@@ -150,7 +150,7 @@
               <span class="context-file-name">{{ contextFileInfo()!.name }}</span>
               <span class="context-file-size">{{ contextFileInfo()!.size }}</span>
             </div>
-            <button class="context-file-remove" (click)="removeContextFile()" aria-label="Remove file">✕</button>
+            <button class="context-file-remove" (click)="removeContextFile()" [attr.aria-label]="'ai_ppt.remove_context_file' | translate">✕</button>
           </div>
         }
 
@@ -281,13 +281,13 @@
             }
 
             <div class="carousel-nav">
-              <button class="nav-btn nav-prev" (click)="prevSlide()" [disabled]="activeSlideIdx() === 0" aria-label="Previous slide">‹</button>
+              <button class="nav-btn nav-prev" (click)="prevSlide()" [disabled]="activeSlideIdx() === 0" [attr.aria-label]="'ai_ppt.prev_slide' | translate">‹</button>
               <div class="nav-dots">
                 @for (s of res.slides; track $index) {
                   <button class="nav-dot" [class.active]="activeSlideIdx() === $index" (click)="goToSlide($index)" [attr.aria-label]="'Slide ' + ($index + 1)"></button>
                 }
               </div>
-              <button class="nav-btn nav-next" (click)="nextSlide()" [disabled]="activeSlideIdx() === totalSlides() - 1" aria-label="Next slide">›</button>
+              <button class="nav-btn nav-next" (click)="nextSlide()" [disabled]="activeSlideIdx() === totalSlides() - 1" [attr.aria-label]="'ai_ppt.next_slide' | translate">›</button>
             </div>
 
             <div class="carousel-progress">

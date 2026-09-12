@@ -15,7 +15,9 @@
     "dashboard": "Dashboard",
     "ai_tools": "AI & Tools",
     "testimonials": "Testimonials",
-    "search": "Search"
+    "search": "Search",
+    "open_menu": "Open menu",
+    "back_to_top": "Back to top"
   },
   "sidebar": {
     "collapse_menu": "Collapse the sidebar",
@@ -906,7 +908,10 @@
     "err_file_type": "Only PDF, TXT, or DOCX files are supported as context.",
     "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
     "err_generic": "An error occurred. Please try again.",
-    "err_truncated": "Some slide content was cut off due to space when exporting the PDF. Try shortening the text and regenerate."
+    "err_truncated": "Some slide content was cut off due to space when exporting the PDF. Try shortening the text and regenerate.",
+    "remove_context_file": "Remove file",
+    "prev_slide": "Previous slide",
+    "next_slide": "Next slide"
   },
   "ai_formatter": {
     "title": "AI Formatter",
@@ -1150,7 +1155,9 @@
     "preview_timeout": "The preview is taking too long to load. Download the PDF to read it.",
     "err_search": "Search failed. Please try again.",
     "err_workspace_send": "Sending to Workspace failed. Please try again.",
-    "err_library_save": "Saving to Library failed. Please try again."
+    "err_library_save": "Saving to Library failed. Please try again.",
+    "preview_prev_page": "Previous page",
+    "preview_next_page": "Next page"
   },
   "convert": {
     "title": "Converter",
@@ -1782,5 +1789,16 @@
     "role_label": "Role",
     "role_admin": "Administrator",
     "role_user": "User"
+  },
+  "ai_assistant": {
+    "clear_chat": "Clear conversation",
+    "messages_log": "Messages",
+    "suggested_prompts": "Suggested questions",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copy_message": "Copy message",
+    "typing": "The AI is typing",
+    "message_input": "Message field",
+    "send_message": "Send message"
   }
 }

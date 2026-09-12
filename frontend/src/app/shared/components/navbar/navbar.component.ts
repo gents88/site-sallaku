@@ -79,12 +79,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     return this.auth.isLoggedIn() && this.auth.isAdmin() ? '⚙️' : '🧰';
   }
 
-  get drawerLabel(): string {
-    return this.auth.isLoggedIn() && this.auth.isAdmin() ? 'Admin' : 'AI & Tools';
-  }
-
-  get drawerToggleLabel(): string {
-    return `${this.drawerBadge} ${this.drawerLabel}`;
+  /** Chiave di traduzione (non testo già tradotto): il template la passa a `| translate`, così resta reattiva al cambio lingua anche in OnPush/zoneless — le stesse chiavi già usate da SidebarComponent. */
+  get drawerLabelKey(): string {
+    return this.auth.isLoggedIn() && this.auth.isAdmin() ? 'sidebar.brand_admin' : 'sidebar.brand_tools';
   }
 
   private routerSub: Subscription | null = null;

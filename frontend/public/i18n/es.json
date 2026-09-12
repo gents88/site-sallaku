@@ -15,7 +15,9 @@
     "dashboard": "Dashboard",
     "ai_tools": "IA & Herramientas",
     "testimonials": "Testimonios",
-    "search": "Buscar"
+    "search": "Buscar",
+    "open_menu": "Abrir menú",
+    "back_to_top": "Volver arriba"
   },
   "sidebar": {
     "collapse_menu": "Contraer el menú lateral",
@@ -906,7 +908,10 @@
     "err_file_type": "Solo se admiten archivos PDF, TXT o DOCX como contexto.",
     "err_file_too_large": "Archivo demasiado grande (máx {{max}}MB): {{name}}",
     "err_generic": "Se ha producido un error. Inténtalo de nuevo.",
-    "err_truncated": "El contenido de algunas diapositivas se recortó por falta de espacio al exportar el PDF. Prueba a acortar el texto y regenerar."
+    "err_truncated": "El contenido de algunas diapositivas se recortó por falta de espacio al exportar el PDF. Prueba a acortar el texto y regenerar.",
+    "remove_context_file": "Eliminar archivo",
+    "prev_slide": "Diapositiva anterior",
+    "next_slide": "Diapositiva siguiente"
   },
   "ai_formatter": {
     "title": "Formateador IA",
@@ -1150,7 +1155,9 @@
     "preview_timeout": "La vista previa está tardando demasiado en cargar. Descarga el PDF para leerlo.",
     "err_search": "La búsqueda ha fallado. Inténtalo de nuevo.",
     "err_workspace_send": "Error al enviar a Workspace. Inténtalo de nuevo.",
-    "err_library_save": "Error al guardar en la Biblioteca. Inténtalo de nuevo."
+    "err_library_save": "Error al guardar en la Biblioteca. Inténtalo de nuevo.",
+    "preview_prev_page": "Página anterior",
+    "preview_next_page": "Página siguiente"
   },
   "convert": {
     "title": "Convertidor",
@@ -1782,5 +1789,16 @@
     "role_label": "Rol",
     "role_admin": "Administrador",
     "role_user": "Usuario"
+  },
+  "ai_assistant": {
+    "clear_chat": "Borrar conversación",
+    "messages_log": "Mensajes",
+    "suggested_prompts": "Preguntas sugeridas",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "copy_message": "Copiar mensaje",
+    "typing": "La IA está escribiendo",
+    "message_input": "Campo de mensaje",
+    "send_message": "Enviar mensaje"
   }
 }

@@ -10,10 +10,10 @@
             type="button"
             (click)="toggleDrawerFromNavbar()"
             [attr.aria-expanded]="drawer.drawerOpen()"
-            [attr.aria-label]="'Apri il menu ' + drawerLabel"
+            [attr.aria-label]="('nav.open_menu' | translate) + ' ' + (drawerLabelKey | translate)"
             aria-controls="app-sidebar">
       <span class="drawer-toggle-badge" aria-hidden="true">{{ drawerBadge }}</span>
-      <span class="drawer-toggle-label">{{ drawerLabel }}</span>
+      <span class="drawer-toggle-label">{{ drawerLabelKey | translate }}</span>
       <svg class="drawer-toggle-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 6l6 6-6 6" />
       </svg>
@@ -42,7 +42,7 @@
         </li>
       }
       <li class="nav-item-mobile-drawer">
-        <button type="button" class="nav-link nav-link--button" (click)="openDrawerFromMenu()">{{ drawerToggleLabel }}</button>
+        <button type="button" class="nav-link nav-link--button" (click)="openDrawerFromMenu()">{{ drawerBadge }} {{ drawerLabelKey | translate }}</button>
       </li>
     </ul>
 

@@ -15,7 +15,9 @@
     "dashboard": "Dashboard",
     "ai_tools": "IA & Ferramentas",
     "testimonials": "Depoimentos",
-    "search": "Pesquisar"
+    "search": "Pesquisar",
+    "open_menu": "Abrir menu",
+    "back_to_top": "Voltar ao topo"
   },
   "sidebar": {
     "collapse_menu": "Recolher o menu lateral",
@@ -906,7 +908,10 @@
     "err_file_type": "Apenas ficheiros PDF, TXT ou DOCX são suportados como contexto.",
     "err_file_too_large": "Ficheiro demasiado grande (máx {{max}}MB): {{name}}",
     "err_generic": "Ocorreu um erro. Tente novamente.",
-    "err_truncated": "O conteúdo de alguns slides foi cortado por falta de espaço ao exportar o PDF. Tente encurtar o texto e gerar novamente."
+    "err_truncated": "O conteúdo de alguns slides foi cortado por falta de espaço ao exportar o PDF. Tente encurtar o texto e gerar novamente.",
+    "remove_context_file": "Remover ficheiro",
+    "prev_slide": "Diapositivo anterior",
+    "next_slide": "Diapositivo seguinte"
   },
   "ai_formatter": {
     "title": "Formatador IA",
@@ -1150,7 +1155,9 @@
     "preview_timeout": "A pré-visualização está a demorar muito a carregar. Descarregue o PDF para o ler.",
     "err_search": "A pesquisa falhou. Tente novamente.",
     "err_workspace_send": "Falha ao enviar para o Workspace. Tente novamente.",
-    "err_library_save": "Falha ao guardar na Biblioteca. Tente novamente."
+    "err_library_save": "Falha ao guardar na Biblioteca. Tente novamente.",
+    "preview_prev_page": "Página anterior",
+    "preview_next_page": "Página seguinte"
   },
   "convert": {
     "title": "Conversor",
@@ -1782,5 +1789,16 @@
     "role_label": "Função",
     "role_admin": "Administrador",
     "role_user": "Utilizador"
+  },
+  "ai_assistant": {
+    "clear_chat": "Limpar conversa",
+    "messages_log": "Mensagens",
+    "suggested_prompts": "Perguntas sugeridas",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "copy_message": "Copiar mensagem",
+    "typing": "A IA está a escrever",
+    "message_input": "Campo de mensagem",
+    "send_message": "Enviar mensagem"
   }
 }
