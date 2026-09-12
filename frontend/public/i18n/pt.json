@@ -395,7 +395,9 @@
     "not_admin": "Esta conta não tem acesso de administrador.",
     "login_error": "Email ou senha inválidos.",
     "login_with_email_password": "Entrar com email e senha",
-    "or": "ou"
+    "or": "ou",
+    "show_password": "Mostrar palavra-passe",
+    "hide_password": "Ocultar palavra-passe"
   },
   "admin": {
     "dashboard": "Dashboard",
