@@ -397,7 +397,9 @@
     "login_with_email_password": "Accedi con email e password",
     "or": "oppure",
     "show_password": "Mostra password",
-    "hide_password": "Nascondi password"
+    "hide_password": "Nascondi password",
+    "login_chip_admin": "Accesso Admin",
+    "login_title_generic": "Accedi"
   },
   "admin": {
     "dashboard": "Dashboard",

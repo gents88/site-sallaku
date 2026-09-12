@@ -397,7 +397,9 @@
     "login_with_email_password": "Hyrje me email dhe fjalëkalim",
     "or": "ose",
     "show_password": "Shfaq fjalëkalimin",
-    "hide_password": "Fshih fjalëkalimin"
+    "hide_password": "Fshih fjalëkalimin",
+    "login_chip_admin": "Hyrje Admin",
+    "login_title_generic": "Identifikohu"
   },
   "admin": {
     "dashboard": "Dashboard",

@@ -397,7 +397,9 @@
     "login_with_email_password": "Se connecter avec email et mot de passe",
     "or": "ou",
     "show_password": "Afficher le mot de passe",
-    "hide_password": "Masquer le mot de passe"
+    "hide_password": "Masquer le mot de passe",
+    "login_chip_admin": "Accès Admin",
+    "login_title_generic": "Se connecter"
   },
   "admin": {
     "dashboard": "Dashboard",
