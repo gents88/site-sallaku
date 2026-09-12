@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AiQuotaService } from './ai-quota.service';
 
 export interface AiChatMessage {
   role: string;
@@ -25,7 +26,10 @@ export interface AiChatOptions {
 export class AiProviderService {
   private readonly logger = new Logger(AiProviderService.name);
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    private readonly aiQuota: AiQuotaService,
+  ) {}
 
   async chatCompletion(messages: AiChatMessage[], opts: AiChatOptions): Promise<string> {
     const apiKey = this.config.get<string>('GROQ_API_KEY');
@@ -63,6 +67,9 @@ export class AiProviderService {
         `Groq [${data.model}] → ${data.usage?.prompt_tokens ?? '?'} prompt + ${data.usage?.completion_tokens ?? '?'} completion tokens`,
       );
     }
+
+    const tokensUsed = (data.usage?.prompt_tokens ?? 0) + (data.usage?.completion_tokens ?? 0);
+    await this.aiQuota.recordTokens(tokensUsed);
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }

@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Body,
+  Req,
   UseInterceptors,
   UploadedFile,
   HttpCode,
@@ -12,8 +13,17 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ApiTags, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
+import { Request } from 'express';
 import { AiService } from './ai.service';
+import { AiQuotaService } from '../common/services/ai-quota.service';
 import { AskDocumentDto } from './dto/ask-document.dto';
+
+function clientIp(req: Request): string {
+  if (req.ip) return req.ip;
+  const forwarded = req.headers['x-forwarded-for'];
+  const first = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(',')[0];
+  return first?.trim() || req.socket?.remoteAddress || '';
+}
 
 const ALLOWED_MIMES = new Set([
   'application/pdf',
@@ -40,7 +50,10 @@ const upload = (maxMb: number) => FileInterceptor('file', {
 @ApiTags('AI')
 @Controller('ai')
 export class AiController {
-  constructor(private readonly aiService: AiService) {}
+  constructor(
+    private readonly aiService: AiService,
+    private readonly aiQuota: AiQuotaService,
+  ) {}
 
   // ── POST /ai/summarize-file ──────────────────────────────────────────
   @Post('summarize-file')
@@ -50,10 +63,12 @@ export class AiController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(upload(20))
   async summarizeFile(
+    @Req() req: Request,
     @UploadedFile() file: Express.Multer.File,
     @Body('lang') lang: string = 'en',
     @Body('mode') mode: string = 'short',
   ) {
+    await this.aiQuota.assertWithinBudget(clientIp(req));
     return this.aiService.summarizeFile(validateFile(file, 20), lang || 'en', mode || 'short');
   }
 
@@ -65,7 +80,8 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @ApiOperation({ summary: 'Answer a question grounded in caller-supplied document excerpts' })
-  async askDocument(@Body() dto: AskDocumentDto) {
+  async askDocument(@Req() req: Request, @Body() dto: AskDocumentDto) {
+    await this.aiQuota.assertWithinBudget(clientIp(req));
     return this.aiService.askDocument(dto.question, dto.passages, dto.lang || 'it');
   }
 
@@ -75,11 +91,13 @@ export class AiController {
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({ summary: 'Format raw text into a structured Markdown document using AI' })
   async formatText(
+    @Req() req: Request,
     @Body() body: { text: string; docType?: string },
   ) {
     if (!body.text || body.text.trim().length < 10) {
       throw new BadRequestException('text must be at least 10 characters');
     }
+    await this.aiQuota.assertWithinBudget(clientIp(req));
     return this.aiService.formatText(body.text, body.docType || 'general');
   }
 
@@ -91,6 +109,7 @@ export class AiController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(upload(20))
   async generatePpt(
+    @Req() req: Request,
     @Body('topic') topic: string,
     @Body('slideCount') slideCount: string,
     @Body('style') style: string = 'modern',
@@ -102,6 +121,7 @@ export class AiController {
     if (topic.trim().length > 500) {
       throw new BadRequestException('topic must be at most 500 characters');
     }
+    await this.aiQuota.assertWithinBudget(clientIp(req));
     const count = Math.min(Math.max(parseInt(slideCount, 10) || 10, 3), 20);
     return this.aiService.generatePpt(topic.trim(), count, style || 'modern', contextFile);
   }
@@ -114,10 +134,12 @@ export class AiController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(upload(50))
   async translatePdf(
+    @Req() req: Request,
     @UploadedFile() file: Express.Multer.File,
     @Body('targetLanguage') targetLanguage: string = 'english',
     @Body('highFidelity') highFidelity: string = 'true',
   ) {
+    await this.aiQuota.assertWithinBudget(clientIp(req));
     return this.aiService.translatePdf(validateFile(file, 50), targetLanguage || 'english', highFidelity !== 'false');
   }
 }

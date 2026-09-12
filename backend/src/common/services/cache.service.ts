@@ -69,6 +69,53 @@ export class CacheService implements OnModuleDestroy {
     this.store.delete(key);
   }
 
+  /**
+   * Atomically add `by` to a numeric counter, creating it (with `ttlMs`) if
+   * absent. The TTL is only applied on the write that creates the key, so it
+   * never resets on subsequent increments within the same window.
+   */
+  async increment(key: string, by: number, ttlMs: number): Promise<number> {
+    if (this.redis) {
+      try {
+        const count = await this.redis.incrby(key, by);
+        // INCRBY on a missing key starts from 0, so the result equals `by`
+        // only on the write that created it — never afterwards, since every
+        // increment here adds a positive amount.
+        if (count === by) {
+          await this.redis.pexpire(key, ttlMs);
+        }
+        return count;
+      } catch (err) {
+        this.logger.warn(`Redis increment failed for "${key}", falling back to in-memory: ${(err as Error).message}`);
+      }
+    }
+
+    const now = Date.now();
+    const entry = this.store.get(key) as CacheEntry<number> | undefined;
+    if (entry && now < entry.expiresAt) {
+      entry.value += by;
+      return entry.value;
+    }
+    this.store.set(key, { value: by, expiresAt: now + ttlMs });
+    return by;
+  }
+
+  /** Read a counter written by `increment`, without incrementing it. Returns 0 if absent or expired. */
+  async getCounter(key: string): Promise<number> {
+    if (this.redis) {
+      try {
+        const raw = await this.redis.get(key);
+        return raw ? Number(raw) : 0;
+      } catch (err) {
+        this.logger.warn(`Redis getCounter failed for "${key}": ${(err as Error).message}`);
+        return 0;
+      }
+    }
+
+    const entry = this.store.get(key) as CacheEntry<number> | undefined;
+    return entry && Date.now() < entry.expiresAt ? entry.value : 0;
+  }
+
   /** Remove all entries whose key starts with `prefix`. */
   async invalidatePrefix(prefix: string): Promise<void> {
     if (this.redis) {
