@@ -105,6 +105,7 @@ docker compose up --build
 | Home | `/` | Hero, About, Tech Stack, Esperienza, Soft Skills, Servizi |
 | Progetti | `/projects` | Project card con dettaglio |
 | Blog | `/blog`, `/blog/:slug` | Post slug-based, tag, paginazione server-side, note dei lettori |
+| Feed RSS | `/rss.xml` | Generato staticamente da `scripts/generate-rss.js`, stesso ciclo di `sitemap.yml` |
 | Testimonianze | `/testimonials` | Invio pubblico + moderazione admin |
 | Contatti | `/contact` | Form con invio email (Resend/SMTP) e protezione Turnstile |
 | Ricerca | `/search` | Ricerca full-text sul sito con suggerimenti |
@@ -389,7 +390,7 @@ essere considerata completa — non basta che `tsc`/`build` passino.
 | Workflow | Trigger | Job |
 |---|---|---|
 | `ci.yml` | push / PR | `backend` (ci → audit → lint → build → test) · `frontend` (ci → audit → lint → test → build:prod) · `e2e` (Playwright/chromium) · `docker-build` (solo `main`) |
-| `sitemap.yml` | push + schedule | Rigenera `sitemap.xml` includendo i post del blog |
+| `sitemap.yml` | push + schedule | Rigenera `sitemap.xml` e `rss.xml` includendo i post del blog |
 | `mongo-backup.yml` | schedule | Dump periodico del database |
 
 I segreti Railway / Docker Hub / Mongo vanno configurati in **Settings → Secrets** del repo.

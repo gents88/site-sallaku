@@ -639,6 +639,7 @@
   "blog": {
     "readMore": "Read more",
     "loadMore": "Load more",
+    "rss_feed": "RSS feed",
     "views_singular": "{{count}} view",
     "views_plural": "{{count}} views",
     "empty": {

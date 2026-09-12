@@ -639,6 +639,7 @@
   "blog": {
     "readMore": "Lire la suite",
     "loadMore": "Charger plus",
+    "rss_feed": "Flux RSS",
     "views_singular": "{{count}} vue",
     "views_plural": "{{count}} vues",
     "empty": {
