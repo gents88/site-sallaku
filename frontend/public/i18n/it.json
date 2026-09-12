@@ -572,7 +572,8 @@
     "warning_body": "Per sicurezza, la sessione admin terminerà a breve se non confermi che sei ancora attivo.",
     "seconds_remaining": "secondi rimanenti",
     "stay_logged_in": "Resta connesso",
-    "logout_now": "Esci ora"
+    "logout_now": "Esci ora",
+    "eyebrow": "Timeout di sicurezza"
   },
   "common": {
     "loading": "Caricamento…",
