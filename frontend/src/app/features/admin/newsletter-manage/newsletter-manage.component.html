@@ -1,0 +1,70 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'newsletter_manage.title' | translate }}</h1>
+    </div>
+    <button mat-stroked-button [disabled]="exporting || !total" (click)="exportCsv()">
+      @if (exporting) {
+        <mat-icon class="spin">sync</mat-icon>
+      } @else {
+        <mat-icon>download</mat-icon>
+      }
+      {{ 'newsletter_manage.export_csv' | translate }}
+    </button>
+  </header>
+
+  @if (counts) {
+    <div class="newsletter-counts">
+      <span class="newsletter-counts__item">{{ 'newsletter_manage.status_confirmed' | translate }}: <strong>{{ counts.confirmed }}</strong></span>
+      <span class="newsletter-counts__item">{{ 'newsletter_manage.status_pending' | translate }}: <strong>{{ counts.pending }}</strong></span>
+      <span class="newsletter-counts__item">{{ 'newsletter_manage.status_unsubscribed' | translate }}: <strong>{{ counts.unsubscribed }}</strong></span>
+    </div>
+  }
+
+  <div class="status-tabs">
+    @for (s of statuses; track s) {
+      <button type="button" class="status-tab" [class.active]="status === s" (click)="switchStatus(s)">
+        {{ ('newsletter_manage.status_' + s) | translate }}
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <app-loading-spinner />
+  } @else if (!subscribers.length) {
+    <p class="empty-state">{{ 'newsletter_manage.empty' | translate }}</p>
+  } @else {
+    <div class="list">
+      @for (item of subscribers; track item._id) {
+        <div class="card subscriber-row">
+          <mat-icon class="subscriber-row__icon" aria-hidden="true">mail</mat-icon>
+          <div class="subscriber-row__main">
+            <span class="subscriber-row__email">{{ item.email }}</span>
+            <span class="subscriber-row__meta">
+              <span class="badge" [ngClass]="'badge--' + item.status">
+                {{ ('newsletter_manage.status_' + item.status) | translate }}
+              </span>
+              <span class="subscriber-row__dot">·</span>
+              <time>{{ item.createdAt | date:'medium' }}</time>
+            </span>
+          </div>
+          <button mat-icon-button color="warn" [disabled]="removingId === item._id"
+                  (click)="remove(item)" [attr.title]="'common.delete' | translate">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+
+    <div class="pagination">
+      <button mat-button [disabled]="page === 1" (click)="prevPage()">
+        <mat-icon>chevron_left</mat-icon> {{ 'newsletter_manage.prev_page' | translate }}
+      </button>
+      <span class="pagination__info">{{ (page - 1) * 20 + 1 }}–{{ (page - 1) * 20 + subscribers.length }} / {{ total }}</span>
+      <button mat-button [disabled]="page * 20 >= total" (click)="nextPage()">
+        {{ 'newsletter_manage.next_page' | translate }} <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  }
+</div>

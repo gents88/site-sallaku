@@ -106,6 +106,7 @@ docker compose up --build
 | Progetti | `/projects` | Project card con dettaglio |
 | Blog | `/blog`, `/blog/:slug` | Post slug-based, tag, paginazione server-side, note dei lettori |
 | Feed RSS | `/rss.xml` | Generato staticamente da `scripts/generate-rss.js`, stesso ciclo di `sitemap.yml` |
+| Newsletter | Widget nel blog + `/newsletter/confirm`, `/newsletter/unsubscribe` | Iscrizione double opt-in via email, gestione iscritti in admin |
 | Testimonianze | `/testimonials` | Invio pubblico + moderazione admin |
 | Contatti | `/contact` | Form con invio email (Resend/SMTP) e protezione Turnstile |
 | Ricerca | `/search` | Ricerca full-text sul sito con suggerimenti |
@@ -137,8 +138,9 @@ docker compose up --build
 
 ### 🔐 Admin dashboard (`/dashboard`)
 
-CRUD completo su Progetti, Esperienze, About, Blog, Note, Testimonianze; inbox contatti
-paginata; analytics con export CSV; audit trail; gestione cron; stato sistema.
+CRUD completo su Progetti, Esperienze, About, Blog, Note, Testimonianze; gestione iscritti
+newsletter con export CSV; inbox contatti paginata; analytics con export CSV; audit trail;
+gestione cron; stato sistema.
 Login con password **oppure OTP** via email/SMS (`/dashboard/login/otp`).
 
 ### 🌍 Multilingua (i18n)
@@ -321,6 +323,7 @@ Documentazione interattiva su `/api/docs` (Swagger).
 | Blog | `/blog` | `GET /posts?page&limit&tag` · `GET /posts/:slug` · `GET|POST|PUT|DELETE /admin/posts` 🔒 |
 | Notes | `/notes` | `POST /:articleId` · `GET /:articleId` · `GET /:articleId/stats` · `GET /admin/list` 🔒 · `PATCH /:noteId/approve\|reject\|spam` 🔒 · `DELETE /:noteId` 🔒 |
 | Testimonials | `/testimonials` | `GET /` · `GET /featured` · `POST /` · `GET /admin/list` 🔒 · `GET /admin/stats` 🔒 · `PATCH /:id/approve\|reject\|spam\|content\|feature` 🔒 · `DELETE /:id` 🔒 |
+| Newsletter | `/newsletter` | `POST /subscribe` · `GET /confirm` · `GET /unsubscribe` · `GET /admin/subscribers` 🔒 · `GET /admin/counts` 🔒 · `GET /admin/export` 🔒 · `DELETE /admin/subscribers/:id` 🔒 |
 | Contact | `/contact` | `POST /` · `GET /?page&limit&unreadOnly` 🔒 |
 | Search | `/search` | `GET /` · `GET /suggest` |
 | Chatbot | `/chatbot` | `POST /message` · `GET /session/:sessionId` · `POST /send-transcript` · `GET /stats` 🔒 · `GET /sessions/today` 🔒 |
