@@ -1,4 +1,4 @@
-import { Component, OnInit, PLATFORM_ID, effect, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, PLATFORM_ID, effect, inject, signal, viewChild } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
@@ -21,12 +21,12 @@ import { ConsentService } from '../../../core/services/consent.service';
       </div>
     </div>
 
-    <div *ngIf="modalVisible()" class="consent-modal" role="dialog" aria-modal="true">
-      <div class="consent-modal__box">
-        <h3>{{ 'consent.settings_title' | translate }}</h3>
+    <div *ngIf="modalVisible()" class="consent-modal" role="dialog" aria-modal="true" aria-labelledby="consent-modal-title">
+      <div class="consent-modal__box" #modalBox (keydown.tab)="onModalTabKey($event)">
+        <h3 id="consent-modal-title">{{ 'consent.settings_title' | translate }}</h3>
         <p class="text-muted">{{ 'consent.settings_desc' | translate }}</p>
         <div class="pref-row"><label>{{ 'consent.necessary' | translate }}</label><input type="checkbox" [checked]="true" disabled/></div>
-        <div class="pref-row"><label>{{ 'consent.analytics' | translate }}</label><input type="checkbox" [(ngModel)]="analytics"/></div>
+        <div class="pref-row"><label>{{ 'consent.analytics' | translate }}</label><input #firstCheckbox type="checkbox" [(ngModel)]="analytics"/></div>
         <div class="pref-row"><label>{{ 'consent.marketing' | translate }}</label><input type="checkbox" [(ngModel)]="marketing"/></div>
         <div class="pref-row"><label>{{ 'consent.preferences' | translate }}</label><input type="checkbox" [(ngModel)]="preferences"/></div>
         <div class="consent-modal__actions">
@@ -88,8 +88,15 @@ export class ConsentBannerComponent implements OnInit {
 
   private readonly platformId = inject(PLATFORM_ID);
   private readonly document = inject(DOCUMENT);
+  private readonly firstCheckboxRef = viewChild<ElementRef<HTMLInputElement>>('firstCheckbox');
 
   constructor(private consent: ConsentService) {
+    effect(() => {
+      if (this.modalVisible()) {
+        setTimeout(() => this.firstCheckboxRef()?.nativeElement.focus(), 0);
+      }
+    });
+
     // reopenRequested starts at 0 and this only fires on increments (footer's
     // "manage cookie consent" link), so it never opens the modal on load —
     // ngOnInit's `visible` already handles the first-visit banner.
@@ -129,6 +136,30 @@ export class ConsentBannerComponent implements OnInit {
     this.modalVisible.set(true);
   }
   closeModal(): void { this.modalVisible.set(false); }
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    if (this.modalVisible()) this.closeModal();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro finché la modale preferenze è aperta. */
+  onModalTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const box = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      box.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])'),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
+  }
 
   savePreferences(): void { this.save({ analytics: this.analytics, marketing: this.marketing, preferences: this.preferences }); this.closeModal(); }
 
