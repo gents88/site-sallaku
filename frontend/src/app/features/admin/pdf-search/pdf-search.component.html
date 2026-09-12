@@ -301,9 +301,9 @@
 
         @if (useCanvasViewer() && canvasNumPages() > 0) {
           <div class="canvas-page-nav">
-            <button type="button" (click)="prevCanvasPage()" [disabled]="canvasPageNum() <= 1" aria-label="Previous page">‹</button>
+            <button type="button" (click)="prevCanvasPage()" [disabled]="canvasPageNum() <= 1" [attr.aria-label]="'pdf_search.preview_prev_page' | translate">‹</button>
             <span>{{ canvasPageNum() }} / {{ canvasNumPages() }}</span>
-            <button type="button" (click)="nextCanvasPage()" [disabled]="canvasPageNum() >= canvasNumPages()" aria-label="Next page">›</button>
+            <button type="button" (click)="nextCanvasPage()" [disabled]="canvasPageNum() >= canvasNumPages()" [attr.aria-label]="'pdf_search.preview_next_page' | translate">›</button>
           </div>
         }
 
