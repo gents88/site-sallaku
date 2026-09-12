@@ -1,6 +1,12 @@
 <div class="container section">
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-  <h1 class="page-title">Blog</h1>
+  <div class="page-title-row">
+    <h1 class="page-title">Blog</h1>
+    <a href="/rss.xml" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" [attr.aria-label]="'blog.rss_feed' | translate">
+      <mat-icon aria-hidden="true">rss_feed</mat-icon>
+      {{ 'blog.rss_feed' | translate }}
+    </a>
+  </div>
 
   @if (loading) {
     <div class="posts-grid">

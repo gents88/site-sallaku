@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Gent Sallaku — Blog</title>
+  <link>https://gentsallaku.it/blog</link>
+  <atom:link href="https://gentsallaku.it/rss.xml" rel="self" type="application/rss+xml" />
+  <description>Articoli su sviluppo front-end, Angular, TypeScript e data visualization.</description>
+  <language>it-it</language>
+  <lastBuildDate>Sat, 12 Sep 2026 13:01:21 GMT</lastBuildDate>
+  <item>
+    <title>Collegare più strumenti PDF senza scaricare e ricaricare ogni volta</title>
+    <link>https://gentsallaku.it/blog/collegare-strumenti-pdf-senza-scaricare-e-ricaricare</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/collegare-strumenti-pdf-senza-scaricare-e-ricaricare</guid>
+    <pubDate>Thu, 20 Aug 2026 17:44:51 GMT</pubDate>
+    <description>In un flusso di lavoro su documenti il tempo raramente si perde nell&apos;elaborazione: si perde nei download e riupload tra uno strumento e l&apos;altro, e nel filo che si smarrisce lungo il percorso. Questa guida spiega come funziona un&apos;area di passaggio tra strumenti, quali catene sono davvero utili e il limite deliberato da conoscere prima di iniziare.</description>
+      <category>Workflow</category>
+      <category>PDF</category>
+      <category>Produttività</category>
+      <category>OCR</category>
+      <category>Automazione</category>
+      <category>Privacy</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Creare una presentazione con l&apos;AI: quante slide servono e quale stile scegliere</title>
+    <link>https://gentsallaku.it/blog/creare-presentazione-con-ai-quante-slide-e-quale-stile</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/creare-presentazione-con-ai-quante-slide-e-quale-stile</guid>
+    <pubDate>Thu, 20 Aug 2026 17:43:51 GMT</pubDate>
+    <description>Il costo maggiore di una presentazione non è scrivere le slide, ma decidere da zero la struttura: quante parti, con che peso, in che ordine. Questa guida spiega come derivare il numero di slide dai minuti a disposizione, cosa cambia davvero tra i cinque stili disponibili e quali quattro elementi vanno sempre rivisti a mano dopo una generazione automatica.</description>
+      <category>AI</category>
+      <category>Presentazioni</category>
+      <category>Slide</category>
+      <category>Pitch Deck</category>
+      <category>Produttività</category>
+      <category>Public Speaking</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Da appunti grezzi a documento leggibile: come funziona la formattazione automatica</title>
+    <link>https://gentsallaku.it/blog/da-appunti-grezzi-a-documento-strutturato-con-ai</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/da-appunti-grezzi-a-documento-strutturato-con-ai</guid>
+    <pubDate>Thu, 20 Aug 2026 17:42:51 GMT</pubDate>
+    <description>Appunti di riunione presi di corsa e trascrizioni di note vocali contengono già tutto il necessario, ma sono illeggibili perché privi di struttura. Questa guida spiega perché la formattazione è informazione e non decorazione, cosa un formattatore automatico deve riorganizzare senza inventare, come il tipo di documento indicato cambia il risultato e perché il Markdown risolve un problema quotidiano.</description>
+      <category>AI</category>
+      <category>Formattazione</category>
+      <category>Markdown</category>
+      <category>Produttività</category>
+      <category>Note</category>
+      <category>Documenti</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Scrivere un documento ed esportarlo in PDF, DOCX o HTML senza Word</title>
+    <link>https://gentsallaku.it/blog/scrivere-ed-esportare-documenti-pdf-docx-html-senza-word</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/scrivere-ed-esportare-documenti-pdf-docx-html-senza-word</guid>
+    <pubDate>Thu, 20 Aug 2026 17:41:51 GMT</pubDate>
+    <description>Il problema di scrivere un documento senza una suite installata quasi mai è la scrittura: è l&apos;esportazione nel formato richiesto. Questa guida spiega quando serve PDF, quando DOCX e quando HTML, cosa si perde davvero importando da Word e come funziona il salvataggio automatico della bozza — e perché non va confuso con un backup.</description>
+      <category>Editor</category>
+      <category>Word</category>
+      <category>DOCX</category>
+      <category>PDF</category>
+      <category>HTML</category>
+      <category>Documenti</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Perché la ricerca dentro un PDF non trova niente (e cosa serve davvero in un viewer)</title>
+    <link>https://gentsallaku.it/blog/perche-la-ricerca-nel-pdf-non-trova-niente</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/perche-la-ricerca-nel-pdf-non-trova-niente</guid>
+    <pubDate>Thu, 20 Aug 2026 17:40:51 GMT</pubDate>
+    <description>Cercare una parola in un PDF e non trovarla non è un problema del lettore: è un problema del file, che in tre casi ricorrenti non contiene un livello testuale su cui cercare. Questa guida spiega le tre cause, chiarisce quali funzioni servono davvero in un visualizzatore e quando invece il viewer non basta più.</description>
+      <category>PDF</category>
+      <category>Viewer</category>
+      <category>Ricerca</category>
+      <category>OCR</category>
+      <category>Privacy</category>
+      <category>Documenti</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Unire, dividere e ruotare PDF senza caricarli su nessun server</title>
+    <link>https://gentsallaku.it/blog/unire-dividere-ruotare-pdf-senza-caricarli-online</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/unire-dividere-ruotare-pdf-senza-caricarli-online</guid>
+    <pubDate>Thu, 20 Aug 2026 17:39:51 GMT</pubDate>
+    <description>Per unire, estrarre, ruotare o eliminare pagine di un PDF non serve caricare il file da nessuna parte: il browser fa tutto in locale, e per contratti o documenti sanitari è la differenza che conta. Questa guida spiega le cinque operazioni, l&apos;ordine corretto in cui applicarle per evitare errori di numerazione, e i quattro limiti di cui tenere conto.</description>
+      <category>PDF</category>
+      <category>Privacy</category>
+      <category>Unire PDF</category>
+      <category>Filigrana</category>
+      <category>Documenti</category>
+      <category>Browser</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Come scansionare un documento con il telefono (senza avere uno scanner)</title>
+    <link>https://gentsallaku.it/blog/scansionare-documenti-con-il-telefono-senza-scanner</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/scansionare-documenti-con-il-telefono-senza-scanner</guid>
+    <pubDate>Thu, 20 Aug 2026 17:38:51 GMT</pubDate>
+    <description>Fotografare un foglio con il telefono non produce una scansione: produce una foto storta, con ombre e sfondo indesiderato, spesso troppo pesante per essere allegata. Questa guida spiega le tre distorsioni sistematiche di uno scatto a mano libera, quale filtro usare per ogni tipo di documento e come arrivare a un PDF multipagina pulito e, se serve, ricercabile.</description>
+      <category>Scanner</category>
+      <category>PDF</category>
+      <category>OCR</category>
+      <category>Documenti</category>
+      <category>Mobile</category>
+      <category>Produttività</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>OCR: come estrarre testo da scansioni e foto (e perché a volte sbaglia)</title>
+    <link>https://gentsallaku.it/blog/ocr-online-estrarre-testo-da-scansioni-e-foto</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/ocr-online-estrarre-testo-da-scansioni-e-foto</guid>
+    <pubDate>Thu, 20 Aug 2026 17:37:51 GMT</pubDate>
+    <description>Un PDF scansionato è una fotografia: nessuna ricerca funziona, nessun testo si seleziona. L&apos;OCR risolve il problema, ma la precisione dipende molto più dall&apos;immagine di partenza che dal software. Questa guida spiega come funziona il riconoscimento, quali fattori migliorano davvero il risultato e come leggere il punteggio di affidabilità prima di fidarsi del testo estratto.</description>
+      <category>OCR</category>
+      <category>PDF</category>
+      <category>Scansioni</category>
+      <category>Riconoscimento Testo</category>
+      <category>Tesseract</category>
+      <category>Produttività</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Come riassumere un PDF con l&apos;AI (e quando non fidarsi del risultato)</title>
+    <link>https://gentsallaku.it/blog/riassumere-pdf-con-ai-guida-pratica</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/riassumere-pdf-con-ai-guida-pratica</guid>
+    <pubDate>Thu, 20 Aug 2026 17:36:51 GMT</pubDate>
+    <description>Riassumere un documento automaticamente non è comprimere il testo: è riscriverlo, con tutti i rischi che comporta. Questa guida spiega la differenza tra sintesi estrattiva e astrattiva, mette a confronto le quattro modalità di output utili in pratica, e chiarisce il passaggio OCR che fa fallire silenziosamente il riassunto dei PDF scansionati.</description>
+      <category>PDF</category>
+      <category>AI</category>
+      <category>Riassunto</category>
+      <category>Produttività</category>
+      <category>OCR</category>
+      <category>Documenti</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Come trovare e scaricare libri PDF gratis e legali</title>
+    <link>https://gentsallaku.it/blog/come-trovare-scaricare-libri-pdf-gratis-legali</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/come-trovare-scaricare-libri-pdf-gratis-legali</guid>
+    <pubDate>Thu, 20 Aug 2026 17:35:51 GMT</pubDate>
+    <description>Milioni di libri in PDF sono scaricabili gratis e in modo perfettamente legale, ma non stanno dove li cerca la maggior parte delle persone. Questa guida spiega la differenza tra pubblico dominio e open access, confronta le quattro fonti che contano davvero — Internet Archive, Project Gutenberg, arXiv e PubMed Central — e mostra come interrogarle tutte insieme.</description>
+      <category>PDF</category>
+      <category>Libri</category>
+      <category>Pubblico Dominio</category>
+      <category>Open Access</category>
+      <category>Internet Archive</category>
+      <category>Project Gutenberg</category>
+      <category>Download Gratis</category>
+      <category>Ebook</category>
+  </item>
+  <item>
+    <title>Perché il mio blog Angular non viene indicizzato da Google (e come l&apos;ho risolto)</title>
+    <link>https://gentsallaku.it/blog/perche-il-blog-non-viene-indicizzato-da-google</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/perche-il-blog-non-viene-indicizzato-da-google</guid>
+    <pubDate>Mon, 17 Aug 2026 07:08:59 GMT</pubDate>
+    <description>Diagnosi passo-passo di un blog Angular non indicizzato da Google: prerendering SSR mancante, redirect 301 di Apache, sitemap statica e contenuto duplicato, con checklist pratica e tempistiche realistiche.</description>
+      <category>SEO</category>
+      <category>Angular</category>
+      <category>Google Search Console</category>
+      <category>SSR</category>
+      <category>Sitemap</category>
+      <category>Indicizzazione</category>
+  </item>
+  <item>
+    <title>Angular Signals vs Zone.js: Perché Angular sta diventando Zoneless</title>
+    <link>https://gentsallaku.it/blog/angular-signals-vs-zonejs-perche-angular-diventa-zoneless</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/angular-signals-vs-zonejs-perche-angular-diventa-zoneless</guid>
+    <pubDate>Sat, 15 Aug 2026 20:38:52 GMT</pubDate>
+    <description>Per anni Angular ha usato Zone.js per sapere quando ricontrollare la UI, patchando setTimeout, Promise e ogni API asincrona del browser. I Signals cambiano il modello alla radice: notificano solo chi dipende davvero da un dato che è cambiato. Questa guida spiega come funziona Zone.js, perché ha limiti strutturali di performance e debug, e cosa serve per rendere un&apos;app Angular zoneless.</description>
+      <category>Angular</category>
+      <category>Signals</category>
+      <category>Zone.js</category>
+      <category>Change Detection</category>
+      <category>Performance</category>
+      <category>Zoneless</category>
+  </item>
+  <item>
+    <title>Come convertire PDF in Word senza perdere la formattazione: Guida 2026</title>
+    <link>https://gentsallaku.it/blog/come-convertire-pdf-in-word-senza-perdere-formattazione</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/come-convertire-pdf-in-word-senza-perdere-formattazione</guid>
+    <pubDate>Sat, 15 Aug 2026 20:32:57 GMT</pubDate>
+    <description>Convertire un PDF in Word sembra semplice finché non si aprono tabelle rotte, font sostituiti e paragrafi scomposti. Questa guida confronta i metodi disponibili, spiega perché la formattazione si rompe e mostra il modo più affidabile per ottenere un .docx pulito, anche partendo da PDF scansionati.</description>
+      <category>PDF</category>
+      <category>Word</category>
+      <category>Conversione File</category>
+      <category>Produttività</category>
+      <category>Guida</category>
+      <category>OCR</category>
+  </item>
+  <item>
+    <title>Traduzione PDF AI: Approcci moderni e migliori pratiche</title>
+    <link>https://gentsallaku.it/blog/pdf-ai-translation-guide-2026</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/pdf-ai-translation-guide-2026</guid>
+    <pubDate>Fri, 14 Aug 2026 13:39:22 GMT</pubDate>
+    <description>Guida completa alla traduzione PDF basata sull&apos;intelligenza artificiale con approcci moderni e best practice.</description>
+      <category>pdf</category>
+      <category>translation</category>
+      <category>ai</category>
+      <category>automation</category>
+      <category>guide</category>
+  </item>
+  <item>
+    <title>Come essere indicizzati da Google search: Guida completa SEO 2026</title>
+    <link>https://gentsallaku.it/blog/come-essere-indicizzati-google-search</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/come-essere-indicizzati-google-search</guid>
+    <pubDate>Fri, 14 Aug 2026 13:37:04 GMT</pubDate>
+    <description>Scopri le strategie avanzate per fare indicizzare il tuo sito web su Google Search. Guida tecnica e SEO completa che copre GoogleBot, sitemap XML, Core Web Vitals, E-E-A-T, link building, mobile-first indexing e tutte le tecniche professionali per dominare i risultati di ricerca.</description>
+      <category>SEO</category>
+      <category>Indicizzazione</category>
+      <category>Google Search</category>
+      <category>GoogleBot</category>
+      <category>Core Web Vitals</category>
+      <category>E-E-A-T</category>
+      <category>Link Building</category>
+      <category>Technical SEO</category>
+  </item>
+  <item>
+    <title>Core Web vitals e SEO tecnico: La guida completa al ranking</title>
+    <link>https://gentsallaku.it/blog/core-web-vitals-seo-tecnico</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/core-web-vitals-seo-tecnico</guid>
+    <pubDate>Fri, 14 Aug 2026 13:35:52 GMT</pubDate>
+    <description>Scopri come i Core Web Vitals influenzano il ranking nei motori di ricerca. Guida tecnica completa con checklist, best practices e implementazione pratica di SEO tecnico moderno.</description>
+      <category>SEO</category>
+      <category>Core Web Vitals</category>
+      <category>Performance</category>
+      <category>Technical SEO</category>
+      <category>JSON-LD</category>
+      <category>Ranking</category>
+  </item>
+  <item>
+    <title>Ottimizza title tag e meta description</title>
+    <link>https://gentsallaku.it/blog/ottimizza-title-meta-description</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/ottimizza-title-meta-description</guid>
+    <pubDate>Fri, 14 Aug 2026 13:35:35 GMT</pubDate>
+    <description>Guida passo-passo per scrivere title tag e meta description che aumentano il CTR nei risultati di ricerca. Include checklist operativa e errori comuni da evitare.</description>
+      <category>SEO</category>
+      <category>title-tag</category>
+      <category>meta-description</category>
+      <category>CTR</category>
+      <category>SERP</category>
+  </item>
+  <item>
+    <title>SCSS Component Class vs Utility CSS: Quando usare cosa</title>
+    <link>https://gentsallaku.it/blog/scss-vs-utility-css-quando-usare-cosa</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/scss-vs-utility-css-quando-usare-cosa</guid>
+    <pubDate>Sat, 08 Aug 2026 21:09:55 GMT</pubDate>
+    <description>Component class (SCSS, BEM, CSS Modules) e utility class (atomic CSS in stile Tailwind) risolvono lo stesso problema con architetture opposte: le prime nascondono i dettagli di stile dietro un nome semantico, le seconde espongono ogni proprietà come classe atomica componibile nel markup. Questo articolo confronta le due strategie su manutenibilità, performance del bundle CSS, leggibilità del markup e learning curve, con esempi pratici in SCSS/BEM/CSS Modules e utility-style, mappe SCSS per generare utility coerenti, e il pattern ibrido che combina component class per l&apos;identità strutturale con utility per le variazioni contestuali. Include tre casi di studio realistici (small app, team design system, monorepo enterprise), best practice su naming e nesting SCSS, tecniche di performance come purge e critical CSS, strategie di testing visivo, e oltre dieci errori comuni con soluzioni rapide per team che devono scegliere o combinare le due architetture di styling nei propri progetti.</description>
+      <category>css</category>
+      <category>scss</category>
+      <category>tailwind</category>
+      <category>frontend</category>
+      <category>design-system</category>
+      <category>performance</category>
+  </item>
+  <item>
+    <title>npm, yarn o pnpm: Quando scegliere quale Package Manager</title>
+    <link>https://gentsallaku.it/blog/quando-scegliere-npm-yarn-pnpm</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/quando-scegliere-npm-yarn-pnpm</guid>
+    <pubDate>Sat, 08 Aug 2026 21:03:06 GMT</pubDate>
+    <description>La scelta del package manager non è un dettaglio stilistico: impatta direttamente i tempi di build in CI, lo spazio disco su ogni macchina di sviluppo e runner, la superficie di attacco per dipendenze malevole, e la praticità di gestire un monorepo con decine di pacchetti interdipendenti. Questa guida pratica confronta npm, Yarn (Berry/v4) e pnpm su criteri concreti e misurabili: velocità di install a cache fredda e calda, dedup delle dipendenze, uso disco, workspace support, sicurezza e compatibilità con l&apos;ecosistema esistente. Include criteri di scelta per contesti diversi (progetto small, team medio, monorepo enterprise, libreria pubblica, CI/CD in cloud), dettagli tecnici su lockfile e comandi per ciascun tool, script di benchmark riproducibili, tre casi di studio realistici con effort stimato in ore/persona, un piano di migrazione 30/60/90 giorni con rollback plan, best practice di caching CI/CD, policy di sicurezza e audit, FAQ ed errori comuni da evitare per team e tech lead che devono scegliere o migrare il proprio package manager JavaScript.</description>
+      <category>npm</category>
+      <category>yarn</category>
+      <category>pnpm</category>
+      <category>nodejs</category>
+      <category>devops</category>
+      <category>monorepo</category>
+  </item>
+  <item>
+    <title>Novità di Angular 22: Signal forms, Resource API e Angular Aria stabili</title>
+    <link>https://gentsallaku.it/blog/novita-angular-22</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/novita-angular-22</guid>
+    <pubDate>Sat, 08 Aug 2026 20:55:22 GMT</pubDate>
+    <description>Angular 22, rilasciato il 3 giugno 2026, è la versione stabile più recente del framework. Rispetto ad Angular 21, che aveva reso zoneless il default e introdotto Signal Forms come API sperimentale, questa release consolida in stabile e production-ready tutto ciò che era ancora in developer preview: Signal Forms, Resource API e Angular Aria diventano ufficialmente utilizzabili in produzione. Questo articolo copre tutte le novità principali: OnPush come default per la change detection, Fetch API come default per HttpClient, il nuovo decoratore @Service, injectAsync() per il lazy loading di servizi, i breaking change su TypeScript 6 e Node 22 minimo, i cambi al router e ai Signal Forms, il tooling AI/MCP integrato nella CLI, la migrazione automatica da Karma a Vitest, l&apos;impatto su performance e bundle, e un piano operativo pratico per l&apos;upgrade. Include sei snippet di codice pronti all&apos;uso, due casi d&apos;uso realistici, una matrice di compatibilità, FAQ e una sezione di verifica tecnica per chi sta pianificando l&apos;aggiornamento da versioni precedenti.</description>
+      <category>angular</category>
+      <category>angular-22</category>
+      <category>signals</category>
+      <category>release-notes</category>
+      <category>typescript</category>
+  </item>
+  <item>
+    <title>Microfrontend con Angular: Architettura, implementazione e Best Practice</title>
+    <link>https://gentsallaku.it/blog/microfrontend-angular-architettura-implementazione-best-practice</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/microfrontend-angular-architettura-implementazione-best-practice</guid>
+    <pubDate>Sat, 08 Aug 2026 20:37:31 GMT</pubDate>
+    <description>Un microfrontend applica il principio dei microservizi allo strato di presentazione: invece di un&apos;unica applicazione Angular monolitica, il frontend viene diviso in pezzi indipendenti, spesso allineati a team di prodotto separati, ognuno con la propria pipeline di build, deploy e ciclo di rilascio. Questa guida completa confronta i pattern di integrazione (client-side con Module Federation, server-side, edge/reverse proxy, Web Components, iframe) e mostra come implementarli in Angular: configurazione shell e remote con Webpack 5 Module Federation, Single-SPA, Angular Elements, condivisione di dipendenze come singleton, design system centralizzato, routing globale vs locale, comunicazione tra microfrontend con RxJS, pipeline CI/CD indipendenti, performance con prefetch e bundle analysis, sicurezza con CSP e fallback UX, e rollback basato su manifest versionato. Include oltre dieci snippet di codice pronti all&apos;uso, due case study con effort realistico in ore/persona, una checklist pre-avvio, un piano operativo 30/60/90 giorni con KPI misurabili, più di dieci FAQ e altrettanti errori comuni da evitare per team che valutano o stanno già adottando un&apos;architettura a microfrontend.</description>
+      <category>angular</category>
+      <category>microfrontend</category>
+      <category>module-federation</category>
+      <category>architecture</category>
+      <category>webpack</category>
+      <category>devops</category>
+  </item>
+  <item>
+    <title>Migrazione Angular da v10 a v21: Guida completa versione per versione</title>
+    <link>https://gentsallaku.it/blog/migrazione-angular-10-21-guida-completa</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/migrazione-angular-10-21-guida-completa</guid>
+    <pubDate>Fri, 07 Aug 2026 21:46:55 GMT</pubDate>
+    <description>Migrare un&apos;applicazione da Angular 10 ad Angular 21 significa attraversare undici major release, ognuna con breaking change propri: farlo in un salto unico non è mai un&apos;opzione realistica, e il team Angular stesso raccomanda upgrade sequenziali con ng update, una major alla volta. Questa guida copre l&apos;intero percorso pratico: la matrice di compatibilità TypeScript/RxJS/Node/CLI/Material per ogni versione, i breaking change principali da Angular 11 a 21 (Ivy everywhere, rimozione di View Engine, standalone components, il nuovo control flow @if/@for, Signals, zoneless change detection, incremental hydration), i comandi ng update con i relativi flag e rischi, la migrazione di monorepo Nx con librerie interne, il passaggio da Protractor a Cypress, l&apos;impatto su performance e bundle size, e uno script di automazione per upgrade sequenziali con report. Include oltre venti snippet di codice pronti all&apos;uso, due case study con effort realistico in ore/persona, una checklist pre-upgrade e di rollback, un piano operativo 30/60/90 giorni con KPI misurabili, più di dieci FAQ e altrettanti errori comuni da evitare per pianificare un upgrade multi-major a basso rischio.</description>
+      <category>angular</category>
+      <category>migration</category>
+      <category>upgrade</category>
+      <category>typescript</category>
+      <category>nx</category>
+      <category>testing</category>
+  </item>
+  <item>
+    <title>Best Practice combinate per applicazioni Web moderne: Sicurezza, cache e Websocket</title>
+    <link>https://gentsallaku.it/blog/best-practice-sicurezza-performance-web-combinate</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/best-practice-sicurezza-performance-web-combinate</guid>
+    <pubDate>Fri, 07 Aug 2026 21:38:39 GMT</pubDate>
+    <description>Le singole best practice di sicurezza e performance web sono ampiamente documentate, ma raramente vengono spiegate insieme come un sistema coerente. Questa guida pratica copre dieci pratiche che, applicate insieme, riducono davvero la superficie di attacco senza sacrificare le performance: HTTPS/WSS obbligatorio con TLS 1.2/1.3 e HSTS, cookie di sessione con HttpOnly/Secure/SameSite, l&apos;eliminazione del JWT da localStorage a favore di HttpOnly cookie e refresh token, fingerprinting degli asset statici con cache immutable, header no-store per le risposte con dati personali, uso corretto di s-maxage per separare TTL di CDN e browser, token refresh con revoca reale anche per le connessioni WebSocket, rate limiting e size limit sui canali real-time, monitoring con Prometheus/Grafana ed ELK, e test di privacy e accessibilità. Include oltre otto snippet di codice pronti all&apos;uso (Nginx, Express, NestJS, WebSocket), una checklist operativa a priorità, un piano 30/60/90 giorni con KPI misurabili, FAQ ed errori comuni da evitare per team che vogliono una base di sicurezza e performance coerente.</description>
+      <category>sicurezza</category>
+      <category>websocket</category>
+      <category>caching</category>
+      <category>performance</category>
+      <category>nginx</category>
+      <category>nestjs</category>
+  </item>
+  <item>
+    <title>Cookie, cache e Websocket: Guida pratica per sviluppatori</title>
+    <link>https://gentsallaku.it/blog/cookie-cache-websocket</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/cookie-cache-websocket</guid>
+    <pubDate>Fri, 07 Aug 2026 21:37:12 GMT</pubDate>
+    <description>Guida pratica per sviluppatori su cookie sicuri (HttpOnly, Secure, SameSite), cache HTTP (Cache-Control, ETag, CDN) e WebSocket scalabili (Redis pub/sub, pattern snapshot+delta). Con esempi Express/Nginx, sicurezza, performance, testing e un piano operativo 30/60/90 giorni.</description>
+      <category>Cookie</category>
+      <category>Cache</category>
+      <category>WebSocket</category>
+      <category>Security</category>
+      <category>Performance</category>
+      <category>WebDevelopment</category>
+      <category>DevOps</category>
+  </item>
+  <item>
+    <title>UI/UX per applicazioni Angular: Progettare interfacce usabili, accessibili e performanti</title>
+    <link>https://gentsallaku.it/blog/ui-ux-angular-interfacce-usabili-accessibili-performanti</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/ui-ux-angular-interfacce-usabili-accessibili-performanti</guid>
+    <pubDate>Fri, 07 Aug 2026 21:27:39 GMT</pubDate>
+    <description>L&apos;UI/UX in un&apos;applicazione Angular non è uno strato estetico aggiunto alla fine: è l&apos;insieme delle decisioni architetturali e di interazione che determinano se un utente completa un task o abbandona il flusso. Questa guida completa mostra come progettare interfacce usabili, accessibili e performanti in Angular: principi di design applicati al framework, architettura di un design system con token e component library, pattern UX-friendly per form, modali, notifiche e stati di loading/empty/error, checklist di accessibilità con esempi ARIA concreti e focus management, animazioni con Angular Animations, tecniche per la performance percepita legate alle Core Web Vitals, testing UX con Storybook e visual regression, e il workflow di collaborazione tra designer e sviluppatori basato su design token da Figma. Include oltre dieci snippet di codice pronti all&apos;uso, cinque mini-guide pratiche, due case study con metriche realistiche (aumento conversioni, riduzione tempo di completamento), una checklist operativa 30/60/90 giorni con KPI misurabili ed errori comuni da evitare per team che vogliono migliorare in modo sistematico la qualità UX delle proprie applicazioni Angular.</description>
+      <category>angular</category>
+      <category>ui-ux</category>
+      <category>accessibilita</category>
+      <category>design-system</category>
+      <category>storybook</category>
+      <category>performance</category>
+  </item>
+  <item>
+    <title>Costruire un Design System con Angular: Componenti, schematics, Storybook e publishing su npm</title>
+    <link>https://gentsallaku.it/blog/design-system-angular-componenti-storybook-npm</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/design-system-angular-componenti-storybook-npm</guid>
+    <pubDate>Fri, 07 Aug 2026 21:17:57 GMT</pubDate>
+    <description>Un design system non è una semplice libreria di componenti UI: è il contratto condiviso tra design e sviluppo che garantisce coerenza visiva, comportamentale e di accessibilità su tutti i prodotti di un&apos;organizzazione. Questa guida completa mostra come costruire un design system Angular partendo da zero: architettura monorepo o repo separato, component design con OnPush e Signal inputs, schematics custom per ridurre l&apos;attrito di adozione, setup di Storybook con addon di accessibilità, packaging e publishing su npm con ng-packagr e peerDependencies corrette, testing unit/visual/E2E, pipeline CI/CD per build e publish automatizzati, design token per il theming, governance delle breaking change e checklist di accessibilità con esempi ARIA concreti. Include oltre quindici snippet di codice pronti all&apos;uso, cinque mini-guide pratiche, due case study con metriche realistiche e misurabili, una checklist operativa 30/60/90 giorni con KPI chiari ed errori comuni da evitare per chi sta valutando o già costruendo una libreria di componenti condivisa tra più team.</description>
+      <category>angular</category>
+      <category>design-system</category>
+      <category>storybook</category>
+      <category>npm</category>
+      <category>typescript</category>
+      <category>ng-packagr</category>
+  </item>
+  <item>
+    <title>Migrazione da ANGULARJS a Angular: Guida completa, strategia e Best Practice</title>
+    <link>https://gentsallaku.it/blog/migrazione-angularjs-angular</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/migrazione-angularjs-angular</guid>
+    <pubDate>Fri, 07 Aug 2026 20:58:19 GMT</pubDate>
+    <description>Guida completa alla migrazione da AngularJS ad Angular moderno: audit del codice legacy, strategia big bang vs strangler pattern, ngUpgrade per il bootstrap ibrido, mapping dei concetti, autenticazione JWT, testing e un piano operativo 30/60/90 giorni con KPI misurabili.</description>
+      <category>AngularJS</category>
+      <category>Angular</category>
+      <category>Migration</category>
+      <category>TypeScript</category>
+      <category>ngUpgrade</category>
+      <category>WebDevelopment</category>
+      <category>FrontendDevelopment</category>
+  </item>
+  <item>
+    <title>SEO nel 2026: La guida completa per essere trovati da Google e citati dall&apos;AI</title>
+    <link>https://gentsallaku.it/blog/guida-seo-2026-google-e-assistenti-ai</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/guida-seo-2026-google-e-assistenti-ai</guid>
+    <pubDate>Fri, 07 Aug 2026 20:38:56 GMT</pubDate>
+    <description>Una guida pratica alla SEO nel 2026: ricerca keyword, struttura pillar/cluster, dati strutturati, featured snippet e ottimizzazione per ChatGPT e assistenti AI. Con 5 esempi pronti, FAQ e piano operativo 30/60/90 giorni.</description>
+      <category>SEO</category>
+      <category>ContentMarketing</category>
+      <category>SchemaOrg</category>
+      <category>FeaturedSnippet</category>
+      <category>AIOverview</category>
+      <category>DigitalMarketing</category>
+  </item>
+  <item>
+    <title>25 domande da colloquio per frontend / Angular developer: Da junior a lead (con risposte)</title>
+    <link>https://gentsallaku.it/blog/25-domande-colloquio-frontend-angular-developer-junior-lead</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/25-domande-colloquio-frontend-angular-developer-junior-lead</guid>
+    <pubDate>Fri, 07 Aug 2026 20:26:22 GMT</pubDate>
+    <description>25 domande da colloquio per Frontend/Angular Developer, organizzate per livello — Junior, Mid-level, Senior, Expert/Lead — con risposte complete su HTML, CSS, JavaScript, TypeScript, RxJS, Signals, change detection, architettura e sicurezza.</description>
+      <category>angular</category>
+      <category>frontend</category>
+      <category>job-interview</category>
+      <category>typescript</category>
+      <category>javascript</category>
+      <category>rxjs</category>
+      <category>career</category>
+  </item>
+  <item>
+    <title>Performance Angular, Nestjs e Node.js: La guida definitiva 2026</title>
+    <link>https://gentsallaku.it/blog/performance-angular-nestjs-nodejs-guida-2026</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/performance-angular-nestjs-nodejs-guida-2026</guid>
+    <pubDate>Fri, 07 Aug 2026 15:32:28 GMT</pubDate>
+    <description>Come ottimizzare davvero applicazioni Angular, NestJS e Node.js in produzione: caching Redis, change detection, connection pooling, worker threads, benchmark reali e gli errori che rallentano la maggior parte dei progetti full-stack.</description>
+      <category>angular</category>
+      <category>nestjs</category>
+      <category>nodejs</category>
+      <category>performance</category>
+      <category>typescript</category>
+      <category>backend</category>
+      <category>redis</category>
+      <category>postgresql</category>
+  </item>
+  <item>
+    <title>Creare una REST API completa con Nestjs: Guida definitiva a Typeorm, JWT, RBAC e sicurezza</title>
+    <link>https://gentsallaku.it/blog/creare-rest-api-completa-con-nestjs-typeorm-jwt-rbac-guida-completa</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/creare-rest-api-completa-con-nestjs-typeorm-jwt-rbac-guida-completa</guid>
+    <pubDate>Fri, 07 Aug 2026 14:41:18 GMT</pubDate>
+    <description>Guida completa e pratica alla creazione di REST API con NestJS: architettura, TypeORM, autenticazione JWT con refresh token, RBAC, upload file, sicurezza, performance, 20 errori comuni e 25 FAQ, con un esempio reale di API Blog.</description>
+      <category>NestJS</category>
+      <category>NodeJS</category>
+      <category>TypeScript</category>
+      <category>RESTAPI</category>
+      <category>TypeORM</category>
+      <category>PostgreSQL</category>
+      <category>JWT</category>
+      <category>RBAC</category>
+      <category>BackendDevelopment</category>
+      <category>WebDevelopment</category>
+      <category>API</category>
+      <category>Security</category>
+  </item>
+  <item>
+    <title>Test e Debugging in Angular: Guida completa a Jest, Jasmine/Karma, Cypress, Playwright e Angular Devtools</title>
+    <link>https://gentsallaku.it/blog/test-e-debugging-in-angular-jest-jasmine-karma-cypress-playwright-devtools</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/test-e-debugging-in-angular-jest-jasmine-karma-cypress-playwright-devtools</guid>
+    <pubDate>Fri, 07 Aug 2026 14:10:48 GMT</pubDate>
+    <description>Una guida pratica e approfondita a test e debugging in Angular: come scrivere unit test efficaci con Jest e Jasmine/Karma, testare flussi utente completi con Cypress e Playwright, e usare Angular DevTools per trovare colli di bottiglia nelle performance.</description>
+      <category>Angular</category>
+      <category>Testing</category>
+      <category>UnitTesting</category>
+      <category>Jest</category>
+      <category>Jasmine</category>
+      <category>Karma</category>
+      <category>Cypress</category>
+      <category>Playwright</category>
+      <category>E2ETesting</category>
+      <category>AngularDevTools</category>
+      <category>Debugging</category>
+      <category>Performance</category>
+      <category>WebDevelopment</category>
+  </item>
+  <item>
+    <title>Guide How-to Angular: Tailwind CSS, chart.js, Signals, ngrx e reactive forms avanzati</title>
+    <link>https://gentsallaku.it/blog/guide-how-to-angular-tailwind-css-chart-js-signals-ngrx-e-reactive-forms-avanzati</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/guide-how-to-angular-tailwind-css-chart-js-signals-ngrx-e-reactive-forms-avanzati</guid>
+    <pubDate>Fri, 07 Aug 2026 13:28:14 GMT</pubDate>
+    <description>Guide How-To Angular: Tailwind CSS, Chart.js, Signals, NgRx e Reactive Forms avanzati Guide How-To Angular: integrazioni pratiche, gestione dello stato e Reactive Forms avanzati Le guide passo-passo…</description>
+  </item>
+  <item>
+    <title>Angular Signals vs RXJS: Quando usare l&apos;uno e quando l&apos;altro</title>
+    <link>https://gentsallaku.it/blog/angular-signals-vs-rxjs-quando-usare-l-uno-e-quando-l-altro</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/angular-signals-vs-rxjs-quando-usare-l-uno-e-quando-l-altro</guid>
+    <pubDate>Fri, 17 Jul 2026 22:48:42 GMT</pubDate>
+    <description>Questo articolo spiega la differenza tra Angular Signals e RxJS, quando usare l&apos;uno, quando usare l&apos;altro e come combinarli in applicazioni Angular reali. Angular Signals e…</description>
+  </item>
+  <item>
+    <title>Anatomia delle Performance del Browser: Esempi concreti e analisi del codice</title>
+    <link>https://gentsallaku.it/blog/anatomia-delle-performance-del-browser-esempi-concreti-e-analisi-del-codice</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/anatomia-delle-performance-del-browser-esempi-concreti-e-analisi-del-codice</guid>
+    <pubDate>Fri, 17 Jul 2026 15:21:58 GMT</pubDate>
+    <description>Anatomia delle Performance del Browser: Esempi Concreti e Analisi del Codice Nel panorama del moderno sviluppo web frontend, la teoria del ciclo di rendering e dell&apos;Event Loop deve necessariamente…</description>
+  </item>
+  <item>
+    <title>SEO in Angular: La guida definitiva a ssr, ssg e dati strutturati</title>
+    <link>https://gentsallaku.it/blog/seo-in-angular-la-guida-definitiva-a-ssr-ssg-e-dati-strutturati</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/seo-in-angular-la-guida-definitiva-a-ssr-ssg-e-dati-strutturati</guid>
+    <pubDate>Fri, 17 Jul 2026 15:05:20 GMT</pubDate>
+    <description>Nel panorama moderno dello sviluppo web, Angular si è affermato come uno dei framework più solidi, strutturati e performanti per la creazione di Single Page Application (SPA) scalabili e di livello…</description>
+  </item>
+  <item>
+    <title>Angular Architecture</title>
+    <link>https://gentsallaku.it/blog/angular-architecture</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/angular-architecture</guid>
+    <pubDate>Fri, 17 Jul 2026 14:58:02 GMT</pubDate>
+    <description>Costruire un&apos;app Angular che funziona è relativamente semplice. Costruire un&apos;app Angular che rimane ordinata, leggibile, scalabile e facile da mantenere dopo mesi o anni di sviluppo è tutta un&apos;altra…</description>
+  </item>
+  <item>
+    <title>L&apos;importanza di creare siti Web accessibili: Un impegno professionale per un Web inclusivo</title>
+    <link>https://gentsallaku.it/blog/web-accessibility-inclusive-development</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/web-accessibility-inclusive-development</guid>
+    <pubDate>Mon, 30 Mar 2026 21:31:09 GMT</pubDate>
+    <description>Perché l&apos;accessibilità web è un obbligo etico, legale e professionale. Guida pratica con WCAG 2.1, AGID, HTML semantico, attributi ARIA, esempi di form e menu accessibili ed errori comuni da evitare.</description>
+      <category>Accessibilità</category>
+      <category>WCAG</category>
+      <category>WebDevelopment</category>
+      <category>HTML</category>
+      <category>ARIA</category>
+      <category>SEO</category>
+      <category>UX</category>
+      <category>InclusiveDesign</category>
+      <category>CSS</category>
+  </item>
+  <item>
+    <title>Ottimizzazione delle prestazioni in Angular: Strategie e strumenti</title>
+    <link>https://gentsallaku.it/blog/ottimizzazione-prestazioni-angular-strategie-strumenti</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/ottimizzazione-prestazioni-angular-strategie-strumenti</guid>
+    <pubDate>Mon, 30 Mar 2026 21:29:43 GMT</pubDate>
+    <description>AOT, tree shaking, lazy loading, OnPush, Signals, cache HTTP, NgOptimizedImage e profiling con Lighthouse e Angular DevTools: tutte le tecniche per rendere Angular veloce.</description>
+      <category>Angular</category>
+      <category>Performance</category>
+      <category>LazyLoading</category>
+      <category>ChangeDetection</category>
+      <category>Signals</category>
+      <category>WebDevelopment</category>
+      <category>FrontendDevelopment</category>
+      <category>Lighthouse</category>
+      <category>Optimization</category>
+  </item>
+  <item>
+    <title>Operatori RXJS: Guida pratica con casi d&apos;uso reali</title>
+    <link>https://gentsallaku.it/blog/operatori-rxjs-guida-pratica-con-casi-duso-reali</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/operatori-rxjs-guida-pratica-con-casi-duso-reali</guid>
+    <pubDate>Mon, 30 Mar 2026 21:28:18 GMT</pubDate>
+    <description>Scopri i 13 operatori RxJS più utilizzati in Angular con casi d&apos;uso pratici: dalla ricerca con debounce al caricamento parallelo di dati, fino alla gestione degli errori e al cleanup dei memory leak.</description>
+      <category>rxjs</category>
+      <category>angular</category>
+      <category>reactive-programming</category>
+      <category>typescript</category>
+      <category>frontend</category>
+  </item>
+  <item>
+    <title>Intelligenza artificiale: Uso quotidiano, casi reali e limiti da conoscere</title>
+    <link>https://gentsallaku.it/blog/intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere</guid>
+    <pubDate>Mon, 30 Mar 2026 21:26:52 GMT</pubDate>
+    <description>Intelligenza Artificiale: Uso Quotidiano e Casi Reali nei Progetti Web L’intelligenza artificiale è diventata uno strumento quotidiano, non solo nello sviluppo software ma anche nella vita di tutti i…</description>
+  </item>
+  <item>
+    <title>Come registrare la tua attività su Google Maps: Guida completa a Google Business Profile (2026)</title>
+    <link>https://gentsallaku.it/blog/come-registrare-la-tua-attivita-su-google-maps-guida-completa-a-google-business-profile-2026</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/come-registrare-la-tua-attivita-su-google-maps-guida-completa-a-google-business-profile-2026</guid>
+    <pubDate>Mon, 30 Mar 2026 21:24:42 GMT</pubDate>
+    <description>Se hai un&apos;attività e non sei ancora su Google Maps, stai perdendo ogni giorno potenziali clienti. Oggi, quando una persona cerca un ristorante, un idraulico, un negozio di scarpe o qualsiasi altro…</description>
+  </item>
+  <item>
+    <title>Guida geospatial 3d con Cesium.js per Web</title>
+    <link>https://gentsallaku.it/blog/guida-geospatial-3d-con-cesium-js-per-web</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/guida-geospatial-3d-con-cesium-js-per-web</guid>
+    <pubDate>Tue, 24 Mar 2026 17:05:43 GMT</pubDate>
+    <description>🇮🇹 Cesium.js — Guida Completa alla Visualizzazione Geospaziale 3D per il Web Introduzione: Il Mondo in 3D nel Tuo Browser Immagina di poter esplorare un modello tridimensionale dell&apos;intero pianeta…</description>
+  </item>
+  <item>
+    <title>🔐 Sicurezza nei router di Angular: Guards e Interceptor in azione</title>
+    <link>https://gentsallaku.it/blog/angular-router-security-guards-interceptors</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/angular-router-security-guards-interceptors</guid>
+    <pubDate>Tue, 24 Mar 2026 16:19:44 GMT</pubDate>
+    <description>Scopri come proteggere le rotte Angular con guard funzionali (CanActivate, CanMatch, CanDeactivate) e HTTP Interceptors per autenticazione JWT, spinner globale e blocco navigazione non salvata.</description>
+      <category>Angular</category>
+      <category>Guards</category>
+      <category>Interceptor</category>
+      <category>WebDevelopment</category>
+      <category>FrontendDevelopment</category>
+      <category>JWT</category>
+      <category>TypeScript</category>
+      <category>Security</category>
+  </item>
+</channel>
+</rss>
