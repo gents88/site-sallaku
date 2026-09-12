@@ -1,5 +1,6 @@
 import {
-  Component, ChangeDetectionStrategy, OnInit, PLATFORM_ID, inject, signal, computed,
+  Component, ChangeDetectionStrategy, ElementRef, HostListener, OnInit, PLATFORM_ID, ViewChild,
+  effect, inject, signal, computed,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -101,6 +102,41 @@ export class LibraryComponent implements OnInit {
   readonly chatInput = signal('');
   readonly messages = signal<ChatMessage[]>([]);
   readonly asking = signal(false);
+
+  @ViewChild('chatInputEl') private chatInputRef?: ElementRef<HTMLInputElement>;
+
+  constructor() {
+    effect(() => {
+      if (this.chatOpen()) {
+        // L'input esiste solo dopo che l'@if del pannello chat lo renderizza.
+        setTimeout(() => this.chatInputRef?.nativeElement.focus(), 0);
+      }
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    if (this.chatOpen()) this.closeChat();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro il pannello chat finché è aperto. */
+  onChatPanelTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const panel = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      panel.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])'),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
+  }
 
   readonly tags = computed(() => {
     this.docs();
