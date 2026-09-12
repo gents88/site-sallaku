@@ -572,7 +572,8 @@
     "warning_body": "Aus Sicherheitsgründen wird Ihre Admin-Sitzung bald beendet, es sei denn, Sie bestätigen, dass Sie noch aktiv sind.",
     "seconds_remaining": "Sekunden verbleibend",
     "stay_logged_in": "Angemeldet bleiben",
-    "logout_now": "Jetzt abmelden"
+    "logout_now": "Jetzt abmelden",
+    "eyebrow": "Sicherheits-Timeout"
   },
   "common": {
     "loading": "Wird geladen…",

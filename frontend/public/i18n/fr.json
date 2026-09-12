@@ -572,7 +572,8 @@
     "warning_body": "Pour votre sécurité, votre session admin se terminera bientôt si vous ne confirmez pas que vous êtes toujours actif.",
     "seconds_remaining": "secondes restantes",
     "stay_logged_in": "Rester connecté",
-    "logout_now": "Se déconnecter maintenant"
+    "logout_now": "Se déconnecter maintenant",
+    "eyebrow": "Délai de sécurité"
   },
   "common": {
     "loading": "Chargement…",

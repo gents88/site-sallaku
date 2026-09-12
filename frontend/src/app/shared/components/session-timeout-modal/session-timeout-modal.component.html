@@ -5,10 +5,11 @@
   role="dialog"
   aria-modal="true"
   aria-labelledby="session-timeout-title"
-  aria-describedby="session-timeout-description">
+  aria-describedby="session-timeout-description"
+  (keydown.tab)="onPanelTabKey($event)">
   <div class="session-timeout__pulse" aria-hidden="true"></div>
 
-  <div class="session-timeout__eyebrow">Security Timeout</div>
+  <div class="session-timeout__eyebrow">{{ 'session.eyebrow' | translate }}</div>
   <h2 id="session-timeout-title">{{ 'session.warning_title' | translate }}</h2>
 
   <p id="session-timeout-description" class="session-timeout__message">
@@ -21,7 +22,7 @@
   </div>
 
   <div class="session-timeout__actions">
-    <button type="button" class="session-timeout__button session-timeout__button--primary" (click)="stayLoggedIn.emit()">
+    <button #stayBtn type="button" class="session-timeout__button session-timeout__button--primary" (click)="stayLoggedIn.emit()">
       {{ 'session.stay_logged_in' | translate }}
     </button>
     <button type="button" class="session-timeout__button session-timeout__button--warn" (click)="logoutNow.emit()">
