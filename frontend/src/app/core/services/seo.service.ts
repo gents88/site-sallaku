@@ -19,6 +19,17 @@ export const SITE_ORIGIN = 'https://gentsallaku.it';
  */
 const HOMEPAGE_ALIAS_BASE_PATHS = new Set(['/about', '/tech-stack', '/experience', '/skills', '/services']);
 
+/** BCP-47 locale per site language, for og:locale / og:locale:alternate. */
+const LOCALE_MAP: Record<Lang, string> = {
+  it: 'it_IT',
+  en: 'en_US',
+  sq: 'sq_AL',
+  es: 'es_ES',
+  pt: 'pt_PT',
+  fr: 'fr_FR',
+  de: 'de_DE',
+};
+
 interface SeoData {
   title?: string;
   description?: string;
@@ -26,7 +37,7 @@ interface SeoData {
   /** Canonical URL override. If omitted, derived from current router path. */
   url?: string;
   type?: string;
-  /** BCP-47 locale for og:locale, e.g. 'it_IT', 'en_US', 'sq_AL'. Defaults to 'it_IT'. */
+  /** BCP-47 locale for og:locale, e.g. 'it_IT', 'en_US', 'sq_AL'. Defaults to the current route's language (see LOCALE_MAP). */
   locale?: string;
 }
 
@@ -69,11 +80,10 @@ export class SeoService {
       : `${this.siteName} | Senior Front-End & API Developer`;
     const description = data.description || this.defaultDescription;
     const image       = data.image || this.defaultImage;
-    const canonicalUrl = data.url ?? (() => {
-      const { lang, basePath } = stripLangPrefix(this.router.url.split('?')[0]);
-      return `${SITE_ORIGIN}${withLangPrefix(basePath, lang)}`;
-    })();
-    const locale      = data.locale ?? 'it_IT';
+    const currentPath = this.router.url.split('?')[0];
+    const { lang: currentLang, basePath } = stripLangPrefix(currentPath);
+    const canonicalUrl = data.url ?? `${SITE_ORIGIN}${withLangPrefix(basePath, currentLang)}`;
+    const locale      = data.locale ?? LOCALE_MAP[currentLang];
 
     // Basic
     this.title.setTitle(pageTitle);
@@ -84,8 +94,6 @@ export class SeoService {
 
     // hreflang alternate links — skipped on homepage-alias pages (see
     // HOMEPAGE_ALIAS_BASE_PATHS), which never self-canonicalize.
-    const currentPath = this.router.url.split('?')[0];
-    const { basePath } = stripLangPrefix(currentPath);
     if (HOMEPAGE_ALIAS_BASE_PATHS.has(basePath)) {
       this.removeHreflang();
     } else {
@@ -100,6 +108,7 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:type',         content: data.type ?? 'website' });
     this.meta.updateTag({ property: 'og:site_name',    content: this.siteName });
     this.meta.updateTag({ property: 'og:locale',       content: locale });
+    this.updateOgLocaleAlternates(currentLang);
 
     // Twitter Card
     this.meta.updateTag({ name: 'twitter:card',        content: 'summary_large_image' });
@@ -214,6 +223,24 @@ export class SeoService {
   /** Strips all hreflang alternate tags — used on pages that don't self-canonicalize (see HOMEPAGE_ALIAS_BASE_PATHS). */
   private removeHreflang(): void {
     this.document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
+  }
+
+  /**
+   * Emits <meta property="og:locale:alternate"> for every site language
+   * except the current one, so Facebook/LinkedIn know the other language
+   * variants exist (mirrors the hreflang links above, OG's own mechanism).
+   * Meta.updateTag can't manage multiple tags sharing one property, so this
+   * removes and recreates them directly, same pattern as updateHreflang.
+   */
+  private updateOgLocaleAlternates(currentLang: Lang): void {
+    this.document.querySelectorAll('meta[property="og:locale:alternate"]').forEach(el => el.remove());
+    const allLangs: Lang[] = ['it', ...NON_DEFAULT_LANGS];
+    allLangs.filter(lang => lang !== currentLang).forEach(lang => {
+      const el = this.document.createElement('meta');
+      el.setAttribute('property', 'og:locale:alternate');
+      el.setAttribute('content', LOCALE_MAP[lang]);
+      this.document.head.appendChild(el);
+    });
   }
 
   private loadGtag(id: string): void {
