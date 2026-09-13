@@ -6,7 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '@env/environment';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
@@ -46,6 +47,7 @@ export class PdfSummaryComponent implements OnInit {
 
   private http       = inject(HttpClient);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
   private readonly t = inject(TranslateService);
   private readonly savedResults = inject(SavedResultsService);
@@ -63,9 +65,9 @@ export class PdfSummaryComponent implements OnInit {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'AI PDF Summarizer — Extract Key Points from Any Document',
-      description: 'Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.',
-      url: 'https://gentsallaku.it/lab/pdf-summary',
+      title: this.t.instant('pdf_summary.seo_title'),
+      description: this.t.instant('pdf_summary.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-summary', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {

@@ -14,7 +14,8 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
@@ -45,6 +46,7 @@ export class AiFormatterComponent implements OnInit {
   private readonly sanitizer     = inject(DomSanitizer);
   private readonly service       = inject(AiFormatterService);
   private readonly seo           = inject(SeoService);
+  private readonly langService   = inject(LanguageService);
   private readonly platformId    = inject(PLATFORM_ID);
   private readonly workspace     = inject(WorkspaceService);
   private readonly t             = inject(TranslateService);
@@ -86,9 +88,9 @@ export class AiFormatterComponent implements OnInit {
     }
 
     this.seo.update({
-      title: 'AI Text Formatter — Convert Notes to Polished Documents',
-      description: 'Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter.',
-      url: 'https://gentsallaku.it/lab/ai-formatter',
+      title: this.t.instant('ai_formatter.seo_title'),
+      description: this.t.instant('ai_formatter.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/ai-formatter', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {

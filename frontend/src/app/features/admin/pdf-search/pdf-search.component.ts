@@ -6,7 +6,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, of, switchMap, catchError } from 'rxjs';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -59,6 +60,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly service = inject(PdfSearchService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
   private readonly analytics = inject(AnalyticsTrackingService);
   private readonly pdfjs = inject(PdfjsService);
@@ -246,9 +248,9 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     }
 
     this.seo.update({
-      title: 'Motore di Ricerca PDF Pubblico Dominio — Libri Senza Copyright',
-      description: 'Motore di ricerca PDF per trovare e scaricare libri di pubblico dominio, paper scientifici e articoli open access, senza problemi di copyright. Cerca su Internet Archive, Project Gutenberg, arXiv e PubMed Central con anteprima prima del download.',
-      url: 'https://gentsallaku.it/lab/pdf-search',
+      title: this.translate.instant('pdf_search.seo_title'),
+      description: this.translate.instant('pdf_search.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-search', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {

@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 interface ToolCard {
@@ -230,15 +231,16 @@ interface ToolCard {
 })
 export class ToolsComponent implements OnInit {
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly translate = inject(TranslateService);
 
   breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Free AI PDF Tools & Document Utilities',
-      description: 'Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools powered by GPT-4o. No signup required.',
-      url: 'https://gentsallaku.it/lab',
+      title: this.translate.instant('tools.seo_title'),
+      description: this.translate.instant('tools.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab', this.langService.current())}`,
     });
     this.breadcrumbItems = [
       { label: this.translate.instant('nav.home'), path: '/' },

@@ -14,7 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
@@ -51,6 +52,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   private readonly service      = inject(PdfTranslateService);
   private readonly sanitizer    = inject(DomSanitizer);
   private readonly seo          = inject(SeoService);
+  private readonly langService  = inject(LanguageService);
   private readonly workspace    = inject(WorkspaceService);
   private readonly t            = inject(TranslateService);
   private readonly savedResults = inject(SavedResultsService);
@@ -71,9 +73,9 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'AI PDF Translator — Translate PDF, Pages Preserved',
-      description: 'Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
-      url: 'https://gentsallaku.it/lab/pdf-translate',
+      title: this.t.instant('pdf_translate.seo_title'),
+      description: this.t.instant('pdf_translate.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-translate', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {

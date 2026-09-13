@@ -639,7 +639,8 @@
   },
   "blog": {
     "readMore": "Leggi di più",
-    "loadMore": "Carica altri",    "views_singular": "{{count}} lettura",
+    "loadMore": "Carica altri",
+    "views_singular": "{{count}} lettura",
     "views_plural": "{{count}} letture",
     "empty": {
       "title": "Nessun articolo trovato",
@@ -946,7 +947,9 @@
     "err_truncated": "Il contenuto di alcune slide è stato troncato per motivi di spazio nel PDF esportato. Prova ad accorciare il testo e rigenera.",
     "remove_context_file": "Rimuovi file",
     "prev_slide": "Slide precedente",
-    "next_slide": "Slide successiva"
+    "next_slide": "Slide successiva",
+    "seo_title": "Generatore di Presentazioni AI — Crea Slide con l'Intelligenza Artificiale",
+    "seo_description": "Genera una presentazione professionale completa da qualsiasi argomento in pochi secondi. Fino a 20 slide con titoli, punti elenco, note del relatore e 5 stili. Gratuito online."
   },
   "ai_formatter": {
     "title": "Formattatore AI",
@@ -1000,7 +1003,9 @@
     "dismiss_draft": "Ignora bozza",
     "textarea_placeholder": "Incolla qui il testo non formattato...\n\n✦ Appunti riunione, contenuto grezzo, output AI, email...\n✦ Oppure clicca \"Usa esempio\" per una demo",
     "copied": "Copiato",
-    "copy": "Copia"
+    "copy": "Copia",
+    "seo_title": "Formattatore di Testo AI — Da Appunti a Documento Professionale",
+    "seo_description": "Trasforma appunti, testo grezzo o output AI non formattato in documenti professionali in un istante. Report, proposte, CV, articoli e altro. Formattatore AI gratuito online."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1033,7 +1038,9 @@
     "err_file_type": "Formato non supportato. Sono ammessi PDF, Word (.docx/.doc), TXT e HTML.",
     "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}",
     "err_generic": "Si è verificato un errore durante l'analisi del file.",
-    "remove_file": "Rimuovi file"
+    "remove_file": "Rimuovi file",
+    "seo_title": "Riassunto PDF con AI — Estrai i Punti Chiave da Ogni Documento",
+    "seo_description": "Carica un PDF, Word o TXT e ottieni un riassunto generato dall'AI all'istante. Riassunto breve, analisi dettagliata, punti chiave. Riassuntore AI gratuito online."
   },
   "workspace": {
     "badge": "Novità",
@@ -1051,7 +1058,9 @@
     "start_here": "Strumenti di partenza",
     "persistence_hint": "Non salvato: si perde ricaricando o chiudendo questa scheda.",
     "feedback_cleared": "Rimosso dal Workspace",
-    "feedback_downloaded": "Download avviato"
+    "feedback_downloaded": "Download avviato",
+    "seo_title": "Flusso di Lavoro — Collega Strumenti AI e PDF tra Loro",
+    "seo_description": "Invia un file o un testo da uno strumento all'altro senza ricaricarlo. Scansiona, estrai, traduci e riassumi in un unico flusso collegato."
   },
   "pdf_translate": {
     "title": "Traduzione PDF",
@@ -1125,7 +1134,9 @@
     "err_no_file": "Seleziona un file.",
     "err_generic": "Traduzione non riuscita. Riprova.",
     "upload_aria": "Carica un file PDF",
-    "remove_file": "Rimuovi file"
+    "remove_file": "Rimuovi file",
+    "seo_title": "Traduttore PDF con AI — Traduzione Mantenendo le Pagine Originali",
+    "seo_description": "Traduci qualsiasi PDF in 12 lingue mantenendo lo stesso numero di pagine e la stessa formattazione. Traduzione AI di livello enterprise con GPT-4o. Gratuito online, nessuna registrazione."
   },
   "pdf_search": {
     "title": "Ricerca PDF",
@@ -1192,7 +1203,9 @@
     "err_workspace_send": "Invio a Workspace non riuscito. Riprova.",
     "err_library_save": "Salvataggio in libreria non riuscito. Riprova.",
     "preview_prev_page": "Pagina precedente",
-    "preview_next_page": "Pagina successiva"
+    "preview_next_page": "Pagina successiva",
+    "seo_title": "Motore di Ricerca PDF Pubblico Dominio — Libri Senza Copyright",
+    "seo_description": "Motore di ricerca PDF per trovare e scaricare libri di pubblico dominio, paper scientifici e articoli open access, senza problemi di copyright. Cerca su Internet Archive, Project Gutenberg, arXiv e PubMed Central con anteprima prima del download."
   },
   "convert": {
     "title": "Convertitore",
@@ -1302,7 +1315,9 @@
     "workspace_banner_dismiss": "Ignora",
     "workspace_send": "Invia a Workspace",
     "workspace_sent": "Inviato ✓",
-    "blog_link": "Guida: come convertire PDF in Word senza perdere formattazione"
+    "blog_link": "Guida: come convertire PDF in Word senza perdere formattazione",
+    "seo_title": "Convertitore di File Gratuito — PDF, Word, Excel, Immagini e Altro",
+    "seo_description": "Converti tra PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG e altro — {{count}} tipi di conversione, gratis, nel browser. Nessuna registrazione richiesta."
   },
   "ocr": {
     "title": "Riconoscimento testo (OCR)",
@@ -1341,7 +1356,9 @@
     "send_workspace": "Invia a Workspace",
     "sent": "Inviato ✓",
     "save_library": "Salva in libreria",
-    "saved_library": "Salvato in libreria"
+    "saved_library": "Salvato in libreria",
+    "seo_title": "OCR Online Gratuito — Estrai Testo da Immagini e PDF Scansionati",
+    "seo_description": "Estrai testo da foto, documenti scansionati e PDF in 7 lingue. OCR online gratuito, senza registrazione."
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1374,7 +1391,9 @@
     "library_title": "La mia libreria",
     "library_desc": "Archivia i PDF nel browser, cercali per contenuto, annotali e fai domande ai tuoi documenti.",
     "my_files_title": "I miei file",
-    "my_files_desc": "Ritrova i risultati che hai salvato dai tool AI"
+    "my_files_desc": "Ritrova i risultati che hai salvato dai tool AI",
+    "seo_title": "Strumenti PDF e AI Gratuiti — Traduzione, Riassunto, Presentazioni",
+    "seo_description": "Strumenti online gratuiti basati su AI: traduttore PDF, generatore di presentazioni, formattatore di testo e riassuntore PDF. Strumenti professionali powered by GPT-4o. Nessuna registrazione."
   },
   "about_manage": {
     "title": "Sezione About",
@@ -1475,7 +1494,9 @@
     "workspace_banner_dismiss": "Ignora",
     "workspace_send": "Invia a Workspace",
     "workspace_sent": "Inviato ✓",
-    "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}"
+    "err_file_too_large": "File troppo grande (max {{max}}MB): {{name}}",
+    "seo_title": "Editor di Documenti Online Gratuito — Esporta in PDF e DOCX",
+    "seo_description": "Scrivi e formatta documenti nel browser, importa file Word ed esporta in PDF, DOCX o HTML. Gratuito, senza registrazione."
   },
   "pdf_editor": {
     "title": "Editor PDF",
@@ -1508,7 +1529,9 @@
     "move_left": "Sposta a sinistra",
     "move_right": "Sposta a destra",
     "delete": "Elimina",
-    "persistence_hint": "Le modifiche non vengono salvate: si perdono ricaricando o chiudendo questa scheda."
+    "persistence_hint": "Le modifiche non vengono salvate: si perdono ricaricando o chiudendo questa scheda.",
+    "seo_title": "Editor PDF Gratuito — Unisci, Dividi, Ruota e Aggiungi Filigrana",
+    "seo_description": "Unisci PDF, dividi ed estrai pagine, ruota o elimina pagine e aggiungi filigrane — interamente nel browser, i file non lasciano mai il tuo dispositivo."
   },
   "viewer": {
     "title": "Visualizzatore PDF",
@@ -1542,7 +1565,9 @@
     "zoom_out": "Riduci zoom",
     "zoom_in": "Aumenta zoom",
     "prev_match": "Risultato precedente",
-    "next_match": "Risultato successivo"
+    "next_match": "Risultato successivo",
+    "seo_title": "Visualizzatore PDF Online Gratuito — Zoom, Ricerca e Miniature",
+    "seo_description": "Visualizza documenti PDF nel browser: navigazione pagine, zoom, ricerca full-text e anteprima miniature. Gratuito, privato, nessun caricamento."
   },
   "scanner": {
     "title": "Scanner Documenti",
@@ -1594,7 +1619,9 @@
     "delete": "Elimina",
     "page_alt": "pagina {{n}}",
     "err_camera_unsupported": "Fotocamera non disponibile su questo browser o connessione non sicura (serve HTTPS). Puoi comunque caricare un'immagine.",
-    "persistence_hint": "Le pagine acquisite non vengono salvate: si perdono ricaricando o chiudendo questa scheda."
+    "persistence_hint": "Le pagine acquisite non vengono salvate: si perdono ricaricando o chiudendo questa scheda.",
+    "seo_title": "Scanner di Documenti Gratuito — Dalla Fotocamera al PDF Online",
+    "seo_description": "Scansiona documenti con webcam o fotocamera del telefono, ritagliali e migliorali, esportali in PDF. Gratuito, senza registrazione."
   },
   "library": {
     "badge": "Nuovo",
@@ -1650,7 +1677,9 @@
     "chat_send": "Invia",
     "chat_no_context": "Non ho trovato nulla di pertinente nei documenti indicizzati.",
     "chat_error": "Risposta non riuscita. Riprova.",
-    "import_skipped": "{{count}} file ignorati: solo i PDF possono essere importati in Libreria."
+    "import_skipped": "{{count}} file ignorati: solo i PDF possono essere importati in Libreria.",
+    "seo_title": "La Mia Libreria PDF — Archivio Personale con Ricerca e Chat AI",
+    "seo_description": "Salva i PDF trovati, cercali per contenuto pagina per pagina, annotali e fai domande ai tuoi documenti. Tutto resta nel tuo browser, nessun caricamento sul server."
   },
   "blog_manage": {
     "title": "Articoli del blog",
@@ -1815,7 +1844,9 @@
     "login_button": "Accedi",
     "open": "Apri",
     "delete": "Elimina",
-    "confirm_delete": "Eliminare questo file salvato?"
+    "confirm_delete": "Eliminare questo file salvato?",
+    "seo_title": "I miei file — Risultati salvati dai tool AI",
+    "seo_description": "Ritrova i file e i risultati che hai salvato dai tool AI di gentsallaku.it."
   },
   "account_modal": {
     "badge_admin": "Admin",

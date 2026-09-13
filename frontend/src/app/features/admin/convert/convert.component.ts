@@ -4,7 +4,8 @@ import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
@@ -42,6 +43,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
   private readonly san = inject(DomSanitizer);
   private readonly t   = inject(TranslateService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
 
   readonly searchQuery = signal('');
@@ -108,9 +110,9 @@ export class ConvertComponent implements OnInit, OnDestroy {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'Free File Converter — PDF, Word, Excel, Images & More',
-      description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
-      url: 'https://gentsallaku.it/lab/convert',
+      title: this.t.instant('convert.seo_title'),
+      description: this.t.instant('convert.seo_description', { count: this.totalCount }),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/convert', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
