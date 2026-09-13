@@ -69,10 +69,14 @@ async function fetchBlogSlugs(): Promise<{ slug: string }[]> {
 export const serverRoutes: ServerRoute[] = [
   ...PUBLIC_TOOL_PAGES.map((path): ServerRoute => ({ path, renderMode: RenderMode.Prerender })),
   ...STATIC_PUBLIC_PAGES.map((path): ServerRoute => ({ path, renderMode: RenderMode.Prerender })),
-  // /en/homepage, /es/about, ... — one dynamic :lang route per static page
-  // (mirrors app.routes.ts's `:lang` + canMatch structure), each expanding
-  // to the 6 non-default languages via getPrerenderParams.
-  ...STATIC_PUBLIC_PAGES.map((page): ServerRoute => ({
+  // /en/homepage, /es/about, /en/lab/pdf-search, ... — one dynamic :lang route
+  // per static AND tool page (mirrors app.routes.ts's `:lang` + canMatch
+  // structure), each expanding to the 6 non-default languages via
+  // getPrerenderParams. Without this, SeoService's hreflang tags (emitted on
+  // every /lab/* page too) pointed at URLs that were never actually
+  // prerendered under the static deploy — crawlers got the generic shell
+  // instead of localized content for every non-Italian tool page.
+  ...[...STATIC_PUBLIC_PAGES, ...PUBLIC_TOOL_PAGES].map((page): ServerRoute => ({
     path: `:lang/${page}`,
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {

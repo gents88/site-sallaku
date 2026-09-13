@@ -96,11 +96,11 @@
     }
   },
   "hero": {
-    "role": "Desarrollador Senior Front‑End & API",
+    "role": "Desarrollador Senior Front-End & API",
     "tagline1": "Angular",
     "tagline2": "Aplicaciones Web",
     "tagline3": "UI/UX & Data Visualization 3D Web",
-    "description": "Diseño y desarrollo aplicaciones e interfaces escalables con Angular, JavaScript y las principales bibliotecas frontend. Optimizo el rendimiento reduciendo la latencia y mejorando la capacidad de respuesta del sistema. Ofrezco soluciones fiables y estables listas para entornos enterprise de misión crítica.",
+    "description": "Diseño y desarrollo aplicaciones e interfaces escalables con Angular, JavaScript y las principales bibliotecas frontend. Optimizo el rendimiento reduciendo la latencia y mejorando la capacidad de respuesta del sistema. Ofrezco soluciones fiables y estables listas para entornos enterprise de misión crítica. Trabajo como Angular Developer y TypeScript Developer para equipos enterprise.",
     "kpi_years": "Años de experiencia",
     "kpi_projects": "Proyectos completados",
     "kpi_companies": "Empresas enterprise",
@@ -602,8 +602,8 @@
       "cta": "Probar gratis"
     },
     "frontend": {
-      "title": "Desarrollo Front‑End",
-      "desc": "Aplicaciones Angular escalables con TypeScript, RxJS y arquitectura de buenas prácticas. Desde proyectos greenfield hasta migraciones legacy.",
+      "title": "Desarrollo Front-End",
+      "desc": "Aplicaciones Angular escalables con TypeScript, RxJS y arquitectura de buenas prácticas. Desde proyectos greenfield hasta migraciones legacy. El servicio ideal si buscas un Angular Developer o TypeScript Developer para tu equipo.",
       "cta": "Saber más"
     },
     "web3d": {
