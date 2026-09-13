@@ -7,7 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -64,6 +65,7 @@ export class LibraryComponent implements OnInit {
   private readonly analytics = inject(AnalyticsTrackingService);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -174,10 +176,9 @@ export class LibraryComponent implements OnInit {
     void this.init();
 
     this.seo.update({
-      title: 'La Mia Libreria PDF — Archivio Personale con Ricerca e Chat AI',
-      description:
-        'Salva i PDF trovati, cercali per contenuto pagina per pagina, annotali e fai domande ai tuoi documenti. Tutto resta nel tuo browser, nessun caricamento sul server.',
-      url: 'https://gentsallaku.it/lab/library',
+      title: this.translate.instant('library.seo_title'),
+      description: this.translate.instant('library.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/library', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',

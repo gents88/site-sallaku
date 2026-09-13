@@ -639,7 +639,8 @@
   },
   "blog": {
     "readMore": "Weiterlesen",
-    "loadMore": "Mehr laden",    "views_singular": "{{count}} Aufruf",
+    "loadMore": "Mehr laden",
+    "views_singular": "{{count}} Aufruf",
     "views_plural": "{{count}} Aufrufe",
     "empty": {
       "title": "Keine Artikel gefunden",
@@ -946,7 +947,9 @@
     "err_truncated": "Der Inhalt einiger Folien wurde beim PDF-Export aus Platzgründen abgeschnitten. Kürze den Text und erstelle die Folien erneut.",
     "remove_context_file": "Datei entfernen",
     "prev_slide": "Vorherige Folie",
-    "next_slide": "Nächste Folie"
+    "next_slide": "Nächste Folie",
+    "seo_title": "KI-Präsentationsgenerator — Folien mit Künstlicher Intelligenz Erstellen",
+    "seo_description": "Erstelle eine vollständige professionelle Präsentation zu jedem Thema in Sekunden. Bis zu 20 Folien mit Titeln, Stichpunkten, Sprechernotizen und 5 Stilen. Kostenlos online."
   },
   "ai_formatter": {
     "title": "KI-Formatierer",
@@ -1000,7 +1003,9 @@
     "dismiss_draft": "Entwurf verwerfen",
     "textarea_placeholder": "Füge hier deinen unformatierten Text ein...\n\n✦ Besprechungsnotizen, Rohinhalt, KI-Ausgabe, E-Mails...\n✦ Oder klicke auf „Beispiel verwenden“ für eine Demo",
     "copied": "Kopiert",
-    "copy": "Kopieren"
+    "copy": "Kopieren",
+    "seo_title": "KI-Textformatierer — Von Notizen zum Professionellen Dokument",
+    "seo_description": "Verwandle Notizen, unformatierten Text oder KI-Inhalte sofort in strukturierte, professionelle Dokumente. Berichte, Angebote, Lebensläufe, Artikel und mehr. Kostenloser KI-Formatierer online."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1033,7 +1038,9 @@
     "err_file_type": "Nicht unterstütztes Format. Erlaubt sind PDF, Word (.docx/.doc), TXT und HTML.",
     "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
     "err_generic": "Bei der Analyse der Datei ist ein Fehler aufgetreten.",
-    "remove_file": "Datei entfernen"
+    "remove_file": "Datei entfernen",
+    "seo_title": "KI-PDF-Zusammenfassung — Kernpunkte aus Jedem Dokument",
+    "seo_description": "Lade ein PDF, Word- oder TXT-Dokument hoch und erhalte sofort eine KI-Zusammenfassung. Kurzfassung, detaillierte Analyse oder Kernpunkte. Kostenloser KI-Dokumenten-Zusammenfasser online."
   },
   "workspace": {
     "badge": "Neu",
@@ -1051,7 +1058,9 @@
     "start_here": "Start-Tools",
     "persistence_hint": "Nicht gespeichert: geht beim Neuladen oder Schließen dieses Tabs verloren.",
     "feedback_cleared": "Aus Workspace entfernt",
-    "feedback_downloaded": "Download gestartet"
+    "feedback_downloaded": "Download gestartet",
+    "seo_title": "Workflow — KI- und PDF-Tools Miteinander Verketten",
+    "seo_description": "Sende eine Datei oder Text von einem Tool zum nächsten, ohne erneut hochzuladen. Scannen, extrahieren, übersetzen und zusammenfassen in einem verbundenen Ablauf."
   },
   "pdf_translate": {
     "title": "PDF-Übersetzung",
@@ -1125,7 +1134,9 @@
     "err_no_file": "Bitte wähle eine Datei aus.",
     "err_generic": "Übersetzung fehlgeschlagen. Bitte versuche es erneut.",
     "upload_aria": "Eine PDF-Datei hochladen",
-    "remove_file": "Datei entfernen"
+    "remove_file": "Datei entfernen",
+    "seo_title": "KI-PDF-Übersetzer — Übersetzung mit Erhaltenen Seiten",
+    "seo_description": "Übersetze jedes PDF in 12 Sprachen bei gleichbleibender Seitenzahl und Formatierung. KI-Übersetzung auf Enterprise-Niveau mit GPT-4o. Kostenlos online, keine Anmeldung."
   },
   "pdf_search": {
     "title": "PDF-Suche",
@@ -1192,7 +1203,9 @@
     "err_workspace_send": "Senden an Workspace fehlgeschlagen. Bitte versuche es erneut.",
     "err_library_save": "Speichern in der Bibliothek fehlgeschlagen. Bitte versuche es erneut.",
     "preview_prev_page": "Vorherige Seite",
-    "preview_next_page": "Nächste Seite"
+    "preview_next_page": "Nächste Seite",
+    "seo_title": "PDF-Suchmaschine für Gemeinfreie Werke — Bücher ohne Urheberrecht",
+    "seo_description": "Suche und lade gemeinfreie Bücher, wissenschaftliche Paper und Open-Access-Artikel herunter, ohne Urheberrechtsprobleme. Durchsuche Internet Archive, Project Gutenberg, arXiv und PubMed Central mit Vorschau vor dem Download."
   },
   "convert": {
     "title": "Konverter",
@@ -1302,7 +1315,9 @@
     "workspace_banner_dismiss": "Ignorieren",
     "workspace_send": "An Workspace senden",
     "workspace_sent": "Gesendet ✓",
-    "blog_link": "Leitfaden: PDF in Word umwandeln, ohne die Formatierung zu verlieren"
+    "blog_link": "Leitfaden: PDF in Word umwandeln, ohne die Formatierung zu verlieren",
+    "seo_title": "Kostenloser Dateikonverter — PDF, Word, Excel, Bilder",
+    "seo_description": "Konvertiere zwischen PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG und mehr — {{count}} Konvertierungsarten, kostenlos, im Browser. Keine Anmeldung."
   },
   "ocr": {
     "title": "OCR — Texterkennung",
@@ -1341,7 +1356,9 @@
     "send_workspace": "An Workspace senden",
     "sent": "Gesendet ✓",
     "save_library": "In Bibliothek speichern",
-    "saved_library": "In Bibliothek gespeichert"
+    "saved_library": "In Bibliothek gespeichert",
+    "seo_title": "Kostenloses Online-OCR — Text aus Bildern und Gescannten PDFs",
+    "seo_description": "Extrahiere Text aus Fotos, gescannten Dokumenten und PDFs in 7 Sprachen. Kostenloses Online-OCR, keine Anmeldung."
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1374,7 +1391,9 @@
     "library_title": "Meine Bibliothek",
     "library_desc": "PDFs im Browser behalten, ihren Inhalt durchsuchen, Anmerkungen setzen und den Dokumenten Fragen stellen.",
     "my_files_title": "Meine Dateien",
-    "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast"
+    "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast",
+    "seo_title": "Kostenlose PDF- & KI-Tools — Übersetzung, Zusammenfassung, Präsentationen",
+    "seo_description": "Kostenlose Online-Tools mit KI: PDF-Übersetzer, Präsentationsgenerator, Textformatierer und PDF-Zusammenfasser. Professionelle Dokumententools mit GPT-4o. Keine Anmeldung."
   },
   "about_manage": {
     "title": "About-Bereich",
@@ -1475,7 +1494,9 @@
     "workspace_banner_dismiss": "Ignorieren",
     "workspace_send": "An Workspace senden",
     "workspace_sent": "Gesendet ✓",
-    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}"
+    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
+    "seo_title": "Kostenloser Online-Dokumenteneditor — Export als PDF & DOCX",
+    "seo_description": "Schreibe und formatiere Dokumente im Browser, importiere Word-Dateien und exportiere als PDF, DOCX oder HTML. Kostenlos, keine Anmeldung."
   },
   "pdf_editor": {
     "title": "PDF-Editor",
@@ -1508,7 +1529,9 @@
     "move_left": "Nach links verschieben",
     "move_right": "Nach rechts verschieben",
     "delete": "Löschen",
-    "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren."
+    "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
+    "seo_title": "Kostenloser PDF-Editor — Zusammenführen, Teilen, Drehen & Wasserzeichen",
+    "seo_description": "PDFs zusammenführen, Seiten teilen und extrahieren, Seiten drehen oder löschen und Wasserzeichen hinzufügen — komplett im Browser, Dateien verlassen nie dein Gerät."
   },
   "viewer": {
     "title": "PDF-Betrachter",
@@ -1542,7 +1565,9 @@
     "zoom_out": "Verkleinern",
     "zoom_in": "Vergrößern",
     "prev_match": "Vorheriger Treffer",
-    "next_match": "Nächster Treffer"
+    "next_match": "Nächster Treffer",
+    "seo_title": "Kostenloser PDF-Viewer Online — Zoom, Suche & Miniaturansichten",
+    "seo_description": "Betrachte PDF-Dokumente im Browser: Seitennavigation, Zoom, Volltextsuche und Miniaturansicht. Kostenlos, privat, kein Upload."
   },
   "scanner": {
     "title": "Dokumentenscanner",
@@ -1594,7 +1619,9 @@
     "delete": "Löschen",
     "page_alt": "Seite {{n}}",
     "err_camera_unsupported": "Kamera in diesem Browser nicht verfügbar oder unsichere Verbindung (HTTPS erforderlich). Du kannst trotzdem ein Bild hochladen.",
-    "persistence_hint": "Erfasste Seiten werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren."
+    "persistence_hint": "Erfasste Seiten werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
+    "seo_title": "Kostenloser Dokumentenscanner — Von der Kamera zum PDF Online",
+    "seo_description": "Scanne Dokumente mit Webcam oder Handykamera, schneide und verbessere sie, exportiere sie als PDF. Kostenlos, keine Anmeldung."
   },
   "library": {
     "badge": "Neu",
@@ -1650,7 +1677,9 @@
     "chat_send": "Senden",
     "chat_no_context": "In den indexierten Dokumenten habe ich nichts Passendes gefunden.",
     "chat_error": "Die Antwort ist fehlgeschlagen. Versuch es erneut.",
-    "import_skipped": "{{count}} Datei(en) übersprungen: In die Bibliothek können nur PDFs importiert werden."
+    "import_skipped": "{{count}} Datei(en) übersprungen: In die Bibliothek können nur PDFs importiert werden.",
+    "seo_title": "Meine PDF-Bibliothek — Persönliches Archiv mit Suche und KI-Chat",
+    "seo_description": "Speichere gefundene PDFs, durchsuche sie Seite für Seite, kommentiere sie und stelle Fragen zu deinen Dokumenten. Alles bleibt im Browser, nichts wird hochgeladen."
   },
   "blog_manage": {
     "title": "Blogbeiträge",
@@ -1815,7 +1844,9 @@
     "login_button": "Anmelden",
     "open": "Öffnen",
     "delete": "Löschen",
-    "confirm_delete": "Diese gespeicherte Datei löschen?"
+    "confirm_delete": "Diese gespeicherte Datei löschen?",
+    "seo_title": "Meine Dateien — Gespeicherte Ergebnisse der KI-Tools",
+    "seo_description": "Finde die Dateien und Ergebnisse, die du von den KI-Tools von gentsallaku.it gespeichert hast."
   },
   "account_modal": {
     "badge_admin": "Admin",

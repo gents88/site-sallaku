@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy, OnInit, inject, computed, signal } 
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceKind } from '../../../core/services/workspace.service';
 
@@ -47,6 +48,7 @@ const STARTING_TOOLS: ToolLink[] = [
 })
 export class WorkspaceComponent implements OnInit {
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   readonly workspace = inject(WorkspaceService);
 
@@ -71,9 +73,9 @@ export class WorkspaceComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Workflow — Chain AI & PDF Tools Together',
-      description: 'Send a file or text from one tool to the next without re-uploading. Scan, extract, translate and summarize in one connected flow.',
-      url: 'https://gentsallaku.it/lab/workspace',
+      title: this.translate.instant('workspace.seo_title'),
+      description: this.translate.instant('workspace.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/workspace', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       this.seo.breadcrumb([

@@ -3,7 +3,8 @@ import {
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
@@ -32,6 +33,7 @@ interface PageEntry {
 export class PdfEditorComponent implements OnInit {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
 
@@ -66,9 +68,9 @@ export class PdfEditorComponent implements OnInit {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'Free PDF Editor — Merge, Split, Rotate & Watermark',
-      description: 'Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.',
-      url: 'https://gentsallaku.it/lab/pdf-editor',
+      title: this.t.instant('pdf_editor.seo_title'),
+      description: this.t.instant('pdf_editor.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-editor', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {

@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy, OnInit, afterNextRender, inject, si
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { OcrService, OcrResult, OcrPageResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
@@ -52,6 +53,7 @@ export class OcrComponent implements OnInit {
   private readonly svc = inject(OcrService);
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
   private readonly library = inject(LibraryService);
@@ -116,9 +118,9 @@ export class OcrComponent implements OnInit {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'Free Online OCR — Extract Text from Images & Scanned PDFs',
-      description: 'Extract text from photos, scanned documents and PDFs in 7 languages. Free online OCR, no signup required.',
-      url: 'https://gentsallaku.it/lab/ocr',
+      title: this.t.instant('ocr.seo_title'),
+      description: this.t.instant('ocr.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/ocr', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
