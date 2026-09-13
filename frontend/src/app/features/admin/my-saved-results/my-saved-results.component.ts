@@ -1,7 +1,8 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -30,6 +31,7 @@ const TOOL_ICON: Record<SavedResultToolType, string> = {
 })
 export class MySavedResultsComponent implements OnInit {
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly savedResults = inject(SavedResultsService);
   readonly auth = inject(AuthService);
@@ -61,9 +63,9 @@ export class MySavedResultsComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'I miei file — Risultati salvati dai tool AI',
-      description: 'Ritrova i file e i risultati che hai salvato dai tool AI di gentsallaku.it.',
-      url: 'https://gentsallaku.it/lab/i-miei-file',
+      title: this.t.instant('saved_results.seo_title'),
+      description: this.t.instant('saved_results.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/i-miei-file', this.langService.current())}`,
     });
     this.breadcrumbItems = [
       { label: this.t.instant('nav.home'), path: '/' },

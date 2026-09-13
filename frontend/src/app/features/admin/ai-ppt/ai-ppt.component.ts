@@ -11,7 +11,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import {
@@ -46,6 +47,7 @@ export class AiPptComponent implements OnInit {
 
   private readonly service      = inject(AiPptService);
   private readonly seo          = inject(SeoService);
+  private readonly langService  = inject(LanguageService);
   private readonly workspace    = inject(WorkspaceService);
   private readonly t            = inject(TranslateService);
   private readonly savedResults = inject(SavedResultsService);
@@ -57,9 +59,9 @@ export class AiPptComponent implements OnInit {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'AI Slides Generator — Create Presentations with AI',
-      description: 'Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online.',
-      url: 'https://gentsallaku.it/lab/ai-ppt',
+      title: this.t.instant('ai_ppt.seo_title'),
+      description: this.t.instant('ai_ppt.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/ai-ppt', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {

@@ -639,7 +639,8 @@
   },
   "blog": {
     "readMore": "Read more",
-    "loadMore": "Load more",    "views_singular": "{{count}} view",
+    "loadMore": "Load more",
+    "views_singular": "{{count}} view",
     "views_plural": "{{count}} views",
     "empty": {
       "title": "No articles found",
@@ -946,7 +947,9 @@
     "err_truncated": "Some slide content was cut off due to space when exporting the PDF. Try shortening the text and regenerate.",
     "remove_context_file": "Remove file",
     "prev_slide": "Previous slide",
-    "next_slide": "Next slide"
+    "next_slide": "Next slide",
+    "seo_title": "AI Slides Generator — Create Presentations with AI",
+    "seo_description": "Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online."
   },
   "ai_formatter": {
     "title": "AI Formatter",
@@ -1000,7 +1003,9 @@
     "dismiss_draft": "Dismiss draft",
     "textarea_placeholder": "Paste your unformatted text here...\n\n✦ Meeting notes, raw content, AI output, emails...\n✦ Or click 'Use Sample' to see a demo",
     "copied": "Copied",
-    "copy": "Copy"
+    "copy": "Copy",
+    "seo_title": "AI Text Formatter — Convert Notes to Polished Documents",
+    "seo_description": "Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1033,7 +1038,9 @@
     "err_file_type": "Unsupported format. PDF, Word (.docx/.doc), TXT and HTML are allowed.",
     "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
     "err_generic": "An error occurred while analyzing the file.",
-    "remove_file": "Remove file"
+    "remove_file": "Remove file",
+    "seo_title": "AI PDF Summarizer — Extract Key Points from Any Document",
+    "seo_description": "Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online."
   },
   "workspace": {
     "badge": "New",
@@ -1051,7 +1058,9 @@
     "start_here": "Starting tools",
     "persistence_hint": "Not saved: lost if you reload or close this tab.",
     "feedback_cleared": "Removed from Workspace",
-    "feedback_downloaded": "Download started"
+    "feedback_downloaded": "Download started",
+    "seo_title": "Workflow — Chain AI & PDF Tools Together",
+    "seo_description": "Send a file or text from one tool to the next without re-uploading. Scan, extract, translate and summarize in one connected flow."
   },
   "pdf_translate": {
     "title": "PDF Translation",
@@ -1125,7 +1134,9 @@
     "err_no_file": "Please select a file.",
     "err_generic": "Translation failed. Please try again.",
     "upload_aria": "Upload a PDF file",
-    "remove_file": "Remove file"
+    "remove_file": "Remove file",
+    "seo_title": "AI PDF Translator — Translate PDF, Pages Preserved",
+    "seo_description": "Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed."
   },
   "pdf_search": {
     "title": "PDF Search",
@@ -1192,7 +1203,9 @@
     "err_workspace_send": "Sending to Workspace failed. Please try again.",
     "err_library_save": "Saving to Library failed. Please try again.",
     "preview_prev_page": "Previous page",
-    "preview_next_page": "Next page"
+    "preview_next_page": "Next page",
+    "seo_title": "Public Domain PDF Search Engine — Copyright-Free Books",
+    "seo_description": "Search and download public domain books, scientific papers and open-access articles with no copyright issues. Search Internet Archive, Project Gutenberg, arXiv and PubMed Central with a preview before downloading."
   },
   "convert": {
     "title": "Converter",
@@ -1302,7 +1315,9 @@
     "workspace_banner_dismiss": "Ignore",
     "workspace_send": "Send to Workspace",
     "workspace_sent": "Sent ✓",
-    "blog_link": "Guide: how to convert PDF to Word without losing formatting"
+    "blog_link": "Guide: how to convert PDF to Word without losing formatting",
+    "seo_title": "Free File Converter — PDF, Word, Excel, Images & More",
+    "seo_description": "Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — {{count}} conversion types, free, in your browser. No signup needed."
   },
   "ocr": {
     "title": "OCR — Text Recognition",
@@ -1341,7 +1356,9 @@
     "send_workspace": "Send to Workspace",
     "sent": "Sent ✓",
     "save_library": "Save to library",
-    "saved_library": "Saved to library"
+    "saved_library": "Saved to library",
+    "seo_title": "Free Online OCR — Extract Text from Images & Scanned PDFs",
+    "seo_description": "Extract text from photos, scanned documents and PDFs in 7 languages. Free online OCR, no signup required."
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1374,7 +1391,9 @@
     "library_title": "My library",
     "library_desc": "Keep PDFs in your browser, search their contents, annotate them and ask your documents questions.",
     "my_files_title": "My files",
-    "my_files_desc": "Find the results you have saved from the AI tools"
+    "my_files_desc": "Find the results you have saved from the AI tools",
+    "seo_title": "Free AI PDF Tools & Document Utilities",
+    "seo_description": "Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools powered by GPT-4o. No signup required."
   },
   "about_manage": {
     "title": "About Section",
@@ -1475,7 +1494,9 @@
     "workspace_banner_dismiss": "Ignore",
     "workspace_send": "Send to Workspace",
     "workspace_sent": "Sent ✓",
-    "err_file_too_large": "File too large (max {{max}}MB): {{name}}"
+    "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
+    "seo_title": "Free Online Document Editor — Export to PDF & DOCX",
+    "seo_description": "Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup."
   },
   "pdf_editor": {
     "title": "PDF Editor",
@@ -1508,7 +1529,9 @@
     "move_left": "Move left",
     "move_right": "Move right",
     "delete": "Delete",
-    "persistence_hint": "Changes are not saved: they are lost if you reload or close this tab."
+    "persistence_hint": "Changes are not saved: they are lost if you reload or close this tab.",
+    "seo_title": "Free PDF Editor — Merge, Split, Rotate & Watermark",
+    "seo_description": "Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device."
   },
   "viewer": {
     "title": "PDF Viewer",
@@ -1542,7 +1565,9 @@
     "zoom_out": "Zoom out",
     "zoom_in": "Zoom in",
     "prev_match": "Previous match",
-    "next_match": "Next match"
+    "next_match": "Next match",
+    "seo_title": "Free PDF Viewer Online — Zoom, Search & Thumbnails",
+    "seo_description": "View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload."
   },
   "scanner": {
     "title": "Document Scanner",
@@ -1594,7 +1619,9 @@
     "delete": "Delete",
     "page_alt": "page {{n}}",
     "err_camera_unsupported": "Camera unavailable in this browser or insecure connection (HTTPS required). You can still upload an image.",
-    "persistence_hint": "Captured pages are not saved: they are lost if you reload or close this tab."
+    "persistence_hint": "Captured pages are not saved: they are lost if you reload or close this tab.",
+    "seo_title": "Free Document Scanner — Camera to PDF Online",
+    "seo_description": "Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup."
   },
   "library": {
     "badge": "New",
@@ -1650,7 +1677,9 @@
     "chat_send": "Send",
     "chat_no_context": "I found nothing relevant in the indexed documents.",
     "chat_error": "The answer failed. Try again.",
-    "import_skipped": "{{count}} file(s) skipped: only PDFs can be imported into the Library."
+    "import_skipped": "{{count}} file(s) skipped: only PDFs can be imported into the Library.",
+    "seo_title": "My PDF Library — Personal Archive with Search and AI Chat",
+    "seo_description": "Save the PDFs you find, search them page by page, annotate them and ask questions about your documents. Everything stays in your browser, nothing is uploaded."
   },
   "blog_manage": {
     "title": "Blog Posts",
@@ -1815,7 +1844,9 @@
     "login_button": "Sign in",
     "open": "Open",
     "delete": "Delete",
-    "confirm_delete": "Delete this saved file?"
+    "confirm_delete": "Delete this saved file?",
+    "seo_title": "My Files — Saved Results from the AI Tools",
+    "seo_description": "Find the files and results you've saved from gentsallaku.it's AI tools."
   },
   "account_modal": {
     "badge_admin": "Admin",

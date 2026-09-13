@@ -639,7 +639,8 @@
   },
   "blog": {
     "readMore": "Lire la suite",
-    "loadMore": "Charger plus",    "views_singular": "{{count}} vue",
+    "loadMore": "Charger plus",
+    "views_singular": "{{count}} vue",
     "views_plural": "{{count}} vues",
     "empty": {
       "title": "Aucun article trouvé",
@@ -946,7 +947,9 @@
     "err_truncated": "Le contenu de certaines diapositives a été tronqué par manque de place lors de l’export du PDF. Essayez de raccourcir le texte et régénérez.",
     "remove_context_file": "Supprimer le fichier",
     "prev_slide": "Diapositive précédente",
-    "next_slide": "Diapositive suivante"
+    "next_slide": "Diapositive suivante",
+    "seo_title": "Générateur de Présentations IA — Créez des Diapositives avec l'IA",
+    "seo_description": "Générez une présentation professionnelle complète sur n'importe quel sujet en quelques secondes. Jusqu'à 20 diapositives avec titres, puces, notes et 5 styles. Gratuit en ligne."
   },
   "ai_formatter": {
     "title": "Formateur IA",
@@ -1000,7 +1003,9 @@
     "dismiss_draft": "Ignorer le brouillon",
     "textarea_placeholder": "Collez ici votre texte non formaté...\n\n✦ Notes de réunion, contenu brut, sortie IA, e-mails...\n✦ Ou cliquez sur « Utiliser l'exemple » pour une démo",
     "copied": "Copié",
-    "copy": "Copier"
+    "copy": "Copier",
+    "seo_title": "Formateur de Texte IA — Des Notes à un Document Professionnel",
+    "seo_description": "Transformez notes, texte brut ou contenu IA en documents professionnels structurés instantanément. Rapports, propositions, CV, articles et plus. Formateur IA gratuit en ligne."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1033,7 +1038,9 @@
     "err_file_type": "Format non pris en charge. PDF, Word (.docx/.doc), TXT et HTML sont autorisés.",
     "err_file_too_large": "Fichier trop volumineux (max {{max}}Mo) : {{name}}",
     "err_generic": "Une erreur est survenue lors de l'analyse du fichier.",
-    "remove_file": "Supprimer le fichier"
+    "remove_file": "Supprimer le fichier",
+    "seo_title": "Résumé de PDF avec l'IA — Extrayez les Points Clés de Tout Document",
+    "seo_description": "Téléchargez un PDF, Word ou TXT et obtenez un résumé généré par IA instantanément. Résumé court, analyse détaillée ou points clés. Résumeur de documents IA gratuit en ligne."
   },
   "workspace": {
     "badge": "Nouveau",
@@ -1051,7 +1058,9 @@
     "start_here": "Outils de départ",
     "persistence_hint": "Non enregistré : perdu si vous rechargez ou fermez cet onglet.",
     "feedback_cleared": "Supprimé de Workspace",
-    "feedback_downloaded": "Téléchargement commencé"
+    "feedback_downloaded": "Téléchargement commencé",
+    "seo_title": "Flux de Travail — Enchaînez les Outils IA et PDF",
+    "seo_description": "Envoyez un fichier ou un texte d'un outil à l'autre sans le retélécharger. Numérisez, extrayez, traduisez et résumez dans un flux connecté."
   },
   "pdf_translate": {
     "title": "Traduction de PDF",
@@ -1125,7 +1134,9 @@
     "err_no_file": "Veuillez sélectionner un fichier.",
     "err_generic": "Échec de la traduction. Veuillez réessayer.",
     "upload_aria": "Importer un fichier PDF",
-    "remove_file": "Supprimer le fichier"
+    "remove_file": "Supprimer le fichier",
+    "seo_title": "Traducteur de PDF avec IA — Traduction en Préservant les Pages",
+    "seo_description": "Traduisez n'importe quel PDF en 12 langues en conservant le même nombre de pages et la mise en forme. Traduction IA de niveau entreprise avec GPT-4o. Gratuit en ligne, sans inscription."
   },
   "pdf_search": {
     "title": "Recherche PDF",
@@ -1192,7 +1203,9 @@
     "err_workspace_send": "L'envoi vers Workspace a échoué. Veuillez réessayer.",
     "err_library_save": "L'enregistrement dans la Bibliothèque a échoué. Veuillez réessayer.",
     "preview_prev_page": "Page précédente",
-    "preview_next_page": "Page suivante"
+    "preview_next_page": "Page suivante",
+    "seo_title": "Moteur de Recherche PDF du Domaine Public — Livres sans Droits d'Auteur",
+    "seo_description": "Recherchez et téléchargez des livres du domaine public, des articles scientifiques et des publications en libre accès, sans problème de droits d'auteur. Recherchez sur Internet Archive, Project Gutenberg, arXiv et PubMed Central avec aperçu avant téléchargement."
   },
   "convert": {
     "title": "Convertisseur",
@@ -1302,7 +1315,9 @@
     "workspace_banner_dismiss": "Ignorer",
     "workspace_send": "Envoyer vers Workspace",
     "workspace_sent": "Envoyé ✓",
-    "blog_link": "Guide : comment convertir un PDF en Word sans perdre la mise en forme"
+    "blog_link": "Guide : comment convertir un PDF en Word sans perdre la mise en forme",
+    "seo_title": "Convertisseur de Fichiers Gratuit — PDF, Word, Excel, Images",
+    "seo_description": "Convertissez entre PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG et plus — {{count}} types de conversion, gratuit, dans le navigateur. Sans inscription."
   },
   "ocr": {
     "title": "OCR — Reconnaissance de texte",
@@ -1341,7 +1356,9 @@
     "send_workspace": "Envoyer vers Workspace",
     "sent": "Envoyé ✓",
     "save_library": "Enregistrer dans la bibliothèque",
-    "saved_library": "Enregistré dans la bibliothèque"
+    "saved_library": "Enregistré dans la bibliothèque",
+    "seo_title": "OCR en Ligne Gratuit — Extrayez le Texte d'Images et de PDF Scannés",
+    "seo_description": "Extrayez le texte de photos, documents scannés et PDF en 7 langues. OCR en ligne gratuit, sans inscription."
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1374,7 +1391,9 @@
     "library_title": "Ma bibliothèque",
     "library_desc": "Gardez vos PDF dans le navigateur, cherchez dans leur contenu, annotez-les et interrogez vos documents.",
     "my_files_title": "Mes fichiers",
-    "my_files_desc": "Retrouve les résultats que tu as enregistrés depuis les outils IA"
+    "my_files_desc": "Retrouve les résultats que tu as enregistrés depuis les outils IA",
+    "seo_title": "Outils PDF et IA Gratuits — Traduction, Résumé, Présentations",
+    "seo_description": "Outils en ligne gratuits basés sur l'IA : traducteur PDF, générateur de présentations, formateur de texte et résumeur de PDF. Outils professionnels avec GPT-4o. Sans inscription."
   },
   "about_manage": {
     "title": "Section À propos",
@@ -1475,7 +1494,9 @@
     "workspace_banner_dismiss": "Ignorer",
     "workspace_send": "Envoyer vers Workspace",
     "workspace_sent": "Envoyé ✓",
-    "err_file_too_large": "Fichier trop volumineux (max {{max}}Mo) : {{name}}"
+    "err_file_too_large": "Fichier trop volumineux (max {{max}}Mo) : {{name}}",
+    "seo_title": "Éditeur de Documents en Ligne Gratuit — Exportez en PDF et DOCX",
+    "seo_description": "Rédigez et mettez en forme des documents dans le navigateur, importez des fichiers Word et exportez en PDF, DOCX ou HTML. Gratuit, sans inscription."
   },
   "pdf_editor": {
     "title": "Éditeur PDF",
@@ -1508,7 +1529,9 @@
     "move_left": "Déplacer à gauche",
     "move_right": "Déplacer à droite",
     "delete": "Supprimer",
-    "persistence_hint": "Les modifications ne sont pas enregistrées : elles sont perdues si vous rechargez ou fermez cet onglet."
+    "persistence_hint": "Les modifications ne sont pas enregistrées : elles sont perdues si vous rechargez ou fermez cet onglet.",
+    "seo_title": "Éditeur PDF Gratuit — Fusionner, Diviser, Pivoter et Filigraner",
+    "seo_description": "Fusionnez des PDF, divisez et extrayez des pages, pivotez ou supprimez des pages et ajoutez des filigranes — entièrement dans le navigateur, vos fichiers ne quittent jamais votre appareil."
   },
   "viewer": {
     "title": "Visionneuse PDF",
@@ -1542,7 +1565,9 @@
     "zoom_out": "Zoom arrière",
     "zoom_in": "Zoom avant",
     "prev_match": "Résultat précédent",
-    "next_match": "Résultat suivant"
+    "next_match": "Résultat suivant",
+    "seo_title": "Visionneuse PDF en Ligne Gratuite — Zoom, Recherche et Miniatures",
+    "seo_description": "Consultez des documents PDF dans votre navigateur : navigation par page, zoom, recherche en texte intégral et aperçu des miniatures. Gratuit, privé, sans envoi de fichier."
   },
   "scanner": {
     "title": "Scanner de Documents",
@@ -1594,7 +1619,9 @@
     "delete": "Supprimer",
     "page_alt": "page {{n}}",
     "err_camera_unsupported": "Caméra indisponible dans ce navigateur ou connexion non sécurisée (HTTPS requis). Vous pouvez toujours importer une image.",
-    "persistence_hint": "Les pages capturées ne sont pas enregistrées : elles sont perdues si vous rechargez ou fermez cet onglet."
+    "persistence_hint": "Les pages capturées ne sont pas enregistrées : elles sont perdues si vous rechargez ou fermez cet onglet.",
+    "seo_title": "Scanner de Documents Gratuit — De la Caméra au PDF en Ligne",
+    "seo_description": "Numérisez des documents avec votre webcam ou l'appareil photo de votre téléphone, recadrez-les et améliorez-les, exportez-les en PDF. Gratuit, sans inscription."
   },
   "library": {
     "badge": "Nouveau",
@@ -1650,7 +1677,9 @@
     "chat_send": "Envoyer",
     "chat_no_context": "Je n'ai rien trouvé de pertinent dans les documents indexés.",
     "chat_error": "La réponse a échoué. Réessayez.",
-    "import_skipped": "{{count}} fichier(s) ignoré(s) : seuls les PDF peuvent être importés dans la Bibliothèque."
+    "import_skipped": "{{count}} fichier(s) ignoré(s) : seuls les PDF peuvent être importés dans la Bibliothèque.",
+    "seo_title": "Ma Bibliothèque PDF — Archive Personnelle avec Recherche et Chat IA",
+    "seo_description": "Enregistrez les PDF que vous trouvez, recherchez-les page par page, annotez-les et posez des questions sur vos documents. Tout reste dans votre navigateur, rien n'est envoyé."
   },
   "blog_manage": {
     "title": "Articles du blog",
@@ -1815,7 +1844,9 @@
     "login_button": "Se connecter",
     "open": "Ouvrir",
     "delete": "Supprimer",
-    "confirm_delete": "Supprimer ce fichier enregistré ?"
+    "confirm_delete": "Supprimer ce fichier enregistré ?",
+    "seo_title": "Mes Fichiers — Résultats Enregistrés des Outils IA",
+    "seo_description": "Retrouvez les fichiers et résultats que vous avez enregistrés depuis les outils IA de gentsallaku.it."
   },
   "account_modal": {
     "badge_admin": "Admin",

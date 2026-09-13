@@ -5,7 +5,8 @@ import {
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService } from '../../../core/services/conversion.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
@@ -55,6 +56,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly ocr = inject(OcrService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
 
@@ -101,9 +103,9 @@ export class ScannerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Free Document Scanner — Camera to PDF Online',
-      description: 'Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup.',
-      url: 'https://gentsallaku.it/lab/scanner',
+      title: this.t.instant('scanner.seo_title'),
+      description: this.t.instant('scanner.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/scanner', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
