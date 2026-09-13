@@ -9,6 +9,20 @@ const API_BASE_URL = process.env.SITEMAP_API_URL
   || process.env.API_BASE_URL
   || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
 
+// Keep in sync with frontend/src/app/core/services/language.service.ts's NON_DEFAULT_LANGS.
+const NON_DEFAULT_LANGS = ['en', 'sq', 'es', 'pt', 'fr', 'de'];
+
+// Language-prefixed path for a default-language `loc`, matching
+// app.routes.server.ts's `:lang/<page>` prerender routes and
+// LanguageService.withLangPrefix(). '/' is special-cased to 'homepage'
+// (the root '/' is a `redirectTo` route, never itself prerendered — see
+// app.routes.server.ts's STATIC_PUBLIC_PAGES comment); every other route's
+// page slug is just its loc without the leading slash.
+function langLoc(loc, lang) {
+  const page = loc === '/' ? 'homepage' : loc.replace(/^\//, '');
+  return `/${lang}/${page}`;
+}
+
 const routes = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
   { loc: '/projects', changefreq: 'monthly', priority: '0.95' },
@@ -116,9 +130,25 @@ async function notifySearchEngines() {
   }
 }
 
+/** Expands a list of default-language (IT) entries into their prerendered lang-prefixed siblings. */
+function withLangVariants(entries) {
+  const variants = [];
+  for (const e of entries) {
+    for (const lang of NON_DEFAULT_LANGS) {
+      variants.push({ ...e, loc: langLoc(e.loc, lang) });
+    }
+  }
+  return variants;
+}
+
 async function main() {
   const blogRoutes = await fetchBlogRoutes();
-  const xml = buildXml([...routes, ...blogRoutes]);
+  const xml = buildXml([
+    ...routes,
+    ...withLangVariants(routes),
+    ...blogRoutes,
+    ...withLangVariants(blogRoutes),
+  ]);
 
   const targets = [
     path.join(__dirname, '..', 'public', 'sitemap.xml'),
