@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, effect } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, timeout } from 'rxjs';
@@ -43,6 +43,7 @@ export class BlogListComponent implements OnInit {
   }
 
   private readonly langService = inject(LanguageService);
+  private readonly route = inject(ActivatedRoute);
   readonly currentLang = this.langService.current;
 
   constructor(
@@ -75,6 +76,12 @@ export class BlogListComponent implements OnInit {
       { label: homeLabel, path: '/' },
       { label: blogLabel },
     ];
+    // Pre-fills the search box from ?q= — the WebSite JSON-LD's SearchAction
+    // (see home.component.ts) tells Google this URL performs a search;
+    // without reading it back here that was a dead promise, so a visitor
+    // arriving via Google's sitelinks search box saw the full unfiltered list.
+    this.searchQuery = this.route.snapshot.queryParamMap.get('q') ?? '';
+
     this.blogService.getPublishedAll().pipe(
       // No retry() — see blog-detail.component.ts for why: it trades a
       // clean failure for a worse one (page stuck on the loading spinner)
@@ -84,10 +91,9 @@ export class BlogListComponent implements OnInit {
     ).subscribe({
       next: posts => {
         this.posts = posts;
-        this.filteredPosts = posts;
         const tagsSet = new Set(posts.flatMap(p => p.tags));
         this.allTags = Array.from(tagsSet).sort();
-        this.cdr.markForCheck();
+        this.filter();
       },
       error: () => {},
     });
@@ -116,21 +122,37 @@ export class BlogListComponent implements OnInit {
   }
 
   filter(): void {
-    const q = this.searchQuery.toLowerCase();
-    this.filteredPosts = this.posts.filter(p => {
-      const matchesTag = !this.activeTag || p.tags.includes(this.activeTag);
-      const matchesSearch = !q ||
-        p.title.toLowerCase().includes(q) ||
-        (p.title_en ?? '').toLowerCase().includes(q) ||
-        (p.title_sq ?? '').toLowerCase().includes(q) ||
-        (p.title_pt ?? '').toLowerCase().includes(q) ||
-        (p.title_es ?? '').toLowerCase().includes(q) ||
-        (p.title_fr ?? '').toLowerCase().includes(q) ||
-        (p.title_de ?? '').toLowerCase().includes(q);
-      return matchesTag && matchesSearch;
-    });
+    const tokens = this.searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    let posts = this.posts.filter(p => !this.activeTag || p.tags.includes(this.activeTag));
+
+    if (tokens.length > 0) {
+      // Score by per-word overlap across title (weighted higher) + excerpt/tags,
+      // instead of requiring the whole query as one literal substring of the
+      // title only. That old rule meant a paraphrase like "come aggiornare
+      // angular dal 11 al 21" found nothing for a post titled "Migrazione
+      // Angular da v10 a v21", even though every meaningful word overlaps.
+      posts = posts
+        .map(p => ({ post: p, score: this.matchScore(p, tokens) }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(({ post }) => post);
+    }
+
+    this.filteredPosts = posts;
     this.visibleCount = this.pageSize;
     this.cdr.markForCheck();
+  }
+
+  private matchScore(post: PostSummary, tokens: string[]): number {
+    const titleHaystack = [post.title, post.title_en, post.title_sq, post.title_pt, post.title_es, post.title_fr, post.title_de]
+      .filter(Boolean).join(' ').toLowerCase();
+    const bodyHaystack = [post.excerpt, post.excerpt_en, post.excerpt_sq, post.excerpt_pt, post.excerpt_es, post.excerpt_fr, post.excerpt_de, ...(post.tags ?? [])]
+      .filter(Boolean).join(' ').toLowerCase();
+    return tokens.reduce((total, token) => {
+      if (titleHaystack.includes(token)) return total + 2;
+      if (bodyHaystack.includes(token)) return total + 1;
+      return total;
+    }, 0);
   }
 
   setTag(tag: string | null): void {
