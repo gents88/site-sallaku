@@ -47,7 +47,7 @@
     "@angular/build": "^21.2.19",
     "@angular/cli": "^21.2.19",
     "@angular/compiler-cli": "^21.2.19",
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.63.0",
     "@types/dompurify": "^3.0.5",
     "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
