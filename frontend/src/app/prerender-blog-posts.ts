@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { Post } from './core/models/post.model';
+import { Post, localizedSlug } from './core/models/post.model';
+import { NON_DEFAULT_LANGS } from './core/services/language.service';
 
 /**
  * SERVER-ONLY. Reads the posts scripts/prefetch-blog-posts.js saved before the
@@ -20,4 +21,9 @@ export function readPrerenderBlogPosts(): Post[] {
     cache = [];
   }
   return cache;
+}
+
+/** Every distinct URL slug of a post (Italian + translated), for cache lookups. */
+export function allSlugs(post: Post): string[] {
+  return [...new Set([post.slug, ...NON_DEFAULT_LANGS.map(lang => localizedSlug(post, lang))])];
 }

@@ -82,6 +82,9 @@ async function fetchBlogRoutes() {
         if (!post.slug) continue;
         posts.push({
           loc: `/blog/${post.slug}`,
+          // Translated slug per language (backend slug_xx, from title_xx) —
+          // must match blog-detail's canonical, which uses the same fallback.
+          langLocs: Object.fromEntries(NON_DEFAULT_LANGS.map(l => [l, `/${l}/blog/${post[`slug_${l}`] || post.slug}`])),
           changefreq: 'monthly',
           priority: '0.75',
           lastmod: post.publishedAt ? formatDate(new Date(post.publishedAt)) : today,
@@ -135,7 +138,8 @@ function withLangVariants(entries) {
   const variants = [];
   for (const e of entries) {
     for (const lang of NON_DEFAULT_LANGS) {
-      variants.push({ ...e, loc: langLoc(e.loc, lang) });
+      const { langLocs, ...entry } = e;
+      variants.push({ ...entry, loc: langLocs?.[lang] ?? langLoc(e.loc, lang) });
     }
   }
   return variants;
@@ -146,7 +150,7 @@ async function main() {
   const xml = buildXml([
     ...routes,
     ...withLangVariants(routes),
-    ...blogRoutes,
+    ...blogRoutes.map(({ langLocs, ...entry }) => entry),
     ...withLangVariants(blogRoutes),
   ]);
 
