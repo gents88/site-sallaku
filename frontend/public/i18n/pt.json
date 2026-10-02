@@ -657,7 +657,8 @@
       "instagram": "Compartilhar no Instagram",
       "copyLink": "Copiar link",
       "linkCopied": "Link copiado!"
-    }
+    },
+    "reading_time": "{{count}} min de leitura"
   },
   "notes": {
     "title": "Notas dos leitores",
@@ -1768,7 +1769,9 @@
     "cover_data_url_unsupported": "Usa um URL de imagem para a capa. O carregamento direto de ficheiros não é suportado.",
     "err_payload_too_large": "Conteúdo demasiado grande. Remove as imagens incorporadas e usa URLs de imagem.",
     "err_session_expired": "Sessão expirada. Inicia sessão novamente.",
-    "err_save_failed_default": "Falha ao guardar. Verifica título, conteúdo e slug."
+    "err_save_failed_default": "Falha ao guardar. Verifica título, conteúdo e slug.",
+    "action_unpublish": "Mover para rascunho",
+    "unpublished_msg": "Artigo movido para rascunho (visualizações mantidas)"
   },
   "privacy": {
     "title": "Política de Privacidade",

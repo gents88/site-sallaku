@@ -657,7 +657,8 @@
       "instagram": "Auf Instagram teilen",
       "copyLink": "Link kopieren",
       "linkCopied": "Link kopiert!"
-    }
+    },
+    "reading_time": "{{count}} Min. Lesezeit"
   },
   "notes": {
     "title": "Leser-Notizen",
@@ -1768,7 +1769,9 @@
     "cover_data_url_unsupported": "Verwende eine Bild-URL für das Titelbild. Direkter Datei-Upload wird nicht unterstützt.",
     "err_payload_too_large": "Inhalt zu groß. Eingebettete Bilder entfernen und Bild-URLs verwenden.",
     "err_session_expired": "Sitzung abgelaufen. Bitte erneut anmelden.",
-    "err_save_failed_default": "Speichern fehlgeschlagen. Titel, Inhalt und Slug prüfen."
+    "err_save_failed_default": "Speichern fehlgeschlagen. Titel, Inhalt und Slug prüfen.",
+    "action_unpublish": "Zurück in den Entwurf",
+    "unpublished_msg": "Artikel wieder im Entwurf (Aufrufe bleiben erhalten)"
   },
   "privacy": {
     "title": "Datenschutzerklärung",
