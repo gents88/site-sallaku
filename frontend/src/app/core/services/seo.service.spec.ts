@@ -83,4 +83,47 @@ describe('SeoService', () => {
     const ogLocale = document.querySelector('meta[property="og:locale"]');
     expect(ogLocale?.getAttribute('content')).toBe('sq_AL');
   });
+
+  describe('translated paths (blog slugs)', () => {
+    const alternatePaths = {
+      it: '/blog/blinisht-storia', en: '/blog/blinisht-history', sq: '/blog/blinishti-historia',
+      es: '/blog/blinisht-storia', pt: '/blog/blinisht-storia', fr: '/blog/blinisht-storia', de: '/blog/blinisht-storia',
+    };
+    const href = (lang: string) =>
+      document.querySelector(`link[rel="alternate"][hreflang="${lang}"]`)?.getAttribute('href');
+
+    it('points each hreflang at that language\'s own slug', () => {
+      const seo = configure();
+      routerStub.url = '/sq/blog/blinishti-historia';
+
+      seo.update({ title: 'Blinishti', alternatePaths });
+
+      expect(href('sq')).toBe('https://gentsallaku.it/sq/blog/blinishti-historia');
+      expect(href('en')).toBe('https://gentsallaku.it/en/blog/blinisht-history');
+      expect(href('de')).toBe('https://gentsallaku.it/de/blog/blinisht-storia');
+      expect(href('it')).toBe('https://gentsallaku.it/blog/blinisht-storia');
+      expect(href('x-default')).toBe('https://gentsallaku.it/blog/blinisht-storia');
+    });
+
+    it('exposes the translated path to the language switcher only while still on that page', () => {
+      const seo = configure();
+      routerStub.url = '/sq/blog/blinishti-historia';
+      seo.update({ title: 'Blinishti', alternatePaths });
+
+      expect(seo.alternatePath('en')).toBe('/blog/blinisht-history');
+
+      routerStub.url = '/sq/blog';
+      expect(seo.alternatePath('en')).toBeNull();
+    });
+
+    it('forgets the translated paths when the next page declares none', () => {
+      const seo = configure();
+      routerStub.url = '/sq/blog/blinishti-historia';
+      seo.update({ title: 'Blinishti', alternatePaths });
+      seo.update({ title: 'Same URL, no alternates' });
+
+      expect(seo.alternatePath('en')).toBeNull();
+      expect(href('en')).toBe('https://gentsallaku.it/en/blog/blinishti-historia');
+    });
+  });
 });

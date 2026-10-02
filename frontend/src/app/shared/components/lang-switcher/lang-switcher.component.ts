@@ -2,6 +2,7 @@ import { Component, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LanguageService, Lang, SUPPORTED_LANGS, stripLangPrefix, withLangPrefix } from '../../../core/services/language.service';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-lang-switcher',
@@ -97,7 +98,7 @@ export class LangSwitcherComponent {
   private readonly _open = signal(false);
   readonly open = this._open.asReadonly();
 
-  constructor(public lang: LanguageService, private router: Router) {}
+  constructor(public lang: LanguageService, private router: Router, private seo: SeoService) {}
 
   toggle(): void { this._open.update(v => !v); }
 
@@ -122,7 +123,9 @@ export class LangSwitcherComponent {
       if (code === 'it') {
         this.lang.persistChoice('it');
       }
-      const targetUrl = withLangPrefix(basePath, code);
+      // Pages with translated paths (blog posts: /blog/<slug_xx>) declare
+      // each language's path via SeoService; everything else keeps basePath.
+      const targetUrl = withLangPrefix(this.seo.alternatePath(code) ?? basePath, code);
       this.router.navigateByUrl(targetUrl).then(() => {
         this._open.set(false);
       }).catch(() => {
