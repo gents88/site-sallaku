@@ -1,5 +1,6 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 import { NON_DEFAULT_LANGS } from './core/services/language.service';
+import { readPrerenderBlogPosts } from './prerender-blog-posts';
 
 // Public AI/PDF tool pages under /lab — pre-rendered at build time so the
 // static FileZilla deploy ships real HTML (title/meta/JSON-LD) for crawlers
@@ -41,6 +42,12 @@ const API_BASE_URL = process.env['SITEMAP_API_URL']
   || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
 
 async function fetchBlogSlugs(): Promise<{ slug: string }[]> {
+  // Prefer the posts scripts/prefetch-blog-posts.js already downloaded before
+  // the build — same source the prerendered pages render from, and no extra
+  // API traffic. Falls back to the live API when the cache is missing/empty.
+  const prefetched = readPrerenderBlogPosts();
+  if (prefetched.length) return prefetched.map(p => ({ slug: p.slug }));
+
   const slugs: { slug: string }[] = [];
   let page = 1;
   let totalPages = 1;
