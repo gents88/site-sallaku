@@ -417,6 +417,18 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     });
   }
 
+  /** Moves a published post back to draft; viewCount and publishedAt are kept server-side. */
+  unpublish(post: Post): void {
+    this.blogService.update(post._id, { published: false }).subscribe({
+      next: updated => {
+        this.posts = this.posts.map(p => (p._id === post._id ? { ...p, published: updated.published } : p));
+        this.cdr.markForCheck();
+        this.snackBar.open(this.t.instant('blog_manage.unpublished_msg'), this.t.instant('common.close'), { duration: 3000 });
+      },
+      error: error => this.snackBar.open(this.resolveSaveError(error), this.t.instant('common.close'), { duration: 4500 }),
+    });
+  }
+
   delete(id: string): void {
     if (!confirm(this.t.instant('blog_manage.confirm_delete'))) return;
     this.blogService.remove(id).subscribe({

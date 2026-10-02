@@ -348,6 +348,9 @@
           </div>
           <div class="list-item__actions">
             <a mat-icon-button [routerLink]="['/dashboard/blog/preview', post._id]" target="_blank" [matTooltip]="'blog_manage.action_preview' | translate"><mat-icon>visibility</mat-icon></a>
+            @if (post.published) {
+              <button mat-icon-button (click)="unpublish(post)" [matTooltip]="'blog_manage.action_unpublish' | translate"><mat-icon>unpublished</mat-icon></button>
+            }
             <button mat-icon-button (click)="openEdit(post)" [matTooltip]="'common.edit' | translate"><mat-icon>edit</mat-icon></button>
             <button mat-icon-button color="warn" (click)="delete(post._id)" [matTooltip]="'common.delete' | translate"><mat-icon>delete</mat-icon></button>
           </div>

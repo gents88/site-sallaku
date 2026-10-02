@@ -657,7 +657,8 @@
       "instagram": "Condividi su Instagram",
       "copyLink": "Copia link",
       "linkCopied": "Link copiato!"
-    }
+    },
+    "reading_time": "{{count}} min di lettura"
   },
   "notes": {
     "title": "Note dei lettori",
@@ -1768,7 +1769,9 @@
     "cover_data_url_unsupported": "Usa un URL immagine per la copertina. Il caricamento diretto del file non è supportato.",
     "err_payload_too_large": "Contenuto troppo grande. Rimuovi le immagini incorporate e usa URL immagine.",
     "err_session_expired": "Sessione scaduta. Effettua di nuovo l'accesso.",
-    "err_save_failed_default": "Salvataggio non riuscito. Controlla titolo, contenuto e slug."
+    "err_save_failed_default": "Salvataggio non riuscito. Controlla titolo, contenuto e slug.",
+    "action_unpublish": "Metti in bozza",
+    "unpublished_msg": "Articolo riportato in bozza (letture conservate)"
   },
   "privacy": {
     "title": "Privacy Policy",

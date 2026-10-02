@@ -111,8 +111,26 @@ describe('BlogDetailComponent publish from preview', () => {
     expect(component.post?.published).toBe(true);
   });
 
-  it('hides the Publish button when the article is already published', () => {
+  it('shows "Metti in bozza" instead of Publish when the article is already published', () => {
     const { fixture } = createPreview(true);
-    expect(fixture.nativeElement.querySelector('.post-article__toolbar button')).toBeNull();
+    const btn = fixture.nativeElement.querySelector('.post-article__toolbar button');
+    expect(btn.textContent).toContain('Metti in bozza');
+    expect(btn.textContent).not.toContain('Publish');
+  });
+
+  it('moves a published article back to draft keeping the view count', () => {
+    const { fixture, component, blogService } = createPreview(true);
+    (component.post as any).viewCount = 42;
+    blogService.update.mockReturnValue(of({ published: false, publishedAt: '2026-01-01T00:00:00Z' } as any));
+    expect(fixture.nativeElement.querySelector('.post-article__toolbar button')).toBeTruthy();
+    component.unpublish();
+    expect(blogService.update).toHaveBeenCalledWith('1', { published: false });
+    expect(component.post?.published).toBe(false);
+    expect(component.post?.viewCount).toBe(42);
+  });
+
+  it('computes an estimated reading time of at least one minute', () => {
+    const { component } = createPreview(true);
+    expect(component.readingMinutes).toBeGreaterThanOrEqual(1);
   });
 });

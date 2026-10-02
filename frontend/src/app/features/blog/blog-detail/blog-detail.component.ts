@@ -16,6 +16,7 @@ import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.comp
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
+import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
@@ -109,6 +110,11 @@ export class BlogDetailComponent implements OnInit {
     return this.post.content;
   }
 
+  /** Estimated reading time of the content in the current language. */
+  get readingMinutes(): number {
+    return estimateReadingMinutes(this.localizedContent);
+  }
+
   constructor(
     private blogService: BlogService,
     private seo: SeoService,
@@ -119,19 +125,22 @@ export class BlogDetailComponent implements OnInit {
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
   }
 
-  /** Publishes the draft being previewed (admin preview route only). */
-  publish(): void {
+  /** Publishes the draft being previewed, or moves a published post back to draft (admin preview route only). */
+  publish(): void { this.setPublished(true); }
+  unpublish(): void { this.setPublished(false); }
+
+  private setPublished(published: boolean): void {
     if (!this.post || this.publishing) return;
     this.publishing = true;
-    this.blogService.update(this.post._id, { published: true }).pipe(
+    this.blogService.update(this.post._id, { published }).pipe(
       finalize(() => { this.publishing = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: updated => {
         this.post = { ...this.post!, published: updated.published, publishedAt: updated.publishedAt, updatedAt: updated.updatedAt };
-        this.snackBar.open('Articolo pubblicato', undefined, { duration: 3000 });
+        this.snackBar.open(published ? 'Articolo pubblicato' : 'Articolo riportato in bozza (letture conservate)', undefined, { duration: 3000 });
         this.cdr.markForCheck();
       },
-      error: () => this.snackBar.open('Pubblicazione non riuscita', undefined, { duration: 4000 }),
+      error: () => this.snackBar.open(published ? 'Pubblicazione non riuscita' : 'Operazione non riuscita', undefined, { duration: 4000 }),
     });
   }
 

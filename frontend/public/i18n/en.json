@@ -657,7 +657,8 @@
       "instagram": "Share on Instagram",
       "copyLink": "Copy link",
       "linkCopied": "Link copied!"
-    }
+    },
+    "reading_time": "{{count}} min read"
   },
   "notes": {
     "title": "Reader notes",
@@ -1768,7 +1769,9 @@
     "cover_data_url_unsupported": "Use an image URL for cover. Direct file upload is not supported.",
     "err_payload_too_large": "Payload too large. Remove inline images and use image URLs instead.",
     "err_session_expired": "Session expired. Please log in again.",
-    "err_save_failed_default": "Save failed. Check title, content and slug."
+    "err_save_failed_default": "Save failed. Check title, content and slug.",
+    "action_unpublish": "Move to draft",
+    "unpublished_msg": "Article moved back to draft (views kept)"
   },
   "privacy": {
     "title": "Privacy Policy",

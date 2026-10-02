@@ -188,8 +188,10 @@ export class BlogService implements OnApplicationBootstrap {
 
     await this.fillLocalizedSlugs(update, existing.toObject(), id);
 
-    if (dto.published !== undefined) {
-      update.publishedAt = dto.published ? existing.publishedAt || new Date() : null;
+    // Publishing stamps the date once; going back to draft keeps it (and viewCount,
+    // which is never part of the update) so re-publishing restores the article as it was.
+    if (dto.published) {
+      update.publishedAt = existing.publishedAt || new Date();
     }
 
     const post = await this.postModel.findByIdAndUpdate(id, update, { new: true }).exec();
