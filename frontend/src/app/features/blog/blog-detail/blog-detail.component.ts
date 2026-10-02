@@ -2,6 +2,7 @@ import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component,
 import { CommonModule, Location, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
@@ -47,6 +48,8 @@ export class BlogDetailComponent implements OnInit {
   private readonly injector = inject(Injector);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly location = inject(Location);
+  private readonly snackBar = inject(MatSnackBar);
+  publishing = false;
   readonly currentLang = this.langService.current;
 
   /** Returns the title in the current portal language, falling back to Italian. */
@@ -114,6 +117,22 @@ export class BlogDetailComponent implements OnInit {
   ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+  }
+
+  /** Publishes the draft being previewed (admin preview route only). */
+  publish(): void {
+    if (!this.post || this.publishing) return;
+    this.publishing = true;
+    this.blogService.update(this.post._id, { published: true }).pipe(
+      finalize(() => { this.publishing = false; this.cdr.markForCheck(); }),
+    ).subscribe({
+      next: updated => {
+        this.post = { ...this.post!, published: updated.published, publishedAt: updated.publishedAt, updatedAt: updated.updatedAt };
+        this.snackBar.open('Articolo pubblicato', undefined, { duration: 3000 });
+        this.cdr.markForCheck();
+      },
+      error: () => this.snackBar.open('Pubblicazione non riuscita', undefined, { duration: 4000 }),
+    });
   }
 
   private highlightCode(): void {

@@ -77,3 +77,42 @@ describe('BlogDetailComponent view tracking', () => {
     });
   });
 });
+
+describe('BlogDetailComponent publish from preview', () => {
+  function createPreview(published: boolean) {
+    const draft = { ...post, published } as Post;
+    const blogService = {
+      getOne: vi.fn(() => of(draft)),
+      update: vi.fn(() => of({ ...draft, published: true, publishedAt: '2026-10-02T00:00:00Z' })),
+    };
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        provideRouter([]),
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: BlogService, useValue: blogService },
+        { provide: SeoService, useValue: { update: vi.fn() } },
+        { provide: LanguageService, useValue: { current: () => 'it' } },
+      ],
+    });
+    const fixture = TestBed.createComponent(BlogDetailComponent);
+    fixture.componentInstance.id = '1';
+    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
+    return { fixture, component: fixture.componentInstance, blogService };
+  }
+
+  it('shows the Publish button for a draft and publishes it', () => {
+    const { fixture, component, blogService } = createPreview(false);
+    const btn = fixture.nativeElement.querySelector('.post-article__toolbar button');
+    expect(btn).toBeTruthy();
+    component.publish();
+    expect(blogService.update).toHaveBeenCalledWith('1', { published: true });
+    expect(component.post?.published).toBe(true);
+  });
+
+  it('hides the Publish button when the article is already published', () => {
+    const { fixture } = createPreview(true);
+    expect(fixture.nativeElement.querySelector('.post-article__toolbar button')).toBeNull();
+  });
+});
