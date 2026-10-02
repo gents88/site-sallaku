@@ -15,6 +15,28 @@ export class Post {
   @Prop({ unique: true })
   slug: string;
 
+  // Per-language URL slugs, generated once from title_xx (see
+  // BlogService.fillLocalizedSlugs) so /sq/blog/... carries an Albanian
+  // slug instead of the Italian one. Never regenerated once set: changing
+  // them would break links already shared. Empty → falls back to `slug`.
+  @Prop({ default: '' })
+  slug_en: string;
+
+  @Prop({ default: '' })
+  slug_sq: string;
+
+  @Prop({ default: '' })
+  slug_pt: string;
+
+  @Prop({ default: '' })
+  slug_es: string;
+
+  @Prop({ default: '' })
+  slug_fr: string;
+
+  @Prop({ default: '' })
+  slug_de: string;
+
   @Prop({ required: true })
   content: string;
 

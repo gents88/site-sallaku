@@ -1,5 +1,5 @@
-import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject, effect } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject, effect, PLATFORM_ID } from '@angular/core';
+import { CommonModule, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, timeout } from 'rxjs';
@@ -45,6 +45,7 @@ export class BlogDetailComponent implements OnInit {
   private readonly el = inject(ElementRef);
   private readonly prismService = inject(PrismService);
   private readonly injector = inject(Injector);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   readonly currentLang = this.langService.current;
 
   /** Returns the title in the current portal language, falling back to Italian. */
@@ -143,8 +144,12 @@ export class BlogDetailComponent implements OnInit {
         afterNextRender(() => this.highlightCode(), { injector: this.injector });
         this.cdr.markForCheck();
         if (this.isPreview) return; // no view tracking, canonical tags, or JSON-LD for an unpublished draft
-        // Fire-and-forget: increment view count without blocking rendering
-        this.blogService.trackView(post.slug).subscribe({ error: () => {} });
+        // Fire-and-forget: increment view count without blocking rendering.
+        // Browser only — prerendering every post × language used to count
+        // ~300 fake views per build (and eat into the backend throttle).
+        if (this.isBrowser) {
+          this.blogService.trackView(post.slug).subscribe({ error: () => {} });
+        }
         // Self-referencing canonical: previously always pointed at the
         // Italian URL regardless of currentLang(), which was wrong for
         // every non-IT visitor/crawler once /en/, /es/... URLs became real.

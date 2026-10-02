@@ -258,6 +258,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.showForm = true;
     this.setupAutoSave();
     this.setupSlugFromTitle();
+    this.scrollToTop();
   }
 
   openEdit(post: Post): void {
@@ -285,6 +286,14 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.showForm = true;
     this.setupAutoSave();
     this.setupSlugFromTitle();
+    this.scrollToTop();
+  }
+
+  /** Il form sta sopra la lista: se si è scrollati in basso sembra che la penna non faccia nulla. */
+  private scrollToTop(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   closeForm(): void {
