@@ -657,7 +657,8 @@
       "instagram": "Partager sur Instagram",
       "copyLink": "Copier le lien",
       "linkCopied": "Lien copié !"
-    }
+    },
+    "reading_time": "{{count}} min de lecture"
   },
   "notes": {
     "title": "Notes des lecteurs",
@@ -1768,7 +1769,9 @@
     "cover_data_url_unsupported": "Utilisez une URL d'image pour la couverture. Le téléversement direct de fichier n'est pas pris en charge.",
     "err_payload_too_large": "Contenu trop volumineux. Retirez les images intégrées et utilisez des URL d'image.",
     "err_session_expired": "Session expirée. Veuillez vous reconnecter.",
-    "err_save_failed_default": "Échec de l'enregistrement. Vérifiez le titre, le contenu et le slug."
+    "err_save_failed_default": "Échec de l'enregistrement. Vérifiez le titre, le contenu et le slug.",
+    "action_unpublish": "Repasser en brouillon",
+    "unpublished_msg": "Article remis en brouillon (vues conservées)"
   },
   "privacy": {
     "title": "Politique de confidentialité",

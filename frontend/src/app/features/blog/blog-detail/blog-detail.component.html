@@ -24,6 +24,10 @@
           <button type="button" class="btn btn-primary btn-sm" (click)="publish()" [disabled]="publishing">
             <mat-icon>publish</mat-icon> {{ publishing ? 'Pubblicazione…' : 'Publish' }}
           </button>
+        } @else {
+          <button type="button" class="btn btn-sm" (click)="unpublish()" [disabled]="publishing">
+            <mat-icon>unpublished</mat-icon> Metti in bozza
+          </button>
         }
       </div>
     } @else {
@@ -42,11 +46,15 @@
       </div>
       <h1>{{ localizedTitle }}</h1>
       <p class="text-muted post-article__meta">
-        @if (post.publishedAt) {
+        @if (post.published && post.publishedAt) {
           <time [dateTime]="post.publishedAt">{{ post.publishedAt | date:'longDate' }}</time>
         } @else {
           <time [dateTime]="post.updatedAt">Bozza — ultimo salvataggio {{ post.updatedAt | date:'longDate' }}</time>
         }
+        <span class="post-article__views">
+          <mat-icon aria-hidden="true">schedule</mat-icon>
+          {{ 'blog.reading_time' | translate: { count: readingMinutes } }}
+        </span>
         @if (post.viewCount != null) {
           <span class="post-article__views">
             <mat-icon aria-hidden="true">visibility</mat-icon>

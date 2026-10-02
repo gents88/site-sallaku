@@ -657,7 +657,8 @@
       "instagram": "Shpërndaje në Instagram",
       "copyLink": "Kopjo lidhjen",
       "linkCopied": "Lidhja u kopjua!"
-    }
+    },
+    "reading_time": "{{count}} min lexim"
   },
   "notes": {
     "title": "Shënime nga lexuesit",
@@ -1768,7 +1769,9 @@
     "cover_data_url_unsupported": "Përdor një URL imazhi për kopertinën. Ngarkimi direkt i skedarit nuk mbështetet.",
     "err_payload_too_large": "Përmbajtja shumë e madhe. Hiq imazhet e ngulitura dhe përdor URL imazhesh.",
     "err_session_expired": "Sesioni skadoi. Identifikohu përsëri.",
-    "err_save_failed_default": "Ruajtja dështoi. Kontrollo titullin, përmbajtjen dhe slug-un."
+    "err_save_failed_default": "Ruajtja dështoi. Kontrollo titullin, përmbajtjen dhe slug-un.",
+    "action_unpublish": "Kthe në draft",
+    "unpublished_msg": "Artikulli u kthye në draft (leximet u ruajtën)"
   },
   "privacy": {
     "title": "Politika e Privatësisë",

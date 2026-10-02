@@ -208,6 +208,20 @@ describe('BlogService', () => {
   // ── update ──────────────────────────────────────────────────────────────────
 
   describe('update', () => {
+    it('keeps publishedAt and never touches viewCount when moving a post back to draft', async () => {
+      const publishedAt = new Date('2025-01-01');
+      const existing = { ...makePost({ published: true, publishedAt, viewCount: 42 }), toObject() { return this; } };
+      modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
+      modelMock.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
+
+      await service.update('1', { published: false } as any);
+
+      const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
+      expect(update.published).toBe(false);
+      expect(update).not.toHaveProperty('publishedAt');
+      expect(update).not.toHaveProperty('viewCount');
+    });
+
     it('never regenerates a per-language slug that already exists', async () => {
       const existing = { ...makePost(), title_sq: 'Titull i vjetër', slug_sq: 'titull-i-vjeter', toObject() { return this; } };
       modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
