@@ -1031,6 +1031,20 @@
   </url>
 
   <url>
+    <loc>https://gentsallaku.it/blog/colloqui-tecnici-era-ia-domande-classiche-hanno-ancora-senso</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
     <loc>https://gentsallaku.it/blog/collegare-strumenti-pdf-senza-scaricare-e-ricaricare</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
@@ -1103,6 +1117,13 @@
   <url>
     <loc>https://gentsallaku.it/blog/perche-il-blog-non-viene-indicizzato-da-google</loc>
     <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -1340,6 +1361,90 @@
 
   <url>
     <loc>https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/technical-interviews-in-the-ai-era-do-classic-questions-still-make-sense</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/intervistat-teknike-ne-epoken-e-ia-se-a-kane-ende-kuptim-pyetjet-klasike</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/entrevistas-tecnicas-en-la-era-de-la-ia-siguen-teniendo-sentido-las-preguntas-clasicas</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/entrevistas-tecnicas-na-era-da-ia-as-perguntas-classicas-ainda-fazem-sentido</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/entretiens-techniques-a-l-ere-de-l-ia-les-questions-classiques-ont-elles-encore-un-sens</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/technische-vorstellungsgesprache-im-ki-zeitalter-haben-klassische-fragen-noch-sinn</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
     <lastmod>2026-10-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
@@ -1803,6 +1908,48 @@
   <url>
     <loc>https://gentsallaku.it/de/blog/warum-mein-angular-blog-nicht-von-google-indiziert-wird-und-wie-ich-das-problem-behoben-habe</loc>
     <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
