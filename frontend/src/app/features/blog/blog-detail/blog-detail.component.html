@@ -18,7 +18,14 @@
   <article class="container section post-article">
     <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
     @if (isPreview) {
-      <a routerLink="/dashboard/blog" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+      <div class="post-article__toolbar">
+        <a routerLink="/dashboard/blog" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
+        @if (!post.published) {
+          <button type="button" class="btn btn-primary btn-sm" (click)="publish()" [disabled]="publishing">
+            <mat-icon>publish</mat-icon> {{ publishing ? 'Pubblicazione…' : 'Publish' }}
+          </button>
+        }
+      </div>
     } @else {
       <a [routerLink]="'/blog' | langUrl" class="back-link" appTrackClick eventType="blog" label="blog_back_link"><mat-icon>arrow_back</mat-icon> All posts</a>
     }
@@ -50,6 +57,14 @@
     </header>
 
     <div class="post-article__content prose" [innerHTML]="localizedContent"></div>
+
+    @if (isPreview && !post.published) {
+      <div class="post-article__publish-bottom">
+        <button type="button" class="btn btn-primary" (click)="publish()" [disabled]="publishing">
+          <mat-icon>publish</mat-icon> {{ publishing ? 'Pubblicazione…' : 'Publish' }}
+        </button>
+      </div>
+    }
 
     @if (!isPreview) {
       <app-social-share [url]="pageUrl" [title]="localizedTitle" />
