@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
-import { PostSummary } from '../../../core/models/post.model';
+import { PostSummary, localizedSlug } from '../../../core/models/post.model';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
@@ -97,6 +97,11 @@ export class BlogListComponent implements OnInit {
       },
       error: () => {},
     });
+  }
+
+  /** URL slug in the current language, so /sq/blog/... links carry the Albanian slug. */
+  postSlug(post: PostSummary): string {
+    return localizedSlug(post, this.currentLang());
   }
 
   getLocalizedTitle(post: PostSummary): string {

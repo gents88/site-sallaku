@@ -1,6 +1,9 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 import { NON_DEFAULT_LANGS } from './core/services/language.service';
 import { readPrerenderBlogPosts } from './prerender-blog-posts';
+import { Post, localizedSlug } from './core/models/post.model';
+
+type PostSlugs = Pick<Post, 'slug' | 'slug_en' | 'slug_sq' | 'slug_pt' | 'slug_es' | 'slug_fr' | 'slug_de'>;
 
 // Public AI/PDF tool pages under /lab — pre-rendered at build time so the
 // static FileZilla deploy ships real HTML (title/meta/JSON-LD) for crawlers
@@ -41,14 +44,14 @@ const API_BASE_URL = process.env['SITEMAP_API_URL']
   || process.env['API_BASE_URL']
   || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
 
-async function fetchBlogSlugs(): Promise<{ slug: string }[]> {
+async function fetchBlogPosts(): Promise<PostSlugs[]> {
   // Prefer the posts scripts/prefetch-blog-posts.js already downloaded before
   // the build — same source the prerendered pages render from, and no extra
   // API traffic. Falls back to the live API when the cache is missing/empty.
   const prefetched = readPrerenderBlogPosts();
-  if (prefetched.length) return prefetched.map(p => ({ slug: p.slug }));
+  if (prefetched.length) return prefetched;
 
-  const slugs: { slug: string }[] = [];
+  const posts: PostSlugs[] = [];
   let page = 1;
   let totalPages = 1;
 
@@ -59,7 +62,7 @@ async function fetchBlogSlugs(): Promise<{ slug: string }[]> {
       const json = await res.json();
 
       for (const post of json.data ?? []) {
-        if (post.slug) slugs.push({ slug: post.slug });
+        if (post.slug) posts.push(post);
       }
 
       totalPages = json.totalPages ?? 1;
@@ -70,7 +73,7 @@ async function fetchBlogSlugs(): Promise<{ slug: string }[]> {
     return [];
   }
 
-  return slugs;
+  return posts;
 }
 
 export const serverRoutes: ServerRoute[] = [
@@ -94,20 +97,23 @@ export const serverRoutes: ServerRoute[] = [
     path: 'blog/:slug',
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
-      return fetchBlogSlugs();
+      return (await fetchBlogPosts()).map(p => ({ slug: p.slug }));
     },
   },
-  // /en/blog/some-slug, /es/blog/some-slug, ... — cross-join of every
-  // published post × the 6 non-default languages. Each Post already has
-  // title_en/content_en/excerpt_en (etc.) fields populated and verified
-  // this session; this is what finally makes them reachable by crawlers
-  // instead of only by client-side language switching.
+  // /en/blog/<slug_en>, /sq/blog/<slug_sq>, ... — every published post ×
+  // the 6 non-default languages, each under its translated slug. The
+  // Italian slug is ALSO prerendered under every language prefix: links
+  // like /sq/blog/<italian-slug> were already shared before slugs were
+  // translated, and must keep serving real og: tags (their canonical/og:url
+  // point at the translated slug).
   {
     path: ':lang/blog/:slug',
     renderMode: RenderMode.Prerender,
     async getPrerenderParams() {
-      const slugs = await fetchBlogSlugs();
-      return NON_DEFAULT_LANGS.flatMap(lang => slugs.map(s => ({ lang, slug: s.slug })));
+      const posts = await fetchBlogPosts();
+      return NON_DEFAULT_LANGS.flatMap(lang => posts.flatMap(p =>
+        [...new Set([localizedSlug(p, lang), p.slug])].map(slug => ({ lang, slug })),
+      ));
     },
   },
   { path: '**', renderMode: RenderMode.Server },

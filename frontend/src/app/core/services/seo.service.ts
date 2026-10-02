@@ -39,6 +39,12 @@ interface SeoData {
   type?: string;
   /** BCP-47 locale for og:locale, e.g. 'it_IT', 'en_US', 'sq_AL'. Defaults to the current route's language (see LOCALE_MAP). */
   locale?: string;
+  /**
+   * Language-neutral path of this page in every language, for pages whose
+   * path itself is translated (blog posts: /blog/<slug_xx>). Drives hreflang
+   * and the language switcher. Omitted → same basePath in every language.
+   */
+  alternatePaths?: Record<Lang, string>;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -48,6 +54,8 @@ export class SeoService {
     'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.';
   private readonly defaultImage = 'https://gentsallaku.it/assets/og-image.png';
   private lastTrackedPath: string | null = null;
+  /** alternatePaths of the page they were declared for (see alternatePath()). */
+  private alternates: { forPath: string; paths: Record<Lang, string> } | null = null;
 
   constructor(
     private title: Title,
@@ -82,6 +90,7 @@ export class SeoService {
     const image       = data.image || this.defaultImage;
     const currentPath = this.router.url.split('?')[0];
     const { lang: currentLang, basePath } = stripLangPrefix(currentPath);
+    this.alternates = data.alternatePaths ? { forPath: currentPath, paths: data.alternatePaths } : null;
     const canonicalUrl = data.url ?? `${SITE_ORIGIN}${withLangPrefix(basePath, currentLang)}`;
     const locale      = data.locale ?? LOCALE_MAP[currentLang];
 
@@ -97,7 +106,7 @@ export class SeoService {
     if (HOMEPAGE_ALIAS_BASE_PATHS.has(basePath)) {
       this.removeHreflang();
     } else {
-      this.updateHreflang(currentPath);
+      this.updateHreflang(currentPath, data.alternatePaths);
     }
 
     // Open Graph
@@ -191,7 +200,18 @@ export class SeoService {
    * so it's stripped back to the language-neutral basePath first to avoid
    * double-prefixing (e.g. /en/en/blog/foo).
    */
-  private updateHreflang(path: string): void {
+  /**
+   * Language-neutral path of the CURRENT page in `lang`, when the page
+   * declared translated paths (blog posts). Null otherwise, or when the
+   * declaration belongs to a page we've since navigated away from.
+   */
+  alternatePath(lang: Lang): string | null {
+    const currentPath = this.router.url.split('?')[0].split('#')[0];
+    if (!this.alternates || this.alternates.forPath !== currentPath) return null;
+    return this.alternates.paths[lang] ?? null;
+  }
+
+  private updateHreflang(path: string, alternatePaths?: Record<Lang, string>): void {
     // Runs on both server (prerender) and browser: the prerendered HTML is
     // what crawlers actually receive, so hreflang must be present there too,
     // not just injected client-side after bootstrap.
@@ -216,8 +236,9 @@ export class SeoService {
       el.setAttribute('href', href);
     };
 
-    setHref('x-default', `${SITE_ORIGIN}${basePath}`);
-    allLangs.forEach(lang => setHref(lang, `${SITE_ORIGIN}${withLangPrefix(basePath, lang)}`));
+    const pathFor = (lang: Lang) => alternatePaths?.[lang] ?? basePath;
+    setHref('x-default', `${SITE_ORIGIN}${pathFor('it')}`);
+    allLangs.forEach(lang => setHref(lang, `${SITE_ORIGIN}${withLangPrefix(pathFor(lang), lang)}`));
   }
 
   /** Strips all hreflang alternate tags — used on pages that don't self-canonicalize (see HOMEPAGE_ALIAS_BASE_PATHS). */
