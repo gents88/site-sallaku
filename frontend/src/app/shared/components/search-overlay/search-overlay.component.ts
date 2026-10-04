@@ -9,7 +9,7 @@ import { SearchOverlayService } from '../../../core/services/search-overlay.serv
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { NAV_REGISTRY, NavEntry } from '../../../core/navigation/nav-registry';
-import { NavIconComponent } from '../nav-icon/nav-icon.component';
+import { NavIconComponent, navIconColor } from '../nav-icon/nav-icon.component';
 import { PaletteItem, PaletteSection, filterLocal, mergeSections } from './palette-items';
 
 const MIN_REMOTE_QUERY = 2;
@@ -47,6 +47,7 @@ export class SearchOverlayComponent {
   readonly loading = signal(false);
   readonly activeIndex = signal(0);
   readonly minRemote = MIN_REMOTE_QUERY;
+  readonly iconColor = navIconColor;
 
   private readonly isAdmin = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
 

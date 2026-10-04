@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 /**
  * Icone di navigazione come SVG inline a tratto (24×24, stroke currentColor).
@@ -54,6 +55,28 @@ export const NAV_ICONS: Record<string, string> = {
   palette: '<path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.2 0 1.8-.8 1.8-1.7 0-1.2-1-1.5-1-2.6 0-1 .8-1.7 1.8-1.7h2.2a3.7 3.7 0 0 0 3.7-3.7C20.5 7 16.7 3.5 12 3.5z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.5" r="1"/><circle cx="14.5" cy="7.5" r="1"/>',
 };
 
+/**
+ * Colore di ogni icona di navigazione: le vecchie emoji erano colorate e il
+ * colore aiuta a riconoscere le voci a colpo d'occhio, soprattutto nella rail
+ * collassata. Tinte a media saturazione, leggibili su tema chiaro e scuro.
+ * Chi vuole l'icona colorata imposta `color` sul contenitore (vedi navIconColor);
+ * altrove l'icona eredita il colore del testo (currentColor).
+ */
+export const NAV_ICON_COLORS: Record<string, string> = {
+  home: '#3b82f6', user: '#3b82f6', users: '#8b5cf6', layers: '#8b5cf6', grid: '#6366f1',
+  briefcase: '#d97706', timeline: '#06b6d4', sparkles: '#d97706', mail: '#ef4444', inbox: '#0ea5e9',
+  send: '#ec4899', chat: '#14b8a6', article: '#10b981', star: '#f59e0b', shield: '#64748b',
+  flask: '#8b5cf6', rocket: '#f97316', dashboard: '#6366f1', 'search-doc': '#3b82f6', books: '#d97706',
+  summary: '#0d9488', globe: '#06b6d4', slides: '#f97316', puzzle: '#22c55e', folder: '#f59e0b',
+  pen: '#ec4899', eye: '#0ea5e9', pencil: '#ca8a04', swap: '#22c55e', 'text-scan': '#6366f1',
+  camera: '#f43f5e', palette: '#ec4899', logout: '#ef4444', sun: '#f59e0b', moon: '#818cf8', monitor: '#64748b',
+};
+
+/** Colore dell'icona, o null per lasciarle il colore del testo. */
+export function navIconColor(name: string): string | null {
+  return Object.prototype.hasOwnProperty.call(NAV_ICON_COLORS, name) ? NAV_ICON_COLORS[name] : null;
+}
+
 /** Icona di fallback se un nome non è (ancora) nella mappa: un punto, mai un riquadro vuoto. */
 const FALLBACK = '<circle cx="12" cy="12" r="2.5"/>';
 
@@ -70,7 +93,17 @@ export class NavIconComponent {
   readonly name = input.required<string>();
   readonly size = input(18);
 
-  // Markup statico e interno (NAV_ICONS), mai input utente: il sanitizer di
-  // Angular lascia passare questi elementi SVG semplici senza bypass.
-  readonly markup = computed(() => NAV_ICONS[this.name()] ?? FALLBACK);
+  private readonly sanitizer = inject(DomSanitizer);
+
+  /**
+   * Il sanitizer HTML di Angular elimina gli elementi SVG (<path>, <circle>…):
+   * con un [innerHTML] normale le icone restavano vuote. Il bypass è sicuro
+   * perché il markup viene solo da NAV_ICONS, costante interna indicizzata
+   * per nome: l'input `name` sceglie una chiave, non fornisce mai markup.
+   */
+  readonly markup = computed<SafeHtml>(() => {
+    const name = this.name();
+    const svg = Object.prototype.hasOwnProperty.call(NAV_ICONS, name) ? NAV_ICONS[name] : FALLBACK;
+    return this.sanitizer.bypassSecurityTrustHtml(svg);
+  });
 }

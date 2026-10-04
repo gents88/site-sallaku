@@ -6,7 +6,7 @@ import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { sidebarGroups } from '../../../core/navigation/nav-registry';
-import { NavIconComponent } from '../../../shared/components/nav-icon/nav-icon.component';
+import { NavIconComponent, navIconColor } from '../../../shared/components/nav-icon/nav-icon.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 
 interface ToolCard {
@@ -57,8 +57,8 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
         </h2>
         <div class="cards-grid">
           @for (card of aiCards; track card.id) {
-            <a [routerLink]="card.route | langUrl" class="tool-card">
-              <div class="card-icon" aria-hidden="true"><app-nav-icon [name]="card.icon" [size]="24" /></div>
+            <a [routerLink]="card.route | langUrl" class="tool-card icon-tile--lift">
+              <div class="card-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(card.icon)"><app-nav-icon [name]="card.icon" [size]="22" /></div>
               <div class="card-body">
                 <h3>{{ card.titleKey | translate }}</h3>
                 <p>{{ card.descKey | translate }}</p>
@@ -78,8 +78,8 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
         </h2>
         <div class="cards-grid">
           @for (card of toolCards; track card.id) {
-            <a [routerLink]="card.route | langUrl" class="tool-card tool-card--secondary">
-              <div class="card-icon" aria-hidden="true"><app-nav-icon [name]="card.icon" [size]="24" /></div>
+            <a [routerLink]="card.route | langUrl" class="tool-card tool-card--secondary icon-tile--lift">
+              <div class="card-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(card.icon)"><app-nav-icon [name]="card.icon" [size]="22" /></div>
               <div class="card-body">
                 <h3>{{ card.titleKey | translate }}</h3>
                 <p>{{ card.descKey | translate }}</p>
@@ -201,14 +201,11 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
     }
 
     .card-icon {
-      color: var(--primary-400, #8b8bff); flex-shrink: 0;
+      flex-shrink: 0;
       width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(108,99,255,.1); border-radius: 10px;
-    }
-
-    .tool-card--secondary .card-icon {
-      background: rgba(99,179,255,.08);
+      /* Aspetto 3D (gradiente, luce, ombra): .icon-tile in styles.scss. */
+      border-radius: 12px;
     }
 
     .card-body {
@@ -288,6 +285,7 @@ export class ToolsComponent implements OnInit {
     ]);
   }
 
+  readonly iconColor = navIconColor;
   readonly aiCards = cardsFor('ai');
   readonly toolCards = cardsFor('tools');
 }

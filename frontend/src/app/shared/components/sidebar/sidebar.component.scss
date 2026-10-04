@@ -264,9 +264,10 @@
     color: var(--accent-400, #a78bfa);
     font-weight: 600;
 
+    /* Voce attiva: anello del colore dell'icona attorno alla tessera 3D. */
     .nav-icon {
-      background: rgba(139, 92, 246, 0.22);
-      box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.3) inset;
+      outline: 2px solid color-mix(in srgb, var(--icon-color) 55%, transparent);
+      outline-offset: 2px;
     }
   }
 }
@@ -292,12 +293,7 @@
   flex-shrink: 0;
   border-radius: 9px;
   font-size: 1rem;
-  background: rgba(255, 255, 255, 0.045);
-  transition: background 0.15s ease, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.nav-item:hover .nav-icon {
-  transform: scale(1.12);
+  /* Aspetto (gradiente, luce, ombra, sollevamento in hover): .icon-tile in styles.scss. */
 }
 
 .nav-label {
@@ -343,6 +339,7 @@
   height: 30px;
   flex-shrink: 0;
   font-size: 1rem;
+  border-radius: 9px;
 }
 
 .cta-text {
@@ -501,9 +498,6 @@
     background: var(--bg-secondary, #f8fafc);
   }
 
-  .nav-icon {
-    background: rgba(15, 23, 42, 0.05);
-  }
 
   .rail-tooltip,
   .rail-tooltip::before {
