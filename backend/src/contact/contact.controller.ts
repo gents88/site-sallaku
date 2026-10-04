@@ -63,8 +63,9 @@ export class ContactController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'unreadOnly', required: false, type: Boolean })
-  findAll(@Query() { page, limit, unreadOnly }: ContactAdminQueryDto) {
-    return this.contactService.findPaginated({ page: page ?? 1, limit: limit ?? 20, unreadOnly });
+  @ApiQuery({ name: 'q', required: false, type: String })
+  findAll(@Query() { page, limit, unreadOnly, q }: ContactAdminQueryDto) {
+    return this.contactService.findPaginated({ page: page ?? 1, limit: limit ?? 20, unreadOnly, q });
   }
 
   @Post('bulk-delete')
