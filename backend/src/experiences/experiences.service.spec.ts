@@ -17,6 +17,7 @@ describe('ExperiencesService', () => {
       create: jest.fn(),
       findByIdAndUpdate: jest.fn(),
       findByIdAndDelete: jest.fn(),
+      bulkWrite: jest.fn().mockResolvedValue({}),
     };
     mockCache = {
       getOrSet: jest.fn((_key: string, factory: () => unknown) => factory()),
@@ -80,6 +81,17 @@ describe('ExperiencesService', () => {
 
       await service.remove('1');
 
+      expect(mockCache.invalidate).toHaveBeenCalledWith('experiences:all');
+    });
+  });
+  describe('reorder', () => {
+    it('writes the array index as `order` and invalidates the list cache', async () => {
+      await service.reorder(['x', 'y', 'z']);
+      expect(mockModel.bulkWrite).toHaveBeenCalledWith([
+        { updateOne: { filter: { _id: 'x' }, update: { $set: { order: 0 } } } },
+        { updateOne: { filter: { _id: 'y' }, update: { $set: { order: 1 } } } },
+        { updateOne: { filter: { _id: 'z' }, update: { $set: { order: 2 } } } },
+      ]);
       expect(mockCache.invalidate).toHaveBeenCalledWith('experiences:all');
     });
   });

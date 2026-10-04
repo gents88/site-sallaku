@@ -16,6 +16,7 @@ import { LanguageService, withLangPrefix } from '../../core/services/language.se
 import { About } from '../../core/models/about.model';
 import { Project } from '../../core/models/project.model';
 import { Experience } from '../../core/models/experience.model';
+import { hasCaseStudy, localizeExperience, localizeProject } from '../../core/models/localize-content';
 import { of } from 'rxjs';
 import { TrackClickDirective } from '../../shared/directives/track-click.directive';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
@@ -185,6 +186,23 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   get displayProjects(): ProjectItem[] {
     return this.staticProjects;
   }
+
+  /**
+   * Contenuti dal CMS, localizzati. Prima la home li scaricava a ogni visita
+   * ma mostrava sempre quelli statici: ora, se l'admin ne ha inseriti, sono
+   * questi a comparire (con fallback statico finché il DB è vuoto).
+   */
+  get cmsProjects(): Project[] {
+    const lang = this.langService.current();
+    return this.featuredProjects.map(p => localizeProject(p, lang));
+  }
+
+  get cmsExperiences(): Experience[] {
+    const lang = this.langService.current();
+    return this.experiences.map(e => localizeExperience(e, lang));
+  }
+
+  readonly hasCaseStudy = hasCaseStudy;
 
   get displayExperiences(): ExpItem[] {
     return this.staticExperiences;

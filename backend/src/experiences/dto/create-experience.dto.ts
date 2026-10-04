@@ -1,7 +1,9 @@
 import {
-  IsString, IsArray, IsOptional, IsBoolean, IsNumber, MaxLength, MinLength,
+  IsString, IsArray, IsOptional, IsBoolean, IsNumber, MaxLength, MinLength, ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ExperienceTranslationsDto } from './experience-translations.dto';
 
 export class CreateExperienceDto {
   @ApiProperty({ example: 'Acme Corp' })
@@ -48,4 +50,10 @@ export class CreateExperienceDto {
   @IsNumber()
   @IsOptional()
   order?: number;
+
+  @ApiPropertyOptional({ type: ExperienceTranslationsDto })
+  @ValidateNested()
+  @Type(() => ExperienceTranslationsDto)
+  @IsOptional()
+  translations?: ExperienceTranslationsDto;
 }

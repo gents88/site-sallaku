@@ -20,6 +20,15 @@ export class ProjectsService {
     return this.cache.get(CACHE_KEY, () => this.http.get<Project[]>(this.url, { context }), TTL);
   }
   getOne(id: string): Observable<Project> { return this.http.get<Project>(`${this.url}/${id}`); }
+  /** Pagina pubblica /projects/:slug. */
+  getBySlug(slug: string): Observable<Project> {
+    return this.http.get<Project>(`${this.url}/slug/${encodeURIComponent(slug)}`);
+  }
+  /** Drag & drop in admin: l'indice nell'array diventa `order`. */
+  reorder(ids: string[]): Observable<void> {
+    this.cache.invalidate(CACHE_KEY);
+    return this.http.patch<void>(`${this.url}/reorder`, { ids });
+  }
   create(payload: CreateProjectPayload): Observable<Project> {
     this.cache.invalidate(CACHE_KEY);
     return this.http.post<Project>(this.url, payload);
