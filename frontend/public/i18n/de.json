@@ -17,7 +17,9 @@
     "testimonials": "Referenzen",
     "search": "Suche",
     "open_menu": "Menü öffnen",
-    "back_to_top": "Nach oben"
+    "back_to_top": "Nach oben",
+    "main_aria": "Hauptnavigation",
+    "bottom_aria": "Schnellnavigation"
   },
   "sidebar": {
     "collapse_menu": "Seitenleiste einklappen",

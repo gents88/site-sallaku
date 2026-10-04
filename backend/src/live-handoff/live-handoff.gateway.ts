@@ -12,6 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { LiveHandoffService } from './live-handoff.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
+import { isProductionEnv } from '../common/utils/runtime-env';
 
 /**
  * Stati in cui la chat accetta messaggi. Include "agent_joining" di proposito: fra
@@ -39,7 +40,7 @@ function corsOriginValidator(
     .map((o) => o.trim())
     .filter(Boolean);
 
-  if (process.env.NODE_ENV !== 'production' && allowedOrigins.length === 0) {
+  if (!isProductionEnv() && allowedOrigins.length === 0) {
     callback(null, true);
     return;
   }

@@ -19,6 +19,7 @@ import * as compression from 'compression';
 import * as express from 'express';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { isProductionEnv } from './common/utils/runtime-env';
 
 function parseCorsOrigins(rawOrigins?: string): string[] {
   return (rawOrigins ?? '')
@@ -91,7 +92,7 @@ async function bootstrap() {
   // ── CORS ─────────────────────────────────────────────
   // In production CORS_ORIGIN must be set — an empty allowlist blocks all
   // cross-origin requests rather than open them up.
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = isProductionEnv();
   if (isProduction && allowedOrigins.length === 0) {
     throw new Error('CORS_ORIGIN must be set in production. Server cannot start.');
   }
@@ -142,7 +143,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // ── Swagger (dev & staging only) ─────────────────────
-  if (process.env.NODE_ENV !== 'production') {
+  if (!isProduction) {
     const config = new DocumentBuilder()
       .setTitle('Portfolio API')
       .setDescription('Developer Portfolio Admin REST API')
