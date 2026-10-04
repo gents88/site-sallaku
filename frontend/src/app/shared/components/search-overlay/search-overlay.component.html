@@ -1,0 +1,64 @@
+@if (overlay.open()) {
+  <div class="so-backdrop" (click)="close()" aria-hidden="true"></div>
+  <div class="so-panel" role="dialog" aria-modal="true" [attr.aria-label]="'search.dialog_label' | translate">
+    <form class="so-input-row" (submit)="viewAll(); $event.preventDefault()" role="search">
+      <span class="so-input-icon" aria-hidden="true"><app-nav-icon name="search-doc" [size]="18" /></span>
+      <!-- Combobox ARIA: il focus resta nell'input, l'opzione attiva è annunciata via aria-activedescendant. -->
+      <input
+        #input
+        type="text"
+        class="so-input"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-controls="palette-listbox"
+        [attr.aria-expanded]="items().length > 0"
+        [attr.aria-activedescendant]="activeId()"
+        [placeholder]="'palette.placeholder' | translate"
+        [value]="query()"
+        (input)="onQuery($event)"
+        (keydown.arrowdown)="move(1); $event.preventDefault()"
+        (keydown.arrowup)="move(-1); $event.preventDefault()"
+        (keydown.enter)="onEnter(); $event.preventDefault()"
+      />
+      <kbd class="so-esc">Esc</kbd>
+    </form>
+    <p class="so-close-hint">{{ 'search.tap_outside_close' | translate }}</p>
+
+    @if (items().length) {
+      <ul class="so-list" id="palette-listbox" role="listbox" [attr.aria-label]="'search.dialog_label' | translate">
+        @for (item of items(); track item.id; let i = $index) {
+          @if (sectionStart(i); as section) {
+            <li class="so-section" role="presentation">{{ ('palette.section_' + section) | translate }}</li>
+          }
+          <li
+            role="option"
+            class="so-item"
+            [id]="optionId(item)"
+            [class.active]="i === activeIndex()"
+            [attr.aria-selected]="i === activeIndex()"
+            (mouseenter)="activeIndex.set(i)"
+            (click)="select(i)"
+          >
+            <span class="so-item-icon" aria-hidden="true"><app-nav-icon [name]="item.icon" [size]="18" /></span>
+            <span class="so-item-body">
+              <span class="so-item-title">{{ item.title }}</span>
+              @if (item.detail) { <span class="so-item-excerpt">{{ item.detail }}</span> }
+            </span>
+            @if (item.run) { <span class="so-item-type">↵</span> }
+          </li>
+        }
+      </ul>
+    }
+
+    @if (loading()) {
+      <div class="so-hint" aria-live="polite">{{ 'search.loading' | translate }}</div>
+    } @else if (query().trim().length >= minRemote) {
+      @if (!items().length) {
+        <div class="so-empty" aria-live="polite">{{ 'search.no_results' | translate }}</div>
+      }
+      <button type="button" class="so-view-all" (click)="viewAll()">{{ 'search.view_all' | translate }}</button>
+    }
+
+    <p class="so-footer" aria-hidden="true">{{ 'palette.footer_hint' | translate }}</p>
+  </div>
+}
