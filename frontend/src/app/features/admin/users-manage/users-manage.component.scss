@@ -50,3 +50,47 @@
   h2 { font-size: 1.05rem; margin: 0 0 .4rem; }
   form { display: flex; flex-direction: column; gap: .5rem; }
 }
+
+/* ── Mobile: ogni utente diventa una card ───────────────────────────────────
+   La tabella (5 colonne + 4 pulsanti) era larga ~690px: su un telefono da
+   390px la pagina sbordava e il browser la rimpiccioliva tutta per farla
+   entrare. Sotto i 720px righe → card: nome e ruolo in alto, contatto e data
+   sotto, azioni su due colonne a tutta larghezza. */
+@media (max-width: 720px) {
+  .um-card { padding: 0; background: transparent; border: none; box-shadow: none; }
+  .um-table-wrap { overflow: visible; }
+  .um-table,
+  .um-table tbody { display: block; width: 100%; }
+  .um-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+
+  .um-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .35rem .75rem;
+    padding: .9rem 1rem;
+    margin-bottom: .75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--bg-secondary);
+  }
+  .um-table td { display: block; padding: 0; border: none; min-width: 0; }
+
+  .um-cell-name { grid-column: 1; grid-row: 1; font-weight: 600; align-self: center; }
+  .um-cell-role { grid-column: 2; grid-row: 1; }
+  .um-cell-contact,
+  .um-cell-date { grid-column: 1 / -1; font-size: .85rem; color: var(--text-secondary); overflow-wrap: anywhere; }
+  .um-cell-date::before { content: attr(data-label) ': '; }
+
+  .um-actions {
+    grid-column: 1 / -1;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: .4rem;
+    margin-top: .4rem;
+    white-space: normal;
+    .btn { width: 100%; justify-content: center; }
+  }
+
+  .um-toolbar > * { flex: 1 1 100%; }
+  .admin-header .btn-primary { width: 100%; justify-content: center; }
+}

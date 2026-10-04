@@ -117,15 +117,15 @@
           <tbody>
             @for (u of users(); track u._id) {
               <tr [class.is-self]="isSelf(u)">
-                <td>
+                <td class="um-cell-name">
                   {{ u.name }}
                   @if (isSelf(u)) { <span class="um-badge">{{ 'users_manage.you' | translate }}</span> }
                 </td>
-                <td>
+                <td class="um-cell-contact">
                   {{ u.email || u.phone || '—' }}
                   @if (u.email && u.emailVerified) { <span class="um-verified" [title]="'users_manage.verified' | translate">✓</span> }
                 </td>
-                <td>
+                <td class="um-cell-role">
                   <select class="um-select" [ngModel]="u.role" (ngModelChange)="changeRole(u, $event)"
                           [disabled]="isSelf(u) || busyId() === u._id"
                           [attr.aria-label]="('users_manage.col_role' | translate) + ': ' + u.name">
@@ -133,7 +133,7 @@
                     <option value="user">{{ 'account_modal.role_user' | translate }}</option>
                   </select>
                 </td>
-                <td><time [attr.datetime]="u.createdAt">{{ u.createdAt | date: 'dd/MM/yyyy' }}</time></td>
+                <td class="um-cell-date" [attr.data-label]="'users_manage.col_created' | translate"><time [attr.datetime]="u.createdAt">{{ u.createdAt | date: 'dd/MM/yyyy' }}</time></td>
                 <td class="um-actions">
                   <button type="button" class="btn btn-sm" (click)="openEdit(u)" [disabled]="busyId() === u._id"
                           [attr.aria-label]="('common.edit' | translate) + ': ' + u.name">{{ 'common.edit' | translate }}</button>
