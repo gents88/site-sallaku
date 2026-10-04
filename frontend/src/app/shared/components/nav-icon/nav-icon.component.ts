@@ -83,9 +83,7 @@ const FALLBACK = '<circle cx="12" cy="12" r="2.5"/>';
 @Component({
   selector: 'app-nav-icon',
   standalone: true,
-  template: `<svg viewBox="0 0 24 24" [attr.width]="size()" [attr.height]="size()" fill="none" stroke="currentColor"
-      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"
-      [innerHTML]="markup()"></svg>`,
+  template: `<span [innerHTML]="markup()"></span>`,
   styles: [`:host { display: inline-flex; line-height: 0; flex-shrink: 0; }`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -100,10 +98,14 @@ export class NavIconComponent {
    * con un [innerHTML] normale le icone restavano vuote. Il bypass è sicuro
    * perché il markup viene solo da NAV_ICONS, costante interna indicizzata
    * per nome: l'input `name` sceglie una chiave, non fornisce mai markup.
+   * L'innerHTML è sullo span HTML, non sull'SVG: il DOM usato dal prerender
+   * non implementa il setter innerHTML degli elementi SVG.
    */
   readonly markup = computed<SafeHtml>(() => {
     const name = this.name();
-    const svg = Object.prototype.hasOwnProperty.call(NAV_ICONS, name) ? NAV_ICONS[name] : FALLBACK;
+    const shapes = Object.prototype.hasOwnProperty.call(NAV_ICONS, name) ? NAV_ICONS[name] : FALLBACK;
+    const size = this.size();
+    const svg = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${shapes}</svg>`;
     return this.sanitizer.bypassSecurityTrustHtml(svg);
   });
 }
