@@ -1795,7 +1795,11 @@
     "err_session_expired": "Session expired. Please log in again.",
     "err_save_failed_default": "Save failed. Check title, content and slug.",
     "action_unpublish": "Move to draft",
-    "unpublished_msg": "Article moved back to draft (views kept)"
+    "unpublished_msg": "Article moved back to draft (views kept)",
+    "filter_label": "Filter by status",
+    "filter_all": "All",
+    "empty_drafts": "No drafts.",
+    "empty_published": "No published articles."
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -1952,7 +1956,28 @@
     "verified": "Email verified",
     "confirm_role": "Change {{name}}'s role to \"{{role}}\"?",
     "confirm_delete": "Permanently delete user {{name}}?",
-    "action_error": "Action failed."
+    "action_error": "Action failed.",
+    "new": "New user",
+    "edit_title": "Edit user",
+    "phone": "Phone (optional)",
+    "password_optional": "Password (optional)",
+    "password_hint": "At least 8 characters with uppercase, lowercase, a digit and a symbol. Without a password the user signs in with an email code.",
+    "save": "Save",
+    "created": "User created.",
+    "updated": "User updated.",
+    "password_title": "New password for {{name}}",
+    "password_effect": "The user will be logged out of every device.",
+    "new_password": "New password",
+    "set_password": "Set password",
+    "password_short": "Password",
+    "password_set": "{{name}}'s password updated.",
+    "revoke": "Log out",
+    "confirm_revoke": "Log {{name}} out of every device?",
+    "sessions_revoked": "{{name}} has been logged out.",
+    "err_name": "Name is required.",
+    "err_email": "Enter a valid email.",
+    "err_phone": "Phone in international format, e.g. +393331234567.",
+    "err_password": "The password does not meet the requirements."
   },
   "notifications": {
     "label": "Notifications",

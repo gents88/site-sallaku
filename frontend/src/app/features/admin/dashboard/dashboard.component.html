@@ -61,7 +61,7 @@
     <!-- Stats grid -->
     <div class="stats-grid">
       @for (stat of stats; track stat.labelKey) {
-        <a [routerLink]="stat.route" class="stat-card card">
+        <a [routerLink]="stat.route" [queryParams]="stat.query ?? null" class="stat-card card">
           <div class="stat-card__icon" [style.background]="stat.color + '22'" [style.color]="stat.color">
             <mat-icon>{{ stat.icon }}</mat-icon>
           </div>

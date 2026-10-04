@@ -586,3 +586,15 @@
 }
 
 
+
+/* Filtro Tutti / Pubblicati / Bozze (la card "Bozze" della dashboard apre ?status=draft). */
+.status-filter {
+  display: inline-flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem;
+  button {
+    display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .9rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); font-size: .85rem;
+    span { font-variant-numeric: tabular-nums; opacity: .8; }
+    &.active { background: rgba(79, 106, 245, .15); border-color: rgba(79, 106, 245, .5); color: var(--text-primary); }
+    &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 2px; }
+  }
+}

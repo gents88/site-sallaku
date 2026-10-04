@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, AfterViewChecked, ChangeDetectorRef, Component, HostListener, inject, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewChecked, ChangeDetectorRef, Component, HostListener, inject, OnInit, OnDestroy, ViewChild, ElementRef, DestroyRef } from '@angular/core';
 import { HasUnsavedChanges, warnOnUnload } from '../../../core/guards/unsaved-changes.guard';
 import { DirtyTracker } from '../../../shared/utils/dirty-tracker';
 import { PrismService } from '../../../shared/services/prism.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -28,6 +28,7 @@ import {
   BlogPdfUploadComponent,
   BlogPdfUploadRequest,
 } from './components/blog-pdf-upload/blog-pdf-upload.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface PdfPreview {
   fileName: string;
@@ -37,6 +38,8 @@ interface PdfPreview {
   paragraphs: string[];
   rawText: string;
 }
+
+export type BlogStatusFilter = 'all' | 'published' | 'draft';
 
 @Component({
   selector: 'app-blog-manage',
@@ -55,6 +58,8 @@ interface PdfPreview {
 export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked, HasUnsavedChanges {
   private readonly dirty = new DirtyTracker();
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Il blog ha l'autosave: è "sporco" solo ciò che non è ancora finito né in un salvataggio né in un autosave. */
   hasUnsavedChanges(): boolean {
@@ -69,6 +74,28 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
   readonly pdfGenerationEnabled = environment.blogPdfUploadEnabled;
 
   posts: Post[] = [];
+  /** Filtro della lista, sincronizzato con ?status= (la card "Bozze" della dashboard apre ?status=draft). */
+  statusFilter: BlogStatusFilter = 'all';
+
+  get visiblePosts(): Post[] {
+    if (this.statusFilter === 'all') return this.posts;
+    const published = this.statusFilter === 'published';
+    return this.posts.filter(p => !!p.published === published);
+  }
+
+  get draftCount(): number {
+    return this.posts.filter(p => !p.published).length;
+  }
+
+  /** Cambia filtro aggiornando l'URL, così è condivisibile e sopravvive al refresh. */
+  setStatusFilter(filter: BlogStatusFilter): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { status: filter === 'all' ? null : filter },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
   loading = true;
   showForm = false;
   editingId: string | null = null;
@@ -230,6 +257,12 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
 
   ngOnInit(): void {
     this.load();
+    // takeUntilDestroyed, non destroy$: destroy$ viene emesso anche alla chiusura del form (autosave).
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      const status = params.get('status');
+      this.statusFilter = status === 'draft' || status === 'published' ? status : 'all';
+      this.cdr.markForCheck();
+    });
     // ?new=1 dalla palette Ctrl+K ("Nuovo articolo"): apre direttamente il form.
     if (this.route.snapshot.queryParamMap.get('new') === '1') this.openCreate();
   }

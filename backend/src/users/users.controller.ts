@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Query, Req, UseGuards, UseInterceptors,
+  Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, Req, UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,7 +8,7 @@ import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { AuditInterceptor } from '../audit/interceptors/audit.interceptor';
 import { ParseMongoIdPipe } from '../common/pipes/parse-mongo-id.pipe';
 import { UsersService } from './users.service';
-import { UpdateUserRoleDto, UsersAdminQueryDto } from './dto/users-admin.dto';
+import { CreateUserDto, SetPasswordDto, UpdateUserDto, UpdateUserRoleDto, UsersAdminQueryDto } from './dto/users-admin.dto';
 
 interface AuthedRequest {
   user: { _id: unknown };
@@ -28,6 +28,32 @@ export class UsersController {
   @ApiOperation({ summary: 'List users (admin)' })
   list(@Query() { page, limit, q, role }: UsersAdminQueryDto) {
     return this.users.findPaginated({ page: page ?? 1, limit: limit ?? 20, q, role });
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create a user (admin)' })
+  create(@Body() dto: CreateUserDto) {
+    return this.users.createByAdmin(dto);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Edit name, email, phone, email verification (admin)' })
+  update(@Param('id', ParseMongoIdPipe) id: string, @Body() dto: UpdateUserDto) {
+    return this.users.updateByAdmin(id, dto);
+  }
+
+  @Post(':id/password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Set a new password and end all sessions (admin)' })
+  setPassword(@Param('id', ParseMongoIdPipe) id: string, @Body() dto: SetPasswordDto) {
+    return this.users.setPasswordByAdmin(id, dto.password);
+  }
+
+  @Post(':id/revoke-sessions')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Log the user out everywhere (admin; not self)' })
+  revokeSessions(@Req() req: AuthedRequest, @Param('id', ParseMongoIdPipe) id: string) {
+    return this.users.revokeSessions(String(req.user._id), id);
   }
 
   @Patch(':id/role')

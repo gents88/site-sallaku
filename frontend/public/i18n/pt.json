@@ -1795,7 +1795,11 @@
     "err_session_expired": "Sessão expirada. Inicia sessão novamente.",
     "err_save_failed_default": "Falha ao guardar. Verifica título, conteúdo e slug.",
     "action_unpublish": "Mover para rascunho",
-    "unpublished_msg": "Artigo movido para rascunho (visualizações mantidas)"
+    "unpublished_msg": "Artigo movido para rascunho (visualizações mantidas)",
+    "filter_label": "Filtrar por estado",
+    "filter_all": "Todos",
+    "empty_drafts": "Sem rascunhos.",
+    "empty_published": "Nenhum artigo publicado."
   },
   "privacy": {
     "title": "Política de Privacidade",
@@ -1952,7 +1956,28 @@
     "verified": "Email verificado",
     "confirm_role": "Alterar a função de {{name}} para \"{{role}}\"?",
     "confirm_delete": "Eliminar definitivamente o utilizador {{name}}?",
-    "action_error": "A operação falhou."
+    "action_error": "A operação falhou.",
+    "new": "Novo utilizador",
+    "edit_title": "Editar utilizador",
+    "phone": "Telefone (opcional)",
+    "password_optional": "Palavra-passe (opcional)",
+    "password_hint": "Pelo menos 8 caracteres com maiúscula, minúscula, número e símbolo. Sem palavra-passe o utilizador entra com um código por email.",
+    "save": "Guardar",
+    "created": "Utilizador criado.",
+    "updated": "Utilizador atualizado.",
+    "password_title": "Nova palavra-passe para {{name}}",
+    "password_effect": "O utilizador será desligado de todos os dispositivos.",
+    "new_password": "Nova palavra-passe",
+    "set_password": "Definir palavra-passe",
+    "password_short": "Palavra-passe",
+    "password_set": "Palavra-passe de {{name}} atualizada.",
+    "revoke": "Desligar",
+    "confirm_revoke": "Desligar {{name}} de todos os dispositivos?",
+    "sessions_revoked": "{{name}} foi desligado.",
+    "err_name": "O nome é obrigatório.",
+    "err_email": "Introduza um email válido.",
+    "err_phone": "Telefone em formato internacional, ex. +393331234567.",
+    "err_password": "A palavra-passe não cumpre os requisitos."
   },
   "notifications": {
     "label": "Notificações",
