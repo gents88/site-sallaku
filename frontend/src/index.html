@@ -75,7 +75,8 @@
          only discovers the font after parsing the stylesheet. JetBrains Mono
          is not — it's for code blocks, well below the fold. -->
     <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter/inter-latin.woff2" crossorigin />
-    <link rel="stylesheet" href="/assets/fonts/inter/inter.css" />
+    <link rel="preload" as="style" href="/assets/fonts/inter/inter.css" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/assets/fonts/inter/inter.css" /></noscript>
     <link rel="preload" as="style" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" /></noscript>
     <!-- Material Icons and Font Awesome are self-hosted from /assets/fonts
