@@ -7,7 +7,16 @@ export type ThemePreference = Theme | 'system';
 const PREFERENCE_CYCLE: ThemePreference[] = ['light', 'dark', 'system'];
 export type LanguageAccent = 'default' | 'albanian';
 
-const THEME_STORAGE_KEY = 'portfolio_theme';
+/**
+ * Solo una scelta esplicita dell'utente (chiaro/scuro) viene salvata; senza,
+ * il tema segue il sistema di telefono/PC. Chiave nuova perché la vecchia
+ * (`portfolio_theme`) veniva scritta a ogni visita col tema corrente anche
+ * senza alcuna scelta: chiunque fosse già passato dal sito restava bloccato
+ * su quel tema e non seguiva più il sistema. Tenere allineato con lo script
+ * inline in src/index.html, che applica il tema prima del primo paint.
+ */
+export const THEME_CHOICE_KEY = 'portfolio_theme_choice';
+const LEGACY_THEME_KEY = 'portfolio_theme';
 const ACCENT_STORAGE_KEY = 'portfolio_accent';
 
 @Injectable({ providedIn: 'root' })
@@ -25,12 +34,6 @@ export class ThemeService {
     @Inject(DOCUMENT) private readonly document: Document,
     @Inject(PLATFORM_ID) private readonly platformId: object,
   ) {
-    // Persiste la preferenza (non il tema effettivo: 'system' deve restare 'system').
-    effect(() => {
-      if (!isPlatformBrowser(this.platformId)) return;
-      try { localStorage.setItem(THEME_STORAGE_KEY, this.preference()); } catch { /* storage non disponibile */ }
-    });
-
     effect(() => {
       if (!isPlatformBrowser(this.platformId)) return;
       const t = this.theme();
@@ -62,17 +65,23 @@ export class ThemeService {
 
   /** Inverte il tema effettivo, fissandolo come preferenza esplicita (palette Ctrl+K). */
   toggle(): void {
-    this.preference.set(this.theme() === 'light' ? 'dark' : 'light');
+    this.setPreference(this.theme() === 'light' ? 'dark' : 'light');
   }
 
   /** Pulsante in navbar: chiaro → scuro → sistema → chiaro. */
   cycle(): void {
     const i = PREFERENCE_CYCLE.indexOf(this.preference());
-    this.preference.set(PREFERENCE_CYCLE[(i + 1) % PREFERENCE_CYCLE.length]);
+    this.setPreference(PREFERENCE_CYCLE[(i + 1) % PREFERENCE_CYCLE.length]);
   }
 
+  /** Scelta esplicita: chiaro/scuro vengono ricordati, 'system' torna a seguire il dispositivo. */
   setPreference(pref: ThemePreference): void {
     this.preference.set(pref);
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      if (pref === 'system') localStorage.removeItem(THEME_CHOICE_KEY);
+      else localStorage.setItem(THEME_CHOICE_KEY, pref);
+    } catch { /* storage non disponibile */ }
   }
 
   setLanguageAccent(accent: LanguageAccent): void {
@@ -90,9 +99,12 @@ export class ThemeService {
   private getStoredPreference(): ThemePreference {
     if (!isPlatformBrowser(this.platformId)) return 'dark';
     let stored: string | null = null;
-    try { stored = localStorage.getItem(THEME_STORAGE_KEY); } catch { /* storage non disponibile */ }
-    // Valori salvati prima di questa modifica ('light'/'dark') restano validi.
-    return stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+    try {
+      stored = localStorage.getItem(THEME_CHOICE_KEY);
+      // Il valore della vecchia chiave non era una scelta dell'utente: si scarta.
+      localStorage.removeItem(LEGACY_THEME_KEY);
+    } catch { /* storage non disponibile */ }
+    return stored === 'light' || stored === 'dark' ? stored : 'system';
   }
 
   private readSystemDark(): boolean {

@@ -9,6 +9,21 @@
          lo stesso attributo dopo il bootstrap: senza questo, su desktop il
          contenuto partirebbe a piena larghezza e slitterebbe di 76px appena
          Angular idrata. Tenere soglia e chiave allineate a drawer.service.ts. -->
+    <!-- Tema prima del primo paint: scelta esplicita salvata (portfolio_theme_choice,
+         vedi theme.service.ts) oppure il tema del sistema del dispositivo. Senza,
+         le pagine prerenderizzate partivano sempre scure (data-theme="dark") e chi
+         usa il tema chiaro vedeva un lampo scuro prima del bootstrap. -->
+    <script>
+      (function () {
+        var theme = 'dark';
+        try {
+          var choice = localStorage.getItem('portfolio_theme_choice');
+          if (choice === 'light' || choice === 'dark') theme = choice;
+          else if (window.matchMedia) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        } catch (e) { /* storage/matchMedia non disponibili: resta scuro */ }
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <script>
       (function () {
         try {

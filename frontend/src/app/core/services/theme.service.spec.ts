@@ -32,26 +32,41 @@ describe('ThemeService', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('light');
   });
 
-  it('cycles light → dark → system and persists the preference, not the effective theme', () => {
+  it('cycles light → dark → system, saving only explicit choices', () => {
     mockMatchMedia(false);
-    localStorage.setItem('portfolio_theme', 'light');
+    localStorage.setItem('portfolio_theme_choice', 'light');
     const theme = TestBed.inject(ThemeService);
+    expect(theme.preference()).toBe('light');
     theme.cycle();
-    expect(theme.preference()).toBe('dark');
+    expect(localStorage.getItem('portfolio_theme_choice')).toBe('dark');
     theme.cycle();
     expect(theme.preference()).toBe('system');
-    TestBed.tick();
-    expect(localStorage.getItem('portfolio_theme')).toBe('system');
+    // "Sistema" non è una scelta da ricordare: si torna a seguire il dispositivo.
+    expect(localStorage.getItem('portfolio_theme_choice')).toBeNull();
     theme.cycle();
     expect(theme.preference()).toBe('light');
   });
 
-  it('keeps legacy stored values and ignores garbage', () => {
+  it('never writes anything while just following the system', () => {
     mockMatchMedia(true);
+    const theme = TestBed.inject(ThemeService);
+    TestBed.tick();
+    expect(theme.theme()).toBe('dark');
+    expect(localStorage.getItem('portfolio_theme_choice')).toBeNull();
+  });
+
+  it('ignores (and cleans up) the old auto-saved key, so returning visitors follow the system again', () => {
+    mockMatchMedia(false);
     localStorage.setItem('portfolio_theme', 'dark');
-    expect(TestBed.inject(ThemeService).preference()).toBe('dark');
-    TestBed.resetTestingModule();
-    localStorage.setItem('portfolio_theme', 'purple');
+    const theme = TestBed.inject(ThemeService);
+    expect(theme.preference()).toBe('system');
+    expect(theme.theme()).toBe('light');
+    expect(localStorage.getItem('portfolio_theme')).toBeNull();
+  });
+
+  it('ignores garbage in the choice key', () => {
+    mockMatchMedia(true);
+    localStorage.setItem('portfolio_theme_choice', 'purple');
     expect(TestBed.inject(ThemeService).preference()).toBe('system');
   });
 
