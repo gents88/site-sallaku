@@ -184,6 +184,7 @@
           <span>{{ 'ai_ppt.btn_generate' | translate: { count: selectedCount() } }}</span>
         }
       </button>
+      <app-request-progress [request]="req" (cancel)="cancelRequest()" />
     </div>
   </section>
 

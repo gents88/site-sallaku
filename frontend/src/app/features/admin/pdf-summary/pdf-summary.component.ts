@@ -3,13 +3,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { UploadClient } from '../../../core/http/upload-client.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '@env/environment';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -38,14 +40,14 @@ const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })
 export class PdfSummaryComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private http       = inject(HttpClient);
+  private readonly upload = inject(UploadClient);
   private readonly seo = inject(SeoService);
   private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
@@ -117,7 +119,9 @@ export class PdfSummaryComponent implements OnInit {
   }
 
   selectedFile   = signal<File | null>(null);
-  loading        = signal(false);
+  /** Upload con avanzamento reale + annullamento (anche all'uscita dalla pagina). */
+  readonly req   = new TrackedRequest();
+  readonly loading = this.req.active;
   result         = signal<FileSummaryResult | null>(null);
   error          = signal<string | null>(null);
   justCopied     = signal(false);
@@ -259,23 +263,26 @@ export class PdfSummaryComponent implements OnInit {
   summarize(): void {
     const file = this.selectedFile();
     if (!file) return;
-    this.loading.set(true); this.error.set(null); this.result.set(null);
+    this.error.set(null); this.result.set(null);
     const form = new FormData();
     form.append('file', file);
     form.append('lang', this.selectedLang);
     form.append('mode', this.outputMode());
-    this.http.post<FileSummaryResult>(this.api, form).subscribe({
+    this.req.run(this.upload.post<FileSummaryResult>(this.api, form), {
       next: (res) => {
         this.result.set(res);
-        this.loading.set(false);
         this.analytics.trackClick('lab_tool', 'pdf_summary');
       },
       error: (err) => {
         const rawMsg = err?.error?.message ?? err?.message;
         const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('pdf_summary.err_generic');
-        this.error.set(msg); this.loading.set(false);
+        this.error.set(msg);
       },
     });
+  }
+
+  cancelRequest(): void {
+    this.req.cancel();
   }
 
   reset(): void { this.selectedFile.set(null); this.result.set(null); this.error.set(null); }

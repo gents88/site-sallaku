@@ -190,6 +190,8 @@
         }
       </button>
 
+      <app-request-progress [request]="req" (cancel)="cancelRequest()" />
+
       @if (loading()) {
         <div class="progress-wrap" aria-live="polite">
           <div class="progress-bar"><div class="progress-fill"></div></div>
