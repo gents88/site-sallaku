@@ -17,7 +17,9 @@
     "testimonials": "Depoimentos",
     "search": "Pesquisar",
     "open_menu": "Abrir menu",
-    "back_to_top": "Voltar ao topo"
+    "back_to_top": "Voltar ao topo",
+    "main_aria": "Navegação principal",
+    "bottom_aria": "Navegação rápida"
   },
   "sidebar": {
     "collapse_menu": "Recolher o menu lateral",

@@ -17,7 +17,9 @@
     "testimonials": "Testimonianze",
     "search": "Cerca",
     "open_menu": "Apri il menu",
-    "back_to_top": "Torna su"
+    "back_to_top": "Torna su",
+    "main_aria": "Navigazione principale",
+    "bottom_aria": "Navigazione rapida"
   },
   "sidebar": {
     "collapse_menu": "Comprimi il menu laterale",

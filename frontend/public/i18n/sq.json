@@ -17,7 +17,9 @@
     "testimonials": "Dëshmi",
     "search": "Kërko",
     "open_menu": "Hap menynë",
-    "back_to_top": "Kthehu lart"
+    "back_to_top": "Kthehu lart",
+    "main_aria": "Navigimi kryesor",
+    "bottom_aria": "Navigim i shpejtë"
   },
   "sidebar": {
     "collapse_menu": "Ngushto menynë anësore",
