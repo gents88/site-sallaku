@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, PLATFORM_ID, effect, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnInit, PLATFORM_ID, effect, inject, signal, viewChild } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { ConsentService } from '../../../core/services/consent.service';
 
 @Component({
   selector: 'app-consent-banner',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, TranslateModule, FormsModule],
   template: `

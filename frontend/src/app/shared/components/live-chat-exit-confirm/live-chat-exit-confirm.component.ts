@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 export type ExitConfirmStep = 'none' | 'ask_resolved' | 'ask_close';
@@ -12,6 +12,7 @@ export type ExitConfirmStep = 'none' | 'ask_resolved' | 'ask_close';
  */
 @Component({
   selector: 'app-live-chat-exit-confirm',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, TranslateModule],
   templateUrl: './live-chat-exit-confirm.component.html',

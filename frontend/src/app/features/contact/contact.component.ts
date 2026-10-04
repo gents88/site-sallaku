@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, AfterViewInit, ElementRef, inject, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, ElementRef, inject, PLATFORM_ID } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -18,6 +18,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/bre
 
 @Component({
   selector: 'app-contact',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, TranslateModule,
