@@ -15,6 +15,8 @@ import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import {
   AiPptService,
   PptStyle,
@@ -37,7 +39,7 @@ const MAX_CONTEXT_FILE_MB = 20;
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -115,7 +117,13 @@ export class AiPptComponent implements OnInit {
     ];
   }
 
-  readonly loading         = this.service.isLoading;
+  /** Richiesta annullabile con avanzamento dell'upload del file di contesto. */
+  readonly req             = new TrackedRequest();
+  readonly loading         = this.req.active;
+
+  cancelRequest(): void {
+    this.req.cancel();
+  }
   readonly topic           = signal('');
   readonly result          = signal<GeneratePptResult | null>(null);
   readonly error           = signal('');
@@ -202,12 +210,12 @@ export class AiPptComponent implements OnInit {
     this.result.set(null);
     this.activeSlideIdx.set(0);
 
-    this.service.generate({
+    this.req.run(this.service.generate({
       topic:      t,
       slideCount: this.selectedCount(),
       style:      this.selectedStyle(),
       file:       this.contextFile() ?? undefined,
-    }).subscribe({
+    }), {
       next: (res) => {
         this.result.set(res);
         this.activeSlideIdx.set(0);

@@ -1,6 +1,7 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, finalize, catchError, throwError } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { UploadClient } from '../http/upload-client.service';
+import { UploadEvent } from '../http/upload-events';
 import { environment } from '@env/environment';
 
 export type PptStyle = 'business' | 'education' | 'minimal' | 'modern' | 'pitch_deck';
@@ -47,12 +48,10 @@ export const SLIDE_COUNT_OPTIONS = [5, 10, 15, 20] as const;
 @Injectable({ providedIn: 'root' })
 export class AiPptService {
   private readonly api = `${environment.apiUrl}/ai`;
-  private readonly http = inject(HttpClient);
+  private readonly upload = inject(UploadClient);
 
-  readonly isLoading = signal<boolean>(false);
-
-  generate(req: GeneratePptRequest): Observable<GeneratePptResult> {
-    this.isLoading.set(true);
+  /** Con avanzamento dell'upload del file di contesto; annullabile dal componente. */
+  generate(req: GeneratePptRequest): Observable<UploadEvent<GeneratePptResult>> {
 
     const formData = new FormData();
     formData.append('topic', req.topic);
@@ -61,12 +60,7 @@ export class AiPptService {
     if (req.context) formData.append('context', req.context);
     if (req.file) formData.append('file', req.file, req.file.name);
 
-    return this.http
-      .post<GeneratePptResult>(`${this.api}/generate-ppt`, formData)
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        catchError((err) => throwError(() => err)),
-      );
+    return this.upload.post<GeneratePptResult>(`${this.api}/generate-ppt`, formData);
   }
 
   /** @returns whether the exported PDF had to cut off content on any slide (space ran out on the page). */

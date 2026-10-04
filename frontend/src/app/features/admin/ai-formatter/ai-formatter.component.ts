@@ -24,6 +24,8 @@ import {
   FormatTextResult,
 } from '../../../core/services/ai-formatter.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -36,7 +38,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
@@ -139,7 +141,13 @@ export class AiFormatterComponent implements OnInit {
     ];
   }
 
-  readonly loading = this.service.isLoading;
+  /** Richiesta annullabile: annullata anche quando si lascia la pagina. */
+  readonly req = new TrackedRequest();
+  readonly loading = this.req.active;
+
+  cancelRequest(): void {
+    this.req.cancel();
+  }
 
   readonly text             = signal('');
   readonly result           = signal<FormatTextResult | null>(null);
@@ -190,7 +198,7 @@ export class AiFormatterComponent implements OnInit {
     this.error.set('');
     this.result.set(null);
 
-    this.service.formatText({ text: rawText, docType: this.selectedDocType() }).subscribe({
+    this.req.run(this.service.formatText({ text: rawText, docType: this.selectedDocType() }), {
       next: (res) => {
         this.result.set(res);
         this.analytics.trackClick('lab_tool', 'ai_formatter');
