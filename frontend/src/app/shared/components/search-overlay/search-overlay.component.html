@@ -39,7 +39,7 @@
             (mouseenter)="activeIndex.set(i)"
             (click)="select(i)"
           >
-            <span class="so-item-icon" aria-hidden="true"><app-nav-icon [name]="item.icon" [size]="18" /></span>
+            <span class="so-item-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="15" /></span>
             <span class="so-item-body">
               <span class="so-item-title">{{ item.title }}</span>
               @if (item.detail) { <span class="so-item-excerpt">{{ item.detail }}</span> }
