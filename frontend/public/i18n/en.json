@@ -17,7 +17,9 @@
     "testimonials": "Testimonials",
     "search": "Search",
     "open_menu": "Open menu",
-    "back_to_top": "Back to top"
+    "back_to_top": "Back to top",
+    "main_aria": "Main navigation",
+    "bottom_aria": "Quick navigation"
   },
   "sidebar": {
     "collapse_menu": "Collapse the sidebar",

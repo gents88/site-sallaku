@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import * as geoip from 'geoip-lite';
+import { isProductionEnv } from './runtime-env';
 
 /**
  * Pure helpers shared by the analytics tracking/query/export services
@@ -91,7 +92,7 @@ export function resolveGeo(ip: string): { country: string; city: string; region:
   let normalizedIp = normalizeIp(ip);
 
   // In development, use well-known public IPs so geoip-lite can resolve locations
-  if ((!normalizedIp || isPrivateIp(normalizedIp)) && process.env.NODE_ENV !== 'production') {
+  if ((!normalizedIp || isPrivateIp(normalizedIp)) && !isProductionEnv()) {
     const devIps = ['151.38.39.1', '93.62.236.1', '2.39.170.1', '185.31.175.1', '8.8.8.8'];
     normalizedIp = devIps[Math.floor(Math.random() * devIps.length)];
   }
