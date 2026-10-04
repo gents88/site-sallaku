@@ -1,29 +1,50 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Inject, Injectable, PLATFORM_ID, signal, effect } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID, computed, signal, effect } from '@angular/core';
 
-type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dark';
+/** 'system' segue prefers-color-scheme anche quando cambia a pagina aperta (es. modalità notte automatica). */
+export type ThemePreference = Theme | 'system';
+const PREFERENCE_CYCLE: ThemePreference[] = ['light', 'dark', 'system'];
 export type LanguageAccent = 'default' | 'albanian';
 
-const THEME_STORAGE_KEY = 'portfolio_theme';
+/**
+ * Solo una scelta esplicita dell'utente (chiaro/scuro) viene salvata; senza,
+ * il tema segue il sistema di telefono/PC. Chiave nuova perché la vecchia
+ * (`portfolio_theme`) veniva scritta a ogni visita col tema corrente anche
+ * senza alcuna scelta: chiunque fosse già passato dal sito restava bloccato
+ * su quel tema e non seguiva più il sistema. Tenere allineato con lo script
+ * inline in src/index.html, che applica il tema prima del primo paint.
+ */
+export const THEME_CHOICE_KEY = 'portfolio_theme_choice';
+const LEGACY_THEME_KEY = 'portfolio_theme';
 const ACCENT_STORAGE_KEY = 'portfolio_accent';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  readonly theme = signal<Theme>(this.getPreferred());
+  readonly preference = signal<ThemePreference>(this.getStoredPreference());
+  private readonly systemDark = signal(this.readSystemDark());
+  /** Tema effettivo applicato a <html data-theme>. */
+  readonly theme = computed<Theme>(() => {
+    const pref = this.preference();
+    return pref === 'system' ? (this.systemDark() ? 'dark' : 'light') : pref;
+  });
   readonly languageAccent = signal<LanguageAccent>(this.getPreferredAccent());
 
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
     @Inject(PLATFORM_ID) private readonly platformId: object,
   ) {
-    // Persist to localStorage whenever theme changes
     effect(() => {
       if (!isPlatformBrowser(this.platformId)) return;
       const t = this.theme();
-      localStorage.setItem(THEME_STORAGE_KEY, t);
       this.document.documentElement.setAttribute('data-theme', t);
       this.updateThemeColor(t);
     });
+
+    if (isPlatformBrowser(this.platformId) && typeof window.matchMedia === 'function') {
+      window.matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener?.('change', e => this.systemDark.set(e.matches));
+    }
 
     // Persist language accent and apply CSS attribute
     effect(() => {
@@ -42,8 +63,25 @@ export class ThemeService {
     this.updateThemeColor(this.theme());
   }
 
+  /** Inverte il tema effettivo, fissandolo come preferenza esplicita (palette Ctrl+K). */
   toggle(): void {
-    this.theme.update(t => (t === 'light' ? 'dark' : 'light'));
+    this.setPreference(this.theme() === 'light' ? 'dark' : 'light');
+  }
+
+  /** Pulsante in navbar: chiaro → scuro → sistema → chiaro. */
+  cycle(): void {
+    const i = PREFERENCE_CYCLE.indexOf(this.preference());
+    this.setPreference(PREFERENCE_CYCLE[(i + 1) % PREFERENCE_CYCLE.length]);
+  }
+
+  /** Scelta esplicita: chiaro/scuro vengono ricordati, 'system' torna a seguire il dispositivo. */
+  setPreference(pref: ThemePreference): void {
+    this.preference.set(pref);
+    if (!isPlatformBrowser(this.platformId)) return;
+    try {
+      if (pref === 'system') localStorage.removeItem(THEME_CHOICE_KEY);
+      else localStorage.setItem(THEME_CHOICE_KEY, pref);
+    } catch { /* storage non disponibile */ }
   }
 
   setLanguageAccent(accent: LanguageAccent): void {
@@ -58,12 +96,20 @@ export class ThemeService {
     return this.languageAccent() === 'albanian';
   }
 
-  private getPreferred(): Theme {
+  private getStoredPreference(): ThemePreference {
     if (!isPlatformBrowser(this.platformId)) return 'dark';
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem(THEME_CHOICE_KEY);
+      // Il valore della vecchia chiave non era una scelta dell'utente: si scarta.
+      localStorage.removeItem(LEGACY_THEME_KEY);
+    } catch { /* storage non disponibile */ }
+    return stored === 'light' || stored === 'dark' ? stored : 'system';
+  }
 
-    const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-    if (stored) return stored;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  private readSystemDark(): boolean {
+    if (!isPlatformBrowser(this.platformId) || typeof window.matchMedia !== 'function') return true;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   }
 
   private getPreferredAccent(): LanguageAccent {

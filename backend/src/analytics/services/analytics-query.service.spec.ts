@@ -25,6 +25,7 @@ describe('AnalyticsQueryService', () => {
     mockClickEventModel = {
       aggregate: jest.fn(),
       countDocuments: jest.fn(),
+      distinct: jest.fn(),
     };
     // Bypass caching entirely so tests exercise the underlying aggregation logic.
     mockCache = {
@@ -130,6 +131,54 @@ describe('AnalyticsQueryService', () => {
       for (const [pipeline] of mockClickEventModel.aggregate.mock.calls) {
         expect(pipeline[0].$match).toMatchObject({ eventType: 'sidebar' });
       }
+    });
+  });
+
+  describe('getToolConversionFunnel', () => {
+    it('counts, per tool, how many of its unique visitors also appear as a lead', async () => {
+      mockClickEventModel.distinct.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(['visitor-a', 'visitor-c']),
+      });
+      mockClickEventModel.aggregate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue([
+          { _id: 'pdf_translate', visitorIds: ['visitor-a', 'visitor-b'] },
+          { _id: 'ocr', visitorIds: ['visitor-x'] },
+        ]),
+      });
+
+      const result = await service.getToolConversionFunnel(30);
+
+      expect(result).toEqual([
+        { tool: 'pdf_translate', uniqueVisitors: 2, becameLead: 1, conversionRate: 50 },
+        { tool: 'ocr', uniqueVisitors: 1, becameLead: 0, conversionRate: 0 },
+      ]);
+      expect(mockClickEventModel.distinct).toHaveBeenCalledWith(
+        'visitorId',
+        expect.objectContaining({ eventType: 'lead' }),
+      );
+    });
+
+    it('sorts tools by unique visitors, descending', async () => {
+      mockClickEventModel.distinct.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+      mockClickEventModel.aggregate.mockReturnValue({
+        exec: jest.fn().mockResolvedValue([
+          { _id: 'ocr', visitorIds: ['v1'] },
+          { _id: 'pdf_translate', visitorIds: ['v1', 'v2', 'v3'] },
+        ]),
+      });
+
+      const result = await service.getToolConversionFunnel(30);
+
+      expect(result.map((r) => r.tool)).toEqual(['pdf_translate', 'ocr']);
+    });
+
+    it('returns an empty array when no tool has been used in the window', async () => {
+      mockClickEventModel.distinct.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+      mockClickEventModel.aggregate.mockReturnValue({ exec: jest.fn().mockResolvedValue([]) });
+
+      const result = await service.getToolConversionFunnel(30);
+
+      expect(result).toEqual([]);
     });
   });
 });

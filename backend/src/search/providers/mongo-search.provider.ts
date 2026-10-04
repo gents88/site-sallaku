@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Post, PostDocument } from '../../blog/schemas/post.schema';
 import { Project, ProjectDocument } from '../../projects/schemas/project.schema';
 import { SearchHit, SearchParams, SearchProvider, SearchResult } from '../interfaces/search.interface';
+import { escapeRegex } from '../../common/utils/escape-regex';
 
 /** Post field-name suffix for each blog language — '' (no suffix) is the Italian base copy. */
 const LANG_SUFFIX: Record<string, string> = { it: '', en: '_en', sq: '_sq', es: '_es', pt: '_pt', fr: '_fr', de: '_de' };
@@ -13,9 +14,15 @@ const MAX_SCAN = 300;
 
 type ScoredHit = SearchHit & { score: number };
 
-function escapeRegex(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const POST_FIELDS = 'title excerpt title_en excerpt_en title_sq excerpt_sq title_es excerpt_es title_pt excerpt_pt title_fr excerpt_fr title_de excerpt_de tags slug publishedAt updatedAt';
+const PROJECT_FIELDS = 'title description technologies slug problem solution results translations updatedAt';
+const TRANSLATED_LANGS = ['en', 'sq', 'es', 'pt', 'fr', 'de'];
+
+/** $text ignora i termini troppo corti/parziali: sotto i 3 caratteri si va direttamente di regex. */
+function hasIndexableTerm(q: string): boolean {
+  return q.split(/\s+/).some((w) => w.length >= 3);
 }
+
 
 /** First non-empty of the requested-language field, falling back to the Italian base field. */
 function pickField(value: string | undefined, fallback: string): string {
@@ -30,13 +37,26 @@ export class MongoSearchProvider implements SearchProvider {
   ) {}
 
   async search(params: SearchParams): Promise<SearchResult> {
-    const { q, lang, type, page, limit } = params;
+    const { q, lang, type, page, limit, mode = 'full' } = params;
     const pattern = new RegExp(escapeRegex(q), 'i');
 
-    const [posts, projects] = await Promise.all([
-      type === 'project' ? Promise.resolve([]) : this.searchPosts(pattern, lang),
-      type === 'post' ? Promise.resolve([]) : this.searchProjects(pattern),
-    ]);
+    // Ricerca completa: indice full-text (pertinenza pesata su titolo/tag),
+    // invece della vecchia regex non ancorata che scansionava ogni documento.
+    // Se non trova nulla (parola parziale, es. "angu") si ripiega sulla regex.
+    let posts: ScoredHit[] = [];
+    let projects: ScoredHit[] = [];
+    if (mode === 'full' && hasIndexableTerm(q)) {
+      [posts, projects] = await Promise.all([
+        type === 'project' ? Promise.resolve([]) : this.textSearchPosts(q, lang),
+        type === 'post' ? Promise.resolve([]) : this.textSearchProjects(q, lang),
+      ]);
+    }
+    if (posts.length + projects.length === 0) {
+      [posts, projects] = await Promise.all([
+        type === 'project' ? Promise.resolve([]) : this.searchPosts(pattern, lang),
+        type === 'post' ? Promise.resolve([]) : this.searchProjects(pattern, lang),
+      ]);
+    }
 
     const merged = [...posts, ...projects].sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
@@ -69,48 +89,84 @@ export class MongoSearchProvider implements SearchProvider {
       .find({ published: true, $or: or })
       .sort({ publishedAt: -1 })
       .limit(MAX_SCAN)
-      .select('title excerpt title_en excerpt_en title_sq excerpt_sq title_es excerpt_es title_pt excerpt_pt title_fr excerpt_fr title_de excerpt_de tags slug publishedAt updatedAt')
+      .select(POST_FIELDS)
       .lean()
       .exec();
 
-    const suffix = lang ? LANG_SUFFIX[lang] ?? '' : '';
     return docs.map((doc: any): ScoredHit => {
-      const title = pickField(doc[`title${suffix}`], doc.title);
-      const excerpt = pickField(doc[`excerpt${suffix}`], doc.excerpt);
-      const titleMatch = pattern.test(title);
-      const tagMatch = (doc.tags ?? []).some((t: string) => pattern.test(t));
-      return {
-        id: String(doc._id),
-        type: 'post',
-        title,
-        excerpt,
-        url: `/blog/${doc.slug}`,
-        tags: doc.tags ?? [],
-        updatedAt: doc.updatedAt ?? doc.publishedAt ?? new Date(0),
-        score: titleMatch ? 2 : tagMatch ? 1.5 : 1,
-      };
+      const hit = this.toPostHit(doc, lang);
+      const titleMatch = pattern.test(hit.title);
+      const tagMatch = hit.tags.some((t: string) => pattern.test(t));
+      return { ...hit, score: titleMatch ? 2 : tagMatch ? 1.5 : 1 };
     });
   }
 
-  private async searchProjects(pattern: RegExp): Promise<ScoredHit[]> {
+  private toPostHit(doc: any, lang?: string): SearchHit {
+    const suffix = lang ? LANG_SUFFIX[lang] ?? '' : '';
+    return {
+      id: String(doc._id),
+      type: 'post',
+      title: pickField(doc[`title${suffix}`], doc.title),
+      excerpt: pickField(doc[`excerpt${suffix}`], doc.excerpt),
+      url: `/blog/${doc.slug}`,
+      tags: doc.tags ?? [],
+      updatedAt: doc.updatedAt ?? doc.publishedAt ?? new Date(0),
+    };
+  }
+
+  private async textSearchPosts(q: string, lang?: string): Promise<ScoredHit[]> {
+    const docs = await this.postModel
+      .find({ published: true, $text: { $search: q } }, { score: { $meta: 'textScore' } })
+      .sort({ score: { $meta: 'textScore' } })
+      .limit(MAX_SCAN)
+      .select(POST_FIELDS)
+      .lean()
+      .exec();
+    return docs.map((doc: any) => ({ ...this.toPostHit(doc, lang), score: doc.score ?? 0 }));
+  }
+
+  private async textSearchProjects(q: string, lang?: string): Promise<ScoredHit[]> {
     const docs = await this.projectModel
-      .find({ $or: [{ title: pattern }, { description: pattern }, { technologies: pattern }] })
+      .find({ $text: { $search: q } }, { score: { $meta: 'textScore' } })
+      .sort({ score: { $meta: 'textScore' } })
+      .limit(MAX_SCAN)
+      .select(PROJECT_FIELDS)
+      .lean()
+      .exec();
+    return docs.map((doc: any) => ({ ...this.toProjectHit(doc, lang), score: doc.score ?? 0 }));
+  }
+
+  private async searchProjects(pattern: RegExp, lang?: string): Promise<ScoredHit[]> {
+    const translated = TRANSLATED_LANGS.flatMap((l) => [
+      { [`translations.${l}.title`]: pattern },
+      { [`translations.${l}.description`]: pattern },
+    ]);
+    const docs = await this.projectModel
+      .find({ $or: [{ title: pattern }, { description: pattern }, { technologies: pattern }, { problem: pattern }, { solution: pattern }, { results: pattern }, ...translated] })
       .sort({ order: 1 })
       .limit(MAX_SCAN)
-      .select('title description technologies updatedAt')
+      .select(PROJECT_FIELDS)
       .lean()
       .exec();
 
-    return docs.map((doc: any): ScoredHit => ({
+    return docs.map((doc: any): ScoredHit => {
+      const hit = this.toProjectHit(doc, lang);
+      return { ...hit, score: pattern.test(hit.title) ? 2 : 1 };
+    });
+  }
+
+  /** Titolo/descrizione nella lingua richiesta (fallback italiano); link al case study se esiste. */
+  private toProjectHit(doc: any, lang?: string): SearchHit {
+    const tr = lang && lang !== 'it' ? doc.translations?.[lang] ?? {} : {};
+    const hasCaseStudy = [doc.problem, doc.solution, doc.results].some((t: string | undefined) => t && t.trim());
+    return {
       id: String(doc._id),
       type: 'project',
-      title: doc.title,
-      excerpt: doc.description,
-      // No project detail route exists yet — results link back to the list page.
-      url: '/projects',
+      title: pickField(tr.title, doc.title),
+      excerpt: pickField(tr.description, doc.description),
+      url: hasCaseStudy && doc.slug ? `/projects/${doc.slug}` : '/projects',
       tags: doc.technologies ?? [],
       updatedAt: doc.updatedAt ?? new Date(0),
-      score: pattern.test(doc.title) ? 2 : 1,
-    }));
+    };
   }
 }

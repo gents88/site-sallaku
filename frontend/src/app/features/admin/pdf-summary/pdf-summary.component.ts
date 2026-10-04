@@ -3,13 +3,20 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { UploadClient } from '../../../core/http/upload-client.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from '@env/environment';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 interface FileSummaryResult {
   title: string;
@@ -33,17 +40,22 @@ const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })
 export class PdfSummaryComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private http       = inject(HttpClient);
+  private readonly upload = inject(UploadClient);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
   private readonly t = inject(TranslateService);
+  private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics = inject(AnalyticsTrackingService);
+  readonly auth = inject(AuthService);
+  readonly authModal = inject(AuthModalService);
   private readonly api = `${environment.apiUrl}/ai/summarize-file`;
 
   workspaceItem = signal<WorkspaceItem | null>(null);
@@ -55,9 +67,9 @@ export class PdfSummaryComponent implements OnInit {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'AI PDF Summarizer — Extract Key Points from Any Document',
-      description: 'Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.',
-      url: 'https://gentsallaku.it/lab/pdf-summary',
+      title: this.t.instant('pdf_summary.seo_title'),
+      description: this.t.instant('pdf_summary.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-summary', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
@@ -107,11 +119,16 @@ export class PdfSummaryComponent implements OnInit {
   }
 
   selectedFile   = signal<File | null>(null);
-  loading        = signal(false);
+  /** Upload con avanzamento reale + annullamento (anche all'uscita dalla pagina). */
+  readonly req   = new TrackedRequest();
+  readonly loading = this.req.active;
   result         = signal<FileSummaryResult | null>(null);
   error          = signal<string | null>(null);
   justCopied     = signal(false);
   justSent       = signal(false);
+  saving         = signal(false);
+  justSaved      = signal(false);
+  saveError      = signal('');
 
   selectedLang: SummaryLang = 'en';
   outputMode     = signal<OutputMode>('short');
@@ -183,6 +200,40 @@ export class PdfSummaryComponent implements OnInit {
     });
   }
 
+  saveToAccount(): void {
+    const r = this.result();
+    if (!r) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults
+      .save({
+        toolType: 'pdf-summary',
+        title: r.title || this.selectedFile()?.name || 'Riassunto',
+        payload: r as unknown as Record<string, unknown>,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          const rawMsg = err?.error?.message;
+          this.saveError.set(
+            Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+          );
+          setTimeout(() => this.saveError.set(''), 3000);
+        },
+      });
+  }
+
   downloadSummary(): void {
     const r = this.result();
     if (!r) return;
@@ -212,18 +263,26 @@ export class PdfSummaryComponent implements OnInit {
   summarize(): void {
     const file = this.selectedFile();
     if (!file) return;
-    this.loading.set(true); this.error.set(null); this.result.set(null);
+    this.error.set(null); this.result.set(null);
     const form = new FormData();
     form.append('file', file);
     form.append('lang', this.selectedLang);
     form.append('mode', this.outputMode());
-    this.http.post<FileSummaryResult>(this.api, form).subscribe({
-      next: (res) => { this.result.set(res); this.loading.set(false); },
+    this.req.run(this.upload.post<FileSummaryResult>(this.api, form), {
+      next: (res) => {
+        this.result.set(res);
+        this.analytics.trackClick('lab_tool', 'pdf_summary');
+      },
       error: (err) => {
-        const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_summary.err_generic');
-        this.error.set(msg); this.loading.set(false);
+        const rawMsg = err?.error?.message ?? err?.message;
+        const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('pdf_summary.err_generic');
+        this.error.set(msg);
       },
     });
+  }
+
+  cancelRequest(): void {
+    this.req.cancel();
   }
 
   reset(): void { this.selectedFile.set(null); this.result.set(null); this.error.set(null); }

@@ -17,6 +17,8 @@ describe('ProjectsService', () => {
       create: jest.fn(),
       findByIdAndUpdate: jest.fn(),
       findByIdAndDelete: jest.fn(),
+      findOne: jest.fn(),
+      bulkWrite: jest.fn().mockResolvedValue({}),
     };
     mockCache = {
       getOrSet: jest.fn((_key: string, factory: () => unknown) => factory()),
@@ -32,6 +34,30 @@ describe('ProjectsService', () => {
     }).compile();
 
     service = module.get<ProjectsService>(ProjectsService);
+  });
+
+  describe('findBySlug', () => {
+    it('returns the case study for a known slug', async () => {
+      mockProjectModel.findOne.mockReturnValue({ lean: () => ({ exec: () => Promise.resolve({ slug: 'cms' }) }) });
+      await expect(service.findBySlug('cms')).resolves.toEqual({ slug: 'cms' });
+      expect(mockProjectModel.findOne).toHaveBeenCalledWith({ slug: 'cms' });
+    });
+
+    it('throws NotFoundException for an unknown slug', async () => {
+      mockProjectModel.findOne.mockReturnValue({ lean: () => ({ exec: () => Promise.resolve(null) }) });
+      await expect(service.findBySlug('nope')).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('reorder', () => {
+    it('writes the array index as `order` in one bulkWrite and invalidates the cache', async () => {
+      await service.reorder(['a1', 'b2']);
+      expect(mockProjectModel.bulkWrite).toHaveBeenCalledWith([
+        { updateOne: { filter: { _id: 'a1' }, update: { $set: { order: 0 } } } },
+        { updateOne: { filter: { _id: 'b2' }, update: { $set: { order: 1 } } } },
+      ]);
+      expect(mockCache.invalidate).toHaveBeenCalledWith('projects:all');
+    });
   });
 
   describe('create', () => {

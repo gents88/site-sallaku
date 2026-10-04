@@ -34,7 +34,8 @@
           }
           <button mat-icon-button type="button"
                   (click)="togglePreview()"
-                  [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
+                  [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate"
+                  [attr.aria-label]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
             <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </div>
@@ -201,7 +202,7 @@
                 </span>
                 {{ 'blog_manage.preview_label' | translate }}
               </h3>
-              <button mat-icon-button type="button" (click)="togglePreview()" [matTooltip]="'blog_manage.close_preview' | translate">
+              <button mat-icon-button type="button" (click)="togglePreview()" [matTooltip]="'blog_manage.close_preview' | translate" [attr.aria-label]="'blog_manage.close_preview' | translate">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
@@ -295,7 +296,8 @@
           <div class="form-actions__right">
             <button mat-icon-button type="button"
                     (click)="togglePreview()"
-                    [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
+                    [matTooltip]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate"
+                    [attr.aria-label]="(showPreview ? 'blog_manage.hide_preview' : 'blog_manage.show_preview') | translate">
               <mat-icon>{{ showPreview ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             <button mat-stroked-button type="button" (click)="saveDraft()" [disabled]="saving">
@@ -320,8 +322,22 @@
   } @else if (!posts.length) {
     <p class="empty-state">{{ 'blog_manage.empty' | translate }}</p>
   } @else {
+    <div class="status-filter" role="group" [attr.aria-label]="'blog_manage.filter_label' | translate">
+      <button type="button" [class.active]="statusFilter === 'all'" [attr.aria-pressed]="statusFilter === 'all'" (click)="setStatusFilter('all')">
+        {{ 'blog_manage.filter_all' | translate }} <span>{{ posts.length }}</span>
+      </button>
+      <button type="button" [class.active]="statusFilter === 'published'" [attr.aria-pressed]="statusFilter === 'published'" (click)="setStatusFilter('published')">
+        {{ 'admin.published' | translate }} <span>{{ posts.length - draftCount }}</span>
+      </button>
+      <button type="button" [class.active]="statusFilter === 'draft'" [attr.aria-pressed]="statusFilter === 'draft'" (click)="setStatusFilter('draft')">
+        {{ 'admin.drafts' | translate }} <span>{{ draftCount }}</span>
+      </button>
+    </div>
+    @if (!visiblePosts.length) {
+      <p class="empty-state">{{ (statusFilter === 'draft' ? 'blog_manage.empty_drafts' : 'blog_manage.empty_published') | translate }}</p>
+    }
     <div class="list">
-      @for (post of posts; track post._id) {
+      @for (post of visiblePosts; track post._id) {
         <div class="card list-item">
           @if (post.coverImage) {
             <img [src]="post.coverImage" [alt]="post.title" class="list-item__thumb" />
@@ -346,6 +362,9 @@
           </div>
           <div class="list-item__actions">
             <a mat-icon-button [routerLink]="['/dashboard/blog/preview', post._id]" target="_blank" [matTooltip]="'blog_manage.action_preview' | translate"><mat-icon>visibility</mat-icon></a>
+            @if (post.published) {
+              <button mat-icon-button (click)="unpublish(post)" [matTooltip]="'blog_manage.action_unpublish' | translate"><mat-icon>unpublished</mat-icon></button>
+            }
             <button mat-icon-button (click)="openEdit(post)" [matTooltip]="'common.edit' | translate"><mat-icon>edit</mat-icon></button>
             <button mat-icon-button color="warn" (click)="delete(post._id)" [matTooltip]="'common.delete' | translate"><mat-icon>delete</mat-icon></button>
           </div>

@@ -72,8 +72,13 @@
                  (matChipInputTokenEnd)="addTech($event)" />
         </mat-form-field>
 
+        <app-translations-editor
+          [fields]="translatableFields"
+          [source]="translationSource"
+          [(translations)]="translations" />
+
         <div class="form-actions">
-          <button mat-button type="button" (click)="showForm = false">{{ 'common.cancel' | translate }}</button>
+          <button mat-button type="button" (click)="cancelForm()">{{ 'common.cancel' | translate }}</button>
           <button mat-raised-button color="primary" type="submit" [disabled]="saving">
             {{ (saving ? 'about_manage.saving' : 'common.save') | translate }}
           </button>
@@ -87,17 +92,21 @@
   } @else if (!experiences.length) {
     <p class="empty-state">{{ 'experiences_manage.empty' | translate }}</p>
   } @else {
-    <div class="list">
-      @for (exp of experiences; track exp._id) {
-        <div class="card list-item">
+    <p class="form-hint">{{ 'projects_manage.reorder_hint' | translate }}</p>
+    <div class="list" cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListDisabled]="reordering" [attr.aria-busy]="reordering">
+      @for (exp of experiences; track exp._id; let i = $index; let first = $first; let last = $last) {
+        <div class="card list-item" cdkDrag>
+          <span class="drag-handle" cdkDragHandle aria-hidden="true"><app-nav-icon name="drag" [size]="20" /></span>
           <div class="list-item__info">
             <h3>{{ exp.role }} – <span class="text-muted">{{ exp.company }}</span></h3>
             <p class="text-muted">{{ exp.startDate }} → {{ exp.current ? ('experiences_manage.present' | translate) : exp.endDate }}</p>
             <p>{{ exp.description | slice:0:120 }}…</p>
           </div>
           <div class="list-item__actions">
-            <button mat-icon-button (click)="openEdit(exp)"><mat-icon>edit</mat-icon></button>
-            <button mat-icon-button color="warn" (click)="delete(exp._id)"><mat-icon>delete</mat-icon></button>
+            <button mat-icon-button (click)="move(i, -1)" [disabled]="first || reordering" [attr.aria-label]="('projects_manage.move_up' | translate) + ': ' + exp.role"><app-nav-icon name="arrow-up" /></button>
+            <button mat-icon-button (click)="move(i, 1)" [disabled]="last || reordering" [attr.aria-label]="('projects_manage.move_down' | translate) + ': ' + exp.role"><app-nav-icon name="arrow-down" /></button>
+            <button mat-icon-button (click)="openEdit(exp)" [attr.aria-label]="'common.edit' | translate"><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button color="warn" (click)="delete(exp._id)" [attr.aria-label]="'common.delete' | translate"><mat-icon>delete</mat-icon></button>
           </div>
         </div>
       }

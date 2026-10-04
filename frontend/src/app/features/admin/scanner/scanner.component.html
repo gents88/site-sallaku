@@ -121,12 +121,7 @@
               }
             </div>
           }
-          @if (ocrBusy()) {
-            <div class="progress-wrap">
-              <div class="progress-bar"><div class="progress-fill"></div></div>
-              <small>{{ 'ocr.recognizing' | translate }}</small>
-            </div>
-          }
+          <app-request-progress [request]="ocrReq" (cancel)="cancelOcr()" />
           @if (msg()) {
             <p class="msg result-pop" role="alert" aria-live="assertive" [class.msg--ok]="msgOk()">{{ msg() }}</p>
           }

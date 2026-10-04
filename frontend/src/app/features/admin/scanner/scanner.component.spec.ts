@@ -9,6 +9,8 @@ import { ConversionService } from '../../../core/services/conversion.service';
 import { OcrService } from '../../../core/services/ocr.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { BreadcrumbStubComponent } from '../../../../testing/breadcrumb-stub';
 
 function page(id: number) {
   return { id, thumb: 'data:image/jpeg;base64,x', blob: new Blob([new Uint8Array(4)], { type: 'image/jpeg' }) };
@@ -30,9 +32,10 @@ describe('ScannerComponent', () => {
         importProvidersFrom(TranslateModule.forRoot()),
         { provide: ConversionService, useValue: conv },
         { provide: OcrService, useValue: { extract: vi.fn() } },
-        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn() } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
       ],
     });
+    TestBed.overrideComponent(ScannerComponent, { remove: { imports: [BreadcrumbComponent] }, add: { imports: [BreadcrumbStubComponent] } });
 
     workspace = TestBed.inject(WorkspaceService);
   }

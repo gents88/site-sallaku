@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -18,6 +18,7 @@ function passwordsMatch(ctrl: AbstractControl) {
 
 @Component({
   selector: 'app-register',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
@@ -120,11 +121,23 @@ export class RegisterComponent {
 
     const { name, email, password } = this.form.value as any;
     this.auth.register({ name, email, password }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      // La registrazione non fa più login automatico: il backend manda un
+      // OTP per verificare che l'email sia davvero del richiedente, quindi
+      // si passa allo step 2 della pagina OTP (già inviato lato server, non
+      // richiederlo di nuovo) invece di tornare subito alla home.
+      next: () => {
+        this.snackBar.open(
+          this.translate.instant('auth.register_verify_sent'),
+          this.translate.instant('common.close'),
+          { duration: 6000 },
+        );
+        this.router.navigate(['/dashboard/login/otp'], { queryParams: { email, sent: 1 } });
+      },
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg = err?.error?.message || this.translate.instant('common.error');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.translate.instant('common.error');
         this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 4000 });
       },
     });

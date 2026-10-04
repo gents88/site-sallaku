@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { loadStylesheetOnce } from '../../../core/utils/load-stylesheet';
 import { MATERIAL_CSS } from '../../../core/utils/vendor-css.generated';
 
 @Component({
   selector: 'app-admin-shell',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [RouterOutlet],
   template: `
-    <main class="admin-main">
+    <!-- div, non <main>: la shell sta già dentro il <main id="main-content"> di AppComponent,
+         e due landmark main annidati non sono HTML valido. -->
+    <div class="admin-main">
       <router-outlet />
-    </main>
+    </div>
   `,
   styles: [`
     :host { display: block; padding-top: var(--navbar-height, 72px); }

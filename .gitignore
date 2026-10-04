@@ -24,3 +24,6 @@ backups/
 
 # Frontend build artifacts — never commit
 frontend-deploy/
+
+# Blog posts prefetched before prerendering (scripts/prefetch-blog-posts.js)
+frontend/.prerender-cache/
