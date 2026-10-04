@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from '../../blog/schemas/post.schema';
@@ -31,6 +31,8 @@ function pickField(value: string | undefined, fallback: string): string {
 
 @Injectable()
 export class MongoSearchProvider implements SearchProvider {
+  private readonly logger = new Logger(MongoSearchProvider.name);
+
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
     @InjectModel(Project.name) private readonly projectModel: Model<ProjectDocument>,
@@ -46,10 +48,19 @@ export class MongoSearchProvider implements SearchProvider {
     let posts: ScoredHit[] = [];
     let projects: ScoredHit[] = [];
     if (mode === 'full' && hasIndexableTerm(q)) {
-      [posts, projects] = await Promise.all([
-        type === 'project' ? Promise.resolve([]) : this.textSearchPosts(q, lang),
-        type === 'post' ? Promise.resolve([]) : this.textSearchProjects(q, lang),
-      ]);
+      try {
+        [posts, projects] = await Promise.all([
+          type === 'project' ? Promise.resolve([]) : this.textSearchPosts(q, lang),
+          type === 'post' ? Promise.resolve([]) : this.textSearchProjects(q, lang),
+        ]);
+      } catch (err) {
+        // Indice full-text assente o non ancora creato (es. "text index required for
+        // $text query", o un altro indice text già presente sulla collection): la
+        // ricerca non deve andare in 500, si ripiega sulla scansione regex.
+        this.logger.warn(`Full-text search unavailable, falling back to regex: ${(err as Error).message}`);
+        posts = [];
+        projects = [];
+      }
     }
     if (posts.length + projects.length === 0) {
       [posts, projects] = await Promise.all([

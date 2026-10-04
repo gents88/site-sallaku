@@ -50,4 +50,23 @@ describe('MongoSearchProvider', () => {
     const res = await new MongoSearchProvider(model({}) as never, projects as never).search({ q: 'management', lang: 'en', type: 'project', page: 1, limit: 5 });
     expect(res.data[0]).toMatchObject({ title: 'Management', url: '/projects/gest' });
   });
+
+  it('falls back to regex instead of failing when the text index is missing (production regression)', async () => {
+    const regexChain = () => {
+      const q: Record<string, jest.Mock> = {};
+      for (const m of ['sort', 'limit', 'select', 'lean']) q[m] = jest.fn(() => q);
+      q.exec = jest.fn().mockResolvedValue([post('Angular')]);
+      return q;
+    };
+    const failingText = () => {
+      const q: Record<string, jest.Mock> = {};
+      for (const m of ['sort', 'limit', 'select', 'lean']) q[m] = jest.fn(() => q);
+      q.exec = jest.fn().mockRejectedValue(new Error('text index required for $text query'));
+      return q;
+    };
+    const posts = { find: jest.fn((f: Record<string, unknown>) => (f.$text ? failingText() : regexChain())) };
+    const projects = { find: jest.fn((f: Record<string, unknown>) => (f.$text ? failingText() : { sort: () => ({ limit: () => ({ select: () => ({ lean: () => ({ exec: async () => [] }) }) }) }) })) };
+    const res = await new MongoSearchProvider(posts as never, projects as never).search({ q: 'angular', page: 1, limit: 10 });
+    expect(res.data.map(h => h.title)).toEqual(['Angular']);
+  });
 });
