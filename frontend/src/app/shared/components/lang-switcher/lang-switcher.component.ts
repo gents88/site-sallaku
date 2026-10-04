@@ -1,4 +1,4 @@
-import { Component, HostListener, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LanguageService, Lang, SUPPORTED_LANGS, stripLangPrefix, withLangPrefix } from '../../../core/services/language.service';
@@ -6,6 +6,7 @@ import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-lang-switcher',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule],
   template: `
