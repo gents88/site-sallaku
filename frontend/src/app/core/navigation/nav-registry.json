@@ -14,6 +14,8 @@
   { "id": "lab", "route": "/lab", "labelKey": "nav.ai_tools", "group": "lab", "access": "public", "icon": "flask", "search": true, "prerender": true, "sitemap": { "changefreq": "monthly", "priority": "0.9" } },
 
   { "id": "dashboard", "route": "/dashboard", "labelKey": "sidebar.items.dashboard", "group": "overview", "access": "admin", "icon": "dashboard", "sidebar": true },
+  { "id": "admin-contacts", "route": "/dashboard/contacts", "labelKey": "sidebar.items.contacts", "group": "overview", "access": "admin", "icon": "inbox", "sidebar": true },
+  { "id": "admin-users", "route": "/dashboard/users", "labelKey": "sidebar.items.users", "group": "overview", "access": "admin", "icon": "users", "sidebar": true },
   { "id": "admin-projects", "route": "/dashboard/projects", "labelKey": "sidebar.items.projects", "group": "content", "access": "admin", "icon": "grid", "sidebar": true },
   { "id": "admin-blog", "route": "/dashboard/blog", "labelKey": "sidebar.items.blog", "group": "content", "access": "admin", "icon": "article", "sidebar": true },
   { "id": "admin-experiences", "route": "/dashboard/experiences", "labelKey": "sidebar.items.experiences", "group": "content", "access": "admin", "icon": "timeline", "sidebar": true },
