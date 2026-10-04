@@ -9,6 +9,7 @@ import { finalize, timeout } from 'rxjs';
 import { NewsletterAdminService } from '../../../core/services/newsletter-admin.service';
 import { NewsletterCounts, NewsletterStatus, NewsletterSubscriber } from '../../../core/models/newsletter.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { NewsletterCampaignsComponent } from './campaigns/newsletter-campaigns.component';
 
 const PAGE_SIZE = 20;
 
@@ -18,7 +19,7 @@ type StatusFilter = NewsletterStatus | 'all';
   selector: 'app-newsletter-manage',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, TranslateModule, MatButtonModule, MatIconModule, MatSnackBarModule, LoadingSpinnerComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, MatButtonModule, MatIconModule, MatSnackBarModule, LoadingSpinnerComponent, NewsletterCampaignsComponent],
   templateUrl: './newsletter-manage.component.html',
   styleUrl: './newsletter-manage.component.scss',
 })

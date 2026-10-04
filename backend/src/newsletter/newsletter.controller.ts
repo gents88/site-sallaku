@@ -50,6 +50,20 @@ export class NewsletterController {
     return this.newsletterService.unsubscribe(token);
   }
 
+  /**
+   * Disiscrizione one-click (RFC 8058): i client di posta fanno POST
+   * all'URL dell'header List-Unsubscribe, senza aprire pagine. Gmail e
+   * Yahoo lo richiedono per gli invii massivi delle campagne.
+   */
+  @Post('unsubscribe')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @ApiOperation({ summary: 'One-click unsubscribe (public, RFC 8058, token from List-Unsubscribe)' })
+  @ApiQuery({ name: 'token', required: true })
+  unsubscribeOneClick(@Query('token') token: string) {
+    return this.newsletterService.unsubscribe(token);
+  }
+
   @Get('admin/subscribers')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
