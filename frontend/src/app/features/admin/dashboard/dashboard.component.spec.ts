@@ -62,7 +62,7 @@ describe('DashboardComponent', () => {
     expect(el.querySelector('.dashboard-error')?.textContent).toContain('admin.seo_title');
     const values = Array.from(el.querySelectorAll('.stat-card__value')).map(v => v.textContent?.trim());
     expect(values[0]).toBe('3'); // projectsCount è caricato
-    expect(values.filter(v => v === '—')).toHaveLength(6); // le 6 card derivate da "core"
+    expect(values.filter(v => v === '—')).toHaveLength(7); // le 7 card derivate da "core" (bozze inclusa)
     expect(values).not.toContain('0');
   });
 
@@ -82,6 +82,15 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
     expect(component.stats.find(s => s.labelKey === 'admin.projects')!.value).toBe(3);
     expect(el.querySelector('.dashboard-error')?.textContent).toContain('admin.overview_refresh_error');
+  });
+
+  it('has a "Drafts" card that opens the blog list filtered on drafts', () => {
+    const { component, el } = setup(() => of(overview()));
+    const drafts = component.stats.find(s => s.labelKey === 'admin.drafts')!;
+    expect(drafts.value).toBe(1);
+    expect(drafts.query).toEqual({ status: 'draft' });
+    const links = Array.from(el.querySelectorAll('a.stat-card')).map(a => a.getAttribute('href'));
+    expect(links).toContain('/dashboard/blog?status=draft');
   });
 
   it('manual refresh bypasses the server cache', () => {

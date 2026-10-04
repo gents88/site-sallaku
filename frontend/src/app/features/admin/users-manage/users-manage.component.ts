@@ -1,15 +1,26 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { AdminUser, UserRole, UsersAdminService } from '../../../core/services/users-admin.service';
+import { AdminUser, PASSWORD_PATTERN, PHONE_PATTERN, UserRole, UsersAdminService } from '../../../core/services/users-admin.service';
 import { AuthService } from '../../../core/services/auth.service';
 
+interface UserForm {
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRole;
+  emailVerified: boolean;
+  password: string;
+}
+
+const EMPTY_FORM: UserForm = { name: '', email: '', phone: '', role: 'user', emailVerified: true, password: '' };
+
 /**
- * Gestione utenti: elenco con ricerca/filtro ruolo, cambio ruolo ed
- * eliminazione. Il backend impedisce di modificare sé stessi e di togliere
+ * Gestione utenti: elenco con ricerca/filtro ruolo, creazione, modifica,
+ * cambio ruolo, reimpostazione password, disconnessione ed eliminazione. Il backend impedisce di modificare sé stessi e di togliere
  * l'ultimo admin; qui la propria riga è già disabilitata, e gli errori del
  * server (es. "ultimo admin") vengono mostrati invece di essere ignorati.
  */
@@ -41,6 +52,17 @@ export class UsersManageComponent {
   readonly errorMessage = signal<string | null>(null);
 
   readonly currentUserId = computed(() => this.auth.currentUser()?._id ?? null);
+
+  /** Editor: null = chiuso; senza `id` = nuovo utente. */
+  readonly editor = signal<{ id?: string } | null>(null);
+  readonly form = signal<UserForm>({ ...EMPTY_FORM });
+  readonly formErrors = signal<string[]>([]);
+  readonly saving = signal(false);
+
+  /** Dialog "reimposta password". */
+  readonly passwordFor = signal<AdminUser | null>(null);
+  readonly newPassword = signal('');
+  readonly notice = signal<string | null>(null);
 
   private loadSub: Subscription | null = null;
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
@@ -108,6 +130,121 @@ export class UsersManageComponent {
       next: () => {
         this.busyId.set(null);
         this.reload();
+      },
+      error: err => {
+        this.busyId.set(null);
+        this.errorMessage.set(this.serverMessage(err));
+      },
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.passwordFor()) this.passwordFor.set(null);
+    else if (this.editor()) this.editor.set(null);
+  }
+
+  // ── Creazione / modifica ────────────────────────────────────────────────
+
+  openCreate(): void {
+    this.form.set({ ...EMPTY_FORM });
+    this.formErrors.set([]);
+    this.editor.set({});
+  }
+
+  openEdit(user: AdminUser): void {
+    this.form.set({
+      name: user.name, email: user.email ?? '', phone: user.phone ?? '', role: user.role,
+      emailVerified: user.emailVerified, password: '',
+    });
+    this.formErrors.set([]);
+    this.editor.set({ id: user._id });
+  }
+
+  closeEditor(): void {
+    this.editor.set(null);
+  }
+
+  patchForm(patch: Partial<UserForm>): void {
+    this.form.update(f => ({ ...f, ...patch }));
+  }
+
+  /** Stesse regole del backend, così l'errore arriva prima dell'invio. */
+  validate(form: UserForm, creating: boolean): string[] {
+    const errors: string[] = [];
+    if (!form.name.trim()) errors.push('users_manage.err_name');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.push('users_manage.err_email');
+    if (form.phone.trim() && !PHONE_PATTERN.test(form.phone.trim())) errors.push('users_manage.err_phone');
+    if (creating && form.password && !PASSWORD_PATTERN.test(form.password)) errors.push('users_manage.err_password');
+    return errors;
+  }
+
+  saveUser(): void {
+    const ed = this.editor();
+    if (!ed || this.saving()) return;
+    const f = this.form();
+    const creating = !ed.id;
+    const errors = this.validate(f, creating);
+    this.formErrors.set(errors);
+    if (errors.length) return;
+
+    const base = { name: f.name.trim(), email: f.email.trim(), emailVerified: f.emailVerified };
+    const req$ = creating
+      ? this.api.create({ ...base, role: f.role, ...(f.phone.trim() ? { phone: f.phone.trim() } : {}), ...(f.password ? { password: f.password } : {}) })
+      : this.api.update(ed.id!, { ...base, phone: f.phone.trim() });
+
+    this.saving.set(true);
+    this.errorMessage.set(null);
+    req$.subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.editor.set(null);
+        this.notice.set(this.t.instant(creating ? 'users_manage.created' : 'users_manage.updated'));
+        this.reload();
+      },
+      error: err => {
+        this.saving.set(false);
+        this.errorMessage.set(this.serverMessage(err));
+      },
+    });
+  }
+
+  // ── Password e sessioni ─────────────────────────────────────────────────
+
+  openPassword(user: AdminUser): void {
+    this.newPassword.set('');
+    this.formErrors.set([]);
+    this.passwordFor.set(user);
+  }
+
+  savePassword(): void {
+    const user = this.passwordFor();
+    if (!user) return;
+    if (!PASSWORD_PATTERN.test(this.newPassword())) {
+      this.formErrors.set(['users_manage.err_password']);
+      return;
+    }
+    this.busyId.set(user._id);
+    this.api.setPassword(user._id, this.newPassword()).subscribe({
+      next: () => {
+        this.busyId.set(null);
+        this.passwordFor.set(null);
+        this.notice.set(this.t.instant('users_manage.password_set', { name: user.name }));
+      },
+      error: err => {
+        this.busyId.set(null);
+        this.errorMessage.set(this.serverMessage(err));
+      },
+    });
+  }
+
+  revokeSessions(user: AdminUser): void {
+    if (this.isSelf(user) || !confirm(this.t.instant('users_manage.confirm_revoke', { name: user.name }))) return;
+    this.busyId.set(user._id);
+    this.api.revokeSessions(user._id).subscribe({
+      next: () => {
+        this.busyId.set(null);
+        this.notice.set(this.t.instant('users_manage.sessions_revoked', { name: user.name }));
       },
       error: err => {
         this.busyId.set(null);

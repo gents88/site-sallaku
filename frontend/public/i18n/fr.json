@@ -1795,7 +1795,11 @@
     "err_session_expired": "Session expirée. Veuillez vous reconnecter.",
     "err_save_failed_default": "Échec de l'enregistrement. Vérifiez le titre, le contenu et le slug.",
     "action_unpublish": "Repasser en brouillon",
-    "unpublished_msg": "Article remis en brouillon (vues conservées)"
+    "unpublished_msg": "Article remis en brouillon (vues conservées)",
+    "filter_label": "Filtrer par statut",
+    "filter_all": "Tous",
+    "empty_drafts": "Aucun brouillon.",
+    "empty_published": "Aucun article publié."
   },
   "privacy": {
     "title": "Politique de confidentialité",
@@ -1952,7 +1956,28 @@
     "verified": "E-mail vérifié",
     "confirm_role": "Changer le rôle de {{name}} en « {{role}} » ?",
     "confirm_delete": "Supprimer définitivement l'utilisateur {{name}} ?",
-    "action_error": "L'opération a échoué."
+    "action_error": "L'opération a échoué.",
+    "new": "Nouvel utilisateur",
+    "edit_title": "Modifier l'utilisateur",
+    "phone": "Téléphone (facultatif)",
+    "password_optional": "Mot de passe (facultatif)",
+    "password_hint": "Au moins 8 caractères avec majuscule, minuscule, chiffre et symbole. Sans mot de passe, l'utilisateur se connecte avec un code par e-mail.",
+    "save": "Enregistrer",
+    "created": "Utilisateur créé.",
+    "updated": "Utilisateur mis à jour.",
+    "password_title": "Nouveau mot de passe pour {{name}}",
+    "password_effect": "L'utilisateur sera déconnecté de tous ses appareils.",
+    "new_password": "Nouveau mot de passe",
+    "set_password": "Définir le mot de passe",
+    "password_short": "Mot de passe",
+    "password_set": "Mot de passe de {{name}} mis à jour.",
+    "revoke": "Déconnecter",
+    "confirm_revoke": "Déconnecter {{name}} de tous ses appareils ?",
+    "sessions_revoked": "{{name}} a été déconnecté.",
+    "err_name": "Le nom est obligatoire.",
+    "err_email": "Saisissez un e-mail valide.",
+    "err_phone": "Téléphone au format international, ex. +393331234567.",
+    "err_password": "Le mot de passe ne respecte pas les exigences."
   },
   "notifications": {
     "label": "Notifications",

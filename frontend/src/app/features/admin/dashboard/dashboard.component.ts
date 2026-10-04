@@ -46,6 +46,8 @@ interface StatCard {
   color: string;
   /** Sparkline da una serie reale per giorno, null se la metrica non ne ha una. */
   spark: number[] | null;
+  /** Filtro della pagina di destinazione (es. solo bozze). */
+  query?: Record<string, string>;
 }
 
 interface ChartBar {
@@ -246,7 +248,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { labelKey: 'admin.projects',    value: failed.has('projectsCount') ? null : data.projectsCount,       icon: 'work',                   route: '/dashboard/projects',    color: '#6366f1', spark: null },
       { labelKey: 'admin.experiences', value: failed.has('experiencesCount') ? null : data.experiencesCount, icon: 'history_edu',            route: '/dashboard/experiences', color: '#06b6d4', spark: null },
       { labelKey: 'admin.blog_posts',  value: coreValue(adminStats.content.total),                           icon: 'article',                route: '/dashboard/blog',        color: '#10b981', spark: null },
-      { labelKey: 'admin.published',   value: coreValue(adminStats.content.published),                       icon: 'published_with_changes', route: '/dashboard/blog',        color: '#f59e0b', spark: null },
+      { labelKey: 'admin.published',   value: coreValue(adminStats.content.published),                       icon: 'published_with_changes', route: '/dashboard/blog',        color: '#f59e0b', spark: null, query: { status: 'published' } },
+      // Bozze: un clic apre la lista articoli filtrata sulle sole bozze.
+      { labelKey: 'admin.drafts',      value: coreValue(adminStats.content.drafts),                          icon: 'edit',                   route: '/dashboard/blog',        color: '#64748b', spark: null, query: { status: 'draft' } },
       { labelKey: 'admin.contacts',    value: coreValue(adminStats.contacts),                                icon: 'mail',                   route: '/dashboard/contacts',             color: '#ec4899', spark: sparkline(adminStats.contactsByDay) },
       { labelKey: 'admin.users',       value: coreValue(adminStats.users),                                   icon: 'group',                  route: '/dashboard/users',             color: '#8b5cf6', spark: null },
       { labelKey: 'admin.visits',      value: coreValue(adminStats.visits.totalViews),                       icon: 'visibility',             route: '/dashboard',             color: '#14b8a6', spark: sparkline(adminStats.visits.viewsByDay) },

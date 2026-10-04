@@ -1795,7 +1795,11 @@
     "err_session_expired": "Sessione scaduta. Effettua di nuovo l'accesso.",
     "err_save_failed_default": "Salvataggio non riuscito. Controlla titolo, contenuto e slug.",
     "action_unpublish": "Metti in bozza",
-    "unpublished_msg": "Articolo riportato in bozza (letture conservate)"
+    "unpublished_msg": "Articolo riportato in bozza (letture conservate)",
+    "filter_label": "Filtra per stato",
+    "filter_all": "Tutti",
+    "empty_drafts": "Nessuna bozza.",
+    "empty_published": "Nessun articolo pubblicato."
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -1952,7 +1956,28 @@
     "verified": "Email verificata",
     "confirm_role": "Cambiare il ruolo di {{name}} in \"{{role}}\"?",
     "confirm_delete": "Eliminare definitivamente l'utente {{name}}?",
-    "action_error": "Operazione non riuscita."
+    "action_error": "Operazione non riuscita.",
+    "new": "Nuovo utente",
+    "edit_title": "Modifica utente",
+    "phone": "Telefono (opzionale)",
+    "password_optional": "Password (opzionale)",
+    "password_hint": "Almeno 8 caratteri con maiuscola, minuscola, numero e simbolo. Senza password l'utente accede con il codice via email.",
+    "save": "Salva",
+    "created": "Utente creato.",
+    "updated": "Utente aggiornato.",
+    "password_title": "Nuova password per {{name}}",
+    "password_effect": "L'utente verrà disconnesso da tutti i dispositivi.",
+    "new_password": "Nuova password",
+    "set_password": "Imposta password",
+    "password_short": "Password",
+    "password_set": "Password di {{name}} aggiornata.",
+    "revoke": "Disconnetti",
+    "confirm_revoke": "Disconnettere {{name}} da tutti i dispositivi?",
+    "sessions_revoked": "{{name}} è stato disconnesso.",
+    "err_name": "Il nome è obbligatorio.",
+    "err_email": "Inserisci un'email valida.",
+    "err_phone": "Telefono nel formato internazionale, es. +393331234567.",
+    "err_password": "La password non rispetta i requisiti."
   },
   "notifications": {
     "label": "Notifiche",

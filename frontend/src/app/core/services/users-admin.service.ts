@@ -15,6 +15,18 @@ export interface AdminUser {
   createdAt: string;
 }
 
+export interface UserFormValue {
+  name: string;
+  email: string;
+  phone?: string;
+  role: UserRole;
+  emailVerified: boolean;
+}
+
+/** Stessa regola del backend (auth/password-policy.ts): 8+ caratteri, maiuscola, minuscola, cifra, simbolo. */
+export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,72}$/;
+export const PHONE_PATTERN = /^\+[1-9]\d{6,14}$/;
+
 export interface AdminUsersPage {
   data: AdminUser[];
   total: number;
@@ -37,6 +49,22 @@ export class UsersAdminService {
 
   updateRole(id: string, role: UserRole): Observable<{ _id: string; role: UserRole }> {
     return this.http.patch<{ _id: string; role: UserRole }>(`${this.url}/${id}/role`, { role });
+  }
+
+  create(body: UserFormValue & { password?: string }): Observable<AdminUser> {
+    return this.http.post<AdminUser>(this.url, body);
+  }
+
+  update(id: string, body: Partial<Omit<UserFormValue, 'role'>>): Observable<AdminUser> {
+    return this.http.patch<AdminUser>(`${this.url}/${id}`, body);
+  }
+
+  setPassword(id: string, password: string): Observable<void> {
+    return this.http.post<void>(`${this.url}/${id}/password`, { password });
+  }
+
+  revokeSessions(id: string): Observable<void> {
+    return this.http.post<void>(`${this.url}/${id}/revoke-sessions`, {});
   }
 
   remove(id: string): Observable<void> {

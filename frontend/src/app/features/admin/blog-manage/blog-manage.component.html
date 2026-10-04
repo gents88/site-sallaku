@@ -322,8 +322,22 @@
   } @else if (!posts.length) {
     <p class="empty-state">{{ 'blog_manage.empty' | translate }}</p>
   } @else {
+    <div class="status-filter" role="group" [attr.aria-label]="'blog_manage.filter_label' | translate">
+      <button type="button" [class.active]="statusFilter === 'all'" [attr.aria-pressed]="statusFilter === 'all'" (click)="setStatusFilter('all')">
+        {{ 'blog_manage.filter_all' | translate }} <span>{{ posts.length }}</span>
+      </button>
+      <button type="button" [class.active]="statusFilter === 'published'" [attr.aria-pressed]="statusFilter === 'published'" (click)="setStatusFilter('published')">
+        {{ 'admin.published' | translate }} <span>{{ posts.length - draftCount }}</span>
+      </button>
+      <button type="button" [class.active]="statusFilter === 'draft'" [attr.aria-pressed]="statusFilter === 'draft'" (click)="setStatusFilter('draft')">
+        {{ 'admin.drafts' | translate }} <span>{{ draftCount }}</span>
+      </button>
+    </div>
+    @if (!visiblePosts.length) {
+      <p class="empty-state">{{ (statusFilter === 'draft' ? 'blog_manage.empty_drafts' : 'blog_manage.empty_published') | translate }}</p>
+    }
     <div class="list">
-      @for (post of posts; track post._id) {
+      @for (post of visiblePosts; track post._id) {
         <div class="card list-item">
           @if (post.coverImage) {
             <img [src]="post.coverImage" [alt]="post.title" class="list-item__thumb" />

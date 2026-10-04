@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
+import { PASSWORD_BCRYPT_ROUNDS } from '../auth/password-policy';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -141,6 +143,63 @@ export class UsersService {
     if (!target) throw new NotFoundException(`User #${targetId} not found`);
     if (target.role === 'admin') await this.assertNotLastAdmin();
     await this.userModel.deleteOne({ _id: targetId }).exec();
+  }
+
+  /** Creazione da admin: niente OTP di verifica, l'indirizzo lo garantisce l'admin (salvo emailVerified=false). */
+  async createByAdmin(dto: { name: string; email: string; phone?: string; role: string; password?: string; emailVerified?: boolean }) {
+    await this.assertUnique(dto.email, dto.phone);
+    const created = await this.userModel.create({
+      name: dto.name.trim(),
+      email: dto.email.toLowerCase().trim(),
+      ...(dto.phone ? { phone: dto.phone } : {}),
+      role: dto.role,
+      emailVerified: dto.emailVerified ?? true,
+      ...(dto.password ? { passwordHash: await bcrypt.hash(dto.password, PASSWORD_BCRYPT_ROUNDS) } : {}),
+    });
+    return this.toAdminView(created);
+  }
+
+  /** Modifica del profilo. Il ruolo resta su updateRole (protezioni su sé stessi e ultimo admin). */
+  async updateByAdmin(targetId: string, dto: { name?: string; email?: string; phone?: string; emailVerified?: boolean }) {
+    const user = await this.userModel.findById(targetId).exec();
+    if (!user) throw new NotFoundException(`User #${targetId} not found`);
+    const email = dto.email?.toLowerCase().trim();
+    await this.assertUnique(email !== user.email ? email : undefined, dto.phone && dto.phone !== user.phone ? dto.phone : undefined, targetId);
+
+    if (dto.name !== undefined) user.name = dto.name.trim();
+    if (email !== undefined) user.email = email;
+    if (dto.phone !== undefined) user.phone = dto.phone === '' ? undefined : dto.phone;
+    if (dto.emailVerified !== undefined) user.emailVerified = dto.emailVerified;
+    await user.save();
+    return this.toAdminView(user);
+  }
+
+  /** Nuova password scelta dall'admin; chiude anche tutte le sessioni dell'utente. */
+  async setPasswordByAdmin(targetId: string, password: string): Promise<void> {
+    const passwordHash = await bcrypt.hash(password, PASSWORD_BCRYPT_ROUNDS);
+    const res = await this.userModel.updateOne({ _id: targetId }, { $set: { passwordHash, refreshTokenHash: null } }).exec();
+    if (!res.matchedCount) throw new NotFoundException(`User #${targetId} not found`);
+  }
+
+  /** Disconnette l'utente ovunque: il refresh token non vale più (l'access token scade da solo). */
+  async revokeSessions(actorId: string, targetId: string): Promise<void> {
+    if (actorId === targetId) throw new BadRequestException('Use logout to end your own session');
+    const res = await this.userModel.updateOne({ _id: targetId }, { $set: { refreshTokenHash: null } }).exec();
+    if (!res.matchedCount) throw new NotFoundException(`User #${targetId} not found`);
+  }
+
+  private async assertUnique(email?: string, phone?: string, exceptId?: string): Promise<void> {
+    const or: Record<string, string>[] = [];
+    if (email) or.push({ email: email.toLowerCase().trim() });
+    if (phone) or.push({ phone });
+    if (!or.length) return;
+    const filter: Record<string, unknown> = { $or: or };
+    if (exceptId) filter._id = { $ne: exceptId };
+    if (await this.userModel.exists(filter)) throw new ConflictException('Email or phone already in use');
+  }
+
+  private toAdminView(u: UserDocument) {
+    return { _id: String(u._id), name: u.name, email: u.email ?? null, phone: u.phone ?? null, role: u.role, emailVerified: u.emailVerified, createdAt: (u as unknown as { createdAt?: Date }).createdAt };
   }
 
   private async assertNotLastAdmin(): Promise<void> {
