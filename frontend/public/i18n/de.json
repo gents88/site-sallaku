@@ -356,7 +356,8 @@
     "cookie_link": "Cookie-Richtlinie",
     "manage_cookies": "Cookie-Einwilligung verwalten",
     "legal": "Rechtliches",
-    "navigation": "Footer-Navigation"
+    "navigation": "Footer-Navigation",
+    "guide": "Anleitung"
   },
   "auth": {
     "login_title": "Beim Dashboard anmelden",
@@ -2054,5 +2055,50 @@
     "current_light": "Helles Design aktiv. Wechseln zu {{next}}",
     "current_dark": "Dunkles Design aktiv. Wechseln zu {{next}}",
     "current_system": "System-Design aktiv. Wechseln zu {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} von {{total}}",
+    "next": "Weiter",
+    "back": "Zurück",
+    "skip": "Tutorial überspringen",
+    "done": "Fertig",
+    "steps": {
+      "welcome": {
+        "title": "Willkommen!",
+        "body": "In wenigen Schritten zeige ich Ihnen, wie Sie sich auf der Website zurechtfinden: Menü, Inhalte und Assistent. Sie können die Anleitung jederzeit überspringen."
+      },
+      "navigation": {
+        "title": "Navigation",
+        "body": "Über dieses Menü erreichen Sie alle Bereiche der Website und alle kostenlosen Tools im Lab."
+      },
+      "group_ai": {
+        "title": "KI-Tools",
+        "body": "PDF-Suche, Bibliothek, Zusammenfassung, Formatierer, Übersetzung und Folien-Generator: künstliche Intelligenz für Ihre Dokumente."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Geben Sie das Ergebnis eines Tools direkt an das nächste weiter, ohne Dateien herunter- und wieder hochzuladen."
+      },
+      "group_account": {
+        "title": "Meine Dateien",
+        "body": "Hier finden Sie die Ergebnisse, die Sie aus den Tools gespeichert haben, verknüpft mit Ihrem Konto."
+      },
+      "group_tools": {
+        "title": "PDF- und Dokument-Tools",
+        "body": "PDFs organisieren und anzeigen, im Editor schreiben, Formate konvertieren, Text per OCR extrahieren und Dokumente mit der Kamera scannen."
+      },
+      "main": {
+        "title": "Hauptinhalt",
+        "body": "In der Mitte sehen Sie den Inhalt der aktuellen Seite: Projekte, Leistungen und Artikel auf der Startseite; im Lab den Arbeitsbereich des gewählten Tools."
+      },
+      "chatbot": {
+        "title": "Virtueller Assistent",
+        "body": "Eine Frage? Tippen Sie hier, um mit dem Assistenten über Leistungen, Projekte und Tools zu chatten. Bei Bedarf können Sie direkt mit Gent sprechen."
+      },
+      "finish": {
+        "title": "Alles bereit!",
+        "body": "Sie können diese Anleitung jederzeit über den Link „Anleitung“ unten auf der Seite erneut ansehen."
+      }
+    }
   }
 }

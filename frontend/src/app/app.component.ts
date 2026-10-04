@@ -15,6 +15,7 @@ import { InactivityService } from './core/services/inactivity.service';
 import { PlatformUiService } from './core/services/platform-ui.service';
 import { AppUpdateService } from './core/services/app-update.service';
 import { AdminNotificationsService } from './core/services/admin-notifications.service';
+import { OnboardingTourService } from './core/onboarding/onboarding-tour.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
 import { SearchOverlayComponent } from './shared/components/search-overlay/search-overlay.component';
@@ -431,6 +432,7 @@ export class AppComponent implements OnInit {
     private platformUi: PlatformUiService,
     private appUpdate: AppUpdateService,
     private adminNotifications: AdminNotificationsService,
+    private onboardingTour: OnboardingTourService,
     private seoService: SeoService,
     private analyticsTracking: AnalyticsTrackingService,
     private router: Router,
@@ -445,6 +447,7 @@ export class AppComponent implements OnInit {
       this.platformUi.init();
       this.appUpdate.init();
       this.adminNotifications.init();
+      this.onboardingTour.scheduleAutoStart();
     }
     this.seoService.trackPageViews();
     this.analyticsTracking.init();

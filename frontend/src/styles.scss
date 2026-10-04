@@ -9,6 +9,7 @@
    file, so it's declared here rather than next to the theme blocks below. */
 @use './styles/platform/ios';
 @use './styles/platform/android';
+@use './styles/onboarding-tour';
 
 /* ── CSS custom properties ─────────────────────── */
 :root {

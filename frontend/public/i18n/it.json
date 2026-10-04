@@ -356,7 +356,8 @@
     "cookie_link": "Cookie Policy",
     "manage_cookies": "Gestisci consenso cookie",
     "legal": "Legale",
-    "navigation": "Navigazione footer"
+    "navigation": "Navigazione footer",
+    "guide": "Guida"
   },
   "auth": {
     "login_title": "Accedi al Dashboard",
@@ -2054,5 +2055,50 @@
     "current_light": "Tema chiaro attivo. Passa a {{next}}",
     "current_dark": "Tema scuro attivo. Passa a {{next}}",
     "current_system": "Tema di sistema attivo. Passa a {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} di {{total}}",
+    "next": "Avanti",
+    "back": "Indietro",
+    "skip": "Salta tutorial",
+    "done": "Concludi",
+    "steps": {
+      "welcome": {
+        "title": "Benvenuto!",
+        "body": "In pochi passaggi ti mostro come muoverti nel sito: menu, contenuti e assistente. Puoi saltare la guida in qualsiasi momento."
+      },
+      "navigation": {
+        "title": "Navigazione",
+        "body": "Da questo menu raggiungi le sezioni del sito e tutti gli strumenti gratuiti del Lab."
+      },
+      "group_ai": {
+        "title": "Strumenti AI",
+        "body": "Ricerca PDF, Libreria, Riassunto, Formattatore, Traduzione e Genera Slide: l'intelligenza artificiale lavora sui tuoi documenti."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Passa il risultato di uno strumento direttamente al successivo, senza scaricare e ricaricare file."
+      },
+      "group_account": {
+        "title": "I miei file",
+        "body": "Qui ritrovi i risultati che hai salvato dagli strumenti, collegati al tuo account."
+      },
+      "group_tools": {
+        "title": "Strumenti PDF e documenti",
+        "body": "Organizza e visualizza PDF, scrivi con l'editor, converti formati, estrai testo con l'OCR e scansiona documenti con la fotocamera."
+      },
+      "main": {
+        "title": "Contenuto principale",
+        "body": "Al centro trovi il contenuto della pagina in cui ti trovi: sulla home progetti, servizi e articoli; nel Lab l'area di lavoro dello strumento scelto."
+      },
+      "chatbot": {
+        "title": "Assistente virtuale",
+        "body": "Hai una domanda? Tocca qui per chattare con l'assistente su servizi, progetti e strumenti. Se serve, puoi chiedere di parlare direttamente con Gent."
+      },
+      "finish": {
+        "title": "Tutto pronto!",
+        "body": "Puoi rivedere questa guida quando vuoi dal link «Guida» in fondo alla pagina."
+      }
+    }
   }
 }

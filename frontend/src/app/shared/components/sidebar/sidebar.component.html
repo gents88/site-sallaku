@@ -45,7 +45,7 @@
        due landmark annidati con lo stesso scopo. -->
   <nav class="sidebar-nav" [attr.aria-label]="brandLabelKey() | translate">
     @for (group of navGroups(); track group.id) {
-      <div class="nav-group">
+      <div class="nav-group" [attr.data-tour-group]="group.id">
         <div class="nav-group-label">
           <span class="group-title">{{ group.titleKey | translate }}</span>
         </div>

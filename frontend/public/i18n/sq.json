@@ -356,7 +356,8 @@
     "cookie_link": "Politika e Cookies",
     "manage_cookies": "Menaxho pëlqimin e cookies",
     "legal": "Ligjore",
-    "navigation": "Navigimi i footer-it"
+    "navigation": "Navigimi i footer-it",
+    "guide": "Udhëzuesi"
   },
   "auth": {
     "login_title": "Hyrje në Dashboard",
@@ -2054,5 +2055,50 @@
     "current_light": "Tema e çelët aktive. Kalo te {{next}}",
     "current_dark": "Tema e errët aktive. Kalo te {{next}}",
     "current_system": "Tema e sistemit aktive. Kalo te {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} nga {{total}}",
+    "next": "Përpara",
+    "back": "Prapa",
+    "skip": "Kapërce udhëzuesin",
+    "done": "Përfundo",
+    "steps": {
+      "welcome": {
+        "title": "Mirë se erdhe!",
+        "body": "Në pak hapa të tregoj si të lëvizësh në faqe: menyja, përmbajtja dhe asistenti. Mund ta kapërcesh udhëzuesin në çdo moment."
+      },
+      "navigation": {
+        "title": "Navigimi",
+        "body": "Nga kjo meny arrin seksionet e faqes dhe të gjitha mjetet falas të Lab-it."
+      },
+      "group_ai": {
+        "title": "Mjetet AI",
+        "body": "Kërkimi PDF, Biblioteka, Përmbledhja, Formatuesi, Përkthimi dhe Gjeneruesi i slajdeve: inteligjenca artificiale punon mbi dokumentet e tua."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Kalo rezultatin e një mjeti direkt te tjetri, pa shkarkuar dhe ringarkuar skedarë."
+      },
+      "group_account": {
+        "title": "Skedarët e mi",
+        "body": "Këtu gjen rezultatet që ke ruajtur nga mjetet, të lidhura me llogarinë tënde."
+      },
+      "group_tools": {
+        "title": "Mjete për PDF dhe dokumente",
+        "body": "Organizo dhe shiko PDF, shkruaj në editor, konverto formate, nxirr tekst me OCR dhe skano dokumente me kamerë."
+      },
+      "main": {
+        "title": "Përmbajtja kryesore",
+        "body": "Në qendër shfaqet përmbajtja e faqes ku ndodhesh: projektet, shërbimet dhe artikujt në faqen kryesore; hapësira e punës së mjetit të zgjedhur në Lab."
+      },
+      "chatbot": {
+        "title": "Asistenti virtual",
+        "body": "Ke një pyetje? Prek këtu për të biseduar me asistentin për shërbimet, projektet dhe mjetet. Nëse duhet, mund të kërkosh të flasësh direkt me Gent-in."
+      },
+      "finish": {
+        "title": "Gati!",
+        "body": "Mund ta rishikosh këtë udhëzues kurdo nga lidhja «Udhëzuesi» në fund të faqes."
+      }
+    }
   }
 }
