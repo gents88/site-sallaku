@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-session-timeout-modal',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, TranslateModule],
   templateUrl: './session-timeout-modal.component.html',
@@ -11,6 +12,8 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class SessionTimeoutModalComponent implements AfterViewInit {
   @Input({ required: true }) countdownSeconds = 30;
+  /** Il testo di default parla di "sessione admin": per un utente 'user' ne serve uno generico. */
+  @Input() admin = true;
   @Output() stayLoggedIn = new EventEmitter<void>();
   @Output() logoutNow = new EventEmitter<void>();
 

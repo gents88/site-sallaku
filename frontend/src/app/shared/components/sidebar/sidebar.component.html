@@ -11,12 +11,10 @@
   [class.is-rail]="mode() === 'rail'"
   [class.open]="drawerOpen()"
   [class.expanded]="expanded()"
-  role="navigation"
-  [attr.aria-label]="brandLabelKey() | translate"
 >
   <div class="sidebar-header">
     <div class="sidebar-brand">
-      <span class="brand-badge" aria-hidden="true">{{ brandBadge() }}</span>
+      <span class="brand-badge" aria-hidden="true"><app-nav-icon [name]="brandBadge()" [size]="18" /></span>
       <span class="brand-label">{{ brandLabelKey() | translate }}</span>
     </div>
 
@@ -43,14 +41,15 @@
     }
   </div>
 
-  <nav class="sidebar-nav">
+  <!-- Unico landmark: prima <aside role="navigation"> conteneva questo <nav>,
+       due landmark annidati con lo stesso scopo. -->
+  <nav class="sidebar-nav" [attr.aria-label]="brandLabelKey() | translate">
     @for (group of navGroups(); track group.id) {
       <div class="nav-group">
         <div class="nav-group-label">
-          <span class="group-emoji" aria-hidden="true">{{ group.emoji }}</span>
           <span class="group-title">{{ group.titleKey | translate }}</span>
         </div>
-        @for (item of group.items; track item.route) {
+        @for (item of group.items; track item.id) {
           <a
             [routerLink]="item.route | langUrl"
             routerLinkActive="active"
@@ -63,7 +62,7 @@
             (focus)="showTooltip($event, item.labelKey)"
             (blur)="hideTooltip()"
           >
-            <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
+            <span class="nav-icon" aria-hidden="true"><app-nav-icon [name]="item.icon" /></span>
             <span class="nav-label">{{ item.labelKey | translate }}</span>
           </a>
         }
@@ -78,13 +77,13 @@
     [routerLink]="'/lab' | langUrl"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
-    (click)="onNavigate({ icon: '🚀', labelKey: 'sidebar.lab', route: '/lab' })"
+    (click)="onNavigate(labCta)"
     (mouseenter)="showTooltip($event, 'sidebar.view_all_tools')"
     (mouseleave)="hideTooltip()"
     (focus)="showTooltip($event, 'sidebar.view_all_tools')"
     (blur)="hideTooltip()"
   >
-    <span class="cta-icon" aria-hidden="true">🚀</span>
+    <span class="cta-icon" aria-hidden="true"><app-nav-icon name="rocket" [size]="20" /></span>
     <span class="cta-text">
       <strong>{{ 'sidebar.explore_lab' | translate }}</strong>
       <small>{{ 'sidebar.items_available' | translate: { count: itemCount() } }}</small>
