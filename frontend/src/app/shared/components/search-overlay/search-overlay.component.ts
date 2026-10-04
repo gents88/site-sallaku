@@ -1,137 +1,34 @@
-import { Component, ElementRef, HostListener, ViewChild, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, of, catchError } from 'rxjs';
+import { Subject, catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SearchHit, SearchService } from '../../../core/services/search.service';
-import { SiteSearchService } from '../../../core/services/site-search.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { SearchOverlayService } from '../../../core/services/search-overlay.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
+import { NAV_REGISTRY, NavEntry } from '../../../core/navigation/nav-registry';
+import { NavIconComponent } from '../nav-icon/nav-icon.component';
+import { PaletteItem, PaletteSection, filterLocal, mergeSections } from './palette-items';
 
-const MIN_QUERY_LENGTH = 2;
+const MIN_REMOTE_QUERY = 2;
 const DEBOUNCE_MS = 250;
+const MAX_IDLE_PAGES = 8;
 
+/**
+ * Palette unica (Ctrl/Cmd+K, "/" o la lente in navbar): azioni, pagine e
+ * contenuti in un solo posto. Prima c'erano due overlay separati — Ctrl+K
+ * solo per la navigazione, "/" solo per i contenuti — con indici delle
+ * pagine duplicati e già disallineati.
+ */
 @Component({
   selector: 'app-search-overlay',
   standalone: true,
-  imports: [TranslateModule],
-  template: `
-    @if (overlay.open()) {
-      <div class="so-backdrop" (click)="close()"></div>
-      <div class="so-panel" role="dialog" aria-modal="true" [attr.aria-label]="'search.dialog_label' | translate">
-        <form class="so-input-row" (submit)="viewAll(); $event.preventDefault()">
-          <span class="so-input-icon">🔎</span>
-          <input
-            #input
-            type="text"
-            class="so-input"
-            [placeholder]="'search.placeholder' | translate"
-            [value]="query()"
-            (input)="onQuery($event)"
-            (keydown.arrowdown)="move(1); $event.preventDefault()"
-            (keydown.arrowup)="move(-1); $event.preventDefault()"
-            (keydown.enter)="onEnter(); $event.preventDefault()"
-          />
-          <kbd class="so-esc">Esc</kbd>
-        </form>
-        <p class="so-close-hint">{{ 'search.tap_outside_close' | translate }}</p>
-
-        @if (query().trim().length > 0 && query().trim().length < minLength) {
-          <div class="so-hint">{{ 'search.min_chars' | translate: { count: minLength } }}</div>
-        } @else if (loading()) {
-          <div class="so-hint">{{ 'search.loading' | translate }}</div>
-        } @else if (combined().length) {
-          <ul class="so-list">
-            @for (hit of combined(); track hit.id; let i = $index) {
-              <li>
-                <button
-                  type="button"
-                  class="so-item"
-                  [class.active]="i === activeIndex()"
-                  (mouseenter)="activeIndex.set(i)"
-                  (click)="select(i)"
-                >
-                  <span class="so-item-icon">{{ hitIcon(hit) }}</span>
-                  <span class="so-item-body">
-                    <span class="so-item-title">{{ hit.title }}</span>
-                    <span class="so-item-excerpt">{{ hit.excerpt }}</span>
-                  </span>
-                  <span class="so-item-type">{{ ('search.filters.' + hit.type) | translate }}</span>
-                </button>
-              </li>
-            }
-          </ul>
-          <button type="button" class="so-view-all" (click)="viewAll()">
-            {{ 'search.view_all' | translate }}
-          </button>
-        } @else if (query().trim().length >= minLength) {
-          <div class="so-empty">{{ 'search.no_results' | translate }}</div>
-        }
-      </div>
-    }
-  `,
-  styles: [`
-    .so-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,.55);
-      z-index: 900; backdrop-filter: blur(2px);
-    }
-    .so-panel {
-      position: fixed; top: 14vh; left: 50%; transform: translateX(-50%);
-      width: min(560px, 92vw); max-height: 68vh;
-      background: var(--bg-secondary, #161b22);
-      border: 1px solid var(--border-color, #30363d);
-      border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.45);
-      z-index: 901; overflow: hidden; display: flex; flex-direction: column;
-    }
-    .so-input-row {
-      display: flex; align-items: center; gap: .6rem;
-      padding: .9rem 1.1rem; border-bottom: 1px solid var(--border-color, #30363d);
-    }
-    .so-input-icon { font-size: .95rem; opacity: .7; }
-    .so-input {
-      flex: 1; background: transparent; border: none; outline: none;
-      color: var(--text-primary, #e6edf3); font-size: .95rem;
-    }
-    .so-esc {
-      font-size: .68rem; color: var(--text-muted, #6e7681);
-      border: 1px solid var(--border-color, #30363d); border-radius: 5px;
-      padding: .1rem .4rem;
-    }
-    .so-close-hint {
-      display: none;
-      margin: 0; padding: .5rem 1.1rem 0;
-      font-size: .74rem; color: var(--text-secondary, #8b949e); text-align: center;
-    }
-    @media (max-width: 600px) {
-      .so-esc { display: none; }
-      .so-close-hint { display: block; }
-    }
-    .so-list { list-style: none; margin: 0; padding: .4rem; overflow-y: auto; }
-    .so-item {
-      display: flex; align-items: center; gap: .7rem; width: 100%;
-      padding: .55rem .7rem; border-radius: 9px; border: none;
-      background: transparent; color: var(--text-primary, #e6edf3);
-      text-align: left; cursor: pointer; font-size: .88rem;
-      &.active, &:hover { background: rgba(108,99,255,.12); }
-    }
-    .so-item-icon { flex-shrink: 0; }
-    .so-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
-    .so-item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .so-item-excerpt {
-      font-size: .76rem; color: var(--text-secondary, #8b949e);
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    .so-item-type { font-size: .72rem; color: var(--text-secondary, #8b949e); flex-shrink: 0; }
-    .so-hint, .so-empty {
-      padding: 1.5rem; text-align: center; color: var(--text-secondary, #8b949e); font-size: .85rem;
-    }
-    .so-view-all {
-      margin: 0 .4rem .4rem; padding: .6rem; border-radius: 9px; border: none;
-      background: rgba(108,99,255,.12); color: var(--text-primary, #e6edf3);
-      font-size: .85rem; font-weight: 600; cursor: pointer;
-      &:hover { background: rgba(108,99,255,.2); }
-    }
-  `],
+  imports: [TranslateModule, NavIconComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './search-overlay.component.html',
+  styleUrl: './search-overlay.component.scss',
 })
 export class SearchOverlayComponent {
   @ViewChild('input') inputRef?: ElementRef<HTMLInputElement>;
@@ -139,18 +36,78 @@ export class SearchOverlayComponent {
   readonly overlay = inject(SearchOverlayService);
   private readonly router = inject(Router);
   private readonly searchSvc = inject(SearchService);
-  private readonly siteSearchSvc = inject(SiteSearchService);
   private readonly langSvc = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly auth = inject(AuthService);
+  private readonly theme = inject(ThemeService);
 
-  readonly minLength = MIN_QUERY_LENGTH;
   readonly query = signal('');
-  readonly results = signal<SearchHit[]>([]);
-  readonly menuResults = signal<SearchHit[]>([]);
-  readonly combined = computed(() => [...this.menuResults(), ...this.results()]);
+  readonly remote = signal<SearchHit[]>([]);
   readonly loading = signal(false);
   readonly activeIndex = signal(0);
+  readonly minRemote = MIN_REMOTE_QUERY;
+
+  private readonly isAdmin = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
+
+  /** Azioni rapide; quelle admin solo per gli admin. Label ricalcolate al cambio lingua. */
+  private readonly actions = computed<PaletteItem[]>(() => {
+    this.langSvc.current();
+    const t = (k: string) => this.translate.instant(k) as string;
+    const list: PaletteItem[] = [
+      { id: 'act:theme', section: 'actions', icon: 'palette', title: t('palette.action_theme'), run: () => this.theme.toggle() },
+      { id: 'act:contact', section: 'actions', icon: 'mail', title: t('palette.action_contact'), url: '/contact' },
+      { id: 'act:lab', section: 'actions', icon: 'flask', title: t('palette.action_lab'), url: '/lab' },
+    ];
+    if (this.isAdmin()) {
+      list.push(
+        { id: 'act:new-post', section: 'actions', icon: 'article', title: t('palette.action_new_post'), url: '/dashboard/blog?new=1' },
+        { id: 'act:new-project', section: 'actions', icon: 'grid', title: t('palette.action_new_project'), url: '/dashboard/projects?new=1' },
+        { id: 'act:inbox', section: 'actions', icon: 'inbox', title: t('palette.action_inbox'), url: '/dashboard/contacts' },
+      );
+    }
+    if (this.auth.isLoggedIn()) {
+      list.push({ id: 'act:logout', section: 'actions', icon: 'logout', title: t('palette.action_logout'), run: () => this.auth.logout('/') });
+    }
+    return list;
+  });
+
+  /** Tutte le pagine navigabili dal registro unico (pubbliche + admin per gli admin). */
+  private readonly pages = computed<PaletteItem[]>(() => {
+    this.langSvc.current();
+    const admin = this.isAdmin();
+    return NAV_REGISTRY
+      .filter((e: NavEntry) => (e.navbar || e.sidebar || e.search) && (admin || e.access === 'public'))
+      .map((e: NavEntry) => ({
+        id: `page:${e.id}`,
+        section: 'pages' as const,
+        icon: e.icon,
+        title: this.translate.instant(e.searchTitleKey ?? e.labelKey) as string,
+        detail: e.descKey ? (this.translate.instant(e.descKey) as string) : undefined,
+        url: e.route,
+      }));
+  });
+
+  readonly items = computed<PaletteItem[]>(() => {
+    const q = this.query();
+    if (!q.trim()) {
+      return mergeSections(this.actions(), this.pages().slice(0, MAX_IDLE_PAGES));
+    }
+    const content: PaletteItem[] = this.remote().map(hit => ({
+      id: hit.id,
+      section: 'content',
+      icon: hit.type === 'post' ? 'article' : hit.type === 'project' ? 'grid' : 'search-doc',
+      title: hit.title,
+      detail: hit.excerpt,
+      url: hit.url,
+    }));
+    return mergeSections(filterLocal(this.actions(), q), filterLocal(this.pages(), q), content);
+  });
+
+  readonly activeId = computed(() => {
+    const item = this.items()[this.activeIndex()];
+    return item ? this.optionId(item) : null;
+  });
 
   private readonly query$ = new Subject<string>();
 
@@ -160,27 +117,23 @@ export class SearchOverlayComponent {
         debounceTime(DEBOUNCE_MS),
         distinctUntilChanged(),
         switchMap(q => {
-          if (q.trim().length < MIN_QUERY_LENGTH) {
+          if (q.trim().length < MIN_REMOTE_QUERY) {
             this.loading.set(false);
             return of<SearchHit[]>([]);
           }
           this.loading.set(true);
-          return this.searchSvc.suggest(q.trim(), this.langSvc.current()).pipe(
-            catchError(() => of<SearchHit[]>([])),
-          );
+          return this.searchSvc.suggest(q.trim(), this.langSvc.current()).pipe(catchError(() => of<SearchHit[]>([])));
         }),
       )
       .subscribe(hits => {
         this.loading.set(false);
-        this.results.set(hits);
-        this.activeIndex.set(0);
+        this.remote.set(hits.filter(h => h.type !== 'page'));
       });
 
     effect(() => {
       if (this.overlay.open()) {
         this.query.set('');
-        this.results.set([]);
-        this.menuResults.set([]);
+        this.remote.set([]);
         this.activeIndex.set(0);
         this.analytics.trackClick('search', 'search_overlay_open');
         queueMicrotask(() => this.inputRef?.nativeElement?.focus());
@@ -190,17 +143,21 @@ export class SearchOverlayComponent {
 
   @HostListener('window:keydown', ['$event'])
   onGlobalKeydown(event: KeyboardEvent): void {
+    const isCmdK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+    if (isCmdK) {
+      event.preventDefault();
+      if (this.overlay.open()) this.close();
+      else this.overlay.show();
+      return;
+    }
     if (event.key === 'Escape' && this.overlay.open()) {
       this.close();
       return;
     }
-    if (this.overlay.open() || event.metaKey || event.ctrlKey || event.altKey) return;
-    if (event.key !== '/') return;
-
+    if (this.overlay.open() || event.metaKey || event.ctrlKey || event.altKey || event.key !== '/') return;
     const target = event.target as HTMLElement | null;
     const tag = target?.tagName?.toLowerCase();
-    if (tag === 'input' || tag === 'textarea' || target?.isContentEditable) return;
-
+    if (tag === 'input' || tag === 'textarea' || tag === 'select' || target?.isContentEditable) return;
     event.preventDefault();
     this.overlay.show();
   }
@@ -208,42 +165,51 @@ export class SearchOverlayComponent {
   onQuery(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.query.set(value);
-    // Local menu-entry matching is instant (no network round-trip) — no need to debounce it like the backend suggest call.
-    this.menuResults.set(this.siteSearchSvc.search(value));
     this.activeIndex.set(0);
     this.query$.next(value);
   }
 
-  hitIcon(hit: SearchHit): string {
-    if (hit.type === 'post') return '📝';
-    if (hit.type === 'project') return '💼';
-    return '🧭';
+  sectionStart(index: number): PaletteSection | null {
+    const list = this.items();
+    return index === 0 || list[index - 1]?.section !== list[index].section ? list[index].section : null;
+  }
+
+  optionId(item: PaletteItem): string {
+    return `palette-opt-${item.id.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
   }
 
   move(delta: number): void {
-    const len = this.combined().length;
+    const len = this.items().length;
     if (!len) return;
     this.activeIndex.update(i => (i + delta + len) % len);
   }
 
   onEnter(): void {
-    if (this.combined().length) this.select(this.activeIndex());
+    if (this.items().length) this.select(this.activeIndex());
     else this.viewAll();
   }
 
   select(index: number): void {
-    const hit = this.combined()[index];
-    if (!hit) return;
-    this.analytics.trackClick('search', 'search_overlay_navigate', hit.url);
-    this.router.navigateByUrl(withLangPrefix(hit.url, this.langSvc.current()));
+    const item = this.items()[index];
+    if (!item) return;
+    this.analytics.trackClick('search', 'palette_select', item.url ?? item.id);
     this.close();
+    if (item.run) {
+      item.run();
+      return;
+    }
+    if (item.url) {
+      // Le rotte /dashboard non hanno prefisso lingua.
+      const url = item.url.startsWith('/dashboard') ? item.url : withLangPrefix(item.url, this.langSvc.current());
+      void this.router.navigateByUrl(url);
+    }
   }
 
   viewAll(): void {
     const q = this.query().trim();
-    if (q.length < MIN_QUERY_LENGTH) return;
+    if (q.length < MIN_REMOTE_QUERY) return;
     this.analytics.trackClick('search', 'search_overlay_view_all', q);
-    this.router.navigate([withLangPrefix('/search', this.langSvc.current())], { queryParams: { q } });
+    void this.router.navigate([withLangPrefix('/search', this.langSvc.current())], { queryParams: { q } });
     this.close();
   }
 
