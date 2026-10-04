@@ -42,6 +42,11 @@ const publicPages: Route[] = [
       import('./features/projects/projects-list/projects-list.component').then(m => m.ProjectsListComponent),
   },
   {
+    path: 'projects/:slug',
+    loadComponent: () =>
+      import('./features/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent),
+  },
+  {
     path: 'blog',
     data: { preload: true },
     loadComponent: () =>

@@ -7,6 +7,47 @@
       <div class="section-line"></div>
     </div>
 
+    @if (projects().length) {
+      @if (techFilters().length > 1) {
+        <div class="project-filters" role="group" [attr.aria-label]="'projects.filter_label' | translate">
+          <button type="button" class="project-filter" [class.active]="!selectedTech()" [attr.aria-pressed]="!selectedTech()" (click)="selectedTech.set(null)">
+            {{ 'projects.filter_all' | translate }}
+          </button>
+          @for (tech of techFilters(); track tech) {
+            <button type="button" class="project-filter" [class.active]="selectedTech() === tech" [attr.aria-pressed]="selectedTech() === tech" (click)="toggleTech(tech)">
+              {{ tech }}
+            </button>
+          }
+        </div>
+      }
+      <div class="projects-grid">
+        @for (p of filteredProjects(); track p._id) {
+          <div class="project-card glass-card">
+            @if (p.images[0]) {
+              <div class="project-visual project-visual--image"><img [src]="p.images[0]" [alt]="p.title" loading="lazy" /></div>
+            }
+            <div class="project-content">
+              <div class="project-tags">
+                @for (tag of p.technologies; track tag) { <span class="project-tag">{{ tag }}</span> }
+              </div>
+              <h3 class="project-title">{{ p.title }}</h3>
+              <p class="project-description">{{ p.description }}</p>
+              @if (hasCaseStudy(p)) {
+                <a class="project-cta" [routerLink]="('/projects/' + p.slug) | langUrl">
+                  <span>{{ 'projects.read_case_study' | translate }} <i class="fas fa-arrow-right"></i></span>
+                </a>
+              } @else if (p.liveUrl) {
+                <a class="project-cta" [href]="p.liveUrl" target="_blank" rel="noopener">
+                  <span>{{ 'projects.discover' | translate }} <i class="fas fa-arrow-right"></i></span>
+                </a>
+              }
+            </div>
+          </div>
+        } @empty {
+          <p class="projects-empty">{{ 'projects.filter_empty' | translate }}</p>
+        }
+      </div>
+    } @else {
     <div class="projects-grid">
     @for (p of staticProjects; track p.titleKey) {
       <div class="project-card reveal glass-card">
@@ -34,5 +75,6 @@
       </div>
     }
     </div>
+    }
   </div>
 </section>
