@@ -15,6 +15,15 @@
       <h2>{{ 'admin.dashboard' | translate }}</h2>
       <p class="text-muted">{{ 'common.loading' | translate }}</p>
     </section>
+  } @else if (loadFailed && !lastLoadedAt) {
+    <!-- Primo caricamento fallito: niente griglia di zeri finti, un errore esplicito. -->
+    <section class="dashboard-loading card dashboard-loading--error" role="alert">
+      <div class="dashboard-loading__spinner" aria-hidden="true">
+        <mat-icon>error_outline</mat-icon>
+      </div>
+      <h2>{{ 'admin.overview_load_error' | translate }}</h2>
+      <button type="button" class="btn" (click)="refresh()">{{ 'admin.retry' | translate }}</button>
+    </section>
   } @else {
     <!-- Dashboard toolbar: last updated + manual refresh -->
     <div class="dashboard-toolbar">
@@ -24,11 +33,30 @@
           {{ 'admin.last_updated' | translate }}: {{ lastLoadedAt | date:'HH:mm:ss' }}
         </span>
       }
-      <button type="button" class="chat-load-btn" (click)="loadData()">
-        <mat-icon>refresh</mat-icon>
+      <button type="button" class="chat-load-btn" (click)="refresh()" [disabled]="refreshing" [attr.aria-busy]="refreshing">
+        <mat-icon [class.spin]="refreshing">refresh</mat-icon>
         {{ 'admin.refresh_data' | translate }}
       </button>
     </div>
+
+    @if (loadFailed || failedSections.size) {
+      <div class="dashboard-error" role="alert">
+        <mat-icon aria-hidden="true">error_outline</mat-icon>
+        <div class="dashboard-error__body">
+          @if (loadFailed) {
+            <strong>{{ 'admin.overview_refresh_error' | translate }}</strong>
+          } @else {
+            <strong>{{ 'admin.overview_partial_error' | translate }}</strong>
+            <span>
+              @for (key of failedLabelKeys; track key; let last = $last) {
+                {{ key | translate }}{{ last ? '' : ', ' }}
+              }
+            </span>
+          }
+        </div>
+        <button type="button" class="chat-load-btn" (click)="refresh()" [disabled]="refreshing">{{ 'admin.retry' | translate }}</button>
+      </div>
+    }
 
     <!-- Stats grid -->
     <div class="stats-grid">
@@ -38,13 +66,16 @@
             <mat-icon>{{ stat.icon }}</mat-icon>
           </div>
           <div class="stat-card__content">
-            <p class="stat-card__value">{{ stat.value }}</p>
+            <p class="stat-card__value">{{ stat.value ?? '—' }}</p>
             <p class="stat-card__label text-muted">{{ stat.labelKey | translate }}</p>
-            <div class="stat-mini-chart" aria-hidden="true">
-              @for (bar of stat.miniBars; track $index) {
-                <span class="stat-mini-chart__bar" [style.height.%]="bar" [style.background]="stat.color"></span>
-              }
-            </div>
+            @if (stat.spark) {
+              <!-- Ultimi 7 giorni, dati reali (contatti/visite per giorno). -->
+              <div class="stat-mini-chart" aria-hidden="true" [title]="'admin.last_7_days' | translate">
+                @for (bar of stat.spark; track $index) {
+                  <span class="stat-mini-chart__bar" [style.height.%]="bar" [style.background]="stat.color"></span>
+                }
+              </div>
+            }
           </div>
         </a>
       }
@@ -244,7 +275,7 @@
             <span class="text-muted">{{ 'consent.preferences' | translate }}</span>
           </div>
         </div>
-        <button type="button" class="btn" (click)="loadData()">{{ 'admin.refresh_data' | translate }}</button>
+        <button type="button" class="btn" (click)="refresh()">{{ 'admin.refresh_data' | translate }}</button>
       </section>
     </div>
 
@@ -791,7 +822,7 @@
         </mat-expansion-panel-header>
 
         <div class="utility-actions">
-          <button type="button" class="utility-action-btn" (click)="loadData()">
+          <button type="button" class="utility-action-btn" (click)="refresh()">
             <mat-icon>refresh</mat-icon>
             {{ 'admin.refresh_data' | translate }}
           </button>
