@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
@@ -6,6 +6,7 @@ import { ConsentService } from '../../../core/services/consent.service';
 
 @Component({
   selector: 'app-footer',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [RouterLink, LangUrlPipe, TranslateModule],
   templateUrl: './footer.component.html',

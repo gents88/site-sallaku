@@ -1,12 +1,4 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ElementRef,
-  inject,
-  signal,
-  PLATFORM_ID,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, AfterViewInit, ElementRef, inject, signal, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -31,6 +23,7 @@ const DATE_LOCALES: Record<string, string> = {
 
 @Component({
   selector: 'app-testimonials',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent],
   templateUrl: './testimonials.component.html',

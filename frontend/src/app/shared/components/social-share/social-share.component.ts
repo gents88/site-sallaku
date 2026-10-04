@@ -1,4 +1,4 @@
-import { Component, Input, inject, PLATFORM_ID, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject, PLATFORM_ID, signal } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SnackbarService } from '../../../core/services/snackbar.service';
@@ -20,6 +20,7 @@ import { TrackClickDirective } from '../../directives/track-click.directive';
  */
 @Component({
   selector: 'app-social-share',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, TranslateModule, TrackClickDirective],
   template: `
