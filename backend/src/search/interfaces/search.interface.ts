@@ -16,6 +16,11 @@ export interface SearchParams {
   type?: SearchHitType;
   page: number;
   limit: number;
+  /**
+   * 'full' (default): indice full-text, ordinato per pertinenza.
+   * 'prefix': regex, trova anche parole parziali mentre si digita (suggest).
+   */
+  mode?: 'full' | 'prefix';
 }
 
 export interface SearchResult {

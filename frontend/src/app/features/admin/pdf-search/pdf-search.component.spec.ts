@@ -54,7 +54,7 @@ describe('PdfSearchComponent', () => {
           provide: PdfSearchService,
           useValue: { isLoading: signal(false), search: searchMock, downloadBlob: downloadBlobMock },
         },
-        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn() } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: WorkspaceService, useValue: { send: vi.fn() } },
         { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
         { provide: PdfjsService, useValue: pdfjsMock },
@@ -403,7 +403,7 @@ describe('PdfSearchComponent', () => {
       component.saveToLibrary(makeResult());
       await flush();
 
-      expect(component.error()).toContain('libreria');
+      expect(component.error()).toBe('pdf_search.err_library_save');
       expect(component.savingToLibrary()).toBe(false);
       expect(libraryMock.add).not.toHaveBeenCalled();
     });
