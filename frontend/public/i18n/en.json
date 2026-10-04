@@ -356,7 +356,8 @@
     "cookie_link": "Cookie Policy",
     "manage_cookies": "Manage cookie consent",
     "legal": "Legal",
-    "navigation": "Footer navigation"
+    "navigation": "Footer navigation",
+    "guide": "Guide"
   },
   "auth": {
     "login_title": "Sign In to Dashboard",
@@ -2054,5 +2055,50 @@
     "current_light": "Light theme on. Switch to {{next}}",
     "current_dark": "Dark theme on. Switch to {{next}}",
     "current_system": "System theme on. Switch to {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} of {{total}}",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip tutorial",
+    "done": "Finish",
+    "steps": {
+      "welcome": {
+        "title": "Welcome!",
+        "body": "In a few steps I'll show you how to get around the site: menu, content and assistant. You can skip the guide at any time."
+      },
+      "navigation": {
+        "title": "Navigation",
+        "body": "Use this menu to reach every section of the site and all the free tools in the Lab."
+      },
+      "group_ai": {
+        "title": "AI tools",
+        "body": "PDF Search, Library, Summary, Formatter, Translation and Slide Generator: artificial intelligence working on your documents."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Send the output of one tool straight into the next, without downloading and re-uploading files."
+      },
+      "group_account": {
+        "title": "My files",
+        "body": "Find the results you saved from the tools here, linked to your account."
+      },
+      "group_tools": {
+        "title": "PDF & document tools",
+        "body": "Organize and view PDFs, write in the editor, convert formats, extract text with OCR and scan documents with your camera."
+      },
+      "main": {
+        "title": "Main content",
+        "body": "The centre of the page shows the section you're on: projects, services and articles on the home page; the selected tool's workspace in the Lab."
+      },
+      "chatbot": {
+        "title": "Virtual assistant",
+        "body": "Got a question? Tap here to chat with the assistant about services, projects and tools. If needed, you can ask to talk to Gent directly."
+      },
+      "finish": {
+        "title": "All set!",
+        "body": "You can replay this guide any time from the \"Guide\" link at the bottom of the page."
+      }
+    }
   }
 }

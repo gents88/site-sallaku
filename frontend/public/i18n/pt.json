@@ -356,7 +356,8 @@
     "cookie_link": "Política de Cookies",
     "manage_cookies": "Gerir consentimento de cookies",
     "legal": "Legal",
-    "navigation": "Navegação do rodapé"
+    "navigation": "Navegação do rodapé",
+    "guide": "Guia"
   },
   "auth": {
     "login_title": "Entrar no Dashboard",
@@ -2054,5 +2055,50 @@
     "current_light": "Tema claro ativo. Mudar para {{next}}",
     "current_dark": "Tema escuro ativo. Mudar para {{next}}",
     "current_system": "Tema do sistema ativo. Mudar para {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} de {{total}}",
+    "next": "Seguinte",
+    "back": "Voltar",
+    "skip": "Saltar tutorial",
+    "done": "Concluir",
+    "steps": {
+      "welcome": {
+        "title": "Bem-vindo!",
+        "body": "Em poucos passos mostro-te como navegar no site: menu, conteúdos e assistente. Podes saltar o guia a qualquer momento."
+      },
+      "navigation": {
+        "title": "Navegação",
+        "body": "A partir deste menu chegas às secções do site e a todas as ferramentas gratuitas do Lab."
+      },
+      "group_ai": {
+        "title": "Ferramentas de IA",
+        "body": "Pesquisa de PDF, Biblioteca, Resumo, Formatador, Tradução e Gerador de diapositivos: a inteligência artificial a trabalhar nos teus documentos."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Passa o resultado de uma ferramenta diretamente para a seguinte, sem descarregar e voltar a carregar ficheiros."
+      },
+      "group_account": {
+        "title": "Os meus ficheiros",
+        "body": "Aqui encontras os resultados que guardaste a partir das ferramentas, associados à tua conta."
+      },
+      "group_tools": {
+        "title": "Ferramentas PDF e documentos",
+        "body": "Organiza e visualiza PDF, escreve no editor, converte formatos, extrai texto com OCR e digitaliza documentos com a câmara."
+      },
+      "main": {
+        "title": "Conteúdo principal",
+        "body": "Ao centro vês o conteúdo da página onde estás: projetos, serviços e artigos na página inicial; a área de trabalho da ferramenta escolhida no Lab."
+      },
+      "chatbot": {
+        "title": "Assistente virtual",
+        "body": "Tens uma pergunta? Toca aqui para conversar com o assistente sobre serviços, projetos e ferramentas. Se precisares, podes pedir para falar diretamente com o Gent."
+      },
+      "finish": {
+        "title": "Tudo pronto!",
+        "body": "Podes rever este guia quando quiseres a partir da ligação «Guia» no fundo da página."
+      }
+    }
   }
 }
