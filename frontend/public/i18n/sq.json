@@ -66,7 +66,9 @@
       "convert": "Konvertues Skedarësh",
       "ocr": "Tekst nga Imazhi (OCR)",
       "scanner": "Skaner Dokumentesh",
-      "my_files": "Skedarët e mi"
+      "my_files": "Skedarët e mi",
+      "contacts": "Kontaktet",
+      "users": "Përdoruesit"
     }
   },
   "lang": {
@@ -192,7 +194,11 @@
       "f3": "Integrim me shërbime të jashtme",
       "f4": "Audit trail dhe siguri"
     },
-    "discover": "Zbulo më shumë"
+    "discover": "Zbulo më shumë",
+    "read_case_study": "Lexo rastin studimor",
+    "filter_label": "Filtro sipas teknologjisë",
+    "filter_all": "Të gjitha",
+    "filter_empty": "Asnjë projekt me këtë teknologji."
   },
   "experience": {
     "tag": "experience",
@@ -570,7 +576,12 @@
     "tool_conversion_col_tool": "Mjeti",
     "tool_conversion_col_visitors": "Vizitorë",
     "tool_conversion_col_leads": "U bënë lead",
-    "tool_conversion_col_rate": "Përqindja"
+    "tool_conversion_col_rate": "Përqindja",
+    "overview_core": "Statistikat kryesore",
+    "overview_load_error": "Paneli nuk mund të ngarkohej.",
+    "overview_refresh_error": "Përditësimi dështoi: po shikon të dhënat e mëparshme.",
+    "overview_partial_error": "Disa panele nuk u përditësuan:",
+    "retry": "Provo përsëri"
   },
   "session": {
     "warning_title": "Sesioni po skadon",
@@ -578,7 +589,8 @@
     "seconds_remaining": "sekonda të mbetura",
     "stay_logged_in": "Qëndro i kyçur",
     "logout_now": "Dil tani",
-    "eyebrow": "Skadim sigurie"
+    "eyebrow": "Skadim sigurie",
+    "warning_body_user": "Për siguri, sesioni do të mbyllet së shpejti nëse nuk konfirmon që je ende aktiv."
   },
   "common": {
     "loading": "Duke ngarkuar…",
@@ -592,7 +604,8 @@
     "close": "Mbyll",
     "confirm": "Konfirmo",
     "yes": "Po",
-    "no": "Jo"
+    "no": "Jo",
+    "unsaved_confirm": "Ke ndryshime të paruajtura. Do të dalësh dhe t'i humbasësh?"
   },
   "services": {
     "tag": "shërbime",
@@ -1458,7 +1471,16 @@
     "saved": "Projekti u ruajt!",
     "save_error": "Ruajtja e projektit dështoi.",
     "confirm_delete": "Të fshihet ky projekt?",
-    "deleted": "Projekti u fshi."
+    "deleted": "Projekti u fshi.",
+    "case_study": "Rast studimor",
+    "case_study_hint": "Duke plotësuar të paktën një fushë, projekti merr faqen e vet /projects/<slug>.",
+    "problem_label": "Problemi i klientit",
+    "solution_label": "Zgjidhja e realizuar",
+    "results_label": "Rezultatet (të matshme)",
+    "reorder_hint": "Tërhiq rreshtat ose përdor shigjetat për të ndryshuar renditjen: ruhet menjëherë.",
+    "move_up": "Lëviz lart",
+    "move_down": "Lëviz poshtë",
+    "reorder_error": "Renditja nuk u ruajt, u rikthye e mëparshmja."
   },
   "editor": {
     "title": "Editor Dokumentesh",
@@ -1871,5 +1893,141 @@
     "typing": "AI po shkruan",
     "message_input": "Fusha e mesazhit",
     "send_message": "Dërgo mesazhin"
+  },
+  "request": {
+    "uploading": "Po ngarkohet skedari…",
+    "processing": "Duke u përpunuar…",
+    "cancel": "Anulo",
+    "cancelled": "Veprimi u anulua."
+  },
+  "project_detail": {
+    "not_found": "Projekti nuk u gjet",
+    "load_error": "Projekti nuk mund të ngarkohej.",
+    "back": "Të gjitha projektet",
+    "stack": "Teknologjitë e përdorura",
+    "live": "Shiko online",
+    "repo": "Kodi burimor",
+    "problem": "Problemi",
+    "solution": "Zgjidhja",
+    "results": "Rezultatet",
+    "cta_text": "Ke një projekt të ngjashëm?",
+    "cta_button": "Le të flasim"
+  },
+  "translations_editor": {
+    "title": "Përkthimet",
+    "hint": "Fushat bosh shfaqin tekstin italisht në faqe.",
+    "auto": "Përkthe fushat bosh nga italishtja",
+    "translating": "Duke përkthyer…",
+    "error": "Përkthimi automatik dështoi: provo përsëri ose plotëso me dorë."
+  },
+  "contacts_inbox": {
+    "title": "Mesazhet e kontaktit",
+    "total": "{{count}} mesazhe",
+    "search_placeholder": "Kërko sipas emrit, email-it, subjektit ose tekstit…",
+    "filter_label": "Filtro mesazhet",
+    "filter_all": "Të gjitha",
+    "load_error": "Mesazhet nuk mund të ngarkoheshin.",
+    "empty": "Asnjë mesazh i marrë.",
+    "empty_filtered": "Asnjë mesazh nuk përputhet me filtrat.",
+    "select_all": "Zgjidh të gjitha në faqe",
+    "select": "Zgjidh",
+    "pagination": "Faqosja",
+    "replied_at": "U përgjigj më {{date}}",
+    "action_error": "Veprimi dështoi, provo përsëri."
+  },
+  "users_manage": {
+    "title": "Përdoruesit e regjistruar",
+    "total": "{{count}} përdorues",
+    "search_placeholder": "Kërko sipas emrit, email-it ose telefonit…",
+    "role_filter": "Filtro sipas rolit",
+    "all_roles": "Të gjitha rolet",
+    "load_error": "Përdoruesit nuk mund të ngarkoheshin.",
+    "empty": "Nuk u gjet asnjë përdorues.",
+    "col_name": "Emri",
+    "col_contact": "Email / telefon",
+    "col_role": "Roli",
+    "col_created": "Regjistruar më",
+    "col_actions": "Veprimet",
+    "you": "ti",
+    "verified": "Email i verifikuar",
+    "confirm_role": "Të ndryshohet roli i {{name}} në \"{{role}}\"?",
+    "confirm_delete": "Të fshihet përgjithmonë përdoruesi {{name}}?",
+    "action_error": "Veprimi dështoi."
+  },
+  "notifications": {
+    "label": "Njoftimet",
+    "recent": "Ngjarjet e fundit",
+    "empty": "Asgjë në pritje.",
+    "offline": "Përditësimet live nuk janë të disponueshme: numërimet rifreskohen kur hapet.",
+    "live_waiting": "Biseda live në pritje",
+    "contacts_unread": "Mesazhe të palexuara",
+    "testimonials_pending": "Dëshmi për t'u moderuar",
+    "notes_pending": "Shënime për t'u moderuar",
+    "type_contact": "Mesazh i ri",
+    "type_testimonial": "Dëshmi e re",
+    "type_note": "Shënim i ri",
+    "type_live_handoff": "Kërkohet bisedë live"
+  },
+  "newsletter_campaigns": {
+    "title": "Fushatat",
+    "new": "Fushatë e re",
+    "subject": "Subjekti",
+    "body": "Përmbajtja (HTML)",
+    "body_placeholder": "<h1>Titulli</h1><p>Teksti…</p>",
+    "body_hint": "Skriptet dhe formularët hiqen. Lidhja e çregjistrimit shtohet automatikisht.",
+    "preview": "Pamja paraprake",
+    "save_draft": "Ruaj draftin",
+    "saved": "Drafti u ruajt.",
+    "err_incomplete": "Nevojiten një subjekt (min. 3 karaktere) dhe përmbajtje (min. 10).",
+    "err_schedule_past": "Zgjidh një datë të ardhshme për planifikim.",
+    "send_test": "Dërgo provë",
+    "test_email": "Email për provë",
+    "test_sent": "Prova u dërgua te {{email}}.",
+    "test_failed": "Dërgimi i provës dështoi: kontrollo konfigurimin e email-it.",
+    "test_done": "prova u dërgua",
+    "send_now": "Dërgo tani",
+    "schedule": "Planifiko",
+    "schedule_at": "Data dhe ora e dërgimit",
+    "confirm_send": "Të dërgohet tani \"{{subject}}\" te të gjithë abonentët e konfirmuar?",
+    "confirm_schedule": "Të planifikohet \"{{subject}}\" për të gjithë abonentët e konfirmuar?",
+    "confirm_cancel": "Të anulohet fushata \"{{subject}}\"? Email-et e dërguara nuk mund të tërhiqen.",
+    "confirm_delete": "Të fshihet drafti \"{{subject}}\"?",
+    "queued": "Fushata në radhë për {{count}} abonentë.",
+    "cancelled": "Fushata u anulua.",
+    "cancel": "Anulo dërgimin",
+    "load_error": "Fushatat nuk mund të ngarkoheshin.",
+    "empty": "Ende asnjë fushatë. Krijo një për t'u shkruar abonentëve.",
+    "action_error": "Veprimi dështoi.",
+    "progress": "Përparimi i dërgimit",
+    "stats": "{{sent}} të dërguara, {{failed}} të dështuara nga {{total}}",
+    "scheduled_for": "Planifikuar për {{date}}",
+    "sent_at": "Dërguar më {{date}}",
+    "status_draft": "Draft",
+    "status_scheduled": "Planifikuar",
+    "status_sending": "Duke u dërguar",
+    "status_sent": "Dërguar",
+    "status_cancelled": "Anuluar"
+  },
+  "palette": {
+    "placeholder": "Kërko faqe, artikuj, veprime…",
+    "section_actions": "Veprime",
+    "section_pages": "Faqe",
+    "section_content": "Përmbajtje",
+    "action_theme": "Ndrysho temën e çelët/errët",
+    "action_contact": "Më shkruaj",
+    "action_lab": "Hap Lab-in (mjete AI dhe PDF)",
+    "action_new_post": "Artikull i ri",
+    "action_new_project": "Projekt i ri",
+    "action_inbox": "Hap mesazhet e kontaktit",
+    "action_logout": "Dil",
+    "footer_hint": "↑↓ për të zgjedhur · Enter për të hapur · Ctrl+K ose / për ta hapur"
+  },
+  "theme": {
+    "name_light": "temë e çelët",
+    "name_dark": "temë e errët",
+    "name_system": "tema e sistemit",
+    "current_light": "Tema e çelët aktive. Kalo te {{next}}",
+    "current_dark": "Tema e errët aktive. Kalo te {{next}}",
+    "current_system": "Tema e sistemit aktive. Kalo te {{next}}"
   }
 }

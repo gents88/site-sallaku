@@ -11,8 +11,6 @@ import { LAST_ACTIVITY_KEY } from './inactivity.service';
 const TOKEN_KEY = 'portfolio_token';
 const REFRESH_TOKEN_KEY = 'portfolio_refresh_token';
 const USER_KEY = 'portfolio_user';
-/** Automatically log out after 30 minutes of user inactivity */
-const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
@@ -25,16 +23,23 @@ export class AuthService implements OnDestroy {
   private _user = signal<User | null>(null);
 
   readonly isLoggedIn = computed(() => !!this._token());
+  /**
+   * Modalità cookie: al caricamento l'access token non è in storage e va
+   * ripreso col refresh (cookie httpOnly). Finché è true l'authGuard attende
+   * invece di rimandare al login una sessione ancora valida.
+   */
+  readonly restoring = signal(false);
+  private readonly cookieMode = environment.authRefreshCookie === true;
+  /** In modalità cookie le chiamate di auth devono portare/ricevere il cookie (API su sottodominio). */
+  private get httpOpts() {
+    return this.cookieMode ? { withCredentials: true } : {};
+  }
   readonly currentUser = computed(() => this._user());
   readonly isAdmin = computed(() => this._user()?.role === 'admin');
 
   // Refresh token coordination — prevents multiple simultaneous refresh calls
   private _isRefreshing = false;
   readonly refreshTokenSubject = new BehaviorSubject<string | null>(null);
-
-  private _inactivityTimer: ReturnType<typeof setTimeout> | null = null;
-  private readonly _activityEvents = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
-  private readonly _boundResetTimer = () => this.resetInactivityTimer();
 
   constructor(
     private http: HttpClient,
@@ -43,11 +48,13 @@ export class AuthService implements OnDestroy {
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
     if (this.isBrowser) {
-      this._token.set(this.storage.getItem(TOKEN_KEY));
       this._user.set(this.parseStoredUser());
       window.addEventListener('storage', this.handleStorageSync);
-      if (this.isLoggedIn()) {
-        this.startInactivityTimer();
+      if (this.cookieMode) {
+        // L'access token vive solo in memoria: se c'era una sessione, la si riprende dal cookie.
+        if (this._user()) this.restoreFromCookie();
+      } else {
+        this._token.set(this.storage.getItem(TOKEN_KEY));
       }
     }
   }
@@ -56,7 +63,6 @@ export class AuthService implements OnDestroy {
     if (this.isBrowser) {
       window.removeEventListener('storage', this.handleStorageSync);
     }
-    this.stopInactivityTimer();
   }
 
   /** Safe localStorage accessor — returns a no-op stub on the server. */
@@ -65,7 +71,7 @@ export class AuthService implements OnDestroy {
   }
 
   login(payload: LoginPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, payload).pipe(
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, payload, this.httpOpts).pipe(
       tap(res => this.saveSession(res)),
     );
   }
@@ -92,7 +98,7 @@ export class AuthService implements OnDestroy {
     const isEmail = identifier.includes('@');
     const body = isEmail ? { email: identifier, otp } : { phone: identifier, otp };
     return this.http
-      .post<AuthResponse>(`${this.apiUrl}/otp/verify`, body)
+      .post<AuthResponse>(`${this.apiUrl}/otp/verify`, body, this.httpOpts)
       .pipe(tap(res => this.saveSession(res)));
   }
 
@@ -100,9 +106,9 @@ export class AuthService implements OnDestroy {
    * Attempt to get a new access token using the stored refresh token.
    * Multiple callers share a single in-flight request via BehaviorSubject.
    */
-  doRefresh(): Observable<string> {
+  doRefresh(navigateOnFailure = true): Observable<string> {
     const refreshToken = this.storage.getItem(REFRESH_TOKEN_KEY);
-    if (!refreshToken) {
+    if (!refreshToken && !this.cookieMode) {
       return throwError(() => new Error('No refresh token available'));
     }
 
@@ -118,7 +124,8 @@ export class AuthService implements OnDestroy {
     this.refreshTokenSubject.next(null);
 
     return this.http
-      .post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken })
+      // Modalità cookie: niente token nel body, lo porta il cookie httpOnly.
+      .post<AuthResponse>(`${this.apiUrl}/refresh`, this.cookieMode ? {} : { refreshToken }, this.httpOpts)
       .pipe(
         tap(res => {
           this.saveSession(res);
@@ -129,7 +136,7 @@ export class AuthService implements OnDestroy {
         catchError(err => {
           this._isRefreshing = false;
           this.clearSession();
-          void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });
+          if (navigateOnFailure) void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });
           return throwError(() => err);
         }),
       );
@@ -139,7 +146,7 @@ export class AuthService implements OnDestroy {
     const token = this._token();
     if (token) {
       // Best-effort server-side revocation — don't block the UI on this
-      this.http.post(`${this.apiUrl}/logout`, {}).subscribe({ error: () => {} });
+      this.http.post(`${this.apiUrl}/logout`, {}, this.httpOpts).subscribe({ error: () => {} });
     }
     this.clearSession();
 
@@ -158,55 +165,23 @@ export class AuthService implements OnDestroy {
     return this._token();
   }
 
-  // ── Inactivity timer ─────────────────────────────────────────────────────────
-
-  private startInactivityTimer(): void {
-    if (!this.isBrowser) return;
-    this.stopInactivityTimer();
-    this._activityEvents.forEach(event =>
-      document.addEventListener(event, this._boundResetTimer, { passive: true }),
-    );
-    this.scheduleInactivityLogout();
-  }
-
-  private stopInactivityTimer(): void {
-    if (this.isBrowser) {
-      this._activityEvents.forEach(event =>
-        document.removeEventListener(event, this._boundResetTimer),
-      );
-    }
-    if (this._inactivityTimer !== null) {
-      clearTimeout(this._inactivityTimer);
-      this._inactivityTimer = null;
-    }
-  }
-
-  private scheduleInactivityLogout(): void {
-    if (this._inactivityTimer !== null) clearTimeout(this._inactivityTimer);
-    this._inactivityTimer = setTimeout(() => {
-      if (this.isLoggedIn()) {
-        this.logout();
-      }
-    }, INACTIVITY_TIMEOUT_MS);
-  }
-
-  resetInactivityTimer(): void {
-    if (this.isLoggedIn()) {
-      this.scheduleInactivityLogout();
-    }
-  }
+  // L'inattività è gestita da InactivityService (un solo timer, per ruolo, con avviso).
 
   // ── Session persistence ───────────────────────────────────────────────────────
 
   private saveSession(res: AuthResponse): void {
-    this.storage.setItem(TOKEN_KEY, res.access_token);
-    if (res.refresh_token) {
-      this.storage.setItem(REFRESH_TOKEN_KEY, res.refresh_token);
+    // In modalità cookie nessun token tocca lo storage (né access né refresh):
+    // un XSS non può esfiltrarli. Resta solo l'utente, per la UI e per sapere
+    // al prossimo caricamento che c'è una sessione da riprendere.
+    if (!this.cookieMode) {
+      this.storage.setItem(TOKEN_KEY, res.access_token);
+      if (res.refresh_token) {
+        this.storage.setItem(REFRESH_TOKEN_KEY, res.refresh_token);
+      }
     }
     this.storage.setItem(USER_KEY, JSON.stringify(res.user));
     this._token.set(res.access_token);
     this._user.set(res.user);
-    this.startInactivityTimer();
   }
 
   private clearSession(): void {
@@ -216,7 +191,15 @@ export class AuthService implements OnDestroy {
     this.storage.removeItem(LAST_ACTIVITY_KEY);
     this._token.set(null);
     this._user.set(null);
-    this.stopInactivityTimer();
+  }
+
+  /** Ripristino silenzioso all'avvio (modalità cookie): mai redirect, si resta sulla pagina da anonimi. */
+  private restoreFromCookie(): void {
+    this.restoring.set(true);
+    this.doRefresh(false).subscribe({
+      next: () => this.restoring.set(false),
+      error: () => this.restoring.set(false),
+    });
   }
 
   private parseStoredUser(): User | null {
@@ -233,17 +216,23 @@ export class AuthService implements OnDestroy {
     if (event.key !== TOKEN_KEY && event.key !== USER_KEY) return;
 
     const wasLoggedIn = this.isLoggedIn();
-    const token = this.storage.getItem(TOKEN_KEY);
     const user = this.parseStoredUser();
 
+    if (this.cookieMode) {
+      // Il token non è condiviso via storage: login in un'altra scheda → la si riprende dal cookie.
+      if (event.key !== USER_KEY) return;
+      this._user.set(user);
+      if (user && !wasLoggedIn) this.restoreFromCookie();
+      if (!user) this._token.set(null);
+      if (wasLoggedIn && !user && this.router.url.startsWith('/dashboard')) {
+        void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });
+      }
+      return;
+    }
+
+    const token = this.storage.getItem(TOKEN_KEY);
     this._token.set(token);
     this._user.set(user);
-
-    if (token) {
-      this.startInactivityTimer();
-    } else {
-      this.stopInactivityTimer();
-    }
 
     if (wasLoggedIn && !token && this.router.url.startsWith('/dashboard')) {
       void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });

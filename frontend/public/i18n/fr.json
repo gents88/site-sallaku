@@ -66,7 +66,9 @@
       "convert": "Convertisseur de fichiers",
       "ocr": "Texte depuis image (OCR)",
       "scanner": "Scanner de documents",
-      "my_files": "Mes fichiers"
+      "my_files": "Mes fichiers",
+      "contacts": "Contacts",
+      "users": "Utilisateurs"
     }
   },
   "lang": {
@@ -192,7 +194,11 @@
       "f3": "Intégration de services externes",
       "f4": "Audit trail et sécurité"
     },
-    "discover": "En savoir plus"
+    "discover": "En savoir plus",
+    "read_case_study": "Lire l'étude de cas",
+    "filter_label": "Filtrer par technologie",
+    "filter_all": "Tous",
+    "filter_empty": "Aucun projet avec cette technologie."
   },
   "experience": {
     "tag": "experience",
@@ -570,7 +576,12 @@
     "tool_conversion_col_tool": "Outil",
     "tool_conversion_col_visitors": "Visiteurs",
     "tool_conversion_col_leads": "Devenus lead",
-    "tool_conversion_col_rate": "Taux"
+    "tool_conversion_col_rate": "Taux",
+    "overview_core": "Statistiques principales",
+    "overview_load_error": "Impossible de charger le tableau de bord.",
+    "overview_refresh_error": "L'actualisation a échoué : vous voyez les données précédentes.",
+    "overview_partial_error": "Certains panneaux n'ont pas pu être mis à jour :",
+    "retry": "Réessayer"
   },
   "session": {
     "warning_title": "La session est sur le point d'expirer",
@@ -578,7 +589,8 @@
     "seconds_remaining": "secondes restantes",
     "stay_logged_in": "Rester connecté",
     "logout_now": "Se déconnecter maintenant",
-    "eyebrow": "Délai de sécurité"
+    "eyebrow": "Délai de sécurité",
+    "warning_body_user": "Par sécurité, votre session va bientôt se terminer si vous ne confirmez pas que vous êtes toujours actif."
   },
   "common": {
     "loading": "Chargement…",
@@ -592,7 +604,8 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "unsaved_confirm": "Vous avez des modifications non enregistrées. Quitter et les perdre ?"
   },
   "services": {
     "tag": "services",
@@ -1458,7 +1471,16 @@
     "saved": "Projet enregistré !",
     "save_error": "Échec de l'enregistrement du projet.",
     "confirm_delete": "Supprimer ce projet ?",
-    "deleted": "Projet supprimé."
+    "deleted": "Projet supprimé.",
+    "case_study": "Étude de cas",
+    "case_study_hint": "En remplissant au moins un champ, le projet obtient sa propre page /projects/<slug>.",
+    "problem_label": "Problème du client",
+    "solution_label": "Solution réalisée",
+    "results_label": "Résultats (mesurables)",
+    "reorder_hint": "Faites glisser les lignes ou utilisez les flèches pour changer l'ordre : il est enregistré aussitôt.",
+    "move_up": "Monter",
+    "move_down": "Descendre",
+    "reorder_error": "Ordre non enregistré, le précédent a été rétabli."
   },
   "editor": {
     "title": "Éditeur de Documents",
@@ -1871,5 +1893,141 @@
     "typing": "L'IA est en train d'écrire",
     "message_input": "Champ de message",
     "send_message": "Envoyer le message"
+  },
+  "request": {
+    "uploading": "Envoi du fichier…",
+    "processing": "Traitement en cours…",
+    "cancel": "Annuler",
+    "cancelled": "Opération annulée."
+  },
+  "project_detail": {
+    "not_found": "Projet introuvable",
+    "load_error": "Impossible de charger le projet.",
+    "back": "Tous les projets",
+    "stack": "Technologies utilisées",
+    "live": "Voir en ligne",
+    "repo": "Code source",
+    "problem": "Le problème",
+    "solution": "La solution",
+    "results": "Les résultats",
+    "cta_text": "Vous avez un projet similaire ?",
+    "cta_button": "Parlons-en"
+  },
+  "translations_editor": {
+    "title": "Traductions",
+    "hint": "Les champs vides affichent le texte italien sur le site.",
+    "auto": "Traduire les champs vides depuis l'italien",
+    "translating": "Traduction en cours…",
+    "error": "La traduction automatique a échoué : réessayez ou remplissez à la main."
+  },
+  "contacts_inbox": {
+    "title": "Messages de contact",
+    "total": "{{count}} messages",
+    "search_placeholder": "Rechercher par nom, e-mail, objet ou texte…",
+    "filter_label": "Filtrer les messages",
+    "filter_all": "Tous",
+    "load_error": "Impossible de charger les messages.",
+    "empty": "Aucun message reçu.",
+    "empty_filtered": "Aucun message ne correspond aux filtres.",
+    "select_all": "Tout sélectionner sur la page",
+    "select": "Sélectionner",
+    "pagination": "Pagination",
+    "replied_at": "Répondu le {{date}}",
+    "action_error": "L'opération a échoué, réessayez."
+  },
+  "users_manage": {
+    "title": "Utilisateurs inscrits",
+    "total": "{{count}} utilisateurs",
+    "search_placeholder": "Rechercher par nom, e-mail ou téléphone…",
+    "role_filter": "Filtrer par rôle",
+    "all_roles": "Tous les rôles",
+    "load_error": "Impossible de charger les utilisateurs.",
+    "empty": "Aucun utilisateur trouvé.",
+    "col_name": "Nom",
+    "col_contact": "E-mail / téléphone",
+    "col_role": "Rôle",
+    "col_created": "Inscrit le",
+    "col_actions": "Actions",
+    "you": "vous",
+    "verified": "E-mail vérifié",
+    "confirm_role": "Changer le rôle de {{name}} en « {{role}} » ?",
+    "confirm_delete": "Supprimer définitivement l'utilisateur {{name}} ?",
+    "action_error": "L'opération a échoué."
+  },
+  "notifications": {
+    "label": "Notifications",
+    "recent": "Événements récents",
+    "empty": "Rien en attente.",
+    "offline": "Mises à jour en direct indisponibles : les compteurs se rafraîchissent à l'ouverture.",
+    "live_waiting": "Chats en direct en attente",
+    "contacts_unread": "Messages non lus",
+    "testimonials_pending": "Témoignages à modérer",
+    "notes_pending": "Notes à modérer",
+    "type_contact": "Nouveau message",
+    "type_testimonial": "Nouveau témoignage",
+    "type_note": "Nouvelle note",
+    "type_live_handoff": "Chat en direct demandé"
+  },
+  "newsletter_campaigns": {
+    "title": "Campagnes",
+    "new": "Nouvelle campagne",
+    "subject": "Objet",
+    "body": "Contenu (HTML)",
+    "body_placeholder": "<h1>Titre</h1><p>Texte…</p>",
+    "body_hint": "Les scripts et formulaires sont supprimés. Le lien de désinscription est ajouté automatiquement.",
+    "preview": "Aperçu",
+    "save_draft": "Enregistrer le brouillon",
+    "saved": "Brouillon enregistré.",
+    "err_incomplete": "Un objet (3 caractères min.) et un contenu (10 min.) sont requis.",
+    "err_schedule_past": "Choisissez une date future pour la programmation.",
+    "send_test": "Envoyer un test",
+    "test_email": "E-mail de test",
+    "test_sent": "Test envoyé à {{email}}.",
+    "test_failed": "L'envoi de test a échoué : vérifiez la configuration e-mail.",
+    "test_done": "test envoyé",
+    "send_now": "Envoyer maintenant",
+    "schedule": "Programmer",
+    "schedule_at": "Date et heure d'envoi",
+    "confirm_send": "Envoyer maintenant « {{subject}} » à tous les abonnés confirmés ?",
+    "confirm_schedule": "Programmer « {{subject}} » pour tous les abonnés confirmés ?",
+    "confirm_cancel": "Annuler la campagne « {{subject}} » ? Les e-mails déjà envoyés ne peuvent pas être rappelés.",
+    "confirm_delete": "Supprimer le brouillon « {{subject}} » ?",
+    "queued": "Campagne en file d'attente pour {{count}} abonnés.",
+    "cancelled": "Campagne annulée.",
+    "cancel": "Annuler l'envoi",
+    "load_error": "Impossible de charger les campagnes.",
+    "empty": "Aucune campagne. Créez-en une pour écrire à vos abonnés.",
+    "action_error": "L'opération a échoué.",
+    "progress": "Progression de l'envoi",
+    "stats": "{{sent}} envoyés, {{failed}} échoués sur {{total}}",
+    "scheduled_for": "Programmée pour le {{date}}",
+    "sent_at": "Envoyée le {{date}}",
+    "status_draft": "Brouillon",
+    "status_scheduled": "Programmée",
+    "status_sending": "Envoi en cours",
+    "status_sent": "Envoyée",
+    "status_cancelled": "Annulée"
+  },
+  "palette": {
+    "placeholder": "Rechercher pages, articles, actions…",
+    "section_actions": "Actions",
+    "section_pages": "Pages",
+    "section_content": "Contenus",
+    "action_theme": "Basculer thème clair/sombre",
+    "action_contact": "Me contacter",
+    "action_lab": "Ouvrir le Lab (outils IA et PDF)",
+    "action_new_post": "Nouvel article",
+    "action_new_project": "Nouveau projet",
+    "action_inbox": "Ouvrir les messages de contact",
+    "action_logout": "Se déconnecter",
+    "footer_hint": "↑↓ pour choisir · Entrée pour ouvrir · Ctrl+K ou / pour rappeler"
+  },
+  "theme": {
+    "name_light": "thème clair",
+    "name_dark": "thème sombre",
+    "name_system": "thème du système",
+    "current_light": "Thème clair actif. Passer au {{next}}",
+    "current_dark": "Thème sombre actif. Passer au {{next}}",
+    "current_system": "Thème du système actif. Passer au {{next}}"
   }
 }

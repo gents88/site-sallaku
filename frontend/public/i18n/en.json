@@ -66,7 +66,9 @@
       "convert": "File Converter",
       "ocr": "Text from Image (OCR)",
       "scanner": "Document Scanner",
-      "my_files": "My files"
+      "my_files": "My files",
+      "contacts": "Contacts",
+      "users": "Users"
     }
   },
   "lang": {
@@ -192,7 +194,11 @@
       "f3": "External service integration",
       "f4": "Audit trail and security"
     },
-    "discover": "Discover more"
+    "discover": "Discover more",
+    "read_case_study": "Read the case study",
+    "filter_label": "Filter by technology",
+    "filter_all": "All",
+    "filter_empty": "No projects with this technology."
   },
   "experience": {
     "tag": "experience",
@@ -570,7 +576,12 @@
     "tool_conversion_col_tool": "Tool",
     "tool_conversion_col_visitors": "Visitors",
     "tool_conversion_col_leads": "Became lead",
-    "tool_conversion_col_rate": "Rate"
+    "tool_conversion_col_rate": "Rate",
+    "overview_core": "Key statistics",
+    "overview_load_error": "Could not load the dashboard.",
+    "overview_refresh_error": "Refresh failed: you are seeing the previous data.",
+    "overview_partial_error": "Some panels could not be updated:",
+    "retry": "Retry"
   },
   "session": {
     "warning_title": "Session is about to expire",
@@ -578,7 +589,8 @@
     "seconds_remaining": "seconds remaining",
     "stay_logged_in": "Stay logged in",
     "logout_now": "Logout now",
-    "eyebrow": "Security Timeout"
+    "eyebrow": "Security Timeout",
+    "warning_body_user": "For security, your session will end shortly unless you confirm you are still active."
   },
   "common": {
     "loading": "Loading…",
@@ -592,7 +604,8 @@
     "close": "Close",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "unsaved_confirm": "You have unsaved changes. Leave and lose them?"
   },
   "services": {
     "tag": "services",
@@ -1458,7 +1471,16 @@
     "saved": "Project saved!",
     "save_error": "Failed to save project.",
     "confirm_delete": "Delete this project?",
-    "deleted": "Project deleted."
+    "deleted": "Project deleted.",
+    "case_study": "Case study",
+    "case_study_hint": "Filling in at least one field gives the project its own /projects/<slug> page.",
+    "problem_label": "Client problem",
+    "solution_label": "Solution delivered",
+    "results_label": "Results (measurable)",
+    "reorder_hint": "Drag the rows or use the arrows to change the order: it is saved immediately.",
+    "move_up": "Move up",
+    "move_down": "Move down",
+    "reorder_error": "Order not saved, the previous one was restored."
   },
   "editor": {
     "title": "Document Editor",
@@ -1871,5 +1893,141 @@
     "typing": "The AI is typing",
     "message_input": "Message field",
     "send_message": "Send message"
+  },
+  "request": {
+    "uploading": "Uploading file…",
+    "processing": "Processing…",
+    "cancel": "Cancel",
+    "cancelled": "Operation cancelled."
+  },
+  "project_detail": {
+    "not_found": "Project not found",
+    "load_error": "Could not load the project.",
+    "back": "All projects",
+    "stack": "Technologies used",
+    "live": "View live",
+    "repo": "Source code",
+    "problem": "The problem",
+    "solution": "The solution",
+    "results": "The results",
+    "cta_text": "Have a similar project?",
+    "cta_button": "Let's talk"
+  },
+  "translations_editor": {
+    "title": "Translations",
+    "hint": "Empty fields show the Italian text on the site.",
+    "auto": "Translate empty fields from Italian",
+    "translating": "Translating…",
+    "error": "Automatic translation failed: retry or fill in manually."
+  },
+  "contacts_inbox": {
+    "title": "Contact messages",
+    "total": "{{count}} messages",
+    "search_placeholder": "Search by name, email, subject or text…",
+    "filter_label": "Filter messages",
+    "filter_all": "All",
+    "load_error": "Could not load messages.",
+    "empty": "No messages received.",
+    "empty_filtered": "No messages match the filters.",
+    "select_all": "Select all on page",
+    "select": "Select",
+    "pagination": "Pagination",
+    "replied_at": "Replied on {{date}}",
+    "action_error": "Action failed, please retry."
+  },
+  "users_manage": {
+    "title": "Registered users",
+    "total": "{{count}} users",
+    "search_placeholder": "Search by name, email or phone…",
+    "role_filter": "Filter by role",
+    "all_roles": "All roles",
+    "load_error": "Could not load users.",
+    "empty": "No users found.",
+    "col_name": "Name",
+    "col_contact": "Email / phone",
+    "col_role": "Role",
+    "col_created": "Registered on",
+    "col_actions": "Actions",
+    "you": "you",
+    "verified": "Email verified",
+    "confirm_role": "Change {{name}}'s role to \"{{role}}\"?",
+    "confirm_delete": "Permanently delete user {{name}}?",
+    "action_error": "Action failed."
+  },
+  "notifications": {
+    "label": "Notifications",
+    "recent": "Recent events",
+    "empty": "Nothing pending.",
+    "offline": "Live updates unavailable: counts refresh when opened.",
+    "live_waiting": "Live chats waiting",
+    "contacts_unread": "Unread messages",
+    "testimonials_pending": "Testimonials to moderate",
+    "notes_pending": "Notes to moderate",
+    "type_contact": "New message",
+    "type_testimonial": "New testimonial",
+    "type_note": "New note",
+    "type_live_handoff": "Live chat requested"
+  },
+  "newsletter_campaigns": {
+    "title": "Campaigns",
+    "new": "New campaign",
+    "subject": "Subject",
+    "body": "Content (HTML)",
+    "body_placeholder": "<h1>Title</h1><p>Text…</p>",
+    "body_hint": "Scripts and forms are removed. The unsubscribe link is added automatically.",
+    "preview": "Preview",
+    "save_draft": "Save draft",
+    "saved": "Draft saved.",
+    "err_incomplete": "A subject (min. 3 characters) and content (min. 10) are required.",
+    "err_schedule_past": "Pick a future date to schedule.",
+    "send_test": "Send test",
+    "test_email": "Test email address",
+    "test_sent": "Test sent to {{email}}.",
+    "test_failed": "Test send failed: check the email configuration.",
+    "test_done": "test sent",
+    "send_now": "Send now",
+    "schedule": "Schedule",
+    "schedule_at": "Send date and time",
+    "confirm_send": "Send \"{{subject}}\" to all confirmed subscribers now?",
+    "confirm_schedule": "Schedule \"{{subject}}\" for all confirmed subscribers?",
+    "confirm_cancel": "Cancel the campaign \"{{subject}}\"? Emails already sent cannot be recalled.",
+    "confirm_delete": "Delete the draft \"{{subject}}\"?",
+    "queued": "Campaign queued for {{count}} subscribers.",
+    "cancelled": "Campaign cancelled.",
+    "cancel": "Cancel sending",
+    "load_error": "Could not load campaigns.",
+    "empty": "No campaigns yet. Create one to write to your subscribers.",
+    "action_error": "Action failed.",
+    "progress": "Sending progress",
+    "stats": "{{sent}} sent, {{failed}} failed of {{total}}",
+    "scheduled_for": "Scheduled for {{date}}",
+    "sent_at": "Sent on {{date}}",
+    "status_draft": "Draft",
+    "status_scheduled": "Scheduled",
+    "status_sending": "Sending",
+    "status_sent": "Sent",
+    "status_cancelled": "Cancelled"
+  },
+  "palette": {
+    "placeholder": "Search pages, articles, actions…",
+    "section_actions": "Actions",
+    "section_pages": "Pages",
+    "section_content": "Content",
+    "action_theme": "Toggle light/dark theme",
+    "action_contact": "Contact me",
+    "action_lab": "Open the Lab (AI & PDF tools)",
+    "action_new_post": "New article",
+    "action_new_project": "New project",
+    "action_inbox": "Open contact messages",
+    "action_logout": "Log out",
+    "footer_hint": "↑↓ to choose · Enter to open · Ctrl+K or / to recall"
+  },
+  "theme": {
+    "name_light": "light theme",
+    "name_dark": "dark theme",
+    "name_system": "system theme",
+    "current_light": "Light theme on. Switch to {{next}}",
+    "current_dark": "Dark theme on. Switch to {{next}}",
+    "current_system": "System theme on. Switch to {{next}}"
   }
 }

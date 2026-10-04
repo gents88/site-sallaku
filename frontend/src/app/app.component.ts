@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -14,21 +14,21 @@ import { AuthModalService } from './core/services/auth-modal.service';
 import { InactivityService } from './core/services/inactivity.service';
 import { PlatformUiService } from './core/services/platform-ui.service';
 import { AppUpdateService } from './core/services/app-update.service';
+import { AdminNotificationsService } from './core/services/admin-notifications.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
-import { CommandPaletteComponent } from './shared/components/command-palette/command-palette.component';
 import { SearchOverlayComponent } from './shared/components/search-overlay/search-overlay.component';
 
 @Component({
   selector: 'app-root',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, CommandPaletteComponent, SearchOverlayComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent],
   template: `
     <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
     <app-navbar />
     <app-consent-banner />
     <app-sidebar />
-    <app-command-palette />
     <app-search-overlay />
     <main id="main-content" tabindex="-1">
       <router-outlet />
@@ -86,6 +86,7 @@ import { SearchOverlayComponent } from './shared/components/search-overlay/searc
     @if (inactivity.warningVisible()) {
       <app-session-timeout-modal
         [countdownSeconds]="inactivity.countdownSeconds()"
+        [admin]="inactivity.isAdminSession()"
         (stayLoggedIn)="extendSession()"
         (logoutNow)="logoutFromTimeout()" />
     }
@@ -429,6 +430,7 @@ export class AppComponent implements OnInit {
     public inactivity: InactivityService,
     private platformUi: PlatformUiService,
     private appUpdate: AppUpdateService,
+    private adminNotifications: AdminNotificationsService,
     private seoService: SeoService,
     private analyticsTracking: AnalyticsTrackingService,
     private router: Router,
@@ -442,6 +444,7 @@ export class AppComponent implements OnInit {
       this.inactivity.init();
       this.platformUi.init();
       this.appUpdate.init();
+      this.adminNotifications.init();
     }
     this.seoService.trackPageViews();
     this.analyticsTracking.init();

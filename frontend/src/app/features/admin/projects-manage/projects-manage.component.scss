@@ -7,3 +7,11 @@
 .tech-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.5rem; }
 .text-muted { color:var(--color-text-muted); font-size:0.875rem; }
 /* .empty-state → styles.scss (globale, identico) */
+
+/* Case study + riordino */
+.form-section-title { font-size: 1rem; margin: 1.25rem 0 .25rem; }
+.form-hint { font-size: .82rem; color: var(--color-text-muted); margin: 0 0 .75rem; }
+.drag-handle { cursor: grab; color: var(--color-text-muted); display: flex; touch-action: none; }
+.cdk-drag-preview { box-shadow: 0 12px 32px rgba(0,0,0,.35); border-radius: var(--radius-md, 12px); }
+.cdk-drag-placeholder { opacity: .35; }
+.cdk-drop-list-dragging .list-item:not(.cdk-drag-placeholder) { transition: transform .2s ease; }

@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild, inject } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -8,15 +8,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { ProjectsService } from '../../../core/services/projects.service';
-import { ExperiencesService } from '../../../core/services/experiences.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { BlogService } from '../../../core/services/blog.service';
-import { Post } from '../../../core/models/post.model';
 import { DonutChartComponent, DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import {
   AdminDashboardService,
+  DashboardOverview,
+  OverviewSection,
+  TopPost,
   TopPage,
   MonthlyHistoryEntry,
   AuditLogEntry,
@@ -30,6 +29,7 @@ import {
   LiveHandoffSession,
   ToolConversionRow,
 } from './admin-dashboard.service';
+import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -39,11 +39,13 @@ import {
 
 interface StatCard {
   labelKey: string;
-  value: number;
+  /** null = sezione fallita: il template mostra "—" invece di uno zero finto. */
+  value: number | null;
   icon: string;
   route: string;
   color: string;
-  miniBars: number[];
+  /** Sparkline da una serie reale per giorno, null se la metrica non ne ha una. */
+  spark: number[] | null;
 }
 
 interface ChartBar {
@@ -80,7 +82,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   actionMessageKey: string | null = null;
   private actionMessageTimeoutId: number | null = null;
 
-  topPosts: Post[] = [];
+  topPosts: TopPost[] = [];
 
   // Multi-select state
   selectedIds = new Set<string>();
@@ -144,6 +146,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadingTodaySessions = false;
 
   lastLoadedAt: Date | null = null;
+  /** Sezioni che il server non è riuscito a caricare nell'ultimo snapshot. */
+  failedSections: ReadonlySet<OverviewSection> = new Set();
+  /** L'intera richiesta è fallita (rete, 401, 5xx): si tengono i dati precedenti e lo si dice. */
+  loadFailed = false;
+  /** Refresh successivi al primo: niente schermata di caricamento, solo l'icona che gira. */
+  refreshing = false;
+  private readonly document = inject(DOCUMENT);
+  private readonly onVisibilityChange = () => {
+    if (shouldRefreshOnVisible(this.document.hidden, this.lastLoadedAt)) this.loadData();
+  };
   private dataSubscription: Subscription | null = null;
   private refreshInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -170,123 +182,127 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     public auth: AuthService,
-    private projectsService: ProjectsService,
-    private experiencesService: ExperiencesService,
-    private blogService: BlogService,
     private adminDashboard: AdminDashboardService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
     this.loadData();
-    this.refreshInterval = setInterval(() => this.loadData(), 60_000);
+    // In una scheda nascosta non si interroga il server: al ritorno si
+    // aggiorna subito se lo snapshot è più vecchio del polling.
+    this.refreshInterval = setInterval(() => {
+      if (!this.document.hidden) this.loadData();
+    }, DASHBOARD_POLL_MS);
+    this.document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   ngOnDestroy(): void {
     this.dataSubscription?.unsubscribe();
+    this.document.removeEventListener('visibilitychange', this.onVisibilityChange);
     if (this.refreshInterval !== null) {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
     }
   }
 
-  loadData(): void {
-    this.loading = true;
+  /** Pulsante "Aggiorna": salta la cache di 30s del server. */
+  refresh(): void {
+    this.loadData(true);
+  }
+
+  isFailed(section: OverviewSection): boolean {
+    return this.failedSections.has(section);
+  }
+
+  get failedLabelKeys(): string[] {
+    return failedSectionLabels(this.failedSections);
+  }
+
+  loadData(fresh = false): void {
+    this.refreshing = !this.loading;
     this.dataSubscription?.unsubscribe();
-
-    this.adminDashboard.getToolConversion(30).subscribe({
-      next: (rows) => { this.toolConversion = rows; this.cdr.markForCheck(); },
-      error: () => { this.toolConversion = []; },
-    });
-
-    this.dataSubscription = this.adminDashboard.loadAll(
-      this.projectsService.getAll(),
-      this.experiencesService.getAll(),
-      this.blogService.getAll(),
-    ).subscribe({
-      next: ({ projects, experiences, adminStats, advanced, analyticsStats, blogPosts,
-              topPages, monthlyHistory, auditLogs, chatbotStats, systemHealth, systemDetails, systemOps, gsc, consentStats,
-              liveHandoffs }) => {
-        this.liveHandoffs = liveHandoffs;
-        const totalPosts = adminStats.content.total;
-        const publishedPosts = adminStats.content.published;
-        const totalValues = [
-          projects.length,
-          experiences.length,
-          totalPosts,
-          publishedPosts,
-          adminStats.contacts,
-          adminStats.users,
-          adminStats.visits.totalViews,
-          adminStats.visits.uniqueVisitors,
-        ];
-        const maxValue = Math.max(...totalValues, 1);
-
-        this.stats = [
-          { labelKey: 'admin.projects',    value: projects.length,                  icon: 'work',                   route: '/dashboard/projects',    color: '#6366f1', miniBars: this.buildMiniBars(projects.length, maxValue, 0) },
-          { labelKey: 'admin.experiences', value: experiences.length,               icon: 'history_edu',            route: '/dashboard/experiences', color: '#06b6d4', miniBars: this.buildMiniBars(experiences.length, maxValue, 1) },
-          { labelKey: 'admin.blog_posts',  value: totalPosts,                       icon: 'article',                route: '/dashboard/blog',        color: '#10b981', miniBars: this.buildMiniBars(totalPosts, maxValue, 2) },
-          { labelKey: 'admin.published',   value: publishedPosts,                   icon: 'published_with_changes', route: '/dashboard/blog',        color: '#f59e0b', miniBars: this.buildMiniBars(publishedPosts, maxValue, 3) },
-          { labelKey: 'admin.contacts',    value: adminStats.contacts,              icon: 'mail',                   route: '/dashboard',             color: '#ec4899', miniBars: this.buildMiniBars(adminStats.contacts, maxValue, 4) },
-          { labelKey: 'admin.users',       value: adminStats.users,                 icon: 'group',                  route: '/dashboard',             color: '#8b5cf6', miniBars: this.buildMiniBars(adminStats.users, maxValue, 5) },
-          { labelKey: 'admin.visits',      value: adminStats.visits.totalViews,     icon: 'visibility',             route: '/dashboard',             color: '#14b8a6', miniBars: this.buildMiniBars(adminStats.visits.totalViews, maxValue, 6) },
-          { labelKey: 'admin.visitors',    value: adminStats.visits.uniqueVisitors, icon: 'monitoring',             route: '/dashboard',             color: '#ef4444', miniBars: this.buildMiniBars(adminStats.visits.uniqueVisitors, maxValue, 7) },
-        ];
-        this.recentContacts = adminStats.recentContacts;
-        this.unreadCount = adminStats.unreadContacts ?? 0;
-        this.contactBars = adminStats.contactsByDay.map(item => ({ date: item.date, value: item.count }));
-        this.visitBars = adminStats.visits.viewsByDay.map(item => ({ date: item.date, value: item.count }));
-        this.publishedPosts = publishedPosts;
-        this.draftPosts = adminStats.content.drafts;
-        this.totalViews = adminStats.visits.totalViews;
-        this.uniqueVisitors = adminStats.visits.uniqueVisitors;
-
-        // Top posts by view count
-        this.topPosts = [...blogPosts]
-          .sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0))
-          .slice(0, 5);
-
-        // Advanced analytics
-        this.todayVisitors = advanced.todayCount;
-        this.topLocations = advanced.topLocations;
-        this.topCountries = advanced.topCountries;
-        this.deviceBreakdown = advanced.deviceBreakdown;
-        this.browserBreakdown = advanced.browserBreakdown;
-        this.osBreakdown = advanced.osBreakdown;
-        this.trafficSources = advanced.trafficSources;
-
-        // Pre-aggregated monthly + total stats
-        this.monthlyViews = analyticsStats.monthlyViews;
-        this.statsLocations = analyticsStats.locations;
-        this.statsMonthlyLocations = analyticsStats.monthlyLocations;
-        this.statsDevices = analyticsStats.devices;
-        this.statsMonthlyDevices = analyticsStats.monthlyDevices;
-        this.lastResetAt = analyticsStats.lastResetAt;
-
-        this.topPages = topPages;
-        this.monthlyHistory = monthlyHistory;
-        this.auditLogs = Array.isArray(auditLogs) ? auditLogs : [];
-        this.chatbotStats = chatbotStats;
-        this.systemHealth = systemHealth;
-        this.systemDetails = systemDetails;
-        this.systemOps = systemOps;
-        this.totalContacts = adminStats.contacts;
-        this.gscSummary = gsc;
-        // Consent stats
-        this.consentTotal = consentStats?.total ?? 0;
-        this.consentAnalytics = consentStats?.analytics ?? 0;
-        this.consentMarketing = consentStats?.marketing ?? 0;
-        this.consentPreferences = consentStats?.preferences ?? 0;
-        this.consentAnalyticsRate = consentStats?.analyticsRate ?? 0;
-        this.consentMarketingRate = consentStats?.marketingRate ?? 0;
-        this.consentPreferencesRate = consentStats?.preferencesRate ?? 0;
-
-        this.lastLoadedAt = new Date();
+    this.dataSubscription = this.adminDashboard.loadOverview(fresh).subscribe({
+      next: (overview) => this.applyOverview(overview),
+      error: () => {
+        this.loadFailed = true;
         this.loading = false;
+        this.refreshing = false;
         this.cdr.markForCheck();
       },
-      error: () => { this.loading = false; this.cdr.markForCheck(); },
     });
+  }
+
+  private applyOverview({ data, failed }: DashboardOverview): void {
+    const { core: adminStats, advanced, analyticsStats, consentStats } = data;
+    const coreFailed = failed.has('core');
+    const coreValue = (v: number) => (coreFailed ? null : v);
+
+    this.failedSections = failed;
+    this.loadFailed = false;
+    this.liveHandoffs = data.liveHandoffs;
+    this.toolConversion = data.toolConversion;
+
+    this.stats = [
+      { labelKey: 'admin.projects',    value: failed.has('projectsCount') ? null : data.projectsCount,       icon: 'work',                   route: '/dashboard/projects',    color: '#6366f1', spark: null },
+      { labelKey: 'admin.experiences', value: failed.has('experiencesCount') ? null : data.experiencesCount, icon: 'history_edu',            route: '/dashboard/experiences', color: '#06b6d4', spark: null },
+      { labelKey: 'admin.blog_posts',  value: coreValue(adminStats.content.total),                           icon: 'article',                route: '/dashboard/blog',        color: '#10b981', spark: null },
+      { labelKey: 'admin.published',   value: coreValue(adminStats.content.published),                       icon: 'published_with_changes', route: '/dashboard/blog',        color: '#f59e0b', spark: null },
+      { labelKey: 'admin.contacts',    value: coreValue(adminStats.contacts),                                icon: 'mail',                   route: '/dashboard/contacts',             color: '#ec4899', spark: sparkline(adminStats.contactsByDay) },
+      { labelKey: 'admin.users',       value: coreValue(adminStats.users),                                   icon: 'group',                  route: '/dashboard/users',             color: '#8b5cf6', spark: null },
+      { labelKey: 'admin.visits',      value: coreValue(adminStats.visits.totalViews),                       icon: 'visibility',             route: '/dashboard',             color: '#14b8a6', spark: sparkline(adminStats.visits.viewsByDay) },
+      { labelKey: 'admin.visitors',    value: coreValue(adminStats.visits.uniqueVisitors),                   icon: 'monitoring',             route: '/dashboard',             color: '#ef4444', spark: null },
+    ];
+    this.recentContacts = adminStats.recentContacts;
+    this.unreadCount = adminStats.unreadContacts ?? 0;
+    this.contactBars = adminStats.contactsByDay.map(item => ({ date: item.date, value: item.count }));
+    this.visitBars = adminStats.visits.viewsByDay.map(item => ({ date: item.date, value: item.count }));
+    this.publishedPosts = adminStats.content.published;
+    this.draftPosts = adminStats.content.drafts;
+    this.totalViews = adminStats.visits.totalViews;
+    this.uniqueVisitors = adminStats.visits.uniqueVisitors;
+    this.totalContacts = adminStats.contacts;
+
+    // Già ordinati e limitati lato server (prima si scaricavano tutti i post).
+    this.topPosts = data.topPosts;
+
+    // Advanced analytics
+    this.todayVisitors = advanced.todayCount;
+    this.topLocations = advanced.topLocations;
+    this.topCountries = advanced.topCountries;
+    this.deviceBreakdown = advanced.deviceBreakdown;
+    this.browserBreakdown = advanced.browserBreakdown;
+    this.osBreakdown = advanced.osBreakdown;
+    this.trafficSources = advanced.trafficSources;
+
+    // Pre-aggregated monthly + total stats
+    this.monthlyViews = analyticsStats.monthlyViews;
+    this.statsLocations = analyticsStats.locations;
+    this.statsMonthlyLocations = analyticsStats.monthlyLocations;
+    this.statsDevices = analyticsStats.devices;
+    this.statsMonthlyDevices = analyticsStats.monthlyDevices;
+    this.lastResetAt = analyticsStats.lastResetAt;
+
+    this.topPages = data.topPages;
+    this.monthlyHistory = data.monthlyHistory;
+    this.auditLogs = Array.isArray(data.auditLogs) ? data.auditLogs : [];
+    this.chatbotStats = data.chatbotStats;
+    this.systemHealth = data.systemHealth;
+    this.systemDetails = data.systemDetails;
+    this.systemOps = data.systemOps;
+    this.gscSummary = data.gsc;
+
+    this.consentTotal = consentStats.total;
+    this.consentAnalytics = consentStats.analytics;
+    this.consentMarketing = consentStats.marketing;
+    this.consentPreferences = consentStats.preferences;
+    this.consentAnalyticsRate = consentStats.analyticsRate;
+    this.consentMarketingRate = consentStats.marketingRate;
+    this.consentPreferencesRate = consentStats.preferencesRate;
+
+    this.lastLoadedAt = new Date();
+    this.loading = false;
+    this.refreshing = false;
+    this.cdr.markForCheck();
   }
 
   get allSelected(): boolean {
@@ -572,7 +588,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         next: () => {
           this.recentContacts = this.recentContacts.filter(item => item._id !== contactId);
           this.stats = this.stats.map(stat => stat.labelKey === 'admin.contacts'
-            ? { ...stat, value: Math.max(stat.value - 1, 0) }
+            ? { ...stat, value: stat.value === null ? null : Math.max(stat.value - 1, 0) }
             : stat,
           );
           this.closeContact();
@@ -665,7 +681,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.bulkDeleting = false;
             this.stats = this.stats.map(stat =>
               stat.labelKey === 'admin.contacts'
-                ? { ...stat, value: Math.max(stat.value - deleted, 0) }
+                ? { ...stat, value: stat.value === null ? null : Math.max(stat.value - deleted, 0) }
                 : stat,
             );
             this.showActionMessage('admin.messages_deleted');
@@ -710,16 +726,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return liveHandoffRoute(session);
   }
 
-  private buildMiniBars(value: number, maxValue: number, seed: number): number[] {
-    const normalized = maxValue ? value / maxValue : 0;
-    const pattern = [0.42, 0.68, 0.54, 0.82, 0.61, 0.9];
-
-    return pattern.map((point, index) => {
-      const offset = ((seed + index) % 3) * 4;
-      const height = 16 + normalized * 42 + point * 30 + offset;
-      return Math.max(18, Math.min(Math.round(height), 92));
-    });
-  }
 
   resetMonthlyStats(): void {
     if (this.resettingStats) return;

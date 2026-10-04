@@ -1,9 +1,11 @@
-import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewChecked, ChangeDetectorRef, Component, HostListener, inject, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { HasUnsavedChanges, warnOnUnload } from '../../../core/guards/unsaved-changes.guard';
+import { DirtyTracker } from '../../../shared/utils/dirty-tracker';
 import { PrismService } from '../../../shared/services/prism.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -38,6 +40,7 @@ interface PdfPreview {
 
 @Component({
   selector: 'app-blog-manage',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
@@ -49,7 +52,20 @@ interface PdfPreview {
   templateUrl: './blog-manage.component.html',
   styleUrls: ['./blog-manage.component.scss'],
 })
-export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked, HasUnsavedChanges {
+  private readonly dirty = new DirtyTracker();
+  private readonly route = inject(ActivatedRoute);
+
+  /** Il blog ha l'autosave: è "sporco" solo ciò che non è ancora finito né in un salvataggio né in un autosave. */
+  hasUnsavedChanges(): boolean {
+    return this.showForm && this.dirty.isDirty(this.buildPayload(false));
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    warnOnUnload(event, this.hasUnsavedChanges());
+  }
+
   readonly pdfGenerationEnabled = environment.blogPdfUploadEnabled;
 
   posts: Post[] = [];
@@ -212,7 +228,11 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     private t: TranslateService,
   ) {}
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.load();
+    // ?new=1 dalla palette Ctrl+K ("Nuovo articolo"): apre direttamente il form.
+    if (this.route.snapshot.queryParamMap.get('new') === '1') this.openCreate();
+  }
 
   ngAfterViewChecked(): void {
     if (this.needsPreviewHighlight && this.previewContentRef) {
@@ -256,6 +276,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.resetGenerationState();
     this.form.reset({ language: 'it' });
     this.showForm = true;
+    this.dirty.mark(this.buildPayload(false));
     this.setupAutoSave();
     this.setupSlugFromTitle();
     this.scrollToTop();
@@ -284,6 +305,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       excerpt_es: post.excerpt_es || '', excerpt_fr: post.excerpt_fr || '', excerpt_de: post.excerpt_de || '',
     });
     this.showForm = true;
+    this.dirty.mark(this.buildPayload(false));
     this.setupAutoSave();
     this.setupSlugFromTitle();
     this.scrollToTop();
@@ -297,6 +319,8 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   closeForm(): void {
+    if (this.hasUnsavedChanges() && !confirm(this.t.instant('common.unsaved_confirm'))) return;
+    this.dirty.reset();
     this.showForm = false;
     this.showPreview = false;
     this.pdfPreview = null;
@@ -345,6 +369,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     const payload = this.buildPayload(false);
     this.autoSaving = true;
     this.autosaveStatus = 'saving';
+    const autosaved = payload;
 
     const req$ = this.editingId
       ? this.blogService.update(this.editingId, payload)
@@ -355,6 +380,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.autoSaving = false;
         this.autosaveStatus = 'saved';
         this.autosaveTime = new Date();
+        this.dirty.mark(autosaved);
         if (!this.editingId) {
           this.editingId = post._id;
         }
@@ -399,6 +425,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       next: () => {
         this.saving = false;
         this.showForm = false;
+        this.dirty.reset();
         this.autosaveStatus = 'idle';
         this.cdr.markForCheck();
         this.snackBar.open(

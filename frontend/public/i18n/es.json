@@ -66,7 +66,9 @@
       "convert": "Convertidor de Archivos",
       "ocr": "Texto desde Imagen (OCR)",
       "scanner": "Escáner de Documentos",
-      "my_files": "Mis archivos"
+      "my_files": "Mis archivos",
+      "contacts": "Contactos",
+      "users": "Usuarios"
     }
   },
   "lang": {
@@ -192,7 +194,11 @@
       "f3": "Integración de servicios externos",
       "f4": "Audit trail y seguridad"
     },
-    "discover": "Descubrir más"
+    "discover": "Descubrir más",
+    "read_case_study": "Lee el caso de estudio",
+    "filter_label": "Filtrar por tecnología",
+    "filter_all": "Todos",
+    "filter_empty": "Ningún proyecto con esta tecnología."
   },
   "experience": {
     "tag": "experience",
@@ -570,7 +576,12 @@
     "tool_conversion_col_tool": "Herramienta",
     "tool_conversion_col_visitors": "Visitantes",
     "tool_conversion_col_leads": "Se convirtieron",
-    "tool_conversion_col_rate": "Tasa"
+    "tool_conversion_col_rate": "Tasa",
+    "overview_core": "Estadísticas principales",
+    "overview_load_error": "No se pudo cargar el panel.",
+    "overview_refresh_error": "La actualización falló: estás viendo los datos anteriores.",
+    "overview_partial_error": "Algunos paneles no se pudieron actualizar:",
+    "retry": "Reintentar"
   },
   "session": {
     "warning_title": "La sesión está a punto de expirar",
@@ -578,7 +589,8 @@
     "seconds_remaining": "segundos restantes",
     "stay_logged_in": "Seguir conectado",
     "logout_now": "Cerrar sesión ahora",
-    "eyebrow": "Tiempo de seguridad agotado"
+    "eyebrow": "Tiempo de seguridad agotado",
+    "warning_body_user": "Por seguridad, tu sesión terminará en breve si no confirmas que sigues activo."
   },
   "common": {
     "loading": "Cargando…",
@@ -592,7 +604,8 @@
     "close": "Cerrar",
     "confirm": "Confirmar",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "unsaved_confirm": "Tienes cambios sin guardar. ¿Salir y perderlos?"
   },
   "services": {
     "tag": "services",
@@ -1458,7 +1471,16 @@
     "saved": "¡Proyecto guardado!",
     "save_error": "Error al guardar el proyecto.",
     "confirm_delete": "¿Eliminar este proyecto?",
-    "deleted": "Proyecto eliminado."
+    "deleted": "Proyecto eliminado.",
+    "case_study": "Caso de estudio",
+    "case_study_hint": "Si rellenas al menos un campo, el proyecto obtiene su propia página /projects/<slug>.",
+    "problem_label": "Problema del cliente",
+    "solution_label": "Solución realizada",
+    "results_label": "Resultados (medibles)",
+    "reorder_hint": "Arrastra las filas o usa las flechas para cambiar el orden: se guarda al instante.",
+    "move_up": "Subir",
+    "move_down": "Bajar",
+    "reorder_error": "Orden no guardado, se restauró el anterior."
   },
   "editor": {
     "title": "Editor de Documentos",
@@ -1871,5 +1893,141 @@
     "typing": "La IA está escribiendo",
     "message_input": "Campo de mensaje",
     "send_message": "Enviar mensaje"
+  },
+  "request": {
+    "uploading": "Subiendo el archivo…",
+    "processing": "Procesando…",
+    "cancel": "Cancelar",
+    "cancelled": "Operación cancelada."
+  },
+  "project_detail": {
+    "not_found": "Proyecto no encontrado",
+    "load_error": "No se pudo cargar el proyecto.",
+    "back": "Todos los proyectos",
+    "stack": "Tecnologías utilizadas",
+    "live": "Ver en línea",
+    "repo": "Código fuente",
+    "problem": "El problema",
+    "solution": "La solución",
+    "results": "Los resultados",
+    "cta_text": "¿Tienes un proyecto similar?",
+    "cta_button": "Hablemos"
+  },
+  "translations_editor": {
+    "title": "Traducciones",
+    "hint": "Los campos vacíos muestran el texto italiano en el sitio.",
+    "auto": "Traducir los campos vacíos del italiano",
+    "translating": "Traduciendo…",
+    "error": "La traducción automática falló: reinténtalo o rellénalo a mano."
+  },
+  "contacts_inbox": {
+    "title": "Mensajes de contacto",
+    "total": "{{count}} mensajes",
+    "search_placeholder": "Buscar por nombre, email, asunto o texto…",
+    "filter_label": "Filtrar mensajes",
+    "filter_all": "Todos",
+    "load_error": "No se pudieron cargar los mensajes.",
+    "empty": "No se han recibido mensajes.",
+    "empty_filtered": "Ningún mensaje coincide con los filtros.",
+    "select_all": "Seleccionar todos en la página",
+    "select": "Seleccionar",
+    "pagination": "Paginación",
+    "replied_at": "Respondido el {{date}}",
+    "action_error": "La operación falló, inténtalo de nuevo."
+  },
+  "users_manage": {
+    "title": "Usuarios registrados",
+    "total": "{{count}} usuarios",
+    "search_placeholder": "Buscar por nombre, email o teléfono…",
+    "role_filter": "Filtrar por rol",
+    "all_roles": "Todos los roles",
+    "load_error": "No se pudieron cargar los usuarios.",
+    "empty": "No se encontraron usuarios.",
+    "col_name": "Nombre",
+    "col_contact": "Email / teléfono",
+    "col_role": "Rol",
+    "col_created": "Registrado el",
+    "col_actions": "Acciones",
+    "you": "tú",
+    "verified": "Email verificado",
+    "confirm_role": "¿Cambiar el rol de {{name}} a \"{{role}}\"?",
+    "confirm_delete": "¿Eliminar definitivamente al usuario {{name}}?",
+    "action_error": "La operación falló."
+  },
+  "notifications": {
+    "label": "Notificaciones",
+    "recent": "Eventos recientes",
+    "empty": "Nada pendiente.",
+    "offline": "Actualizaciones en tiempo real no disponibles: los recuentos se actualizan al abrir.",
+    "live_waiting": "Chats en vivo en espera",
+    "contacts_unread": "Mensajes sin leer",
+    "testimonials_pending": "Testimonios por moderar",
+    "notes_pending": "Notas por moderar",
+    "type_contact": "Nuevo mensaje",
+    "type_testimonial": "Nuevo testimonio",
+    "type_note": "Nueva nota",
+    "type_live_handoff": "Chat en vivo solicitado"
+  },
+  "newsletter_campaigns": {
+    "title": "Campañas",
+    "new": "Nueva campaña",
+    "subject": "Asunto",
+    "body": "Contenido (HTML)",
+    "body_placeholder": "<h1>Título</h1><p>Texto…</p>",
+    "body_hint": "Los scripts y formularios se eliminan. El enlace de baja se añade automáticamente.",
+    "preview": "Vista previa",
+    "save_draft": "Guardar borrador",
+    "saved": "Borrador guardado.",
+    "err_incomplete": "Se requieren un asunto (mín. 3 caracteres) y un contenido (mín. 10).",
+    "err_schedule_past": "Elige una fecha futura para programar.",
+    "send_test": "Enviar prueba",
+    "test_email": "Email de prueba",
+    "test_sent": "Prueba enviada a {{email}}.",
+    "test_failed": "El envío de prueba falló: revisa la configuración de email.",
+    "test_done": "prueba enviada",
+    "send_now": "Enviar ahora",
+    "schedule": "Programar",
+    "schedule_at": "Fecha y hora de envío",
+    "confirm_send": "¿Enviar ahora \"{{subject}}\" a todos los suscriptores confirmados?",
+    "confirm_schedule": "¿Programar \"{{subject}}\" para todos los suscriptores confirmados?",
+    "confirm_cancel": "¿Cancelar la campaña \"{{subject}}\"? Los emails ya enviados no se pueden retirar.",
+    "confirm_delete": "¿Eliminar el borrador \"{{subject}}\"?",
+    "queued": "Campaña en cola para {{count}} suscriptores.",
+    "cancelled": "Campaña cancelada.",
+    "cancel": "Cancelar envío",
+    "load_error": "No se pudieron cargar las campañas.",
+    "empty": "Aún no hay campañas. Crea una para escribir a los suscriptores.",
+    "action_error": "La operación falló.",
+    "progress": "Progreso del envío",
+    "stats": "{{sent}} enviados, {{failed}} fallidos de {{total}}",
+    "scheduled_for": "Programada para el {{date}}",
+    "sent_at": "Enviada el {{date}}",
+    "status_draft": "Borrador",
+    "status_scheduled": "Programada",
+    "status_sending": "Enviando",
+    "status_sent": "Enviada",
+    "status_cancelled": "Cancelada"
+  },
+  "palette": {
+    "placeholder": "Buscar páginas, artículos, acciones…",
+    "section_actions": "Acciones",
+    "section_pages": "Páginas",
+    "section_content": "Contenido",
+    "action_theme": "Cambiar tema claro/oscuro",
+    "action_contact": "Escríbeme",
+    "action_lab": "Abrir el Lab (herramientas IA y PDF)",
+    "action_new_post": "Nuevo artículo",
+    "action_new_project": "Nuevo proyecto",
+    "action_inbox": "Abrir mensajes de contacto",
+    "action_logout": "Cerrar sesión",
+    "footer_hint": "↑↓ para elegir · Intro para abrir · Ctrl+K o / para abrir"
+  },
+  "theme": {
+    "name_light": "tema claro",
+    "name_dark": "tema oscuro",
+    "name_system": "tema del sistema",
+    "current_light": "Tema claro activo. Cambiar a {{next}}",
+    "current_dark": "Tema oscuro activo. Cambiar a {{next}}",
+    "current_system": "Tema del sistema activo. Cambiar a {{next}}"
   }
 }

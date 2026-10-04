@@ -6,8 +6,8 @@
           <p class="subtitle">{{ 'pdf_summary.subtitle' | translate }}</p>
         </div>
         <div class="header-controls">
-          <label class="ctrl-label">🌐 {{ 'pdf_summary.lang_label' | translate }}</label>
-          <select class="lang-select" [(ngModel)]="selectedLang">
+          <label class="ctrl-label" for="pdf-summary-lang">🌐 {{ 'pdf_summary.lang_label' | translate }}</label>
+          <select id="pdf-summary-lang" class="lang-select" [(ngModel)]="selectedLang">
             <option value="it">Italiano</option>
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -84,6 +84,7 @@
             🤖 {{ 'pdf_summary.btn_generate' | translate }}
           }
         </button>
+        <app-request-progress [request]="req" (cancel)="cancelRequest()" />
       }
 
       @if (error()) {
