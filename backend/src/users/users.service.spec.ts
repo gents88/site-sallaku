@@ -102,11 +102,22 @@ describe('UsersService', () => {
             email: 'admin@example.com',
             passwordHash: 'hashed',
             role: 'admin',
+            emailVerified: true,
           },
         },
         { new: true, upsert: true, setDefaultsOnInsert: true },
       );
       expect(q.select).toHaveBeenCalledWith('+passwordHash');
+    });
+  });
+
+  describe('markEmailVerified', () => {
+    it('sets emailVerified to true for the given user id', async () => {
+      userModel.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(undefined) });
+
+      await service.markEmailVerified('user-1');
+
+      expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith('user-1', { emailVerified: true });
     });
   });
 

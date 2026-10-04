@@ -24,6 +24,23 @@
   max-width: 780px;
   margin-inline: auto;
 
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    .back-link { margin-bottom: 0; }
+    .btn { display: inline-flex; align-items: center; gap: 0.35rem; }
+  }
+
+  &__publish-bottom {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    .btn { display: inline-flex; align-items: center; gap: 0.35rem; }
+  }
+
   &__cover {
     width: 100%;
     max-height: 480px;

@@ -232,6 +232,24 @@
       <h2 class="section-title">{{ 'projects.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
+    @if (cmsProjects.length) {
+      <div class="projects-grid">
+        @for (p of cmsProjects; track p._id) {
+          <div class="project-card glass-card">
+            <div class="project-content">
+              <div class="project-tags">
+                @for (tag of p.technologies; track tag) { <span class="project-tag">{{ tag }}</span> }
+              </div>
+              <h3 class="project-title">{{ p.title }}</h3>
+              <p class="project-description">{{ p.description }}</p>
+              @if (hasCaseStudy(p)) {
+                <a class="project-cta" [routerLink]="('/projects/' + p.slug) | langUrl">{{ 'projects.read_case_study' | translate }} →</a>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
     <div class="projects-grid">
       @for (p of displayProjects; track p.titleKey) {
         <div class="project-card reveal glass-card">
@@ -256,6 +274,7 @@
         </div>
       }
     </div>
+    }
   </div>
 </section>
 
@@ -301,6 +320,26 @@
       <h2 class="section-title">{{ 'experience.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
+    @if (cmsExperiences.length) {
+      <div class="timeline">
+        @for (exp of cmsExperiences; track exp._id; let i = $index) {
+          <div class="timeline-item" [attr.data-side]="i % 2 === 0 ? 'right' : 'left'">
+            <div class="timeline-marker"><div class="timeline-dot"></div></div>
+            <div class="timeline-card glass-card">
+              <div class="timeline-date"><i class="fas fa-calendar"></i>
+                {{ exp.startDate }} – {{ exp.current ? ('exp.current' | translate) : exp.endDate }}
+              </div>
+              <h3 class="timeline-company">{{ exp.company }}</h3>
+              <span class="timeline-role">{{ exp.role }}@if (exp.location) { · {{ exp.location }} }</span>
+              <p class="timeline-desc">{{ exp.description }}</p>
+              <div class="timeline-tags">
+                @for (tag of exp.technologies; track tag) { <span>{{ tag }}</span> }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
     <div class="timeline">
       @for (exp of displayExperiences; track exp.titleKey; let i = $index) {
         <div class="timeline-item reveal" [attr.data-side]="i % 2 === 0 ? 'right' : 'left'">
@@ -317,6 +356,7 @@
         </div>
       }
     </div>
+    }
   </div>
 </section>
 

@@ -68,6 +68,40 @@
   }
 }
 
+.dashboard-loading--error .dashboard-loading__spinner mat-icon {
+  color: var(--color-danger, #ef4444);
+}
+
+/* Banner "pannelli non aggiornati": sostituisce gli zeri finti che prima
+   comparivano in silenzio quando una richiesta falliva. */
+.dashboard-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--text-primary);
+
+  > mat-icon { color: var(--color-danger, #ef4444); flex-shrink: 0; }
+}
+
+.dashboard-error__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.88rem;
+
+  span { color: var(--text-secondary); }
+}
+
+@media (max-width: 600px) {
+  .dashboard-error { flex-wrap: wrap; }
+}
+
 .dashboard-toolbar {
   display: flex;
   align-items: center;
@@ -922,6 +956,26 @@
   border-radius: 999px;
   background: rgba(148, 163, 184, 0.12);
   overflow: hidden;
+}
+
+.tool-conv-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 2fr) 90px 90px 70px;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  padding: 0.15rem 0;
+}
+
+.tool-conv-row--head {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tool-conv-rate {
+  font-weight: 600;
+  color: #8b5cf6;
 }
 
 .h-bar-fill {

@@ -136,7 +136,7 @@
               </button>
             }
           </aside>
-          <main class="vw-main">
+          <div class="vw-main">
             <div class="vw-stage" [class.vw-stage--annotating]="annotateMode()">
               <canvas
                 #page
@@ -175,7 +175,7 @@
             @if (annotateMode()) {
               <p class="vw-annotate-hint">✏️ {{ 'viewer.annotate_hint' | translate }}</p>
             }
-          </main>
+          </div>
         </div>
 
         <!-- ── Annotazioni del documento ────────── -->

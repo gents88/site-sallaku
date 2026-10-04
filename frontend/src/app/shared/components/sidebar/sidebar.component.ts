@@ -1,23 +1,12 @@
-import { Component, ElementRef, HostListener, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
-
-export interface NavItem {
-  icon: string;
-  labelKey: string;
-  route: string;
-}
-
-export interface NavGroup {
-  id: string;
-  emoji: string;
-  titleKey: string;
-  items: NavItem[];
-}
+import { NavEntry, sidebarGroups } from '../../../core/navigation/nav-registry';
+import { NavIconComponent, navIconColor } from '../nav-icon/nav-icon.component';
 
 /** Tooltip della rail collassata: posizione calcolata dall'item sotto il puntatore/focus. */
 interface RailTooltip {
@@ -25,70 +14,16 @@ interface RailTooltip {
   top: number;
 }
 
-export const ADMIN_NAV: NavGroup[] = [
-  {
-    id: 'overview',
-    emoji: '📊',
-    titleKey: 'sidebar.groups.overview',
-    items: [
-      { icon: '🏠', labelKey: 'sidebar.items.dashboard', route: '/dashboard' },
-    ],
-  },
-  {
-    id: 'content',
-    emoji: '📝',
-    titleKey: 'sidebar.groups.content',
-    items: [
-      { icon: '🗂️', labelKey: 'sidebar.items.projects',     route: '/dashboard/projects' },
-      { icon: '✍️', labelKey: 'sidebar.items.blog',          route: '/dashboard/blog' },
-      { icon: '💼', labelKey: 'sidebar.items.experiences',   route: '/dashboard/experiences' },
-      { icon: '👤', labelKey: 'sidebar.items.about',         route: '/dashboard/about' },
-      { icon: '⭐', labelKey: 'sidebar.items.testimonials',  route: '/dashboard/testimonials' },
-      { icon: '💬', labelKey: 'sidebar.items.notes',         route: '/dashboard/notes' },
-    ],
-  },
-  {
-    id: 'ai',
-    emoji: '🧠',
-    titleKey: 'sidebar.groups.ai',
-    items: [
-      { icon: '🔎', labelKey: 'sidebar.items.pdf_search',   route: '/lab/pdf-search' },
-      { icon: '📚', labelKey: 'sidebar.items.library',      route: '/lab/library' },
-      { icon: '📋', labelKey: 'sidebar.items.pdf_summary',  route: '/lab/pdf-summary' },
-      { icon: '✨', labelKey: 'sidebar.items.ai_formatter', route: '/lab/ai-formatter' },
-      { icon: '🌐', labelKey: 'sidebar.items.pdf_translate', route: '/lab/pdf-translate' },
-      { icon: '🎞️', labelKey: 'sidebar.items.ai_ppt',      route: '/lab/ai-ppt' },
-    ],
-  },
-  {
-    id: 'workspace',
-    emoji: '🔗',
-    titleKey: 'sidebar.groups.workspace',
-    items: [
-      { icon: '🧩', labelKey: 'sidebar.items.workspace', route: '/lab/workspace' },
-    ],
-  },
-  {
-    id: 'tools',
-    emoji: '🧰',
-    titleKey: 'sidebar.groups.tools',
-    items: [
-      { icon: '🖊️', labelKey: 'sidebar.items.pdf_editor', route: '/lab/pdf-editor' },
-      { icon: '👁',  labelKey: 'sidebar.items.viewer',     route: '/lab/viewer' },
-      { icon: '✏️', labelKey: 'sidebar.items.editor',      route: '/lab/editor' },
-      { icon: '🔄', labelKey: 'sidebar.items.convert',     route: '/lab/convert' },
-      { icon: '🔤', labelKey: 'sidebar.items.ocr',         route: '/lab/ocr' },
-      { icon: '📷', labelKey: 'sidebar.items.scanner',     route: '/lab/scanner' },
-    ],
-  },
-];
+/** Voce fittizia per il tracciamento del CTA "Esplora il Lab". */
+const LAB_CTA = { route: '/lab' } as const;
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, LangUrlPipe, TranslateModule],
+  imports: [RouterLink, RouterLinkActive, LangUrlPipe, TranslateModule, NavIconComponent],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
   private readonly auth = inject(AuthService);
@@ -104,10 +39,11 @@ export class SidebarComponent {
 
   readonly isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
   readonly brandLabelKey = computed(() => (this.isAdminUser() ? 'sidebar.brand_admin' : 'sidebar.brand_tools'));
-  readonly brandBadge = computed(() => (this.isAdminUser() ? '⚙️' : '🧰'));
-  readonly navGroups = computed(() =>
-    this.isAdminUser() ? ADMIN_NAV : ADMIN_NAV.filter(group => group.id !== 'overview' && group.id !== 'content'),
-  );
+  readonly brandBadge = computed(() => (this.isAdminUser() ? 'dashboard' : 'flask'));
+  /** Voci dal registro unico (core/navigation): stesso elenco di palette, ricerca e prerender. */
+  readonly navGroups = computed(() => sidebarGroups(this.isAdminUser()));
+  readonly labCta = LAB_CTA;
+  readonly iconColor = navIconColor;
 
   /** Numero di voci realmente esposte: alimenta il testo del nudge senza hardcodarlo. */
   readonly itemCount = computed(() => this.navGroups().reduce((total, group) => total + group.items.length, 0));
@@ -141,7 +77,7 @@ export class SidebarComponent {
   }
 
   /** Click su una voce: traccia la destinazione (per route, stabile a prescindere dalla lingua) e, in overlay, chiude il drawer. */
-  onNavigate(item: NavItem): void {
+  onNavigate(item: Pick<NavEntry, 'route'>): void {
     this.analytics.trackClick(
       'sidebar_nav',
       `sidebar_${this.mode()}_${item.route.replace(/^\//, '').replace(/\//g, '_')}`,

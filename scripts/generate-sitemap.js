@@ -9,31 +9,32 @@ const API_BASE_URL = process.env.SITEMAP_API_URL
   || process.env.API_BASE_URL
   || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
 
-const routes = [
-  { loc: '/', changefreq: 'weekly', priority: '1.0' },
-  { loc: '/projects', changefreq: 'monthly', priority: '0.95' },
-  { loc: '/blog', changefreq: 'weekly', priority: '0.9' },
-  { loc: '/testimonials', changefreq: 'weekly', priority: '0.85' },
-  { loc: '/contact', changefreq: 'yearly', priority: '0.7' },
-  { loc: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
-  { loc: '/cookie-policy', changefreq: 'yearly', priority: '0.3' },
+// Keep in sync with frontend/src/app/core/services/language.service.ts's NON_DEFAULT_LANGS.
+const NON_DEFAULT_LANGS = ['en', 'sq', 'es', 'pt', 'fr', 'de'];
 
-  // ── AI & PDF Tools — public pages under /lab (moved from /dashboard/*, 2026-08) ──
-  { loc: '/lab', changefreq: 'monthly', priority: '0.9' },
-  { loc: '/lab/pdf-search', changefreq: 'weekly', priority: '0.89' },
-  { loc: '/lab/library', changefreq: 'monthly', priority: '0.88' },
-  { loc: '/lab/pdf-translate', changefreq: 'monthly', priority: '0.88' },
-  { loc: '/lab/ai-ppt', changefreq: 'monthly', priority: '0.87' },
-  { loc: '/lab/pdf-summary', changefreq: 'monthly', priority: '0.86' },
-  { loc: '/lab/ai-formatter', changefreq: 'monthly', priority: '0.85' },
-  { loc: '/lab/convert', changefreq: 'monthly', priority: '0.84' },
-  { loc: '/lab/ocr', changefreq: 'monthly', priority: '0.83' },
-  { loc: '/lab/pdf-editor', changefreq: 'monthly', priority: '0.82' },
-  { loc: '/lab/viewer', changefreq: 'monthly', priority: '0.8' },
-  { loc: '/lab/editor', changefreq: 'monthly', priority: '0.8' },
-  { loc: '/lab/scanner', changefreq: 'monthly', priority: '0.8' },
-  { loc: '/lab/workspace', changefreq: 'monthly', priority: '0.8' },
-];
+// Language-prefixed path for a default-language `loc`, matching
+// app.routes.server.ts's `:lang/<page>` prerender routes and
+// LanguageService.withLangPrefix(). '/' is special-cased to 'homepage'
+// (the root '/' is a `redirectTo` route, never itself prerendered — see
+// app.routes.server.ts's STATIC_PUBLIC_PAGES comment); every other route's
+// page slug is just its loc without the leading slash.
+function langLoc(loc, lang) {
+  const page = loc === '/' ? 'homepage' : loc.replace(/^\//, '');
+  return `/${lang}/${page}`;
+}
+
+// Pagine statiche dal registro unico della navigazione (stesso file letto da
+// navbar, sidebar, ricerca e prerender): solo le voci con `sitemap`. Prima la
+// lista era duplicata qui a mano e divergeva dal prerender (/lab/library).
+const NAV_REGISTRY = require('../frontend/src/app/core/navigation/nav-registry.json');
+
+function staticRoutes(registry = NAV_REGISTRY) {
+  return registry
+    .filter((e) => e.sitemap)
+    .map((e) => ({ loc: e.sitemap.loc || e.route, changefreq: e.sitemap.changefreq, priority: e.sitemap.priority }));
+}
+
+const routes = staticRoutes();
 
 const today = formatDate(new Date());
 
@@ -68,6 +69,9 @@ async function fetchBlogRoutes() {
         if (!post.slug) continue;
         posts.push({
           loc: `/blog/${post.slug}`,
+          // Translated slug per language (backend slug_xx, from title_xx) —
+          // must match blog-detail's canonical, which uses the same fallback.
+          langLocs: Object.fromEntries(NON_DEFAULT_LANGS.map(l => [l, `/${l}/blog/${post[`slug_${l}`] || post.slug}`])),
           changefreq: 'monthly',
           priority: '0.75',
           lastmod: post.publishedAt ? formatDate(new Date(post.publishedAt)) : today,
@@ -116,9 +120,49 @@ async function notifySearchEngines() {
   }
 }
 
+/** Expands a list of default-language (IT) entries into their prerendered lang-prefixed siblings. */
+function withLangVariants(entries) {
+  const variants = [];
+  for (const e of entries) {
+    for (const lang of NON_DEFAULT_LANGS) {
+      const { langLocs, ...entry } = e;
+      variants.push({ ...entry, loc: langLocs?.[lang] ?? langLoc(e.loc, lang) });
+    }
+  }
+  return variants;
+}
+
+/** Progetti con case study (stesso criterio del prerender in app.routes.server.ts). */
+async function fetchProjectRoutes() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/projects`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const projects = await res.json();
+    return projects
+      .filter((p) => p.slug && [p.problem, p.solution, p.results].some((t) => t && t.trim()))
+      .map((p) => ({
+        loc: `/projects/${p.slug}`,
+        changefreq: 'monthly',
+        priority: '0.8',
+        lastmod: p.updatedAt ? formatDate(new Date(p.updatedAt)) : today,
+      }));
+  } catch (err) {
+    console.warn('Could not fetch projects for sitemap — skipping case studies:', err.message);
+    return [];
+  }
+}
+
 async function main() {
   const blogRoutes = await fetchBlogRoutes();
-  const xml = buildXml([...routes, ...blogRoutes]);
+  const projectRoutes = await fetchProjectRoutes();
+  const xml = buildXml([
+    ...routes,
+    ...withLangVariants(routes),
+    ...projectRoutes,
+    ...withLangVariants(projectRoutes),
+    ...blogRoutes.map(({ langLocs, ...entry }) => entry),
+    ...withLangVariants(blogRoutes),
+  ]);
 
   const targets = [
     path.join(__dirname, '..', 'public', 'sitemap.xml'),
@@ -143,4 +187,9 @@ async function main() {
   }
 }
 
-main();
+// Eseguito solo da riga di comando: `require()` (es. dai test) non scrive file.
+if (require.main === module) {
+  main();
+}
+
+module.exports = { staticRoutes, buildXml, withLangVariants };

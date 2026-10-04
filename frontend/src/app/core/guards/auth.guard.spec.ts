@@ -13,7 +13,7 @@ describe('authGuard', () => {
     const urlTree = {} as UrlTree;
     TestBed.configureTestingModule({
       providers: [
-        { provide: AuthService, useValue: { isLoggedIn: () => true, isAdmin: () => true } },
+        { provide: AuthService, useValue: { isLoggedIn: () => true, isAdmin: () => true, restoring: () => false } },
         { provide: Router, useValue: { createUrlTree: vi.fn().mockReturnValue(urlTree) } },
       ],
     });
@@ -26,7 +26,7 @@ describe('authGuard', () => {
     const createUrlTree = vi.fn().mockReturnValue(urlTree);
     TestBed.configureTestingModule({
       providers: [
-        { provide: AuthService, useValue: { isLoggedIn: () => false, isAdmin: () => false } },
+        { provide: AuthService, useValue: { isLoggedIn: () => false, isAdmin: () => false, restoring: () => false } },
         { provide: Router, useValue: { createUrlTree } },
       ],
     });
@@ -40,7 +40,7 @@ describe('authGuard', () => {
     const createUrlTree = vi.fn().mockReturnValue(urlTree);
     TestBed.configureTestingModule({
       providers: [
-        { provide: AuthService, useValue: { isLoggedIn: () => true, isAdmin: () => false } },
+        { provide: AuthService, useValue: { isLoggedIn: () => true, isAdmin: () => false, restoring: () => false } },
         { provide: Router, useValue: { createUrlTree } },
       ],
     });

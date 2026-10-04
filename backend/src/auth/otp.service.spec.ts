@@ -23,10 +23,11 @@ describe('OtpService', () => {
       findOne: jest.fn(),
     };
     smsService = { sendOtp: jest.fn().mockResolvedValue(undefined) } as any;
-    mailService = { sendOtpEmail: jest.fn().mockResolvedValue(undefined) } as any;
+    mailService = { sendOtpEmail: jest.fn().mockResolvedValue(undefined), sendWelcome: jest.fn() } as any;
     usersService = {
       findOrCreateByPhone: jest.fn(),
       findOrCreateByEmailOtp: jest.fn(),
+      markEmailVerified: jest.fn().mockResolvedValue(undefined),
     } as any;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -108,13 +109,36 @@ describe('OtpService', () => {
       const otpHash = await bcrypt.hash('123456', 10);
       const record = makeRecord({ otpHash });
       mockFindOne(record);
-      usersService.findOrCreateByEmailOtp.mockResolvedValue({ _id: 'user-1' } as any);
+      usersService.findOrCreateByEmailOtp.mockResolvedValue({ _id: 'user-1', name: 'Ada', emailVerified: true } as any);
 
       const user = await service.verifyOtp(undefined, 'a@b.com', '123456');
 
       expect(record.used).toBe(true);
       expect(record.save).toHaveBeenCalled();
-      expect(user).toEqual({ _id: 'user-1' });
+      expect(user).toEqual({ _id: 'user-1', name: 'Ada', emailVerified: true });
+    });
+
+    it('marks the email verified and sends the welcome email on the first successful email verification', async () => {
+      const otpHash = await bcrypt.hash('123456', 10);
+      mockFindOne(makeRecord({ otpHash }));
+      usersService.findOrCreateByEmailOtp.mockResolvedValue({ _id: 'user-1', name: 'Ada', emailVerified: false } as any);
+
+      const user = await service.verifyOtp(undefined, 'a@b.com', '123456');
+
+      expect(usersService.markEmailVerified).toHaveBeenCalledWith('user-1');
+      expect(mailService.sendWelcome).toHaveBeenCalledWith('Ada', 'a@b.com');
+      expect(user.emailVerified).toBe(true);
+    });
+
+    it('does not re-mark or re-welcome an already-verified email', async () => {
+      const otpHash = await bcrypt.hash('123456', 10);
+      mockFindOne(makeRecord({ otpHash }));
+      usersService.findOrCreateByEmailOtp.mockResolvedValue({ _id: 'user-1', name: 'Ada', emailVerified: true } as any);
+
+      await service.verifyOtp(undefined, 'a@b.com', '123456');
+
+      expect(usersService.markEmailVerified).not.toHaveBeenCalled();
+      expect(mailService.sendWelcome).not.toHaveBeenCalled();
     });
 
     it('rejects an incorrect code without marking the record used, and increments attempts', async () => {
@@ -150,6 +174,8 @@ describe('OtpService', () => {
 
       expect(usersService.findOrCreateByPhone).toHaveBeenCalledWith('+15551234567');
       expect(usersService.findOrCreateByEmailOtp).not.toHaveBeenCalled();
+      expect(usersService.markEmailVerified).not.toHaveBeenCalled();
+      expect(mailService.sendWelcome).not.toHaveBeenCalled();
     });
   });
 });

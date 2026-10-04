@@ -562,6 +562,39 @@
   .form-actions { flex-direction: column; align-items: stretch; }
   .form-actions__right { justify-content: flex-end; }
   .form-row--slim { max-width: 100%; }
+
+  /* Su mobile le azioni rubavano ~150px di larghezza al testo:
+     le spostiamo su una riga a sé, sotto i badge. */
+  .list-item {
+    flex-wrap: wrap;
+    align-items: flex-start;
+
+    &__info h3 {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    &__actions {
+      flex-basis: 100%;
+      justify-content: flex-end;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+    }
+  }
 }
 
 
+
+/* Filtro Tutti / Pubblicati / Bozze (la card "Bozze" della dashboard apre ?status=draft). */
+.status-filter {
+  display: inline-flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem;
+  button {
+    display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .9rem; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); font-size: .85rem;
+    span { font-variant-numeric: tabular-nums; opacity: .8; }
+    &.active { background: rgba(79, 106, 245, .15); border-color: rgba(79, 106, 245, .5); color: var(--text-primary); }
+    &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 2px; }
+  }
+}

@@ -1,12 +1,13 @@
-import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject, effect } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject, effect, PLATFORM_ID } from '@angular/core';
+import { CommonModule, Location, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
-import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
-import { Post } from '../../../core/models/post.model';
+import { Lang, LanguageService, NON_DEFAULT_LANGS, withLangPrefix } from '../../../core/services/language.service';
+import { Post, localizedSlug } from '../../../core/models/post.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { PrismService } from '../../../shared/services/prism.service';
@@ -15,6 +16,7 @@ import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.comp
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
+import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
@@ -45,6 +47,10 @@ export class BlogDetailComponent implements OnInit {
   private readonly el = inject(ElementRef);
   private readonly prismService = inject(PrismService);
   private readonly injector = inject(Injector);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly location = inject(Location);
+  private readonly snackBar = inject(MatSnackBar);
+  publishing = false;
   readonly currentLang = this.langService.current;
 
   /** Returns the title in the current portal language, falling back to Italian. */
@@ -104,6 +110,11 @@ export class BlogDetailComponent implements OnInit {
     return this.post.content;
   }
 
+  /** Estimated reading time of the content in the current language. */
+  get readingMinutes(): number {
+    return estimateReadingMinutes(this.localizedContent);
+  }
+
   constructor(
     private blogService: BlogService,
     private seo: SeoService,
@@ -112,6 +123,25 @@ export class BlogDetailComponent implements OnInit {
   ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+  }
+
+  /** Publishes the draft being previewed, or moves a published post back to draft (admin preview route only). */
+  publish(): void { this.setPublished(true); }
+  unpublish(): void { this.setPublished(false); }
+
+  private setPublished(published: boolean): void {
+    if (!this.post || this.publishing) return;
+    this.publishing = true;
+    this.blogService.update(this.post._id, { published }).pipe(
+      finalize(() => { this.publishing = false; this.cdr.markForCheck(); }),
+    ).subscribe({
+      next: updated => {
+        this.post = { ...this.post!, published: updated.published, publishedAt: updated.publishedAt, updatedAt: updated.updatedAt };
+        this.snackBar.open(published ? 'Articolo pubblicato' : 'Articolo riportato in bozza (letture conservate)', undefined, { duration: 3000 });
+        this.cdr.markForCheck();
+      },
+      error: () => this.snackBar.open(published ? 'Pubblicazione non riuscita' : 'Operazione non riuscita', undefined, { duration: 4000 }),
+    });
   }
 
   private highlightCode(): void {
@@ -143,14 +173,28 @@ export class BlogDetailComponent implements OnInit {
         afterNextRender(() => this.highlightCode(), { injector: this.injector });
         this.cdr.markForCheck();
         if (this.isPreview) return; // no view tracking, canonical tags, or JSON-LD for an unpublished draft
-        // Fire-and-forget: increment view count without blocking rendering
-        this.blogService.trackView(post.slug).subscribe({ error: () => {} });
+        // Fire-and-forget: increment view count without blocking rendering.
+        // Browser only — prerendering every post × language used to count
+        // ~300 fake views per build (and eat into the backend throttle).
+        if (this.isBrowser) {
+          this.blogService.trackView(post.slug).subscribe({ error: () => {} });
+        }
         // Self-referencing canonical: previously always pointed at the
         // Italian URL regardless of currentLang(), which was wrong for
         // every non-IT visitor/crawler once /en/, /es/... URLs became real.
         // Also fed to app-social-share so shared links point at the exact
         // language variant the visitor was actually reading.
-        this.pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog/' + post.slug, this.currentLang())}`;
+        //
+        // The slug itself is translated too (/sq/blog/<slug_sq>), falling
+        // back to the Italian slug for languages without a translated title.
+        // Old links (e.g. /sq/blog/<italian-slug>, already shared on social)
+        // still resolve — the backend matches any slug — but canonical/og:url
+        // point at the localized one, and the browser URL is corrected to it.
+        const alternatePaths = Object.fromEntries(
+          (['it', ...NON_DEFAULT_LANGS] as Lang[]).map(l => [l, `/blog/${localizedSlug(post, l)}`]),
+        ) as Record<Lang, string>;
+        const localizedPath = withLangPrefix(alternatePaths[this.currentLang()], this.currentLang());
+        this.pageUrl = `${SITE_ORIGIN}${localizedPath}`;
         const pageUrl = this.pageUrl;
         this.seo.update({
           title: this.localizedMetaTitle,
@@ -158,7 +202,11 @@ export class BlogDetailComponent implements OnInit {
           image: post.coverImage,
           type: 'article',
           url: pageUrl,
+          alternatePaths,
         });
+        if (this.isBrowser && this.slug !== localizedSlug(post, this.currentLang())) {
+          this.location.replaceState(localizedPath);
+        }
         const lang = this.currentLang();
         this.seo.injectJsonLd([
           {

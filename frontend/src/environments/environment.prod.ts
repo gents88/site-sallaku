@@ -8,4 +8,9 @@ export const environment = {
   // Left empty until then — Sentry.init() no-ops on an empty DSN.
   sentryDsn: '',
   turnstileSiteKey: '',
+  // Refresh token in cookie httpOnly invece che in localStorage (backend:
+  // AUTH_REFRESH_COOKIE=true). Da accendere solo quando l'API è sullo stesso
+  // sito del frontend (es. api.gentsallaku.it): con *.up.railway.app il
+  // cookie sarebbe di terze parti e Safari lo bloccherebbe.
+  authRefreshCookie: false,
 };

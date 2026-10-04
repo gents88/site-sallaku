@@ -1,6 +1,7 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, finalize, catchError, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
+import { UploadEvent, asUploadEvents } from '../http/upload-events';
 import { environment } from '@env/environment';
 
 export type DocType = 'general' | 'business_proposal' | 'report' | 'meeting_notes' | 'resume' | 'article';
@@ -24,15 +25,10 @@ export class AiFormatterService {
   private readonly api = `${environment.apiUrl}/ai`;
   private readonly http = inject(HttpClient);
 
-  readonly isLoading = signal<boolean>(false);
-
-  formatText(payload: FormatTextRequest): Observable<FormatTextResult> {
-    this.isLoading.set(true);
+  /** Lo stato di caricamento vive nel componente (TrackedRequest), così la richiesta è annullabile. */
+  formatText(payload: FormatTextRequest): Observable<UploadEvent<FormatTextResult>> {
     return this.http
       .post<FormatTextResult>(`${this.api}/format-text`, payload)
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        catchError((err) => throwError(() => err)),
-      );
+      .pipe(asUploadEvents<FormatTextResult>());
   }
 }

@@ -14,6 +14,7 @@ import { TrackClickEventDto } from './dto/track-click-event.dto';
 import { AdminTrackingBypassInterceptor } from './interceptors/admin-tracking-bypass.interceptor';
 import { MonthsQueryDto } from './dto/months-query.dto';
 import { ClickStatsQueryDto } from './dto/click-stats-query.dto';
+import { DaysQueryDto } from './dto/days-query.dto';
 import { LimitOnlyDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Analytics')
@@ -89,6 +90,16 @@ export class AnalyticsController {
   @ApiOperation({ summary: 'Get advanced analytics breakdown (admin only)' })
   getAdvancedAnalytics() {
     return this.query.getAdvancedAnalytics();
+  }
+
+  @Get('tool-conversion')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Per-tool usage → lead funnel over a rolling window (admin only)' })
+  @ApiQuery({ name: 'days', required: false })
+  getToolConversion(@Query() { days }: DaysQueryDto) {
+    return this.query.getToolConversionFunnel(days ?? 30);
   }
 
   @Get('search-console')

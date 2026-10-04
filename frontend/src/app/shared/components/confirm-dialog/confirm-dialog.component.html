@@ -1,6 +1,12 @@
 @if (visible) {
   <div class="confirm-dialog-backdrop" (click)="cancelled.emit()" aria-hidden="true"></div>
-  <div class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-dialog-title">
+  <div
+    class="confirm-dialog"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="confirm-dialog-title"
+    (keydown.tab)="onDialogTabKey($event)"
+  >
     <div class="confirm-dialog__icon">
       <mat-icon>warning_amber</mat-icon>
     </div>
@@ -9,7 +15,7 @@
       {{ messageKey | translate: messageParams }}
     </p>
     <div class="confirm-dialog__actions">
-      <button type="button" class="modal-btn modal-btn--plain" (click)="cancelled.emit()">
+      <button #cancelBtn type="button" class="modal-btn modal-btn--plain" (click)="cancelled.emit()">
         <mat-icon>close</mat-icon>
         {{ 'common.cancel' | translate }}
       </button>

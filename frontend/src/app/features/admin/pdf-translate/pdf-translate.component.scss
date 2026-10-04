@@ -849,6 +849,12 @@ $error-clr:     #f87171;
   gap: 12px;
 }
 
+.save-error {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  color: #f87171;
+}
+
 .download-btn {
   display: flex;
   align-items: center;

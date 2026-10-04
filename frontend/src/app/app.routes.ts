@@ -42,6 +42,11 @@ const publicPages: Route[] = [
       import('./features/projects/projects-list/projects-list.component').then(m => m.ProjectsListComponent),
   },
   {
+    path: 'projects/:slug',
+    loadComponent: () =>
+      import('./features/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent),
+  },
+  {
     path: 'blog',
     data: { preload: true },
     loadComponent: () =>
@@ -133,6 +138,22 @@ const publicPages: Route[] = [
   {
     path: 'lab/library',
     loadComponent: () => import('./features/admin/library/library.component').then(m => m.LibraryComponent),
+  },
+  {
+    path: 'lab/i-miei-file',
+    loadComponent: () => import('./features/admin/my-saved-results/my-saved-results.component').then(m => m.MySavedResultsComponent),
+  },
+
+  // ── Newsletter: confirm/unsubscribe landing pages ──
+  {
+    path: 'newsletter/confirm',
+    loadComponent: () =>
+      import('./features/newsletter/newsletter-confirm/newsletter-confirm.component').then(m => m.NewsletterConfirmComponent),
+  },
+  {
+    path: 'newsletter/unsubscribe',
+    loadComponent: () =>
+      import('./features/newsletter/newsletter-unsubscribe/newsletter-unsubscribe.component').then(m => m.NewsletterUnsubscribeComponent),
   },
 
   // ── Legal ─────────────────────────────────────────

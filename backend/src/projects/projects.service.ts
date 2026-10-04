@@ -27,6 +27,21 @@ export class ProjectsService {
     );
   }
 
+  /** Pagina pubblica /projects/:slug. */
+  async findBySlug(slug: string): Promise<unknown> {
+    const project = await this.projectModel.findOne({ slug }).lean().exec();
+    if (!project) throw new NotFoundException(`Project "${slug}" not found`);
+    return project;
+  }
+
+  /** Drag & drop in admin: l'indice nell'array diventa `order`, in un solo bulkWrite. */
+  async reorder(ids: string[]): Promise<void> {
+    await this.projectModel.bulkWrite(
+      ids.map((id, index) => ({ updateOne: { filter: { _id: id }, update: { $set: { order: index } } } })),
+    );
+    await this.cache.invalidate(LIST_KEY);
+  }
+
   async findOne(id: string): Promise<ProjectDocument> {
     const project = await this.projectModel.findById(id).exec();
     if (!project) throw new NotFoundException(`Project #${id} not found`);

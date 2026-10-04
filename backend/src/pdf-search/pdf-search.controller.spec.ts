@@ -27,6 +27,32 @@ function jsonUpstream(body: unknown, ok = true, status = 200, contentType = 'app
   } as unknown as Response;
 }
 
+function redirectUpstream(location: string, status = 302) {
+  return {
+    ok: false, status,
+    headers: { get: (name: string) => (name === 'location' ? location : null) },
+  } as unknown as Response;
+}
+
+/** Upstream con body in streaming e content-length assente/falso. */
+function streamingUpstream(chunks: number[], contentLength: string | null = null) {
+  let i = 0;
+  const cancel = jest.fn().mockResolvedValue(undefined);
+  return {
+    upstream: {
+      ok: true, status: 200,
+      headers: { get: (name: string) => (name === 'content-type' ? 'application/pdf' : name === 'content-length' ? contentLength : null) },
+      body: {
+        getReader: () => ({
+          read: () => Promise.resolve(i < chunks.length ? { done: false, value: new Uint8Array(chunks[i++]) } : { done: true, value: undefined }),
+          cancel,
+        }),
+      },
+    } as unknown as Response,
+    cancel,
+  };
+}
+
 describe('PdfSearchController', () => {
   let controller: PdfSearchController;
   let service: jest.Mocked<Pick<PdfSearchService, 'search'>>;
@@ -144,6 +170,70 @@ describe('PdfSearchController', () => {
 
       expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/pdf');
       expect(res.send).toHaveBeenCalled();
+    });
+
+    it('disables automatic redirects so every hop goes through the allow-list', async () => {
+      fetchMock.mockResolvedValue(jsonUpstream(new ArrayBuffer(8)));
+
+      await controller.proxyPdf('https://arxiv.org/pdf/1234', mockResponse() as unknown as Response);
+
+      expect(fetchMock).toHaveBeenCalledWith('https://arxiv.org/pdf/1234', expect.objectContaining({ redirect: 'manual' }));
+    });
+
+    it('follows a redirect to an allow-listed subdomain (archive.org → dnNNN.ca.archive.org)', async () => {
+      fetchMock
+        .mockResolvedValueOnce(redirectUpstream('https://dn710305.ca.archive.org/0/items/x/x.pdf'))
+        .mockResolvedValueOnce(jsonUpstream(new ArrayBuffer(8)));
+      const res = mockResponse();
+
+      await controller.proxyPdf('https://archive.org/download/x/x.pdf', res as unknown as Response);
+
+      expect(fetchMock).toHaveBeenNthCalledWith(2, 'https://dn710305.ca.archive.org/0/items/x/x.pdf', expect.anything());
+      expect(res.send).toHaveBeenCalled();
+    });
+
+    it('resolves a relative Location header against the current URL', async () => {
+      fetchMock
+        .mockResolvedValueOnce(redirectUpstream('/pdf/1234v2'))
+        .mockResolvedValueOnce(jsonUpstream(new ArrayBuffer(8)));
+
+      await controller.proxyPdf('https://arxiv.org/pdf/1234', mockResponse() as unknown as Response);
+
+      expect(fetchMock).toHaveBeenNthCalledWith(2, 'https://arxiv.org/pdf/1234v2', expect.anything());
+    });
+
+    it('refuses a redirect that leaves the allow-list (SSRF via 302)', async () => {
+      fetchMock.mockResolvedValueOnce(redirectUpstream('http://169.254.169.254/latest/meta-data'));
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(BadRequestException);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('gives up after too many redirects', async () => {
+      fetchMock.mockResolvedValue(redirectUpstream('https://archive.org/loop.pdf'));
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(BadRequestException);
+      expect(fetchMock).toHaveBeenCalledTimes(6);
+    });
+
+    it('stops reading and cancels the stream once the size cap is exceeded, even without content-length', async () => {
+      const { upstream, cancel } = streamingUpstream([60 * 1024 * 1024, 60 * 1024 * 1024, 1]);
+      fetchMock.mockResolvedValue(upstream);
+      const res = mockResponse();
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', res as unknown as Response)).rejects.toBeInstanceOf(BadRequestException);
+      expect(cancel).toHaveBeenCalled();
+      expect(res.send).not.toHaveBeenCalled();
+    });
+
+    it('concatenates streamed chunks under the cap', async () => {
+      const { upstream } = streamingUpstream([3, 5]);
+      fetchMock.mockResolvedValue(upstream);
+      const res = mockResponse();
+
+      await controller.proxyPdf('https://archive.org/x.pdf', res as unknown as Response);
+
+      expect((res.send.mock.calls[0][0] as Buffer).byteLength).toBe(8);
     });
   });
 });

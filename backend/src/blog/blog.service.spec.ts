@@ -4,6 +4,10 @@ import { NotFoundException } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { Post } from './schemas/post.schema';
 
+const anySlugFilter = (slug: string) => ({
+  $or: ['slug', 'slug_en', 'slug_sq', 'slug_pt', 'slug_es', 'slug_fr', 'slug_de'].map(f => ({ [f]: slug })),
+});
+
 // ── Mock helpers ───────────────────────────────────────────────────────────────
 
 function makePost(overrides: Partial<{
@@ -129,7 +133,17 @@ describe('BlogService', () => {
       const result = await service.findBySlug('test-post');
 
       expect(result).toEqual(post);
-      expect(modelMock.findOne).toHaveBeenCalledWith({ slug: 'test-post', published: true });
+      expect(modelMock.findOne).toHaveBeenCalledWith({ ...anySlugFilter('test-post'), published: true });
+    });
+
+    it('should match a per-language slug too (e.g. /sq/blog/<albanian-slug>)', async () => {
+      modelMock.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(makePost()) });
+
+      await service.findBySlug('blinishti-historia');
+
+      const filter = modelMock.findOne.mock.calls[0][0];
+      expect(filter.$or).toContainEqual({ slug_sq: 'blinishti-historia' });
+      expect(filter.$or).toContainEqual({ slug: 'blinishti-historia' });
     });
 
     it('should throw NotFoundException if post not found', async () => {
@@ -157,6 +171,24 @@ describe('BlogService', () => {
       expect(result.slug).toBe('test-post');
     });
 
+    it('should generate a per-language slug from each translated title (diacritics stripped)', async () => {
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.create.mockResolvedValue(makePost());
+
+      await service.create({
+        title: 'Blinisht: storia e memoria',
+        title_sq: 'Blinishti: historia dhe kujtesa e një territori',
+        title_en: 'Blinisht: history and memory',
+        content: 'Content here',
+      } as any);
+
+      const created = modelMock.create.mock.calls[0][0];
+      expect(created.slug).toBe('blinisht-storia-e-memoria');
+      expect(created.slug_sq).toBe('blinishti-historia-dhe-kujtesa-e-nje-territori');
+      expect(created.slug_en).toBe('blinisht-history-and-memory');
+      expect(created.slug_de).toBeUndefined(); // no German title → no German slug
+    });
+
     it('should set publishedAt when publishing', async () => {
       const now = new Date();
       const post = makePost({ published: true, publishedAt: now });
@@ -170,6 +202,50 @@ describe('BlogService', () => {
       } as any);
 
       expect(result.publishedAt).toBeTruthy();
+    });
+  });
+
+  // ── update ──────────────────────────────────────────────────────────────────
+
+  describe('update', () => {
+    it('keeps publishedAt and never touches viewCount when moving a post back to draft', async () => {
+      const publishedAt = new Date('2025-01-01');
+      const existing = { ...makePost({ published: true, publishedAt, viewCount: 42 }), toObject() { return this; } };
+      modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
+      modelMock.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
+
+      await service.update('1', { published: false } as any);
+
+      const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
+      expect(update.published).toBe(false);
+      expect(update).not.toHaveProperty('publishedAt');
+      expect(update).not.toHaveProperty('viewCount');
+    });
+
+    it('never regenerates a per-language slug that already exists', async () => {
+      const existing = { ...makePost(), title_sq: 'Titull i vjetër', slug_sq: 'titull-i-vjeter', toObject() { return this; } };
+      modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(existing) });
+
+      await service.update('post-id-1', { title: 'Test Post', title_sq: 'Titull i ri' } as any);
+
+      const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
+      expect(update.slug_sq).toBeUndefined();
+    });
+  });
+
+  // ── backfillLocalizedSlugs ──────────────────────────────────────────────────
+
+  describe('backfillLocalizedSlugs', () => {
+    it('fills only the missing slugs of existing posts', async () => {
+      const post = { _id: 'p1', slug: 'blinisht', title_sq: 'Blinishti sot', slug_en: 'kept', title_en: 'Kept' };
+      modelMock.find.mockReturnValue(makeMockChain([post]));
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.updateOne.mockReturnValue({ exec: jest.fn().mockResolvedValue({}) });
+
+      await expect(service.backfillLocalizedSlugs()).resolves.toBe(1);
+      expect(modelMock.updateOne).toHaveBeenCalledWith({ _id: 'p1' }, { $set: { slug_sq: 'blinishti-sot' } });
     });
   });
 

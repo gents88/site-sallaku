@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, HostListener, PLATFORM_ID, signal, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef, HostListener, PLATFORM_ID, ViewChild, effect, signal, computed, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +6,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Subject, of, switchMap, catchError } from 'rxjs';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -59,6 +60,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly service = inject(PdfSearchService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
   private readonly analytics = inject(AnalyticsTrackingService);
   private readonly pdfjs = inject(PdfjsService);
@@ -194,13 +196,22 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   // the first failed search.
   private readonly searchTrigger$ = new Subject<string>();
 
+  @ViewChild('previewCloseBtn') private previewCloseBtnRef?: ElementRef<HTMLButtonElement>;
+
   constructor() {
+    effect(() => {
+      if (this.selected()) {
+        setTimeout(() => this.previewCloseBtnRef?.nativeElement.focus(), 0);
+      }
+    });
+
     this.searchTrigger$
       .pipe(
         switchMap((q) =>
           this.service.search(q).pipe(
             catchError((err) => {
-              const msg = err?.error?.message ?? this.translate.instant('pdf_search.err_search');
+              const rawMsg = err?.error?.message;
+              const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.translate.instant('pdf_search.err_search');
               this.error.set(msg);
               this.results.set([]);
               return of(null);
@@ -237,9 +248,9 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     }
 
     this.seo.update({
-      title: 'Motore di Ricerca PDF Pubblico Dominio — Libri Senza Copyright',
-      description: 'Motore di ricerca PDF per trovare e scaricare libri di pubblico dominio, paper scientifici e articoli open access, senza problemi di copyright. Cerca su Internet Archive, Project Gutenberg, arXiv e PubMed Central con anteprima prima del download.',
-      url: 'https://gentsallaku.it/lab/pdf-search',
+      title: this.translate.instant('pdf_search.seo_title'),
+      description: this.translate.instant('pdf_search.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-search', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
@@ -645,5 +656,24 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   @HostListener('window:keydown.escape')
   onEscape(): void {
     if (this.selected()) this.closePreview();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro la preview finché è aperta. */
+  onPreviewTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const modal = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      modal.querySelectorAll<HTMLElement>('button:not([disabled]), [href], input:not([disabled])'),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
   }
 }

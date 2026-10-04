@@ -14,7 +14,8 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
@@ -23,7 +24,13 @@ import {
   FormatTextResult,
 } from '../../../core/services/ai-formatter.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 type ViewMode = 'formatted' | 'raw';
 
@@ -31,19 +38,24 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
 export class AiFormatterComponent implements OnInit {
   @ViewChild('formatterSection') formatterSection!: ElementRef<HTMLElement>;
 
-  private readonly sanitizer  = inject(DomSanitizer);
-  private readonly service    = inject(AiFormatterService);
-  private readonly seo        = inject(SeoService);
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly workspace  = inject(WorkspaceService);
-  private readonly t          = inject(TranslateService);
+  private readonly sanitizer     = inject(DomSanitizer);
+  private readonly service       = inject(AiFormatterService);
+  private readonly seo           = inject(SeoService);
+  private readonly langService   = inject(LanguageService);
+  private readonly platformId    = inject(PLATFORM_ID);
+  private readonly workspace     = inject(WorkspaceService);
+  private readonly t             = inject(TranslateService);
+  private readonly savedResults  = inject(SavedResultsService);
+  private readonly analytics     = inject(AnalyticsTrackingService);
+  readonly auth                  = inject(AuthService);
+  readonly authModal             = inject(AuthModalService);
 
   breadcrumbItems: BreadcrumbItem[] = [];
 
@@ -78,9 +90,9 @@ export class AiFormatterComponent implements OnInit {
     }
 
     this.seo.update({
-      title: 'AI Text Formatter — Convert Notes to Polished Documents',
-      description: 'Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter.',
-      url: 'https://gentsallaku.it/lab/ai-formatter',
+      title: this.t.instant('ai_formatter.seo_title'),
+      description: this.t.instant('ai_formatter.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/ai-formatter', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
@@ -129,7 +141,13 @@ export class AiFormatterComponent implements OnInit {
     ];
   }
 
-  readonly loading = this.service.isLoading;
+  /** Richiesta annullabile: annullata anche quando si lascia la pagina. */
+  readonly req = new TrackedRequest();
+  readonly loading = this.req.active;
+
+  cancelRequest(): void {
+    this.req.cancel();
+  }
 
   readonly text             = signal('');
   readonly result           = signal<FormatTextResult | null>(null);
@@ -140,6 +158,9 @@ export class AiFormatterComponent implements OnInit {
   readonly draftRestored    = signal(false);
   readonly workspaceItem    = signal<WorkspaceItem | null>(null);
   readonly justSentToWorkspace = signal(false);
+  readonly saving              = signal(false);
+  readonly justSaved           = signal(false);
+  readonly saveError           = signal('');
 
   readonly wordCount = computed(() =>
     this.text().trim() ? this.text().trim().split(/\s+/).filter(Boolean).length : 0,
@@ -177,8 +198,11 @@ export class AiFormatterComponent implements OnInit {
     this.error.set('');
     this.result.set(null);
 
-    this.service.formatText({ text: rawText, docType: this.selectedDocType() }).subscribe({
-      next: (res) => this.result.set(res),
+    this.req.run(this.service.formatText({ text: rawText, docType: this.selectedDocType() }), {
+      next: (res) => {
+        this.result.set(res);
+        this.analytics.trackClick('lab_tool', 'ai_formatter');
+      },
       error: (err) => {
         const msg = err?.error?.message ?? this.t.instant('ai_formatter.err_generic');
         this.error.set(Array.isArray(msg) ? msg.join(' ') : msg);
@@ -249,6 +273,40 @@ export class AiFormatterComponent implements OnInit {
     });
     this.justSentToWorkspace.set(true);
     setTimeout(() => this.justSentToWorkspace.set(false), 1500);
+  }
+
+  saveToAccount(): void {
+    const r = this.result();
+    if (!r) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults
+      .save({
+        toolType: 'ai-formatter',
+        title: this.text().trim().slice(0, 60) || 'Testo formattato',
+        payload: r as unknown as Record<string, unknown>,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          const rawMsg = err?.error?.message;
+          this.saveError.set(
+            Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+          );
+          setTimeout(() => this.saveError.set(''), 3000);
+        },
+      });
   }
 
   clearAll(): void {

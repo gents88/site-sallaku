@@ -1,6 +1,7 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, finalize, catchError, throwError } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { UploadClient } from '../http/upload-client.service';
+import { UploadEvent } from '../http/upload-events';
 import { environment } from '@env/environment';
 
 export type TranslationLanguage =
@@ -62,28 +63,20 @@ export const TRANSLATION_LANGUAGES: TranslationLanguageOption[] = [
 @Injectable({ providedIn: 'root' })
 export class PdfTranslateService {
   private readonly api = `${environment.apiUrl}/ai`;
-  private readonly http = inject(HttpClient);
-
-  readonly isLoading = signal<boolean>(false);
+  private readonly upload = inject(UploadClient);
 
   translate(
     file: File,
     targetLanguage: TranslationLanguage,
     options: TranslateOptions = {},
-  ): Observable<TranslatePdfResult> {
-    this.isLoading.set(true);
+  ): Observable<UploadEvent<TranslatePdfResult>> {
 
     const formData = new FormData();
     formData.append('file', file, file.name);
     formData.append('targetLanguage', targetLanguage);
     formData.append('highFidelity', String(options.highFidelity !== false));
 
-    return this.http
-      .post<TranslatePdfResult>(`${this.api}/translate-pdf`, formData)
-      .pipe(
-        finalize(() => this.isLoading.set(false)),
-        catchError((err) => throwError(() => err)),
-      );
+    return this.upload.post<TranslatePdfResult>(`${this.api}/translate-pdf`, formData);
   }
 
   downloadPdf(base64: string, filename: string): void {

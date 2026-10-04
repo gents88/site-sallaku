@@ -1,0 +1,31 @@
+.nc { padding: 1.25rem 1.5rem; margin-bottom: 2rem; }
+.nc__head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; h2 { margin: 0; font-size: 1.2rem; } }
+.nc__msg { font-size: .88rem; color: var(--text-secondary); &--error { color: var(--color-danger, #ef4444); } }
+.nc__editor { border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: .5rem; }
+.nc__editor label, .nc__label { font-weight: 600; font-size: .85rem; }
+.nc__input {
+  width: 100%; padding: .55rem .75rem; border-radius: 10px; border: 1px solid var(--border-color);
+  background: var(--bg-secondary); color: var(--text-primary);
+  &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 1px; }
+  &--sm { width: auto; padding: .35rem .6rem; font-size: .85rem; }
+}
+.nc__code { font-family: 'JetBrains Mono', monospace; font-size: .82rem; resize: vertical; }
+.nc__hint { color: var(--text-secondary); font-size: .78rem; }
+.nc__split { display: grid; grid-template-columns: 1fr; gap: 1rem; @media (min-width: 900px) { grid-template-columns: 1fr 1fr; } }
+.nc__preview { width: 100%; min-height: 320px; border: 1px solid var(--border-color); border-radius: 10px; background: #fff; }
+.nc__actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .5rem; }
+.nc__inline { display: inline-flex; gap: .35rem; align-items: center; }
+.nc__danger { color: var(--color-danger, #ef4444) !important; }
+.nc__state { text-align: center; color: var(--text-secondary); padding: 1.5rem; }
+.nc__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .75rem; }
+.nc__item { border: 1px solid var(--border-color); border-radius: 12px; padding: .9rem 1rem; }
+.nc__item-head { display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+.nc__meta { font-size: .82rem; color: var(--text-secondary); margin: .3rem 0; }
+.nc__status {
+  font-size: .72rem; padding: .15rem .55rem; border-radius: 999px; background: rgba(127,127,127,.15); white-space: nowrap;
+  &--scheduled, &--sending { background: rgba(245, 158, 11, .18); }
+  &--sent { background: rgba(16, 185, 129, .18); }
+  &--cancelled { background: rgba(239, 68, 68, .15); }
+}
+.nc__progress { height: 6px; border-radius: 999px; background: rgba(127,127,127,.18); overflow: hidden; margin-top: .5rem; }
+.nc__bar { height: 100%; background: linear-gradient(90deg, #4f6af5, #8b5cf6); transition: width .3s ease; }

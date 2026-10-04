@@ -6,7 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService, LibraryAnnotation, LibraryDoc } from '../../../core/services/library.service';
@@ -30,6 +31,7 @@ const MAX_THUMBS = 200;
 export class ViewerComponent implements OnInit, OnDestroy {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly library = inject(LibraryService);
   private readonly workspace = inject(WorkspaceService);
@@ -109,9 +111,9 @@ export class ViewerComponent implements OnInit, OnDestroy {
     }
 
     this.seo.update({
-      title: 'Free PDF Viewer Online — Zoom, Search & Thumbnails',
-      description: 'View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload.',
-      url: 'https://gentsallaku.it/lab/viewer',
+      title: this.t.instant('viewer.seo_title'),
+      description: this.t.instant('viewer.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/viewer', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',

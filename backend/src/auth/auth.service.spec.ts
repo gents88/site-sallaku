@@ -5,14 +5,13 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { MailService } from '../mail/mail.service';
 import { OtpService } from './otp.service';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function makeUser(overrides: Partial<{
   _id: string; name: string; email: string; passwordHash: string;
-  role: string; refreshTokenHash: string | null;
+  role: string; refreshTokenHash: string | null; emailVerified: boolean;
 }> = {}) {
   return {
     _id: 'user-id-1',
@@ -21,6 +20,7 @@ function makeUser(overrides: Partial<{
     passwordHash: '$2b$12$hashedpassword',
     role: 'user',
     refreshTokenHash: null,
+    emailVerified: true,
     toString: () => 'user-id-1',
     ...overrides,
   };
@@ -32,7 +32,6 @@ describe('AuthService', () => {
   let service: AuthService;
   let usersService: jest.Mocked<UsersService>;
   let jwtService: jest.Mocked<JwtService>;
-  let mailService: jest.Mocked<MailService>;
   let otpService: jest.Mocked<OtpService>;
 
   beforeEach(async () => {
@@ -66,10 +65,6 @@ describe('AuthService', () => {
           },
         },
         {
-          provide: MailService,
-          useValue: { sendWelcome: jest.fn() },
-        },
-        {
           provide: OtpService,
           useValue: {
             requestOtp: jest.fn(),
@@ -82,18 +77,17 @@ describe('AuthService', () => {
     service = module.get<AuthService>(AuthService);
     usersService = module.get(UsersService);
     jwtService = module.get(JwtService);
-    mailService = module.get(MailService);
     otpService = module.get(OtpService);
   });
 
   // ── register ────────────────────────────────────────────────────────────────
 
   describe('register', () => {
-    it('should create a user and return token pair', async () => {
+    it('crea l’utente non verificato, invia un OTP email e NON restituisce token', async () => {
       usersService.findByEmail.mockResolvedValue(null);
-      const user = makeUser();
+      const user = makeUser({ emailVerified: false });
       usersService.create.mockResolvedValue(user as any);
-      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+      otpService.requestOtp.mockResolvedValue({ message: 'OTP sent' });
 
       const result = await service.register({
         name: 'Test User',
@@ -105,10 +99,9 @@ describe('AuthService', () => {
       expect(usersService.create).toHaveBeenCalledWith(
         expect.objectContaining({ email: 'test@example.com', role: 'user' }),
       );
-      expect(mailService.sendWelcome).toHaveBeenCalledWith(user.name, user.email);
-      expect(result).toHaveProperty('access_token');
-      expect(result).toHaveProperty('refresh_token');
-      expect(result).toHaveProperty('expires_in', 900);
+      expect(otpService.requestOtp).toHaveBeenCalledWith(undefined, 'test@example.com');
+      expect(result).toEqual({ message: expect.any(String), email: 'test@example.com' });
+      expect(result).not.toHaveProperty('access_token');
     });
 
     it('should throw ConflictException if email already registered', async () => {
@@ -118,6 +111,7 @@ describe('AuthService', () => {
         service.register({ name: 'X', email: 'test@example.com', password: 'pass' }),
       ).rejects.toThrow(ConflictException);
       expect(usersService.create).not.toHaveBeenCalled();
+      expect(otpService.requestOtp).not.toHaveBeenCalled();
     });
   });
 
@@ -151,6 +145,17 @@ describe('AuthService', () => {
 
       await expect(
         service.login({ email: 'test@example.com', password: 'wrong-pass' }),
+      ).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw UnauthorizedException when the email has not been verified yet', async () => {
+      const rawPassword = 'MyPassword1!';
+      const hash = await bcrypt.hash(rawPassword, 10);
+      const user = makeUser({ passwordHash: hash, emailVerified: false });
+      usersService.findByEmail.mockResolvedValue(user as any);
+
+      await expect(
+        service.login({ email: user.email, password: rawPassword }),
       ).rejects.toThrow(UnauthorizedException);
     });
   });

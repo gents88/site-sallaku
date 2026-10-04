@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Note, NoteDocument } from '../schemas/note.schema';
@@ -9,6 +9,7 @@ import { NoteAdminListItemDto } from '../dto/note-admin-list-item.dto';
 import { SpamDetectionService } from '../../common/services/spam-detection.service';
 import { TurnstileService } from '../../common/services/turnstile.service';
 import { plainToInstance } from 'class-transformer';
+import { AdminEventsService } from '../../common/services/admin-events.service';
 
 export type NoteModerationStatus = 'pending' | 'approved' | 'spam' | 'all';
 
@@ -19,6 +20,8 @@ export class NotesService {
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     private spamDetectionService: SpamDetectionService,
     private turnstile: TurnstileService,
+    // @Optional: i test che costruiscono il servizio a mano non devono conoscere il bus.
+    @Optional() private readonly adminEvents?: AdminEventsService,
   ) {}
 
   async createNote(
@@ -54,6 +57,8 @@ export class NotesService {
     });
 
     const savedNote = await note.save();
+    // Le note a basso punteggio spam si auto-approvano: si avvisa solo per quelle in coda.
+    if (!savedNote.isApproved && !savedNote.isSpam) this.adminEvents?.notify('note', savedNote.name ?? undefined);
     return this.mapToResponseDto(savedNote);
   }
 
