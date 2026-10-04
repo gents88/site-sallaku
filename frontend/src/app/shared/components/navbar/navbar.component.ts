@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy, Component, DestroyRef, ElementRef, PLATFORM_ID, ViewChild, afterNextRender, computed, inject, signal,
+  ChangeDetectionStrategy, Component, DestroyRef, ElementRef, Injector, PLATFORM_ID, ViewChild, afterNextRender, computed, inject, signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -19,6 +19,8 @@ import { AnalyticsTrackingService } from '../../../core/services/analytics-track
 import { NavEntry, homepageRoutes, navbarEntries } from '../../../core/navigation/nav-registry';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { SectionScrollSpy, bottomTabFor } from './section-scroll-spy';
+import { NotificationBellComponent } from '../notification-bell/notification-bell.component';
+import { NavIconComponent } from '../nav-icon/nav-icon.component';
 
 const DASHBOARD_LINK: NavEntry = {
   id: 'dashboard', route: '/dashboard', labelKey: 'nav.dashboard', group: 'overview', access: 'admin', icon: 'dashboard',
@@ -32,7 +34,7 @@ function basePathOf(url: string): string {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, TranslateModule, MatIconModule, MatButtonModule, ThemeToggleComponent, LangSwitcherComponent, LangUrlPipe],
+  imports: [RouterLink, TranslateModule, MatIconModule, MatButtonModule, ThemeToggleComponent, LangSwitcherComponent, LangUrlPipe, NotificationBellComponent, NavIconComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +48,7 @@ export class NavbarComponent {
   private readonly analytics = inject(AnalyticsTrackingService);
   private readonly searchOverlay = inject(SearchOverlayService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   @ViewChild('navMenu') private navMenuRef?: ElementRef<HTMLUListElement>;
@@ -83,7 +86,8 @@ export class NavbarComponent {
   readonly activeBottomTab = computed(() => bottomTabFor(this.isHomepage(), this.activeSection(), this.currentPath()));
 
   // stesse label mostrate nell'header della sidebar (SidebarComponent)
-  readonly drawerBadge = computed(() => (this.isAdminUser() ? '⚙️' : '🧰'));
+  /** Icona SVG (NAV_ICONS), non emoji: resa uniforme su ogni OS e colore del tema. */
+  readonly drawerBadge = computed(() => (this.isAdminUser() ? 'dashboard' : 'flask'));
 
   /** Chiave di traduzione (non testo già tradotto): il template la passa a `| translate`, così resta reattiva al cambio lingua. */
   readonly drawerLabelKey = computed(() => (this.isAdminUser() ? 'sidebar.brand_admin' : 'sidebar.brand_tools'));
@@ -146,7 +150,8 @@ export class NavbarComponent {
     this.mobileMenuOpen.set(true);
     this.setMenuOpenClass(true);
     // Il focus entra nello sheet: altrimenti Tab continuerebbe sulla pagina dietro il backdrop.
-    queueMicrotask(() => this.focusableInMenu()[0]?.focus());
+    // Dopo il render: in un microtask lo sheet non è ancora visibile e il focus andava perso.
+    afterNextRender(() => this.focusableInMenu()[0]?.focus(), { injector: this.injector });
   }
 
   closeMenu(restoreFocus = false): void {

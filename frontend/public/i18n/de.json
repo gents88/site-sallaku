@@ -66,7 +66,9 @@
       "convert": "Dateikonverter",
       "ocr": "Text aus Bild (OCR)",
       "scanner": "Dokumentenscanner",
-      "my_files": "Meine Dateien"
+      "my_files": "Meine Dateien",
+      "contacts": "Kontakte",
+      "users": "Benutzer"
     }
   },
   "lang": {
@@ -192,7 +194,11 @@
       "f3": "Integration externer Dienste",
       "f4": "Audit-Trail und Sicherheit"
     },
-    "discover": "Mehr entdecken"
+    "discover": "Mehr entdecken",
+    "read_case_study": "Fallstudie lesen",
+    "filter_label": "Nach Technologie filtern",
+    "filter_all": "Alle",
+    "filter_empty": "Keine Projekte mit dieser Technologie."
   },
   "experience": {
     "tag": "experience",
@@ -570,7 +576,12 @@
     "tool_conversion_col_tool": "Tool",
     "tool_conversion_col_visitors": "Besucher",
     "tool_conversion_col_leads": "Zu Lead geworden",
-    "tool_conversion_col_rate": "Quote"
+    "tool_conversion_col_rate": "Quote",
+    "overview_core": "Wichtigste Statistiken",
+    "overview_load_error": "Das Dashboard konnte nicht geladen werden.",
+    "overview_refresh_error": "Aktualisierung fehlgeschlagen: Du siehst die vorherigen Daten.",
+    "overview_partial_error": "Einige Bereiche konnten nicht aktualisiert werden:",
+    "retry": "Erneut versuchen"
   },
   "session": {
     "warning_title": "Sitzung läuft bald ab",
@@ -578,7 +589,8 @@
     "seconds_remaining": "Sekunden verbleibend",
     "stay_logged_in": "Angemeldet bleiben",
     "logout_now": "Jetzt abmelden",
-    "eyebrow": "Sicherheits-Timeout"
+    "eyebrow": "Sicherheits-Timeout",
+    "warning_body_user": "Aus Sicherheitsgründen endet deine Sitzung in Kürze, wenn du nicht bestätigst, dass du noch aktiv bist."
   },
   "common": {
     "loading": "Wird geladen…",
@@ -592,7 +604,8 @@
     "close": "Schließen",
     "confirm": "Bestätigen",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "unsaved_confirm": "Du hast ungespeicherte Änderungen. Verlassen und verwerfen?"
   },
   "services": {
     "tag": "services",
@@ -1458,7 +1471,16 @@
     "saved": "Projekt gespeichert!",
     "save_error": "Projekt konnte nicht gespeichert werden.",
     "confirm_delete": "Dieses Projekt löschen?",
-    "deleted": "Projekt gelöscht."
+    "deleted": "Projekt gelöscht.",
+    "case_study": "Fallstudie",
+    "case_study_hint": "Wenn mindestens ein Feld ausgefüllt ist, erhält das Projekt eine eigene Seite /projects/<slug>.",
+    "problem_label": "Problem des Kunden",
+    "solution_label": "Umgesetzte Lösung",
+    "results_label": "Ergebnisse (messbar)",
+    "reorder_hint": "Zeilen ziehen oder Pfeile nutzen, um die Reihenfolge zu ändern: sie wird sofort gespeichert.",
+    "move_up": "Nach oben",
+    "move_down": "Nach unten",
+    "reorder_error": "Reihenfolge nicht gespeichert, die vorherige wurde wiederhergestellt."
   },
   "editor": {
     "title": "Dokumenteneditor",
@@ -1871,5 +1893,141 @@
     "typing": "Die KI schreibt",
     "message_input": "Nachrichtenfeld",
     "send_message": "Nachricht senden"
+  },
+  "request": {
+    "uploading": "Datei wird hochgeladen…",
+    "processing": "Wird verarbeitet…",
+    "cancel": "Abbrechen",
+    "cancelled": "Vorgang abgebrochen."
+  },
+  "project_detail": {
+    "not_found": "Projekt nicht gefunden",
+    "load_error": "Das Projekt konnte nicht geladen werden.",
+    "back": "Alle Projekte",
+    "stack": "Verwendete Technologien",
+    "live": "Live ansehen",
+    "repo": "Quellcode",
+    "problem": "Das Problem",
+    "solution": "Die Lösung",
+    "results": "Die Ergebnisse",
+    "cta_text": "Hast du ein ähnliches Projekt?",
+    "cta_button": "Lass uns sprechen"
+  },
+  "translations_editor": {
+    "title": "Übersetzungen",
+    "hint": "Leere Felder zeigen auf der Website den italienischen Text.",
+    "auto": "Leere Felder aus dem Italienischen übersetzen",
+    "translating": "Wird übersetzt…",
+    "error": "Automatische Übersetzung fehlgeschlagen: erneut versuchen oder manuell ausfüllen."
+  },
+  "contacts_inbox": {
+    "title": "Kontaktnachrichten",
+    "total": "{{count}} Nachrichten",
+    "search_placeholder": "Nach Name, E-Mail, Betreff oder Text suchen…",
+    "filter_label": "Nachrichten filtern",
+    "filter_all": "Alle",
+    "load_error": "Nachrichten konnten nicht geladen werden.",
+    "empty": "Keine Nachrichten erhalten.",
+    "empty_filtered": "Keine Nachricht entspricht den Filtern.",
+    "select_all": "Alle auf der Seite auswählen",
+    "select": "Auswählen",
+    "pagination": "Seitennavigation",
+    "replied_at": "Beantwortet am {{date}}",
+    "action_error": "Aktion fehlgeschlagen, bitte erneut versuchen."
+  },
+  "users_manage": {
+    "title": "Registrierte Benutzer",
+    "total": "{{count}} Benutzer",
+    "search_placeholder": "Nach Name, E-Mail oder Telefon suchen…",
+    "role_filter": "Nach Rolle filtern",
+    "all_roles": "Alle Rollen",
+    "load_error": "Benutzer konnten nicht geladen werden.",
+    "empty": "Keine Benutzer gefunden.",
+    "col_name": "Name",
+    "col_contact": "E-Mail / Telefon",
+    "col_role": "Rolle",
+    "col_created": "Registriert am",
+    "col_actions": "Aktionen",
+    "you": "du",
+    "verified": "E-Mail bestätigt",
+    "confirm_role": "Rolle von {{name}} auf „{{role}}“ ändern?",
+    "confirm_delete": "Benutzer {{name}} endgültig löschen?",
+    "action_error": "Aktion fehlgeschlagen."
+  },
+  "notifications": {
+    "label": "Benachrichtigungen",
+    "recent": "Letzte Ereignisse",
+    "empty": "Nichts ausstehend.",
+    "offline": "Live-Updates nicht verfügbar: Zähler werden beim Öffnen aktualisiert.",
+    "live_waiting": "Wartende Live-Chats",
+    "contacts_unread": "Ungelesene Nachrichten",
+    "testimonials_pending": "Zu moderierende Referenzen",
+    "notes_pending": "Zu moderierende Notizen",
+    "type_contact": "Neue Nachricht",
+    "type_testimonial": "Neue Referenz",
+    "type_note": "Neue Notiz",
+    "type_live_handoff": "Live-Chat angefragt"
+  },
+  "newsletter_campaigns": {
+    "title": "Kampagnen",
+    "new": "Neue Kampagne",
+    "subject": "Betreff",
+    "body": "Inhalt (HTML)",
+    "body_placeholder": "<h1>Titel</h1><p>Text…</p>",
+    "body_hint": "Skripte und Formulare werden entfernt. Der Abmeldelink wird automatisch hinzugefügt.",
+    "preview": "Vorschau",
+    "save_draft": "Entwurf speichern",
+    "saved": "Entwurf gespeichert.",
+    "err_incomplete": "Betreff (mind. 3 Zeichen) und Inhalt (mind. 10) sind erforderlich.",
+    "err_schedule_past": "Wähle ein zukünftiges Datum für die Planung.",
+    "send_test": "Test senden",
+    "test_email": "Test-E-Mail-Adresse",
+    "test_sent": "Test an {{email}} gesendet.",
+    "test_failed": "Testversand fehlgeschlagen: E-Mail-Konfiguration prüfen.",
+    "test_done": "Test gesendet",
+    "send_now": "Jetzt senden",
+    "schedule": "Planen",
+    "schedule_at": "Versanddatum und -uhrzeit",
+    "confirm_send": "„{{subject}}“ jetzt an alle bestätigten Abonnenten senden?",
+    "confirm_schedule": "„{{subject}}“ für alle bestätigten Abonnenten planen?",
+    "confirm_cancel": "Kampagne „{{subject}}“ abbrechen? Bereits gesendete E-Mails können nicht zurückgeholt werden.",
+    "confirm_delete": "Entwurf „{{subject}}“ löschen?",
+    "queued": "Kampagne für {{count}} Abonnenten eingereiht.",
+    "cancelled": "Kampagne abgebrochen.",
+    "cancel": "Versand abbrechen",
+    "load_error": "Kampagnen konnten nicht geladen werden.",
+    "empty": "Noch keine Kampagnen. Erstelle eine, um deinen Abonnenten zu schreiben.",
+    "action_error": "Aktion fehlgeschlagen.",
+    "progress": "Versandfortschritt",
+    "stats": "{{sent}} gesendet, {{failed}} fehlgeschlagen von {{total}}",
+    "scheduled_for": "Geplant für {{date}}",
+    "sent_at": "Gesendet am {{date}}",
+    "status_draft": "Entwurf",
+    "status_scheduled": "Geplant",
+    "status_sending": "Wird gesendet",
+    "status_sent": "Gesendet",
+    "status_cancelled": "Abgebrochen"
+  },
+  "palette": {
+    "placeholder": "Seiten, Artikel, Aktionen suchen…",
+    "section_actions": "Aktionen",
+    "section_pages": "Seiten",
+    "section_content": "Inhalte",
+    "action_theme": "Helles/dunkles Design umschalten",
+    "action_contact": "Kontakt aufnehmen",
+    "action_lab": "Lab öffnen (KI- und PDF-Tools)",
+    "action_new_post": "Neuer Artikel",
+    "action_new_project": "Neues Projekt",
+    "action_inbox": "Kontaktnachrichten öffnen",
+    "action_logout": "Abmelden",
+    "footer_hint": "↑↓ zum Wählen · Enter zum Öffnen · Strg+K oder / zum Aufrufen"
+  },
+  "theme": {
+    "name_light": "helles Design",
+    "name_dark": "dunkles Design",
+    "name_system": "System-Design",
+    "current_light": "Helles Design aktiv. Wechseln zu {{next}}",
+    "current_dark": "Dunkles Design aktiv. Wechseln zu {{next}}",
+    "current_system": "System-Design aktiv. Wechseln zu {{next}}"
   }
 }

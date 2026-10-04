@@ -5,21 +5,31 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { sidebarGroups } from '../../../core/navigation/nav-registry';
+import { NavIconComponent } from '../../../shared/components/nav-icon/nav-icon.component';
+import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 
 interface ToolCard {
+  id: string;
   icon: string;
   titleKey: string;
   descKey: string;
   route: string;
-  group: 'ai' | 'tools';
   badge?: string;
+}
+
+/** Card del Lab dal registro unico: stesse voci (e stesso ordine) della sidebar. */
+function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
+  return sidebarGroups(false)
+    .find(g => g.id === group)!
+    .items.map(e => ({ id: e.id, icon: e.icon, titleKey: e.searchTitleKey ?? e.labelKey, descKey: e.descKey ?? '', route: e.route }));
 }
 
 @Component({
   selector: 'app-tools',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent, NavIconComponent, LangUrlPipe],
   template: `
     <div class="page">
       <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
@@ -32,7 +42,7 @@ interface ToolCard {
         <p>{{ 'tools.subtitle' | translate }}</p>
       </header>
 
-      <a routerLink="/lab/workspace" class="workspace-banner">
+      <a [routerLink]="'/lab/workspace' | langUrl" class="workspace-banner">
         <div class="workspace-banner-icon">🔗</div>
         <div class="workspace-banner-body">
           <h2>{{ 'workspace.title' | translate }}</h2>
@@ -46,9 +56,9 @@ interface ToolCard {
           <span class="section-emoji">🧠</span> {{ 'tools.section_ai' | translate }}
         </h2>
         <div class="cards-grid">
-          @for (card of aiCards; track card.route) {
-            <a [routerLink]="card.route" class="tool-card">
-              <div class="card-icon">{{ card.icon }}</div>
+          @for (card of aiCards; track card.id) {
+            <a [routerLink]="card.route | langUrl" class="tool-card">
+              <div class="card-icon" aria-hidden="true"><app-nav-icon [name]="card.icon" [size]="24" /></div>
               <div class="card-body">
                 <h3>{{ card.titleKey | translate }}</h3>
                 <p>{{ card.descKey | translate }}</p>
@@ -67,9 +77,9 @@ interface ToolCard {
           <span class="section-emoji">🧰</span> {{ 'tools.section_tools' | translate }}
         </h2>
         <div class="cards-grid">
-          @for (card of toolCards; track card.route) {
-            <a [routerLink]="card.route" class="tool-card tool-card--secondary">
-              <div class="card-icon">{{ card.icon }}</div>
+          @for (card of toolCards; track card.id) {
+            <a [routerLink]="card.route | langUrl" class="tool-card tool-card--secondary">
+              <div class="card-icon" aria-hidden="true"><app-nav-icon [name]="card.icon" [size]="24" /></div>
               <div class="card-body">
                 <h3>{{ card.titleKey | translate }}</h3>
                 <p>{{ card.descKey | translate }}</p>
@@ -101,6 +111,8 @@ interface ToolCard {
       background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.28);
       font-size: 12px; color: #a78bfa; margin-bottom: 1.25rem; letter-spacing: .03em;
     }
+    /* #a78bfa su sfondo chiaro era 2.3:1 (axe): tonalità più scura in light. */
+    :host-context([data-theme='light']) .header-badge { color: #6d28d9; }
     .badge-dot {
       width: 7px; height: 7px; border-radius: 50%;
       background: #7c3aed; box-shadow: 0 0 6px #7c3aed;
@@ -189,7 +201,7 @@ interface ToolCard {
     }
 
     .card-icon {
-      font-size: 1.8rem; flex-shrink: 0;
+      color: var(--primary-400, #8b8bff); flex-shrink: 0;
       width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
       background: rgba(108,99,255,.1); border-radius: 10px;
@@ -276,21 +288,6 @@ export class ToolsComponent implements OnInit {
     ]);
   }
 
-  readonly aiCards: ToolCard[] = [
-    { icon: '🔎', titleKey: 'tools.pdf_search_title',   descKey: 'tools.pdf_search_desc',   route: '/lab/pdf-search',    group: 'ai' },
-    { icon: '📚', titleKey: 'tools.library_title',      descKey: 'tools.library_desc',      route: '/lab/library',       group: 'ai' },
-    { icon: '📋', titleKey: 'tools.pdf_summary_title',  descKey: 'tools.pdf_summary_desc',  route: '/lab/pdf-summary',   group: 'ai' },
-    { icon: '✨', titleKey: 'tools.ai_formatter_title', descKey: 'tools.ai_formatter_desc', route: '/lab/ai-formatter',  group: 'ai' },
-    { icon: '🌐', titleKey: 'tools.pdf_translate_title',descKey: 'tools.pdf_translate_desc',route: '/lab/pdf-translate', group: 'ai' },
-    { icon: '🎞️', titleKey: 'tools.ai_slides_title',   descKey: 'tools.ai_slides_desc',    route: '/lab/ai-ppt',        group: 'ai' },
-  ];
-
-  readonly toolCards: ToolCard[] = [
-    { icon: '🖊️', titleKey: 'tools.pdf_editor_title', descKey: 'tools.pdf_editor_desc', route: '/lab/pdf-editor', group: 'tools' },
-    { icon: '👁',  titleKey: 'tools.viewer_title',     descKey: 'tools.viewer_desc',     route: '/lab/viewer',     group: 'tools' },
-    { icon: '✏️', titleKey: 'tools.editor_title',      descKey: 'tools.editor_desc',     route: '/lab/editor',     group: 'tools' },
-    { icon: '🔄', titleKey: 'tools.convert_title',     descKey: 'tools.convert_desc',    route: '/lab/convert',    group: 'tools' },
-    { icon: '🔤', titleKey: 'tools.ocr_title',         descKey: 'tools.ocr_desc',        route: '/lab/ocr',        group: 'tools' },
-    { icon: '📷', titleKey: 'tools.scanner_title',     descKey: 'tools.scanner_desc',    route: '/lab/scanner',    group: 'tools' },
-  ];
+  readonly aiCards = cardsFor('ai');
+  readonly toolCards = cardsFor('tools');
 }
