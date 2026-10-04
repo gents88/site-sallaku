@@ -8,6 +8,8 @@ interface MailOptions {
   html: string;
   text?: string;
   replyTo?: string;
+  /** Header aggiuntivi (es. List-Unsubscribe per le campagne newsletter). */
+  headers?: Record<string, string>;
 }
 
 interface MailDeliveryResult {
@@ -109,6 +111,7 @@ export class MailService {
           html: opts.html,
           ...(opts.text   ? { text: opts.text }       : {}),
           ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
+          ...(opts.headers ? { headers: opts.headers } : {}),
         }),
       });
 
