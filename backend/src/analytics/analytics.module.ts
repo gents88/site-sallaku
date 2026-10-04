@@ -32,6 +32,6 @@ import { ClickEvent, ClickEventSchema } from './schemas/click-event.schema';
     SearchConsoleService,
     AdminTrackingBypassInterceptor,
   ],
-  exports: [AnalyticsTrackingService, AnalyticsQueryService, AnalyticsExportService],
+  exports: [AnalyticsTrackingService, AnalyticsQueryService, AnalyticsExportService, SearchConsoleService],
 })
 export class AnalyticsModule {}

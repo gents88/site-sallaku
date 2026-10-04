@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import * as Sentry from '@sentry/node';
+import { isProductionEnv } from '../utils/runtime-env';
 
 interface ApiErrorResponse {
   success: boolean;
@@ -23,7 +24,7 @@ interface ApiErrorResponse {
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
-  private readonly isDev = process.env.NODE_ENV !== 'production';
+  private readonly isDev = !isProductionEnv();
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();

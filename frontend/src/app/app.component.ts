@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -14,21 +14,21 @@ import { AuthModalService } from './core/services/auth-modal.service';
 import { InactivityService } from './core/services/inactivity.service';
 import { PlatformUiService } from './core/services/platform-ui.service';
 import { AppUpdateService } from './core/services/app-update.service';
+import { AdminNotificationsService } from './core/services/admin-notifications.service';
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
-import { CommandPaletteComponent } from './shared/components/command-palette/command-palette.component';
 import { SearchOverlayComponent } from './shared/components/search-overlay/search-overlay.component';
 
 @Component({
   selector: 'app-root',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, CommandPaletteComponent, SearchOverlayComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent],
   template: `
     <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
     <app-navbar />
     <app-consent-banner />
     <app-sidebar />
-    <app-command-palette />
     <app-search-overlay />
     <main id="main-content" tabindex="-1">
       <router-outlet />
@@ -41,30 +41,43 @@ import { SearchOverlayComponent } from './shared/components/search-overlay/searc
     }
     @if (authModal.accountOpen()) {
       <div class="account-modal-backdrop" (click)="closeAccountModal()" aria-hidden="true"></div>
-      <section class="account-modal" role="dialog" aria-modal="true" aria-labelledby="account-modal-title" (click)="$event.stopPropagation()">
-        <button type="button" class="account-modal__close" (click)="closeAccountModal()" aria-label="Chiudi account">
+      <section
+        class="account-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="account-modal-title"
+        (click)="$event.stopPropagation()"
+        (keydown.tab)="onAccountModalTabKey($event)"
+      >
+        <button type="button" class="account-modal__close" (click)="closeAccountModal()" [attr.aria-label]="'common.close' | translate">
           ×
         </button>
         <div class="account-modal__hero">
           <div class="account-modal__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</div>
           <div class="account-modal__identity">
-            <span class="account-modal__badge">Admin</span>
+            @if (auth.isAdmin()) {
+              <span class="account-modal__badge">{{ 'account_modal.badge_admin' | translate }}</span>
+            }
             <h2 id="account-modal-title">{{ auth.currentUser()?.name || 'Admin' }}</h2>
             <p class="account-modal__subtitle">{{ auth.currentUser()?.email }}</p>
           </div>
         </div>
         <div class="account-modal__meta">
           <div class="account-modal__meta-card">
-            <span class="account-modal__meta-label">Stato</span>
-            <strong>Sessione attiva</strong>
+            <span class="account-modal__meta-label">{{ 'account_modal.status_label' | translate }}</span>
+            <strong>{{ 'account_modal.status_active' | translate }}</strong>
           </div>
           <div class="account-modal__meta-card">
-            <span class="account-modal__meta-label">Ruolo</span>
-            <strong>Administrator</strong>
+            <span class="account-modal__meta-label">{{ 'account_modal.role_label' | translate }}</span>
+            <strong>{{ (auth.isAdmin() ? 'account_modal.role_admin' : 'account_modal.role_user') | translate }}</strong>
           </div>
         </div>
         <div class="account-modal__actions">
-          <button type="button" class="account-modal__button account-modal__button--primary" (click)="goToDashboard()">{{ 'nav.dashboard' | translate }}</button>
+          @if (auth.isAdmin()) {
+            <button type="button" class="account-modal__button account-modal__button--primary" (click)="goToDashboard()">{{ 'nav.dashboard' | translate }}</button>
+          } @else {
+            <button type="button" class="account-modal__button account-modal__button--primary" (click)="goToMyFiles()">{{ 'sidebar.items.my_files' | translate }}</button>
+          }
           <button type="button" class="account-modal__button account-modal__button--warn" (click)="logoutFromModal()">{{ 'admin.logout' | translate }}</button>
           <button type="button" class="account-modal__button account-modal__button--ghost" (click)="closeAccountModal()">{{ 'common.close' | translate }}</button>
         </div>
@@ -73,6 +86,7 @@ import { SearchOverlayComponent } from './shared/components/search-overlay/searc
     @if (inactivity.warningVisible()) {
       <app-session-timeout-modal
         [countdownSeconds]="inactivity.countdownSeconds()"
+        [admin]="inactivity.isAdminSession()"
         (stayLoggedIn)="extendSession()"
         (logoutNow)="logoutFromTimeout()" />
     }
@@ -80,7 +94,7 @@ import { SearchOverlayComponent } from './shared/components/search-overlay/searc
       <app-chatbot />
     }
     @if (showBackToTop()) {
-      <button class="back-to-top" (click)="scrollToTop()" aria-label="Torna su">
+      <button class="back-to-top" (click)="scrollToTop()" [attr.aria-label]="'nav.back_to_top' | translate">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
       </button>
     }
@@ -401,6 +415,11 @@ export class AppComponent implements OnInit {
     this.showBackToTop.set(window.scrollY > 300);
   }
 
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    if (this.authModal.accountOpen()) this.closeAccountModal();
+  }
+
   scrollToTop(): void {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -411,6 +430,7 @@ export class AppComponent implements OnInit {
     public inactivity: InactivityService,
     private platformUi: PlatformUiService,
     private appUpdate: AppUpdateService,
+    private adminNotifications: AdminNotificationsService,
     private seoService: SeoService,
     private analyticsTracking: AnalyticsTrackingService,
     private router: Router,
@@ -424,6 +444,7 @@ export class AppComponent implements OnInit {
       this.inactivity.init();
       this.platformUi.init();
       this.appUpdate.init();
+      this.adminNotifications.init();
     }
     this.seoService.trackPageViews();
     this.analyticsTracking.init();
@@ -448,6 +469,32 @@ export class AppComponent implements OnInit {
   goToDashboard(): void {
     this.authModal.closeAccount();
     void this.router.navigate(['/dashboard']);
+  }
+
+  goToMyFiles(): void {
+    this.authModal.closeAccount();
+    void this.router.navigate(['/lab/i-miei-file']);
+  }
+
+  /** Focus trap manuale sulla modale account: Tab/Shift+Tab restano dentro finché è aperta. */
+  onAccountModalTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const modal = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      modal.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
   }
 
   logoutFromModal(): void {

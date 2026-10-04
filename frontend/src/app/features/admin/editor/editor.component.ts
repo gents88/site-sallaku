@@ -8,7 +8,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { timeout, TimeoutError } from 'rxjs';
 import DOMPurify from 'dompurify';
 import { ConversionService, ConversionTypeId } from '../../../core/services/conversion.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 
@@ -68,6 +69,7 @@ const TOOLBAR: ToolBtn[][] = [
 export class EditorComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
   private readonly platformId = inject(PLATFORM_ID);
@@ -113,9 +115,9 @@ export class EditorComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Free Online Document Editor — Export to PDF & DOCX',
-      description: 'Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup.',
-      url: 'https://gentsallaku.it/lab/editor',
+      title: this.t.instant('editor.seo_title'),
+      description: this.t.instant('editor.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/editor', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',

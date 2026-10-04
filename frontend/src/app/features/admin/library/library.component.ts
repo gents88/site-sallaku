@@ -1,12 +1,14 @@
 import {
-  Component, ChangeDetectionStrategy, OnInit, PLATFORM_ID, inject, signal, computed,
+  Component, ChangeDetectionStrategy, ElementRef, HostListener, OnInit, PLATFORM_ID, ViewChild,
+  effect, inject, signal, computed,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -63,6 +65,7 @@ export class LibraryComponent implements OnInit {
   private readonly analytics = inject(AnalyticsTrackingService);
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   private readonly platformId = inject(PLATFORM_ID);
 
@@ -102,6 +105,41 @@ export class LibraryComponent implements OnInit {
   readonly messages = signal<ChatMessage[]>([]);
   readonly asking = signal(false);
 
+  @ViewChild('chatInputEl') private chatInputRef?: ElementRef<HTMLInputElement>;
+
+  constructor() {
+    effect(() => {
+      if (this.chatOpen()) {
+        // L'input esiste solo dopo che l'@if del pannello chat lo renderizza.
+        setTimeout(() => this.chatInputRef?.nativeElement.focus(), 0);
+      }
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    if (this.chatOpen()) this.closeChat();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro il pannello chat finché è aperto. */
+  onChatPanelTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const panel = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      panel.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled])'),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
+  }
+
   readonly tags = computed(() => {
     this.docs();
     return this.library.allTags();
@@ -138,10 +176,9 @@ export class LibraryComponent implements OnInit {
     void this.init();
 
     this.seo.update({
-      title: 'La Mia Libreria PDF — Archivio Personale con Ricerca e Chat AI',
-      description:
-        'Salva i PDF trovati, cercali per contenuto pagina per pagina, annotali e fai domande ai tuoi documenti. Tutto resta nel tuo browser, nessun caricamento sul server.',
-      url: 'https://gentsallaku.it/lab/library',
+      title: this.translate.instant('library.seo_title'),
+      description: this.translate.instant('library.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/library', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',

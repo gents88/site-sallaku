@@ -9,6 +9,21 @@
          lo stesso attributo dopo il bootstrap: senza questo, su desktop il
          contenuto partirebbe a piena larghezza e slitterebbe di 76px appena
          Angular idrata. Tenere soglia e chiave allineate a drawer.service.ts. -->
+    <!-- Tema prima del primo paint: scelta esplicita salvata (portfolio_theme_choice,
+         vedi theme.service.ts) oppure il tema del sistema del dispositivo. Senza,
+         le pagine prerenderizzate partivano sempre scure (data-theme="dark") e chi
+         usa il tema chiaro vedeva un lampo scuro prima del bootstrap. -->
+    <script>
+      (function () {
+        var theme = 'dark';
+        try {
+          var choice = localStorage.getItem('portfolio_theme_choice');
+          if (choice === 'light' || choice === 'dark') theme = choice;
+          else if (window.matchMedia) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        } catch (e) { /* storage/matchMedia non disponibili: resta scuro */ }
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <script>
       (function () {
         try {
@@ -28,6 +43,7 @@
     <meta property="og:description" content="Sviluppo web e API per applicazioni enterprise con Angular, JavaScript, TypeScript, .NET e Django." />
     <meta property="og:url" content="https://gentsallaku.it/" />
     <link rel="canonical" href="https://gentsallaku.it/" />
+    <link rel="alternate" type="application/rss+xml" title="Gent Sallaku — Blog" href="https://gentsallaku.it/rss.xml" />
     <!-- Hreflang tags: injected dynamically by SeoService.updateHreflang() on every
          route (server + browser), covering all 7 site languages — not hardcoded here
          to avoid duplicate/stale tags. -->

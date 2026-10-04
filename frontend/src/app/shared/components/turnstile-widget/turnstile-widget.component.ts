@@ -1,13 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-  PLATFORM_ID,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 
@@ -56,6 +47,7 @@ function loadTurnstileScript(): Promise<void> {
  */
 @Component({
   selector: 'app-turnstile-widget',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   template: `@if (siteKey) {
     <div class="turnstile-widget"></div>

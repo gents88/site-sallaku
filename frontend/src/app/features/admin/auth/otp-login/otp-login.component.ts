@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, HostListener, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,6 +25,7 @@ function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | nul
 
 @Component({
   selector: 'app-otp-login',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule,
@@ -40,7 +41,10 @@ function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | nul
   templateUrl: './otp-login.component.html',
   styleUrls: ['./otp-login.component.scss'],
 })
-export class OtpLoginComponent implements OnDestroy {
+export class OtpLoginComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('identifierInput') private identifierInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('otpInput') private otpInputRef?: ElementRef<HTMLInputElement>;
+
   step: 'identifier' | 'otp' = 'identifier';
   identifier = '';
   loading = false;
@@ -65,10 +69,34 @@ export class OtpLoginComponent implements OnDestroy {
     private fb: FormBuilder,
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  ngOnInit(): void {
+    // Arriving here right after registration: the backend already sent the
+    // verification OTP as part of /auth/register, so land straight on step 2
+    // with that email pre-filled instead of making the user re-request it.
+    const params = this.route.snapshot.queryParamMap;
+    const email = params.get('email');
+    if (email && params.get('sent') === '1') {
+      this.identifierForm.patchValue({ identifier: email });
+      this.identifier = email;
+      this.step = 'otp';
+      this.startCountdown();
+      this.startResendCooldown();
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.step === 'otp') {
+      setTimeout(() => this.otpInputRef?.nativeElement.focus(), 0);
+      return;
+    }
+    setTimeout(() => this.identifierInputRef?.nativeElement.focus(), 0);
+  }
 
   ngOnDestroy(): void {
     this.countdownSub?.unsubscribe();
@@ -79,6 +107,27 @@ export class OtpLoginComponent implements OnDestroy {
   @HostListener('document:keydown.escape')
   onEscapePressed(): void {
     if (!this.loading) this.router.navigate(['/']);
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro la card finché è aperta come dialog. */
+  onModalTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const card = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      card.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
   }
 
   get isEmail(): boolean {
@@ -114,13 +163,16 @@ export class OtpLoginComponent implements OnDestroy {
         this.otpForm.reset();
         this.startCountdown();
         this.startResendCooldown();
+        // Il campo OTP esiste solo dopo che l'@if dello step 2 lo renderizza.
+        setTimeout(() => this.otpInputRef?.nativeElement.focus(), 0);
       },
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg =
-          err?.error?.message ||
-          this.translate.instant('auth.otp_send_failed');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg)
+          ? rawMsg.join(' ')
+          : rawMsg || this.translate.instant('auth.otp_send_failed');
         this.snackBar.open(msg, this.translate.instant('common.close'), {
           duration: 5000,
         });
@@ -147,20 +199,18 @@ export class OtpLoginComponent implements OnDestroy {
             this.router.navigate(['/dashboard']);
           }, 80);
         } else {
-          this.auth.logout();
-          this.snackBar.open(
-            this.translate.instant('auth.not_admin'),
-            this.translate.instant('common.close'),
-            { duration: 4000 },
-          );
+          // Un account 'user' non ha nulla da fare in /dashboard, ma la sessione
+          // è comunque valida — niente logout né rifiuto, si torna alla home.
+          this.router.navigate(['/']);
         }
       },
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg =
-          err?.error?.message ||
-          this.translate.instant('auth.otp_invalid');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg)
+          ? rawMsg.join(' ')
+          : rawMsg || this.translate.instant('auth.otp_invalid');
         this.snackBar.open(msg, this.translate.instant('common.close'), {
           duration: 5000,
         });
@@ -190,9 +240,10 @@ export class OtpLoginComponent implements OnDestroy {
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg =
-          err?.error?.message ||
-          this.translate.instant('auth.otp_send_failed');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg)
+          ? rawMsg.join(' ')
+          : rawMsg || this.translate.instant('auth.otp_send_failed');
         this.snackBar.open(msg, this.translate.instant('common.close'), {
           duration: 5000,
         });

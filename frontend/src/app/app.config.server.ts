@@ -9,6 +9,8 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { SwRegistrationOptions } from '@angular/service-worker';
+import { PRERENDER_BLOG_POSTS } from './core/interceptors/prerender-blog-cache.interceptor';
+import { allSlugs, readPrerenderBlogPosts } from './prerender-blog-posts';
 
 /**
  * Loads i18n JSON files at server-render time so SSR/prerender output
@@ -58,6 +60,9 @@ const serverConfig: ApplicationConfig = {
     { provide: TranslateLoader, useClass: SsrTranslateLoader },
     // Disable service worker in SSR context — it's browser-only
     { provide: SwRegistrationOptions, useValue: { enabled: false } },
+    // Posts prefetched once before the build (scripts/prefetch-blog-posts.js),
+    // served to blog-detail by prerenderBlogCacheInterceptor.
+    { provide: PRERENDER_BLOG_POSTS, useFactory: () => new Map(readPrerenderBlogPosts().flatMap(p => allSlugs(p).map(slug => [slug, p] as const))) },
   ],
 };
 

@@ -14,11 +14,18 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import {
   PdfTranslateService,
   TranslationLanguage,
@@ -36,7 +43,7 @@ const MAX_FILE_MB = 50;
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -44,14 +51,22 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   @ViewChild('uploadSection') uploadSection!: ElementRef<HTMLElement>;
   @ViewChild('fileInput')     fileInput!: ElementRef<HTMLInputElement>;
 
-  private readonly service   = inject(PdfTranslateService);
-  private readonly sanitizer = inject(DomSanitizer);
-  private readonly seo       = inject(SeoService);
-  private readonly workspace = inject(WorkspaceService);
-  private readonly t         = inject(TranslateService);
+  private readonly service      = inject(PdfTranslateService);
+  private readonly sanitizer    = inject(DomSanitizer);
+  private readonly seo          = inject(SeoService);
+  private readonly langService  = inject(LanguageService);
+  private readonly workspace    = inject(WorkspaceService);
+  private readonly t            = inject(TranslateService);
+  private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics    = inject(AnalyticsTrackingService);
+  readonly auth                 = inject(AuthService);
+  readonly authModal            = inject(AuthModalService);
 
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent      = signal(false);
+  readonly saving        = signal(false);
+  readonly justSaved     = signal(false);
+  readonly saveError     = signal('');
   breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
@@ -60,9 +75,9 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'AI PDF Translator — Translate PDF, Pages Preserved',
-      description: 'Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed.',
-      url: 'https://gentsallaku.it/lab/pdf-translate',
+      title: this.t.instant('pdf_translate.seo_title'),
+      description: this.t.instant('pdf_translate.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-translate', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
@@ -116,7 +131,13 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     ];
   }
 
-  readonly loading = this.service.isLoading;
+  /** Upload con avanzamento reale + annullamento (anche all'uscita dalla pagina). */
+  readonly req = new TrackedRequest();
+  readonly loading = this.req.active;
+
+  cancelRequest(): void {
+    this.req.cancel();
+  }
 
   readonly file             = signal<File | null>(null);
   readonly result           = signal<TranslatePdfResult | null>(null);
@@ -286,16 +307,18 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
 
     this._startStepCycle(f.size);
 
-    this.service.translate(f, this.selectedLanguage(), options)
-      .pipe(finalize(() => this._stopStepCycle()))
-      .subscribe({
+    // finalize gira anche su annullamento: il ciclo degli step si ferma comunque.
+    const events$ = this.service.translate(f, this.selectedLanguage(), options)
+      .pipe(finalize(() => this._stopStepCycle()));
+    this.req.run<TranslatePdfResult>(events$, {
         next: (res) => {
           this.result.set(res);
           if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
+          this.analytics.trackClick('lab_tool', 'pdf_translate');
         },
         error: (err) => {
-          const msg = err?.error?.message ?? err?.message ?? this.t.instant('pdf_translate.err_generic');
-          this.error.set(msg);
+          const rawMsg = err?.error?.message ?? err?.message;
+          this.error.set(Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('pdf_translate.err_generic'));
         },
       });
   }
@@ -348,6 +371,40 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     }
     this.justSent.set(true);
     setTimeout(() => this.justSent.set(false), 1500);
+  }
+
+  saveToAccount(): void {
+    const res = this.result();
+    if (!res) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults
+      .save({
+        toolType: 'pdf-translate',
+        title: `${this.file()?.name ?? 'Documento'} → ${res.targetLanguage}`,
+        payload: res as unknown as Record<string, unknown>,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          const rawMsg = err?.error?.message;
+          this.saveError.set(
+            Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+          );
+          setTimeout(() => this.saveError.set(''), 3000);
+        },
+      });
   }
 
   reset(): void {

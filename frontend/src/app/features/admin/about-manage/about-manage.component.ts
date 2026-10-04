@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { HasUnsavedChanges, warnOnUnload } from '../../../core/guards/unsaved-changes.guard';
+import { DirtyTracker } from '../../../shared/utils/dirty-tracker';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -18,6 +20,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 
 @Component({
   selector: 'app-about-manage',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
@@ -27,7 +30,22 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   templateUrl: './about-manage.component.html',
   styleUrls: ['./about-manage.component.scss'],
 })
-export class AboutManageComponent implements OnInit {
+export class AboutManageComponent implements OnInit, HasUnsavedChanges {
+  private readonly dirty = new DirtyTracker();
+
+  private formState() {
+    return { form: this.form.getRawValue(), skills: this.skills };
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.dirty.isDirty(this.formState());
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    warnOnUnload(event, this.hasUnsavedChanges());
+  }
+
   loading = true;
   saving = false;
   separatorKeys = [ENTER, COMMA];
@@ -69,6 +87,7 @@ export class AboutManageComponent implements OnInit {
           twitter: about.socials?.twitter ?? '',
           email: about.socials?.email ?? '',
         });
+        this.dirty.mark(this.formState());
         this.loading = false;
       },
       error: () => {},
@@ -86,9 +105,11 @@ export class AboutManageComponent implements OnInit {
       socials: { github, linkedin, twitter, email },
     };
 
+    const saved = this.formState();
     this.aboutService.update(payload).subscribe({
       next: () => {
         this.saving = false;
+        this.dirty.mark(saved);
         this.cdr.markForCheck();
         this.snackBar.open(this.t.instant('about_manage.update_success'), this.t.instant('common.close'), { duration: 3000 });
       },

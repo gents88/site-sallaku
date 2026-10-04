@@ -1,9 +1,10 @@
-import { Inject, Logger, forwardRef } from '@nestjs/common';
+import { Inject, Logger, OnModuleDestroy, Optional, forwardRef } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -12,6 +13,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Server, Socket } from 'socket.io';
 import { LiveHandoffService } from './live-handoff.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
+import { isProductionEnv } from '../common/utils/runtime-env';
+import { Subscription } from 'rxjs';
+import { UsersService } from '../users/users.service';
+import { AdminEventsService } from '../common/services/admin-events.service';
+
+/** Stanza dei socket admin autenticati all'handshake: riceve gli eventi del campanello. */
+export const ADMINS_ROOM = 'admins';
 
 /**
  * Stati in cui la chat accetta messaggi. Include "agent_joining" di proposito: fra
@@ -39,7 +47,7 @@ function corsOriginValidator(
     .map((o) => o.trim())
     .filter(Boolean);
 
-  if (process.env.NODE_ENV !== 'production' && allowedOrigins.length === 0) {
+  if (!isProductionEnv() && allowedOrigins.length === 0) {
     callback(null, true);
     return;
   }
@@ -50,7 +58,7 @@ function corsOriginValidator(
   namespace: '/live-chat',
   cors: { origin: corsOriginValidator },
 })
-export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy {
   @WebSocketServer() server: Server;
 
   private readonly logger = new Logger(LiveHandoffGateway.name);
@@ -60,10 +68,34 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     private readonly liveHandoffService: LiveHandoffService,
     private readonly chatbotService: ChatbotService,
     private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+    @Optional() private readonly adminEvents?: AdminEventsService,
   ) {}
 
-  handleConnection(client: Socket): void {
+  private eventsSub: Subscription | null = null;
+
+  afterInit(): void {
+    this.eventsSub = this.adminEvents?.events$.subscribe((event) => {
+      this.server?.to(ADMINS_ROOM).emit('admin_notification', event);
+    }) ?? null;
+  }
+
+  onModuleDestroy(): void {
+    this.eventsSub?.unsubscribe();
+  }
+
+  /**
+   * Autenticazione all'handshake (`io(url, { auth: { token } })`): un admin
+   * verificato entra nella stanza 'admins' e non deve più allegare il token
+   * a ogni messaggio. I visitatori si connettono senza token come prima.
+   */
+  async handleConnection(client: Socket): Promise<void> {
     this.logger.debug(`Client connected: ${client.id}`);
+    const token = (client.handshake?.auth as { token?: unknown } | undefined)?.token;
+    if (typeof token === 'string' && (await this.isAdminToken(token))) {
+      client.data = { ...(client.data ?? {}), isAdmin: true };
+      await client.join(ADMINS_ROOM);
+    }
   }
 
   handleDisconnect(client: Socket): void {
@@ -109,8 +141,8 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     @ConnectedSocket() client: Socket,
     @MessageBody() body: { sessionId?: string; token?: string },
   ): Promise<void> {
-    const payload = this.verifyAdminToken(body?.token);
-    if (!payload || !body?.sessionId) {
+    const authorized = await this.isAdmin(client, body?.token);
+    if (!authorized || !body?.sessionId) {
       client.emit('error', { message: 'Non autorizzato' });
       return;
     }
@@ -139,9 +171,9 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     @ConnectedSocket() client: Socket,
     @MessageBody() body: { sessionId?: string; text?: string; token?: string },
   ): Promise<void> {
-    const payload = this.verifyAdminToken(body?.token);
+    const authorized = await this.isAdmin(client, body?.token);
     const text = body?.text?.trim().slice(0, 2000);
-    if (!payload || !body?.sessionId || !text) return;
+    if (!authorized || !body?.sessionId || !text) return;
 
     const status = await this.liveHandoffService.getStatus(body.sessionId);
     if (!CHATTABLE_STATUSES.includes(status.status)) {
@@ -166,8 +198,8 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     @ConnectedSocket() client: Socket,
     @MessageBody() body: { sessionId?: string; token?: string },
   ): Promise<void> {
-    const payload = this.verifyAdminToken(body?.token);
-    if (!payload || !body?.sessionId) return;
+    const authorized = await this.isAdmin(client, body?.token);
+    if (!authorized || !body?.sessionId) return;
     await this.liveHandoffService.closeSession(body.sessionId);
   }
 
@@ -185,13 +217,28 @@ export class LiveHandoffGateway implements OnGatewayConnection, OnGatewayDisconn
     await this.liveHandoffService.closeSession(body.sessionId);
   }
 
-  private verifyAdminToken(token?: string): unknown | null {
-    if (!token) return null;
+  /** Socket già autenticato all'handshake, oppure token per-messaggio (client precedenti). */
+  private async isAdmin(client: Socket, token?: string): Promise<boolean> {
+    if (client.data?.isAdmin) return true;
+    return token ? this.isAdminToken(token) : false;
+  }
+
+  /**
+   * Firma valida NON basta: prima bastava un JWT qualsiasi, e con la
+   * registrazione aperta un utente 'user' poteva entrare in una chat live
+   * come "Gent", scrivere come agente e chiuderla. Il ruolo si legge dal DB
+   * (come fa JwtStrategy), così un admin declassato perde subito l'accesso.
+   */
+  private async isAdminToken(token: string): Promise<boolean> {
+    let sub: string | undefined;
     try {
-      return this.jwtService.verify(token);
+      sub = (this.jwtService.verify(token) as { sub?: string })?.sub;
     } catch {
-      return null;
+      return false;
     }
+    if (!sub) return false;
+    const user = await this.usersService.findById(sub);
+    return user?.role === 'admin';
   }
 
   emitStatusChanged(sessionId: string, status: string): void {

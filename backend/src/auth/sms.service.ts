@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import twilio from 'twilio';
+// `import x = require`: con `import x from` (senza esModuleInterop) twilio_1.default è undefined
+// e il costruttore lanciava TypeError appena TWILIO_* era configurato.
+import twilio = require('twilio');
 
 @Injectable()
 export class SmsService {

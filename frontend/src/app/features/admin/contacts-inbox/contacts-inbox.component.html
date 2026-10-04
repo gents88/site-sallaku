@@ -1,0 +1,109 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/dashboard" class="back-link">← {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'contacts_inbox.title' | translate }}</h1>
+      <p class="ci-sub">{{ 'contacts_inbox.total' | translate: { count: total() } }}</p>
+    </div>
+  </header>
+
+  <div class="ci-toolbar">
+    <input type="search" class="ci-search" [ngModel]="search()" (ngModelChange)="onSearch($event)"
+           [placeholder]="'contacts_inbox.search_placeholder' | translate"
+           [attr.aria-label]="'contacts_inbox.search_placeholder' | translate" />
+    <div class="ci-filter" role="group" [attr.aria-label]="'contacts_inbox.filter_label' | translate">
+      <button type="button" [class.active]="!unreadOnly()" [attr.aria-pressed]="!unreadOnly()" (click)="setUnreadOnly(false)">{{ 'contacts_inbox.filter_all' | translate }}</button>
+      <button type="button" [class.active]="unreadOnly()" [attr.aria-pressed]="unreadOnly()" (click)="setUnreadOnly(true)">{{ 'admin.status_unread' | translate }}</button>
+    </div>
+    @if (selectedIds().size) {
+      <button type="button" class="btn btn-sm ci-danger" (click)="deleteSelected()">
+        {{ 'admin.delete_selected' | translate }} ({{ selectedIds().size }})
+      </button>
+    }
+  </div>
+
+  @if (feedbackKey()) {
+    <p class="ci-feedback" role="status">{{ feedbackKey()! | translate }}</p>
+  }
+
+  <div class="ci-layout" [class.has-detail]="!!selected()">
+    <section class="ci-list card" [attr.aria-busy]="loading()">
+      @if (loadError()) {
+        <div class="ci-state" role="alert">
+          <p>{{ 'contacts_inbox.load_error' | translate }}</p>
+          <button type="button" class="btn btn-sm btn-primary" (click)="reload()">{{ 'admin.retry' | translate }}</button>
+        </div>
+      } @else if (loading() && !items().length) {
+        @for (i of [1, 2, 3, 4]; track i) { <div class="ci-skeleton"></div> }
+      } @else if (!items().length) {
+        <p class="ci-state">{{ (query() || unreadOnly() ? 'contacts_inbox.empty_filtered' : 'contacts_inbox.empty') | translate }}</p>
+      } @else {
+        <label class="ci-selectall">
+          <input type="checkbox" [checked]="allSelected()" (change)="toggleSelectAll()" />
+          {{ 'contacts_inbox.select_all' | translate }}
+        </label>
+        <ul class="ci-items">
+          @for (c of items(); track c._id) {
+            <li class="ci-item" [class.unread]="!c.read" [class.active]="selected()?._id === c._id">
+              <input type="checkbox" [checked]="selectedIds().has(c._id ?? '')" (change)="toggleSelect(c._id)"
+                     [attr.aria-label]="('contacts_inbox.select' | translate) + ': ' + c.subject" />
+              <button type="button" class="ci-item__open" (click)="open(c)">
+                <span class="ci-item__top">
+                  <strong>{{ c.name }}</strong>
+                  <time [attr.datetime]="c.createdAt">{{ c.createdAt | date: 'dd/MM/yy HH:mm' }}</time>
+                </span>
+                <span class="ci-item__subject">
+                  @if (!c.read) { <span class="ci-dot" [attr.aria-label]="'admin.status_unread' | translate"></span> }
+                  {{ c.subject }}
+                </span>
+                <span class="ci-item__preview">{{ c.message }}</span>
+              </button>
+            </li>
+          }
+        </ul>
+        @if (totalPages() > 1) {
+          <nav class="ci-pager" [attr.aria-label]="'contacts_inbox.pagination' | translate">
+            <button type="button" class="btn btn-sm" [disabled]="page() <= 1 || loading()" (click)="goTo(page() - 1)">←</button>
+            <span>{{ page() }} / {{ totalPages() }}</span>
+            <button type="button" class="btn btn-sm" [disabled]="page() >= totalPages() || loading()" (click)="goTo(page() + 1)">→</button>
+          </nav>
+        }
+      }
+    </section>
+
+    @if (selected(); as c) {
+      <section class="ci-detail card" aria-labelledby="ci-detail-title">
+        <div class="ci-detail__head">
+          <h2 id="ci-detail-title">{{ c.subject }}</h2>
+          <button type="button" class="ci-close" (click)="close()" [attr.aria-label]="'common.close' | translate">×</button>
+        </div>
+        <p class="ci-detail__meta">
+          <strong>{{ c.name }}</strong> · <a [href]="'mailto:' + c.email">{{ c.email }}</a> ·
+          <time [attr.datetime]="c.createdAt">{{ c.createdAt | date: 'dd/MM/yyyy HH:mm' }}</time>
+        </p>
+        <p class="ci-detail__body">{{ c.message }}</p>
+
+        @if (c.repliedAt) {
+          <div class="ci-replied">
+            <span>{{ 'contacts_inbox.replied_at' | translate: { date: (c.repliedAt | date: 'dd/MM/yyyy HH:mm') } }}</span>
+            @if (c.replyText) { <p>{{ c.replyText }}</p> }
+          </div>
+        }
+
+        <label class="ci-reply-label" for="ci-reply">{{ 'admin.reply' | translate }}</label>
+        <textarea id="ci-reply" rows="5" class="ci-reply" [ngModel]="replyText()" (ngModelChange)="replyText.set($event)"
+                  [placeholder]="'admin.reply_placeholder' | translate"></textarea>
+
+        <div class="ci-actions">
+          <button type="button" class="btn btn-sm btn-primary" [disabled]="!replyText().trim() || sending()" (click)="sendReply()">
+            {{ (sending() ? 'common.loading' : 'admin.reply_send') | translate }}
+          </button>
+          <button type="button" class="btn btn-sm" (click)="setRead(c, !c.read)">
+            {{ (c.read ? 'admin.mark_unread' : 'admin.mark_read') | translate }}
+          </button>
+          <button type="button" class="btn btn-sm ci-danger" (click)="delete(c)">{{ 'common.delete' | translate }}</button>
+        </div>
+      </section>
+    }
+  </div>
+</div>

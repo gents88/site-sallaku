@@ -1,6 +1,6 @@
-<nav class="navbar" [class.scrolled]="scrolled" [class.menu-open]="mobileMenuOpen">
+<nav class="navbar" [class.scrolled]="scrolled()" [class.menu-open]="mobileMenuOpen()" [attr.aria-label]="'nav.main_aria' | translate">
   <!-- Scroll progress bar -->
-  <div class="scroll-progress" [style.width.%]="scrollProgress" aria-hidden="true"></div>
+  <div class="scroll-progress" [style.width.%]="scrollProgress()" aria-hidden="true"></div>
   <div class="nav-container">
     <!-- Trigger del drawer. Non più un hamburger anonimo: su desktop stretto
          (901–1199px) l'hamburger accanto a una navbar orizzontale completa
@@ -10,10 +10,10 @@
             type="button"
             (click)="toggleDrawerFromNavbar()"
             [attr.aria-expanded]="drawer.drawerOpen()"
-            [attr.aria-label]="'Apri il menu ' + drawerLabel"
+            [attr.aria-label]="('nav.open_menu' | translate) + ' ' + (drawerLabelKey() | translate)"
             aria-controls="app-sidebar">
-      <span class="drawer-toggle-badge" aria-hidden="true">{{ drawerBadge }}</span>
-      <span class="drawer-toggle-label">{{ drawerLabel }}</span>
+      <span class="drawer-toggle-badge" aria-hidden="true"><app-nav-icon [name]="drawerBadge()" [size]="16" /></span>
+      <span class="drawer-toggle-label">{{ drawerLabelKey() | translate }}</span>
       <svg class="drawer-toggle-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M9 6l6 6-6 6" />
       </svg>
@@ -25,24 +25,25 @@
     </a>
 
     <!-- Mobile menu backdrop -->
-    @if (mobileMenuOpen) {
-      <div class="nav-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
+    @if (mobileMenuOpen()) {
+      <div class="nav-backdrop" (click)="closeMenu(true)" aria-hidden="true"></div>
     }
 
     <!-- Desktop nav links (raddoppia anche come sheet "Altro" sul mobile) -->
-    <ul class="nav-menu" [class.open]="mobileMenuOpen" id="nav-menu" role="navigation">
-      @for (link of desktopNavLinks; track link.labelKey) {
-        <li [class.nav-item-mobile-hide]="bottomTabRoutes.has(link.route ?? '')">
+    <!-- Niente role="navigation" sulla lista: il landmark è già il <nav>
+         esterno, e il ruolo toglieva alla <ul> la sua semantica di lista. -->
+    <ul class="nav-menu" #navMenu [class.open]="mobileMenuOpen()" id="nav-menu" (keydown)="onMenuKeydown($event)">
+      @for (link of desktopNavLinks(); track link.id) {
+        <li [class.nav-item-mobile-hide]="bottomTabRoutes.has(link.route)">
           <a [routerLink]="link.route | langUrl"
              class="nav-link"
-             [class.active]="isHomepage ? activeSection === (link.route ?? '').slice(1) : false"
-             routerLinkActive="active"
-             [routerLinkActiveOptions]="{exact: true}"
+             [class.active]="isActive(link)"
+             [attr.aria-current]="isActive(link) ? (isHomepage() ? 'location' : 'page') : null"
              (click)="closeMenu()">{{ link.labelKey | translate }}</a>
         </li>
       }
       <li class="nav-item-mobile-drawer">
-        <button type="button" class="nav-link nav-link--button" (click)="openDrawerFromMenu()">{{ drawerToggleLabel }}</button>
+        <button type="button" class="nav-link nav-link--button" (click)="openDrawerFromMenu()"><app-nav-icon [name]="drawerBadge()" [size]="16" /> {{ drawerLabelKey() | translate }}</button>
       </li>
     </ul>
 
@@ -51,6 +52,9 @@
       <button mat-icon-button type="button" (click)="openSearch()" [attr.aria-label]="'search.trigger' | translate" [title]="'search.trigger' | translate">
         <mat-icon>search</mat-icon>
       </button>
+      @if (isAdminUser()) {
+        <app-notification-bell />
+      }
       <app-lang-switcher />
       <app-theme-toggle />
       @if (!auth.isLoggedIn()) {
@@ -76,10 +80,10 @@
      dentro .navbar, il backdrop-filter di .navbar.scrolled creerebbe un
      nuovo containing block e questo elemento position:fixed si ancorerebbe
      al fondo della navbar invece che al fondo reale della viewport. -->
-<div class="bottom-tabbar" role="navigation" aria-label="Bottom navigation">
+<nav class="bottom-tabbar" [attr.aria-label]="'nav.bottom_aria' | translate">
     <a [routerLink]="'/homepage' | langUrl"
        class="tab-item"
-       [class.active]="activeBottomTab === 'home'"
+       [class.active]="activeBottomTab() === 'home'"
        (click)="closeMenu()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M3 11.5 12 4l9 7.5"/>
@@ -90,7 +94,7 @@
 
     <a [routerLink]="'/projects' | langUrl"
        class="tab-item"
-       [class.active]="activeBottomTab === 'projects'"
+       [class.active]="activeBottomTab() === 'projects'"
        (click)="closeMenu()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/>
@@ -103,7 +107,7 @@
 
     <a [routerLink]="'/services' | langUrl"
        class="tab-item"
-       [class.active]="activeBottomTab === 'services'"
+       [class.active]="activeBottomTab() === 'services'"
        (click)="closeMenu()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <rect x="3" y="7.5" width="18" height="12" rx="2"/>
@@ -112,10 +116,10 @@
       <span>{{ 'nav.services' | translate }}</span>
     </a>
 
-    <button type="button" class="tab-item"
-            [class.active]="mobileMenuOpen"
+    <button type="button" class="tab-item" #moreTab
+            [class.active]="mobileMenuOpen()"
             (click)="toggleMenu()"
-            [attr.aria-expanded]="mobileMenuOpen"
+            [attr.aria-expanded]="mobileMenuOpen()"
             aria-controls="nav-menu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <circle cx="5" cy="12" r="1.3" fill="currentColor" stroke="none"/>
@@ -140,4 +144,4 @@
         <span>{{ auth.currentUser()?.name || 'Admin' }}</span>
       </button>
     }
-</div>
+</nav>
