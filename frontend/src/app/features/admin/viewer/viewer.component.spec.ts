@@ -35,12 +35,13 @@ function fakePdfPage() {
 
 describe('ViewerComponent', () => {
   let library: LibraryService;
-  let workspace: { send: ReturnType<typeof vi.fn> };
+  let workspace: { send: ReturnType<typeof vi.fn>; peek: ReturnType<typeof vi.fn>; take: ReturnType<typeof vi.fn> };
   let router: { navigate: ReturnType<typeof vi.fn> };
   let queryParams: Record<string, string>;
 
   function configure(): void {
-    workspace = { send: vi.fn() };
+    // peek/take: usati dal viewer per il banner "file dal Workspace" (mock prima incompleto).
+    workspace = { send: vi.fn(), peek: vi.fn(() => null), take: vi.fn(() => null) };
     router = { navigate: vi.fn() };
     queryParams = {};
 
@@ -64,7 +65,7 @@ describe('ViewerComponent', () => {
           provide: ActivatedRoute,
           useValue: { snapshot: { queryParamMap: { get: (k: string) => queryParams[k] ?? null } } },
         },
-        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn() } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });

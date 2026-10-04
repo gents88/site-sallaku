@@ -30,6 +30,8 @@ import { TestimonialsModule } from './testimonials/testimonials.module';
 import { SearchModule } from './search/search.module';
 import { SavedResultsModule } from './saved-results/saved-results.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
+import Redis from 'ioredis';
+import { RedisThrottlerStorage } from './common/services/redis-throttler.storage';
 
 @Module({
   imports: [
@@ -43,14 +45,22 @@ import { NewsletterModule } from './newsletter/newsletter.module';
 
     // ── Rate limiting (global default: 60 req / 60 s per IP) ─────────────
     // Individual endpoints may override with @Throttle({ default: { limit, ttl } })
+    // Con REDIS_URL i contatori sono condivisi fra istanze e sopravvivono ai
+    // redeploy (RedisThrottlerStorage); senza, resta lo storage in memoria.
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (cfg: ConfigService) => [
-        {
-          ttl: cfg.get<number>('THROTTLE_TTL', 60000),
-          limit: cfg.get<number>('THROTTLE_LIMIT', 60),
-        },
-      ],
+      useFactory: (cfg: ConfigService) => {
+        const redisUrl = cfg.get<string>('REDIS_URL');
+        return {
+          throttlers: [
+            {
+              ttl: cfg.get<number>('THROTTLE_TTL', 60000),
+              limit: cfg.get<number>('THROTTLE_LIMIT', 60),
+            },
+          ],
+          ...(redisUrl ? { storage: new RedisThrottlerStorage(new Redis(redisUrl, { maxRetriesPerRequest: 1, enableOfflineQueue: false })) } : {}),
+        };
+      },
       inject: [ConfigService],
     }),
     // ── Scheduled tasks ───────────────────────────────────────────

@@ -43,8 +43,11 @@
   /* Text */
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
-  --text-tertiary: #64748b;
-  --text-muted: #475569;
+  /* Tema scuro: #64748b e #475569 davano 3.9:1 e 2.4:1 su --bg-secondary
+     (axe, WCAG AA richiede 4.5:1). Tonalità minime che superano la soglia
+     anche sulle superfici più chiare (#161b2e). */
+  --text-tertiary: #7c8aa3;
+  --text-muted: #7a879c;
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #4f6af5 0%, #8b5cf6 50%, #a78bfa 100%);
@@ -137,7 +140,8 @@
   --glass-border-hover: rgba(99, 102, 241, 0.35);
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-tertiary: #64748b;
+  /* #64748b su --bg-secondary dava 4.32:1 (sotto WCAG AA 4.5:1, segnalato da axe sul footer). */
+  --text-tertiary: #526277;
   --text-muted: #526277;
   --color-text: #0f172a;
   --color-text-muted: #526277;
@@ -948,4 +952,13 @@ app-library {
 }
 .result-pop {
   animation: result-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Contrasto WCAG AA nel tema chiaro ──────────────────────────────────────
+   --primary-400 (#6b8afc) va bene sullo sfondo scuro ma su quello chiaro
+   arrivava a 2.7:1 (axe, e2e/a11y.spec.ts): tag di sezione e badge usano una
+   tonalità più scura solo in light. */
+[data-theme='light'] {
+  .section-tag,
+  .badge { color: var(--primary-700); }
 }
