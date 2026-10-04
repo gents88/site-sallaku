@@ -1795,7 +1795,11 @@
     "err_session_expired": "Sitzung abgelaufen. Bitte erneut anmelden.",
     "err_save_failed_default": "Speichern fehlgeschlagen. Titel, Inhalt und Slug prüfen.",
     "action_unpublish": "Zurück in den Entwurf",
-    "unpublished_msg": "Artikel wieder im Entwurf (Aufrufe bleiben erhalten)"
+    "unpublished_msg": "Artikel wieder im Entwurf (Aufrufe bleiben erhalten)",
+    "filter_label": "Nach Status filtern",
+    "filter_all": "Alle",
+    "empty_drafts": "Keine Entwürfe.",
+    "empty_published": "Keine veröffentlichten Artikel."
   },
   "privacy": {
     "title": "Datenschutzerklärung",
@@ -1952,7 +1956,28 @@
     "verified": "E-Mail bestätigt",
     "confirm_role": "Rolle von {{name}} auf „{{role}}“ ändern?",
     "confirm_delete": "Benutzer {{name}} endgültig löschen?",
-    "action_error": "Aktion fehlgeschlagen."
+    "action_error": "Aktion fehlgeschlagen.",
+    "new": "Neuer Benutzer",
+    "edit_title": "Benutzer bearbeiten",
+    "phone": "Telefon (optional)",
+    "password_optional": "Passwort (optional)",
+    "password_hint": "Mindestens 8 Zeichen mit Groß- und Kleinbuchstaben, Ziffer und Symbol. Ohne Passwort meldet sich der Benutzer mit einem E-Mail-Code an.",
+    "save": "Speichern",
+    "created": "Benutzer erstellt.",
+    "updated": "Benutzer aktualisiert.",
+    "password_title": "Neues Passwort für {{name}}",
+    "password_effect": "Der Benutzer wird auf allen Geräten abgemeldet.",
+    "new_password": "Neues Passwort",
+    "set_password": "Passwort festlegen",
+    "password_short": "Passwort",
+    "password_set": "Passwort von {{name}} aktualisiert.",
+    "revoke": "Abmelden",
+    "confirm_revoke": "{{name}} auf allen Geräten abmelden?",
+    "sessions_revoked": "{{name}} wurde abgemeldet.",
+    "err_name": "Der Name ist erforderlich.",
+    "err_email": "Gib eine gültige E-Mail-Adresse ein.",
+    "err_phone": "Telefon im internationalen Format, z. B. +393331234567.",
+    "err_password": "Das Passwort erfüllt die Anforderungen nicht."
   },
   "notifications": {
     "label": "Benachrichtigungen",

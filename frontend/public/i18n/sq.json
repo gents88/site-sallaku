@@ -1795,7 +1795,11 @@
     "err_session_expired": "Sesioni skadoi. Identifikohu përsëri.",
     "err_save_failed_default": "Ruajtja dështoi. Kontrollo titullin, përmbajtjen dhe slug-un.",
     "action_unpublish": "Kthe në draft",
-    "unpublished_msg": "Artikulli u kthye në draft (leximet u ruajtën)"
+    "unpublished_msg": "Artikulli u kthye në draft (leximet u ruajtën)",
+    "filter_label": "Filtro sipas statusit",
+    "filter_all": "Të gjitha",
+    "empty_drafts": "Asnjë draft.",
+    "empty_published": "Asnjë artikull i publikuar."
   },
   "privacy": {
     "title": "Politika e Privatësisë",
@@ -1952,7 +1956,28 @@
     "verified": "Email i verifikuar",
     "confirm_role": "Të ndryshohet roli i {{name}} në \"{{role}}\"?",
     "confirm_delete": "Të fshihet përgjithmonë përdoruesi {{name}}?",
-    "action_error": "Veprimi dështoi."
+    "action_error": "Veprimi dështoi.",
+    "new": "Përdorues i ri",
+    "edit_title": "Ndrysho përdoruesin",
+    "phone": "Telefoni (opsional)",
+    "password_optional": "Fjalëkalimi (opsional)",
+    "password_hint": "Të paktën 8 karaktere me shkronjë të madhe, të vogël, numër dhe simbol. Pa fjalëkalim përdoruesi hyn me kod me email.",
+    "save": "Ruaj",
+    "created": "Përdoruesi u krijua.",
+    "updated": "Përdoruesi u përditësua.",
+    "password_title": "Fjalëkalim i ri për {{name}}",
+    "password_effect": "Përdoruesi do të shkëputet nga të gjitha pajisjet.",
+    "new_password": "Fjalëkalimi i ri",
+    "set_password": "Vendos fjalëkalimin",
+    "password_short": "Fjalëkalimi",
+    "password_set": "Fjalëkalimi i {{name}} u përditësua.",
+    "revoke": "Shkëput",
+    "confirm_revoke": "Të shkëputet {{name}} nga të gjitha pajisjet?",
+    "sessions_revoked": "{{name}} u shkëput.",
+    "err_name": "Emri është i detyrueshëm.",
+    "err_email": "Shkruaj një email të vlefshëm.",
+    "err_phone": "Telefoni në format ndërkombëtar, p.sh. +393331234567.",
+    "err_password": "Fjalëkalimi nuk i plotëson kërkesat."
   },
   "notifications": {
     "label": "Njoftimet",

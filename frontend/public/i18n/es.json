@@ -1795,7 +1795,11 @@
     "err_session_expired": "Sesión caducada. Vuelve a iniciar sesión.",
     "err_save_failed_default": "Error al guardar. Comprueba título, contenido y slug.",
     "action_unpublish": "Pasar a borrador",
-    "unpublished_msg": "Artículo devuelto a borrador (visitas conservadas)"
+    "unpublished_msg": "Artículo devuelto a borrador (visitas conservadas)",
+    "filter_label": "Filtrar por estado",
+    "filter_all": "Todos",
+    "empty_drafts": "No hay borradores.",
+    "empty_published": "No hay artículos publicados."
   },
   "privacy": {
     "title": "Política de Privacidad",
@@ -1952,7 +1956,28 @@
     "verified": "Email verificado",
     "confirm_role": "¿Cambiar el rol de {{name}} a \"{{role}}\"?",
     "confirm_delete": "¿Eliminar definitivamente al usuario {{name}}?",
-    "action_error": "La operación falló."
+    "action_error": "La operación falló.",
+    "new": "Nuevo usuario",
+    "edit_title": "Editar usuario",
+    "phone": "Teléfono (opcional)",
+    "password_optional": "Contraseña (opcional)",
+    "password_hint": "Al menos 8 caracteres con mayúscula, minúscula, número y símbolo. Sin contraseña el usuario accede con un código por email.",
+    "save": "Guardar",
+    "created": "Usuario creado.",
+    "updated": "Usuario actualizado.",
+    "password_title": "Nueva contraseña para {{name}}",
+    "password_effect": "El usuario se desconectará de todos los dispositivos.",
+    "new_password": "Nueva contraseña",
+    "set_password": "Establecer contraseña",
+    "password_short": "Contraseña",
+    "password_set": "Contraseña de {{name}} actualizada.",
+    "revoke": "Desconectar",
+    "confirm_revoke": "¿Desconectar a {{name}} de todos los dispositivos?",
+    "sessions_revoked": "{{name}} ha sido desconectado.",
+    "err_name": "El nombre es obligatorio.",
+    "err_email": "Introduce un email válido.",
+    "err_phone": "Teléfono en formato internacional, p. ej. +393331234567.",
+    "err_password": "La contraseña no cumple los requisitos."
   },
   "notifications": {
     "label": "Notificaciones",
