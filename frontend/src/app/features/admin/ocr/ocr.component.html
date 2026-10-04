@@ -90,6 +90,7 @@
                 {{ 'ocr.recognizing' | translate }}
               }
             </small>
+            <app-request-progress [request]="req" (cancel)="cancelRequest()" />
           </div>
         }
 

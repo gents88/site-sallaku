@@ -19,6 +19,8 @@ import { LanguageService, withLangPrefix } from '../../../core/services/language
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -41,7 +43,7 @@ const MAX_FILE_MB = 50;
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -129,7 +131,13 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     ];
   }
 
-  readonly loading = this.service.isLoading;
+  /** Upload con avanzamento reale + annullamento (anche all'uscita dalla pagina). */
+  readonly req = new TrackedRequest();
+  readonly loading = this.req.active;
+
+  cancelRequest(): void {
+    this.req.cancel();
+  }
 
   readonly file             = signal<File | null>(null);
   readonly result           = signal<TranslatePdfResult | null>(null);
@@ -299,9 +307,10 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
 
     this._startStepCycle(f.size);
 
-    this.service.translate(f, this.selectedLanguage(), options)
-      .pipe(finalize(() => this._stopStepCycle()))
-      .subscribe({
+    // finalize gira anche su annullamento: il ciclo degli step si ferma comunque.
+    const events$ = this.service.translate(f, this.selectedLanguage(), options)
+      .pipe(finalize(() => this._stopStepCycle()));
+    this.req.run<TranslatePdfResult>(events$, {
         next: (res) => {
           this.result.set(res);
           if (res.pdfBase64) this._setTranslatedUrl(res.pdfBase64);
