@@ -356,7 +356,8 @@
     "cookie_link": "Politique de cookies",
     "manage_cookies": "Gérer le consentement aux cookies",
     "legal": "Légal",
-    "navigation": "Navigation du pied de page"
+    "navigation": "Navigation du pied de page",
+    "guide": "Guide"
   },
   "auth": {
     "login_title": "Connexion au Dashboard",
@@ -2054,5 +2055,50 @@
     "current_light": "Thème clair actif. Passer au {{next}}",
     "current_dark": "Thème sombre actif. Passer au {{next}}",
     "current_system": "Thème du système actif. Passer au {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} sur {{total}}",
+    "next": "Suivant",
+    "back": "Retour",
+    "skip": "Passer le tutoriel",
+    "done": "Terminer",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue !",
+        "body": "En quelques étapes, je vous montre comment naviguer sur le site : menu, contenus et assistant. Vous pouvez passer le guide à tout moment."
+      },
+      "navigation": {
+        "title": "Navigation",
+        "body": "Ce menu vous mène à toutes les sections du site et à tous les outils gratuits du Lab."
+      },
+      "group_ai": {
+        "title": "Outils IA",
+        "body": "Recherche PDF, Bibliothèque, Résumé, Mise en forme, Traduction et Générateur de diapositives : l'intelligence artificielle au service de vos documents."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Transmettez le résultat d'un outil directement au suivant, sans télécharger ni réimporter de fichiers."
+      },
+      "group_account": {
+        "title": "Mes fichiers",
+        "body": "Retrouvez ici les résultats enregistrés depuis les outils, liés à votre compte."
+      },
+      "group_tools": {
+        "title": "Outils PDF et documents",
+        "body": "Organisez et visualisez des PDF, écrivez dans l'éditeur, convertissez des formats, extrayez du texte par OCR et numérisez des documents avec l'appareil photo."
+      },
+      "main": {
+        "title": "Contenu principal",
+        "body": "Au centre s'affiche le contenu de la page où vous êtes : projets, services et articles sur l'accueil ; l'espace de travail de l'outil choisi dans le Lab."
+      },
+      "chatbot": {
+        "title": "Assistant virtuel",
+        "body": "Une question ? Touchez ici pour discuter avec l'assistant des services, projets et outils. Si besoin, vous pouvez demander à parler directement à Gent."
+      },
+      "finish": {
+        "title": "C'est prêt !",
+        "body": "Vous pouvez revoir ce guide à tout moment grâce au lien « Guide » en bas de page."
+      }
+    }
   }
 }
