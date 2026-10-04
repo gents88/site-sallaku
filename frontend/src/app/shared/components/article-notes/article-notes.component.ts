@@ -6,8 +6,10 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   effect,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NotesService, Note } from '../../services/notes.service';
@@ -54,6 +56,7 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private langService: LanguageService,
+    @Inject(PLATFORM_ID) private platformId: object,
   ) {
     this.form = this.createForm();
     // Re-render on UI language change (OnPush requires explicit trigger) —
@@ -67,7 +70,9 @@ export class ArticleNotesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loadNotes();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadNotes();
+    }
   }
 
   ngOnDestroy(): void {
