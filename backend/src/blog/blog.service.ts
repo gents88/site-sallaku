@@ -212,6 +212,16 @@ export class BlogService implements OnApplicationBootstrap {
       .then(() => undefined);
   }
 
+  /** Admin: articoli più letti, solo i campi che la dashboard mostra (prima scaricava tutti i post per ordinarli lato client). */
+  async getTopPostsByViews(limit = 5): Promise<Array<{ _id: unknown; title: string; slug: string; viewCount: number }>> {
+    return this.postModel
+      .find({}, { title: 1, slug: 1, viewCount: 1 })
+      .sort({ viewCount: -1 })
+      .limit(limit)
+      .lean<Array<{ _id: unknown; title: string; slug: string; viewCount: number }>>()
+      .exec();
+  }
+
   async getContentSummary(): Promise<ContentSummary> {
     const [total, published] = await Promise.all([
       this.postModel.countDocuments().exec(),
