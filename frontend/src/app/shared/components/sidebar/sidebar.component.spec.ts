@@ -50,6 +50,8 @@ describe('SidebarComponent', () => {
     const el = setup(false);
     const icon = el.querySelector('a.nav-item .nav-icon');
     expect(icon?.querySelector('svg')).not.toBeNull();
+    // Le forme devono esserci davvero: prima l'svg c'era ma vuoto (sanitizer).
+    expect(icon?.querySelector('svg')?.children.length).toBeGreaterThan(0);
     expect(icon?.textContent?.trim()).toBe('');
   });
 });

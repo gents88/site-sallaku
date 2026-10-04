@@ -6,7 +6,7 @@ import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { NavEntry, sidebarGroups } from '../../../core/navigation/nav-registry';
-import { NavIconComponent } from '../nav-icon/nav-icon.component';
+import { NavIconComponent, navIconColor } from '../nav-icon/nav-icon.component';
 
 /** Tooltip della rail collassata: posizione calcolata dall'item sotto il puntatore/focus. */
 interface RailTooltip {
@@ -43,6 +43,7 @@ export class SidebarComponent {
   /** Voci dal registro unico (core/navigation): stesso elenco di palette, ricerca e prerender. */
   readonly navGroups = computed(() => sidebarGroups(this.isAdminUser()));
   readonly labCta = LAB_CTA;
+  readonly iconColor = navIconColor;
 
   /** Numero di voci realmente esposte: alimenta il testo del nudge senza hardcodarlo. */
   readonly itemCount = computed(() => this.navGroups().reduce((total, group) => total + group.items.length, 0));

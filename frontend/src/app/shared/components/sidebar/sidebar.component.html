@@ -55,14 +55,14 @@
             routerLinkActive="active"
             ariaCurrentWhenActive="page"
             [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
-            class="nav-item"
+            class="nav-item icon-tile--lift"
             (click)="onNavigate(item)"
             (mouseenter)="showTooltip($event, item.labelKey)"
             (mouseleave)="hideTooltip()"
             (focus)="showTooltip($event, item.labelKey)"
             (blur)="hideTooltip()"
           >
-            <span class="nav-icon" aria-hidden="true"><app-nav-icon [name]="item.icon" /></span>
+            <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
             <span class="nav-label">{{ item.labelKey | translate }}</span>
           </a>
         }
@@ -73,7 +73,7 @@
   <!-- CTA di chiusura: dà alla colonna una destinazione "indice" e riempie il
        vuoto in fondo, che altrimenti fa leggere la rail come una decorazione. -->
   <a
-    class="sidebar-cta"
+    class="sidebar-cta icon-tile--lift"
     [routerLink]="'/lab' | langUrl"
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
@@ -83,7 +83,7 @@
     (focus)="showTooltip($event, 'sidebar.view_all_tools')"
     (blur)="hideTooltip()"
   >
-    <span class="cta-icon" aria-hidden="true"><app-nav-icon name="rocket" [size]="20" /></span>
+    <span class="cta-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor('rocket')"><app-nav-icon name="rocket" [size]="18" /></span>
     <span class="cta-text">
       <strong>{{ 'sidebar.explore_lab' | translate }}</strong>
       <small>{{ 'sidebar.items_available' | translate: { count: itemCount() } }}</small>
