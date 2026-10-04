@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, Logger, NotFoundException, forwardRef, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
@@ -13,6 +13,7 @@ import { CreateLiveHandoffDto } from './dto/live-handoff.dto';
 import { ChatbotService } from '../chatbot/chatbot.service';
 import { MailService } from '../mail/mail.service';
 import { LiveHandoffGateway } from './live-handoff.gateway';
+import { AdminEventsService } from '../common/services/admin-events.service';
 
 export interface LiveHandoffStatusDto {
   requestId: string | null;
@@ -43,6 +44,8 @@ export class LiveHandoffService {
     private readonly config: ConfigService,
     @Inject(forwardRef(() => LiveHandoffGateway))
     private readonly gateway: LiveHandoffGateway,
+    // @Optional: i test che costruiscono il servizio a mano non devono conoscere il bus.
+    @Optional() private readonly adminEvents?: AdminEventsService,
   ) {}
 
   async createRequest(
@@ -78,6 +81,7 @@ export class LiveHandoffService {
       expiresAt,
     });
     await doc.save();
+    this.adminEvents?.notify('live_handoff', dto.lastUserMessage?.slice(0, 80));
 
     // Fire-and-forget: a slow mail provider must not delay the response to the visitor.
     this.notifyGent(doc).catch((err) =>
