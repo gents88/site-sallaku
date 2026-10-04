@@ -63,7 +63,7 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
     <div class="chat-shell">
 
       <!-- ── Main chat area ──────────────────────────────── -->
-      <main class="chat-main">
+      <div class="chat-main">
         <header class="chat-header">
           <div class="header-title">
             <span class="header-brand" aria-hidden="true">✦</span>
@@ -172,7 +172,7 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
           </div>
           <p class="input-hint">Premi Invio per inviare, Shift+Invio per andare a capo</p>
         </div>
-      </main>
+      </div>
     </div>
   `,
   styles: [`
