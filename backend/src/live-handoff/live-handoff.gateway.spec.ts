@@ -3,12 +3,16 @@ import { JwtService } from '@nestjs/jwt';
 import { LiveHandoffGateway } from './live-handoff.gateway';
 import { LiveHandoffService } from './live-handoff.service';
 import { ChatbotService } from '../chatbot/chatbot.service';
+import { UsersService } from '../users/users.service';
+import { AdminEventsService } from '../common/services/admin-events.service';
 
 describe('LiveHandoffGateway', () => {
   let gateway: LiveHandoffGateway;
   let mockLiveHandoffService: any;
   let mockChatbotService: any;
   let mockJwtService: any;
+  let mockUsersService: any;
+  let adminEvents: AdminEventsService;
   let mockServer: any;
   let mockClient: any;
 
@@ -22,6 +26,9 @@ describe('LiveHandoffGateway', () => {
     };
     mockChatbotService = { appendLiveMessage: jest.fn() };
     mockJwtService = { verify: jest.fn() };
+    // Il ruolo si legge dal DB: 'admin-1' è admin, chiunque altro no.
+    mockUsersService = { findById: jest.fn(async (id: string) => (id === 'admin-1' ? { role: 'admin' } : { role: 'user' })) };
+    adminEvents = new AdminEventsService();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -29,6 +36,8 @@ describe('LiveHandoffGateway', () => {
         { provide: LiveHandoffService, useValue: mockLiveHandoffService },
         { provide: ChatbotService, useValue: mockChatbotService },
         { provide: JwtService, useValue: mockJwtService },
+        { provide: UsersService, useValue: mockUsersService },
+        { provide: AdminEventsService, useValue: adminEvents },
       ],
     }).compile();
 
@@ -36,7 +45,55 @@ describe('LiveHandoffGateway', () => {
 
     mockServer = { to: jest.fn().mockReturnThis(), emit: jest.fn() };
     gateway.server = mockServer;
-    mockClient = { id: 'socket-1', join: jest.fn().mockResolvedValue(undefined), emit: jest.fn() };
+    mockClient = { id: 'socket-1', join: jest.fn().mockResolvedValue(undefined), emit: jest.fn(), data: {} };
+  });
+
+  describe('admin authorization (security)', () => {
+    it('rejects a validly signed token of a non-admin user (was accepted before)', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'user-9', role: 'user' });
+
+      await gateway.onAdminJoin(mockClient, { sessionId: 's1', token: 'user-token' });
+
+      expect(mockClient.emit).toHaveBeenCalledWith('error', { message: 'Non autorizzato' });
+      expect(mockLiveHandoffService.markAgentJoining).not.toHaveBeenCalled();
+    });
+
+    it('does not trust a forged role claim: the role comes from the database', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'user-9', role: 'admin' });
+
+      await gateway.onAdminClose(mockClient, { sessionId: 's1', token: 't' });
+
+      expect(mockLiveHandoffService.closeSession).not.toHaveBeenCalled();
+    });
+
+    it('authenticates an admin at handshake and joins the admins room', async () => {
+      mockJwtService.verify.mockReturnValue({ sub: 'admin-1' });
+      const client = { ...mockClient, handshake: { auth: { token: 'admin-token' } } };
+
+      await gateway.handleConnection(client);
+
+      expect(client.join).toHaveBeenCalledWith('admins');
+      expect(client.data.isAdmin).toBe(true);
+    });
+
+    it('lets a visitor connect without joining the admins room', async () => {
+      const client = { ...mockClient, handshake: { auth: {} } };
+      await gateway.handleConnection(client);
+      expect(client.join).not.toHaveBeenCalled();
+    });
+
+    it('accepts admin actions without a per-message token once authenticated at handshake', async () => {
+      await gateway.onAdminClose({ ...mockClient, data: { isAdmin: true } }, { sessionId: 's1' });
+      expect(mockLiveHandoffService.closeSession).toHaveBeenCalledWith('s1');
+    });
+
+    it('relays domain events to the admins room', () => {
+      gateway.afterInit();
+      adminEvents.notify('contact', 'Preventivo');
+      expect(mockServer.to).toHaveBeenCalledWith('admins');
+      expect(mockServer.emit).toHaveBeenCalledWith('admin_notification', expect.objectContaining({ type: 'contact', title: 'Preventivo' }));
+      gateway.onModuleDestroy();
+    });
   });
 
   describe('onJoinSession', () => {
