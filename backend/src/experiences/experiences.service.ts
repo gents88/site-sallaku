@@ -26,6 +26,14 @@ export class ExperiencesService {
     );
   }
 
+  /** Drag & drop in admin: l'indice nell'array diventa `order`. */
+  async reorder(ids: string[]): Promise<void> {
+    await this.model.bulkWrite(
+      ids.map((id, index) => ({ updateOne: { filter: { _id: id }, update: { $set: { order: index } } } })),
+    );
+    await this.cache.invalidate(LIST_KEY);
+  }
+
   async findOne(id: string): Promise<ExperienceDocument> {
     const doc = await this.model.findById(id).exec();
     if (!doc) throw new NotFoundException(`Experience #${id} not found`);

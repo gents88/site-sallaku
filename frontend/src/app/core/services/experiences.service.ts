@@ -13,5 +13,7 @@ export class ExperiencesService {
   getOne(id: string): Observable<Experience> { return this.http.get<Experience>(`${this.url}/${id}`); }
   create(payload: CreateExperiencePayload): Observable<Experience> { return this.http.post<Experience>(this.url, payload); }
   update(id: string, payload: UpdateExperiencePayload): Observable<Experience> { return this.http.put<Experience>(`${this.url}/${id}`, payload); }
+  /** Drag & drop in admin: l'indice nell'array diventa `order`. */
+  reorder(ids: string[]): Observable<void> { return this.http.patch<void>(`${this.url}/reorder`, { ids }); }
   remove(id: string): Observable<void> { return this.http.delete<void>(`${this.url}/${id}`); }
 }

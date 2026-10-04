@@ -1,0 +1,73 @@
+@switch (state()) {
+  @case ('loading') {
+    <div class="container section pd-skeleton" aria-busy="true" [attr.aria-label]="'common.loading' | translate">
+      <div class="sk sk-title"></div>
+      <div class="sk sk-line"></div>
+      <div class="sk sk-line sk-short"></div>
+      <div class="sk sk-block"></div>
+    </div>
+  }
+  @case ('not-found') {
+    <div class="container section pd-empty">
+      <h1>{{ 'project_detail.not_found' | translate }}</h1>
+      <a [routerLink]="'/projects' | langUrl" class="btn btn-primary">← {{ 'project_detail.back' | translate }}</a>
+    </div>
+  }
+  @case ('error') {
+    <div class="container section pd-empty" role="alert">
+      <h1>{{ 'project_detail.load_error' | translate }}</h1>
+      <button type="button" class="btn btn-primary" (click)="retry()">{{ 'admin.retry' | translate }}</button>
+    </div>
+  }
+  @case ('ready') {
+    @if (project(); as p) {
+      <article class="container section pd">
+        <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
+
+        <header class="pd__header">
+          <h1 class="pd__title">{{ p.title }}</h1>
+          <p class="pd__lead">{{ p.description }}</p>
+          @if (p.technologies.length) {
+            <ul class="pd__tags" [attr.aria-label]="'project_detail.stack' | translate">
+              @for (tech of p.technologies; track tech) { <li>{{ tech }}</li> }
+            </ul>
+          }
+          @if (p.liveUrl || p.repoUrl) {
+            <div class="pd__links">
+              @if (p.liveUrl) { <a [href]="p.liveUrl" target="_blank" rel="noopener" class="btn btn-primary">{{ 'project_detail.live' | translate }} ↗</a> }
+              @if (p.repoUrl) { <a [href]="p.repoUrl" target="_blank" rel="noopener" class="btn">{{ 'project_detail.repo' | translate }} ↗</a> }
+            </div>
+          }
+        </header>
+
+        @if (p.images.length) {
+          <figure class="pd__cover">
+            <img [src]="p.images[0]" [alt]="p.title" loading="eager" />
+          </figure>
+        }
+
+        @for (s of sections(); track s.key) {
+          <section class="pd__section" [attr.aria-labelledby]="'pd-' + s.key">
+            <h2 [id]="'pd-' + s.key">{{ s.titleKey | translate }}</h2>
+            <p>{{ s.text }}</p>
+          </section>
+        }
+
+        @if (p.images.length > 1) {
+          <div class="pd__gallery">
+            @for (img of p.images.slice(1); track img) {
+              <img [src]="img" [alt]="p.title" loading="lazy" />
+            }
+          </div>
+        }
+
+        <aside class="pd__cta">
+          <p>{{ 'project_detail.cta_text' | translate }}</p>
+          <a [routerLink]="'/contact' | langUrl" class="btn btn-primary">{{ 'project_detail.cta_button' | translate }}</a>
+        </aside>
+
+        <a [routerLink]="'/projects' | langUrl" class="pd__back">← {{ 'project_detail.back' | translate }}</a>
+      </article>
+    }
+  }
+}

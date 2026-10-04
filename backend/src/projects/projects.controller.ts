@@ -1,11 +1,12 @@
 import {
-  Controller, Get, Post, Put, Delete,
+  Controller, Get, Post, Put, Patch, Delete,
   Param, Body, UseGuards, HttpCode, HttpStatus, UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ReorderDto } from '../common/dto/reorder.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
@@ -25,6 +26,14 @@ export class ProjectsController {
     return this.projectsService.findAll();
   }
 
+  // Prima di ':id', altrimenti 'slug' verrebbe preso come id.
+  @Get('slug/:slug')
+  @UseInterceptors(new CacheControlInterceptor(120, 60))
+  @ApiOperation({ summary: 'Get a project case study by slug (public)' })
+  findBySlug(@Param('slug') slug: string) {
+    return this.projectsService.findBySlug(slug);
+  }
+
   @Get(':id')
   @UseInterceptors(new CacheControlInterceptor(120, 60))
   @ApiOperation({ summary: 'Get a single project (public)' })
@@ -41,6 +50,17 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Create project (admin)' })
   create(@Body() dto: CreateProjectDto) {
     return this.projectsService.create(dto);
+  }
+
+  @Patch('reorder')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
+  @ApiBearerAuth('access-token')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Reorder projects (admin, drag & drop)' })
+  reorder(@Body() dto: ReorderDto) {
+    return this.projectsService.reorder(dto.ids);
   }
 
   @Put(':id')
