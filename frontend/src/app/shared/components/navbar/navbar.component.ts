@@ -50,6 +50,8 @@ export class NavbarComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  /** Scorciatoia della palette nel tooltip della lente: ⌘K su Apple, Ctrl+K altrove. */
+  readonly paletteShortcut = this.isBrowser && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘K' : 'Ctrl+K';
 
   @ViewChild('navMenu') private navMenuRef?: ElementRef<HTMLUListElement>;
   @ViewChild('moreTab') private moreTabRef?: ElementRef<HTMLButtonElement>;

@@ -2054,7 +2054,13 @@
     "action_new_project": "Neues Projekt",
     "action_inbox": "Kontaktnachrichten öffnen",
     "action_logout": "Abmelden",
-    "footer_hint": "↑↓ zum Wählen · Enter zum Öffnen · Strg+K oder / zum Aufrufen"
+    "footer_hint": "↑↓ zum Wählen · Enter zum Öffnen · Strg+K oder / zum Aufrufen",
+    "action_copy_link": "Link dieser Seite kopieren",
+    "action_install": "Website als App installieren",
+    "action_language": "Sprache: {{lang}}",
+    "action_language_detail": "Sprache wechseln · language",
+    "link_copied": "Link kopiert",
+    "copy_failed": "Kopieren fehlgeschlagen"
   },
   "theme": {
     "name_light": "helles Design",

@@ -2054,7 +2054,13 @@
     "action_new_project": "Projekt i ri",
     "action_inbox": "Hap mesazhet e kontaktit",
     "action_logout": "Dil",
-    "footer_hint": "↑↓ për të zgjedhur · Enter për të hapur · Ctrl+K ose / për ta hapur"
+    "footer_hint": "↑↓ për të zgjedhur · Enter për të hapur · Ctrl+K ose / për ta hapur",
+    "action_copy_link": "Kopjo lidhjen e kësaj faqeje",
+    "action_install": "Instalo faqen si aplikacion",
+    "action_language": "Gjuha: {{lang}}",
+    "action_language_detail": "Ndrysho gjuhën · language",
+    "link_copied": "Lidhja u kopjua",
+    "copy_failed": "Kopjimi dështoi"
   },
   "theme": {
     "name_light": "temë e çelët",
