@@ -4,7 +4,7 @@ import { importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
 import { of } from 'rxjs';
-import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { BlogDetailComponent } from './blog-detail.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -27,6 +27,8 @@ const published = [
 ];
 
 describe('BlogDetailComponent view tracking', () => {
+  // Ogni create('browser') registra il post nella cronologia di lettura (localStorage condiviso fra spec).
+  afterEach(() => localStorage.clear());
   function create(platform: 'browser' | 'server', urlSlug = 'blinisht') {
     const location = { replaceState: vi.fn() };
     const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) };
