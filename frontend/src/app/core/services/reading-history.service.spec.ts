@@ -1,6 +1,6 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { READING_HISTORY_KEY, READING_HISTORY_MAX, ReadingHistoryService } from './reading-history.service';
 
 function create(platform: 'browser' | 'server' = 'browser') {
@@ -9,6 +9,8 @@ function create(platform: 'browser' | 'server' = 'browser') {
 }
 
 describe('ReadingHistoryService', () => {
+  // I file di spec condividono l'ambiente: niente residui di altri test.
+  beforeEach(() => localStorage.clear());
   afterEach(() => {
     localStorage.clear();
     vi.restoreAllMocks();
