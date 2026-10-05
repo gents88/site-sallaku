@@ -16,6 +16,27 @@ import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/v
 import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { ReadEntry, ReadingHistoryService } from '../../../core/services/reading-history.service';
 
+/**
+ * Tag unici ordinati per numero di articoli. Unisce le varianti che
+ * differiscono solo per maiuscole ("angular"/"Angular") e mostra la grafia
+ * più usata; a parità di frequenza vince l'ordine alfabetico.
+ */
+export function rankTags(posts: PostSummary[]): string[] {
+  const groups = new Map<string, { count: number; spellings: Map<string, number> }>();
+  for (const tag of posts.flatMap(p => p.tags ?? [])) {
+    const key = tag.trim().toLowerCase();
+    if (!key) continue;
+    const g = groups.get(key) ?? { count: 0, spellings: new Map<string, number>() };
+    g.count++;
+    g.spellings.set(tag.trim(), (g.spellings.get(tag.trim()) ?? 0) + 1);
+    groups.set(key, g);
+  }
+  return [...groups.values()]
+    .map(g => ({ count: g.count, label: [...g.spellings].sort((a, b) => b[1] - a[1])[0][0] }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .map(t => t.label);
+}
+
 @Component({
   selector: 'app-blog-list',
   standalone: true,
@@ -30,6 +51,23 @@ export class BlogListComponent implements OnInit {
   filteredPosts: PostSummary[] = [];
   allTags: string[] = [];
   activeTag: string | null = null;
+  /** Con ~170 tag la lista copriva gli articoli: si mostrano solo i più usati. */
+  readonly topTagCount = 12;
+  /** Tag mostrati su ogni card prima del "+N". */
+  readonly cardTagCount = 3;
+  showAllTags = false;
+
+  get visibleTags(): string[] {
+    if (this.showAllTags) return this.allTags;
+    const top = this.allTags.slice(0, this.topTagCount);
+    // Il tag selezionato resta visibile anche se non è tra i più usati.
+    if (this.activeTag && !top.includes(this.activeTag)) top.push(this.activeTag);
+    return top;
+  }
+
+  get hiddenTagCount(): number {
+    return Math.max(0, this.allTags.length - this.topTagCount);
+  }
   searchQuery = '';
   loading = true;
   /** La lista non è arrivata (tipicamente: offline senza copia in cache). */
@@ -114,8 +152,7 @@ export class BlogListComponent implements OnInit {
       next: posts => {
         this.loadError = false;
         this.posts = posts;
-        const tagsSet = new Set(posts.flatMap(p => p.tags));
-        this.allTags = Array.from(tagsSet).sort();
+        this.allTags = rankTags(posts);
         this.filter();
       },
       error: () => { this.loadError = true; },
@@ -164,7 +201,8 @@ export class BlogListComponent implements OnInit {
 
   filter(): void {
     const tokens = this.searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    let posts = this.posts.filter(p => !this.activeTag || p.tags.includes(this.activeTag));
+    const tag = this.activeTag?.toLowerCase();
+    let posts = this.posts.filter(p => !tag || (p.tags ?? []).some(t => t.trim().toLowerCase() === tag));
 
     if (tokens.length > 0) {
       // Score by per-word overlap across title (weighted higher) + excerpt/tags,
@@ -200,6 +238,11 @@ export class BlogListComponent implements OnInit {
     this.activeTag = tag;
     this.visibleCount = this.pageSize;
     this.filter();
+  }
+
+  toggleTags(): void {
+    this.showAllTags = !this.showAllTags;
+    this.cdr.markForCheck();
   }
 
   loadMore(): void {

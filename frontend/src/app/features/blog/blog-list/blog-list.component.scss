@@ -30,6 +30,8 @@
   button { cursor: pointer; user-select: none; transition: all 0.2s; flex-shrink: 0; }
   /* --primary-600: con --color-primary il testo bianco era 4.45:1, appena sotto AA. */
   .badge.active, .badge:hover { background: var(--primary-600); color: #fff; border-color: var(--primary-600); }
+  /* "Mostra tutti i tag": stesso badge, tratteggiato per distinguerlo dai filtri */
+  .badge--toggle { border-style: dashed; font-weight: 600; }
 
   @media (max-width: 600px) {
     flex-wrap: nowrap;
