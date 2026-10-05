@@ -84,12 +84,12 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
         name: 'AI PDF Translator',
-        description: 'Translate any PDF to 12 languages while keeping the original page count and page format. Powered by GPT-4o.',
+        description: 'Translate any PDF to 12 languages while keeping the original page count and page format, with AI translation.',
         url: 'https://gentsallaku.it/lab/pdf-translate',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-        featureList: ['12 languages', 'Page-accurate layout', 'OCR for scanned PDFs', 'GPT-4o quality', '50 MB limit'],
+        featureList: ['12 languages', 'Page-accurate layout', 'OCR for scanned PDFs', 'AI translation', '50 MB limit'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
       {
@@ -99,7 +99,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
           {
             '@type': 'Question',
             name: 'How many languages can I translate a PDF into?',
-            acceptedAnswer: { '@type': 'Answer', text: 'You can translate PDFs into 12 languages, powered by GPT-4o for high-quality, natural translations.' },
+            acceptedAnswer: { '@type': 'Answer', text: 'You can translate PDFs into 12 languages, with AI translation designed for natural, accurate results.' },
           },
           {
             '@type': 'Question',

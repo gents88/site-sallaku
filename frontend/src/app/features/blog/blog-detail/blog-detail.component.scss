@@ -431,3 +431,28 @@
     .heading-anchor { transition: none; }
   }
 }
+
+// ===========================================================
+// Barra di avanzamento della lettura, fissa in cima allo schermo
+// ===========================================================
+.reading-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  z-index: 1100;
+  pointer-events: none;
+
+  &__bar {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 55%, #a78bfa));
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.08s linear;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__bar { transition: none; }
+  }
+}

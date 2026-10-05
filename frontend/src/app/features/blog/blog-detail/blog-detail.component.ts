@@ -23,6 +23,16 @@ import { rankRelated } from '../../../shared/utils/related-content';
 import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
+/**
+ * Quanto del testo è stato letto, da 0 a 1: 0 finché l'inizio del testo non
+ * arriva in cima allo schermo, 1 quando la fine del testo è visibile in fondo.
+ */
+export function readingProgressOf(rect: { top: number; height: number }, viewportHeight: number): number {
+  const scrollable = rect.height - viewportHeight;
+  if (scrollable <= 0) return rect.top <= 0 ? 1 : 0;
+  return Math.min(1, Math.max(0, -rect.top / scrollable));
+}
+
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
@@ -57,6 +67,10 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   private readonly readingHistory = inject(ReadingHistoryService);
   publishing = false;
   readonly currentLang = this.langService.current;
+
+  /** Avanzamento della lettura (0–1) per la barra in cima alla pagina. */
+  readonly readingProgress = signal(0);
+  private progressFrame = 0;
 
   /** Sezione dell'indice attualmente in lettura (scroll-spy). */
   readonly activeTocId = signal<string | null>(null);
@@ -154,6 +168,26 @@ export class BlogDetailComponent implements OnInit, OnChanges {
       if (this.post) afterNextRender(() => this.enhanceContent(), { injector: this.injector });
     });
     inject(DestroyRef).onDestroy(() => { this.headingObserver?.disconnect(); this.postSub?.unsubscribe(); });
+    if (this.isBrowser) this.trackReadingProgress();
+  }
+
+  /** Aggiorna la barra di lettura allo scroll: listener passivo, al massimo un calcolo per frame. */
+  private trackReadingProgress(): void {
+    const update = () => {
+      if (this.progressFrame) return;
+      this.progressFrame = requestAnimationFrame(() => {
+        this.progressFrame = 0;
+        const content = (this.el.nativeElement as HTMLElement).querySelector('.post-article__content');
+        this.readingProgress.set(content ? readingProgressOf(content.getBoundingClientRect(), window.innerHeight) : 0);
+      });
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    inject(DestroyRef).onDestroy(() => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+      cancelAnimationFrame(this.progressFrame);
+    });
   }
 
   /** Click su una voce dell'indice: scroll fluido, hash nell'URL e focus sul titolo. */
