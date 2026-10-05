@@ -3,7 +3,10 @@ import { Router } from '@angular/router';
 import { Subject, catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SearchHit, SearchService } from '../../../core/services/search.service';
-import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
+import { LanguageService, SUPPORTED_LANGS, withLangPrefix } from '../../../core/services/language.service';
+import { LanguageSwitchService } from '../../../core/services/language-switch.service';
+import { InstallPromptService } from '../../../core/services/install-prompt.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { SearchOverlayService } from '../../../core/services/search-overlay.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -41,6 +44,9 @@ export class SearchOverlayComponent {
   private readonly analytics = inject(AnalyticsTrackingService);
   private readonly auth = inject(AuthService);
   private readonly theme = inject(ThemeService);
+  private readonly langSwitch = inject(LanguageSwitchService);
+  private readonly installPrompt = inject(InstallPromptService);
+  private readonly snackbar = inject(SnackbarService);
 
   readonly query = signal('');
   readonly remote = signal<SearchHit[]>([]);
@@ -59,7 +65,11 @@ export class SearchOverlayComponent {
       { id: 'act:theme', section: 'actions', icon: 'palette', title: t('palette.action_theme'), run: () => this.theme.toggle() },
       { id: 'act:contact', section: 'actions', icon: 'mail', title: t('palette.action_contact'), url: '/contact' },
       { id: 'act:lab', section: 'actions', icon: 'flask', title: t('palette.action_lab'), url: '/lab' },
+      { id: 'act:copy-link', section: 'actions', icon: 'send', title: t('palette.action_copy_link'), run: () => this.copyPageLink() },
     ];
+    if (this.installPrompt.canPromptNatively()) {
+      list.push({ id: 'act:install', section: 'actions', icon: 'arrow-down', title: t('palette.action_install'), run: () => void this.installPrompt.install() });
+    }
     if (this.isAdmin()) {
       list.push(
         { id: 'act:new-post', section: 'actions', icon: 'article', title: t('palette.action_new_post'), url: '/dashboard/blog?new=1' },
@@ -71,6 +81,26 @@ export class SearchOverlayComponent {
       list.push({ id: 'act:logout', section: 'actions', icon: 'logout', title: t('palette.action_logout'), run: () => this.auth.logout('/') });
     }
     return list;
+  });
+
+  /**
+   * "Lingua: English"… una voce per ogni lingua diversa da quella corrente.
+   * Solo cercando (es. "english", "lingua", "language"): nella lista iniziale
+   * sette voci di lingua coprirebbero le azioni più utili.
+   */
+  private readonly languageActions = computed<PaletteItem[]>(() => {
+    const current = this.langSvc.current();
+    const detail = this.translate.instant('palette.action_language_detail') as string;
+    return SUPPORTED_LANGS
+      .filter(l => l.code !== current)
+      .map(l => ({
+        id: `act:lang-${l.code}`,
+        section: 'actions' as const,
+        icon: 'globe',
+        title: this.translate.instant('palette.action_language', { lang: l.label }) as string,
+        detail,
+        run: () => void this.langSwitch.switchTo(l.code),
+      }));
   });
 
   /** Tutte le pagine navigabili dal registro unico (pubbliche + admin per gli admin). */
@@ -102,7 +132,7 @@ export class SearchOverlayComponent {
       detail: hit.excerpt,
       url: hit.url,
     }));
-    return mergeSections(filterLocal(this.actions(), q), filterLocal(this.pages(), q), content);
+    return mergeSections(filterLocal([...this.actions(), ...this.languageActions()], q), filterLocal(this.pages(), q), content);
   });
 
   readonly activeId = computed(() => {
@@ -216,5 +246,14 @@ export class SearchOverlayComponent {
 
   close(): void {
     this.overlay.close();
+  }
+
+  private copyPageLink(): void {
+    const url = location.href;
+    if (!navigator.clipboard?.writeText) return;
+    navigator.clipboard.writeText(url).then(
+      () => this.snackbar.show(this.translate.instant('palette.link_copied'), 'success', 2500),
+      () => this.snackbar.show(this.translate.instant('palette.copy_failed'), 'error', 3000),
+    );
   }
 }

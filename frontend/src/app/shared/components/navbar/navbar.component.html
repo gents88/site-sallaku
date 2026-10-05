@@ -49,7 +49,7 @@
 
     <!-- Right actions -->
     <div class="nav-right">
-      <button mat-icon-button type="button" (click)="openSearch()" [attr.aria-label]="'search.trigger' | translate" [title]="'search.trigger' | translate">
+      <button mat-icon-button type="button" (click)="openSearch()" [attr.aria-label]="'search.trigger' | translate" [title]="('search.trigger' | translate) + ' (' + paletteShortcut + ')'" aria-keyshortcuts="Control+K Meta+K">
         <mat-icon>search</mat-icon>
       </button>
       @if (isAdminUser()) {
