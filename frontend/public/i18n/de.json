@@ -2133,5 +2133,12 @@
     "ios_text_after": "und dann „Zum Home-Bildschirm“.",
     "cta": "Installieren",
     "later": "Nicht jetzt"
+  },
+  "lab_next": {
+    "ready": "„{{name}}“ ist bereit.",
+    "continue_with": "Weiter mit:",
+    "close": "Vorschläge schließen",
+    "resume_title": "Dort weitermachen, wo du aufgehört hast",
+    "pending": "„{{name}}“ liegt im Workspace bereit. Öffnen in:"
   }
 }

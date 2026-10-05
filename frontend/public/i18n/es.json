@@ -2133,5 +2133,12 @@
     "ios_text_after": "y luego «Añadir a pantalla de inicio».",
     "cta": "Instalar",
     "later": "Ahora no"
+  },
+  "lab_next": {
+    "ready": "«{{name}}» está listo.",
+    "continue_with": "Continúa con:",
+    "close": "Cerrar sugerencias",
+    "resume_title": "Continúa donde lo dejaste",
+    "pending": "Tienes «{{name}}» listo en el workspace. Ábrelo en:"
   }
 }

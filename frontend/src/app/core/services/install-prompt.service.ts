@@ -3,6 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { PlatformUiService } from './platform-ui.service';
+import { labToolIdForUrl } from '../navigation/lab-tools';
 
 /** Evento non standard di Chromium (Chrome, Edge, Samsung Internet). */
 export interface BeforeInstallPromptEvent extends Event {
@@ -16,8 +17,6 @@ export const INSTALL_DISMISSED_KEY = 'gs.install-dismissed-at';
 export const LAB_USES_BEFORE_OFFER = 2;
 export const DISMISS_COOLDOWN_MS = 30 * 24 * 60 * 60 * 1000;
 
-/** /lab/ocr, /en/lab/pdf-translate… ma non la pagina indice /lab. */
-const LAB_TOOL_PATH = /^\/(?:[a-z]{2}\/)?lab\/[^/?#]+/;
 
 function readNumber(key: string): number {
   try {
@@ -91,7 +90,7 @@ export class InstallPromptService {
     inject(Router).events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
       .subscribe(e => {
-        if (LAB_TOOL_PATH.test(e.urlAfterRedirects)) this.recordLabUse();
+        if (labToolIdForUrl(e.urlAfterRedirects)) this.recordLabUse();
       });
   }
 
