@@ -64,7 +64,33 @@
       </p>
     </header>
 
-    <div class="post-article__content prose" [innerHTML]="localizedContent"></div>
+    <div class="post-article__body">
+      @if (toc.length >= 2) {
+        <!-- Indice: riquadro richiudibile sopra il testo; da 1280px diventa una colonna sticky a destra. -->
+        <aside class="post-toc">
+          <details open>
+            <summary class="post-toc__title">{{ 'blog.toc_title' | translate }}</summary>
+            <nav [attr.aria-label]="'blog.toc_title' | translate">
+              <ol class="post-toc__list">
+                @for (entry of toc; track entry.id) {
+                  <li [class.post-toc__item--sub]="entry.level === 3">
+                    <a
+                      [href]="'#' + entry.id"
+                      class="post-toc__link"
+                      [class.active]="activeTocId() === entry.id"
+                      [attr.aria-current]="activeTocId() === entry.id ? 'location' : null"
+                      (click)="scrollToHeading($event, entry.id)"
+                    >{{ entry.text }}</a>
+                  </li>
+                }
+              </ol>
+            </nav>
+          </details>
+        </aside>
+      }
+
+      <div class="post-article__content prose" [innerHTML]="localizedContent"></div>
+    </div>
 
     @if (isPreview && !post.published) {
       <div class="post-article__publish-bottom">

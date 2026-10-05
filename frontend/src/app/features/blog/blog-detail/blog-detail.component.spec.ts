@@ -134,3 +134,83 @@ describe('BlogDetailComponent publish from preview', () => {
     expect(component.readingMinutes).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('BlogDetailComponent table of contents', () => {
+  const article = {
+    ...post,
+    published: true,
+    content: '<h2>Introduzione</h2><p>a</p><h3>Dettagli</h3><p>b</p><h2>Conclusione</h2>',
+    content_sq: '<h2>Hyrje</h2><p>a</p><h2>Përfundim</h2>',
+  } as unknown as Post;
+
+  function createWithToc(lang: 'it' | 'sq') {
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        provideRouter([]),
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: BlogService, useValue: { getOne: vi.fn(() => of(article)) } },
+        { provide: SeoService, useValue: { update: vi.fn() } },
+        { provide: LanguageService, useValue: { current: () => lang } },
+      ],
+    });
+    const fixture = TestBed.createComponent(BlogDetailComponent);
+    fixture.componentInstance.id = '1';
+    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
+    return { fixture, component: fixture.componentInstance };
+  }
+
+  it('builds the toc from the content in the current language and renders it', () => {
+    const { fixture, component } = createWithToc('it');
+    expect(component.toc.map(e => e.id)).toEqual(['introduzione', 'dettagli', 'conclusione']);
+    const links = fixture.nativeElement.querySelectorAll('.post-toc__link');
+    expect(links.length).toBe(3);
+    expect(links[1].getAttribute('href')).toBe('#dettagli');
+    expect(links[1].parentElement.classList).toContain('post-toc__item--sub');
+  });
+
+  it('follows the translated content', () => {
+    const { component } = createWithToc('sq');
+    expect(component.toc.map(e => e.text)).toEqual(['Hyrje', 'Përfundim']);
+  });
+
+  it('gives the rendered headings the toc ids once the article is in the DOM', async () => {
+    const { fixture } = createWithToc('it');
+    await fixture.whenStable();
+    const ids = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.post-article__content h2, .post-article__content h3')).map(h => h.id);
+    expect(ids).toEqual(['introduzione', 'dettagli', 'conclusione']);
+  });
+
+  it('does not render the toc for articles with fewer than two headings', () => {
+    article.content = '<h2>Solo</h2><p>x</p>';
+    const { fixture } = createWithToc('it');
+    expect(fixture.nativeElement.querySelector('.post-toc')).toBeNull();
+    article.content = '<h2>Introduzione</h2><p>a</p><h3>Dettagli</h3><p>b</p><h2>Conclusione</h2>';
+  });
+
+  it('scrolls to the heading, marks it active and writes the hash on click', async () => {
+    const scroll = vi.fn();
+    Element.prototype.scrollIntoView = scroll;
+    const { fixture, component } = createWithToc('it');
+    await fixture.whenStable();
+    const event = new Event('click', { cancelable: true });
+
+    component.scrollToHeading(event, 'dettagli');
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(scroll).toHaveBeenCalled();
+    expect((scroll.mock.contexts.at(-1) as HTMLElement).id).toBe('dettagli');
+    expect(component.activeTocId()).toBe('dettagli');
+    expect(location.hash).toBe('#dettagli');
+    history.replaceState(history.state, '', location.pathname);
+  });
+
+  it('leaves the default link behaviour alone when the heading does not exist', () => {
+    const { component } = createWithToc('it');
+    const event = new Event('click', { cancelable: true });
+    component.scrollToHeading(event, 'manca');
+    expect(event.defaultPrevented).toBe(false);
+    expect(component.activeTocId()).toBeNull();
+  });
+});

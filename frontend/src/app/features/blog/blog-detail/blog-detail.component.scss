@@ -30,7 +30,90 @@
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 1.5rem;
-    .back-link { margin-bottom: 0; }
+    // ===========================================================
+// Indice dell'articolo
+// ===========================================================
+.post-toc {
+  margin-bottom: 2rem;
+
+  details {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-alt);
+    padding: 0.75rem 1rem;
+  }
+
+  &__title {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  &__list {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__item--sub { padding-left: 0.9rem; }
+
+  &__link {
+    display: block;
+    padding: 0.25rem 0.6rem;
+    border-left: 2px solid transparent;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+    &:hover { color: var(--color-text); }
+
+    &.active {
+      color: var(--color-primary);
+      border-left-color: var(--color-primary);
+      background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    }
+  }
+}
+
+// Su schermi larghi l'indice esce dalla colonna di lettura e resta visibile
+// mentre si scorre (il wrapper assoluto copre tutta l'altezza del testo).
+@media (min-width: 1340px) {
+  .post-article__body { position: relative; }
+
+  .post-toc {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(100% + 2.5rem);
+    width: 230px;
+    margin: 0;
+
+    details {
+      position: sticky;
+      top: calc(var(--navbar-height, 72px) + 1.5rem);
+      max-height: calc(100vh - var(--navbar-height, 72px) - 3rem);
+      overflow-y: auto;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-toc__link { transition: none; }
+}
+
+.back-link { margin-bottom: 0; }
     .btn { display: inline-flex; align-items: center; gap: 0.35rem; }
   }
 

@@ -1,4 +1,4 @@
-import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnInit, Input, inject, effect, PLATFORM_ID } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, Injector, OnInit, Input, inject, effect, signal, PLATFORM_ID } from '@angular/core';
 import { CommonModule, Location, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,6 +17,7 @@ import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
 import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
+import { TocEntry, applyHeadingIds, extractToc } from '../../../shared/utils/article-toc';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
@@ -52,6 +53,11 @@ export class BlogDetailComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   publishing = false;
   readonly currentLang = this.langService.current;
+
+  /** Sezione dell'indice attualmente in lettura (scroll-spy). */
+  readonly activeTocId = signal<string | null>(null);
+  private headingObserver?: IntersectionObserver;
+  private tocCache: { content: string; entries: TocEntry[] } | null = null;
 
   /** Returns the title in the current portal language, falling back to Italian. */
   get localizedTitle(): string {
@@ -110,6 +116,13 @@ export class BlogDetailComponent implements OnInit {
     return this.post.content;
   }
 
+  /** Indice dagli h2/h3 del contenuto nella lingua corrente (memorizzato per stringa). */
+  get toc(): TocEntry[] {
+    const content = this.localizedContent ?? '';
+    if (!this.tocCache || this.tocCache.content !== content) this.tocCache = { content, entries: extractToc(content) };
+    return this.tocCache.entries;
+  }
+
   /** Estimated reading time of the content in the current language. */
   get readingMinutes(): number {
     return estimateReadingMinutes(this.localizedContent);
@@ -122,7 +135,27 @@ export class BlogDetailComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
-    effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+    effect(() => {
+      this.langService.current();
+      this.cdr.markForCheck();
+      // Cambiando lingua [innerHTML] viene riscritto: id, scroll-spy ed
+      // evidenziazione del codice vanno riapplicati al nuovo contenuto.
+      if (this.post) afterNextRender(() => this.enhanceContent(), { injector: this.injector });
+    });
+    inject(DestroyRef).onDestroy(() => this.headingObserver?.disconnect());
+  }
+
+  /** Click su una voce dell'indice: scroll fluido, hash nell'URL e focus sul titolo. */
+  scrollToHeading(event: Event, id: string): void {
+    if (!this.isBrowser) return;
+    const heading = document.getElementById(id);
+    if (!heading) return;
+    event.preventDefault();
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    heading.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    heading.focus({ preventScroll: true });
+    history.replaceState(history.state, '', `#${id}`);
+    this.activeTocId.set(id);
   }
 
   /** Publishes the draft being previewed, or moves a published post back to draft (admin preview route only). */
@@ -144,10 +177,32 @@ export class BlogDetailComponent implements OnInit {
     });
   }
 
-  private highlightCode(): void {
-    const article = this.el.nativeElement.querySelector('.post-article__content');
+  private enhanceContent(): void {
+    const article: HTMLElement | null = this.el.nativeElement.querySelector('.post-article__content');
     if (!article) return;
     this.prismService.highlightAllUnder(article);
+    const headings = applyHeadingIds(article, this.toc);
+    this.observeHeadings(headings);
+    // L'anchorScrolling del router scatta prima che il post sia caricato:
+    // con un link diretto a /blog/x#sezione lo scroll va rifatto qui.
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (hash) headings.find(h => h.id === hash)?.scrollIntoView({ block: 'start' });
+  }
+
+  /** Evidenzia nell'indice l'ultimo titolo superato dalla parte alta della viewport. */
+  private observeHeadings(headings: HTMLElement[]): void {
+    this.headingObserver?.disconnect();
+    if (!headings.length || typeof IntersectionObserver === 'undefined') return;
+    const visible = new Set<HTMLElement>();
+    this.headingObserver = new IntersectionObserver(records => {
+      for (const r of records) {
+        if (r.isIntersecting) visible.add(r.target as HTMLElement);
+        else visible.delete(r.target as HTMLElement);
+      }
+      const first = headings.find(h => visible.has(h));
+      if (first) this.activeTocId.set(first.id);
+    }, { rootMargin: '-80px 0px -65% 0px' });
+    headings.forEach(h => this.headingObserver!.observe(h));
   }
 
   ngOnInit(): void {
@@ -170,7 +225,7 @@ export class BlogDetailComponent implements OnInit {
     ).subscribe({
       next: post => {
         this.post = post;
-        afterNextRender(() => this.highlightCode(), { injector: this.injector });
+        afterNextRender(() => this.enhanceContent(), { injector: this.injector });
         this.cdr.markForCheck();
         if (this.isPreview) return; // no view tracking, canonical tags, or JSON-LD for an unpublished draft
         // Fire-and-forget: increment view count without blocking rendering.
