@@ -25,7 +25,7 @@
         <app-breadcrumb [items]="breadcrumbItems()"></app-breadcrumb>
 
         <header class="pd__header">
-          <h1 class="pd__title">{{ p.title }}</h1>
+          <h1 class="pd__title" appVtName="project-title">{{ p.title }}</h1>
           <p class="pd__lead">{{ p.description }}</p>
           @if (p.technologies.length) {
             <ul class="pd__tags" [attr.aria-label]="'project_detail.stack' | translate">
@@ -66,7 +66,7 @@
             <h2 id="pd-related">{{ 'project_detail.related_title' | translate }}</h2>
             <div class="pd__related-grid">
               @for (rp of related(); track rp._id) {
-                <a [routerLink]="('/projects/' + rp.slug) | langUrl" class="pd__related-card">
+                <a [routerLink]="('/projects/' + rp.slug) | langUrl" class="pd__related-card" appVtNameOnClick="project-title" vtTarget="h3">
                   <h3>{{ rp.title }}</h3>
                   <p>{{ rp.description }}</p>
                   @if (rp.technologies.length) {

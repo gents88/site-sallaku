@@ -11,6 +11,7 @@ import { LanguageService, withLangPrefix } from '../../../core/services/language
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 
 type LoadState = 'loading' | 'ready' | 'not-found' | 'error';
 
@@ -22,7 +23,7 @@ type LoadState = 'loading' | 'ready' | 'not-found' | 'error';
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  imports: [RouterLink, TranslateModule, BreadcrumbComponent, LangUrlPipe],
+  imports: [RouterLink, TranslateModule, BreadcrumbComponent, LangUrlPipe, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
