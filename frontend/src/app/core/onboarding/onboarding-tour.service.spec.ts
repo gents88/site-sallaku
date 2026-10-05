@@ -6,7 +6,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { driver, type Config, type PopoverDOM } from 'driver.js';
 import { AnalyticsTrackingService } from '../services/analytics-tracking.service';
 import { AuthService } from '../services/auth.service';
-import { ConsentService } from '../services/consent.service';
 import { DrawerService } from '../services/drawer.service';
 import { ONBOARDING_STEPS } from './onboarding-steps';
 import { ONBOARDING_STORAGE_KEY, OnboardingTourService } from './onboarding-tour.service';
@@ -43,7 +42,6 @@ function fakePopover(): PopoverDOM {
 }
 
 describe('OnboardingTourService', () => {
-  let consentDecided: ReturnType<typeof signal<boolean>>;
   let router: { url: string };
   let auth: { isLoggedIn: ReturnType<typeof signal<boolean>>; isAdmin: ReturnType<typeof signal<boolean>> };
   let drawer: { mode: ReturnType<typeof signal<'rail' | 'overlay'>>; railExpanded: ReturnType<typeof signal<boolean>>; open: ReturnType<typeof vi.fn>; toggleRail: ReturnType<typeof vi.fn> };
@@ -57,7 +55,6 @@ describe('OnboardingTourService', () => {
   function setup() {
     TestBed.configureTestingModule({
       providers: [
-        { provide: ConsentService, useValue: { hasDecided: consentDecided } },
         { provide: Router, useValue: router },
         { provide: AuthService, useValue: auth },
         { provide: DrawerService, useValue: drawer },
@@ -74,7 +71,6 @@ describe('OnboardingTourService', () => {
     fake.state.config = null;
     fake.state.activeIndex = 0;
     vi.clearAllMocks();
-    consentDecided = signal(false);
     router = { url: '/' };
     auth = { isLoggedIn: signal(false), isAdmin: signal(false) };
     drawer = {
@@ -99,15 +95,11 @@ describe('OnboardingTourService', () => {
   });
 
   describe('avvio automatico al primo accesso', () => {
-    it('aspetta la decisione sul consenso, poi parte dopo il ritardo', async () => {
+    it("parte all'atterraggio dopo il ritardo, senza aspettare il banner del consenso", async () => {
+      // Primo accesso reale: nessuna scelta sui cookie salvata, banner aperto.
+      expect(localStorage.getItem('cookie_consent_v1')).toBeNull();
       const tour = setup();
       tour.scheduleAutoStart();
-      TestBed.tick();
-      await vi.advanceTimersByTimeAsync(5000);
-      expect(fake.instance.drive).not.toHaveBeenCalled();
-
-      consentDecided.set(true);
-      TestBed.tick();
       await vi.advanceTimersByTimeAsync(1499);
       expect(fake.instance.drive).not.toHaveBeenCalled();
       await vi.advanceTimersByTimeAsync(1);
@@ -117,7 +109,6 @@ describe('OnboardingTourService', () => {
 
     it('non parte se il flag hasSeenOnboarding è già presente', async () => {
       localStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
-      consentDecided.set(true);
       const tour = setup();
       tour.scheduleAutoStart();
       TestBed.tick();
@@ -126,7 +117,6 @@ describe('OnboardingTourService', () => {
     });
 
     it("non parte nell'area admin né per un admin loggato", async () => {
-      consentDecided.set(true);
       router.url = '/en/dashboard/users';
       let tour = setup();
       tour.scheduleAutoStart();
