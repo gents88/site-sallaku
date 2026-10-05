@@ -48,10 +48,11 @@ describe('BlogDetailComponent view tracking', () => {
         { provide: LanguageService, useValue: { current: () => 'sq' } },
       ],
     });
-    const component = TestBed.createComponent(BlogDetailComponent).componentInstance;
+    const fixture = TestBed.createComponent(BlogDetailComponent);
+    const component = fixture.componentInstance;
     component.slug = urlSlug;
     component.ngOnInit();
-    return { component, blogService, location, seo };
+    return { component, fixture, blogService, location, seo };
   }
 
   it('counts a view in the browser', () => {
@@ -84,6 +85,20 @@ describe('BlogDetailComponent view tracking', () => {
       expect(component.relatedSlug(component.related[0])).toBe('postimi-3');
       expect(component.relatedTitle(component.related[1])).toBe('Post 4'); // nessuna traduzione → italiano
       (post as any).tags = [];
+    });
+
+    it('renders each suggestion as a card with tag, date, title, excerpt and a read-more link', () => {
+      const { fixture } = create('browser');
+      fixture.detectChanges();
+
+      const cards: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('.related__card'));
+      expect(cards).toHaveLength(3);
+      const card = cards.find(c => c.getAttribute('href')?.endsWith('/postimi-3'))!;
+      expect(card.querySelector('.related__tag')?.textContent).toContain('#Angular');
+      expect(card.querySelector('.related__date')?.getAttribute('datetime')).toBe('2026-01-01');
+      expect(card.querySelector('h3')?.textContent).toContain('Postimi 3');
+      expect(card.querySelector('p')?.textContent).toContain('Estratto 3');
+      expect(card.querySelector('.related__cta')).not.toBeNull();
     });
 
     it('does not fetch them while prerendering', () => {

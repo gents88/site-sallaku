@@ -679,6 +679,7 @@
     "reading_time": "{{count}} min de lecture",
     "toc_title": "Dans cet article",
     "related_title": "À lire aussi",
+    "related_subtitle": "D'autres articles sur les mêmes sujets",
     "copy_code": "Copier",
     "copied": "Copié !",
     "copy_failed": "Échec de la copie",
