@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { importProvidersFrom, signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BlogListComponent } from './blog-list.component';
+import { BlogListComponent, rankTags } from './blog-list.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
@@ -208,5 +208,68 @@ describe('BlogListComponent offline', () => {
     fixture.detectChanges();
     expect(component.loadError).toBe(false);
     expect(component.posts).toEqual(posts);
+  });
+});
+
+describe('BlogListComponent tags', () => {
+  function configure(): BlogListComponent {
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])) } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
+        { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
+      ],
+    });
+    return TestBed.createComponent(BlogListComponent).componentInstance;
+  }
+
+  it('merges tags that differ only by case and keeps the most used spelling', () => {
+    const tags = rankTags([
+      post({ tags: ['Angular', 'PDF'] }),
+      post({ tags: ['angular'] }),
+      post({ tags: ['Angular'] }),
+    ]);
+    expect(tags).toEqual(['Angular', 'PDF']);
+  });
+
+  it('orders tags by number of posts, then alphabetically', () => {
+    const tags = rankTags([
+      post({ tags: ['zeta', 'beta'] }),
+      post({ tags: ['zeta', 'alpha'] }),
+    ]);
+    expect(tags).toEqual(['zeta', 'alpha', 'beta']);
+  });
+
+  it('shows only the most used tags until expanded, and counts the hidden ones', () => {
+    const component = configure();
+    component.allTags = Array.from({ length: 20 }, (_, i) => `t${i}`);
+
+    expect(component.visibleTags).toHaveLength(component.topTagCount);
+    expect(component.hiddenTagCount).toBe(20 - component.topTagCount);
+
+    component.toggleTags();
+    expect(component.visibleTags).toHaveLength(20);
+  });
+
+  it('keeps the active tag visible even when it is not among the most used', () => {
+    const component = configure();
+    component.allTags = Array.from({ length: 20 }, (_, i) => `t${i}`);
+    component.activeTag = 't19';
+
+    expect(component.visibleTags).toContain('t19');
+  });
+
+  it('filters by tag regardless of case', () => {
+    const component = configure();
+    const lower = post({ title: 'a', tags: ['angular'] });
+    const upper = post({ title: 'b', tags: ['Angular'] });
+    const other = post({ title: 'c', tags: ['pdf'] });
+    component.posts = [lower, upper, other];
+
+    component.setTag('Angular');
+
+    expect(component.filteredPosts).toEqual([lower, upper]);
   });
 });

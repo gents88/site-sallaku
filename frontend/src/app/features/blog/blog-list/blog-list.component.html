@@ -33,8 +33,13 @@
     @if (allTags.length) {
       <div class="tag-filter">
         <button class="badge" [class.active]="!activeTag" (click)="setTag(null)">All</button>
-        @for (tag of allTags; track tag) {
+        @for (tag of visibleTags; track tag) {
           <button class="badge" [class.active]="activeTag === tag" (click)="setTag(tag)">#{{ tag }}</button>
+        }
+        @if (hiddenTagCount > 0) {
+          <button class="badge badge--toggle" (click)="toggleTags()" [attr.aria-expanded]="showAllTags">
+            {{ showAllTags ? ('blog.tags_less' | translate) : ('blog.tags_more' | translate: { count: hiddenTagCount }) }}
+          </button>
         }
       </div>
     }
@@ -57,8 +62,11 @@
           }
           <div class="post-card__body">
             <div class="post-card__tags">
-              @for (tag of post.tags; track tag) {
+              @for (tag of post.tags.slice(0, cardTagCount); track tag) {
                 <span class="badge">#{{ tag }}</span>
+              }
+              @if (post.tags.length > cardTagCount) {
+                <span class="badge badge--more">+{{ post.tags.length - cardTagCount }}</span>
               }
             </div>
             <h2 class="post-card__title">
