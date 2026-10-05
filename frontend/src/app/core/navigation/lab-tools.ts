@@ -77,6 +77,11 @@ export function labToolIdForUrl(url: string): string | null {
   return NAV_REGISTRY.find(e => e.route === `/${match[1]}`)?.id ?? null;
 }
 
+/** La pagina indice /lab (in qualsiasi lingua). */
+export function isLabIndexUrl(url: string): boolean {
+  return /^\/(?:[a-z]{2}\/)?lab\/?(?:[?#].*)?$/.test(url);
+}
+
 /** Voce di registro di uno strumento, per titolo/icona/rotta. */
 export function labToolEntry(id: string): NavEntry | undefined {
   return entryFor(id);

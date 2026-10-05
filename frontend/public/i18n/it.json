@@ -2140,5 +2140,11 @@
     "close": "Chiudi suggerimenti",
     "resume_title": "Continua da dove eri rimasto",
     "pending": "Hai «{{name}}» pronto nel workspace. Aprilo in:"
+  },
+  "lab_drop": {
+    "hint": "Trascina un file in qualsiasi punto della pagina e ti suggerisco gli strumenti adatti. Resta nel tuo browser.",
+    "pick": "Scegli file",
+    "release": "Rilascia il file per vedere cosa puoi farci",
+    "only_first": "Uso solo il primo file ({{count}} ignorati)."
   }
 }

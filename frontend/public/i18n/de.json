@@ -2140,5 +2140,11 @@
     "close": "Vorschläge schließen",
     "resume_title": "Dort weitermachen, wo du aufgehört hast",
     "pending": "„{{name}}“ liegt im Workspace bereit. Öffnen in:"
+  },
+  "lab_drop": {
+    "hint": "Zieh eine Datei irgendwo auf die Seite und ich schlage dir die passenden Tools vor. Sie bleibt in deinem Browser.",
+    "pick": "Datei auswählen",
+    "release": "Lass die Datei los, um zu sehen, was du damit machen kannst",
+    "only_first": "Nur die erste Datei wird verwendet ({{count}} ignoriert)."
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fileExtension, labToolIdForUrl, labToolsAccepting, workspaceInput } from './lab-tools';
+import { fileExtension, isLabIndexUrl, labToolIdForUrl, labToolsAccepting, workspaceInput } from './lab-tools';
 
 const ids = (list: { id: string }[]) => list.map(e => e.id);
 
@@ -47,5 +47,13 @@ describe('lab-tools', () => {
     expect(labToolIdForUrl('/lab')).toBeNull();
     expect(labToolIdForUrl('/lab/sconosciuto')).toBeNull();
     expect(labToolIdForUrl('/blog/lab/ocr')).toBeNull();
+  });
+
+  it('isLabIndexUrl matches only the /lab page itself', () => {
+    expect(isLabIndexUrl('/lab')).toBe(true);
+    expect(isLabIndexUrl('/en/lab/')).toBe(true);
+    expect(isLabIndexUrl('/lab?x=1')).toBe(true);
+    expect(isLabIndexUrl('/lab/ocr')).toBe(false);
+    expect(isLabIndexUrl('/laboratorio')).toBe(false);
   });
 });
