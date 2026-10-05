@@ -676,7 +676,12 @@
     },
     "reading_time": "{{count}} min lexim",
     "toc_title": "Në këtë artikull",
-    "related_title": "Lexo edhe"
+    "related_title": "Lexo edhe",
+    "copy_code": "Kopjo",
+    "copied": "U kopjua!",
+    "copy_failed": "Kopjimi dështoi",
+    "copy_section_link": "Kopjo lidhjen e seksionit",
+    "link_copied": "Lidhja e seksionit u kopjua"
   },
   "notes": {
     "title": "Shënime nga lexuesit",

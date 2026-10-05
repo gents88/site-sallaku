@@ -77,3 +77,20 @@ export function applyHeadingIds(container: ParentNode, entries: readonly TocEntr
   });
   return applied;
 }
+
+/**
+ * Aggiunge a ogni titolo un link "#" alla sezione (visibile al passaggio del
+ * mouse o col focus). Idempotente: un titolo che ha già l'ancora viene saltato.
+ */
+export function addHeadingAnchors(headings: readonly HTMLElement[], label: string, onActivate: (id: string, event: MouseEvent) => void): void {
+  for (const heading of headings) {
+    if (!heading.id || heading.querySelector(':scope > .heading-anchor')) continue;
+    const anchor = heading.ownerDocument.createElement('a');
+    anchor.className = 'heading-anchor';
+    anchor.href = `#${heading.id}`;
+    anchor.textContent = '#';
+    anchor.setAttribute('aria-label', `${label}: ${heading.textContent?.trim() ?? ''}`);
+    anchor.addEventListener('click', event => onActivate(heading.id, event));
+    heading.appendChild(anchor);
+  }
+}
