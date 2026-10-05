@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, InjectionToken, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -20,6 +20,14 @@ export interface LiveHandoffMessage {
   sentAt: Date;
 }
 
+/**
+ * Factory di socket.io iniettabile: i test la sostituiscono via DI. Con
+ * vi.mock('socket.io-client') il mock non si applicava quando un altro spec
+ * aveva già caricato il modulo vero (i file di test condividono la cache dei
+ * moduli), e la suite falliva a caso a seconda dell'ordine dei file.
+ */
+export const SOCKET_IO = new InjectionToken<typeof io>('SOCKET_IO', { providedIn: 'root', factory: () => io });
+
 const DISMISS_COOLDOWN_MS = 10 * 60_000;
 const AUTO_MINIMIZE_MS = 8_000;
 const DISMISS_KEY_PREFIX = 'live_handoff_dismissed_';
@@ -28,6 +36,7 @@ const DISMISS_KEY_PREFIX = 'live_handoff_dismissed_';
 export class LiveHandoffService {
   private readonly http = inject(HttpClient);
   private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly io = inject(SOCKET_IO);
   private readonly apiUrl = `${environment.apiUrl}/chatbot`;
   private readonly wsOrigin = environment.apiUrl.replace(/\/api\/v\d+\/?$/, '');
 
@@ -147,7 +156,7 @@ export class LiveHandoffService {
     // e su alcuni proxy/edge che parlano HTTP/2 (Railway compreso) l'upgrade diretto a
     // WS fallisce con 400 Bad Request. Il default (polling → tentativo di upgrade a WS)
     // funziona sempre almeno via polling, con eventuale upgrade opportunistico.
-    this.socket = io(`${this.wsOrigin}/live-chat`);
+    this.socket = this.io(`${this.wsOrigin}/live-chat`);
 
     this.socket.on('connect', () => {
       this.socket?.emit('join_session', { sessionId });

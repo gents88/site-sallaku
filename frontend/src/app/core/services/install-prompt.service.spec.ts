@@ -1,7 +1,7 @@
 import { Component, PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   BeforeInstallPromptEvent,
   DISMISS_COOLDOWN_MS,
@@ -39,6 +39,7 @@ function firePrompt(outcome: 'accepted' | 'dismissed' = 'accepted') {
 }
 
 describe('InstallPromptService', () => {
+  beforeEach(() => localStorage.clear());
   afterEach(() => localStorage.clear());
 
   it('captures beforeinstallprompt, suppressing the browser mini-infobar', () => {
