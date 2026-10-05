@@ -33,6 +33,22 @@ export function readingProgressOf(rect: { top: number; height: number }, viewpor
   return Math.min(1, Math.max(0, -rect.top / scrollable));
 }
 
+/** Distanza dalla cima dello schermo oltre la quale un titolo conta come "già letto". */
+const TOC_READING_LINE = 120;
+
+/**
+ * Scroll-spy: indice dell'ultimo titolo già salito oltre la linea di lettura
+ * (-1 prima del primo). In fondo alla pagina vince l'ultimo, altrimenti
+ * una sezione finale corta non diventerebbe mai attiva.
+ */
+export function activeHeadingIndex(tops: number[], readingLine: number, atBottom: boolean): number {
+  if (!tops.length) return -1;
+  if (atBottom) return tops.length - 1;
+  let active = -1;
+  tops.forEach((top, i) => { if (top <= readingLine) active = i; });
+  return active;
+}
+
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
@@ -76,7 +92,8 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   readonly activeTocId = signal<string | null>(null);
   /** "Leggi anche": post con più tag in comune, a parità i più recenti. */
   related: PostSummary[] = [];
-  private headingObserver?: IntersectionObserver;
+  /** Titoli h2/h3 del contenuto renderizzato, nello stesso ordine dell'indice. */
+  private headings: HTMLElement[] = [];
   private postSub?: Subscription;
   private tocCache: { content: string; entries: TocEntry[] } | null = null;
 
@@ -167,11 +184,11 @@ export class BlogDetailComponent implements OnInit, OnChanges {
       // evidenziazione del codice vanno riapplicati al nuovo contenuto.
       if (this.post) afterNextRender(() => this.enhanceContent(), { injector: this.injector });
     });
-    inject(DestroyRef).onDestroy(() => { this.headingObserver?.disconnect(); this.postSub?.unsubscribe(); });
+    inject(DestroyRef).onDestroy(() => this.postSub?.unsubscribe());
     if (this.isBrowser) this.trackReadingProgress();
   }
 
-  /** Aggiorna la barra di lettura allo scroll: listener passivo, al massimo un calcolo per frame. */
+  /** Aggiorna barra di lettura e voce attiva dell'indice allo scroll: listener passivo, al massimo un calcolo per frame. */
   private trackReadingProgress(): void {
     const update = () => {
       if (this.progressFrame) return;
@@ -179,6 +196,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
         this.progressFrame = 0;
         const content = (this.el.nativeElement as HTMLElement).querySelector('.post-article__content');
         this.readingProgress.set(content ? readingProgressOf(content.getBoundingClientRect(), window.innerHeight) : 0);
+        this.updateActiveHeading();
       });
     };
     window.addEventListener('scroll', update, { passive: true });
@@ -261,27 +279,38 @@ export class BlogDetailComponent implements OnInit, OnChanges {
     this.prismService.highlightAllUnder(article);
     const headings = applyHeadingIds(article, this.toc);
     addHeadingAnchors(headings, this.translate.instant('blog.copy_section_link'), (id, event) => this.copyHeadingLink(id, event));
-    this.observeHeadings(headings);
+    this.headings = headings;
+    this.updateActiveHeading();
     // L'anchorScrolling del router scatta prima che il post sia caricato:
     // con un link diretto a /blog/x#sezione lo scroll va rifatto qui.
     const hash = decodeURIComponent(location.hash.slice(1));
     if (hash) headings.find(h => h.id === hash)?.scrollIntoView({ block: 'start' });
   }
 
-  /** Evidenzia nell'indice l'ultimo titolo superato dalla parte alta della viewport. */
-  private observeHeadings(headings: HTMLElement[]): void {
-    this.headingObserver?.disconnect();
-    if (!headings.length || typeof IntersectionObserver === 'undefined') return;
-    const visible = new Set<HTMLElement>();
-    this.headingObserver = new IntersectionObserver(records => {
-      for (const r of records) {
-        if (r.isIntersecting) visible.add(r.target as HTMLElement);
-        else visible.delete(r.target as HTMLElement);
-      }
-      const first = headings.find(h => visible.has(h));
-      if (first) this.activeTocId.set(first.id);
-    }, { rootMargin: '-80px 0px -65% 0px' });
-    headings.forEach(h => this.headingObserver!.observe(h));
+  /** Evidenzia nell'indice la sezione in lettura e la tiene visibile nella colonna. */
+  private updateActiveHeading(): void {
+    if (!this.headings.length) return;
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    const index = activeHeadingIndex(this.headings.map(h => h.getBoundingClientRect().top), TOC_READING_LINE, atBottom);
+    const id = index >= 0 ? this.headings[index].id : null;
+    if (id === this.activeTocId()) return;
+    this.activeTocId.set(id);
+    if (id) this.revealTocEntry(id);
+  }
+
+  /**
+   * Con un indice più alto dello schermo la colonna scorre per conto suo:
+   * porta la voce attiva al centro, muovendo solo la colonna e non la pagina.
+   */
+  private revealTocEntry(id: string): void {
+    const host = this.el.nativeElement as HTMLElement;
+    const box = host.querySelector<HTMLElement>('.post-toc details');
+    const link = Array.from(host.querySelectorAll<HTMLElement>('.post-toc__link')).find(a => a.dataset['tocId'] === id);
+    if (!box || !link || box.scrollHeight <= box.clientHeight) return;
+    const linkTop = link.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop;
+    const target = linkTop - (box.clientHeight - link.offsetHeight) / 2;
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    box.scrollTo({ top: Math.max(0, target), behavior: reduceMotion ? 'auto' : 'smooth' });
   }
 
   ngOnInit(): void {
@@ -306,7 +335,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
     this.post = null;
     this.related = [];
     this.activeTocId.set(null);
-    this.headingObserver?.disconnect();
+    this.headings = [];
     const post$ = this.isPreview ? this.blogService.getOne(this.id!) : this.blogService.getBySlug(this.slug!);
     this.postSub = post$.pipe(
       // NOTE: deliberately no retry() here. Prerendering builds fetch
