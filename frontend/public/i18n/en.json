@@ -1094,7 +1094,7 @@
     "badge": "AI PDF Translation",
     "hero_title_1": "Translate Any PDF",
     "hero_title_2": "With Layout Preserved",
-    "hero_subtitle": "Enterprise-grade AI translation that keeps your document's page count and page format intact — powered by GPT-4o.",
+    "hero_subtitle": "Enterprise-grade AI translation that keeps your document's page count and page format intact.",
     "cta_primary": "🌍 Translate PDF Free",
     "stat_languages": "Languages",
     "stat_scanned": "Scanned PDFs",
@@ -1103,7 +1103,7 @@
     "feature_layout_title": "Page-Accurate Layout",
     "feature_layout_desc": "Keeps the same page count and page size as the original, page by page — not the original fonts or images.",
     "feature_ai_title": "AI-Quality Translation",
-    "feature_ai_desc": "GPT-4o powered, block-by-block translation with structure-aware prompts.",
+    "feature_ai_desc": "AI-powered, block-by-block translation with structure-aware prompts.",
     "feature_ocr_title": "OCR for Scanned PDFs",
     "feature_ocr_desc": "Detects image-based PDFs automatically and processes via OCR pipeline.",
     "feature_langs_title": "12 Languages",
@@ -1163,7 +1163,7 @@
     "upload_aria": "Upload a PDF file",
     "remove_file": "Remove file",
     "seo_title": "AI PDF Translator — Translate PDF, Pages Preserved",
-    "seo_description": "Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation powered by GPT-4o. Free online PDF translator — no signup needed."
+    "seo_description": "Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation. Free online PDF translator — no signup needed."
   },
   "pdf_search": {
     "title": "PDF Search",
@@ -1420,7 +1420,7 @@
     "my_files_title": "My files",
     "my_files_desc": "Find the results you have saved from the AI tools",
     "seo_title": "Free AI PDF Tools & Document Utilities",
-    "seo_description": "Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools powered by GPT-4o. No signup required."
+    "seo_description": "Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools. No signup required."
   },
   "about_manage": {
     "title": "About Section",
