@@ -1,0 +1,163 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/dashboard" class="back-link">← {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'users_manage.title' | translate }}</h1>
+      <p class="um-sub">{{ 'users_manage.total' | translate: { count: total() } }}</p>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">+ {{ 'users_manage.new' | translate }}</button>
+  </header>
+
+  @if (editor(); as ed) {
+    <section class="card um-editor" aria-labelledby="um-editor-title">
+      <h2 id="um-editor-title">{{ (ed.id ? 'users_manage.edit_title' : 'users_manage.new') | translate }}</h2>
+      <form (submit)="saveUser(); $event.preventDefault()" novalidate>
+        <div class="um-grid">
+          <label>{{ 'users_manage.col_name' | translate }}
+            <input class="um-input" [ngModel]="form().name" (ngModelChange)="patchForm({ name: $event })" name="name" maxlength="60" required />
+          </label>
+          <label>Email
+            <input class="um-input" type="email" [ngModel]="form().email" (ngModelChange)="patchForm({ email: $event })" name="email" required />
+          </label>
+          <label>{{ 'users_manage.phone' | translate }}
+            <input class="um-input" type="tel" [ngModel]="form().phone" (ngModelChange)="patchForm({ phone: $event })" name="phone" placeholder="+393331234567" />
+          </label>
+          @if (!ed.id) {
+            <label>{{ 'users_manage.col_role' | translate }}
+              <select class="um-input" [ngModel]="form().role" (ngModelChange)="patchForm({ role: $event })" name="role">
+                <option value="user">{{ 'account_modal.role_user' | translate }}</option>
+                <option value="admin">{{ 'account_modal.role_admin' | translate }}</option>
+              </select>
+            </label>
+            <label class="um-span">{{ 'users_manage.password_optional' | translate }}
+              <input class="um-input" type="password" autocomplete="new-password" [ngModel]="form().password" (ngModelChange)="patchForm({ password: $event })" name="password" />
+              <small>{{ 'users_manage.password_hint' | translate }}</small>
+            </label>
+          }
+          <label class="um-check um-span">
+            <input type="checkbox" [ngModel]="form().emailVerified" (ngModelChange)="patchForm({ emailVerified: $event })" name="emailVerified" />
+            {{ 'users_manage.verified' | translate }}
+          </label>
+        </div>
+        @if (formErrors().length) {
+          <ul class="um-errors" role="alert">
+            @for (e of formErrors(); track e) { <li>{{ e | translate }}</li> }
+          </ul>
+        }
+        <div class="um-form-actions">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">{{ (saving() ? 'common.loading' : 'users_manage.save') | translate }}</button>
+          <button type="button" class="btn btn-sm" (click)="closeEditor()">{{ 'common.cancel' | translate }}</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (passwordFor(); as pu) {
+    <div class="um-backdrop" (click)="passwordFor.set(null)" aria-hidden="true"></div>
+    <section class="card um-dialog" role="dialog" aria-modal="true" aria-labelledby="um-pw-title">
+      <h2 id="um-pw-title">{{ 'users_manage.password_title' | translate: { name: pu.name } }}</h2>
+      <p class="um-sub">{{ 'users_manage.password_effect' | translate }}</p>
+      <form (submit)="savePassword(); $event.preventDefault()">
+        <input class="um-input" type="password" autocomplete="new-password" [ngModel]="newPassword()" (ngModelChange)="newPassword.set($event)" name="newPassword"
+               [attr.aria-label]="'users_manage.new_password' | translate" />
+        <small class="um-sub">{{ 'users_manage.password_hint' | translate }}</small>
+        @if (formErrors().length) {
+          <ul class="um-errors" role="alert">@for (e of formErrors(); track e) { <li>{{ e | translate }}</li> }</ul>
+        }
+        <div class="um-form-actions">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="busyId() === pu._id">{{ 'users_manage.set_password' | translate }}</button>
+          <button type="button" class="btn btn-sm" (click)="passwordFor.set(null)">{{ 'common.cancel' | translate }}</button>
+        </div>
+      </form>
+    </section>
+  }
+
+  @if (notice()) {
+    <p class="um-notice" role="status">{{ notice() }}</p>
+  }
+
+  <div class="um-toolbar">
+    <input type="search" class="um-search" [ngModel]="search()" (ngModelChange)="onSearch($event)"
+           [placeholder]="'users_manage.search_placeholder' | translate"
+           [attr.aria-label]="'users_manage.search_placeholder' | translate" />
+    <select class="um-select" [ngModel]="role()" (ngModelChange)="setRoleFilter($event)" [attr.aria-label]="'users_manage.role_filter' | translate">
+      <option value="">{{ 'users_manage.all_roles' | translate }}</option>
+      <option value="admin">{{ 'account_modal.role_admin' | translate }}</option>
+      <option value="user">{{ 'account_modal.role_user' | translate }}</option>
+    </select>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="um-error" role="alert">{{ errorMessage() }}</p>
+  }
+
+  <section class="card um-card" [attr.aria-busy]="loading()">
+    @if (loadError()) {
+      <div class="um-state" role="alert">
+        <p>{{ 'users_manage.load_error' | translate }}</p>
+        <button type="button" class="btn btn-sm btn-primary" (click)="reload()">{{ 'admin.retry' | translate }}</button>
+      </div>
+    } @else if (loading() && !users().length) {
+      <p class="um-state">{{ 'common.loading' | translate }}</p>
+    } @else if (!users().length) {
+      <p class="um-state">{{ 'users_manage.empty' | translate }}</p>
+    } @else {
+      <div class="um-table-wrap">
+        <table class="um-table">
+          <caption class="sr-only">{{ 'users_manage.title' | translate }}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{{ 'users_manage.col_name' | translate }}</th>
+              <th scope="col">{{ 'users_manage.col_contact' | translate }}</th>
+              <th scope="col">{{ 'users_manage.col_role' | translate }}</th>
+              <th scope="col">{{ 'users_manage.col_created' | translate }}</th>
+              <th scope="col"><span class="sr-only">{{ 'users_manage.col_actions' | translate }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of users(); track u._id) {
+              <tr [class.is-self]="isSelf(u)">
+                <td class="um-cell-name">
+                  {{ u.name }}
+                  @if (isSelf(u)) { <span class="um-badge">{{ 'users_manage.you' | translate }}</span> }
+                </td>
+                <td class="um-cell-contact">
+                  {{ u.email || u.phone || '—' }}
+                  @if (u.email && u.emailVerified) { <span class="um-verified" [title]="'users_manage.verified' | translate">✓</span> }
+                </td>
+                <td class="um-cell-role">
+                  <select class="um-select" [ngModel]="u.role" (ngModelChange)="changeRole(u, $event)"
+                          [disabled]="isSelf(u) || busyId() === u._id"
+                          [attr.aria-label]="('users_manage.col_role' | translate) + ': ' + u.name">
+                    <option value="admin">{{ 'account_modal.role_admin' | translate }}</option>
+                    <option value="user">{{ 'account_modal.role_user' | translate }}</option>
+                  </select>
+                </td>
+                <td class="um-cell-date" [attr.data-label]="'users_manage.col_created' | translate"><time [attr.datetime]="u.createdAt">{{ u.createdAt | date: 'dd/MM/yyyy' }}</time></td>
+                <td class="um-actions">
+                  <button type="button" class="btn btn-sm" (click)="openEdit(u)" [disabled]="busyId() === u._id"
+                          [attr.aria-label]="('common.edit' | translate) + ': ' + u.name">{{ 'common.edit' | translate }}</button>
+                  <button type="button" class="btn btn-sm" (click)="openPassword(u)" [disabled]="busyId() === u._id"
+                          [attr.aria-label]="('users_manage.set_password' | translate) + ': ' + u.name">{{ 'users_manage.password_short' | translate }}</button>
+                  <button type="button" class="btn btn-sm" (click)="revokeSessions(u)" [disabled]="isSelf(u) || busyId() === u._id"
+                          [attr.aria-label]="('users_manage.revoke' | translate) + ': ' + u.name">{{ 'users_manage.revoke' | translate }}</button>
+                  <button type="button" class="btn btn-sm um-danger" (click)="remove(u)" [disabled]="isSelf(u) || busyId() === u._id"
+                          [attr.aria-label]="('common.delete' | translate) + ': ' + u.name">
+                    {{ 'common.delete' | translate }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @if (totalPages() > 1) {
+        <nav class="um-pager" [attr.aria-label]="'contacts_inbox.pagination' | translate">
+          <button type="button" class="btn btn-sm" [disabled]="page() <= 1 || loading()" (click)="goTo(page() - 1)">←</button>
+          <span>{{ page() }} / {{ totalPages() }}</span>
+          <button type="button" class="btn btn-sm" [disabled]="page() >= totalPages() || loading()" (click)="goTo(page() + 1)">→</button>
+        </nav>
+      }
+    }
+  </section>
+</div>

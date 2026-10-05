@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -13,6 +13,7 @@ import { AuthModalService } from '../../../../core/services/auth-modal.service';
 
 @Component({
   selector: 'app-login',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
@@ -22,8 +23,9 @@ import { AuthModalService } from '../../../../core/services/auth-modal.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() embedded = false;
+  @ViewChild('emailInput') private emailInputRef?: ElementRef<HTMLInputElement>;
 
   form = this.fb.group({
     email:    ['', [Validators.required, Validators.email]],
@@ -45,13 +47,29 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    if (this.auth.isLoggedIn() && this.auth.isAdmin()) {
+    if (!this.auth.isLoggedIn()) {
+      return;
+    }
+
+    if (this.auth.isAdmin()) {
       this.scheduleAdminRedirect();
       return;
     }
 
-    if (this.auth.isLoggedIn() && !this.auth.isAdmin()) {
-      this.auth.logout();
+    // Already logged in as a plain 'user' account: nothing to reject anymore,
+    // just get out of the way of whatever triggered the login UI.
+    if (this.embedded) {
+      this.authModal.closeLogin();
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // Solo se il form resta davvero visibile — ngOnInit reindirizza/chiude subito
+    // chi è già loggato, e mettere a fuoco un campo in procinto di sparire non serve.
+    if (!this.auth.isLoggedIn()) {
+      setTimeout(() => this.emailInputRef?.nativeElement.focus(), 0);
     }
   }
 
@@ -62,6 +80,27 @@ export class LoginComponent implements OnInit, OnDestroy {
   @HostListener('document:keydown.escape')
   onEscapePressed(): void {
     this.closeModal();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro la card finché è aperta come dialog. */
+  onModalTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const card = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      card.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
   }
 
   closeModal(): void {
@@ -97,18 +136,23 @@ export class LoginComponent implements OnInit, OnDestroy {
         // Zoneless: an HTTP callback mutating a plain property schedules no
         // change detection on its own, so the spinner would never clear.
         this.cdr.markForCheck();
-        this.auth.logout();
-        this.snackBar.open(
-          'Questo account non ha accesso alla dashboard admin.',
-          this.translate.instant('common.close'),
-          { duration: 4000 },
-        );
+
+        if (this.embedded) {
+          // Opened from a public /lab tool to unlock saving results — just
+          // close the modal, the caller re-checks auth state on its own.
+          this.authModal.closeLogin();
+        } else {
+          // A plain 'user' account has nothing to do in /dashboard.
+          this.router.navigate(['/']);
+        }
       },
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-        const msg = err?.error?.message
-          || this.translate.instant('auth.login_error');
+        const rawMsg = err?.error?.message;
+        const msg = Array.isArray(rawMsg)
+          ? rawMsg.join(' ')
+          : rawMsg || this.translate.instant('auth.login_error');
         this.snackBar.open(msg, this.translate.instant('common.close'), { duration: 4000 });
       },
     });

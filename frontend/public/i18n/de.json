@@ -15,7 +15,11 @@
     "dashboard": "Dashboard",
     "ai_tools": "KI & Tools",
     "testimonials": "Referenzen",
-    "search": "Suche"
+    "search": "Suche",
+    "open_menu": "Menü öffnen",
+    "back_to_top": "Nach oben",
+    "main_aria": "Hauptnavigation",
+    "bottom_aria": "Schnellnavigation"
   },
   "sidebar": {
     "collapse_menu": "Seitenleiste einklappen",
@@ -37,7 +41,8 @@
       "content": "Inhalt",
       "ai": "KI",
       "workspace": "Workflow",
-      "tools": "Tools"
+      "tools": "Tools",
+      "account": "Konto"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -46,6 +51,7 @@
       "experiences": "Erfahrung",
       "about": "Über mich",
       "testimonials": "Referenzen",
+      "newsletter": "Newsletter",
       "notes": "Notizen",
       "pdf_search": "PDF-Suche",
       "library": "Bibliothek",
@@ -59,7 +65,10 @@
       "editor": "Text-Editor",
       "convert": "Dateikonverter",
       "ocr": "Text aus Bild (OCR)",
-      "scanner": "Dokumentenscanner"
+      "scanner": "Dokumentenscanner",
+      "my_files": "Meine Dateien",
+      "contacts": "Kontakte",
+      "users": "Benutzer"
     }
   },
   "lang": {
@@ -91,11 +100,11 @@
     }
   },
   "hero": {
-    "role": "Senior Front‑End & API Entwickler",
+    "role": "Senior Front-End & API Entwickler",
     "tagline1": "Angular",
     "tagline2": "Webanwendungen",
     "tagline3": "UI/UX & Data Visualization 3D Web",
-    "description": "Ich entwerfe und entwickle skalierbare Anwendungen und Oberflächen mit Angular, JavaScript und führenden Frontend-Bibliotheken. Ich optimiere die Performance durch Reduzierung der Latenz und Verbesserung der Systemreaktionsfähigkeit. Ich liefere zuverlässige und stabile Lösungen, die für unternehmenskritische Umgebungen bereit sind.",
+    "description": "Ich entwerfe und entwickle skalierbare Anwendungen und Oberflächen mit Angular, JavaScript und führenden Frontend-Bibliotheken. Ich optimiere die Performance durch Reduzierung der Latenz und Verbesserung der Systemreaktionsfähigkeit. Ich liefere zuverlässige und stabile Lösungen, die für unternehmenskritische Umgebungen bereit sind. Ich arbeite als Angular Developer und TypeScript Developer für Enterprise-Teams.",
     "kpi_years": "Jahre Erfahrung",
     "kpi_projects": "Abgeschlossene Projekte",
     "kpi_companies": "Enterprise-Unternehmen",
@@ -185,7 +194,11 @@
       "f3": "Integration externer Dienste",
       "f4": "Audit-Trail und Sicherheit"
     },
-    "discover": "Mehr entdecken"
+    "discover": "Mehr entdecken",
+    "read_case_study": "Fallstudie lesen",
+    "filter_label": "Nach Technologie filtern",
+    "filter_all": "Alle",
+    "filter_empty": "Keine Projekte mit dieser Technologie."
   },
   "experience": {
     "tag": "experience",
@@ -343,7 +356,8 @@
     "cookie_link": "Cookie-Richtlinie",
     "manage_cookies": "Cookie-Einwilligung verwalten",
     "legal": "Rechtliches",
-    "navigation": "Footer-Navigation"
+    "navigation": "Footer-Navigation",
+    "guide": "Anleitung"
   },
   "auth": {
     "login_title": "Beim Dashboard anmelden",
@@ -360,6 +374,7 @@
     "confirm_password": "Passwort bestätigen",
     "register_btn": "Registrieren",
     "registering": "Registrierung läuft…",
+    "register_verify_sent": "Konto erstellt! Prüfe deine E-Mails – wir haben dir einen Code zur Bestätigung geschickt.",
     "have_account": "Bereits ein Konto?",
     "sign_in": "Anmelden",
     "email_required": "Gültige E-Mail erforderlich",
@@ -390,10 +405,13 @@
     "otp_resent": "Neuer Code gesendet!",
     "otp_send_failed": "Code konnte nicht gesendet werden. Bitte erneut versuchen.",
     "otp_invalid": "Ungültiger oder abgelaufener Code.",
-    "not_admin": "Dieses Konto hat keinen Admin-Zugriff.",
     "login_error": "Ungültige E-Mail oder Passwort.",
     "login_with_email_password": "Mit E-Mail und Passwort anmelden",
-    "or": "oder"
+    "or": "oder",
+    "show_password": "Passwort anzeigen",
+    "hide_password": "Passwort verbergen",
+    "login_chip_admin": "Admin-Zugang",
+    "login_title_generic": "Anmelden"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -553,14 +571,27 @@
     "export_csv": "CSV exportieren",
     "no_chart_data": "Keine Daten für diesen Zeitraum.",
     "refresh_data": "Aktualisieren",
-    "last_updated": "Aktualisiert"
+    "last_updated": "Aktualisiert",
+    "tool_conversion": "KI-Tools → Leads",
+    "tool_conversion_desc": "Eindeutige Besucher pro Tool in den letzten 30 Tagen und wie viele danach zu einem Kontakt oder Live-Chat wurden",
+    "tool_conversion_col_tool": "Tool",
+    "tool_conversion_col_visitors": "Besucher",
+    "tool_conversion_col_leads": "Zu Lead geworden",
+    "tool_conversion_col_rate": "Quote",
+    "overview_core": "Wichtigste Statistiken",
+    "overview_load_error": "Das Dashboard konnte nicht geladen werden.",
+    "overview_refresh_error": "Aktualisierung fehlgeschlagen: Du siehst die vorherigen Daten.",
+    "overview_partial_error": "Einige Bereiche konnten nicht aktualisiert werden:",
+    "retry": "Erneut versuchen"
   },
   "session": {
     "warning_title": "Sitzung läuft bald ab",
     "warning_body": "Aus Sicherheitsgründen wird Ihre Admin-Sitzung bald beendet, es sei denn, Sie bestätigen, dass Sie noch aktiv sind.",
     "seconds_remaining": "Sekunden verbleibend",
     "stay_logged_in": "Angemeldet bleiben",
-    "logout_now": "Jetzt abmelden"
+    "logout_now": "Jetzt abmelden",
+    "eyebrow": "Sicherheits-Timeout",
+    "warning_body_user": "Aus Sicherheitsgründen endet deine Sitzung in Kürze, wenn du nicht bestätigst, dass du noch aktiv bist."
   },
   "common": {
     "loading": "Wird geladen…",
@@ -574,7 +605,8 @@
     "close": "Schließen",
     "confirm": "Bestätigen",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "unsaved_confirm": "Du hast ungespeicherte Änderungen. Verlassen und verwerfen?"
   },
   "services": {
     "tag": "services",
@@ -586,8 +618,8 @@
       "cta": "Kostenlos testen"
     },
     "frontend": {
-      "title": "Front‑End Entwicklung",
-      "desc": "Skalierbare Angular-Anwendungen mit TypeScript, RxJS und Best-Practice-Architektur. Von Greenfield-Projekten bis zu Legacy-Migrationen.",
+      "title": "Front-End Entwicklung",
+      "desc": "Skalierbare Angular-Anwendungen mit TypeScript, RxJS und Best-Practice-Architektur. Von Greenfield-Projekten bis zu Legacy-Migrationen. Der richtige Service, wenn Sie einen Angular Developer oder TypeScript Developer für Ihr Team suchen.",
       "cta": "Mehr erfahren"
     },
     "web3d": {
@@ -624,6 +656,8 @@
   "blog": {
     "readMore": "Weiterlesen",
     "loadMore": "Mehr laden",
+    "tags_more": "Alle Tags anzeigen (+{{count}})",
+    "tags_less": "Weniger Tags anzeigen",
     "views_singular": "{{count}} Aufruf",
     "views_plural": "{{count}} Aufrufe",
     "empty": {
@@ -641,7 +675,16 @@
       "instagram": "Auf Instagram teilen",
       "copyLink": "Link kopieren",
       "linkCopied": "Link kopiert!"
-    }
+    },
+    "reading_time": "{{count}} Min. Lesezeit",
+    "toc_title": "In diesem Artikel",
+    "related_title": "Weiterlesen",
+    "related_subtitle": "Weitere Artikel zu denselben Themen",
+    "copy_code": "Kopieren",
+    "copied": "Kopiert!",
+    "copy_failed": "Kopieren fehlgeschlagen",
+    "copy_section_link": "Link zum Abschnitt kopieren",
+    "link_copied": "Abschnittslink kopiert"
   },
   "notes": {
     "title": "Leser-Notizen",
@@ -766,6 +809,41 @@
     "edit_content": "Text bearbeiten",
     "content_updated": "Text aktualisiert."
   },
+  "newsletter": {
+    "title": "Verpasse keine neuen Artikel",
+    "subtitle": "Eine E-Mail, wenn ich etwas Neues im Blog veröffentliche. Kein Spam.",
+    "email_placeholder": "Deine E-Mail",
+    "subscribe_btn": "Abonnieren",
+    "subscribe_success": "Prüfe deine E-Mails: wir haben dir einen Link zur Bestätigung geschickt.",
+    "subscribe_error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+    "confirm_loading": "Abonnement wird bestätigt…",
+    "confirm_success_title": "Abonnement bestätigt!",
+    "confirm_success_message": "Du erhältst ab jetzt eine E-Mail, sobald ich einen neuen Artikel veröffentliche.",
+    "confirm_error_title": "Ungültiger Link",
+    "confirm_error_message": "Dieser Bestätigungslink ist ungültig oder abgelaufen. Versuche dich erneut anzumelden.",
+    "unsubscribe_loading": "Abmeldung läuft…",
+    "unsubscribe_success_title": "Abgemeldet",
+    "unsubscribe_success_message": "Du erhältst keine Newsletter-E-Mails mehr. Du kannst dich jederzeit wieder anmelden.",
+    "unsubscribe_error_title": "Ungültiger Link",
+    "unsubscribe_error_message": "Dieser Link ist ungültig oder das Abonnement existiert nicht mehr.",
+    "back_to_blog": "Zurück zum Blog"
+  },
+  "newsletter_manage": {
+    "title": "Newsletter",
+    "export_csv": "CSV exportieren",
+    "status_all": "Alle",
+    "status_pending": "Ausstehend",
+    "status_confirmed": "Bestätigt",
+    "status_unsubscribed": "Abgemeldet",
+    "empty": "Keine Abonnenten in dieser Kategorie.",
+    "load_error": "Abonnenten konnten nicht geladen werden.",
+    "confirm_delete": "{{email}} endgültig löschen?",
+    "deleted": "Abonnent gelöscht.",
+    "delete_error": "Löschen fehlgeschlagen. Bitte versuche es erneut.",
+    "export_error": "Export fehlgeschlagen. Bitte versuche es erneut.",
+    "prev_page": "Zurück",
+    "next_page": "Weiter"
+  },
   "chatbot_ui": {
     "title": "KI-Assistent",
     "online": "Online",
@@ -792,7 +870,10 @@
     "chip_who": "👋 Wer ist Gent?",
     "chip_skills": "🛠 Was sind seine Fähigkeiten?",
     "chip_projects": "📁 Zeig mir seine Projekte",
-    "chip_contact": "📬 Wie kann ich ihn kontaktieren?"
+    "chip_contact": "📬 Wie kann ich ihn kontaktieren?",
+    "live_offer_cta": "💬 Jetzt mit Gent chatten",
+    "unread_badge": "{{count}} ungelesene Nachrichten",
+    "new_messages": "Neue Nachrichten"
   },
   "live_handoff": {
     "prompt_title": "Möchten Sie direkt mit Gent sprechen?",
@@ -890,7 +971,12 @@
     "err_file_type": "Als Kontext werden nur PDF-, TXT- oder DOCX-Dateien unterstützt.",
     "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
     "err_generic": "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
-    "err_truncated": "Der Inhalt einiger Folien wurde beim PDF-Export aus Platzgründen abgeschnitten. Kürze den Text und erstelle die Folien erneut."
+    "err_truncated": "Der Inhalt einiger Folien wurde beim PDF-Export aus Platzgründen abgeschnitten. Kürze den Text und erstelle die Folien erneut.",
+    "remove_context_file": "Datei entfernen",
+    "prev_slide": "Vorherige Folie",
+    "next_slide": "Nächste Folie",
+    "seo_title": "KI-Präsentationsgenerator — Folien mit Künstlicher Intelligenz Erstellen",
+    "seo_description": "Erstelle eine vollständige professionelle Präsentation zu jedem Thema in Sekunden. Bis zu 20 Folien mit Titeln, Stichpunkten, Sprechernotizen und 5 Stilen. Kostenlos online."
   },
   "ai_formatter": {
     "title": "KI-Formatierer",
@@ -944,7 +1030,9 @@
     "dismiss_draft": "Entwurf verwerfen",
     "textarea_placeholder": "Füge hier deinen unformatierten Text ein...\n\n✦ Besprechungsnotizen, Rohinhalt, KI-Ausgabe, E-Mails...\n✦ Oder klicke auf „Beispiel verwenden“ für eine Demo",
     "copied": "Kopiert",
-    "copy": "Kopieren"
+    "copy": "Kopieren",
+    "seo_title": "KI-Textformatierer — Von Notizen zum Professionellen Dokument",
+    "seo_description": "Verwandle Notizen, unformatierten Text oder KI-Inhalte sofort in strukturierte, professionelle Dokumente. Berichte, Angebote, Lebensläufe, Artikel und mehr. Kostenloser KI-Formatierer online."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -977,7 +1065,9 @@
     "err_file_type": "Nicht unterstütztes Format. Erlaubt sind PDF, Word (.docx/.doc), TXT und HTML.",
     "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
     "err_generic": "Bei der Analyse der Datei ist ein Fehler aufgetreten.",
-    "remove_file": "Datei entfernen"
+    "remove_file": "Datei entfernen",
+    "seo_title": "KI-PDF-Zusammenfassung — Kernpunkte aus Jedem Dokument",
+    "seo_description": "Lade ein PDF, Word- oder TXT-Dokument hoch und erhalte sofort eine KI-Zusammenfassung. Kurzfassung, detaillierte Analyse oder Kernpunkte. Kostenloser KI-Dokumenten-Zusammenfasser online."
   },
   "workspace": {
     "badge": "Neu",
@@ -995,7 +1085,9 @@
     "start_here": "Start-Tools",
     "persistence_hint": "Nicht gespeichert: geht beim Neuladen oder Schließen dieses Tabs verloren.",
     "feedback_cleared": "Aus Workspace entfernt",
-    "feedback_downloaded": "Download gestartet"
+    "feedback_downloaded": "Download gestartet",
+    "seo_title": "Workflow — KI- und PDF-Tools Miteinander Verketten",
+    "seo_description": "Sende eine Datei oder Text von einem Tool zum nächsten, ohne erneut hochzuladen. Scannen, extrahieren, übersetzen und zusammenfassen in einem verbundenen Ablauf."
   },
   "pdf_translate": {
     "title": "PDF-Übersetzung",
@@ -1069,7 +1161,9 @@
     "err_no_file": "Bitte wähle eine Datei aus.",
     "err_generic": "Übersetzung fehlgeschlagen. Bitte versuche es erneut.",
     "upload_aria": "Eine PDF-Datei hochladen",
-    "remove_file": "Datei entfernen"
+    "remove_file": "Datei entfernen",
+    "seo_title": "KI-PDF-Übersetzer — Übersetzung mit Erhaltenen Seiten",
+    "seo_description": "Übersetze jedes PDF in 12 Sprachen bei gleichbleibender Seitenzahl und Formatierung. KI-Übersetzung auf Enterprise-Niveau mit GPT-4o. Kostenlos online, keine Anmeldung."
   },
   "pdf_search": {
     "title": "PDF-Suche",
@@ -1134,7 +1228,11 @@
     "preview_timeout": "Die Vorschau lädt zu lange. Lade die PDF herunter, um sie zu lesen.",
     "err_search": "Die Suche ist fehlgeschlagen. Bitte versuche es erneut.",
     "err_workspace_send": "Senden an Workspace fehlgeschlagen. Bitte versuche es erneut.",
-    "err_library_save": "Speichern in der Bibliothek fehlgeschlagen. Bitte versuche es erneut."
+    "err_library_save": "Speichern in der Bibliothek fehlgeschlagen. Bitte versuche es erneut.",
+    "preview_prev_page": "Vorherige Seite",
+    "preview_next_page": "Nächste Seite",
+    "seo_title": "PDF-Suchmaschine für Gemeinfreie Werke — Bücher ohne Urheberrecht",
+    "seo_description": "Suche und lade gemeinfreie Bücher, wissenschaftliche Paper und Open-Access-Artikel herunter, ohne Urheberrechtsprobleme. Durchsuche Internet Archive, Project Gutenberg, arXiv und PubMed Central mit Vorschau vor dem Download."
   },
   "convert": {
     "title": "Konverter",
@@ -1244,7 +1342,9 @@
     "workspace_banner_dismiss": "Ignorieren",
     "workspace_send": "An Workspace senden",
     "workspace_sent": "Gesendet ✓",
-    "blog_link": "Leitfaden: PDF in Word umwandeln, ohne die Formatierung zu verlieren"
+    "blog_link": "Leitfaden: PDF in Word umwandeln, ohne die Formatierung zu verlieren",
+    "seo_title": "Kostenloser Dateikonverter — PDF, Word, Excel, Bilder",
+    "seo_description": "Konvertiere zwischen PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG und mehr — {{count}} Konvertierungsarten, kostenlos, im Browser. Keine Anmeldung."
   },
   "ocr": {
     "title": "OCR — Texterkennung",
@@ -1283,7 +1383,9 @@
     "send_workspace": "An Workspace senden",
     "sent": "Gesendet ✓",
     "save_library": "In Bibliothek speichern",
-    "saved_library": "In Bibliothek gespeichert"
+    "saved_library": "In Bibliothek gespeichert",
+    "seo_title": "Kostenloses Online-OCR — Text aus Bildern und Gescannten PDFs",
+    "seo_description": "Extrahiere Text aus Fotos, gescannten Dokumenten und PDFs in 7 Sprachen. Kostenloses Online-OCR, keine Anmeldung."
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1314,7 +1416,11 @@
     "pdf_search_title": "PDF-Suche",
     "pdf_search_desc": "Suche gemeinfreie PDF-Bücher und -Dokumente mit Vorschau vor dem Download.",
     "library_title": "Meine Bibliothek",
-    "library_desc": "PDFs im Browser behalten, ihren Inhalt durchsuchen, Anmerkungen setzen und den Dokumenten Fragen stellen."
+    "library_desc": "PDFs im Browser behalten, ihren Inhalt durchsuchen, Anmerkungen setzen und den Dokumenten Fragen stellen.",
+    "my_files_title": "Meine Dateien",
+    "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast",
+    "seo_title": "Kostenlose PDF- & KI-Tools — Übersetzung, Zusammenfassung, Präsentationen",
+    "seo_description": "Kostenlose Online-Tools mit KI: PDF-Übersetzer, Präsentationsgenerator, Textformatierer und PDF-Zusammenfasser. Professionelle Dokumententools mit GPT-4o. Keine Anmeldung."
   },
   "about_manage": {
     "title": "About-Bereich",
@@ -1376,7 +1482,16 @@
     "saved": "Projekt gespeichert!",
     "save_error": "Projekt konnte nicht gespeichert werden.",
     "confirm_delete": "Dieses Projekt löschen?",
-    "deleted": "Projekt gelöscht."
+    "deleted": "Projekt gelöscht.",
+    "case_study": "Fallstudie",
+    "case_study_hint": "Wenn mindestens ein Feld ausgefüllt ist, erhält das Projekt eine eigene Seite /projects/<slug>.",
+    "problem_label": "Problem des Kunden",
+    "solution_label": "Umgesetzte Lösung",
+    "results_label": "Ergebnisse (messbar)",
+    "reorder_hint": "Zeilen ziehen oder Pfeile nutzen, um die Reihenfolge zu ändern: sie wird sofort gespeichert.",
+    "move_up": "Nach oben",
+    "move_down": "Nach unten",
+    "reorder_error": "Reihenfolge nicht gespeichert, die vorherige wurde wiederhergestellt."
   },
   "editor": {
     "title": "Dokumenteneditor",
@@ -1415,7 +1530,9 @@
     "workspace_banner_dismiss": "Ignorieren",
     "workspace_send": "An Workspace senden",
     "workspace_sent": "Gesendet ✓",
-    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}"
+    "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
+    "seo_title": "Kostenloser Online-Dokumenteneditor — Export als PDF & DOCX",
+    "seo_description": "Schreibe und formatiere Dokumente im Browser, importiere Word-Dateien und exportiere als PDF, DOCX oder HTML. Kostenlos, keine Anmeldung."
   },
   "pdf_editor": {
     "title": "PDF-Editor",
@@ -1448,7 +1565,9 @@
     "move_left": "Nach links verschieben",
     "move_right": "Nach rechts verschieben",
     "delete": "Löschen",
-    "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren."
+    "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
+    "seo_title": "Kostenloser PDF-Editor — Zusammenführen, Teilen, Drehen & Wasserzeichen",
+    "seo_description": "PDFs zusammenführen, Seiten teilen und extrahieren, Seiten drehen oder löschen und Wasserzeichen hinzufügen — komplett im Browser, Dateien verlassen nie dein Gerät."
   },
   "viewer": {
     "title": "PDF-Betrachter",
@@ -1482,7 +1601,9 @@
     "zoom_out": "Verkleinern",
     "zoom_in": "Vergrößern",
     "prev_match": "Vorheriger Treffer",
-    "next_match": "Nächster Treffer"
+    "next_match": "Nächster Treffer",
+    "seo_title": "Kostenloser PDF-Viewer Online — Zoom, Suche & Miniaturansichten",
+    "seo_description": "Betrachte PDF-Dokumente im Browser: Seitennavigation, Zoom, Volltextsuche und Miniaturansicht. Kostenlos, privat, kein Upload."
   },
   "scanner": {
     "title": "Dokumentenscanner",
@@ -1534,7 +1655,9 @@
     "delete": "Löschen",
     "page_alt": "Seite {{n}}",
     "err_camera_unsupported": "Kamera in diesem Browser nicht verfügbar oder unsichere Verbindung (HTTPS erforderlich). Du kannst trotzdem ein Bild hochladen.",
-    "persistence_hint": "Erfasste Seiten werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren."
+    "persistence_hint": "Erfasste Seiten werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
+    "seo_title": "Kostenloser Dokumentenscanner — Von der Kamera zum PDF Online",
+    "seo_description": "Scanne Dokumente mit Webcam oder Handykamera, schneide und verbessere sie, exportiere sie als PDF. Kostenlos, keine Anmeldung."
   },
   "library": {
     "badge": "Neu",
@@ -1590,7 +1713,9 @@
     "chat_send": "Senden",
     "chat_no_context": "In den indexierten Dokumenten habe ich nichts Passendes gefunden.",
     "chat_error": "Die Antwort ist fehlgeschlagen. Versuch es erneut.",
-    "import_skipped": "{{count}} Datei(en) übersprungen: In die Bibliothek können nur PDFs importiert werden."
+    "import_skipped": "{{count}} Datei(en) übersprungen: In die Bibliothek können nur PDFs importiert werden.",
+    "seo_title": "Meine PDF-Bibliothek — Persönliches Archiv mit Suche und KI-Chat",
+    "seo_description": "Speichere gefundene PDFs, durchsuche sie Seite für Seite, kommentiere sie und stelle Fragen zu deinen Dokumenten. Alles bleibt im Browser, nichts wird hochgeladen."
   },
   "blog_manage": {
     "title": "Blogbeiträge",
@@ -1679,7 +1804,13 @@
     "cover_data_url_unsupported": "Verwende eine Bild-URL für das Titelbild. Direkter Datei-Upload wird nicht unterstützt.",
     "err_payload_too_large": "Inhalt zu groß. Eingebettete Bilder entfernen und Bild-URLs verwenden.",
     "err_session_expired": "Sitzung abgelaufen. Bitte erneut anmelden.",
-    "err_save_failed_default": "Speichern fehlgeschlagen. Titel, Inhalt und Slug prüfen."
+    "err_save_failed_default": "Speichern fehlgeschlagen. Titel, Inhalt und Slug prüfen.",
+    "action_unpublish": "Zurück in den Entwurf",
+    "unpublished_msg": "Artikel wieder im Entwurf (Aufrufe bleiben erhalten)",
+    "filter_label": "Nach Status filtern",
+    "filter_all": "Alle",
+    "empty_drafts": "Keine Entwürfe.",
+    "empty_published": "Keine veröffentlichten Artikel."
   },
   "privacy": {
     "title": "Datenschutzerklärung",
@@ -1736,5 +1867,287 @@
     "manage_body": "Sie können Ihre Einwilligung jederzeit über den Link „Cookie-Einwilligung verwalten\" in der Fußzeile der Website ändern oder widerrufen, oder indem Sie Cookies in Ihrem Browser löschen.",
     "browser_title": "Browser-Einstellungen",
     "browser_body": "Sie können Cookies auch direkt über die Einstellungen Ihres Browsers verwalten oder löschen (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Im Konto speichern",
+    "save_cta_short": "Speichern",
+    "saving_cta": "Wird gespeichert...",
+    "saved_cta": "Gespeichert ✓",
+    "save_sub": "Später unter „Meine Dateien\" wiederfinden",
+    "save_error": "Speichern fehlgeschlagen. Bitte erneut versuchen.",
+    "login_prompt_title": "Anmelden, um Ergebnisse zu speichern",
+    "login_prompt_body": "Erstelle ein kostenloses Konto, um deine generierten Dateien jederzeit wiederzufinden.",
+    "page_title": "Meine Dateien",
+    "page_subtitle": "Ergebnisse, die du aus den KI-Tools gespeichert hast",
+    "empty_title": "Noch keine gespeicherten Dateien",
+    "empty_body": "Ergebnisse, die du aus den KI-Tools speicherst, erscheinen hier.",
+    "login_required_title": "Anmelden, um deine Dateien zu sehen",
+    "login_required_body": "Dateien, die du speicherst, bleiben mit deinem Konto verknüpft.",
+    "login_button": "Anmelden",
+    "open": "Öffnen",
+    "delete": "Löschen",
+    "confirm_delete": "Diese gespeicherte Datei löschen?",
+    "seo_title": "Meine Dateien — Gespeicherte Ergebnisse der KI-Tools",
+    "seo_description": "Finde die Dateien und Ergebnisse, die du von den KI-Tools von gentsallaku.it gespeichert hast."
+  },
+  "account_modal": {
+    "badge_admin": "Admin",
+    "status_label": "Status",
+    "status_active": "Sitzung aktiv",
+    "role_label": "Rolle",
+    "role_admin": "Administrator",
+    "role_user": "Benutzer"
+  },
+  "ai_assistant": {
+    "clear_chat": "Unterhaltung löschen",
+    "messages_log": "Nachrichten",
+    "suggested_prompts": "Vorgeschlagene Fragen",
+    "copy": "Kopieren",
+    "copied": "Kopiert!",
+    "copy_message": "Nachricht kopieren",
+    "typing": "Die KI schreibt",
+    "message_input": "Nachrichtenfeld",
+    "send_message": "Nachricht senden"
+  },
+  "request": {
+    "uploading": "Datei wird hochgeladen…",
+    "processing": "Wird verarbeitet…",
+    "cancel": "Abbrechen",
+    "cancelled": "Vorgang abgebrochen."
+  },
+  "project_detail": {
+    "not_found": "Projekt nicht gefunden",
+    "load_error": "Das Projekt konnte nicht geladen werden.",
+    "back": "Alle Projekte",
+    "stack": "Verwendete Technologien",
+    "live": "Live ansehen",
+    "repo": "Quellcode",
+    "problem": "Das Problem",
+    "solution": "Die Lösung",
+    "results": "Die Ergebnisse",
+    "cta_text": "Hast du ein ähnliches Projekt?",
+    "cta_button": "Lass uns sprechen",
+    "related_title": "Weitere Fallstudien"
+  },
+  "translations_editor": {
+    "title": "Übersetzungen",
+    "hint": "Leere Felder zeigen auf der Website den italienischen Text.",
+    "auto": "Leere Felder aus dem Italienischen übersetzen",
+    "translating": "Wird übersetzt…",
+    "error": "Automatische Übersetzung fehlgeschlagen: erneut versuchen oder manuell ausfüllen."
+  },
+  "contacts_inbox": {
+    "title": "Kontaktnachrichten",
+    "total": "{{count}} Nachrichten",
+    "search_placeholder": "Nach Name, E-Mail, Betreff oder Text suchen…",
+    "filter_label": "Nachrichten filtern",
+    "filter_all": "Alle",
+    "load_error": "Nachrichten konnten nicht geladen werden.",
+    "empty": "Keine Nachrichten erhalten.",
+    "empty_filtered": "Keine Nachricht entspricht den Filtern.",
+    "select_all": "Alle auf der Seite auswählen",
+    "select": "Auswählen",
+    "pagination": "Seitennavigation",
+    "replied_at": "Beantwortet am {{date}}",
+    "action_error": "Aktion fehlgeschlagen, bitte erneut versuchen."
+  },
+  "users_manage": {
+    "title": "Registrierte Benutzer",
+    "total": "{{count}} Benutzer",
+    "search_placeholder": "Nach Name, E-Mail oder Telefon suchen…",
+    "role_filter": "Nach Rolle filtern",
+    "all_roles": "Alle Rollen",
+    "load_error": "Benutzer konnten nicht geladen werden.",
+    "empty": "Keine Benutzer gefunden.",
+    "col_name": "Name",
+    "col_contact": "E-Mail / Telefon",
+    "col_role": "Rolle",
+    "col_created": "Registriert am",
+    "col_actions": "Aktionen",
+    "you": "du",
+    "verified": "E-Mail bestätigt",
+    "confirm_role": "Rolle von {{name}} auf „{{role}}“ ändern?",
+    "confirm_delete": "Benutzer {{name}} endgültig löschen?",
+    "action_error": "Aktion fehlgeschlagen.",
+    "new": "Neuer Benutzer",
+    "edit_title": "Benutzer bearbeiten",
+    "phone": "Telefon (optional)",
+    "password_optional": "Passwort (optional)",
+    "password_hint": "Mindestens 8 Zeichen mit Groß- und Kleinbuchstaben, Ziffer und Symbol. Ohne Passwort meldet sich der Benutzer mit einem E-Mail-Code an.",
+    "save": "Speichern",
+    "created": "Benutzer erstellt.",
+    "updated": "Benutzer aktualisiert.",
+    "password_title": "Neues Passwort für {{name}}",
+    "password_effect": "Der Benutzer wird auf allen Geräten abgemeldet.",
+    "new_password": "Neues Passwort",
+    "set_password": "Passwort festlegen",
+    "password_short": "Passwort",
+    "password_set": "Passwort von {{name}} aktualisiert.",
+    "revoke": "Abmelden",
+    "confirm_revoke": "{{name}} auf allen Geräten abmelden?",
+    "sessions_revoked": "{{name}} wurde abgemeldet.",
+    "err_name": "Der Name ist erforderlich.",
+    "err_email": "Gib eine gültige E-Mail-Adresse ein.",
+    "err_phone": "Telefon im internationalen Format, z. B. +393331234567.",
+    "err_password": "Das Passwort erfüllt die Anforderungen nicht."
+  },
+  "notifications": {
+    "label": "Benachrichtigungen",
+    "recent": "Letzte Ereignisse",
+    "empty": "Nichts ausstehend.",
+    "offline": "Live-Updates nicht verfügbar: Zähler werden beim Öffnen aktualisiert.",
+    "live_waiting": "Wartende Live-Chats",
+    "contacts_unread": "Ungelesene Nachrichten",
+    "testimonials_pending": "Zu moderierende Referenzen",
+    "notes_pending": "Zu moderierende Notizen",
+    "type_contact": "Neue Nachricht",
+    "type_testimonial": "Neue Referenz",
+    "type_note": "Neue Notiz",
+    "type_live_handoff": "Live-Chat angefragt"
+  },
+  "newsletter_campaigns": {
+    "title": "Kampagnen",
+    "new": "Neue Kampagne",
+    "subject": "Betreff",
+    "body": "Inhalt (HTML)",
+    "body_placeholder": "<h1>Titel</h1><p>Text…</p>",
+    "body_hint": "Skripte und Formulare werden entfernt. Der Abmeldelink wird automatisch hinzugefügt.",
+    "preview": "Vorschau",
+    "save_draft": "Entwurf speichern",
+    "saved": "Entwurf gespeichert.",
+    "err_incomplete": "Betreff (mind. 3 Zeichen) und Inhalt (mind. 10) sind erforderlich.",
+    "err_schedule_past": "Wähle ein zukünftiges Datum für die Planung.",
+    "send_test": "Test senden",
+    "test_email": "Test-E-Mail-Adresse",
+    "test_sent": "Test an {{email}} gesendet.",
+    "test_failed": "Testversand fehlgeschlagen: E-Mail-Konfiguration prüfen.",
+    "test_done": "Test gesendet",
+    "send_now": "Jetzt senden",
+    "schedule": "Planen",
+    "schedule_at": "Versanddatum und -uhrzeit",
+    "confirm_send": "„{{subject}}“ jetzt an alle bestätigten Abonnenten senden?",
+    "confirm_schedule": "„{{subject}}“ für alle bestätigten Abonnenten planen?",
+    "confirm_cancel": "Kampagne „{{subject}}“ abbrechen? Bereits gesendete E-Mails können nicht zurückgeholt werden.",
+    "confirm_delete": "Entwurf „{{subject}}“ löschen?",
+    "queued": "Kampagne für {{count}} Abonnenten eingereiht.",
+    "cancelled": "Kampagne abgebrochen.",
+    "cancel": "Versand abbrechen",
+    "load_error": "Kampagnen konnten nicht geladen werden.",
+    "empty": "Noch keine Kampagnen. Erstelle eine, um deinen Abonnenten zu schreiben.",
+    "action_error": "Aktion fehlgeschlagen.",
+    "progress": "Versandfortschritt",
+    "stats": "{{sent}} gesendet, {{failed}} fehlgeschlagen von {{total}}",
+    "scheduled_for": "Geplant für {{date}}",
+    "sent_at": "Gesendet am {{date}}",
+    "status_draft": "Entwurf",
+    "status_scheduled": "Geplant",
+    "status_sending": "Wird gesendet",
+    "status_sent": "Gesendet",
+    "status_cancelled": "Abgebrochen"
+  },
+  "palette": {
+    "placeholder": "Seiten, Artikel, Aktionen suchen…",
+    "section_actions": "Aktionen",
+    "section_pages": "Seiten",
+    "section_content": "Inhalte",
+    "action_theme": "Helles/dunkles Design umschalten",
+    "action_contact": "Kontakt aufnehmen",
+    "action_lab": "Lab öffnen (KI- und PDF-Tools)",
+    "action_new_post": "Neuer Artikel",
+    "action_new_project": "Neues Projekt",
+    "action_inbox": "Kontaktnachrichten öffnen",
+    "action_logout": "Abmelden",
+    "footer_hint": "↑↓ zum Wählen · Enter zum Öffnen · Strg+K oder / zum Aufrufen",
+    "action_copy_link": "Link dieser Seite kopieren",
+    "action_install": "Website als App installieren",
+    "action_language": "Sprache: {{lang}}",
+    "action_language_detail": "Sprache wechseln · language",
+    "link_copied": "Link kopiert",
+    "copy_failed": "Kopieren fehlgeschlagen"
+  },
+  "theme": {
+    "name_light": "helles Design",
+    "name_dark": "dunkles Design",
+    "name_system": "System-Design",
+    "current_light": "Helles Design aktiv. Wechseln zu {{next}}",
+    "current_dark": "Dunkles Design aktiv. Wechseln zu {{next}}",
+    "current_system": "System-Design aktiv. Wechseln zu {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} von {{total}}",
+    "next": "Weiter",
+    "back": "Zurück",
+    "skip": "Tutorial überspringen",
+    "done": "Fertig",
+    "steps": {
+      "welcome": {
+        "title": "Willkommen!",
+        "body": "In wenigen Schritten zeige ich Ihnen, wie Sie sich auf der Website zurechtfinden: Menü, Inhalte und Assistent. Sie können die Anleitung jederzeit überspringen."
+      },
+      "navigation": {
+        "title": "Navigation",
+        "body": "Über dieses Menü erreichen Sie alle Bereiche der Website und alle kostenlosen Tools im Lab."
+      },
+      "group_ai": {
+        "title": "KI-Tools",
+        "body": "PDF-Suche, Bibliothek, Zusammenfassung, Formatierer, Übersetzung und Folien-Generator: künstliche Intelligenz für Ihre Dokumente."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Geben Sie das Ergebnis eines Tools direkt an das nächste weiter, ohne Dateien herunter- und wieder hochzuladen."
+      },
+      "group_account": {
+        "title": "Meine Dateien",
+        "body": "Hier finden Sie die Ergebnisse, die Sie aus den Tools gespeichert haben, verknüpft mit Ihrem Konto."
+      },
+      "group_tools": {
+        "title": "PDF- und Dokument-Tools",
+        "body": "PDFs organisieren und anzeigen, im Editor schreiben, Formate konvertieren, Text per OCR extrahieren und Dokumente mit der Kamera scannen."
+      },
+      "main": {
+        "title": "Hauptinhalt",
+        "body": "In der Mitte sehen Sie den Inhalt der aktuellen Seite: Projekte, Leistungen und Artikel auf der Startseite; im Lab den Arbeitsbereich des gewählten Tools."
+      },
+      "chatbot": {
+        "title": "Virtueller Assistent",
+        "body": "Eine Frage? Tippen Sie hier, um mit dem Assistenten über Leistungen, Projekte und Tools zu chatten. Bei Bedarf können Sie direkt mit Gent sprechen."
+      },
+      "finish": {
+        "title": "Alles bereit!",
+        "body": "Sie können diese Anleitung jederzeit über den Link „Anleitung“ unten auf der Seite erneut ansehen."
+      }
+    }
+  },
+  "offline": {
+    "banner": "Du bist offline. Bereits gelesene Artikel bleiben verfügbar.",
+    "see_articles": "Artikel ansehen",
+    "back_online": "Wieder online",
+    "list_unavailable": "Du bist offline: Die Artikelliste ist nicht verfügbar",
+    "load_error": "Die Artikel konnten nicht geladen werden",
+    "recent_title": "Diese hast du bereits gelesen und kannst sie auch ohne Verbindung öffnen:",
+    "no_recent": "Geöffnete Artikel werden zum Offline-Lesen gespeichert.",
+    "retry": "Erneut versuchen"
+  },
+  "install": {
+    "title": "Installiere das Lab als App",
+    "text": "Öffne die PDF- und KI-Tools mit einem Tipp, im Vollbild und offline für bereits besuchte Seiten.",
+    "ios_text_before": "Tippe auf",
+    "ios_share": "Teilen",
+    "ios_text_after": "und dann „Zum Home-Bildschirm“.",
+    "cta": "Installieren",
+    "later": "Nicht jetzt"
+  },
+  "lab_next": {
+    "ready": "„{{name}}“ ist bereit.",
+    "continue_with": "Weiter mit:",
+    "close": "Vorschläge schließen",
+    "resume_title": "Dort weitermachen, wo du aufgehört hast",
+    "pending": "„{{name}}“ liegt im Workspace bereit. Öffnen in:"
+  },
+  "lab_drop": {
+    "hint": "Zieh eine Datei irgendwo auf die Seite und ich schlage dir die passenden Tools vor. Sie bleibt in deinem Browser.",
+    "pick": "Datei auswählen",
+    "release": "Lass die Datei los, um zu sehen, was du damit machen kannst",
+    "only_first": "Nur die erste Datei wird verwendet ({{count}} ignoriert)."
   }
 }

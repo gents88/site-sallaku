@@ -4,10 +4,13 @@ test('homepage loads with navigation and theme toggle', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle(/Gent Sallaku/i);
-  await expect(page.getByRole('navigation')).toBeVisible();
-  await expect(page.getByRole('link', { name: /projects/i })).toBeVisible();
+  // Più landmark di navigazione (principale, rapida, sidebar): ognuno ha la sua etichetta.
+  await expect(page.locator('nav.navbar')).toBeVisible();
+  // Lingua di default italiana; il link compare sia in navbar sia nella tab bar.
+  await expect(page.getByRole('link', { name: /progetti|projects/i }).first()).toBeVisible();
 
-  const themeToggle = page.getByRole('button', { name: /dark mode|light mode/i }).first();
+  // Etichetta tradotta e a tre stati (chiaro/scuro/sistema), es. "Tema di sistema attivo. Passa a…".
+  const themeToggle = page.locator('app-theme-toggle button').first();
   await expect(themeToggle).toBeVisible();
 });
 

@@ -15,7 +15,11 @@
     "dashboard": "Dashboard",
     "ai_tools": "IA & Ferramentas",
     "testimonials": "Depoimentos",
-    "search": "Pesquisar"
+    "search": "Pesquisar",
+    "open_menu": "Abrir menu",
+    "back_to_top": "Voltar ao topo",
+    "main_aria": "Navegação principal",
+    "bottom_aria": "Navegação rápida"
   },
   "sidebar": {
     "collapse_menu": "Recolher o menu lateral",
@@ -37,7 +41,8 @@
       "content": "Conteúdo",
       "ai": "IA",
       "workspace": "Fluxo de trabalho",
-      "tools": "Ferramentas"
+      "tools": "Ferramentas",
+      "account": "Conta"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -46,6 +51,7 @@
       "experiences": "Experiência",
       "about": "Sobre mim",
       "testimonials": "Depoimentos",
+      "newsletter": "Newsletter",
       "notes": "Notas",
       "pdf_search": "Buscar PDF",
       "library": "Biblioteca",
@@ -59,7 +65,10 @@
       "editor": "Editor de Texto",
       "convert": "Conversor de Arquivos",
       "ocr": "Texto de Imagem (OCR)",
-      "scanner": "Scanner de Documentos"
+      "scanner": "Scanner de Documentos",
+      "my_files": "Os meus ficheiros",
+      "contacts": "Contactos",
+      "users": "Utilizadores"
     }
   },
   "lang": {
@@ -91,11 +100,11 @@
     }
   },
   "hero": {
-    "role": "Desenvolvedor Sênior Front‑End & API",
+    "role": "Desenvolvedor Sênior Front-End & API",
     "tagline1": "Angular",
     "tagline2": "Aplicações Web",
     "tagline3": "UI/UX & Data Visualization 3D Web",
-    "description": "Projeto e desenvolvo aplicações e interfaces escaláveis com Angular, JavaScript e as principais bibliotecas frontend. Otimizo a performance reduzindo a latência e melhorando a capacidade de resposta dos sistemas. Entrego soluções confiáveis e estáveis prontas para ambientes enterprise de missão crítica.",
+    "description": "Projeto e desenvolvo aplicações e interfaces escaláveis com Angular, JavaScript e as principais bibliotecas frontend. Otimizo a performance reduzindo a latência e melhorando a capacidade de resposta dos sistemas. Entrego soluções confiáveis e estáveis prontas para ambientes enterprise de missão crítica. Atuo como Angular Developer e TypeScript Developer para equipes enterprise.",
     "kpi_years": "Anos de experiência",
     "kpi_projects": "Projetos concluídos",
     "kpi_companies": "Empresas enterprise",
@@ -185,7 +194,11 @@
       "f3": "Integração de serviços externos",
       "f4": "Audit trail e segurança"
     },
-    "discover": "Descobrir mais"
+    "discover": "Descobrir mais",
+    "read_case_study": "Ler o estudo de caso",
+    "filter_label": "Filtrar por tecnologia",
+    "filter_all": "Todos",
+    "filter_empty": "Nenhum projeto com esta tecnologia."
   },
   "experience": {
     "tag": "experience",
@@ -343,7 +356,8 @@
     "cookie_link": "Política de Cookies",
     "manage_cookies": "Gerir consentimento de cookies",
     "legal": "Legal",
-    "navigation": "Navegação do rodapé"
+    "navigation": "Navegação do rodapé",
+    "guide": "Guia"
   },
   "auth": {
     "login_title": "Entrar no Dashboard",
@@ -360,6 +374,7 @@
     "confirm_password": "Confirmar senha",
     "register_btn": "Cadastrar",
     "registering": "Cadastrando…",
+    "register_verify_sent": "Conta criada! Verifique seu email — enviamos um código para confirmá-lo.",
     "have_account": "Já tem conta?",
     "sign_in": "Entrar",
     "email_required": "Email válido obrigatório",
@@ -390,10 +405,13 @@
     "otp_resent": "Novo código enviado!",
     "otp_send_failed": "Falha ao enviar o código. Tente novamente.",
     "otp_invalid": "Código inválido ou expirado.",
-    "not_admin": "Esta conta não tem acesso de administrador.",
     "login_error": "Email ou senha inválidos.",
     "login_with_email_password": "Entrar com email e senha",
-    "or": "ou"
+    "or": "ou",
+    "show_password": "Mostrar palavra-passe",
+    "hide_password": "Ocultar palavra-passe",
+    "login_chip_admin": "Acesso Admin",
+    "login_title_generic": "Iniciar sessão"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -553,14 +571,27 @@
     "export_csv": "Exportar CSV",
     "no_chart_data": "Sem dados para este período.",
     "refresh_data": "Atualizar",
-    "last_updated": "Atualizado"
+    "last_updated": "Atualizado",
+    "tool_conversion": "Ferramentas IA → Leads",
+    "tool_conversion_desc": "Visitantes únicos por ferramenta nos últimos 30 dias e quantos depois se tornaram um contacto ou chat ao vivo",
+    "tool_conversion_col_tool": "Ferramenta",
+    "tool_conversion_col_visitors": "Visitantes",
+    "tool_conversion_col_leads": "Tornaram-se lead",
+    "tool_conversion_col_rate": "Taxa",
+    "overview_core": "Estatísticas principais",
+    "overview_load_error": "Não foi possível carregar o painel.",
+    "overview_refresh_error": "A atualização falhou: está a ver os dados anteriores.",
+    "overview_partial_error": "Alguns painéis não foram atualizados:",
+    "retry": "Tentar novamente"
   },
   "session": {
     "warning_title": "A sessão está prestes a expirar",
     "warning_body": "Por sua segurança, sua sessão admin encerrará em breve a menos que você confirme que ainda está ativo.",
     "seconds_remaining": "segundos restantes",
     "stay_logged_in": "Continuar conectado",
-    "logout_now": "Sair agora"
+    "logout_now": "Sair agora",
+    "eyebrow": "Tempo limite de segurança",
+    "warning_body_user": "Por segurança, a sua sessão terminará em breve se não confirmar que ainda está ativo."
   },
   "common": {
     "loading": "Carregando…",
@@ -574,7 +605,8 @@
     "close": "Fechar",
     "confirm": "Confirmar",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "unsaved_confirm": "Tem alterações não guardadas. Sair e perdê-las?"
   },
   "services": {
     "tag": "services",
@@ -586,8 +618,8 @@
       "cta": "Experimente grátis"
     },
     "frontend": {
-      "title": "Desenvolvimento Front‑End",
-      "desc": "Aplicações Angular escaláveis com TypeScript, RxJS e arquitetura de boas práticas. De projetos greenfield a migrações legacy.",
+      "title": "Desenvolvimento Front-End",
+      "desc": "Aplicações Angular escaláveis com TypeScript, RxJS e arquitetura de boas práticas. De projetos greenfield a migrações legacy. O serviço certo se você procura um Angular Developer ou TypeScript Developer para sua equipe.",
       "cta": "Saiba mais"
     },
     "web3d": {
@@ -624,6 +656,8 @@
   "blog": {
     "readMore": "Ler mais",
     "loadMore": "Carregar mais",
+    "tags_more": "Mostrar todas as tags (+{{count}})",
+    "tags_less": "Mostrar menos tags",
     "views_singular": "{{count}} visualização",
     "views_plural": "{{count}} visualizações",
     "empty": {
@@ -641,7 +675,16 @@
       "instagram": "Compartilhar no Instagram",
       "copyLink": "Copiar link",
       "linkCopied": "Link copiado!"
-    }
+    },
+    "reading_time": "{{count}} min de leitura",
+    "toc_title": "Neste artigo",
+    "related_title": "Leia também",
+    "related_subtitle": "Mais artigos sobre os mesmos temas",
+    "copy_code": "Copiar",
+    "copied": "Copiado!",
+    "copy_failed": "Falha ao copiar",
+    "copy_section_link": "Copiar link da seção",
+    "link_copied": "Link da seção copiado"
   },
   "notes": {
     "title": "Notas dos leitores",
@@ -766,6 +809,41 @@
     "edit_content": "Editar texto",
     "content_updated": "Texto atualizado."
   },
+  "newsletter": {
+    "title": "Não perca os novos artigos",
+    "subtitle": "Um email quando publico algo novo no blog. Sem spam.",
+    "email_placeholder": "Seu email",
+    "subscribe_btn": "Inscrever-se",
+    "subscribe_success": "Verifique seu email: enviamos um link para confirmar a inscrição.",
+    "subscribe_error": "A inscrição falhou. Tente novamente.",
+    "confirm_loading": "Confirmando sua inscrição…",
+    "confirm_success_title": "Inscrição confirmada!",
+    "confirm_success_message": "Agora você receberá um email sempre que eu publicar um novo artigo.",
+    "confirm_error_title": "Link inválido",
+    "confirm_error_message": "Este link de confirmação é inválido ou expirou. Tente se inscrever novamente.",
+    "unsubscribe_loading": "Cancelando a inscrição…",
+    "unsubscribe_success_title": "Inscrição cancelada",
+    "unsubscribe_success_message": "Você não receberá mais emails da newsletter. Pode se inscrever novamente quando quiser.",
+    "unsubscribe_error_title": "Link inválido",
+    "unsubscribe_error_message": "Este link é inválido ou a inscrição não existe mais.",
+    "back_to_blog": "Voltar ao blog"
+  },
+  "newsletter_manage": {
+    "title": "Newsletter",
+    "export_csv": "Exportar CSV",
+    "status_all": "Todos",
+    "status_pending": "Pendentes",
+    "status_confirmed": "Confirmados",
+    "status_unsubscribed": "Cancelados",
+    "empty": "Nenhum inscrito nesta categoria.",
+    "load_error": "Não foi possível carregar os inscritos.",
+    "confirm_delete": "Excluir definitivamente {{email}}?",
+    "deleted": "Inscrito excluído.",
+    "delete_error": "Falha ao excluir. Tente novamente.",
+    "export_error": "Falha na exportação. Tente novamente.",
+    "prev_page": "Anterior",
+    "next_page": "Próxima"
+  },
   "chatbot_ui": {
     "title": "Assistente AI",
     "online": "Online",
@@ -792,7 +870,10 @@
     "chip_who": "👋 Quem é Gent?",
     "chip_skills": "🛠 Quais são suas habilidades?",
     "chip_projects": "📁 Mostre-me seus projetos",
-    "chip_contact": "📬 Como posso contatá-lo?"
+    "chip_contact": "📬 Como posso contatá-lo?",
+    "live_offer_cta": "💬 Falar com o Gent agora",
+    "unread_badge": "{{count}} mensagens não lidas",
+    "new_messages": "Novas mensagens"
   },
   "live_handoff": {
     "prompt_title": "Quer falar diretamente com o Gent?",
@@ -890,7 +971,12 @@
     "err_file_type": "Apenas ficheiros PDF, TXT ou DOCX são suportados como contexto.",
     "err_file_too_large": "Ficheiro demasiado grande (máx {{max}}MB): {{name}}",
     "err_generic": "Ocorreu um erro. Tente novamente.",
-    "err_truncated": "O conteúdo de alguns slides foi cortado por falta de espaço ao exportar o PDF. Tente encurtar o texto e gerar novamente."
+    "err_truncated": "O conteúdo de alguns slides foi cortado por falta de espaço ao exportar o PDF. Tente encurtar o texto e gerar novamente.",
+    "remove_context_file": "Remover ficheiro",
+    "prev_slide": "Diapositivo anterior",
+    "next_slide": "Diapositivo seguinte",
+    "seo_title": "Gerador de Apresentações com IA — Crie Slides com Inteligência Artificial",
+    "seo_description": "Gere uma apresentação profissional completa sobre qualquer tema em segundos. Até 20 slides com títulos, tópicos, notas do apresentador e 5 estilos. Grátis online."
   },
   "ai_formatter": {
     "title": "Formatador IA",
@@ -944,7 +1030,9 @@
     "dismiss_draft": "Ignorar rascunho",
     "textarea_placeholder": "Cole aqui o texto não formatado...\n\n✦ Notas de reunião, conteúdo bruto, output de IA, emails...\n✦ Ou clique em \"Usar exemplo\" para uma demonstração",
     "copied": "Copiado",
-    "copy": "Copiar"
+    "copy": "Copiar",
+    "seo_title": "Formatador de Texto com IA — De Notas a Documento Profissional",
+    "seo_description": "Transforme anotações, texto bruto ou conteúdo de IA em documentos profissionais estruturados instantaneamente. Relatórios, propostas, currículos, artigos e mais. Formatador de IA gratuito online."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -977,7 +1065,9 @@
     "err_file_type": "Formato não suportado. São permitidos PDF, Word (.docx/.doc), TXT e HTML.",
     "err_file_too_large": "Ficheiro demasiado grande (máx {{max}}MB): {{name}}",
     "err_generic": "Ocorreu um erro ao analisar o ficheiro.",
-    "remove_file": "Remover ficheiro"
+    "remove_file": "Remover ficheiro",
+    "seo_title": "Resumo de PDF com IA — Extraia os Pontos-Chave de Qualquer Documento",
+    "seo_description": "Envie um PDF, Word ou TXT e obtenha um resumo gerado por IA instantaneamente. Resumo curto, análise detalhada ou pontos-chave. Resumidor de documentos com IA grátis online."
   },
   "workspace": {
     "badge": "Novo",
@@ -995,7 +1085,9 @@
     "start_here": "Ferramentas iniciais",
     "persistence_hint": "Não guardado: perde-se ao recarregar ou fechar esta aba.",
     "feedback_cleared": "Removido do Workspace",
-    "feedback_downloaded": "Transferência iniciada"
+    "feedback_downloaded": "Transferência iniciada",
+    "seo_title": "Fluxo de Trabalho — Encadeie Ferramentas de IA e PDF",
+    "seo_description": "Envie um arquivo ou texto de uma ferramenta para a próxima sem reenviá-lo. Digitalize, extraia, traduza e resuma em um fluxo conectado."
   },
   "pdf_translate": {
     "title": "Tradução de PDF",
@@ -1069,7 +1161,9 @@
     "err_no_file": "Selecione um ficheiro.",
     "err_generic": "Falha na tradução. Tente novamente.",
     "upload_aria": "Carregar um ficheiro PDF",
-    "remove_file": "Remover ficheiro"
+    "remove_file": "Remover ficheiro",
+    "seo_title": "Tradutor de PDF com IA — Tradução Mantendo as Páginas Originais",
+    "seo_description": "Traduza qualquer PDF para 12 idiomas mantendo o mesmo número de páginas e formatação. Tradução com IA de nível empresarial com GPT-4o. Grátis online, sem cadastro."
   },
   "pdf_search": {
     "title": "Pesquisa de PDF",
@@ -1134,7 +1228,11 @@
     "preview_timeout": "A pré-visualização está a demorar muito a carregar. Descarregue o PDF para o ler.",
     "err_search": "A pesquisa falhou. Tente novamente.",
     "err_workspace_send": "Falha ao enviar para o Workspace. Tente novamente.",
-    "err_library_save": "Falha ao guardar na Biblioteca. Tente novamente."
+    "err_library_save": "Falha ao guardar na Biblioteca. Tente novamente.",
+    "preview_prev_page": "Página anterior",
+    "preview_next_page": "Página seguinte",
+    "seo_title": "Buscador de PDF de Domínio Público — Livros sem Direitos Autorais",
+    "seo_description": "Busque e baixe livros de domínio público, artigos científicos e publicações de acesso aberto, sem problemas de direitos autorais. Busque no Internet Archive, Project Gutenberg, arXiv e PubMed Central com pré-visualização antes de baixar."
   },
   "convert": {
     "title": "Conversor",
@@ -1244,7 +1342,9 @@
     "workspace_banner_dismiss": "Ignorar",
     "workspace_send": "Enviar para o Workspace",
     "workspace_sent": "Enviado ✓",
-    "blog_link": "Guia: como converter PDF para Word sem perder a formatação"
+    "blog_link": "Guia: como converter PDF para Word sem perder a formatação",
+    "seo_title": "Conversor de Arquivos Gratuito — PDF, Word, Excel, Imagens",
+    "seo_description": "Converta entre PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG e mais — {{count}} tipos de conversão, grátis, no navegador. Sem cadastro."
   },
   "ocr": {
     "title": "OCR — Reconhecimento de texto",
@@ -1283,7 +1383,9 @@
     "send_workspace": "Enviar para o Workspace",
     "sent": "Enviado ✓",
     "save_library": "Guardar na biblioteca",
-    "saved_library": "Guardado na biblioteca"
+    "saved_library": "Guardado na biblioteca",
+    "seo_title": "OCR Online Gratuito — Extraia Texto de Imagens e PDFs Digitalizados",
+    "seo_description": "Extraia texto de fotos, documentos digitalizados e PDFs em 7 idiomas. OCR online grátis, sem cadastro."
   },
   "tools": {
     "badge": "AI & PDF Tools",
@@ -1314,7 +1416,11 @@
     "pdf_search_title": "Pesquisa de PDF",
     "pdf_search_desc": "Pesquise livros e documentos PDF de domínio público, com pré-visualização antes de baixar.",
     "library_title": "A minha biblioteca",
-    "library_desc": "Guarda os PDF no navegador, procura no conteúdo, anota-os e faz perguntas aos teus documentos."
+    "library_desc": "Guarda os PDF no navegador, procura no conteúdo, anota-os e faz perguntas aos teus documentos.",
+    "my_files_title": "Os meus ficheiros",
+    "my_files_desc": "Encontra os resultados que guardaste das ferramentas de IA",
+    "seo_title": "Ferramentas PDF e IA Gratuitas — Tradução, Resumo, Apresentações",
+    "seo_description": "Ferramentas online gratuitas com IA: tradutor de PDF, gerador de apresentações, formatador de texto e resumidor de PDF. Ferramentas profissionais com GPT-4o. Sem cadastro."
   },
   "about_manage": {
     "title": "Secção About",
@@ -1376,7 +1482,16 @@
     "saved": "Projeto guardado!",
     "save_error": "Falha ao guardar o projeto.",
     "confirm_delete": "Eliminar este projeto?",
-    "deleted": "Projeto eliminado."
+    "deleted": "Projeto eliminado.",
+    "case_study": "Estudo de caso",
+    "case_study_hint": "Ao preencher pelo menos um campo, o projeto ganha uma página própria /projects/<slug>.",
+    "problem_label": "Problema do cliente",
+    "solution_label": "Solução realizada",
+    "results_label": "Resultados (mensuráveis)",
+    "reorder_hint": "Arraste as linhas ou use as setas para mudar a ordem: é guardada de imediato.",
+    "move_up": "Mover para cima",
+    "move_down": "Mover para baixo",
+    "reorder_error": "Ordem não guardada, a anterior foi reposta."
   },
   "editor": {
     "title": "Editor de Documentos",
@@ -1415,7 +1530,9 @@
     "workspace_banner_dismiss": "Ignorar",
     "workspace_send": "Enviar para o Workspace",
     "workspace_sent": "Enviado ✓",
-    "err_file_too_large": "Ficheiro demasiado grande (máx {{max}}MB): {{name}}"
+    "err_file_too_large": "Ficheiro demasiado grande (máx {{max}}MB): {{name}}",
+    "seo_title": "Editor de Documentos Online Gratuito — Exporte para PDF e DOCX",
+    "seo_description": "Escreva e formate documentos no navegador, importe arquivos Word e exporte para PDF, DOCX ou HTML. Grátis, sem cadastro."
   },
   "pdf_editor": {
     "title": "Editor de PDF",
@@ -1448,7 +1565,9 @@
     "move_left": "Mover para a esquerda",
     "move_right": "Mover para a direita",
     "delete": "Eliminar",
-    "persistence_hint": "As alterações não são guardadas: perdem-se ao recarregar ou fechar este separador."
+    "persistence_hint": "As alterações não são guardadas: perdem-se ao recarregar ou fechar este separador.",
+    "seo_title": "Editor de PDF Gratuito — Junte, Divida, Gire e Adicione Marca d'Água",
+    "seo_description": "Junte PDFs, divida e extraia páginas, gire ou exclua páginas e adicione marcas d'água — tudo no navegador, os arquivos nunca saem do seu dispositivo."
   },
   "viewer": {
     "title": "Visualizador de PDF",
@@ -1482,7 +1601,9 @@
     "zoom_out": "Diminuir zoom",
     "zoom_in": "Aumentar zoom",
     "prev_match": "Resultado anterior",
-    "next_match": "Resultado seguinte"
+    "next_match": "Resultado seguinte",
+    "seo_title": "Visualizador de PDF Online Gratuito — Zoom, Busca e Miniaturas",
+    "seo_description": "Visualize documentos PDF no navegador: navegação de páginas, zoom, busca em texto completo e visualização de miniaturas. Grátis, privado, sem upload."
   },
   "scanner": {
     "title": "Scanner de Documentos",
@@ -1534,7 +1655,9 @@
     "delete": "Eliminar",
     "page_alt": "página {{n}}",
     "err_camera_unsupported": "Câmara indisponível neste navegador ou ligação insegura (é necessário HTTPS). Ainda pode carregar uma imagem.",
-    "persistence_hint": "As páginas capturadas não são guardadas: perdem-se ao recarregar ou fechar este separador."
+    "persistence_hint": "As páginas capturadas não são guardadas: perdem-se ao recarregar ou fechar este separador.",
+    "seo_title": "Scanner de Documentos Gratuito — Da Câmera ao PDF Online",
+    "seo_description": "Digitalize documentos com a webcam ou a câmera do celular, corte e melhore-os, exporte como PDF. Grátis, sem cadastro."
   },
   "library": {
     "badge": "Novo",
@@ -1590,7 +1713,9 @@
     "chat_send": "Enviar",
     "chat_no_context": "Não encontrei nada relevante nos documentos indexados.",
     "chat_error": "A resposta falhou. Tenta de novo.",
-    "import_skipped": "{{count}} ficheiro(s) ignorado(s): só é possível importar PDFs para a Biblioteca."
+    "import_skipped": "{{count}} ficheiro(s) ignorado(s): só é possível importar PDFs para a Biblioteca.",
+    "seo_title": "Minha Biblioteca PDF — Arquivo Pessoal com Busca e Chat IA",
+    "seo_description": "Salve os PDFs que encontrar, pesquise-os página por página, anote-os e faça perguntas sobre seus documentos. Tudo permanece no seu navegador, nada é enviado."
   },
   "blog_manage": {
     "title": "Artigos do blog",
@@ -1679,7 +1804,13 @@
     "cover_data_url_unsupported": "Usa um URL de imagem para a capa. O carregamento direto de ficheiros não é suportado.",
     "err_payload_too_large": "Conteúdo demasiado grande. Remove as imagens incorporadas e usa URLs de imagem.",
     "err_session_expired": "Sessão expirada. Inicia sessão novamente.",
-    "err_save_failed_default": "Falha ao guardar. Verifica título, conteúdo e slug."
+    "err_save_failed_default": "Falha ao guardar. Verifica título, conteúdo e slug.",
+    "action_unpublish": "Mover para rascunho",
+    "unpublished_msg": "Artigo movido para rascunho (visualizações mantidas)",
+    "filter_label": "Filtrar por estado",
+    "filter_all": "Todos",
+    "empty_drafts": "Sem rascunhos.",
+    "empty_published": "Nenhum artigo publicado."
   },
   "privacy": {
     "title": "Política de Privacidade",
@@ -1736,5 +1867,287 @@
     "manage_body": "Pode alterar ou revogar o seu consentimento a qualquer momento através do link \"Gerir consentimento de cookies\" no rodapé do site, ou eliminando os cookies do seu navegador.",
     "browser_title": "Definições do navegador",
     "browser_body": "Também pode gerir ou eliminar cookies diretamente nas definições do seu navegador (Chrome, Firefox, Safari, Edge)."
+  },
+  "saved_results": {
+    "save_cta": "Guardar na tua conta",
+    "save_cta_short": "Guardar",
+    "saving_cta": "A guardar...",
+    "saved_cta": "Guardado ✓",
+    "save_sub": "Encontra-o depois em \"Os meus ficheiros\"",
+    "save_error": "Não foi possível guardar. Tenta novamente.",
+    "login_prompt_title": "Inicia sessão para guardar os teus resultados",
+    "login_prompt_body": "Cria uma conta gratuita para encontrares os teus ficheiros gerados quando quiseres.",
+    "page_title": "Os meus ficheiros",
+    "page_subtitle": "Resultados que guardaste das ferramentas de IA",
+    "empty_title": "Ainda não há ficheiros guardados",
+    "empty_body": "Os resultados que guardares das ferramentas de IA vão aparecer aqui.",
+    "login_required_title": "Inicia sessão para veres os teus ficheiros",
+    "login_required_body": "Os ficheiros que guardas ficam ligados à tua conta.",
+    "login_button": "Iniciar sessão",
+    "open": "Abrir",
+    "delete": "Eliminar",
+    "confirm_delete": "Eliminar este ficheiro guardado?",
+    "seo_title": "Meus Arquivos — Resultados Salvos das Ferramentas de IA",
+    "seo_description": "Encontre os arquivos e resultados que você salvou das ferramentas de IA do gentsallaku.it."
+  },
+  "account_modal": {
+    "badge_admin": "Admin",
+    "status_label": "Estado",
+    "status_active": "Sessão ativa",
+    "role_label": "Função",
+    "role_admin": "Administrador",
+    "role_user": "Utilizador"
+  },
+  "ai_assistant": {
+    "clear_chat": "Limpar conversa",
+    "messages_log": "Mensagens",
+    "suggested_prompts": "Perguntas sugeridas",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "copy_message": "Copiar mensagem",
+    "typing": "A IA está a escrever",
+    "message_input": "Campo de mensagem",
+    "send_message": "Enviar mensagem"
+  },
+  "request": {
+    "uploading": "A carregar o ficheiro…",
+    "processing": "A processar…",
+    "cancel": "Cancelar",
+    "cancelled": "Operação cancelada."
+  },
+  "project_detail": {
+    "not_found": "Projeto não encontrado",
+    "load_error": "Não foi possível carregar o projeto.",
+    "back": "Todos os projetos",
+    "stack": "Tecnologias utilizadas",
+    "live": "Ver online",
+    "repo": "Código-fonte",
+    "problem": "O problema",
+    "solution": "A solução",
+    "results": "Os resultados",
+    "cta_text": "Tem um projeto semelhante?",
+    "cta_button": "Vamos conversar",
+    "related_title": "Outros estudos de caso"
+  },
+  "translations_editor": {
+    "title": "Traduções",
+    "hint": "Os campos vazios mostram o texto italiano no site.",
+    "auto": "Traduzir os campos vazios do italiano",
+    "translating": "A traduzir…",
+    "error": "A tradução automática falhou: tente de novo ou preencha à mão."
+  },
+  "contacts_inbox": {
+    "title": "Mensagens de contacto",
+    "total": "{{count}} mensagens",
+    "search_placeholder": "Pesquisar por nome, email, assunto ou texto…",
+    "filter_label": "Filtrar mensagens",
+    "filter_all": "Todas",
+    "load_error": "Não foi possível carregar as mensagens.",
+    "empty": "Nenhuma mensagem recebida.",
+    "empty_filtered": "Nenhuma mensagem corresponde aos filtros.",
+    "select_all": "Selecionar todas na página",
+    "select": "Selecionar",
+    "pagination": "Paginação",
+    "replied_at": "Respondido em {{date}}",
+    "action_error": "A operação falhou, tente novamente."
+  },
+  "users_manage": {
+    "title": "Utilizadores registados",
+    "total": "{{count}} utilizadores",
+    "search_placeholder": "Pesquisar por nome, email ou telefone…",
+    "role_filter": "Filtrar por função",
+    "all_roles": "Todas as funções",
+    "load_error": "Não foi possível carregar os utilizadores.",
+    "empty": "Nenhum utilizador encontrado.",
+    "col_name": "Nome",
+    "col_contact": "Email / telefone",
+    "col_role": "Função",
+    "col_created": "Registado em",
+    "col_actions": "Ações",
+    "you": "você",
+    "verified": "Email verificado",
+    "confirm_role": "Alterar a função de {{name}} para \"{{role}}\"?",
+    "confirm_delete": "Eliminar definitivamente o utilizador {{name}}?",
+    "action_error": "A operação falhou.",
+    "new": "Novo utilizador",
+    "edit_title": "Editar utilizador",
+    "phone": "Telefone (opcional)",
+    "password_optional": "Palavra-passe (opcional)",
+    "password_hint": "Pelo menos 8 caracteres com maiúscula, minúscula, número e símbolo. Sem palavra-passe o utilizador entra com um código por email.",
+    "save": "Guardar",
+    "created": "Utilizador criado.",
+    "updated": "Utilizador atualizado.",
+    "password_title": "Nova palavra-passe para {{name}}",
+    "password_effect": "O utilizador será desligado de todos os dispositivos.",
+    "new_password": "Nova palavra-passe",
+    "set_password": "Definir palavra-passe",
+    "password_short": "Palavra-passe",
+    "password_set": "Palavra-passe de {{name}} atualizada.",
+    "revoke": "Desligar",
+    "confirm_revoke": "Desligar {{name}} de todos os dispositivos?",
+    "sessions_revoked": "{{name}} foi desligado.",
+    "err_name": "O nome é obrigatório.",
+    "err_email": "Introduza um email válido.",
+    "err_phone": "Telefone em formato internacional, ex. +393331234567.",
+    "err_password": "A palavra-passe não cumpre os requisitos."
+  },
+  "notifications": {
+    "label": "Notificações",
+    "recent": "Eventos recentes",
+    "empty": "Nada pendente.",
+    "offline": "Atualizações em tempo real indisponíveis: as contagens atualizam ao abrir.",
+    "live_waiting": "Chats ao vivo em espera",
+    "contacts_unread": "Mensagens por ler",
+    "testimonials_pending": "Testemunhos por moderar",
+    "notes_pending": "Notas por moderar",
+    "type_contact": "Nova mensagem",
+    "type_testimonial": "Novo testemunho",
+    "type_note": "Nova nota",
+    "type_live_handoff": "Chat ao vivo pedido"
+  },
+  "newsletter_campaigns": {
+    "title": "Campanhas",
+    "new": "Nova campanha",
+    "subject": "Assunto",
+    "body": "Conteúdo (HTML)",
+    "body_placeholder": "<h1>Título</h1><p>Texto…</p>",
+    "body_hint": "Scripts e formulários são removidos. O link de cancelamento é adicionado automaticamente.",
+    "preview": "Pré-visualização",
+    "save_draft": "Guardar rascunho",
+    "saved": "Rascunho guardado.",
+    "err_incomplete": "São necessários um assunto (mín. 3 caracteres) e um conteúdo (mín. 10).",
+    "err_schedule_past": "Escolha uma data futura para agendar.",
+    "send_test": "Enviar teste",
+    "test_email": "Email de teste",
+    "test_sent": "Teste enviado para {{email}}.",
+    "test_failed": "O envio de teste falhou: verifique a configuração de email.",
+    "test_done": "teste enviado",
+    "send_now": "Enviar agora",
+    "schedule": "Agendar",
+    "schedule_at": "Data e hora de envio",
+    "confirm_send": "Enviar agora \"{{subject}}\" a todos os subscritores confirmados?",
+    "confirm_schedule": "Agendar \"{{subject}}\" para todos os subscritores confirmados?",
+    "confirm_cancel": "Cancelar a campanha \"{{subject}}\"? Os emails já enviados não podem ser recolhidos.",
+    "confirm_delete": "Eliminar o rascunho \"{{subject}}\"?",
+    "queued": "Campanha em fila para {{count}} subscritores.",
+    "cancelled": "Campanha cancelada.",
+    "cancel": "Cancelar envio",
+    "load_error": "Não foi possível carregar as campanhas.",
+    "empty": "Ainda não há campanhas. Crie uma para escrever aos subscritores.",
+    "action_error": "A operação falhou.",
+    "progress": "Progresso do envio",
+    "stats": "{{sent}} enviados, {{failed}} falhados de {{total}}",
+    "scheduled_for": "Agendada para {{date}}",
+    "sent_at": "Enviada em {{date}}",
+    "status_draft": "Rascunho",
+    "status_scheduled": "Agendada",
+    "status_sending": "A enviar",
+    "status_sent": "Enviada",
+    "status_cancelled": "Cancelada"
+  },
+  "palette": {
+    "placeholder": "Pesquisar páginas, artigos, ações…",
+    "section_actions": "Ações",
+    "section_pages": "Páginas",
+    "section_content": "Conteúdos",
+    "action_theme": "Alternar tema claro/escuro",
+    "action_contact": "Fale comigo",
+    "action_lab": "Abrir o Lab (ferramentas IA e PDF)",
+    "action_new_post": "Novo artigo",
+    "action_new_project": "Novo projeto",
+    "action_inbox": "Abrir mensagens de contacto",
+    "action_logout": "Terminar sessão",
+    "footer_hint": "↑↓ para escolher · Enter para abrir · Ctrl+K ou / para abrir",
+    "action_copy_link": "Copiar o link desta página",
+    "action_install": "Instalar o site como app",
+    "action_language": "Idioma: {{lang}}",
+    "action_language_detail": "Mudar idioma · language",
+    "link_copied": "Link copiado",
+    "copy_failed": "Falha ao copiar"
+  },
+  "theme": {
+    "name_light": "tema claro",
+    "name_dark": "tema escuro",
+    "name_system": "tema do sistema",
+    "current_light": "Tema claro ativo. Mudar para {{next}}",
+    "current_dark": "Tema escuro ativo. Mudar para {{next}}",
+    "current_system": "Tema do sistema ativo. Mudar para {{next}}"
+  },
+  "onboarding": {
+    "progress": "{{current}} de {{total}}",
+    "next": "Seguinte",
+    "back": "Voltar",
+    "skip": "Saltar tutorial",
+    "done": "Concluir",
+    "steps": {
+      "welcome": {
+        "title": "Bem-vindo!",
+        "body": "Em poucos passos mostro-te como navegar no site: menu, conteúdos e assistente. Podes saltar o guia a qualquer momento."
+      },
+      "navigation": {
+        "title": "Navegação",
+        "body": "A partir deste menu chegas às secções do site e a todas as ferramentas gratuitas do Lab."
+      },
+      "group_ai": {
+        "title": "Ferramentas de IA",
+        "body": "Pesquisa de PDF, Biblioteca, Resumo, Formatador, Tradução e Gerador de diapositivos: a inteligência artificial a trabalhar nos teus documentos."
+      },
+      "group_workspace": {
+        "title": "Workspace",
+        "body": "Passa o resultado de uma ferramenta diretamente para a seguinte, sem descarregar e voltar a carregar ficheiros."
+      },
+      "group_account": {
+        "title": "Os meus ficheiros",
+        "body": "Aqui encontras os resultados que guardaste a partir das ferramentas, associados à tua conta."
+      },
+      "group_tools": {
+        "title": "Ferramentas PDF e documentos",
+        "body": "Organiza e visualiza PDF, escreve no editor, converte formatos, extrai texto com OCR e digitaliza documentos com a câmara."
+      },
+      "main": {
+        "title": "Conteúdo principal",
+        "body": "Ao centro vês o conteúdo da página onde estás: projetos, serviços e artigos na página inicial; a área de trabalho da ferramenta escolhida no Lab."
+      },
+      "chatbot": {
+        "title": "Assistente virtual",
+        "body": "Tens uma pergunta? Toca aqui para conversar com o assistente sobre serviços, projetos e ferramentas. Se precisares, podes pedir para falar diretamente com o Gent."
+      },
+      "finish": {
+        "title": "Tudo pronto!",
+        "body": "Podes rever este guia quando quiseres a partir da ligação «Guia» no fundo da página."
+      }
+    }
+  },
+  "offline": {
+    "banner": "Você está offline. Os artigos que já leu continuam disponíveis.",
+    "see_articles": "Ver artigos",
+    "back_online": "Online novamente",
+    "list_unavailable": "Você está offline: a lista de artigos não está disponível",
+    "load_error": "Não foi possível carregar os artigos",
+    "recent_title": "Você já leu estes e pode abri-los mesmo sem conexão:",
+    "no_recent": "Os artigos que você abre ficam salvos para leitura offline.",
+    "retry": "Tentar novamente"
+  },
+  "install": {
+    "title": "Instale o Lab como app",
+    "text": "Abra as ferramentas de PDF e IA com um toque, em tela cheia e offline para as páginas já visitadas.",
+    "ios_text_before": "Toque em",
+    "ios_share": "Compartilhar",
+    "ios_text_after": "e depois «Adicionar à Tela de Início».",
+    "cta": "Instalar",
+    "later": "Agora não"
+  },
+  "lab_next": {
+    "ready": "«{{name}}» está pronto.",
+    "continue_with": "Continue com:",
+    "close": "Fechar sugestões",
+    "resume_title": "Continue de onde parou",
+    "pending": "Você tem «{{name}}» pronto no workspace. Abra em:"
+  },
+  "lab_drop": {
+    "hint": "Arraste um arquivo para qualquer ponto da página e eu sugiro as ferramentas certas. Ele fica no seu navegador.",
+    "pick": "Escolher arquivo",
+    "release": "Solte o arquivo para ver o que pode fazer com ele",
+    "only_first": "Só o primeiro arquivo é usado ({{count}} ignorados)."
   }
 }

@@ -27,6 +27,13 @@ export interface Post {
   title_de: string;
   content_de: string;
   excerpt_de: string;
+  // Per-language URL slugs (generated server-side from title_xx; empty → use `slug`)
+  slug_en?: string;
+  slug_sq?: string;
+  slug_pt?: string;
+  slug_es?: string;
+  slug_fr?: string;
+  slug_de?: string;
   coverImage: string;
   tags: string[];
   published: boolean;
@@ -36,6 +43,18 @@ export interface Post {
   viewCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+/** URL slug of a post in `lang`, falling back to the Italian `slug`. */
+export function localizedSlug(post: Pick<Post, 'slug' | 'slug_en' | 'slug_sq' | 'slug_pt' | 'slug_es' | 'slug_fr' | 'slug_de'>, lang: string): string {
+  if (lang === 'it') return post.slug;
+  return (post as unknown as Record<string, string | undefined>)[`slug_${lang}`] || post.slug;
+}
+
+/** Titolo o estratto di un post in `lang`, con fallback sull'italiano. */
+export function localizedPostText(post: PostSummary, field: 'title' | 'excerpt', lang: string): string {
+  if (lang === 'it') return post[field];
+  return (post as unknown as Record<string, string | undefined>)[`${field}_${lang}`] || post[field];
 }
 
 export interface PostSummary extends Omit<Post, 'content' | 'content_en' | 'content_sq' | 'content_pt' | 'content_es' | 'content_fr' | 'content_de'> {}

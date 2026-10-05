@@ -1,21 +1,46 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, effect } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
-import { PostSummary } from '../../../core/models/post.model';
+import { PostSummary, localizedSlug } from '../../../core/models/post.model';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
+import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
+import { ReadEntry, ReadingHistoryService } from '../../../core/services/reading-history.service';
+
+/**
+ * Tag unici ordinati per numero di articoli. Unisce le varianti che
+ * differiscono solo per maiuscole ("angular"/"Angular") e mostra la grafia
+ * più usata; a parità di frequenza vince l'ordine alfabetico.
+ */
+export function rankTags(posts: PostSummary[]): string[] {
+  const groups = new Map<string, { count: number; spellings: Map<string, number> }>();
+  for (const tag of posts.flatMap(p => p.tags ?? [])) {
+    const key = tag.trim().toLowerCase();
+    if (!key) continue;
+    const g = groups.get(key) ?? { count: 0, spellings: new Map<string, number>() };
+    g.count++;
+    g.spellings.set(tag.trim(), (g.spellings.get(tag.trim()) ?? 0) + 1);
+    groups.set(key, g);
+  }
+  return [...groups.values()]
+    .map(g => ({ count: g.count, label: [...g.spellings].sort((a, b) => b[1] - a[1])[0][0] }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .map(t => t.label);
+}
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, NewsletterSignupComponent, ViewTransitionNameOnClickDirective],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,8 +51,31 @@ export class BlogListComponent implements OnInit {
   filteredPosts: PostSummary[] = [];
   allTags: string[] = [];
   activeTag: string | null = null;
+  /** Con ~170 tag la lista copriva gli articoli: si mostrano solo i più usati. */
+  readonly topTagCount = 12;
+  /** Tag mostrati su ogni card prima del "+N". */
+  readonly cardTagCount = 3;
+  showAllTags = false;
+
+  get visibleTags(): string[] {
+    if (this.showAllTags) return this.allTags;
+    const top = this.allTags.slice(0, this.topTagCount);
+    // Il tag selezionato resta visibile anche se non è tra i più usati.
+    if (this.activeTag && !top.includes(this.activeTag)) top.push(this.activeTag);
+    return top;
+  }
+
+  get hiddenTagCount(): number {
+    return Math.max(0, this.allTags.length - this.topTagCount);
+  }
   searchQuery = '';
   loading = true;
+  /** La lista non è arrivata (tipicamente: offline senza copia in cache). */
+  loadError = false;
+  readonly network = inject(NetworkStatusService);
+  private readonly readingHistory = inject(ReadingHistoryService);
+  /** Articoli già letti in questa lingua: quelli che il service worker può servire offline. */
+  get readOffline(): ReadEntry[] { return this.readingHistory.forLang(this.currentLang()); }
 
   readonly skeletonItems = Array.from({ length: 6 }, (_, i) => i);
   private pageSize = 6;
@@ -42,6 +90,7 @@ export class BlogListComponent implements OnInit {
   }
 
   private readonly langService = inject(LanguageService);
+  private readonly route = inject(ActivatedRoute);
   readonly currentLang = this.langService.current;
 
   constructor(
@@ -52,6 +101,8 @@ export class BlogListComponent implements OnInit {
   ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+    // Tornata la connessione, il pannello offline si rimpiazza da solo con la lista.
+    effect(() => { if (this.network.online() && this.loadError) this.reload(); });
   }
 
   ngOnInit(): void {
@@ -74,6 +125,23 @@ export class BlogListComponent implements OnInit {
       { label: homeLabel, path: '/' },
       { label: blogLabel },
     ];
+    // Pre-fills the search box from ?q= — the WebSite JSON-LD's SearchAction
+    // (see home.component.ts) tells Google this URL performs a search;
+    // without reading it back here that was a dead promise, so a visitor
+    // arriving via Google's sitelinks search box saw the full unfiltered list.
+    this.searchQuery = this.route.snapshot.queryParamMap.get('q') ?? '';
+
+    this.fetchPosts();
+  }
+
+  /** "Riprova" del pannello offline. */
+  reload(): void {
+    this.loading = true;
+    this.loadError = false;
+    this.fetchPosts();
+  }
+
+  private fetchPosts(): void {
     this.blogService.getPublishedAll().pipe(
       // No retry() — see blog-detail.component.ts for why: it trades a
       // clean failure for a worse one (page stuck on the loading spinner)
@@ -82,14 +150,31 @@ export class BlogListComponent implements OnInit {
       finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: posts => {
+        this.loadError = false;
         this.posts = posts;
-        this.filteredPosts = posts;
-        const tagsSet = new Set(posts.flatMap(p => p.tags));
-        this.allTags = Array.from(tagsSet).sort();
-        this.cdr.markForCheck();
+        this.allTags = rankTags(posts);
+        this.filter();
       },
-      error: () => {},
+      error: () => { this.loadError = true; },
     });
+  }
+
+  private readonly prefetched = new Set<string>();
+
+  /**
+   * Scalda la cache del post mentre il puntatore è sulla card: all'apertura
+   * il dettaglio è già pronto e la view transition trova subito il titolo.
+   */
+  prefetch(post: PostSummary): void {
+    const slug = this.postSlug(post);
+    if (this.prefetched.has(slug)) return;
+    this.prefetched.add(slug);
+    this.blogService.getBySlug(slug).subscribe({ error: () => this.prefetched.delete(slug) });
+  }
+
+  /** URL slug in the current language, so /sq/blog/... links carry the Albanian slug. */
+  postSlug(post: PostSummary): string {
+    return localizedSlug(post, this.currentLang());
   }
 
   getLocalizedTitle(post: PostSummary): string {
@@ -115,27 +200,49 @@ export class BlogListComponent implements OnInit {
   }
 
   filter(): void {
-    const q = this.searchQuery.toLowerCase();
-    this.filteredPosts = this.posts.filter(p => {
-      const matchesTag = !this.activeTag || p.tags.includes(this.activeTag);
-      const matchesSearch = !q ||
-        p.title.toLowerCase().includes(q) ||
-        (p.title_en ?? '').toLowerCase().includes(q) ||
-        (p.title_sq ?? '').toLowerCase().includes(q) ||
-        (p.title_pt ?? '').toLowerCase().includes(q) ||
-        (p.title_es ?? '').toLowerCase().includes(q) ||
-        (p.title_fr ?? '').toLowerCase().includes(q) ||
-        (p.title_de ?? '').toLowerCase().includes(q);
-      return matchesTag && matchesSearch;
-    });
+    const tokens = this.searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const tag = this.activeTag?.toLowerCase();
+    let posts = this.posts.filter(p => !tag || (p.tags ?? []).some(t => t.trim().toLowerCase() === tag));
+
+    if (tokens.length > 0) {
+      // Score by per-word overlap across title (weighted higher) + excerpt/tags,
+      // instead of requiring the whole query as one literal substring of the
+      // title only. That old rule meant a paraphrase like "come aggiornare
+      // angular dal 11 al 21" found nothing for a post titled "Migrazione
+      // Angular da v10 a v21", even though every meaningful word overlaps.
+      posts = posts
+        .map(p => ({ post: p, score: this.matchScore(p, tokens) }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(({ post }) => post);
+    }
+
+    this.filteredPosts = posts;
     this.visibleCount = this.pageSize;
     this.cdr.markForCheck();
+  }
+
+  private matchScore(post: PostSummary, tokens: string[]): number {
+    const titleHaystack = [post.title, post.title_en, post.title_sq, post.title_pt, post.title_es, post.title_fr, post.title_de]
+      .filter(Boolean).join(' ').toLowerCase();
+    const bodyHaystack = [post.excerpt, post.excerpt_en, post.excerpt_sq, post.excerpt_pt, post.excerpt_es, post.excerpt_fr, post.excerpt_de, ...(post.tags ?? [])]
+      .filter(Boolean).join(' ').toLowerCase();
+    return tokens.reduce((total, token) => {
+      if (titleHaystack.includes(token)) return total + 2;
+      if (bodyHaystack.includes(token)) return total + 1;
+      return total;
+    }, 0);
   }
 
   setTag(tag: string | null): void {
     this.activeTag = tag;
     this.visibleCount = this.pageSize;
     this.filter();
+  }
+
+  toggleTags(): void {
+    this.showAllTags = !this.showAllTags;
+    this.cdr.markForCheck();
   }
 
   loadMore(): void {

@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { UsersService } from '../users/users.service';
-import { MailService } from '../mail/mail.service';
 import { OtpService } from './otp.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -32,26 +31,35 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private mailService: MailService,
     private otpService: OtpService,
   ) {}
 
-  async register(dto: RegisterDto) {
+  /**
+   * Creates the account but does not log it in yet: the email is unproven at
+   * this point, so we don't hand out tokens (or send the welcome email —
+   * see OtpService.verifyOtp) for an address the registrant may not own.
+   * Instead this sends a verification OTP; the frontend lands the user on
+   * the OTP-verify step, and a successful check there both confirms the
+   * email and issues the token pair.
+   */
+  async register(dto: RegisterDto): Promise<{ message: string; email: string }> {
     const exists = await this.usersService.findByEmail(dto.email);
     if (exists) throw new ConflictException('Email already registered');
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
-    const user = await this.usersService.create({
+    await this.usersService.create({
       name: dto.name,
       email: dto.email,
       passwordHash,
       role: 'user',
     });
 
-    // Fire-and-forget welcome email
-    this.mailService.sendWelcome(user.name, user.email);
+    await this.otpService.requestOtp(undefined, dto.email);
 
-    return this.issueTokenPair(user);
+    return {
+      message: 'Account created. Check your email for a verification code.',
+      email: dto.email,
+    };
   }
 
   async login(dto: LoginDto) {
@@ -60,6 +68,10 @@ export class AuthService {
 
     const passwordMatch = await bcrypt.compare(dto.password, user.passwordHash);
     if (!passwordMatch) throw new UnauthorizedException('Invalid credentials');
+
+    if (!user.emailVerified) {
+      throw new UnauthorizedException('Please verify your email before logging in. Check your inbox for the verification code.');
+    }
 
     return this.issueTokenPair(user);
   }

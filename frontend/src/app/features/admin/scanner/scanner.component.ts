@@ -5,11 +5,14 @@ import {
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConversionService } from '../../../core/services/conversion.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { OcrService, OcrResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 
 type Filter = 'none' | 'grayscale' | 'bw' | 'enhance';
 
@@ -47,7 +50,7 @@ const CROP_KEY_STEP_FINE = 4;
   selector: 'app-scanner',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './scanner.component.html',
   styleUrls: ['./scanner.component.scss'],
 })
@@ -55,6 +58,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly ocr = inject(OcrService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
 
@@ -81,7 +85,9 @@ export class ScannerComponent implements OnInit, OnDestroy {
   // Deterministic fallback only — see the matching comment in ocr.component.ts.
   // The real saved preference is applied after hydration, in the constructor.
   readonly ocrLang = signal(UI_TO_OCR_LANG[this.t.currentLang] ?? 'eng');
-  readonly ocrBusy = signal(false);
+  /** OCR delle pagine scansionate: upload con avanzamento, annullabile. */
+  readonly ocrReq = new TrackedRequest();
+  readonly ocrBusy = this.ocrReq.active;
   readonly ocrResult = signal<OcrResult | null>(null);
   readonly ocrMsg = signal('');
   readonly ocrMsgOk = signal(false);
@@ -101,9 +107,9 @@ export class ScannerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Free Document Scanner — Camera to PDF Online',
-      description: 'Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup.',
-      url: 'https://gentsallaku.it/lab/scanner',
+      title: this.t.instant('scanner.seo_title'),
+      description: this.t.instant('scanner.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/scanner', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
@@ -437,25 +443,26 @@ export class ScannerComponent implements OnInit, OnDestroy {
   runOcr(): void {
     const pages = this.pages();
     if (pages.length === 0 || this.ocrBusy()) return;
-    this.ocrBusy.set(true);
     this.ocrMsg.set('');
     this.ocrMsgOk.set(false);
     this.ocrResult.set(null);
     this.ocrCopied.set(false);
 
     const images = pages.map((p, i) => ({ blob: p.blob, name: `scan-${i + 1}.jpg` }));
-    this.ocr.extract(images, this.ocrLang()).subscribe({
+    this.ocrReq.run(this.ocr.extract(images, this.ocrLang()), {
       next: (res) => {
-        this.ocrBusy.set(false);
         this.ocrResult.set(res);
         this.ocrMsg.set(`✅ ${this.t.instant('ocr.success')}`);
         this.ocrMsgOk.set(true);
       },
       error: (err) => {
-        this.ocrBusy.set(false);
         this.ocrMsg.set(`❌ ${this.ocrErrText(err)}`);
       },
     });
+  }
+
+  cancelOcr(): void {
+    this.ocrReq.cancel();
   }
 
   sendPdfToWorkspace(): void {

@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { LiveHandoffService } from './live-handoff.service';
+import { LiveHandoffService, SOCKET_IO } from './live-handoff.service';
+import { AnalyticsTrackingService } from './analytics-tracking.service';
 import { environment } from '@env/environment';
 
 type Handler = (payload?: unknown) => void;
@@ -29,12 +30,10 @@ class MockSocket {
 
 let lastSocket: MockSocket | undefined;
 
-vi.mock('socket.io-client', () => ({
-  io: vi.fn(() => {
-    lastSocket = new MockSocket();
-    return lastSocket;
-  }),
-}));
+const mockIo = vi.fn(() => {
+  lastSocket = new MockSocket();
+  return lastSocket;
+});
 
 const HANDOFF_URL = `${environment.apiUrl}/chatbot/s1/live-handoff`;
 
@@ -51,7 +50,12 @@ describe('LiveHandoffService', () => {
     lastSocket = undefined;
     sessionStorage.clear();
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
+        { provide: SOCKET_IO, useValue: mockIo },
+      ],
     });
     service = TestBed.inject(LiveHandoffService);
     httpMock = TestBed.inject(HttpTestingController);

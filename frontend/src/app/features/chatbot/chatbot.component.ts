@@ -7,6 +7,7 @@ import {
   AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  HostListener,
   inject,
   computed,
 } from '@angular/core';
@@ -40,6 +41,7 @@ const TYPING_DEBOUNCE_MS = 1200;
 })
 export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLElement>;
+  @ViewChild('chatInput') private chatInputRef?: ElementRef<HTMLTextAreaElement>;
 
   readonly chatbot: ChatbotService = inject(ChatbotService);
   readonly liveHandoff: LiveHandoffService = inject(LiveHandoffService);
@@ -54,6 +56,16 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   isOpen = false;
   inputText = '';
   panelView: PanelView = 'chat';
+
+  /** Messaggi (assistente/agente) arrivati mentre il pannello era chiuso — azzerato all'apertura. */
+  unreadCount = 0;
+  private lastSeenBotLen = 0;
+  private lastSeenLiveLen = 0;
+
+  /** Vero quando lo scroll dei messaggi è vicino al fondo — governa l'auto-scroll vs il pulsante "nuovi messaggi". */
+  isNearBottom = true;
+  showJumpToBottom = false;
+  private readonly SCROLL_BOTTOM_THRESHOLD = 80;
 
   liveState: LiveHandoffState = 'idle';
   liveMinimized = false;
@@ -99,6 +111,11 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   ngOnInit(): void {
     this.subs.add(
       this.chatbot.messages$.subscribe((msgs: ChatMessage[]) => {
+        const newOnes = msgs.slice(this.lastSeenBotLen);
+        this.lastSeenBotLen = msgs.length;
+        if (!this.isOpen) {
+          this.unreadCount += newOnes.filter((m) => m.role !== 'user').length;
+        }
         this.messages = msgs;
         this.shouldScroll = true;
         this.cdr.markForCheck();
@@ -120,7 +137,14 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.subs.add(
       this.chatbot.isOpen$.subscribe((open: boolean) => {
         this.isOpen = open;
-        if (open) this.shouldScroll = true;
+        if (open) {
+          this.shouldScroll = true;
+          this.unreadCount = 0;
+          this.isNearBottom = true;
+          this.showJumpToBottom = false;
+          // L'input esiste solo dopo che l'@if del pannello lo renderizza.
+          setTimeout(() => this.chatInputRef?.nativeElement.focus(), 0);
+        }
         this.cdr.markForCheck();
       }),
     );
@@ -138,6 +162,11 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
     this.subs.add(
       this.liveHandoff.liveMessages$.subscribe((msgs) => {
+        const newOnes = msgs.slice(this.lastSeenLiveLen);
+        this.lastSeenLiveLen = msgs.length;
+        if (!this.isOpen) {
+          this.unreadCount += newOnes.filter((m) => m.from === 'agent').length;
+        }
         this.liveMessages = msgs.map((m) => ({
           role: m.from === 'visitor' ? 'user' : 'agent',
           content: m.text,
@@ -163,8 +192,52 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (this.shouldScroll) {
-      this.scrollToBottom();
+      if (this.isNearBottom) {
+        this.scrollToBottom();
+      } else {
+        this.showJumpToBottom = true;
+      }
       this.shouldScroll = false;
+    }
+  }
+
+  /** Aggiorna isNearBottom mentre l'utente scorre — governa se il prossimo messaggio forza lo scroll o mostra il pulsante "nuovi messaggi". */
+  onMessagesScroll(): void {
+    const el = this.messagesContainer?.nativeElement;
+    if (!el) return;
+    this.isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < this.SCROLL_BOTTOM_THRESHOLD;
+    if (this.isNearBottom) this.showJumpToBottom = false;
+  }
+
+  jumpToBottom(): void {
+    this.isNearBottom = true;
+    this.showJumpToBottom = false;
+    this.scrollToBottom();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.isOpen) this.requestClose();
+  }
+
+  /** Focus trap manuale sul pannello: Tab/Shift+Tab restano dentro finché è aperto come dialog. */
+  onPanelTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const panel = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
     }
   }
 
@@ -227,6 +300,9 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.chatbot.clearSession();
     this.liveHandoff.reset();
     this.panelView = 'chat';
+    this.lastSeenBotLen = 0;
+    this.lastSeenLiveLen = 0;
+    this.unreadCount = 0;
   }
 
   // ── Chiusura/cancellazione durante una chat live con Gent ────────────────

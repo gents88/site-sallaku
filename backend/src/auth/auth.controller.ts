@@ -7,7 +7,11 @@ import {
   Get,
   UseGuards,
   Request,
+  Req,
+  Res,
+  UnauthorizedException,
 } from '@nestjs/common';
+import type { Request as ExpressRequest, Response } from 'express';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
@@ -17,6 +21,7 @@ import { RequestOtpDto } from './dto/request-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { applyRefreshCookie, clearRefreshCookie, readRefreshCookie, refreshCookieEnabled } from './refresh-cookie';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -36,8 +41,8 @@ export class AuthController {
   // 10 login attempts per 60 seconds per IP — brute force protection
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Login and receive JWT access + refresh tokens' })
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+    return applyRefreshCookie(res, await this.authService.login(dto));
   }
 
   @Post('otp/request')
@@ -53,16 +58,19 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Verify OTP and receive JWT access + refresh tokens' })
-  verifyOtp(@Body() dto: VerifyOtpDto) {
-    return this.authService.verifyOtp(dto.phone, dto.email, dto.otp);
+  async verifyOtp(@Body() dto: VerifyOtpDto, @Res({ passthrough: true }) res: Response) {
+    return applyRefreshCookie(res, await this.authService.verifyOtp(dto.phone, dto.email, dto.otp));
   }
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @ApiOperation({ summary: 'Obtain a new access token using a valid refresh token' })
-  refresh(@Body() dto: RefreshTokenDto) {
-    return this.authService.refreshAccessToken(dto.refreshToken);
+  async refresh(@Body() dto: RefreshTokenDto, @Req() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+    // Body (modalità classica) o cookie httpOnly (AUTH_REFRESH_COOKIE=true).
+    const token = dto.refreshToken ?? (refreshCookieEnabled() ? readRefreshCookie(req) : undefined);
+    if (!token) throw new UnauthorizedException('Missing refresh token');
+    return applyRefreshCookie(res, await this.authService.refreshAccessToken(token));
   }
 
   @Post('logout')
@@ -71,7 +79,8 @@ export class AuthController {
   @ApiBearerAuth('access-token')
   @SkipThrottle()
   @ApiOperation({ summary: 'Invalidate the current session refresh token' })
-  logout(@Request() req: any) {
+  logout(@Request() req: any, @Res({ passthrough: true }) res: Response) {
+    if (refreshCookieEnabled()) clearRefreshCookie(res);
     return this.authService.logout(req.user._id.toString());
   }
 

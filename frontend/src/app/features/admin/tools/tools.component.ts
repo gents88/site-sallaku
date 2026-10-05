@@ -1,24 +1,43 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, HostListener, Injector, OnInit, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { sidebarGroups } from '../../../core/navigation/nav-registry';
+import { NavIconComponent, navIconColor } from '../../../shared/components/nav-icon/nav-icon.component';
+import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { LabActivityService } from '../../../core/services/lab-activity.service';
+import { WorkspaceService } from '../../../core/services/workspace.service';
+import { labToolEntry, labToolsAccepting, workspaceInput } from '../../../core/navigation/lab-tools';
+import { NavEntry } from '../../../core/navigation/nav-registry';
 
 interface ToolCard {
+  id: string;
   icon: string;
   titleKey: string;
   descKey: string;
   route: string;
-  group: 'ai' | 'tools';
   badge?: string;
+}
+
+function hasFiles(event: DragEvent): boolean {
+  return Array.from(event.dataTransfer?.types ?? []).includes('Files');
+}
+
+/** Card del Lab dal registro unico: stesse voci (e stesso ordine) della sidebar. */
+function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
+  return sidebarGroups(false)
+    .find(g => g.id === group)!
+    .items.map(e => ({ id: e.id, icon: e.icon, titleKey: e.searchTitleKey ?? e.labelKey, descKey: e.descKey ?? '', route: e.route }));
 }
 
 @Component({
   selector: 'app-tools',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent, NavIconComponent, LangUrlPipe],
   template: `
     <div class="page">
       <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
@@ -31,7 +50,65 @@ interface ToolCard {
         <p>{{ 'tools.subtitle' | translate }}</p>
       </header>
 
-      <a routerLink="/lab/workspace" class="workspace-banner">
+      <!-- Trascina un file (o sceglilo): finisce nel workspace e il riquadro qui sotto propone gli strumenti adatti. -->
+      <div class="drop-card">
+        <span class="drop-card__icon" aria-hidden="true">📄</span>
+        <p>{{ 'lab_drop.hint' | translate }}</p>
+        <label class="drop-card__pick">
+          {{ 'lab_drop.pick' | translate }}
+          <input type="file" class="visually-hidden-input" (change)="onPick($event)" />
+        </label>
+      </div>
+
+      @if (dragging()) {
+        <div class="drop-overlay" aria-hidden="true">
+          <div class="drop-overlay__box">
+            <span class="drop-card__icon">📥</span>
+            {{ 'lab_drop.release' | translate }}
+          </div>
+        </div>
+      }
+
+      @if (pending() || recentTools().length) {
+        <section class="tools-section resume" aria-labelledby="resume-title">
+          <h2 id="resume-title" class="section-title">
+            <span class="section-emoji" aria-hidden="true">⏱️</span> {{ 'lab_next.resume_title' | translate }}
+          </h2>
+          @if (pending(); as p) {
+            <div class="resume-pending" tabindex="-1">
+              <p>
+                {{ 'lab_next.pending' | translate: { name: p.filename } }}
+                @if (ignoredFiles()) {
+                  <small class="resume-note">{{ 'lab_drop.only_first' | translate: { count: ignoredFiles() } }}</small>
+                }
+              </p>
+              <div class="resume-chips">
+                @for (step of pendingSteps(); track step.id) {
+                  <a [routerLink]="step.route | langUrl" class="resume-chip">
+                    <span class="icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(step.icon)"><app-nav-icon [name]="step.icon" [size]="14" /></span>
+                    {{ (step.searchTitleKey ?? step.labelKey) | translate }}
+                  </a>
+                }
+              </div>
+            </div>
+          }
+          @if (recentTools().length) {
+            <div class="cards-grid">
+              @for (tool of recentTools(); track tool.id) {
+                <a [routerLink]="tool.route | langUrl" class="tool-card tool-card--recent icon-tile--lift">
+                  <div class="card-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(tool.icon)"><app-nav-icon [name]="tool.icon" [size]="22" /></div>
+                  <div class="card-body">
+                    <h3>{{ (tool.searchTitleKey ?? tool.labelKey) | translate }}</h3>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </a>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      <a [routerLink]="'/lab/workspace' | langUrl" class="workspace-banner">
         <div class="workspace-banner-icon">🔗</div>
         <div class="workspace-banner-body">
           <h2>{{ 'workspace.title' | translate }}</h2>
@@ -45,9 +122,9 @@ interface ToolCard {
           <span class="section-emoji">🧠</span> {{ 'tools.section_ai' | translate }}
         </h2>
         <div class="cards-grid">
-          @for (card of aiCards; track card.route) {
-            <a [routerLink]="card.route" class="tool-card">
-              <div class="card-icon">{{ card.icon }}</div>
+          @for (card of aiCards; track card.id) {
+            <a [routerLink]="card.route | langUrl" class="tool-card icon-tile--lift">
+              <div class="card-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(card.icon)"><app-nav-icon [name]="card.icon" [size]="22" /></div>
               <div class="card-body">
                 <h3>{{ card.titleKey | translate }}</h3>
                 <p>{{ card.descKey | translate }}</p>
@@ -66,9 +143,9 @@ interface ToolCard {
           <span class="section-emoji">🧰</span> {{ 'tools.section_tools' | translate }}
         </h2>
         <div class="cards-grid">
-          @for (card of toolCards; track card.route) {
-            <a [routerLink]="card.route" class="tool-card tool-card--secondary">
-              <div class="card-icon">{{ card.icon }}</div>
+          @for (card of toolCards; track card.id) {
+            <a [routerLink]="card.route | langUrl" class="tool-card tool-card--secondary icon-tile--lift">
+              <div class="card-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(card.icon)"><app-nav-icon [name]="card.icon" [size]="22" /></div>
               <div class="card-body">
                 <h3>{{ card.titleKey | translate }}</h3>
                 <p>{{ card.descKey | translate }}</p>
@@ -100,6 +177,8 @@ interface ToolCard {
       background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.28);
       font-size: 12px; color: #a78bfa; margin-bottom: 1.25rem; letter-spacing: .03em;
     }
+    /* #a78bfa su sfondo chiaro era 2.3:1 (axe): tonalità più scura in light. */
+    :host-context([data-theme='light']) .header-badge { color: #6d28d9; }
     .badge-dot {
       width: 7px; height: 7px; border-radius: 50%;
       background: #7c3aed; box-shadow: 0 0 6px #7c3aed;
@@ -146,6 +225,56 @@ interface ToolCard {
       p { font-size: .85rem; color: var(--text-secondary, #8b949e); margin: 0; line-height: 1.5; }
     }
 
+    /* ─── Continua da dove eri rimasto ─── */
+    .resume-pending {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem;
+      padding: .9rem 1.1rem; margin-bottom: 1rem;
+      border: 1px dashed rgba(108,99,255,.45); border-radius: 14px;
+      background: rgba(108,99,255,.06);
+      p { margin: 0; font-size: .9rem; color: var(--text-primary, #e6edf3); }
+    }
+    .resume-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .resume-chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .3rem .65rem .3rem .35rem; border-radius: 999px;
+      border: 1px solid var(--border-color, #30363d);
+      color: var(--text-primary, #e6edf3); font-size: .8rem; text-decoration: none;
+      &:hover, &:focus-visible { border-color: rgba(108,99,255,.6); }
+    }
+    .tool-card--recent { padding: .8rem 1rem; }
+    .resume-note { display: block; margin-top: .25rem; color: var(--text-secondary, #8b949e); }
+
+    /* ─── Drag & drop ─── */
+    .drop-card {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem;
+      padding: 1rem 1.25rem; margin-bottom: 2rem;
+      border: 1.5px dashed var(--border-color, #30363d); border-radius: 14px;
+      p { flex: 1; min-width: 200px; margin: 0; font-size: .9rem; color: var(--text-secondary, #8b949e); }
+    }
+    .drop-card__icon { font-size: 1.5rem; }
+    .drop-card__pick {
+      position: relative; cursor: pointer;
+      padding: .45rem .9rem; border-radius: 10px;
+      border: 1px solid rgba(108,99,255,.45); color: var(--text-primary, #e6edf3);
+      font-size: .85rem; font-weight: 600;
+      &:hover { border-color: rgba(108,99,255,.8); }
+      &:focus-within { outline: 2px solid #7c3aed; outline-offset: 2px; }
+    }
+    .visually-hidden-input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
+    .drop-overlay {
+      position: fixed; inset: 0; z-index: 1200;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(13,17,23,.72); backdrop-filter: blur(2px);
+      pointer-events: none;
+    }
+    .drop-overlay__box {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      padding: 2rem 2.5rem; border-radius: 18px;
+      border: 2px dashed #a78bfa; background: var(--bg-secondary, #161b22);
+      color: var(--text-primary, #e6edf3); font-weight: 700;
+      .drop-card__icon { font-size: 2.5rem; }
+    }
+
     /* ─── Section ─── */
     .tools-section { margin-bottom: 3rem; }
 
@@ -188,14 +317,11 @@ interface ToolCard {
     }
 
     .card-icon {
-      font-size: 1.8rem; flex-shrink: 0;
+      flex-shrink: 0;
       width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
-      background: rgba(108,99,255,.1); border-radius: 10px;
-    }
-
-    .tool-card--secondary .card-icon {
-      background: rgba(99,179,255,.08);
+      /* Aspetto 3D (gradiente, luce, ombra): .icon-tile in styles.scss. */
+      border-radius: 12px;
     }
 
     .card-body {
@@ -230,15 +356,16 @@ interface ToolCard {
 })
 export class ToolsComponent implements OnInit {
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly translate = inject(TranslateService);
 
   breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'Free AI PDF Tools & Document Utilities',
-      description: 'Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools powered by GPT-4o. No signup required.',
-      url: 'https://gentsallaku.it/lab',
+      title: this.translate.instant('tools.seo_title'),
+      description: this.translate.instant('tools.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab', this.langService.current())}`,
     });
     this.breadcrumbItems = [
       { label: this.translate.instant('nav.home'), path: '/' },
@@ -274,21 +401,81 @@ export class ToolsComponent implements OnInit {
     ]);
   }
 
-  readonly aiCards: ToolCard[] = [
-    { icon: '🔎', titleKey: 'tools.pdf_search_title',   descKey: 'tools.pdf_search_desc',   route: '/lab/pdf-search',    group: 'ai' },
-    { icon: '📚', titleKey: 'tools.library_title',      descKey: 'tools.library_desc',      route: '/lab/library',       group: 'ai' },
-    { icon: '📋', titleKey: 'tools.pdf_summary_title',  descKey: 'tools.pdf_summary_desc',  route: '/lab/pdf-summary',   group: 'ai' },
-    { icon: '✨', titleKey: 'tools.ai_formatter_title', descKey: 'tools.ai_formatter_desc', route: '/lab/ai-formatter',  group: 'ai' },
-    { icon: '🌐', titleKey: 'tools.pdf_translate_title',descKey: 'tools.pdf_translate_desc',route: '/lab/pdf-translate', group: 'ai' },
-    { icon: '🎞️', titleKey: 'tools.ai_slides_title',   descKey: 'tools.ai_slides_desc',    route: '/lab/ai-ppt',        group: 'ai' },
-  ];
+  readonly iconColor = navIconColor;
+  private readonly labActivity = inject(LabActivityService);
+  private readonly workspace = inject(WorkspaceService);
 
-  readonly toolCards: ToolCard[] = [
-    { icon: '🖊️', titleKey: 'tools.pdf_editor_title', descKey: 'tools.pdf_editor_desc', route: '/lab/pdf-editor', group: 'tools' },
-    { icon: '👁',  titleKey: 'tools.viewer_title',     descKey: 'tools.viewer_desc',     route: '/lab/viewer',     group: 'tools' },
-    { icon: '✏️', titleKey: 'tools.editor_title',      descKey: 'tools.editor_desc',     route: '/lab/editor',     group: 'tools' },
-    { icon: '🔄', titleKey: 'tools.convert_title',     descKey: 'tools.convert_desc',    route: '/lab/convert',    group: 'tools' },
-    { icon: '🔤', titleKey: 'tools.ocr_title',         descKey: 'tools.ocr_desc',        route: '/lab/ocr',        group: 'tools' },
-    { icon: '📷', titleKey: 'tools.scanner_title',     descKey: 'tools.scanner_desc',    route: '/lab/scanner',    group: 'tools' },
-  ];
+  /** Strumenti aperti di recente su questo dispositivo (localStorage). */
+  readonly recentTools = computed(() =>
+    this.labActivity.recent()
+      .map(t => labToolEntry(t.id))
+      .filter((e): e is NavEntry => !!e),
+  );
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  /** Un file viene trascinato sopra la pagina. */
+  readonly dragging = signal(false);
+  /** File oltre il primo nell'ultimo rilascio (si usa solo il primo). */
+  readonly ignoredFiles = signal(0);
+  private dragDepth = 0;
+
+  // Ascoltati su document finché la pagina /lab è aperta: si può rilasciare
+  // ovunque, non solo su un riquadro. Il contatore evita lo sfarfallio dei
+  // dragleave che scattano passando sopra gli elementi figli.
+  @HostListener('document:dragenter', ['$event'])
+  onDragEnter(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    this.dragDepth++;
+    this.dragging.set(true);
+  }
+
+  @HostListener('document:dragover', ['$event'])
+  onDragOver(event: DragEvent): void {
+    if (hasFiles(event)) event.preventDefault(); // senza, il browser aprirebbe il file al posto della pagina
+  }
+
+  @HostListener('document:dragleave', ['$event'])
+  onDragLeave(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    this.dragDepth = Math.max(0, this.dragDepth - 1);
+    if (this.dragDepth === 0) this.dragging.set(false);
+  }
+
+  @HostListener('document:drop', ['$event'])
+  onDrop(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    event.preventDefault();
+    this.dragDepth = 0;
+    this.dragging.set(false);
+    this.useFiles(Array.from(event.dataTransfer?.files ?? []));
+  }
+
+  onPick(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.useFiles(Array.from(input.files ?? []));
+    input.value = '';
+  }
+
+  /** Mette il (primo) file nel workspace e porta l'attenzione sui suggerimenti. */
+  useFiles(files: File[]): void {
+    const [file] = files;
+    if (!file) return;
+    this.workspace.send({ kind: 'file', blob: file, filename: file.name, mime: file.type || undefined, fromTool: 'lab' });
+    this.ignoredFiles.set(files.length - 1);
+    afterNextRender(() => {
+      const box = this.host.nativeElement.querySelector<HTMLElement>('.resume-pending');
+      box?.focus({ preventScroll: true });
+      box?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+    }, { injector: this.injector });
+  }
+
+  /** Risultato in attesa nel workspace (solo in memoria, sparisce al reload). */
+  readonly pending = this.workspace.current;
+  readonly pendingSteps = computed(() => {
+    const item = this.pending();
+    return item ? labToolsAccepting(workspaceInput(item), item.fromTool) : [];
+  });
+
+  readonly aiCards = cardsFor('ai');
+  readonly toolCards = cardsFor('tools');
 }

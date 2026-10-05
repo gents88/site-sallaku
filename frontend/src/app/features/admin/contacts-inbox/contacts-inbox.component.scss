@@ -1,0 +1,55 @@
+.ci-sub { color: var(--text-secondary); margin: .25rem 0 0; font-size: .9rem; }
+
+.ci-toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: 1rem; }
+.ci-search {
+  flex: 1 1 260px; min-width: 0; padding: .6rem .9rem; border-radius: 10px;
+  border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);
+  &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 1px; }
+}
+.ci-filter {
+  display: inline-flex; border: 1px solid var(--border-color); border-radius: 999px; overflow: hidden;
+  button { border: none; background: transparent; color: var(--text-secondary); padding: .45rem .9rem; cursor: pointer; font-size: .85rem; }
+  button.active { background: rgba(79, 106, 245, .15); color: var(--text-primary); }
+  button:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: -2px; }
+}
+.ci-danger { color: var(--color-danger, #ef4444) !important; border-color: rgba(239, 68, 68, .4) !important; }
+.ci-feedback { font-size: .88rem; color: var(--text-secondary); margin: 0 0 .75rem; }
+
+.ci-layout { display: grid; grid-template-columns: 1fr; gap: 1rem; align-items: start; }
+@media (min-width: 1000px) { .ci-layout.has-detail { grid-template-columns: minmax(320px, 2fr) 3fr; } }
+
+.ci-list { padding: .5rem; }
+.ci-state { padding: 2rem 1rem; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: .75rem; }
+.ci-skeleton { height: 68px; margin: .5rem; border-radius: 10px; background: var(--bg-tertiary, rgba(127,127,127,.15)); animation: ci-pulse 1.4s ease-in-out infinite; }
+@keyframes ci-pulse { 50% { opacity: .5; } }
+@media (prefers-reduced-motion: reduce) { .ci-skeleton { animation: none; } }
+
+.ci-selectall { display: flex; gap: .5rem; align-items: center; font-size: .82rem; color: var(--text-secondary); padding: .5rem .75rem; }
+.ci-items { list-style: none; margin: 0; padding: 0; }
+.ci-item {
+  display: flex; gap: .6rem; align-items: flex-start; padding: .35rem .5rem; border-radius: 10px;
+  > input { margin-top: .9rem; }
+  &.active { background: rgba(79, 106, 245, .1); }
+  &.unread .ci-item__subject { font-weight: 700; color: var(--text-primary); }
+}
+.ci-item__open {
+  flex: 1; min-width: 0; text-align: left; border: none; background: transparent; color: inherit; cursor: pointer;
+  padding: .5rem; border-radius: 8px; display: flex; flex-direction: column; gap: .15rem;
+  &:hover { background: rgba(127, 127, 127, .08); }
+  &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); }
+}
+.ci-item__top { display: flex; justify-content: space-between; gap: .5rem; font-size: .9rem; time { color: var(--text-secondary); font-size: .78rem; white-space: nowrap; } }
+.ci-item__subject { font-size: .88rem; color: var(--text-secondary); display: flex; align-items: center; gap: .4rem; }
+.ci-item__preview { font-size: .8rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ci-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary-500, #4f6af5); flex-shrink: 0; }
+.ci-pager { display: flex; justify-content: center; align-items: center; gap: 1rem; padding: .75rem; }
+
+.ci-detail { padding: 1.25rem 1.5rem; position: sticky; top: calc(var(--navbar-height, 72px) + 1rem); }
+.ci-detail__head { display: flex; justify-content: space-between; gap: 1rem; h2 { margin: 0; font-size: 1.2rem; } }
+.ci-close { border: none; background: transparent; color: var(--text-secondary); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.ci-detail__meta { color: var(--text-secondary); font-size: .88rem; margin: .5rem 0 1rem; word-break: break-word; }
+.ci-detail__body { white-space: pre-line; line-height: 1.7; margin-bottom: 1.25rem; }
+.ci-replied { border-left: 3px solid var(--primary-500, #4f6af5); padding: .5rem .9rem; margin-bottom: 1.25rem; font-size: .88rem; color: var(--text-secondary); p { white-space: pre-line; margin: .4rem 0 0; } }
+.ci-reply-label { font-weight: 600; font-size: .9rem; display: block; margin-bottom: .35rem; }
+.ci-reply { width: 100%; padding: .75rem; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); resize: vertical; }
+.ci-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .75rem; }

@@ -1,10 +1,11 @@
-import { Component, ChangeDetectionStrategy, OnDestroy, OnInit, afterNextRender, computed, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, afterNextRender, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
@@ -42,6 +43,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
   private readonly san = inject(DomSanitizer);
   private readonly t   = inject(TranslateService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
 
   readonly searchQuery = signal('');
@@ -61,11 +63,45 @@ export class ConvertComponent implements OnInit, OnDestroy {
 
   breadcrumbItems: BreadcrumbItem[] = [];
 
+  @ViewChild('modalCloseBtn') private modalCloseBtnRef?: ElementRef<HTMLButtonElement>;
+
   constructor() {
     // Client-only, runs once right after the initial (hydrated) render is stable —
     // safe to read localStorage here, unlike a field initializer or ngOnInit, both
     // of which also execute during SSR/prerendering.
     afterNextRender(() => this.favorites.set(this.loadFavs()));
+
+    effect(() => {
+      if (this.openModal()) {
+        setTimeout(() => this.modalCloseBtnRef?.nativeElement.focus(), 0);
+      }
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    if (this.openModal()) this.tryClose();
+  }
+
+  /** Focus trap manuale: Tab/Shift+Tab restano dentro la modale finché è aperta. */
+  onModalTabKey(event: Event): void {
+    const ke = event as KeyboardEvent;
+    const modal = ke.currentTarget as HTMLElement;
+    const focusable = Array.from(
+      modal.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), textarea:not([disabled]), select:not([disabled])',
+      ),
+    );
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ke.shiftKey && document.activeElement === first) {
+      ke.preventDefault();
+      last.focus();
+    } else if (!ke.shiftKey && document.activeElement === last) {
+      ke.preventDefault();
+      first.focus();
+    }
   }
 
   ngOnInit(): void {
@@ -74,9 +110,9 @@ export class ConvertComponent implements OnInit, OnDestroy {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'Free File Converter — PDF, Word, Excel, Images & More',
-      description: `Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — ${this.totalCount} conversion types, free, in your browser. No signup needed.`,
-      url: 'https://gentsallaku.it/lab/convert',
+      title: this.t.instant('convert.seo_title'),
+      description: this.t.instant('convert.seo_description', { count: this.totalCount }),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/convert', this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',

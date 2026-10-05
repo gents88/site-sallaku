@@ -1,0 +1,90 @@
+<section class="nc card" aria-labelledby="nc-title">
+  <header class="nc__head">
+    <h2 id="nc-title">{{ 'newsletter_campaigns.title' | translate }}</h2>
+    <button type="button" class="btn btn-sm btn-primary" (click)="newDraft()" [disabled]="busy()">{{ 'newsletter_campaigns.new' | translate }}</button>
+  </header>
+
+  @if (message(); as m) {
+    <p class="nc__msg" [class.nc__msg--error]="m.error" [attr.role]="m.error ? 'alert' : 'status'">{{ m.key | translate: m.params }}</p>
+  }
+
+  @if (editingId() !== null) {
+    <div class="nc__editor">
+      <label for="nc-subject">{{ 'newsletter_campaigns.subject' | translate }}</label>
+      <input id="nc-subject" class="nc__input" [ngModel]="subject()" (ngModelChange)="subject.set($event)" maxlength="200" />
+      <div class="nc__split">
+        <div>
+          <label for="nc-html">{{ 'newsletter_campaigns.body' | translate }}</label>
+          <textarea id="nc-html" class="nc__input nc__code" rows="14" [ngModel]="html()" (ngModelChange)="html.set($event)"
+                    [placeholder]="'newsletter_campaigns.body_placeholder' | translate"></textarea>
+          <small class="nc__hint">{{ 'newsletter_campaigns.body_hint' | translate }}</small>
+        </div>
+        <div>
+          <span class="nc__label">{{ 'newsletter_campaigns.preview' | translate }}</span>
+          <!-- sandbox senza permessi: nessuno script, nessun form; Angular sanifica comunque srcdoc. -->
+          <iframe class="nc__preview" sandbox="" [srcdoc]="html()" [title]="'newsletter_campaigns.preview' | translate"></iframe>
+        </div>
+      </div>
+      <div class="nc__actions">
+        <button type="button" class="btn btn-sm btn-primary" (click)="saveDraft()" [disabled]="busy()">{{ 'newsletter_campaigns.save_draft' | translate }}</button>
+        <button type="button" class="btn btn-sm" (click)="closeEditor()">{{ 'common.close' | translate }}</button>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="nc__state">{{ 'common.loading' | translate }}</p>
+  } @else if (loadError()) {
+    <div class="nc__state" role="alert">
+      <p>{{ 'newsletter_campaigns.load_error' | translate }}</p>
+      <button type="button" class="btn btn-sm" (click)="load()">{{ 'admin.retry' | translate }}</button>
+    </div>
+  } @else if (!campaigns().length) {
+    <p class="nc__state">{{ 'newsletter_campaigns.empty' | translate }}</p>
+  } @else {
+    <ul class="nc__list">
+      @for (c of campaigns(); track c._id) {
+        <li class="nc__item">
+          <div class="nc__item-head">
+            <strong>{{ c.subject }}</strong>
+            <span class="nc__status nc__status--{{ c.status }}">{{ ('newsletter_campaigns.status_' + c.status) | translate }}</span>
+          </div>
+          <p class="nc__meta">
+            @if (c.status === 'scheduled' && c.scheduledAt) { {{ 'newsletter_campaigns.scheduled_for' | translate: { date: (c.scheduledAt | date: 'dd/MM/yyyy HH:mm') } }} }
+            @if (c.sentAt) { {{ 'newsletter_campaigns.sent_at' | translate: { date: (c.sentAt | date: 'dd/MM/yyyy HH:mm') } }} }
+            @if (c.testSentAt) { · {{ 'newsletter_campaigns.test_done' | translate }} }
+          </p>
+
+          @if (c.status === 'sending' || c.status === 'sent' || c.status === 'cancelled') {
+            <div class="nc__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progress(c)"
+                 [attr.aria-label]="'newsletter_campaigns.progress' | translate">
+              <div class="nc__bar" [style.width.%]="progress(c)"></div>
+            </div>
+            <p class="nc__meta">{{ 'newsletter_campaigns.stats' | translate: { sent: c.stats.sent, failed: c.stats.failed, total: c.stats.total } }}</p>
+          }
+
+          <div class="nc__actions">
+            @if (c.status === 'draft') {
+              <button type="button" class="btn btn-sm" (click)="edit(c)" [disabled]="busy()">{{ 'common.edit' | translate }}</button>
+              <span class="nc__inline">
+                <input type="email" class="nc__input nc__input--sm" [ngModel]="testEmail()" (ngModelChange)="testEmail.set($event)"
+                       [attr.aria-label]="'newsletter_campaigns.test_email' | translate" />
+                <button type="button" class="btn btn-sm" (click)="sendTest(c)" [disabled]="busy() || !testEmail()">{{ 'newsletter_campaigns.send_test' | translate }}</button>
+              </span>
+              <button type="button" class="btn btn-sm btn-primary" (click)="send(c, false)" [disabled]="busy()">{{ 'newsletter_campaigns.send_now' | translate }}</button>
+              <span class="nc__inline">
+                <input type="datetime-local" class="nc__input nc__input--sm" [ngModel]="scheduleAt()" (ngModelChange)="scheduleAt.set($event)"
+                       [attr.aria-label]="'newsletter_campaigns.schedule_at' | translate" />
+                <button type="button" class="btn btn-sm" (click)="send(c, true)" [disabled]="busy() || !scheduleAt()">{{ 'newsletter_campaigns.schedule' | translate }}</button>
+              </span>
+              <button type="button" class="btn btn-sm nc__danger" (click)="remove(c)" [disabled]="busy()">{{ 'common.delete' | translate }}</button>
+            }
+            @if (c.status === 'scheduled' || c.status === 'sending') {
+              <button type="button" class="btn btn-sm nc__danger" (click)="cancel(c)" [disabled]="busy()">{{ 'newsletter_campaigns.cancel' | translate }}</button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>

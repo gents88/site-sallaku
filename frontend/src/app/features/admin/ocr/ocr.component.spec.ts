@@ -2,6 +2,9 @@
 import 'fake-indexeddb/auto';
 import { PLATFORM_ID, importProvidersFrom } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -12,6 +15,8 @@ import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService, IDB_FACTORY } from '../../../core/services/library.service';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { BreadcrumbStubComponent } from '../../../../testing/breadcrumb-stub';
 
 type NewDocMeta = Parameters<LibraryService['add']>[0];
 
@@ -48,28 +53,33 @@ describe('OcrComponent — collegamento con la Libreria', () => {
       renderPageToBlob: vi.fn().mockResolvedValue(new Blob([new Uint8Array(4)], { type: 'image/png' })),
     };
     ocrSvc = {
+      // UploadEvent: OcrService ora espone avanzamento dell'upload + risultato finale.
       extract: vi.fn().mockReturnValue(
-        of({
+        of({ type: 'done', body: {
           lang: 'ita',
           text: 'pagina uno\n\npagina due',
           pages: [
             { index: 0, text: 'testo riconosciuto pagina uno', confidence: 91 },
             { index: 1, text: 'testo riconosciuto pagina due', confidence: 88 },
           ],
-        }),
+        } }),
       ),
     };
 
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: Router, useValue: { url: '/lab/ocr', navigateByUrl: vi.fn() } },
         { provide: IDB_FACTORY, useValue: new IDBFactory() },
         { provide: OcrService, useValue: ocrSvc },
         { provide: PdfjsService, useValue: pdfjs },
-        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn() } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });
+    TestBed.overrideComponent(OcrComponent, { remove: { imports: [BreadcrumbComponent] }, add: { imports: [BreadcrumbStubComponent] } });
 
     library = TestBed.inject(LibraryService);
     workspace = TestBed.inject(WorkspaceService);

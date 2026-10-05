@@ -1,9 +1,11 @@
-import { AfterViewChecked, ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, AfterViewChecked, ChangeDetectorRef, Component, HostListener, inject, OnInit, OnDestroy, ViewChild, ElementRef, DestroyRef } from '@angular/core';
+import { HasUnsavedChanges, warnOnUnload } from '../../../core/guards/unsaved-changes.guard';
+import { DirtyTracker } from '../../../shared/utils/dirty-tracker';
 import { PrismService } from '../../../shared/services/prism.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -26,6 +28,7 @@ import {
   BlogPdfUploadComponent,
   BlogPdfUploadRequest,
 } from './components/blog-pdf-upload/blog-pdf-upload.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface PdfPreview {
   fileName: string;
@@ -36,8 +39,11 @@ interface PdfPreview {
   rawText: string;
 }
 
+export type BlogStatusFilter = 'all' | 'published' | 'draft';
+
 @Component({
   selector: 'app-blog-manage',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
@@ -49,10 +55,47 @@ interface PdfPreview {
   templateUrl: './blog-manage.component.html',
   styleUrls: ['./blog-manage.component.scss'],
 })
-export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked, HasUnsavedChanges {
+  private readonly dirty = new DirtyTracker();
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+
+  /** Il blog ha l'autosave: è "sporco" solo ciò che non è ancora finito né in un salvataggio né in un autosave. */
+  hasUnsavedChanges(): boolean {
+    return this.showForm && this.dirty.isDirty(this.buildPayload(false));
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    warnOnUnload(event, this.hasUnsavedChanges());
+  }
+
   readonly pdfGenerationEnabled = environment.blogPdfUploadEnabled;
 
   posts: Post[] = [];
+  /** Filtro della lista, sincronizzato con ?status= (la card "Bozze" della dashboard apre ?status=draft). */
+  statusFilter: BlogStatusFilter = 'all';
+
+  get visiblePosts(): Post[] {
+    if (this.statusFilter === 'all') return this.posts;
+    const published = this.statusFilter === 'published';
+    return this.posts.filter(p => !!p.published === published);
+  }
+
+  get draftCount(): number {
+    return this.posts.filter(p => !p.published).length;
+  }
+
+  /** Cambia filtro aggiornando l'URL, così è condivisibile e sopravvive al refresh. */
+  setStatusFilter(filter: BlogStatusFilter): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { status: filter === 'all' ? null : filter },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
   loading = true;
   showForm = false;
   editingId: string | null = null;
@@ -212,7 +255,17 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     private t: TranslateService,
   ) {}
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.load();
+    // takeUntilDestroyed, non destroy$: destroy$ viene emesso anche alla chiusura del form (autosave).
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      const status = params.get('status');
+      this.statusFilter = status === 'draft' || status === 'published' ? status : 'all';
+      this.cdr.markForCheck();
+    });
+    // ?new=1 dalla palette Ctrl+K ("Nuovo articolo"): apre direttamente il form.
+    if (this.route.snapshot.queryParamMap.get('new') === '1') this.openCreate();
+  }
 
   ngAfterViewChecked(): void {
     if (this.needsPreviewHighlight && this.previewContentRef) {
@@ -256,8 +309,10 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.resetGenerationState();
     this.form.reset({ language: 'it' });
     this.showForm = true;
+    this.dirty.mark(this.buildPayload(false));
     this.setupAutoSave();
     this.setupSlugFromTitle();
+    this.scrollToTop();
   }
 
   openEdit(post: Post): void {
@@ -283,11 +338,22 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       excerpt_es: post.excerpt_es || '', excerpt_fr: post.excerpt_fr || '', excerpt_de: post.excerpt_de || '',
     });
     this.showForm = true;
+    this.dirty.mark(this.buildPayload(false));
     this.setupAutoSave();
     this.setupSlugFromTitle();
+    this.scrollToTop();
+  }
+
+  /** Il form sta sopra la lista: se si è scrollati in basso sembra che la penna non faccia nulla. */
+  private scrollToTop(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   closeForm(): void {
+    if (this.hasUnsavedChanges() && !confirm(this.t.instant('common.unsaved_confirm'))) return;
+    this.dirty.reset();
     this.showForm = false;
     this.showPreview = false;
     this.pdfPreview = null;
@@ -336,6 +402,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
     const payload = this.buildPayload(false);
     this.autoSaving = true;
     this.autosaveStatus = 'saving';
+    const autosaved = payload;
 
     const req$ = this.editingId
       ? this.blogService.update(this.editingId, payload)
@@ -346,6 +413,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.autoSaving = false;
         this.autosaveStatus = 'saved';
         this.autosaveTime = new Date();
+        this.dirty.mark(autosaved);
         if (!this.editingId) {
           this.editingId = post._id;
         }
@@ -390,6 +458,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
       next: () => {
         this.saving = false;
         this.showForm = false;
+        this.dirty.reset();
         this.autosaveStatus = 'idle';
         this.cdr.markForCheck();
         this.snackBar.open(
@@ -405,6 +474,18 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked 
         this.cdr.markForCheck();
         this.snackBar.open(this.resolveSaveError(error), this.t.instant('common.close'), { duration: 4500 });
       },
+    });
+  }
+
+  /** Moves a published post back to draft; viewCount and publishedAt are kept server-side. */
+  unpublish(post: Post): void {
+    this.blogService.update(post._id, { published: false }).subscribe({
+      next: updated => {
+        this.posts = this.posts.map(p => (p._id === post._id ? { ...p, published: updated.published } : p));
+        this.cdr.markForCheck();
+        this.snackBar.open(this.t.instant('blog_manage.unpublished_msg'), this.t.instant('common.close'), { duration: 3000 });
+      },
+      error: error => this.snackBar.open(this.resolveSaveError(error), this.t.instant('common.close'), { duration: 4500 }),
     });
   }
 
