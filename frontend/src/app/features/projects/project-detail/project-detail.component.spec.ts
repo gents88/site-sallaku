@@ -17,13 +17,13 @@ const project = {
   translations: { en: { title: 'Management app', problem: 'The problem' } },
 } as Project;
 
-async function setup(getBySlug: ProjectsService['getBySlug'], lang: 'it' | 'en' = 'it') {
+async function setup(getBySlug: ProjectsService['getBySlug'], lang: 'it' | 'en' = 'it', all: Project[] = []) {
   const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) };
   TestBed.configureTestingModule({
     imports: [TranslateModule.forRoot()],
     providers: [
       provideRouter([]),
-      { provide: ProjectsService, useValue: { getBySlug: vi.fn(getBySlug) } },
+      { provide: ProjectsService, useValue: { getBySlug: vi.fn(getBySlug), getAll: vi.fn(() => of(all)) } },
       { provide: LanguageService, useValue: { current: signal(lang) } },
       { provide: SeoService, useValue: seo },
     ],
@@ -61,5 +61,29 @@ describe('ProjectDetailComponent', () => {
   it('shows a retryable error on other failures', async () => {
     const { el } = await setup(() => throwError(() => ({ status: 500 })));
     expect(el.querySelector('[role="alert"]')?.textContent).toContain('project_detail.load_error');
+  });
+
+  describe('related case studies', () => {
+    const other = (id: string, technologies: string[], extra: Partial<Project> = {}) =>
+      ({ ...project, _id: id, slug: `p-${id}`, title: `Progetto ${id}`, technologies, translations: undefined, ...extra }) as Project;
+
+    it('lists other case studies sharing technologies first, linking to their page', async () => {
+      const all = [project, other('2', ['Vue']), other('3', ['angular', 'NestJS']), other('4', [], { problem: '', solution: '', results: '' })];
+      const { el, component } = await setup(() => of(project), 'it', all);
+      expect(component.related().map(p => p._id)).toEqual(['3', '2']);
+      const links = Array.from(el.querySelectorAll<HTMLAnchorElement>('.pd__related-card'));
+      expect(links.map(a => a.getAttribute('href'))).toEqual(['/projects/p-3', '/projects/p-2']);
+    });
+
+    it('shows them translated', async () => {
+      const all = [project, other('2', ['Angular'], { translations: { en: { title: 'Project two' } } })];
+      const { el } = await setup(() => of(project), 'en', all);
+      expect(el.querySelector('.pd__related-card h3')?.textContent).toContain('Project two');
+    });
+
+    it('renders no section when there are no other case studies', async () => {
+      const { el } = await setup(() => of(project), 'it', [project]);
+      expect(el.querySelector('.pd__related')).toBeNull();
+    });
   });
 });
