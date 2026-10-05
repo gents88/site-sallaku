@@ -19,12 +19,13 @@ import { ArticleNotesComponent } from '../../../shared/components/article-notes/
 import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
 import { TocEntry, addHeadingAnchors, applyHeadingIds, extractToc } from '../../../shared/utils/article-toc';
 import { rankRelated } from '../../../shared/utils/related-content';
+import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

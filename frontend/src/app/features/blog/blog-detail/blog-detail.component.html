@@ -44,7 +44,7 @@
           <span class="badge">#{{ tag }}</span>
         }
       </div>
-      <h1>{{ localizedTitle }}</h1>
+      <h1 appVtName="post-title">{{ localizedTitle }}</h1>
       <p class="text-muted post-article__meta">
         @if (post.published && post.publishedAt) {
           <time [dateTime]="post.publishedAt">{{ post.publishedAt | date:'longDate' }}</time>
@@ -108,7 +108,7 @@
           <h2 id="related-title" class="related__title">{{ 'blog.related_title' | translate }}</h2>
           <div class="related__grid">
             @for (item of related; track item._id) {
-              <a [routerLink]="('/blog/' + relatedSlug(item)) | langUrl" class="related__card" appTrackClick eventType="blog" label="blog_related_post">
+              <a [routerLink]="('/blog/' + relatedSlug(item)) | langUrl" class="related__card" appVtNameOnClick="post-title" vtTarget="h3" appTrackClick eventType="blog" label="blog_related_post">
                 @if (item.tags.length) {
                   <span class="related__tag">#{{ item.tags[0] }}</span>
                 }

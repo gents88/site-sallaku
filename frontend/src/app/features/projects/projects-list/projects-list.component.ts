@@ -11,6 +11,7 @@ import { ProjectsService } from '../../../core/services/projects.service';
 import { Project } from '../../../core/models/project.model';
 import { hasCaseStudy, localizeProject } from '../../../core/models/localize-content';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 
 interface ProjectItem {
   icon: string;
@@ -23,7 +24,7 @@ interface ProjectItem {
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslateModule, BreadcrumbComponent, RouterLink, LangUrlPipe],
+  imports: [CommonModule, MatIconModule, TranslateModule, BreadcrumbComponent, RouterLink, LangUrlPipe, ViewTransitionNameOnClickDirective],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,6 +54,14 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
     return tech ? this.projects().filter(p => p.technologies.includes(tech)) : this.projects();
   });
   readonly hasCaseStudy = hasCaseStudy;
+  private readonly prefetched = new Set<string>();
+
+  /** Scalda la cache del case study mentre il puntatore è sulla card. */
+  prefetch(p: Project): void {
+    if (!hasCaseStudy(p) || this.prefetched.has(p.slug)) return;
+    this.prefetched.add(p.slug);
+    this.projectsService.getBySlug(p.slug).subscribe({ error: () => this.prefetched.delete(p.slug) });
+  }
 
   toggleTech(tech: string): void {
     this.selectedTech.update(current => (current === tech ? null : tech));

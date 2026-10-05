@@ -41,7 +41,13 @@
 
     <div class="posts-grid">
       @for (post of visiblePosts; track post._id) {
-        <article class="card post-card fade-in-up">
+        <article
+          class="card post-card fade-in-up"
+          appVtNameOnClick="post-title"
+          vtTarget=".post-card__title"
+          (pointerenter)="prefetch(post)"
+          (focusin)="prefetch(post)"
+        >
           @if (post.coverImage) {
             <img [ngSrc]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" width="640" height="360" />
           } @else {
