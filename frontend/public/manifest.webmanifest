@@ -25,6 +25,13 @@
   "categories": ["portfolio", "productivity", "developer"],
   "shortcuts": [
     {
+      "name": "Lab",
+      "short_name": "Lab",
+      "description": "PDF & AI tools",
+      "url": "/lab",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
       "name": "Projects",
       "short_name": "Projects",
       "url": "/projects",

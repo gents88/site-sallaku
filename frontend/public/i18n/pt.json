@@ -2118,5 +2118,14 @@
     "recent_title": "Você já leu estes e pode abri-los mesmo sem conexão:",
     "no_recent": "Os artigos que você abre ficam salvos para leitura offline.",
     "retry": "Tentar novamente"
+  },
+  "install": {
+    "title": "Instale o Lab como app",
+    "text": "Abra as ferramentas de PDF e IA com um toque, em tela cheia e offline para as páginas já visitadas.",
+    "ios_text_before": "Toque em",
+    "ios_share": "Compartilhar",
+    "ios_text_after": "e depois «Adicionar à Tela de Início».",
+    "cta": "Instalar",
+    "later": "Agora não"
   }
 }

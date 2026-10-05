@@ -2118,5 +2118,14 @@
     "recent_title": "Diese hast du bereits gelesen und kannst sie auch ohne Verbindung öffnen:",
     "no_recent": "Geöffnete Artikel werden zum Offline-Lesen gespeichert.",
     "retry": "Erneut versuchen"
+  },
+  "install": {
+    "title": "Installiere das Lab als App",
+    "text": "Öffne die PDF- und KI-Tools mit einem Tipp, im Vollbild und offline für bereits besuchte Seiten.",
+    "ios_text_before": "Tippe auf",
+    "ios_share": "Teilen",
+    "ios_text_after": "und dann „Zum Home-Bildschirm“.",
+    "cta": "Installieren",
+    "later": "Nicht jetzt"
   }
 }

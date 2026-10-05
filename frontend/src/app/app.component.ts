@@ -20,12 +20,14 @@ import { SessionTimeoutModalComponent } from './shared/components/session-timeou
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
 import { SearchOverlayComponent } from './shared/components/search-overlay/search-overlay.component';
 import { OfflineBannerComponent } from './shared/components/offline-banner/offline-banner.component';
+import { InstallPromptComponent } from './shared/components/install-prompt/install-prompt.component';
+import { InstallPromptService } from './core/services/install-prompt.service';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent, InstallPromptComponent],
   template: `
     <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
     <app-navbar />
@@ -33,6 +35,7 @@ import { OfflineBannerComponent } from './shared/components/offline-banner/offli
     <app-sidebar />
     <app-search-overlay />
     <app-offline-banner />
+    <app-install-prompt />
     <main id="main-content" tabindex="-1">
       <router-outlet />
     </main>
@@ -433,6 +436,7 @@ export class AppComponent implements OnInit {
     public inactivity: InactivityService,
     private platformUi: PlatformUiService,
     private appUpdate: AppUpdateService,
+    private installPrompt: InstallPromptService,
     private adminNotifications: AdminNotificationsService,
     private onboardingTour: OnboardingTourService,
     private seoService: SeoService,
@@ -448,6 +452,7 @@ export class AppComponent implements OnInit {
       this.inactivity.init();
       this.platformUi.init();
       this.appUpdate.init();
+      this.installPrompt.init();
       this.adminNotifications.init();
       this.onboardingTour.scheduleAutoStart();
     }
