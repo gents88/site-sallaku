@@ -679,6 +679,7 @@
     "reading_time": "{{count}} Min. Lesezeit",
     "toc_title": "In diesem Artikel",
     "related_title": "Weiterlesen",
+    "related_subtitle": "Weitere Artikel zu denselben Themen",
     "copy_code": "Kopieren",
     "copied": "Kopiert!",
     "copy_failed": "Kopieren fehlgeschlagen",

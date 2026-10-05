@@ -1031,6 +1031,13 @@
   </url>
 
   <url>
+    <loc>https://gentsallaku.it/blog/angular-con-looker-embedded-zero-boilerplate-tabelle-dati</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
     <loc>https://gentsallaku.it/blog/case-study-laboratorio-strumenti-pdf-e-ia</loc>
     <lastmod>2026-10-03</lastmod>
     <changefreq>monthly</changefreq>
@@ -1424,6 +1431,48 @@
 
   <url>
     <loc>https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-with-looker-embedded-zero-boilerplate-data-tables</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/angular-me-looker-embedded-zero-boilerplate-tabela-te-dhenash</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/angular-con-looker-embedded-cero-boilerplate-tablas-de-datos</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/angular-com-looker-embedded-zero-boilerplate-tabelas-de-dados</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/angular-avec-looker-embedded-zero-boilerplate-tableaux-de-donnees</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/angular-mit-looker-embedded-kein-boilerplate-fuer-datentabellen</loc>
     <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>

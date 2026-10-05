@@ -679,6 +679,7 @@
     "reading_time": "{{count}} min lexim",
     "toc_title": "Në këtë artikull",
     "related_title": "Lexo edhe",
+    "related_subtitle": "Artikuj të tjerë për të njëjtat tema",
     "copy_code": "Kopjo",
     "copied": "U kopjua!",
     "copy_failed": "Kopjimi dështoi",
