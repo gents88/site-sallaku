@@ -26,3 +26,9 @@ export interface RegisterPayload {
 export interface OtpRequestResponse {
   message: string;
 }
+
+/** Returned by /auth/register: the account exists but is unverified — no tokens yet. */
+export interface RegisterResponse {
+  message: string;
+  email: string;
+}

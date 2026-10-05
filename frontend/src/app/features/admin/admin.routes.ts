@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../../core/guards/auth.guard';
+import { unsavedChangesGuard } from '../../core/guards/unsaved-changes.guard';
 
 export const adminRoutes: Routes = [
   // ── Admin-only: overview + content management ────────────────────────────
@@ -16,20 +17,35 @@ export const adminRoutes: Routes = [
       import('./ai-assistant/ai-assistant.component').then(m => m.AiAssistantComponent),
   },
   {
+    path: 'contacts',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./contacts-inbox/contacts-inbox.component').then(m => m.ContactsInboxComponent),
+  },
+  {
+    path: 'users',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./users-manage/users-manage.component').then(m => m.UsersManageComponent),
+  },
+  {
     path: 'projects',
     canActivate: [authGuard],
+    canDeactivate: [unsavedChangesGuard],
     loadComponent: () =>
       import('./projects-manage/projects-manage.component').then(m => m.ProjectsManageComponent),
   },
   {
     path: 'experiences',
     canActivate: [authGuard],
+    canDeactivate: [unsavedChangesGuard],
     loadComponent: () =>
       import('./experiences-manage/experiences-manage.component').then(m => m.ExperiencesManageComponent),
   },
   {
     path: 'blog',
     canActivate: [authGuard],
+    canDeactivate: [unsavedChangesGuard],
     loadComponent: () =>
       import('./blog-manage/blog-manage.component').then(m => m.BlogManageComponent),
   },
@@ -52,8 +68,15 @@ export const adminRoutes: Routes = [
       import('./testimonials-manage/testimonials-manage.component').then(m => m.TestimonialsManageComponent),
   },
   {
+    path: 'newsletter',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./newsletter-manage/newsletter-manage.component').then(m => m.NewsletterManageComponent),
+  },
+  {
     path: 'about',
     canActivate: [authGuard],
+    canDeactivate: [unsavedChangesGuard],
     loadComponent: () =>
       import('./about-manage/about-manage.component').then(m => m.AboutManageComponent),
   },

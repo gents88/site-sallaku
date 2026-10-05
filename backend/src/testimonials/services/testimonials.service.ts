@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
@@ -8,6 +8,7 @@ import { TestimonialResponseDto } from '../dto/testimonial-response.dto';
 import { TestimonialAdminItemDto } from '../dto/testimonial-admin-item.dto';
 import { SpamDetectionService } from '../../common/services/spam-detection.service';
 import { TurnstileService } from '../../common/services/turnstile.service';
+import { AdminEventsService } from '../../common/services/admin-events.service';
 
 export type TestimonialModerationStatus = 'pending' | 'approved' | 'spam' | 'all';
 
@@ -17,6 +18,8 @@ export class TestimonialsService {
     @InjectModel(Testimonial.name) private testimonialModel: Model<TestimonialDocument>,
     private spamDetectionService: SpamDetectionService,
     private turnstile: TurnstileService,
+    // @Optional: i test che costruiscono il servizio a mano non devono conoscere il bus.
+    @Optional() private readonly adminEvents?: AdminEventsService,
   ) {}
 
   async createTestimonial(
@@ -74,6 +77,8 @@ export class TestimonialsService {
     });
 
     const saved = await testimonial.save();
+    // Ogni testimonianza non-spam attende moderazione.
+    if (!saved.isSpam) this.adminEvents?.notify('testimonial', saved.authorName);
     return this.mapToResponseDto(saved);
   }
 

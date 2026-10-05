@@ -1,14 +1,29 @@
 import { DOCUMENT } from '@angular/common';
-import { effect, inject, Injectable, signal } from '@angular/core';
-import { fromEvent, merge, Subscription, timer } from 'rxjs';
+import { computed, effect, inject, Injectable, OnDestroy, signal } from '@angular/core';
+import { fromEvent, merge, Subscription, throttleTime, timer } from 'rxjs';
 import { AuthModalService } from './auth-modal.service';
 import { AuthService } from './auth.service';
 
 export const LAST_ACTIVITY_KEY = 'portfolio_last_activity';
 
+/**
+ * Timeout di inattività per ruolo. Prima c'erano due timer sovrapposti:
+ * questo servizio (5 min, con avviso) solo per gli admin e uno in AuthService
+ * (30 min) per tutti — gli utenti 'user' venivano disconnessi senza alcun
+ * avviso, e per gli admin giravano entrambi. Ora c'è un solo timer, con
+ * avviso per tutti. Admin alzato a 15 min: 5 min chiudevano la sessione
+ * durante la scrittura di un articolo.
+ */
+export const INACTIVITY_TIMEOUTS_MS = {
+  admin: 15 * 60 * 1000,
+  user: 30 * 60 * 1000,
+} as const;
+
+/** Granularità dell'attività: un evento al secondo basta, ogni mousemove ricreava timer e scriveva su localStorage. */
+const ACTIVITY_THROTTLE_MS = 1000;
+
 @Injectable({ providedIn: 'root' })
-export class InactivityService {
-  readonly timeoutMs = 5 * 60 * 1000;
+export class InactivityService implements OnDestroy {
   readonly warningMs = 30 * 1000;
   readonly warningVisible = signal(false);
   readonly countdownSeconds = signal(this.warningMs / 1000);
@@ -19,6 +34,9 @@ export class InactivityService {
   private readonly auth = inject(AuthService);
   private readonly authModal = inject(AuthModalService);
   private readonly document = inject(DOCUMENT);
+
+  readonly isAdminSession = computed(() => this.auth.isAdmin());
+  readonly timeoutMs = computed(() => (this.isAdminSession() ? INACTIVITY_TIMEOUTS_MS.admin : INACTIVITY_TIMEOUTS_MS.user));
 
   private initialized = false;
   private lastBroadcastAt = 0;
@@ -37,7 +55,13 @@ export class InactivityService {
     }
 
     this.stopTracking();
-  }, { allowSignalWrites: true });
+  });
+
+  /** Listener su document/window e timer vanno rilasciati con l'injector (test, HMR). */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+    this.clearTimers();
+  }
 
   init(): void {
     if (this.initialized) {
@@ -64,9 +88,12 @@ export class InactivityService {
       return;
     }
 
+    const wasAdmin = this.isAdminSession();
     this.authModal.closeAll();
     this.stopTracking({ clearSharedState: true });
-    this.auth.logout('/dashboard/login');
+    // L'admin torna al login; un utente 'user' perde la sessione sul posto
+    // (AuthService.logout lo rimanda al login solo se era sotto /dashboard).
+    this.auth.logout(wasAdmin ? '/dashboard/login' : undefined);
   }
 
   private bindActivityEvents(): void {
@@ -77,7 +104,7 @@ export class InactivityService {
       fromEvent(window, 'scroll', { passive: true }),
       fromEvent(this.document, 'touchstart', { passive: true }),
       fromEvent(this.document, 'touchmove', { passive: true }),
-    );
+    ).pipe(throttleTime(ACTIVITY_THROTTLE_MS, undefined, { leading: true, trailing: true }));
 
     this.subscriptions.add(
       activity$.subscribe(() => {
@@ -132,7 +159,7 @@ export class InactivityService {
       return;
     }
 
-    const remainingMs = sharedActivityAt + this.timeoutMs - Date.now();
+    const remainingMs = sharedActivityAt + this.timeoutMs() - Date.now();
     if (remainingMs <= 0) {
       // Stale activity key from a previous session — start fresh rather than
       // immediately logging the user out right after login.
@@ -148,7 +175,7 @@ export class InactivityService {
       return;
     }
 
-    const expiresAt = activityAt + this.timeoutMs;
+    const expiresAt = activityAt + this.timeoutMs();
     const remainingMs = expiresAt - Date.now();
 
     if (remainingMs <= 0) {
@@ -238,6 +265,6 @@ export class InactivityService {
   }
 
   private shouldTrack(): boolean {
-    return this.auth.isLoggedIn() && this.auth.isAdmin();
+    return this.auth.isLoggedIn();
   }
 }

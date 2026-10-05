@@ -6,3 +6,9 @@
 .list-item{display:flex;align-items:center;gap:1rem;&__info{flex:1;h3{margin-bottom:0.25rem;}}&__actions{display:flex;gap:0.25rem;}}
 .text-muted{color:var(--color-text-muted);font-size:0.875rem;}
 /* .empty-state → styles.scss (globale, identico) */
+
+/* Riordino */
+.form-hint { font-size: .82rem; color: var(--color-text-muted); margin: 0 0 .75rem; }
+.drag-handle { cursor: grab; color: var(--color-text-muted); display: flex; touch-action: none; }
+.cdk-drag-preview { box-shadow: 0 12px 32px rgba(0,0,0,.35); border-radius: var(--radius-md, 12px); }
+.cdk-drag-placeholder { opacity: .35; }

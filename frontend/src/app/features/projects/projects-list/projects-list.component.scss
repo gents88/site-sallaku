@@ -133,3 +133,19 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ── Progetti dal CMS: filtri per tecnologia e card con immagine ── */
+.project-filters {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; margin-bottom: 2rem;
+}
+.project-filter {
+  padding: .4rem .95rem; border-radius: 999px; font-size: .85rem; cursor: pointer;
+  border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary);
+  transition: background .2s, color .2s, border-color .2s;
+  &:hover { color: var(--text-primary); }
+  &.active { background: rgba(79, 106, 245, .15); border-color: rgba(79, 106, 245, .5); color: var(--text-primary); }
+  &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 2px; }
+}
+.project-visual--image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+a.project-cta { text-decoration: none; color: inherit; }
+.projects-empty { grid-column: 1 / -1; text-align: center; color: var(--text-secondary); }

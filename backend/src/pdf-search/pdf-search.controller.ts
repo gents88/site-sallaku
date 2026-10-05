@@ -10,6 +10,62 @@ import { GutenbergProvider } from './providers/gutenberg.provider';
 // not a generic proxy, to keep this from becoming an SSRF vector.
 const PROXY_ALLOWED_HOSTS = ['archive.org', 'arxiv.org', 'europepmc.org'];
 const PROXY_MAX_BYTES = 100 * 1024 * 1024;
+// archive.org/download/... risponde 302 verso dnNNN.ca.archive.org: pochi hop
+// bastano, e ognuno viene rivalidato contro l'allow-list (vedi fetchAllowListed).
+const PROXY_MAX_REDIRECTS = 5;
+
+/** https + host in allow-list (o suo sottodominio). */
+export function isProxyAllowed(url: URL): boolean {
+  return url.protocol === 'https:'
+    && PROXY_ALLOWED_HOSTS.some((h) => url.hostname === h || url.hostname.endsWith(`.${h}`));
+}
+
+/**
+ * fetch() con redirect gestiti a mano: quello automatico seguirebbe un 302
+ * verso qualsiasi host, scavalcando l'allow-list controllata solo sul primo URL.
+ */
+async function fetchAllowListed(start: URL): Promise<globalThis.Response> {
+  let current = start;
+  for (let hop = 0; hop <= PROXY_MAX_REDIRECTS; hop++) {
+    const res = await fetch(current.toString(), { redirect: 'manual', signal: AbortSignal.timeout(20_000) });
+    if (res.status < 300 || res.status >= 400) return res;
+
+    const location = res.headers.get('location');
+    if (!location) throw new NotFoundException('Could not fetch the requested file');
+    const next = new URL(location, current);
+    if (!isProxyAllowed(next)) throw new BadRequestException('Redirect target is not allow-listed');
+    current = next;
+  }
+  throw new BadRequestException('Too many redirects');
+}
+
+/**
+ * Legge il corpo fermandosi appena supera `maxBytes`: content-length può
+ * mancare o mentire, e arrayBuffer() caricherebbe tutto in memoria prima
+ * di qualsiasi controllo.
+ */
+async function readCapped(res: globalThis.Response, maxBytes: number): Promise<Buffer> {
+  const reader = res.body?.getReader();
+  if (!reader) {
+    const buffer = Buffer.from(await res.arrayBuffer());
+    if (buffer.byteLength > maxBytes) throw new BadRequestException('File is too large to proxy');
+    return buffer;
+  }
+
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      throw new BadRequestException('File is too large to proxy');
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks, total);
+}
 
 @ApiTags('PDF Search')
 @Controller('pdf-search')
@@ -86,10 +142,9 @@ export class PdfSearchController {
       throw new BadRequestException('url is not a valid URL');
     }
     if (parsed.protocol !== 'https:') throw new BadRequestException('url must use https');
-    const allowed = PROXY_ALLOWED_HOSTS.some((h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`));
-    if (!allowed) throw new BadRequestException('url host is not allow-listed');
+    if (!isProxyAllowed(parsed)) throw new BadRequestException('url host is not allow-listed');
 
-    const upstream = await fetch(parsed.toString(), { signal: AbortSignal.timeout(20_000) });
+    const upstream = await fetchAllowListed(parsed);
     if (!upstream.ok) throw new NotFoundException('Could not fetch the requested file');
 
     const contentType = upstream.headers.get('content-type') ?? '';
@@ -98,8 +153,7 @@ export class PdfSearchController {
     const contentLength = Number(upstream.headers.get('content-length') ?? '0');
     if (contentLength > PROXY_MAX_BYTES) throw new BadRequestException('File is too large to proxy');
 
-    const buffer = Buffer.from(await upstream.arrayBuffer());
-    if (buffer.byteLength > PROXY_MAX_BYTES) throw new BadRequestException('File is too large to proxy');
+    const buffer = await readCapped(upstream, PROXY_MAX_BYTES);
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Cache-Control', 'public, max-age=3600');

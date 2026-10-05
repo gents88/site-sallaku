@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
@@ -16,6 +16,7 @@ export interface BreadcrumbItem {
  */
 @Component({
   selector: 'app-breadcrumb',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, RouterLink, LangUrlPipe],
   templateUrl: './breadcrumb.component.html',

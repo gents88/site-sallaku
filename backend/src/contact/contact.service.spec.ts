@@ -43,6 +43,31 @@ describe('ContactService', () => {
     service = module.get<ContactService>(ContactService);
   });
 
+  describe('findPaginated (admin inbox)', () => {
+    function stubQueries() {
+      const q: Record<string, jest.Mock> = {};
+      for (const m of ['sort', 'skip', 'limit']) q[m] = jest.fn(() => q);
+      q.exec = jest.fn().mockResolvedValue([]);
+      mockContactModel.find = jest.fn(() => q);
+      mockContactModel.countDocuments = jest.fn(() => ({ exec: () => Promise.resolve(0) }));
+    }
+
+    it('searches name, email, subject and message with an escaped case-insensitive regex', async () => {
+      stubQueries();
+      await service.findPaginated({ page: 1, limit: 20, unreadOnly: true, q: 'preventivo (urgente)' });
+      const filter = mockContactModel.find.mock.calls[0][0];
+      expect(filter.read).toBe(false);
+      expect(filter.$or.map((c: Record<string, RegExp>) => Object.keys(c)[0])).toEqual(['name', 'email', 'subject', 'message']);
+      expect(filter.$or[0].name.source).toBe('preventivo \\(urgente\\)');
+    });
+
+    it('does not add a search clause for a blank query', async () => {
+      stubQueries();
+      await service.findPaginated({ page: 1, limit: 20, q: '   ' });
+      expect(mockContactModel.find.mock.calls[0][0]).toEqual({});
+    });
+  });
+
   describe('sendMessage', () => {
     it('rejects when the honeypot field is filled', async () => {
       await expect(

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
@@ -10,6 +10,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 
 @Component({
   selector: 'app-cookie-policy',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, TranslateModule, RouterLink, LangUrlPipe, BreadcrumbComponent],
   templateUrl: './cookie-policy.component.html',

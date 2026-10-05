@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, startWith } from 'rxjs/operators';
-import { combineLatest } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
-import { Post } from '../../../core/models/post.model';
 
 // ── Exported types (shared between service and component) ──────────────────────
 
@@ -17,6 +15,8 @@ export interface RecentContact {
   message: string;
   createdAt: string;
   read?: boolean;
+  repliedAt?: string | null;
+  replyText?: string | null;
 }
 
 /** Sessione di chat live che Gent può (ri)aprire dalla dashboard. */
@@ -61,6 +61,13 @@ interface AnalyticsStats {
 }
 
 export interface TopPage { label: string; count: number; }
+
+export interface ToolConversionRow {
+  tool: string;
+  uniqueVisitors: number;
+  becameLead: number;
+  conversionRate: number;
+}
 export interface MonthlyHistoryEntry { month: string; views: number; }
 
 export interface AuditLogEntry {
@@ -156,7 +163,14 @@ interface ChatbotSessionsPage {
   totalPages: number;
 }
 
-interface ConsentStats {
+export interface ContactsPage {
+  data: RecentContact[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export interface ConsentStats {
   total: number;
   analytics: number;
   marketing: number;
@@ -189,9 +203,94 @@ const EMPTY_CHATBOT_STATS: ChatbotStats = {
   totalSessions: 0, totalMessages: 0, interactionsToday: 0, sessionsThisMonth: 0, fallbackRepliesToday: 0,
 };
 
+const EMPTY_CONSENT: ConsentStats = {
+  total: 0, analytics: 0, marketing: 0, preferences: 0, analyticsRate: 0, marketingRate: 0, preferencesRate: 0,
+};
+
 const EMPTY_GSC: SearchConsoleSummary = {
   configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
 };
+
+// ── Overview (GET /stats/overview) ─────────────────────────────────────────────
+
+export interface TopPost { _id: string; title: string; slug: string; viewCount?: number; }
+
+export interface DashboardOverviewData {
+  core: AdminStatsResponse;
+  projectsCount: number;
+  experiencesCount: number;
+  topPosts: TopPost[];
+  advanced: AdvancedAnalytics;
+  analyticsStats: AnalyticsStats;
+  topPages: TopPage[];
+  monthlyHistory: MonthlyHistoryEntry[];
+  toolConversion: ToolConversionRow[];
+  auditLogs: AuditLogEntry[];
+  chatbotStats: ChatbotStats;
+  gsc: SearchConsoleSummary;
+  consentStats: ConsentStats;
+  liveHandoffs: LiveHandoffSession[];
+  systemHealth: SystemHealth | null;
+  systemDetails: SystemDetails | null;
+  systemOps: OperationsInfo | null;
+}
+
+export type OverviewSection = keyof DashboardOverviewData;
+
+export interface DashboardOverview {
+  data: DashboardOverviewData;
+  /** Sezioni fallite lato server: il template mostra un errore lì, non zeri. */
+  failed: ReadonlySet<OverviewSection>;
+  generatedAt: string;
+}
+
+interface RawOverview {
+  generatedAt: string;
+  sections: Partial<Record<OverviewSection, unknown>>;
+  errors: string[];
+}
+
+const OVERVIEW_DEFAULTS: DashboardOverviewData = {
+  core: EMPTY_STATS,
+  projectsCount: 0,
+  experiencesCount: 0,
+  topPosts: [],
+  advanced: EMPTY_ADVANCED,
+  analyticsStats: EMPTY_ANALYTICS_STATS,
+  topPages: [],
+  monthlyHistory: [],
+  toolConversion: [],
+  auditLogs: [],
+  chatbotStats: EMPTY_CHATBOT_STATS,
+  gsc: EMPTY_GSC,
+  consentStats: EMPTY_CONSENT,
+  liveHandoffs: [],
+  systemHealth: null,
+  systemDetails: null,
+  systemOps: null,
+};
+
+/**
+ * Riempie i buchi con valori vuoti (così il template non deve gestire null
+ * ovunque) ma tiene traccia di cosa è fallito davvero: una sezione mancante
+ * o null è "fallita" anche se il server non l'ha elencata in `errors`.
+ */
+export function normalizeOverview(raw: RawOverview): DashboardOverview {
+  const failed = new Set<OverviewSection>();
+  const data = { ...OVERVIEW_DEFAULTS } as Record<OverviewSection, unknown>;
+  const nullable = new Set<OverviewSection>(['systemHealth', 'systemDetails', 'systemOps']);
+
+  for (const key of Object.keys(OVERVIEW_DEFAULTS) as OverviewSection[]) {
+    const value = raw.sections?.[key];
+    const missing = raw.errors?.includes(key) || value === undefined || (value === null && !nullable.has(key));
+    if (missing) {
+      failed.add(key);
+      continue;
+    }
+    data[key] = value;
+  }
+  return { data: data as unknown as DashboardOverviewData, failed, generatedAt: raw.generatedAt };
+}
 
 // ── Service ────────────────────────────────────────────────────────────────────
 
@@ -201,60 +300,19 @@ export class AdminDashboardService {
 
   constructor(private http: HttpClient) {}
 
-  /** Returns a combineLatest of all dashboard data sources. */
-  loadAll(
-    projects$: Observable<unknown[]>,
-    experiences$: Observable<unknown[]>,
-    blogPosts$: Observable<Post[]>,
-  ) {
-    return combineLatest({
-      projects: projects$.pipe(catchError(() => of([])), startWith([])),
-      experiences: experiences$.pipe(catchError(() => of([])), startWith([])),
-      blogPosts: blogPosts$.pipe(catchError(() => of([])), startWith([])),
-      adminStats: this.http.get<AdminStatsResponse>(`${this.api}/stats`).pipe(
-        catchError(() => of(EMPTY_STATS)), startWith(EMPTY_STATS),
-      ),
-      advanced: this.http.get<AdvancedAnalytics>(`${this.api}/analytics/advanced`).pipe(
-        catchError(() => of(EMPTY_ADVANCED)), startWith(EMPTY_ADVANCED),
-      ),
-      analyticsStats: this.http.get<AnalyticsStats>(`${this.api}/analytics`).pipe(
-        catchError(() => of(EMPTY_ANALYTICS_STATS)), startWith(EMPTY_ANALYTICS_STATS),
-      ),
-      topPages: this.http.get<TopPage[]>(`${this.api}/analytics/top-pages`).pipe(
-        catchError(() => of([])), startWith([]),
-      ),
-      monthlyHistory: this.http.get<MonthlyHistoryEntry[]>(`${this.api}/analytics/monthly-history`).pipe(
-        catchError(() => of([])), startWith([]),
-      ),
-      auditLogs: this.http.get<AuditLogEntry[]>(`${this.api}/audit?limit=10`).pipe(
-        catchError(() => of([])), startWith([]),
-      ),
-      chatbotStats: this.http.get<ChatbotStats>(`${this.api}/chatbot/stats`).pipe(
-        catchError(() => of(EMPTY_CHATBOT_STATS)), startWith(EMPTY_CHATBOT_STATS),
-      ),
-      systemHealth: this.http.get<SystemHealth>(`${this.api}/system/health`).pipe(
-        catchError(() => of(null as SystemHealth | null)), startWith(null as SystemHealth | null),
-      ),
-      systemDetails: this.http.get<SystemDetails>(`${this.api}/system/version`).pipe(
-        catchError(() => of(null as SystemDetails | null)), startWith(null as SystemDetails | null),
-      ),
-      systemOps: this.http.get<OperationsInfo>(`${this.api}/system/ops`).pipe(
-        catchError(() => of(null as OperationsInfo | null)), startWith(null as OperationsInfo | null),
-      ),
-      gsc: this.http.get<SearchConsoleSummary>(`${this.api}/analytics/search-console`).pipe(
-        catchError(() => of(EMPTY_GSC)), startWith(EMPTY_GSC),
-      ),
-      liveHandoffs: this.http.get<LiveHandoffSession[]>(`${this.api}/admin/live-handoff/active`).pipe(
-        catchError(() => of([] as LiveHandoffSession[])), startWith([] as LiveHandoffSession[]),
-      ),
-      consentStats: this.http.get<ConsentStats>(`${this.api}/consent/stats`).pipe(
-        catchError(() => of({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats)), startWith({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats),
-      ),
-    });
+  /**
+   * Tutta la dashboard in una richiesta (GET /stats/overview, cache 30s lato
+   * server). Prima erano ~17 richieste parallele a ogni refresh, ognuna con
+   * catchError → zeri: un 401 o un servizio giù mostrava numeri finti invece
+   * di un errore. `fresh` salta la cache (pulsante "Aggiorna").
+   */
+  loadOverview(fresh = false): Observable<DashboardOverview> {
+    const url = `${this.api}/stats/overview${fresh ? '?fresh=1' : ''}`;
+    return this.http.get<RawOverview>(url).pipe(map(normalizeOverview));
   }
 
   getConsentStats() {
-    return this.http.get<ConsentStats>(`${this.api}/consent/stats`).pipe(catchError(() => of({ total:0, analytics:0, marketing:0, preferences:0, analyticsRate:0, marketingRate:0, preferencesRate:0 } as ConsentStats)));
+    return this.http.get<ConsentStats>(`${this.api}/consent/stats`).pipe(catchError(() => of(EMPTY_CONSENT)));
   }
 
   getConsentHistory(limit = 100, skip = 0) {
@@ -265,6 +323,14 @@ export class AdminDashboardService {
     return this.http.get<AdminStatsResponse>(`${this.api}/stats`).pipe(
       catchError(() => of(EMPTY_STATS)),
     );
+  }
+
+  /** Inbox contatti (/dashboard/contacts): paginata, filtro non letti e ricerca. */
+  listContacts(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string }): Observable<ContactsPage> {
+    let params = new HttpParams().set('page', opts.page).set('limit', opts.limit);
+    if (opts.unreadOnly) params = params.set('unreadOnly', 'true');
+    if (opts.q?.trim()) params = params.set('q', opts.q.trim());
+    return this.http.get<ContactsPage>(`${this.api}/contact`, { params });
   }
 
   markContactRead(contactId: string, read: boolean = true): Observable<RecentContact> {
@@ -293,5 +359,9 @@ export class AdminDashboardService {
 
   exportAnalyticsCsv(): Observable<Blob> {
     return this.http.get(`${this.api}/analytics/export/csv`, { responseType: 'blob' });
+  }
+
+  getToolConversion(days = 30): Observable<ToolConversionRow[]> {
+    return this.http.get<ToolConversionRow[]>(`${this.api}/analytics/tool-conversion?days=${days}`);
   }
 }

@@ -44,6 +44,27 @@
           </mat-form-field>
         </div>
 
+        <!-- Case study: pagina /projects/:slug -->
+        <h3 class="form-section-title">{{ 'projects_manage.case_study' | translate }}</h3>
+        <p class="form-hint">{{ 'projects_manage.case_study_hint' | translate }}</p>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'projects_manage.problem_label' | translate }}</mat-label>
+          <textarea matInput formControlName="problem" rows="3"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'projects_manage.solution_label' | translate }}</mat-label>
+          <textarea matInput formControlName="solution" rows="3"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'projects_manage.results_label' | translate }}</mat-label>
+          <textarea matInput formControlName="results" rows="3"></textarea>
+        </mat-form-field>
+
+        <app-translations-editor
+          [fields]="translatableFields"
+          [source]="translationSource"
+          [(translations)]="translations" />
+
         <!-- Technologies chips -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>{{ 'projects_manage.tech_label' | translate }}</mat-label>
@@ -77,7 +98,7 @@
         <mat-checkbox formControlName="featured">{{ 'projects_manage.featured_label' | translate }}</mat-checkbox>
 
         <div class="form-actions">
-          <button mat-button type="button" (click)="showForm = false">{{ 'common.cancel' | translate }}</button>
+          <button mat-button type="button" (click)="cancelForm()">{{ 'common.cancel' | translate }}</button>
           <button mat-raised-button color="primary" type="submit" [disabled]="saving">
             {{ (saving ? 'about_manage.saving' : 'projects_manage.save_project') | translate }}
           </button>
@@ -92,9 +113,11 @@
   } @else if (!projects.length) {
     <p class="empty-state">{{ 'projects_manage.empty' | translate }}</p>
   } @else {
-    <div class="list">
-      @for (project of projects; track project._id) {
-        <div class="card list-item">
+    <p class="form-hint">{{ 'projects_manage.reorder_hint' | translate }}</p>
+    <div class="list" cdkDropList (cdkDropListDropped)="drop($event)" [cdkDropListDisabled]="reordering" [attr.aria-busy]="reordering">
+      @for (project of projects; track project._id; let i = $index; let first = $first; let last = $last) {
+        <div class="card list-item" cdkDrag>
+          <span class="drag-handle" cdkDragHandle aria-hidden="true"><app-nav-icon name="drag" [size]="20" /></span>
           @if (project.images[0]) {
             <img [src]="project.images[0]" [alt]="project.title" class="list-item__thumb" />
           }
@@ -109,6 +132,12 @@
           </div>
           <div class="list-item__actions">
             @if (project.featured) { <span class="badge" style="color:#6366f1">{{ 'projects_manage.featured_badge' | translate }}</span> }
+            <button mat-icon-button (click)="move(i, -1)" [disabled]="first || reordering" [attr.aria-label]="('projects_manage.move_up' | translate) + ': ' + project.title">
+              <app-nav-icon name="arrow-up" />
+            </button>
+            <button mat-icon-button (click)="move(i, 1)" [disabled]="last || reordering" [attr.aria-label]="('projects_manage.move_down' | translate) + ': ' + project.title">
+              <app-nav-icon name="arrow-down" />
+            </button>
             <button mat-icon-button (click)="openEdit(project)" [attr.title]="'common.edit' | translate">
               <mat-icon>edit</mat-icon>
             </button>

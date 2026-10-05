@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import sanitizeHtml from 'sanitize-html';
+// `import x = require` e non `import x from`: senza esModuleInterop il default import
+// compila in `.default`, che per questo modulo CommonJS è undefined (TypeError a runtime).
+import sanitizeHtml = require('sanitize-html');
 
 export interface SpamCheckInput {
   content: string;

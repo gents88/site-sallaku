@@ -9,6 +9,8 @@
    file, so it's declared here rather than next to the theme blocks below. */
 @use './styles/platform/ios';
 @use './styles/platform/android';
+@use './styles/onboarding-tour';
+@use './styles/article-content';
 
 /* ── CSS custom properties ─────────────────────── */
 :root {
@@ -43,8 +45,11 @@
   /* Text */
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
-  --text-tertiary: #64748b;
-  --text-muted: #475569;
+  /* Tema scuro: #64748b e #475569 davano 3.9:1 e 2.4:1 su --bg-secondary
+     (axe, WCAG AA richiede 4.5:1). Tonalità minime che superano la soglia
+     anche sulle superfici più chiare (#161b2e). */
+  --text-tertiary: #7c8aa3;
+  --text-muted: #7a879c;
 
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, #4f6af5 0%, #8b5cf6 50%, #a78bfa 100%);
@@ -137,7 +142,8 @@
   --glass-border-hover: rgba(99, 102, 241, 0.35);
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --text-tertiary: #64748b;
+  /* #64748b su --bg-secondary dava 4.32:1 (sotto WCAG AA 4.5:1, segnalato da axe sul footer). */
+  --text-tertiary: #526277;
   --text-muted: #526277;
   --color-text: #0f172a;
   --color-text-muted: #526277;
@@ -931,9 +937,32 @@ app-library {
   animation: 260ms cubic-bezier(0.4, 0, 0.2, 1) vt-fade-in;
 }
 
+/* Elementi condivisi (direttive appVtName / appVtNameOnClick): il titolo
+   della card "vola" fino al titolo della pagina di dettaglio. Le due
+   istantanee hanno proporzioni diverse (testo piccolo su più righe → h1):
+   altezza piena e larghezza automatica evitano che il testo si deformi. */
+::view-transition-group(post-title),
+::view-transition-group(project-title) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-old(post-title),
+::view-transition-new(post-title),
+::view-transition-old(project-title),
+::view-transition-new(project-title) {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  object-position: left top;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
     animation: none;
   }
 }
@@ -949,3 +978,52 @@ app-library {
 .result-pop {
   animation: result-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* ── Contrasto WCAG AA nel tema chiaro ──────────────────────────────────────
+   --primary-400 (#6b8afc) va bene sullo sfondo scuro ma su quello chiaro
+   arrivava a 2.7:1 (axe, e2e/a11y.spec.ts): tag di sezione e badge usano una
+   tonalità più scura solo in light. */
+[data-theme='light'] {
+  .section-tag,
+  .badge { color: var(--primary-700); }
+}
+
+/* ── Icone "3D" (sidebar, card del Lab, palette Ctrl+K) ─────────────────────
+   Tessera in stile app icon: gradiente del colore dell'icona (--icon-color,
+   impostato inline da navIconColor), riflesso di luce in alto, bordo più scuro
+   in basso e ombra colorata. Il glifo è bianco con una lieve ombra. I genitori
+   possono sollevarla in hover con .icon-tile--lift. */
+.icon-tile {
+  --icon-color: var(--primary-500, #4f6af5);
+  color: #fff;
+  background:
+    radial-gradient(120% 90% at 28% 12%, rgba(255, 255, 255, 0.38), transparent 55%),
+    linear-gradient(150deg,
+      color-mix(in srgb, var(--icon-color) 72%, #fff) 0%,
+      var(--icon-color) 48%,
+      color-mix(in srgb, var(--icon-color) 68%, #000) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -2px 0 color-mix(in srgb, var(--icon-color) 55%, #000),
+    0 4px 10px -3px color-mix(in srgb, var(--icon-color) 65%, transparent);
+  transform: perspective(240px) rotateX(0) translateY(0);
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
+
+  svg { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)); }
+}
+
+.icon-tile--lift:hover .icon-tile,
+.icon-tile--lift:focus-visible .icon-tile {
+  transform: perspective(240px) rotateX(12deg) translateY(-2px) scale(1.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 0 color-mix(in srgb, var(--icon-color) 55%, #000),
+    0 9px 18px -6px color-mix(in srgb, var(--icon-color) 75%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-tile,
+  .icon-tile--lift:hover .icon-tile,
+  .icon-tile--lift:focus-visible .icon-tile { transform: none; transition: none; }
+}
+

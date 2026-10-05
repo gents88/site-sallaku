@@ -14,7 +14,7 @@ export class SearchService {
   }
 
   async suggest(q: string, lang?: string): Promise<SearchHit[]> {
-    const { data } = await this.provider.search({ q: q.trim(), lang, page: 1, limit: SUGGEST_LIMIT });
+    const { data } = await this.provider.search({ q: q.trim(), lang, page: 1, limit: SUGGEST_LIMIT, mode: 'prefix' });
     return data;
   }
 }

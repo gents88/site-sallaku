@@ -14,6 +14,8 @@ import { PdfjsService } from '../../../core/services/pdfjs.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { SeoService } from '../../../core/services/seo.service';
+import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { BreadcrumbStubComponent } from '../../../../testing/breadcrumb-stub';
 
 type NewDocMeta = Parameters<LibraryService['add']>[0];
 
@@ -59,10 +61,11 @@ describe('LibraryComponent', () => {
         { provide: WorkspaceService, useValue: workspace },
         { provide: Router, useValue: router },
         { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
-        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn() } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });
+    TestBed.overrideComponent(LibraryComponent, { remove: { imports: [BreadcrumbComponent] }, add: { imports: [BreadcrumbStubComponent] } });
 
     library = TestBed.inject(LibraryService);
   }

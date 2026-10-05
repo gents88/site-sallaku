@@ -11,9 +11,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import {
   AiPptService,
   PptStyle,
@@ -22,6 +25,10 @@ import {
   SLIDE_COUNT_OPTIONS,
 } from '../../../core/services/ai-ppt.service';
 import { WorkspaceService } from '../../../core/services/workspace.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 type ViewMode = 'carousel' | 'grid';
 
@@ -32,7 +39,7 @@ const MAX_CONTEXT_FILE_MB = 20;
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -40,18 +47,23 @@ export class AiPptComponent implements OnInit {
   @ViewChild('generatorSection') generatorSection!: ElementRef<HTMLElement>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private readonly service   = inject(AiPptService);
-  private readonly seo       = inject(SeoService);
-  private readonly workspace = inject(WorkspaceService);
-  private readonly t         = inject(TranslateService);
+  private readonly service      = inject(AiPptService);
+  private readonly seo          = inject(SeoService);
+  private readonly langService  = inject(LanguageService);
+  private readonly workspace    = inject(WorkspaceService);
+  private readonly t            = inject(TranslateService);
+  private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics    = inject(AnalyticsTrackingService);
+  readonly auth                 = inject(AuthService);
+  readonly authModal            = inject(AuthModalService);
 
   breadcrumbItems: BreadcrumbItem[] = [];
 
   ngOnInit(): void {
     this.seo.update({
-      title: 'AI Slides Generator — Create Presentations with AI',
-      description: 'Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online.',
-      url: 'https://gentsallaku.it/lab/ai-ppt',
+      title: this.t.instant('ai_ppt.seo_title'),
+      description: this.t.instant('ai_ppt.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/ai-ppt', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
@@ -105,7 +117,13 @@ export class AiPptComponent implements OnInit {
     ];
   }
 
-  readonly loading         = this.service.isLoading;
+  /** Richiesta annullabile con avanzamento dell'upload del file di contesto. */
+  readonly req             = new TrackedRequest();
+  readonly loading         = this.req.active;
+
+  cancelRequest(): void {
+    this.req.cancel();
+  }
   readonly topic           = signal('');
   readonly result          = signal<GeneratePptResult | null>(null);
   readonly error           = signal('');
@@ -120,6 +138,9 @@ export class AiPptComponent implements OnInit {
   readonly sending         = signal(false);
   readonly justSent        = signal(false);
   readonly truncatedWarning = signal(false);
+  readonly saving          = signal(false);
+  readonly justSaved       = signal(false);
+  readonly saveError       = signal('');
 
   readonly styles      = PPT_STYLES;
   readonly slideCounts = SLIDE_COUNT_OPTIONS;
@@ -189,16 +210,17 @@ export class AiPptComponent implements OnInit {
     this.result.set(null);
     this.activeSlideIdx.set(0);
 
-    this.service.generate({
+    this.req.run(this.service.generate({
       topic:      t,
       slideCount: this.selectedCount(),
       style:      this.selectedStyle(),
       file:       this.contextFile() ?? undefined,
-    }).subscribe({
+    }), {
       next: (res) => {
         this.result.set(res);
         this.activeSlideIdx.set(0);
         setTimeout(() => this.generatorSection?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+        this.analytics.trackClick('lab_tool', 'ai_ppt');
       },
       error: (err) => {
         const msg = err?.error?.message ?? this.t.instant('ai_ppt.err_generic');
@@ -251,6 +273,40 @@ export class AiPptComponent implements OnInit {
     } finally {
       this.sending.set(false);
     }
+  }
+
+  saveToAccount(): void {
+    const r = this.result();
+    if (!r) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults
+      .save({
+        toolType: 'ai-ppt',
+        title: r.title || this.topic(),
+        payload: r as unknown as Record<string, unknown>,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.justSaved.set(true);
+          setTimeout(() => this.justSaved.set(false), 2000);
+        },
+        error: (err) => {
+          this.saving.set(false);
+          const rawMsg = err?.error?.message;
+          this.saveError.set(
+            Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+          );
+          setTimeout(() => this.saveError.set(''), 3000);
+        },
+      });
   }
 
   copySlideContent(): void {

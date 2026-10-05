@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { UploadClient } from '../http/upload-client.service';
+import { UploadEvent } from '../http/upload-events';
 import { environment } from '@env/environment';
 
 export const OCR_LANGUAGES = [
@@ -27,13 +28,13 @@ export interface OcrResult {
 
 @Injectable({ providedIn: 'root' })
 export class OcrService {
-  private readonly http = inject(HttpClient);
+  private readonly upload = inject(UploadClient);
   private readonly api = `${environment.apiUrl}/ocr`;
 
-  extract(images: { blob: Blob; name: string }[], lang: string): Observable<OcrResult> {
+  extract(images: { blob: Blob; name: string }[], lang: string): Observable<UploadEvent<OcrResult>> {
     const form = new FormData();
     form.append('lang', lang);
     images.forEach((img) => form.append('files', img.blob, img.name));
-    return this.http.post<OcrResult>(`${this.api}/extract`, form);
+    return this.upload.post<OcrResult>(`${this.api}/extract`, form);
   }
 }

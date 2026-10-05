@@ -1,10 +1,16 @@
 <div class="auth-page">
-  <div class="auth-card card fade-in-up">
+  <div
+    class="auth-card card fade-in-up"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'auth.otp_subtitle' | translate"
+    (keydown.tab)="onModalTabKey($event)"
+  >
     <div class="auth-card__accent" aria-hidden="true"></div>
 
     <div class="auth-card__header">
       <div class="auth-avatar" aria-hidden="true">GS</div>
-      <span class="auth-chip">Admin Access</span>
+      <span class="auth-chip">{{ 'auth.login_chip_admin' | translate }}</span>
       <h1 class="logo">
         <span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span>
       </h1>
@@ -17,6 +23,7 @@
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>{{ 'auth.phone_or_email' | translate }}</mat-label>
           <input
+            #identifierInput
             matInput
             formControlName="identifier"
             type="text"
@@ -80,6 +87,7 @@
         <mat-form-field appearance="outline" class="form-field">
           <mat-label>{{ 'auth.otp_code' | translate }}</mat-label>
           <input
+            #otpInput
             matInput
             formControlName="otp"
             type="text"

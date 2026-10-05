@@ -1,11 +1,12 @@
 import {
-  Controller, Get, Post, Put, Delete,
+  Controller, Get, Post, Put, Patch, Delete,
   Param, Body, UseGuards, HttpCode, HttpStatus, UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ExperiencesService } from './experiences.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
+import { ReorderDto } from '../common/dto/reorder.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, Role } from '../auth/decorators/roles.decorator';
@@ -31,6 +32,14 @@ export class ExperiencesController {
   @Roles(Role.Admin)
   @ApiBearerAuth('access-token')
   create(@Body() dto: CreateExperienceDto) { return this.experiencesService.create(dto); }
+
+  @Patch('reorder')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Reorder experiences (admin, drag & drop)' })
+  reorder(@Body() dto: ReorderDto) { return this.experiencesService.reorder(dto.ids); }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)

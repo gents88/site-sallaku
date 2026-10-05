@@ -21,6 +21,8 @@
       }
     </div>
   } @else {
+    <app-newsletter-signup></app-newsletter-signup>
+
     <!-- Search -->
     <div class="blog-search">
       <mat-icon>search</mat-icon>
@@ -31,15 +33,26 @@
     @if (allTags.length) {
       <div class="tag-filter">
         <button class="badge" [class.active]="!activeTag" (click)="setTag(null)">All</button>
-        @for (tag of allTags; track tag) {
+        @for (tag of visibleTags; track tag) {
           <button class="badge" [class.active]="activeTag === tag" (click)="setTag(tag)">#{{ tag }}</button>
+        }
+        @if (hiddenTagCount > 0) {
+          <button class="badge badge--toggle" (click)="toggleTags()" [attr.aria-expanded]="showAllTags">
+            {{ showAllTags ? ('blog.tags_less' | translate) : ('blog.tags_more' | translate: { count: hiddenTagCount }) }}
+          </button>
         }
       </div>
     }
 
     <div class="posts-grid">
       @for (post of visiblePosts; track post._id) {
-        <article class="card post-card fade-in-up">
+        <article
+          class="card post-card fade-in-up"
+          appVtNameOnClick="post-title"
+          vtTarget=".post-card__title"
+          (pointerenter)="prefetch(post)"
+          (focusin)="prefetch(post)"
+        >
           @if (post.coverImage) {
             <img [ngSrc]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" width="640" height="360" />
           } @else {
@@ -49,12 +62,15 @@
           }
           <div class="post-card__body">
             <div class="post-card__tags">
-              @for (tag of post.tags; track tag) {
+              @for (tag of post.tags.slice(0, cardTagCount); track tag) {
                 <span class="badge">#{{ tag }}</span>
+              }
+              @if (post.tags.length > cardTagCount) {
+                <span class="badge badge--more">+{{ post.tags.length - cardTagCount }}</span>
               }
             </div>
             <h2 class="post-card__title">
-              <a [routerLink]="('/blog/' + post.slug) | langUrl">{{ getLocalizedTitle(post) }}</a>
+              <a [routerLink]="('/blog/' + postSlug(post)) | langUrl">{{ getLocalizedTitle(post) }}</a>
             </h2>
             <p class="text-muted post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
             <div class="post-card__footer">
@@ -69,7 +85,7 @@
                   </span>
                 }
               </div>
-              <a [routerLink]="('/blog/' + post.slug) | langUrl" class="btn btn-ghost btn-sm">
+              <a [routerLink]="('/blog/' + postSlug(post)) | langUrl" class="btn btn-ghost btn-sm">
                 {{ 'blog.readMore' | translate }} <mat-icon>arrow_forward</mat-icon>
               </a>
             </div>
@@ -78,7 +94,30 @@
       }
     </div>
 
-    @if (!filteredPosts.length) {
+    @if (loadError) {
+      <section class="offline-panel" aria-labelledby="offline-panel-title">
+        <mat-icon class="empty-icon" aria-hidden="true">{{ network.online() ? 'cloud_off' : 'wifi_off' }}</mat-icon>
+        <h2 id="offline-panel-title" class="empty-title">
+          {{ (network.online() ? 'offline.load_error' : 'offline.list_unavailable') | translate }}
+        </h2>
+        @if (readOffline.length) {
+          <p class="empty-message">{{ 'offline.recent_title' | translate }}</p>
+          <ul class="offline-panel__list">
+            @for (entry of readOffline; track entry.slug) {
+              <li>
+                <a [routerLink]="('/blog/' + entry.slug) | langUrl">{{ entry.title }}</a>
+                @if (entry.excerpt) { <span class="text-muted">{{ entry.excerpt }}</span> }
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty-message">{{ 'offline.no_recent' | translate }}</p>
+        }
+        <button type="button" class="btn btn-ghost" (click)="reload()">
+          <mat-icon>refresh</mat-icon> {{ 'offline.retry' | translate }}
+        </button>
+      </section>
+    } @else if (!filteredPosts.length) {
       <div class="empty-state-illustrated">
         <mat-icon class="empty-icon">search_off</mat-icon>
         <h3 class="empty-title">{{ 'blog.empty.title' | translate }}</h3>

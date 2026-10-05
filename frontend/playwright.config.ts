@@ -12,6 +12,11 @@ export default defineConfig({
   use: {
     baseURL,
     trace: 'on-first-retry',
+    // Chromium alternativo (es. una build in cache compatibile con macOS 13,
+    // dove le build recenti di Playwright non girano). Vuoto = quello di Playwright.
+    launchOptions: process.env['PLAYWRIGHT_CHROMIUM_PATH']
+      ? { executablePath: process.env['PLAYWRIGHT_CHROMIUM_PATH'] }
+      : {},
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },

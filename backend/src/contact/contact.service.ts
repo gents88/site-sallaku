@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException, ServiceUnavailableException, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MailService } from '../mail/mail.service';
@@ -6,6 +6,8 @@ import { MailQueueService } from '../mail/mail-queue.service';
 import { ContactDto } from './dto/contact.dto';
 import { ContactMessage, ContactMessageDocument } from './schemas/contact-message.schema';
 import { TurnstileService } from '../common/services/turnstile.service';
+import { escapeRegex } from '../common/utils/escape-regex';
+import { AdminEventsService } from '../common/services/admin-events.service';
 
 interface ContactCountByDay {
   date: string;
@@ -22,6 +24,8 @@ export class ContactService {
     private mailService: MailService,
     private mailQueue: MailQueueService,
     private turnstile: TurnstileService,
+    // @Optional: i test che costruiscono il servizio a mano non devono conoscere il bus.
+    @Optional() private readonly adminEvents?: AdminEventsService,
   ) {}
 
   async sendMessage(dto: ContactDto, meta?: { ip?: string; location?: string }): Promise<{ success: boolean }> {
@@ -53,6 +57,7 @@ export class ContactService {
 
     // 1. Persist the message (authoritative store)
     const created = await this.contactModel.create(dto);
+    this.adminEvents?.notify('contact', dto.subject);
 
     // 2. Enqueue notification job (fast, reliable delivery via queue)
     try {
@@ -155,7 +160,7 @@ export class ContactService {
   }
 
   /** Paginated list for the admin dashboard — avoids returning unbounded collections. */
-  async findPaginated(opts: { page: number; limit: number; unreadOnly?: boolean }): Promise<{
+  async findPaginated(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string }): Promise<{
     data: ContactMessageDocument[];
     total: number;
     page: number;
@@ -164,7 +169,12 @@ export class ContactService {
     const { page = 1, limit = 20, unreadOnly } = opts;
     const safeLimit = Math.min(Math.max(limit, 1), 100);
     const skip = (Math.max(page, 1) - 1) * safeLimit;
-    const filter = unreadOnly ? { read: false } : {};
+    const filter: Record<string, unknown> = unreadOnly ? { read: false } : {};
+    const q = opts.q?.trim();
+    if (q) {
+      const re = new RegExp(escapeRegex(q), 'i');
+      filter.$or = [{ name: re }, { email: re }, { subject: re }, { message: re }];
+    }
 
     const [data, total] = await Promise.all([
       this.contactModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).exec(),

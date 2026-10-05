@@ -14,6 +14,13 @@ export interface BreakdownItem {
   count: number;
 }
 
+export interface ToolConversionRow {
+  tool: string;
+  uniqueVisitors: number;
+  becameLead: number;
+  conversionRate: number;
+}
+
 export interface AnalyticsStatsResponse {
   totalViews: number;
   monthlyViews: number;

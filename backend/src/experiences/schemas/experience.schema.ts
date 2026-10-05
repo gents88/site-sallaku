@@ -31,6 +31,10 @@ export class Experience {
 
   @Prop({ default: 0 })
   order: number;
+
+  /** Traduzioni per lingua non predefinita ({ en: { role, description, location }, ... }); fallback sull'italiano. */
+  @Prop({ type: Object, default: {} })
+  translations: Record<string, Partial<Record<'role' | 'description' | 'location', string>>>;
 }
 
 export const ExperienceSchema = SchemaFactory.createForClass(Experience);

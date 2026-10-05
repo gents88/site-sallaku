@@ -2,13 +2,23 @@ import { Component, ChangeDetectionStrategy, OnInit, afterNextRender, inject, si
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { OcrService, OcrResult, OcrPageResult, OCR_LANGUAGES } from '../../../core/services/ocr.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
+import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { TrackedRequest } from '../../../shared/utils/tracked-request';
+import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService } from '../../../core/services/library.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SavedResultsService } from '../../../core/services/saved-results.service';
+import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 
 type Status = 'idle' | 'preparing' | 'recognizing' | 'done' | 'error';
+
+/** Rifiuto della Promise di riconoscimento quando l'utente annulla: non è un errore da mostrare. */
+class OcrCancelled extends Error {}
 
 interface PageText {
   index: number;
@@ -40,7 +50,7 @@ const UI_TO_OCR_LANG: Record<string, string> = {
   selector: 'app-ocr',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './ocr.component.html',
   styleUrls: ['./ocr.component.scss'],
 })
@@ -48,9 +58,14 @@ export class OcrComponent implements OnInit {
   private readonly svc = inject(OcrService);
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
+  private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
   private readonly library = inject(LibraryService);
+  private readonly savedResults = inject(SavedResultsService);
+  private readonly analytics = inject(AnalyticsTrackingService);
+  readonly auth = inject(AuthService);
+  readonly authModal = inject(AuthModalService);
 
   readonly accept = IMG_ACCEPT;
   readonly languages = OCR_LANGUAGES;
@@ -63,6 +78,8 @@ export class OcrComponent implements OnInit {
   // than the server sent, which Angular can't reconcile.
   readonly lang = signal(UI_TO_OCR_LANG[this.t.currentLang] ?? 'eng');
   readonly status = signal<Status>('idle');
+  /** Upload delle immagini con avanzamento reale; annullabile (anche all'uscita dalla pagina). */
+  readonly req = new TrackedRequest();
   readonly progress = signal({ current: 0, total: 0 });
   readonly preparingFile = signal('');
   readonly fileResults = signal<FileResult[]>([]);
@@ -71,6 +88,9 @@ export class OcrComponent implements OnInit {
   readonly copied = signal(false);
   readonly workspaceItem = signal<WorkspaceItem | null>(null);
   readonly justSent = signal(false);
+  readonly saving = signal(false);
+  readonly justSaved = signal(false);
+  readonly saveError = signal('');
   breadcrumbItems: BreadcrumbItem[] = [];
 
   /**
@@ -105,9 +125,9 @@ export class OcrComponent implements OnInit {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: 'Free Online OCR — Extract Text from Images & Scanned PDFs',
-      description: 'Extract text from photos, scanned documents and PDFs in 7 languages. Free online OCR, no signup required.',
-      url: 'https://gentsallaku.it/lab/ocr',
+      title: this.t.instant('ocr.seo_title'),
+      description: this.t.instant('ocr.seo_description'),
+      url: `${SITE_ORIGIN}${withLangPrefix('/lab/ocr', this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
@@ -199,9 +219,18 @@ export class OcrComponent implements OnInit {
     try {
       await this.processBatch(fs);
     } catch (err) {
+      if (err instanceof OcrCancelled) {
+        this.status.set('idle');
+        this.msg.set(this.t.instant('request.cancelled'));
+        return;
+      }
       this.status.set('error');
       this.msg.set(`❌ ${this.errText(err)}`);
     }
+  }
+
+  cancelRequest(): void {
+    this.req.cancel();
   }
 
   useWorkspaceFile(): void {
@@ -260,6 +289,37 @@ export class OcrComponent implements OnInit {
     } finally {
       this.savingToLibrary.set(false);
     }
+  }
+
+  saveToAccount(): void {
+    const text = this.allText();
+    if (!text) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
+    const fs = this.files();
+    const title = fs.length === 1 ? fs[0].name : `OCR (${fs.length} file)`;
+
+    this.saving.set(true);
+    this.saveError.set('');
+    this.savedResults.save({ toolType: 'ocr', title, payload: { text } }).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.justSaved.set(true);
+        setTimeout(() => this.justSaved.set(false), 2000);
+      },
+      error: (err) => {
+        this.saving.set(false);
+        const rawMsg = err?.error?.message;
+        this.saveError.set(
+          Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.t.instant('saved_results.save_error'),
+        );
+        setTimeout(() => this.saveError.set(''), 3000);
+      },
+    });
   }
 
   copy(): void {
@@ -373,7 +433,11 @@ export class OcrComponent implements OnInit {
     if (toOcr.length > 0) {
       this.status.set('recognizing');
       const res = await new Promise<OcrResult>((resolve, reject) => {
-        this.svc.extract(toOcr, this.lang()).subscribe({ next: resolve, error: reject });
+        this.req.run(this.svc.extract(toOcr, this.lang()), {
+          next: resolve,
+          error: reject,
+          cancelled: () => reject(new OcrCancelled()),
+        });
       });
       ocrPages = res.pages;
     }
@@ -392,6 +456,7 @@ export class OcrComponent implements OnInit {
     this.status.set('done');
     if (truncatedAny) this.msg.set(this.t.instant('ocr.pages_truncated', { max: MAX_PDF_PAGES }));
     if (!this.msg()) this.msg.set(`✅ ${this.t.instant('ocr.success')}`);
+    if (results.some((r) => r.text)) this.analytics.trackClick('lab_tool', 'ocr');
   }
 
   /** Estrae il testo layer o accoda per OCR le pagine di un singolo PDF. Ritorna true se il PDF è stato troncato a MAX_PDF_PAGES. */

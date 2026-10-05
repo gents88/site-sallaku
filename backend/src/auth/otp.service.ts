@@ -152,6 +152,17 @@ export class OtpService {
         ? await this.usersService.findOrCreateByPhone(identifier)
         : await this.usersService.findOrCreateByEmailOtp(identifier);
 
+    // A successful email OTP check is proof of ownership — whether this is a
+    // brand new OTP-login account or a password account completing its
+    // post-registration verification step, both land here the same way.
+    // Only now, once ownership is actually proven, do we send the welcome
+    // email — never at registration time, when the address is unconfirmed.
+    if (channel === 'email' && !user.emailVerified) {
+      await this.usersService.markEmailVerified(user._id.toString());
+      user.emailVerified = true;
+      this.mailService.sendWelcome(user.name, identifier);
+    }
+
     this.logger.log(
       `OTP verified via ${channel} for ${this.mask(identifier)}, user: ${user._id}`,
     );

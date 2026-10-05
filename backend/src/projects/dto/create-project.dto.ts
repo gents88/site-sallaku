@@ -1,8 +1,10 @@
 import {
   IsString, IsArray, IsOptional, IsBoolean, IsNumber,
-  IsUrl, MaxLength, MinLength,
+  IsUrl, MaxLength, MinLength, ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ProjectTranslationsDto } from './project-translations.dto';
 
 export class CreateProjectDto {
   @ApiProperty({ example: 'Portfolio CMS' })
@@ -47,4 +49,28 @@ export class CreateProjectDto {
   @IsNumber()
   @IsOptional()
   order?: number;
+
+  @ApiPropertyOptional({ description: 'Case study: il problema del cliente' })
+  @IsString()
+  @MaxLength(5000)
+  @IsOptional()
+  problem?: string;
+
+  @ApiPropertyOptional({ description: 'Case study: la soluzione realizzata' })
+  @IsString()
+  @MaxLength(5000)
+  @IsOptional()
+  solution?: string;
+
+  @ApiPropertyOptional({ description: 'Case study: risultati misurabili' })
+  @IsString()
+  @MaxLength(5000)
+  @IsOptional()
+  results?: string;
+
+  @ApiPropertyOptional({ type: ProjectTranslationsDto })
+  @ValidateNested()
+  @Type(() => ProjectTranslationsDto)
+  @IsOptional()
+  translations?: ProjectTranslationsDto;
 }

@@ -3,135 +3,1115 @@
 
   <url>
     <loc>https://gentsallaku.it/</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/projects</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
+    <loc>https://gentsallaku.it/contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://gentsallaku.it/blog</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/testimonials</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
-    <loc>https://gentsallaku.it/contact</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://gentsallaku.it/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/cookie-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/pdf-search</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.89</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/library</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.88</priority>
-  </url>
-
-  <url>
-    <loc>https://gentsallaku.it/lab/pdf-translate</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.88</priority>
-  </url>
-
-  <url>
-    <loc>https://gentsallaku.it/lab/ai-ppt</loc>
-    <lastmod>2026-08-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.87</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/pdf-summary</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.86</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/ai-formatter</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
 
   <url>
-    <loc>https://gentsallaku.it/lab/convert</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://gentsallaku.it/lab/pdf-translate</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.84</priority>
+    <priority>0.88</priority>
   </url>
 
   <url>
-    <loc>https://gentsallaku.it/lab/ocr</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://gentsallaku.it/lab/ai-ppt</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.83</priority>
+    <priority>0.87</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/lab/workspace</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/pdf-editor</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.82</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/viewer</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/editor</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/lab/convert</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/lab/ocr</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
   </url>
 
   <url>
     <loc>https://gentsallaku.it/lab/scanner</loc>
-    <lastmod>2026-08-23</lastmod>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gentsallaku.it/lab/workspace</loc>
-    <lastmod>2026-08-23</lastmod>
+    <loc>https://gentsallaku.it/en/homepage</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/homepage</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/homepage</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/homepage</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/homepage</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/homepage</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/projects</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/projects</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/projects</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/projects</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/projects</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/projects</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/contact</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/testimonials</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/testimonials</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/testimonials</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/testimonials</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/testimonials</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/testimonials</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/privacy-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/cookie-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/cookie-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/cookie-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/cookie-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/cookie-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/cookie-policy</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/pdf-search</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.89</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/pdf-search</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.89</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/pdf-search</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.89</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/pdf-search</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.89</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/pdf-search</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.89</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/pdf-search</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.89</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/library</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/library</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/library</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/library</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/library</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/library</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/pdf-summary</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.86</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/pdf-summary</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.86</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/pdf-summary</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.86</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/pdf-summary</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.86</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/pdf-summary</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.86</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/pdf-summary</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.86</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/ai-formatter</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/ai-formatter</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/ai-formatter</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/ai-formatter</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/ai-formatter</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/ai-formatter</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/pdf-translate</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/pdf-translate</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/pdf-translate</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/pdf-translate</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/pdf-translate</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/pdf-translate</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.88</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/ai-ppt</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.87</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/ai-ppt</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.87</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/ai-ppt</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.87</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/ai-ppt</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.87</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/ai-ppt</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.87</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/ai-ppt</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.87</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/workspace</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/workspace</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/workspace</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/workspace</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/workspace</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/workspace</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/pdf-editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/pdf-editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/pdf-editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/pdf-editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/pdf-editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/pdf-editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.82</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/viewer</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/viewer</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/viewer</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/viewer</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/viewer</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/viewer</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/editor</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/convert</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/convert</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/convert</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/convert</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/convert</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/convert</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.84</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/ocr</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/ocr</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/ocr</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/ocr</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/ocr</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/ocr</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.83</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/lab/scanner</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/lab/scanner</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/lab/scanner</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/lab/scanner</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/lab/scanner</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/lab/scanner</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/angular-con-looker-embedded-zero-boilerplate-tabelle-dati</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/case-study-laboratorio-strumenti-pdf-e-ia</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/case-study-blog-multilingua-url-tradotti</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/segreti-nella-history-di-git-come-rimuoverli</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/angular-o-react-per-un-gestionale-aziendale</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/manutenzione-sito-dopo-il-rilascio-cosa-include</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/quanto-costa-sito-web-app-su-misura-2026</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/sito-statico-ssr-o-cms-quale-scegliere-piccola-attivita</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/pdf-accessibili-cosa-serve-davvero</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/ia-strumento-di-lavoro-o-sostituto</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/colloqui-tecnici-era-ia-domande-classiche-hanno-ancora-senso</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
   </url>
 
   <url>
@@ -207,6 +1187,13 @@
   <url>
     <loc>https://gentsallaku.it/blog/perche-il-blog-non-viene-indicizzato-da-google</loc>
     <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>
@@ -438,6 +1425,2449 @@
   <url>
     <loc>https://gentsallaku.it/blog/angular-router-security-guards-interceptors</loc>
     <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-with-looker-embedded-zero-boilerplate-data-tables</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/angular-me-looker-embedded-zero-boilerplate-tabela-te-dhenash</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/angular-con-looker-embedded-cero-boilerplate-tablas-de-datos</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/angular-com-looker-embedded-zero-boilerplate-tabelas-de-dados</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/angular-avec-looker-embedded-zero-boilerplate-tableaux-de-donnees</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/angular-mit-looker-embedded-kein-boilerplate-fuer-datentabellen</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/case-study-lab-of-pdf-and-ai-tools</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/rast-studimi-laboratori-i-mjeteve-pdf-dhe-ia</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/caso-de-estudio-laboratorio-de-herramientas-pdf-e-ia</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/caso-de-estudo-laboratorio-de-ferramentas-pdf-e-ia</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/etude-de-cas-laboratoire-d-outils-pdf-et-ia</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/fallstudie-labor-aus-pdf-und-ki-werkzeugen</loc>
+    <lastmod>2026-10-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/case-study-multilingual-blog-translated-urls</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/rast-studimi-blog-shumegjuhesh-url-te-perkthyera</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/caso-de-estudio-blog-multilingue-urls-traducidas</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/caso-de-estudo-blog-multilingue-urls-traduzidos</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/etude-de-cas-blog-multilingue-url-traduites</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/fallstudie-mehrsprachiger-blog-uebersetzte-urls</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/secrets-in-git-history-how-to-remove-them</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/sekrete-ne-historine-e-git-si-t-i-heqesh</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/secretos-en-el-historial-de-git-como-eliminarlos</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/segredos-no-historico-do-git-como-remove-los</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/secrets-dans-l-historique-git-comment-les-supprimer</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/geheimnisse-in-der-git-historie-so-entfernt-man-sie</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-or-react-for-a-business-management-app</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/angular-apo-react-per-nje-sistem-menaxhimi-biznesi</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/angular-o-react-para-un-software-de-gestion-empresarial</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/angular-ou-react-para-um-software-de-gestao-empresarial</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/angular-ou-react-pour-un-logiciel-de-gestion</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/angular-oder-react-fuer-eine-unternehmenssoftware</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/website-maintenance-after-launch-what-it-includes</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/mirembajtja-e-nje-faqeje-pas-publikimit-cfare-perfshin</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/mantenimiento-de-una-web-despues-del-lanzamiento-que-incluye</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/manutencao-de-um-site-depois-do-lancamento-o-que-inclui</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/maintenance-d-un-site-apres-sa-mise-en-ligne</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/website-wartung-nach-dem-launch-was-dazugehoert</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/how-much-does-a-custom-website-or-web-app-cost-in-2026</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/sa-kushton-nje-faqe-interneti-ose-web-app-me-porosi-ne-2026</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/cuanto-cuesta-una-web-o-una-web-app-a-medida-en-2026</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/quanto-custa-um-site-ou-uma-web-app-a-medida-em-2026</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/combien-coute-un-site-ou-une-application-web-sur-mesure-en-2026</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/was-kostet-eine-individuelle-website-oder-web-app-2026</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/static-site-ssr-or-cms-which-to-choose-for-a-small-business</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/faqe-statike-ssr-apo-cms-cfare-te-zgjedhesh-per-nje-biznes-te-vogel</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/web-estatica-ssr-o-cms-que-elegir-para-un-pequeno-negocio</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/site-estatico-ssr-ou-cms-o-que-escolher-para-um-pequeno-negocio</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/site-statique-ssr-ou-cms-que-choisir-pour-une-petite-entreprise</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/statische-website-ssr-oder-cms-was-passt-fur-ein-kleines-unternehmen</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/accessible-pdfs-what-you-really-need</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/pdf-te-aksesueshem-cfare-duhet-vertet</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/pdf-accesibles-que-hace-falta-de-verdad</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/pdf-acessiveis-o-que-e-mesmo-preciso</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/pdf-accessibles-ce-qu-il-faut-vraiment</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/barrierefreie-pdfs-was-wirklich-notig-ist</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/ai-a-work-tool-or-something-that-will-do-our-job</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/ia-nje-mjet-pune-apo-dikush-qe-do-te-beje-punen-tone</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/ia-una-herramienta-de-trabajo-o-alguien-que-hara-nuestro-trabajo</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/ia-uma-ferramenta-de-trabalho-ou-alguem-que-vai-fazer-o-nosso-trabalho</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/ia-un-outil-de-travail-ou-quelqu-un-qui-fera-notre-travail</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/ki-ein-arbeitswerkzeug-oder-jemand-der-unsere-arbeit-macht</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/technical-interviews-in-the-ai-era-do-classic-questions-still-make-sense</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/intervistat-teknike-ne-epoken-e-ia-se-a-kane-ende-kuptim-pyetjet-klasike</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/entrevistas-tecnicas-en-la-era-de-la-ia-siguen-teniendo-sentido-las-preguntas-clasicas</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/entrevistas-tecnicas-na-era-da-ia-as-perguntas-classicas-ainda-fazem-sentido</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/entretiens-techniques-a-l-ere-de-l-ia-les-questions-classiques-ont-elles-encore-un-sens</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/technische-vorstellungsgesprache-im-ki-zeitalter-haben-klassische-fragen-noch-sinn</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/chaining-pdf-tools-together-without-downloading-and-re-uploading</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/lidhja-e-disa-mjeteve-pdf-pa-shkarkuar-dhe-ringarkuar-cdo-here</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/encadenar-varias-herramientas-pdf-sin-descargar-y-volver-a-subir</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/ligar-varias-ferramentas-pdf-sem-descarregar-e-voltar-a-carregar</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/enchainer-plusieurs-outils-pdf-sans-telecharger-et-recharger-a-chaque-fois</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/mehrere-pdf-werkzeuge-verketten-ohne-standiges-herunter-und-hochladen</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/creating-a-presentation-with-ai-how-many-slides-and-which-style</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/krijimi-i-nje-prezantimi-me-ia-sa-diapozitive-duhen-dhe-cilin-stil-te-zgjedhesh</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/crear-una-presentacion-con-ia-cuantas-diapositivas-y-que-estilo-elegir</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/criar-uma-apresentacao-com-ia-quantos-diapositivos-e-que-estilo-escolher</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/creer-une-presentation-avec-lia-combien-de-diapositives-et-quel-style</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/eine-prasentation-mit-ki-erstellen-wie-viele-folien-und-welcher-stil</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/from-raw-notes-to-a-readable-document-how-automatic-formatting-works</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/nga-shenime-te-paperpunuara-te-nje-dokument-i-lexueshem-si-funksionon-formatimi-automatik</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/de-apuntes-en-bruto-a-documento-legible-como-funciona-el-formateo-automatico</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/de-apontamentos-em-bruto-a-documento-legivel-como-funciona-a-formatacao-automatica</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/de-notes-brutes-a-un-document-lisible-comment-fonctionne-la-mise-en-forme-automatique</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/von-rohnotizen-zum-lesbaren-dokument-wie-automatische-formatierung-funktioniert</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/write-a-document-and-export-it-to-pdf-docx-or-html-without-word</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/shkruaj-nje-dokument-dhe-eksporto-ne-pdf-docx-ose-html-pa-word</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/escribir-un-documento-y-exportarlo-a-pdf-docx-o-html-sin-word</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/escrever-um-documento-e-exporta-lo-em-pdf-docx-ou-html-sem-word</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/rediger-un-document-et-lexporter-en-pdf-docx-ou-html-sans-word</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/ein-dokument-schreiben-und-als-pdf-docx-oder-html-exportieren-ohne-word</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/why-searching-inside-a-pdf-finds-nothing-and-what-a-viewer-really-needs</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/pse-kerkimi-brenda-nje-pdf-je-nuk-gjen-asgje-dhe-cfare-duhet-vertet-te-nje-shikues</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/por-que-la-busqueda-dentro-de-un-pdf-no-encuentra-nada-y-que-hace-falta-en-un-visor</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/porque-a-procura-dentro-de-um-pdf-nao-encontra-nada-e-o-que-e-mesmo-preciso-num-visualizador</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/pourquoi-la-recherche-dans-un-pdf-ne-trouve-rien-et-ce-quil-faut-vraiment-dans-une-visionneuse</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/warum-die-suche-in-einem-pdf-nichts-findet-und-was-ein-viewer-wirklich-braucht</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/merge-split-and-rotate-pdfs-without-uploading-them-to-any-server</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/bashko-ndaj-dhe-rrotullo-pdf-pa-i-ngarkuar-ne-asnje-server</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/unir-dividir-y-rotar-pdf-sin-subirlos-a-ningun-servidor</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/juntar-dividir-e-rodar-pdf-sem-os-carregar-em-nenhum-servidor</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/fusionner-diviser-et-pivoter-des-pdf-sans-les-envoyer-sur-un-serveur</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/pdfs-zusammenfuhren-teilen-und-drehen-ohne-upload-auf-einen-server</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/how-to-scan-a-document-with-your-phone-without-owning-a-scanner</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/si-te-skanosh-nje-dokument-me-telefon-pa-pasur-skaner</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/como-escanear-un-documento-con-el-movil-sin-tener-escaner</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/como-digitalizar-um-documento-com-o-telemovel-sem-ter-scanner</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/comment-numeriser-un-document-avec-son-telephone-sans-scanner</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/ein-dokument-mit-dem-handy-scannen-ganz-ohne-scanner</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/ocr-how-to-extract-text-from-scans-and-photos-and-why-it-sometimes-fails</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/ocr-si-te-nxjerresh-tekst-nga-skanimet-dhe-fotot-dhe-pse-ndonjehere-gabon</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/ocr-como-extraer-texto-de-escaneos-y-fotos-y-por-que-a-veces-falla</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/ocr-como-extrair-texto-de-digitalizacoes-e-fotos-e-porque-as-vezes-falha</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/ocr-extraire-du-texte-de-numerisations-et-de-photos-et-pourquoi-ca-echoue-parfois</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/ocr-text-aus-scans-und-fotos-extrahieren-und-warum-es-manchmal-misslingt</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/how-to-summarise-a-pdf-with-ai-and-when-not-to-trust-the-result</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/si-te-permbledhesh-nje-pdf-me-ia-dhe-kur-te-mos-i-besosh-rezultatit</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/como-resumir-un-pdf-con-ia-y-cuando-no-fiarse-del-resultado</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/como-resumir-um-pdf-com-ia-e-quando-nao-confiar-no-resultado</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/comment-resumer-un-pdf-avec-lia-et-quand-ne-pas-se-fier-au-resultat</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/ein-pdf-mit-ki-zusammenfassen-und-wann-man-dem-ergebnis-nicht-trauen-sollte</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/how-to-find-and-download-free-legal-pdf-books</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/si-te-gjesh-dhe-te-shkarkosh-libra-pdf-falas-dhe-ligjerisht</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/como-encontrar-y-descargar-libros-pdf-gratis-y-legales</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/como-encontrar-e-descarregar-livros-pdf-gratis-e-legais</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/comment-trouver-et-telecharger-des-livres-pdf-gratuits-et-legaux</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/kostenlose-legale-pdf-bucher-finden-und-herunterladen</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/why-my-angular-blog-isnt-indexed-by-google-and-how-i-fixed-it</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/pse-blogu-im-angular-nuk-eshte-i-indeksuar-nga-google-dhe-si-e-rregullova</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/por-que-google-no-indexa-mi-blog-de-angular-y-como-lo-solucione</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/por-que-meu-blog-angular-nao-e-indexado-pelo-google-e-como-corrigi-isso</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/pourquoi-mon-blog-angulaire-nest-pas-indexe-par-google-et-comment-je-lai-corrige</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/warum-mein-angular-blog-nicht-von-google-indiziert-wird-und-wie-ich-das-problem-behoben-habe</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/case-study-crisi-indicizzazione-seo-angular-produzione</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-signals-vs-zonejs-why-angular-is-becoming-zoneless</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/sinjalet-kendore-vs-zonejs-pse-angular-po-behet-pa-zone</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/angular-signals-vs-zonejs-por-que-angular-se-esta-volviendo-sin-zona</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/angular-signals-vs-zonejs-por-que-o-angular-esta-se-tornando-sem-zona</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/signaux-angulaires-vs-zonejs-pourquoi-angular-devient-sans-zone</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/angular-signals-vs-zonejs-warum-angular-zonenlos-wird</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/how-to-convert-pdf-to-word-without-losing-formatting-2026-guide</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/si-te-konvertohet-pdf-ne-word-pa-humbur-formatimin-udhezues-2026</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/como-convertir-pdf-a-word-sin-perder-formato-guia-2026</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/como-converter-pdf-em-word-sem-perder-a-formatacao-guia-2026</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/comment-convertir-un-pdf-en-word-sans-perdre-le-formatage-guide-2026</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/so-konvertieren-sie-pdf-in-word-ohne-die-formatierung-zu-verlieren-leitfaden-2026</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/ai-pdf-translation-modern-approaches-and-best-practices</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/perkthimi-i-ai-pdf-qasjet-moderne-dhe-praktikat-me-te-mira</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/traduccion-de-pdf-con-ia-enfoques-modernos-y-mejores-practicas</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/traducao-ai-pdf-abordagens-modernas-e-praticas-recomendadas</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/traduction-ai-pdf-approches-modernes-et-meilleures-pratiques</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/ai-pdf-ubersetzung-moderne-ansatze-und-best-practices</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/how-to-get-indexed-by-google-search-complete-seo-guide-2026</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/si-te-indeksoheni-nga-kerkimi-ne-google-udhezues-i-plote-seo-2026</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/como-ser-indexado-por-la-busqueda-de-google-guia-seo-completa-2026</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/como-ser-indexado-pela-pesquisa-google-guia-completo-de-seo-2026</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/comment-etre-indexe-par-la-recherche-google-guide-complet-de-referencement-2026</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/so-werden-sie-von-der-google-suche-indexiert-vollstandiger-seo-leitfaden-2026</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/core-web-vitals-and-technical-seo-the-complete-guide-to-ranking</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/vitalet-kryesore-te-uebit-dhe-seo-teknike-udhezuesi-i-plote-per-renditjen</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/core-web-vitals-y-seo-tecnico-la-guia-completa-para-la-clasificacion</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/core-web-vitals-e-seo-tecnico-o-guia-completo-para-classificacao</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/core-web-vitals-et-referencement-technique-le-guide-complet-du-classement</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/core-web-vitals-und-technisches-seo-der-vollstandige-leitfaden-zum-ranking</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/optimize-title-tag-and-meta-description</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/optimizoni-etiketen-e-titullit-dhe-pershkrimin-meta</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/optimice-la-etiqueta-de-titulo-y-la-meta-descripcion</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/otimize-a-tag-de-titulo-e-a-meta-descricao</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/optimiser-la-balise-de-titre-et-la-meta-description</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/optimieren-sie-titel-tag-und-meta-beschreibung</loc>
+    <lastmod>2026-08-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/scss-component-classes-vs-utility-css-when-to-use-what</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/klasa-e-komponenteve-scss-kundrejt-programit-css-kur-te-perdoret-cfare</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/clases-de-componentes-scss-vs-utility-css-cuando-usar-cada-una</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/classes-de-componentes-scss-vs-utility-css-quando-usar-cada-uma</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/classes-de-composants-scss-vs-utility-css-quand-utiliser-quoi</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/scss-komponentenklassen-vs-utility-css-wann-was-verwenden</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/npm-yarn-or-pnpm-when-to-choose-which-package-manager</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/npm-fije-ose-pnpm-kur-te-zgjidhni-cilin-menaxher-pakete</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/npm-yarn-o-pnpm-cuando-elegir-cada-gestor-de-paquetes</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/npm-yarn-ou-pnpm-quando-escolher-cada-gestor-de-pacotes</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/npm-yarn-ou-pnpm-quand-choisir-quel-gestionnaire-de-paquets</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/npm-yarn-oder-pnpm-wann-welchen-paketmanager-wahlen</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/whats-new-in-angular-22-stable-signal-forms-resource-api-and-angular-aria</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/cfare-ka-te-re-ne-angular-22-format-e-sinjalit-api-ja-e-burimeve-dhe-angular-aria-stabili</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/novedades-de-angular-22-signal-forms-resource-api-y-angular-aria-estables</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/novidades-do-angular-22-signal-forms-resource-api-e-angular-aria-estaveis</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/nouveautes-dangular-22-signal-forms-resource-api-et-angular-aria-stables</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/neuigkeiten-in-angular-22-stabile-signal-forms-resource-api-und-angular-aria</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/microfrontends-with-angular-architecture-implementation-and-best-practices</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/microfrontend-me-angular-arkitektura-zbatimi-dhe-praktikat-me-te-mira</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/microfrontends-con-angular-arquitectura-implementacion-y-buenas-practicas</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/microfrontends-com-angular-arquitetura-implementacao-e-boas-praticas</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/microfrontends-avec-angular-architecture-implementation-et-bonnes-pratiques</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/microfrontends-mit-angular-architektur-implementierung-und-best-practices</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-migration-from-v10-to-v21-the-complete-version-by-version-guide</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/migrimi-kendor-nga-v10-ne-v21-udhezues-i-plote-version-per-version</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/migracion-de-angular-de-v10-a-v21-la-guia-completa-version-por-version</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/migracao-do-angular-de-v10-para-v21-o-guia-completo-versao-a-versao</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/migration-dangular-de-v10-a-v21-le-guide-complet-version-par-version</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/angular-migration-von-v10-zu-v21-der-vollstandige-leitfaden-version-fur-version</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/combined-best-practices-for-modern-web-apps-security-caching-and-websocket</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/praktikat-me-te-mira-te-kombinuara-per-aplikacionet-moderne-te-uebit-siguria-cache-dhe-websockets</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/buenas-practicas-combinadas-para-apps-web-modernas-seguridad-cache-y-websocket</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/boas-praticas-combinadas-para-apps-web-modernas-seguranca-cache-e-websocket</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/bonnes-pratiques-combinees-pour-applications-web-modernes-securite-cache-et-websocket</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/kombinierte-best-practices-fur-moderne-web-apps-sicherheit-caching-und-websocket</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/cookies-cache-and-websockets-a-practical-guide-for-developers</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/cookies-cache-dhe-websockets-nje-udhezues-praktik-per-zhvilluesit</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/cookies-cache-y-websockets-una-guia-practica-para-desarrolladores</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/cookies-cache-e-websockets-um-guia-pratico-para-desenvolvedores</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/cookies-cache-et-websockets-un-guide-pratique-pour-les-developpeurs</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/cookies-cache-und-websockets-ein-praktischer-leitfaden-fur-entwickler</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/uiux-for-angular-applications-designing-usable-accessible-and-performant-interfaces</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/uiux-per-aplikacione-kendore-dizajnimi-i-nderfaqeve-te-perdorshme-te-aksesueshme-dhe-me-performance-te-larte</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/uiux-para-aplicaciones-angular-disenar-interfaces-usables-accesibles-y-performantes</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/uiux-para-aplicacoes-angular-projetar-interfaces-usaveis-acessiveis-e-performaticas</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/uiux-pour-applications-angular-concevoir-des-interfaces-utilisables-accessibles-et-performantes</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/uiux-fur-angular-anwendungen-nutzbare-barrierefreie-und-performante-oberflachen-gestalten</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/building-a-design-system-with-angular-reusable-components-schematics-storybook-and-npm-publishing</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/ndertimi-i-nje-sistemi-projektimi-me-angular-komponentet-skemat-libri-i-tregimeve-dhe-publikimi-ne-npm</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/construir-un-design-system-con-angular-componentes-schematics-storybook-y-publicacion-en-npm</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/construir-um-design-system-com-angular-componentes-schematics-storybook-e-publicacao-no-npm</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/construire-un-design-system-avec-angular-composants-schematics-storybook-et-publication-npm</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/ein-design-system-mit-angular-erstellen-wiederverwendbare-komponenten-schematics-storybook-und-npm-publishing</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/migrating-from-angularjs-to-angular-complete-guide-strategy-and-best-practices</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/migrimi-nga-angularjs-ne-angular-udhezues-i-plote-strategji-dhe-praktika-me-te-mira</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/migracion-de-angularjs-a-angular-guia-completa-estrategia-y-mejores-practicas</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/migrando-de-angularjs-para-angular-guia-completo-estrategia-e-melhores-praticas</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/migrer-dangularjs-vers-angular-guide-complet-strategie-et-bonnes-pratiques</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/migration-von-angularjs-zu-angular-vollstandiger-leitfaden-strategie-und-best-practices</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/seo-in-2026-the-complete-guide-to-being-found-by-google-and-cited-by-ai</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/seo-ne-2026-udhezuesi-i-plote-per-tu-gjetur-nga-google-dhe-cituar-nga-ai</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/seo-en-2026-la-guia-completa-para-ser-encontrado-por-google-y-citado-por-la-ia</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/seo-em-2026-o-guia-completo-para-ser-encontrado-pelo-google-e-citado-pela-ia</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/seo-en-2026-le-guide-complet-pour-etre-trouve-par-google-et-cite-par-lia</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/seo-im-jahr-2026-der-vollstandige-leitfaden-um-von-google-gefunden-und-von-ki-zitiert-zu-werden</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/25-frontend-angular-developer-interview-questions-from-junior-to-lead-with-answers</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/25-pyetje-intervistash-per-frontend-angular-developer-nga-junior-te-lead-me-pergjigje</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/25-preguntas-de-entrevista-para-frontend-angular-developer-de-junior-a-lead-con-respuestas</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/25-perguntas-de-entrevista-para-frontend-angular-developer-de-junior-a-lead-com-respostas</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/25-questions-dentretien-pour-frontend-angular-developer-de-junior-a-lead-avec-reponses</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/25-vorstellungsgesprach-fragen-fur-frontend-angular-developer-von-junior-bis-lead-mit-antworten</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-nestjs-and-nodejs-performance-the-definitive-2026-guide</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/performanca-e-angular-nestjs-dhe-nodejs-udhezuesi-perfundimtar-2026</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/rendimiento-en-angular-nestjs-y-nodejs-la-guia-definitiva-2026</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/performance-em-angular-nestjs-e-nodejs-o-guia-definitivo-2026</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/performance-angular-nestjs-et-nodejs-le-guide-definitif-2026</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/performance-mit-angular-nestjs-und-nodejs-der-definitive-leitfaden-2026</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/building-a-complete-rest-api-with-nestjs-the-definitive-guide-to-typeorm-jwt-rbac-and-security</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/krijimi-i-nje-rest-api-te-plote-me-nestjs-udhezuesi-perfundimtar-per-typeorm-jwt-rbac-dhe-sigurine</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/crear-una-rest-api-completa-con-nestjs-la-guia-definitiva-sobre-typeorm-jwt-rbac-y-seguridad</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/criar-uma-rest-api-completa-com-nestjs-o-guia-definitivo-sobre-typeorm-jwt-rbac-e-seguranca</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/creer-une-rest-api-complete-avec-nestjs-le-guide-definitif-sur-typeorm-jwt-rbac-et-la-securite</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/eine-vollstandige-rest-api-mit-nestjs-erstellen-der-definitive-leitfaden-zu-typeorm-jwt-rbac-und-sicherheit</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/testing-and-debugging-in-angular-a-complete-guide-to-jest-jasminekarma-cypress-playwright-and-angular-devtools</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/testimi-dhe-debugging-ne-angular-udhezues-i-plote-per-jest-jasminekarma-cypress-playwright-dhe-angular-devtools</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/testing-y-depuracion-en-angular-guia-completa-de-jest-jasminekarma-cypress-playwright-y-angular-devtools</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/testes-e-debugging-em-angular-guia-completo-sobre-jest-jasminekarma-cypress-playwright-e-angular-devtools</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/tests-et-debogage-en-angular-guide-complet-de-jest-jasminekarma-cypress-playwright-et-angular-devtools</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/testing-und-debugging-in-angular-der-vollstandige-leitfaden-zu-jest-jasminekarma-cypress-playwright-und-angular-devtools</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/guide-how-to-angular-tailwind-css-chart-js-signals-ngrx-e-reactive-forms-avanzati</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/udhezues-angular-how-to-tailwind-css-chartjs-sinjalet-ngrx-dhe-format-reaktive-te-avancuara</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/guias-practicas-de-angular-tailwind-css-chartjs-signals-ngrx-y-formas-reactivas-avanzadas</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/guide-how-to-angular-tailwind-css-chart-js-signals-ngrx-e-reactive-forms-avanzati</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/guides-pratiques-angulaires-tailwind-css-chartjs-signals-ngrx-et-advanced-reactive-forms</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/angular-anleitungen-tailwind-css-chartjs-signale-ngrx-und-advanced-reactive-forms</loc>
+    <lastmod>2026-08-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-signals-and-rxjs-are-not-enemies</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/angular-signals-dhe-rxjs</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/angular-signals-vs-rxjs-cuando-usar-uno-y-cuando-el-otro</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/angular-signals-vs-rxjs-quando-usare-l-uno-e-quando-l-altro</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/signaux-angulaires-vs-rxjs-quand-utiliser-lun-et-quand-lautre</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/winkelsignale-vs-rxjs-wann-man-das-eine-und-wann-das-andere-verwendet</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/anatomia-delle-performance-del-browser-esempi-concreti-e-analisi-del-codice</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/anatomia-e-performances-se-shfletuesit-shembuj-konkrete-dhe-analiza-e-kodit</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/anatomia-del-rendimiento-del-navegador-ejemplos-concretos-y-analisis-de-codigo</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/anatomia-delle-performance-del-browser-esempi-concreti-e-analisi-del-codice</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/anatomie-des-performances-du-navigateur-exemples-concrets-et-analyse-de-code</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/anatomie-der-browserleistung-konkrete-beispiele-und-codeanalyse</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/seo-in-angular-the-definitive-guide-to-ssr-ssg-and-structured-data</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/seo-ne-angular-udhezuesi-i-plote-per-ssr-ssg-dhe-te-dhenat-e-strukturuara</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/seo-en-angular-la-guia-definitiva-de-ssr-ssg-y-datos-estructurados</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/seo-em-angular-o-guia-definitivo-de-ssr-ssg-e-dados-estruturados</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/seo-en-angular-le-guide-ultime-du-ssr-du-ssg-et-des-donnees-structurees</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/seo-in-angular-der-ultimative-leitfaden-fur-ssr-ssg-und-strukturierte-daten</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-architecture</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/arkitekture-kendore</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/arquitectura-angular</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/angular-architecture</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/architecture-angulaire</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/winkelarchitektur</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/the-importance-of-building-accessible-websites-a-professional-commitment-to-an-inclusive-web</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/rendesia-e-ndertimit-te-faqeve-web-te-aksesueshme-nje-angazhim-profesional-per-nje-web-gjitheperfshires</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/la-importancia-de-crear-sitios-web-accesibles-un-compromiso-profesional-para-una-web-inclusiva</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/a-importancia-de-criar-sites-acessiveis-um-compromisso-profissional-para-uma-web-inclusiva</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/limportance-de-creer-des-sites-web-accessibles-un-engagement-professionnel-pour-un-web-inclusif</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/die-bedeutung-der-erstellung-barrierefreier-websites-ein-professionelles-engagement-fur-ein-integratives-web</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/angular-performance-optimization-strategies-and-tools</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/optimizimi-i-performances-ne-angular-strategji-dhe-mjete</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/optimizacion-del-rendimiento-en-angular-estrategias-y-herramientas</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/otimizacao-de-desempenho-em-angular-estrategias-e-ferramentas</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/optimisation-des-performances-dans-angular-strategies-et-outils</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/leistungsoptimierung-in-angular-strategien-und-tools</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/rxjs-operators-a-practical-guide-with-real-world-use-cases</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/operatoret-rxjs-udhezues-praktik-me-raste-perdorimi-reale</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/operadores-rxjs-guia-practica-con-casos-de-uso-reales</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/operadores-rxjs-guia-pratico-com-casos-de-uso-reais</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/operateurs-rxjs-guide-pratique-avec-des-cas-dutilisation-reels</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/rxjs-operatoren-praktischer-leitfaden-mit-realen-anwendungsfallen</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/artificial-intelligence-everyday-use-real-world-cases-and-key-limitations</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/inteligjenca-artificiale-perdorimi-i-perditshem-raste-reale-dhe-kufizimet</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/inteligencia-artificial-uso-diario-casos-reales-y-limites-a-tener-en-cuenta</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/inteligencia-artificial-uso-diario-casos-reais-e-limites-a-ter-em-conta</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/intelligence-artificielle-usage-quotidien-cas-reels-et-limites-a-connaitre</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/kunstliche-intelligenz-taglicher-einsatz-reale-falle-und-grenzen-die-es-zu-beachten-gilt</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/how-to-register-your-business-on-google-maps-complete-guide-to-google-business-profile-2026</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/i-ta-regjistrosh-biznesin-tend-ne-google-maps-udhezues-i-plote-per-google-business-profile-2026</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/como-registrar-su-empresa-en-google-maps-guia-completa-del-perfil-empresarial-de-google-2026</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/como-registrar-sua-empresa-no-google-maps-guia-completo-para-o-perfil-comercial-do-google-2026</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/comment-enregistrer-votre-entreprise-sur-google-maps-guide-complet-du-profil-dentreprise-google-2026</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/so-registrieren-sie-ihr-unternehmen-auf-google-maps-vollstandiger-leitfaden-zum-google-unternehmensprofil-2026</loc>
+    <lastmod>2026-03-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/3d-geospatial-guide-with-cesiumjs-for-the-web</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/udhezues-gjeohapesinor-3d-me-cesiumjs-per-web</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/guia-geoespacial-3d-con-cesiumjs-para-web</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/guia-3d-geoespacial-com-cesiumjs-para-web</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/guide-geospatial-3d-avec-cesiumjs-pour-le-web</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/geospatial-3d-guide-mit-cesiumjs-fur-das-web</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/introduction-security-is-a-requirement-not-an-option</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/siguria-eshte-nje-kerkese-jo-nje-opsion</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/seguridad-del-enrutador-angular-guardias-e-interceptores-en-accion</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/seguranca-do-roteador-angular-guardas-e-interceptadores-em-acao</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/securite-des-routeurs-angulaires-gardes-et-intercepteurs-en-action</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/angular-router-sicherheit-wachen-und-abfangjager-in-aktion</loc>
+    <lastmod>2026-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/en/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/sq/blog/blinishti-historia-kujtesa-dhe-identiteti-i-nje-treve-te-lashte-te-zadrimes-nga-lashtesia-deri-ne-ditet-e-sotme</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/es/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/pt/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/fr/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://gentsallaku.it/de/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</loc>
+    <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.75</priority>
   </url>

@@ -13,6 +13,8 @@
   background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.28);
   font-size: 12px; color: #a78bfa; margin-bottom: 1.25rem; letter-spacing: .03em;
 }
+/* #a78bfa su sfondo chiaro era 2.3:1 (axe): tonalità più scura in light. */
+:host-context([data-theme='light']) .header-badge { color: #6d28d9; }
 .badge-dot {
   width: 7px; height: 7px; border-radius: 50%;
   background: #7c3aed; box-shadow: 0 0 6px #7c3aed;
