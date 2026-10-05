@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { importProvidersFrom, PLATFORM_ID } from '@angular/core';
+import { importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
 import { of } from 'rxjs';
@@ -15,11 +15,25 @@ const post = {
   _id: '1', slug: 'blinisht', slug_sq: 'blinishti', title: 'Blinisht', title_sq: 'Blinishti', excerpt: '', tags: [],
 } as unknown as Post;
 
+const summary = (id: string, tags: string[], publishedAt: string, extra: Record<string, string> = {}) =>
+  ({ _id: id, slug: `post-${id}`, title: `Post ${id}`, excerpt: `Estratto ${id}`, tags, publishedAt, ...extra }) as unknown as Post;
+const published = [
+  { ...post, tags: ['angular'] } as Post,
+  summary('2', ['react'], '2026-09-01'),
+  summary('3', ['Angular'], '2026-01-01', { title_sq: 'Postimi 3', slug_sq: 'postimi-3' }),
+  summary('4', [], '2026-10-01'),
+  summary('5', [], '2025-01-01'),
+];
+
 describe('BlogDetailComponent view tracking', () => {
   function create(platform: 'browser' | 'server', urlSlug = 'blinisht') {
     const location = { replaceState: vi.fn() };
     const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) };
-    const blogService = { getBySlug: vi.fn(() => of(post)), trackView: vi.fn(() => of(undefined)) };
+    const blogService = {
+      getBySlug: vi.fn(() => of(post)),
+      trackView: vi.fn(() => of(undefined)),
+      getPublishedAll: vi.fn(() => of(published)),
+    };
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
@@ -47,6 +61,43 @@ describe('BlogDetailComponent view tracking', () => {
     const { component, blogService } = create('server');
     expect(component.post).toBe(post);
     expect(blogService.trackView).not.toHaveBeenCalled();
+  });
+
+  describe('related posts', () => {
+    it('suggests three other posts, shared tags first then the most recent, in the current language', () => {
+      const { component } = create('browser');
+      (post as any).tags = ['angular'];
+      component.ngOnInit();
+      expect(component.related.map(p => p._id)).toEqual(['3', '4', '2']);
+      expect(component.relatedTitle(component.related[0])).toBe('Postimi 3');
+      expect(component.relatedSlug(component.related[0])).toBe('postimi-3');
+      expect(component.relatedTitle(component.related[1])).toBe('Post 4'); // nessuna traduzione → italiano
+      (post as any).tags = [];
+    });
+
+    it('does not fetch them while prerendering', () => {
+      const { component, blogService } = create('server');
+      expect(blogService.getPublishedAll).not.toHaveBeenCalled();
+      expect(component.related).toEqual([]);
+    });
+
+    it('loads the new post when the slug changes on the reused component', () => {
+      const { component, blogService } = create('browser');
+      const next = { ...post, _id: '9', slug: 'altro', slug_sq: undefined, title: 'Altro' } as unknown as Post;
+      blogService.getBySlug.mockReturnValue(of(next));
+      component.slug = 'altro';
+      component.ngOnChanges({ slug: new SimpleChange('blinisht', 'altro', false) });
+      expect(blogService.getBySlug).toHaveBeenLastCalledWith('altro');
+      expect(component.post).toBe(next);
+      expect(component.loading).toBe(false);
+      expect(blogService.trackView).toHaveBeenLastCalledWith('altro');
+    });
+
+    it('ignores the first change (handled by ngOnInit)', () => {
+      const { component, blogService } = create('browser');
+      component.ngOnChanges({ slug: new SimpleChange(undefined, 'blinisht', true) });
+      expect(blogService.getBySlug).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('translated slug', () => {

@@ -61,6 +61,23 @@
           </div>
         }
 
+        @if (related().length) {
+          <section class="pd__related" aria-labelledby="pd-related">
+            <h2 id="pd-related">{{ 'project_detail.related_title' | translate }}</h2>
+            <div class="pd__related-grid">
+              @for (rp of related(); track rp._id) {
+                <a [routerLink]="('/projects/' + rp.slug) | langUrl" class="pd__related-card">
+                  <h3>{{ rp.title }}</h3>
+                  <p>{{ rp.description }}</p>
+                  @if (rp.technologies.length) {
+                    <span class="pd__related-tech">{{ rp.technologies.slice(0, 3).join(' · ') }}</span>
+                  }
+                </a>
+              }
+            </div>
+          </section>
+        }
+
         <aside class="pd__cta">
           <p>{{ 'project_detail.cta_text' | translate }}</p>
           <a [routerLink]="'/contact' | langUrl" class="btn btn-primary">{{ 'project_detail.cta_button' | translate }}</a>

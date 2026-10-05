@@ -51,6 +51,12 @@ export function localizedSlug(post: Pick<Post, 'slug' | 'slug_en' | 'slug_sq' | 
   return (post as unknown as Record<string, string | undefined>)[`slug_${lang}`] || post.slug;
 }
 
+/** Titolo o estratto di un post in `lang`, con fallback sull'italiano. */
+export function localizedPostText(post: PostSummary, field: 'title' | 'excerpt', lang: string): string {
+  if (lang === 'it') return post[field];
+  return (post as unknown as Record<string, string | undefined>)[`${field}_${lang}`] || post[field];
+}
+
 export interface PostSummary extends Omit<Post, 'content' | 'content_en' | 'content_sq' | 'content_pt' | 'content_es' | 'content_fr' | 'content_de'> {}
 
 export interface CreatePostPayload {

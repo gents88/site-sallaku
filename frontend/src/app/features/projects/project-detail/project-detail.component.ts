@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, computed, effect, inject, input, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { catchError, of } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
 import { Project } from '../../../core/models/project.model';
-import { localizeProject } from '../../../core/models/localize-content';
+import { hasCaseStudy, localizeProject } from '../../../core/models/localize-content';
+import { rankRelated } from '../../../shared/utils/related-content';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
@@ -34,8 +36,20 @@ export class ProjectDetailComponent {
   private readonly seo = inject(SeoService);
   private readonly t = inject(TranslateService);
 
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   readonly state = signal<LoadState>('loading');
   private readonly raw = signal<Project | null>(null);
+  private readonly allProjects = signal<Project[]>([]);
+
+  /** Altri case study, per tecnologie in comune (a parità, l'ordine scelto in admin). */
+  readonly related = computed(() => {
+    const current = this.raw();
+    if (!current) return [];
+    const lang = this.langService.current();
+    return rankRelated(current, this.allProjects().filter(hasCaseStudy), { id: p => p._id, tags: p => p.technologies })
+      .map(p => localizeProject(p, lang));
+  });
   readonly project = computed(() => {
     const p = this.raw();
     return p ? localizeProject(p, this.langService.current()) : null;
@@ -62,6 +76,10 @@ export class ProjectDetailComponent {
       const slug = this.slug();
       if (slug) this.load(slug);
     });
+    // Solo nel browser, come per i post correlati: niente richiesta extra in prerender.
+    if (this.isBrowser) {
+      this.projects.getAll().pipe(catchError(() => of<Project[]>([]))).subscribe(list => this.allProjects.set(list));
+    }
     effect(() => {
       const p = this.project();
       if (p) this.updateSeo(p);

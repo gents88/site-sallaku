@@ -675,7 +675,8 @@
       "linkCopied": "Link kopiert!"
     },
     "reading_time": "{{count}} Min. Lesezeit",
-    "toc_title": "In diesem Artikel"
+    "toc_title": "In diesem Artikel",
+    "related_title": "Weiterlesen"
   },
   "notes": {
     "title": "Leser-Notizen",
@@ -1917,7 +1918,8 @@
     "solution": "Die Lösung",
     "results": "Die Ergebnisse",
     "cta_text": "Hast du ein ähnliches Projekt?",
-    "cta_button": "Lass uns sprechen"
+    "cta_button": "Lass uns sprechen",
+    "related_title": "Weitere Fallstudien"
   },
   "translations_editor": {
     "title": "Übersetzungen",

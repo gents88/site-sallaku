@@ -1,13 +1,13 @@
-import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, Injector, OnInit, Input, inject, effect, signal, PLATFORM_ID } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, Injector, OnChanges, OnInit, Input, SimpleChanges, inject, effect, signal, PLATFORM_ID } from '@angular/core';
 import { CommonModule, Location, NgOptimizedImage, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { finalize, timeout } from 'rxjs';
+import { Subscription, finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { Lang, LanguageService, NON_DEFAULT_LANGS, withLangPrefix } from '../../../core/services/language.service';
-import { Post, localizedSlug } from '../../../core/models/post.model';
+import { Post, PostSummary, localizedPostText, localizedSlug } from '../../../core/models/post.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { PrismService } from '../../../shared/services/prism.service';
@@ -18,6 +18,7 @@ import { SocialShareComponent } from '../../../shared/components/social-share/so
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
 import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
 import { TocEntry, applyHeadingIds, extractToc } from '../../../shared/utils/article-toc';
+import { rankRelated } from '../../../shared/utils/related-content';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
@@ -28,7 +29,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BlogDetailComponent implements OnInit {
+export class BlogDetailComponent implements OnInit, OnChanges {
   @Input() slug?: string; // injected via withComponentInputBinding(), public route
   @Input() id?: string; // injected via withComponentInputBinding(), admin preview route
 
@@ -56,7 +57,10 @@ export class BlogDetailComponent implements OnInit {
 
   /** Sezione dell'indice attualmente in lettura (scroll-spy). */
   readonly activeTocId = signal<string | null>(null);
+  /** "Leggi anche": post con più tag in comune, a parità i più recenti. */
+  related: PostSummary[] = [];
   private headingObserver?: IntersectionObserver;
+  private postSub?: Subscription;
   private tocCache: { content: string; entries: TocEntry[] } | null = null;
 
   /** Returns the title in the current portal language, falling back to Italian. */
@@ -123,6 +127,10 @@ export class BlogDetailComponent implements OnInit {
     return this.tocCache.entries;
   }
 
+  relatedTitle(post: PostSummary): string { return localizedPostText(post, 'title', this.currentLang()); }
+  relatedExcerpt(post: PostSummary): string { return localizedPostText(post, 'excerpt', this.currentLang()); }
+  relatedSlug(post: PostSummary): string { return localizedSlug(post, this.currentLang()); }
+
   /** Estimated reading time of the content in the current language. */
   get readingMinutes(): number {
     return estimateReadingMinutes(this.localizedContent);
@@ -142,7 +150,7 @@ export class BlogDetailComponent implements OnInit {
       // evidenziazione del codice vanno riapplicati al nuovo contenuto.
       if (this.post) afterNextRender(() => this.enhanceContent(), { injector: this.injector });
     });
-    inject(DestroyRef).onDestroy(() => this.headingObserver?.disconnect());
+    inject(DestroyRef).onDestroy(() => { this.headingObserver?.disconnect(); this.postSub?.unsubscribe(); });
   }
 
   /** Click su una voce dell'indice: scroll fluido, hash nell'URL e focus sul titolo. */
@@ -177,6 +185,25 @@ export class BlogDetailComponent implements OnInit {
     });
   }
 
+  /**
+   * Solo nel browser: in prerender sarebbe una richiesta in più per ogni
+   * post × lingua, proprio quella che fa scattare il throttle del backend.
+   * La lista è la stessa (in cache) della pagina /blog.
+   */
+  private loadRelated(post: Post): void {
+    this.blogService.getPublishedAll().subscribe({
+      next: posts => {
+        this.related = rankRelated<PostSummary>(post, posts, {
+          id: p => p._id,
+          tags: p => p.tags,
+          recency: p => Date.parse(p.publishedAt ?? '') || 0,
+        });
+        this.cdr.markForCheck();
+      },
+      error: () => {},
+    });
+  }
+
   private enhanceContent(): void {
     const article: HTMLElement | null = this.el.nativeElement.querySelector('.post-article__content');
     if (!article) return;
@@ -206,8 +233,30 @@ export class BlogDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.load();
+  }
+
+  /**
+   * Da un post correlato a un altro la rotta resta blog/:slug, quindi Angular
+   * riusa questo componente e cambia solo l'input: senza ricaricare qui la
+   * pagina mostrerebbe ancora il post precedente.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    const change = changes['slug'] ?? changes['id'];
+    if (change && !change.firstChange) this.load();
+  }
+
+  private load(): void {
+    // Prima di azzerare lo stato: il finalize della richiesta precedente rimette loading a false.
+    this.postSub?.unsubscribe();
+    this.loading = true;
+    this.notFound = false;
+    this.post = null;
+    this.related = [];
+    this.activeTocId.set(null);
+    this.headingObserver?.disconnect();
     const post$ = this.isPreview ? this.blogService.getOne(this.id!) : this.blogService.getBySlug(this.slug!);
-    post$.pipe(
+    this.postSub = post$.pipe(
       // NOTE: deliberately no retry() here. Prerendering builds fetch
       // ~200+ posts (every post × every language) from the live API in
       // well under a minute, which can trip the backend's default per-IP
@@ -233,6 +282,7 @@ export class BlogDetailComponent implements OnInit {
         // ~300 fake views per build (and eat into the backend throttle).
         if (this.isBrowser) {
           this.blogService.trackView(post.slug).subscribe({ error: () => {} });
+          this.loadRelated(post);
         }
         // Self-referencing canonical: previously always pointed at the
         // Italian URL regardless of currentLang(), which was wrong for

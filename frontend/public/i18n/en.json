@@ -675,7 +675,8 @@
       "linkCopied": "Link copied!"
     },
     "reading_time": "{{count}} min read",
-    "toc_title": "In this article"
+    "toc_title": "In this article",
+    "related_title": "Keep reading"
   },
   "notes": {
     "title": "Reader notes",
@@ -1917,7 +1918,8 @@
     "solution": "The solution",
     "results": "The results",
     "cta_text": "Have a similar project?",
-    "cta_button": "Let's talk"
+    "cta_button": "Let's talk",
+    "related_title": "More case studies"
   },
   "translations_editor": {
     "title": "Translations",

@@ -675,7 +675,8 @@
       "linkCopied": "Lidhja u kopjua!"
     },
     "reading_time": "{{count}} min lexim",
-    "toc_title": "Në këtë artikull"
+    "toc_title": "Në këtë artikull",
+    "related_title": "Lexo edhe"
   },
   "notes": {
     "title": "Shënime nga lexuesit",
@@ -1917,7 +1918,8 @@
     "solution": "Zgjidhja",
     "results": "Rezultatet",
     "cta_text": "Ke një projekt të ngjashëm?",
-    "cta_button": "Le të flasim"
+    "cta_button": "Le të flasim",
+    "related_title": "Raste të tjera studimi"
   },
   "translations_editor": {
     "title": "Përkthimet",
