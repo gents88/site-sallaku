@@ -344,6 +344,68 @@
 }
 
 // ===========================================================
+// Tabelle dentro gli articoli ([innerHTML]): senza questi stili
+// apparivano come testo allineato, senza bordi né intestazione.
+// ===========================================================
+:host ::ng-deep .post-article__content table {
+  --table-border: color-mix(in srgb, var(--color-primary) 30%, transparent);
+
+  width: 100%;
+  margin: 1.5rem 0 2rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--table-border);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.95em;
+  line-height: 1.5;
+
+  th,
+  td {
+    padding: 0.7rem 1rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--table-border);
+  }
+
+  th + th,
+  td + td {
+    border-left: 1px solid var(--table-border);
+  }
+
+  thead th {
+    background: color-mix(in srgb, var(--color-primary) 16%, var(--color-surface));
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  tbody tr:nth-child(even) td {
+    background: color-mix(in srgb, var(--color-primary) 5%, transparent);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  // La prima colonna è quasi sempre l'etichetta della riga
+  tbody td:first-child {
+    font-weight: 500;
+  }
+
+  // Su schermi stretti una tabella a 3-4 colonne non entra: scorre in orizzontale
+  @media (max-width: 640px) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    th,
+    td {
+      min-width: 9rem;
+    }
+  }
+}
+
+// ===========================================================
 // Link "#" ai titoli (aggiunti nel browser dentro [innerHTML])
 // ===========================================================
 :host ::ng-deep .post-article__content {
