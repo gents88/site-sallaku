@@ -3,7 +3,7 @@ import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { filter } from 'rxjs';
 import { WorkspaceItem, WorkspaceService } from '../../../core/services/workspace.service';
-import { labToolsAccepting, workspaceInput } from '../../../core/navigation/lab-tools';
+import { isLabIndexUrl, labToolsAccepting, workspaceInput } from '../../../core/navigation/lab-tools';
 import { NavIconComponent, navIconColor } from '../nav-icon/nav-icon.component';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 
@@ -93,6 +93,7 @@ const MAX_STEPS = 4;
 })
 export class LabNextStepsComponent {
   private readonly workspace = inject(WorkspaceService);
+  private readonly router = inject(Router);
   readonly iconColor = navIconColor;
   /** Ultimo elemento inviato durante questa visita (null = barra chiusa). */
   readonly item = signal<WorkspaceItem | null>(null);
@@ -109,9 +110,11 @@ export class LabNextStepsComponent {
       const current = this.workspace.current();
       if (!current || current.createdAt === lastSeen) return;
       lastSeen = current.createdAt;
+      // Sulla pagina /lab gli stessi suggerimenti sono già nel riquadro "Continua da dove eri rimasto".
+      if (isLabIndexUrl(untracked(() => this.router.url))) return;
       this.item.set(current);
     });
-    const sub = inject(Router).events
+    const sub = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe(() => this.item.set(null));
     inject(DestroyRef).onDestroy(() => sub.unsubscribe());

@@ -2140,5 +2140,11 @@
     "close": "Fermer les suggestions",
     "resume_title": "Reprenez là où vous en étiez",
     "pending": "« {{name}} » est prêt dans l'espace de travail. Ouvrez-le dans :"
+  },
+  "lab_drop": {
+    "hint": "Déposez un fichier n'importe où sur la page et je vous suggère les bons outils. Il reste dans votre navigateur.",
+    "pick": "Choisir un fichier",
+    "release": "Déposez le fichier pour voir ce que vous pouvez en faire",
+    "only_first": "Seul le premier fichier est utilisé ({{count}} ignorés)."
   }
 }

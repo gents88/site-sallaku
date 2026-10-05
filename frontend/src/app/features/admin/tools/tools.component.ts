@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, computed, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ElementRef, HostListener, Injector, OnInit, afterNextRender, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -20,6 +20,10 @@ interface ToolCard {
   descKey: string;
   route: string;
   badge?: string;
+}
+
+function hasFiles(event: DragEvent): boolean {
+  return Array.from(event.dataTransfer?.types ?? []).includes('Files');
 }
 
 /** Card del Lab dal registro unico: stesse voci (e stesso ordine) della sidebar. */
@@ -46,14 +50,38 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
         <p>{{ 'tools.subtitle' | translate }}</p>
       </header>
 
+      <!-- Trascina un file (o sceglilo): finisce nel workspace e il riquadro qui sotto propone gli strumenti adatti. -->
+      <div class="drop-card">
+        <span class="drop-card__icon" aria-hidden="true">📄</span>
+        <p>{{ 'lab_drop.hint' | translate }}</p>
+        <label class="drop-card__pick">
+          {{ 'lab_drop.pick' | translate }}
+          <input type="file" class="visually-hidden-input" (change)="onPick($event)" />
+        </label>
+      </div>
+
+      @if (dragging()) {
+        <div class="drop-overlay" aria-hidden="true">
+          <div class="drop-overlay__box">
+            <span class="drop-card__icon">📥</span>
+            {{ 'lab_drop.release' | translate }}
+          </div>
+        </div>
+      }
+
       @if (pending() || recentTools().length) {
         <section class="tools-section resume" aria-labelledby="resume-title">
           <h2 id="resume-title" class="section-title">
             <span class="section-emoji" aria-hidden="true">⏱️</span> {{ 'lab_next.resume_title' | translate }}
           </h2>
           @if (pending(); as p) {
-            <div class="resume-pending">
-              <p>{{ 'lab_next.pending' | translate: { name: p.filename } }}</p>
+            <div class="resume-pending" tabindex="-1">
+              <p>
+                {{ 'lab_next.pending' | translate: { name: p.filename } }}
+                @if (ignoredFiles()) {
+                  <small class="resume-note">{{ 'lab_drop.only_first' | translate: { count: ignoredFiles() } }}</small>
+                }
+              </p>
               <div class="resume-chips">
                 @for (step of pendingSteps(); track step.id) {
                   <a [routerLink]="step.route | langUrl" class="resume-chip">
@@ -214,6 +242,38 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
       &:hover, &:focus-visible { border-color: rgba(108,99,255,.6); }
     }
     .tool-card--recent { padding: .8rem 1rem; }
+    .resume-note { display: block; margin-top: .25rem; color: var(--text-secondary, #8b949e); }
+
+    /* ─── Drag & drop ─── */
+    .drop-card {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem;
+      padding: 1rem 1.25rem; margin-bottom: 2rem;
+      border: 1.5px dashed var(--border-color, #30363d); border-radius: 14px;
+      p { flex: 1; min-width: 200px; margin: 0; font-size: .9rem; color: var(--text-secondary, #8b949e); }
+    }
+    .drop-card__icon { font-size: 1.5rem; }
+    .drop-card__pick {
+      position: relative; cursor: pointer;
+      padding: .45rem .9rem; border-radius: 10px;
+      border: 1px solid rgba(108,99,255,.45); color: var(--text-primary, #e6edf3);
+      font-size: .85rem; font-weight: 600;
+      &:hover { border-color: rgba(108,99,255,.8); }
+      &:focus-within { outline: 2px solid #7c3aed; outline-offset: 2px; }
+    }
+    .visually-hidden-input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
+    .drop-overlay {
+      position: fixed; inset: 0; z-index: 1200;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(13,17,23,.72); backdrop-filter: blur(2px);
+      pointer-events: none;
+    }
+    .drop-overlay__box {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      padding: 2rem 2.5rem; border-radius: 18px;
+      border: 2px dashed #a78bfa; background: var(--bg-secondary, #161b22);
+      color: var(--text-primary, #e6edf3); font-weight: 700;
+      .drop-card__icon { font-size: 2.5rem; }
+    }
 
     /* ─── Section ─── */
     .tools-section { margin-bottom: 3rem; }
@@ -351,6 +411,64 @@ export class ToolsComponent implements OnInit {
       .map(t => labToolEntry(t.id))
       .filter((e): e is NavEntry => !!e),
   );
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  /** Un file viene trascinato sopra la pagina. */
+  readonly dragging = signal(false);
+  /** File oltre il primo nell'ultimo rilascio (si usa solo il primo). */
+  readonly ignoredFiles = signal(0);
+  private dragDepth = 0;
+
+  // Ascoltati su document finché la pagina /lab è aperta: si può rilasciare
+  // ovunque, non solo su un riquadro. Il contatore evita lo sfarfallio dei
+  // dragleave che scattano passando sopra gli elementi figli.
+  @HostListener('document:dragenter', ['$event'])
+  onDragEnter(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    this.dragDepth++;
+    this.dragging.set(true);
+  }
+
+  @HostListener('document:dragover', ['$event'])
+  onDragOver(event: DragEvent): void {
+    if (hasFiles(event)) event.preventDefault(); // senza, il browser aprirebbe il file al posto della pagina
+  }
+
+  @HostListener('document:dragleave', ['$event'])
+  onDragLeave(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    this.dragDepth = Math.max(0, this.dragDepth - 1);
+    if (this.dragDepth === 0) this.dragging.set(false);
+  }
+
+  @HostListener('document:drop', ['$event'])
+  onDrop(event: DragEvent): void {
+    if (!hasFiles(event)) return;
+    event.preventDefault();
+    this.dragDepth = 0;
+    this.dragging.set(false);
+    this.useFiles(Array.from(event.dataTransfer?.files ?? []));
+  }
+
+  onPick(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.useFiles(Array.from(input.files ?? []));
+    input.value = '';
+  }
+
+  /** Mette il (primo) file nel workspace e porta l'attenzione sui suggerimenti. */
+  useFiles(files: File[]): void {
+    const [file] = files;
+    if (!file) return;
+    this.workspace.send({ kind: 'file', blob: file, filename: file.name, mime: file.type || undefined, fromTool: 'lab' });
+    this.ignoredFiles.set(files.length - 1);
+    afterNextRender(() => {
+      const box = this.host.nativeElement.querySelector<HTMLElement>('.resume-pending');
+      box?.focus({ preventScroll: true });
+      box?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+    }, { injector: this.injector });
+  }
+
   /** Risultato in attesa nel workspace (solo in memoria, sparisce al reload). */
   readonly pending = this.workspace.current;
   readonly pendingSteps = computed(() => {
