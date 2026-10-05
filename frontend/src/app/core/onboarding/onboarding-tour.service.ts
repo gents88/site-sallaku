@@ -1,20 +1,17 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { DestroyRef, Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import type { DriveStep, Driver } from 'driver.js';
-import { filter, take } from 'rxjs';
 import { AnalyticsTrackingService } from '../services/analytics-tracking.service';
 import { AuthService } from '../services/auth.service';
-import { ConsentService } from '../services/consent.service';
 import { DrawerService } from '../services/drawer.service';
 import { ONBOARDING_STEPS, OnboardingStepDef } from './onboarding-steps';
 
 /** Flag di primo accesso: presente = tour già visto (completato o saltato). */
 export const ONBOARDING_STORAGE_KEY = 'hasSeenOnboarding';
 
-/** Attesa dopo la decisione sul consenso, per non partire sopra una pagina ancora in assestamento. */
+/** Attesa dopo l'atterraggio, per non partire sopra una pagina ancora in assestamento. */
 const AUTO_START_DELAY_MS = 1500;
 /** Il chatbot è in `@defer (on idle)`: al primo accesso il suo pulsante può non esserci ancora. */
 const CHATBOT_WAIT_MS = 4000;
@@ -27,9 +24,9 @@ const ADMIN_ROUTE = /(^|\/)dashboard(\/|$|\?)/;
 /**
  * Tour guidato di primo accesso (spotlight + popover) basato su Driver.js.
  *
- * - Parte da solo una volta per browser, solo dopo che il banner del consenso
- *   è stato chiuso (altrimenti i due overlay si sovrapporrebbero), mai
- *   nell'area admin né per un admin loggato.
+ * - Parte da solo una volta per browser, appena si atterra sul sito, anche
+ *   con il banner del consenso aperto: il banner resta sotto l'overlay e si
+ *   ritrova alla chiusura del tour. Mai nell'area admin né per un admin loggato.
  * - `start()` lo riavvia a mano (link "Guida" nel footer) ignorando il flag.
  * - Driver.js è caricato con import() dinamico: chi non vede mai il tour non
  *   ne scarica il codice.
@@ -40,13 +37,9 @@ export class OnboardingTourService {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
-  private readonly consent = inject(ConsentService);
   private readonly auth = inject(AuthService);
   private readonly drawer = inject(DrawerService);
   private readonly analytics = inject(AnalyticsTrackingService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  private readonly consentDecided$ = toObservable(this.consent.hasDecided);
 
   private instance: Driver | null = null;
   private autoStartTimer: ReturnType<typeof setTimeout> | null = null;
@@ -57,14 +50,10 @@ export class OnboardingTourService {
   /** Da chiamare una volta all'avvio dell'app (AppComponent). */
   scheduleAutoStart(): void {
     if (!this.isBrowser || this.hasSeen()) return;
-    this.consentDecided$
-      .pipe(filter(Boolean), take(1), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.autoStartTimer = setTimeout(() => {
-          this.autoStartTimer = null;
-          if (this.shouldAutoStart()) void this.start();
-        }, AUTO_START_DELAY_MS);
-      });
+    this.autoStartTimer = setTimeout(() => {
+      this.autoStartTimer = null;
+      if (this.shouldAutoStart()) void this.start();
+    }, AUTO_START_DELAY_MS);
   }
 
   /** Avvia (o riavvia) il tour. Ritorna quando il primo step è a schermo. */

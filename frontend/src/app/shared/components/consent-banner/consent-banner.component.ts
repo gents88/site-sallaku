@@ -46,6 +46,15 @@ import { ConsentService } from '../../../core/services/consent.service';
     .consent-banner__text { flex:1 1 480px }
     .consent-banner__actions { display:flex; flex-wrap:wrap; gap:8px }
 
+    /* Il FAB della chat (chatbot.component.scss: right 28px, 58px, z-index
+       1500) sta nell'angolo in basso a destra, proprio dove a riga finiscono
+       i bottoni: copriva metà di "Accetta tutto" anche su desktop. Sopra i
+       480px il banner gli lascia libera la colonna; sotto, i bottoni vanno
+       in colonna allineati a sinistra (regola più in basso). */
+    @media (min-width: 481px) {
+      .consent-banner { right: calc(28px + 58px + 16px); }
+    }
+
     /* Sotto i 900px la navbar aggiunge una bottom tab bar fissa (vedi
        navbar.component.scss): senza questo offset il banner finirebbe
        sovrapposto alla tab bar, con quest'ultima che disegna sopra
