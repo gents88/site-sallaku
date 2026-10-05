@@ -2054,7 +2054,13 @@
     "action_new_project": "Nouveau projet",
     "action_inbox": "Ouvrir les messages de contact",
     "action_logout": "Se déconnecter",
-    "footer_hint": "↑↓ pour choisir · Entrée pour ouvrir · Ctrl+K ou / pour rappeler"
+    "footer_hint": "↑↓ pour choisir · Entrée pour ouvrir · Ctrl+K ou / pour rappeler",
+    "action_copy_link": "Copier le lien de cette page",
+    "action_install": "Installer le site comme une app",
+    "action_language": "Langue : {{lang}}",
+    "action_language_detail": "Changer de langue · language",
+    "link_copied": "Lien copié",
+    "copy_failed": "Échec de la copie"
   },
   "theme": {
     "name_light": "thème clair",

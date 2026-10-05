@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { LanguageService, Lang, SUPPORTED_LANGS, stripLangPrefix, withLangPrefix } from '../../../core/services/language.service';
-import { SeoService } from '../../../core/services/seo.service';
+import { LanguageService, Lang, SUPPORTED_LANGS } from '../../../core/services/language.service';
+import { LanguageSwitchService } from '../../../core/services/language-switch.service';
 
 @Component({
   selector: 'app-lang-switcher',
@@ -99,40 +98,12 @@ export class LangSwitcherComponent {
   private readonly _open = signal(false);
   readonly open = this._open.asReadonly();
 
-  constructor(public lang: LanguageService, private router: Router, private seo: SeoService) {}
+  constructor(public lang: LanguageService, private switcher: LanguageSwitchService) {}
 
   toggle(): void { this._open.update(v => !v); }
 
   select(code: Lang): void {
-    const currentUrl = this.router.url.split('?')[0];
-    if (currentUrl.startsWith('/dashboard')) {
-      // /dashboard/** has no lang-prefixed routes — keep the old
-      // client-state-only behavior there instead of navigating to a URL
-      // the router can't match.
-      this.lang.setLang(code);
-      this._open.set(false);
-    } else {
-      const { basePath } = stripLangPrefix(currentUrl);
-      // langResolver (triggered by this navigation) calls setLangFromUrl,
-      // which persists the choice and updates TranslateService — no need
-      // to also call setLang() here, avoids a double-set race.
-      //
-      // Exception: switching TO 'it' resolves as explicit=false (no URL
-      // prefix), so setLangFromUrl won't persist it — it'll instead see the
-      // still-stored old language and bounce the navigation right back.
-      // Persist 'it' ourselves before navigating to prevent that.
-      if (code === 'it') {
-        this.lang.persistChoice('it');
-      }
-      // Pages with translated paths (blog posts: /blog/<slug_xx>) declare
-      // each language's path via SeoService; everything else keeps basePath.
-      const targetUrl = withLangPrefix(this.seo.alternatePath(code) ?? basePath, code);
-      this.router.navigateByUrl(targetUrl).then(() => {
-        this._open.set(false);
-      }).catch(() => {
-        this._open.set(false);
-      });
-    }
+    void this.switcher.switchTo(code).finally(() => this._open.set(false));
   }
 
   @HostListener('document:click', ['$event'])
