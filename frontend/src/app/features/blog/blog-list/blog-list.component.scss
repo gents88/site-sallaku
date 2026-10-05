@@ -64,14 +64,59 @@
   }
   &:hover &__cover { transform: scale(1.03); }
 
+  // Copertina generata per gli articoli senza immagine: colore stabile per tag
   &__cover-placeholder {
+    --cover-hue: 230;
+    position: relative;
     width: 100%;
     height: 200px;
-    background: linear-gradient(135deg, rgba(79,106,245,0.18) 0%, rgba(139,92,246,0.18) 100%);
+    overflow: hidden;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    mat-icon { font-size: 3rem; width: 3rem; height: 3rem; color: rgba(79,106,245,0.5); }
+    gap: 0.65rem;
+    background:
+      radial-gradient(circle at 18% 22%, hsl(var(--cover-hue) 85% 62% / 0.38), transparent 55%),
+      radial-gradient(circle at 85% 82%, hsl(calc(var(--cover-hue) + 45) 80% 60% / 0.3), transparent 55%),
+      linear-gradient(135deg, hsl(var(--cover-hue) 45% 20%), hsl(calc(var(--cover-hue) + 30) 45% 12%));
+
+    // griglia leggera, sfumata ai bordi
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(circle at center, #000 25%, transparent 75%);
+    }
+
+    mat-icon {
+      position: relative;
+      z-index: 1;
+      font-size: 3.2rem;
+      width: 3.2rem;
+      height: 3.2rem;
+      color: hsl(var(--cover-hue) 90% 82%);
+    }
+  }
+
+  &__cover-label {
+    position: relative;
+    z-index: 1;
+    max-width: 85%;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }

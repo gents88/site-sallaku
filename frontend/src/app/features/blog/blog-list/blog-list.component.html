@@ -56,8 +56,11 @@
           @if (post.coverImage) {
             <img [ngSrc]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" width="640" height="360" />
           } @else {
-            <div class="post-card__cover-placeholder" aria-hidden="true">
-              <mat-icon>article</mat-icon>
+            <div class="post-card__cover-placeholder" [style.--cover-hue]="coverHueOf(post)" aria-hidden="true">
+              <mat-icon>{{ coverIconOf(post) }}</mat-icon>
+              @if (post.tags.length) {
+                <span class="post-card__cover-label">#{{ post.tags[0] }}</span>
+              }
             </div>
           }
           <div class="post-card__body">

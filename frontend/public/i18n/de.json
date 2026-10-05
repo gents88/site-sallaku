@@ -1094,7 +1094,7 @@
     "badge": "KI-PDF-Übersetzung",
     "hero_title_1": "Übersetze Jedes PDF",
     "hero_title_2": "Mit Erhaltenem Layout",
-    "hero_subtitle": "KI-Übersetzung auf Unternehmensniveau, die Seitenzahl und Seitenformat deines Dokuments beibehält — powered by GPT-4o.",
+    "hero_subtitle": "KI-Übersetzung auf Unternehmensniveau, die Seitenzahl und Seitenformat deines Dokuments beibehält.",
     "cta_primary": "🌍 PDF kostenlos übersetzen",
     "stat_languages": "Sprachen",
     "stat_scanned": "Gescannte PDFs",
@@ -1103,7 +1103,7 @@
     "feature_layout_title": "Seitengetreues Layout",
     "feature_layout_desc": "Behält Seitenzahl und Seitengröße des Originals bei, Seite für Seite — nicht die ursprünglichen Schriften oder Bilder.",
     "feature_ai_title": "KI-Übersetzungsqualität",
-    "feature_ai_desc": "GPT-4o-gestützt, Block-für-Block-Übersetzung mit strukturbewussten Prompts.",
+    "feature_ai_desc": "KI-gestützte Block-für-Block-Übersetzung mit strukturbewussten Prompts.",
     "feature_ocr_title": "OCR für gescannte PDFs",
     "feature_ocr_desc": "Erkennt automatisch bildbasierte PDFs und verarbeitet sie über die OCR-Pipeline.",
     "feature_langs_title": "12 Sprachen",
@@ -1163,7 +1163,7 @@
     "upload_aria": "Eine PDF-Datei hochladen",
     "remove_file": "Datei entfernen",
     "seo_title": "KI-PDF-Übersetzer — Übersetzung mit Erhaltenen Seiten",
-    "seo_description": "Übersetze jedes PDF in 12 Sprachen bei gleichbleibender Seitenzahl und Formatierung. KI-Übersetzung auf Enterprise-Niveau mit GPT-4o. Kostenlos online, keine Anmeldung."
+    "seo_description": "Übersetze jedes PDF in 12 Sprachen bei gleichbleibender Seitenzahl und Formatierung. KI-Übersetzung auf Enterprise-Niveau. Kostenlos online, keine Anmeldung."
   },
   "pdf_search": {
     "title": "PDF-Suche",
@@ -1420,7 +1420,7 @@
     "my_files_title": "Meine Dateien",
     "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast",
     "seo_title": "Kostenlose PDF- & KI-Tools — Übersetzung, Zusammenfassung, Präsentationen",
-    "seo_description": "Kostenlose Online-Tools mit KI: PDF-Übersetzer, Präsentationsgenerator, Textformatierer und PDF-Zusammenfasser. Professionelle Dokumententools mit GPT-4o. Keine Anmeldung."
+    "seo_description": "Kostenlose Online-Tools mit KI: PDF-Übersetzer, Präsentationsgenerator, Textformatierer und PDF-Zusammenfasser. Professionelle Dokumententools. Keine Anmeldung."
   },
   "about_manage": {
     "title": "About-Bereich",

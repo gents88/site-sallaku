@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
-import { BlogDetailComponent } from './blog-detail.component';
+import { BlogDetailComponent, activeHeadingIndex, readingProgressOf } from './blog-detail.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
@@ -314,8 +314,51 @@ describe('BlogDetailComponent table of contents', () => {
   it('leaves the default link behaviour alone when the heading does not exist', () => {
     const { component } = createWithToc('it');
     const event = new Event('click', { cancelable: true });
+    const before = component.activeTocId();
     component.scrollToHeading(event, 'manca');
     expect(event.defaultPrevented).toBe(false);
-    expect(component.activeTocId()).toBeNull();
+    expect(component.activeTocId()).toBe(before);
+  });
+});
+
+describe('readingProgressOf', () => {
+  it('is 0 before the text reaches the top of the screen', () => {
+    expect(readingProgressOf({ top: 300, height: 3000 }, 800)).toBe(0);
+  });
+
+  it('grows while scrolling through the text', () => {
+    expect(readingProgressOf({ top: -1100, height: 3000 }, 800)).toBeCloseTo(0.5);
+  });
+
+  it('is 1 once the end of the text is visible, and never goes beyond', () => {
+    expect(readingProgressOf({ top: -2200, height: 3000 }, 800)).toBe(1);
+    expect(readingProgressOf({ top: -5000, height: 3000 }, 800)).toBe(1);
+  });
+
+  it('handles a text shorter than the screen', () => {
+    expect(readingProgressOf({ top: 100, height: 400 }, 800)).toBe(0);
+    expect(readingProgressOf({ top: -10, height: 400 }, 800)).toBe(1);
+  });
+});
+
+describe('activeHeadingIndex', () => {
+  it('nessuna voce attiva prima del primo titolo', () => {
+    expect(activeHeadingIndex([300, 900, 1500], 120, false)).toBe(-1);
+  });
+
+  it("attiva l'ultimo titolo già salito oltre la linea di lettura", () => {
+    expect(activeHeadingIndex([-800, -200, 400], 120, false)).toBe(1);
+  });
+
+  it('risalendo torna al titolo precedente', () => {
+    expect(activeHeadingIndex([-50, 500, 1100], 120, false)).toBe(0);
+  });
+
+  it("in fondo alla pagina attiva l'ultimo anche se non ha raggiunto la linea", () => {
+    expect(activeHeadingIndex([-900, -300, 500], 120, true)).toBe(2);
+  });
+
+  it('senza titoli restituisce -1', () => {
+    expect(activeHeadingIndex([], 120, true)).toBe(-1);
   });
 });

@@ -1094,7 +1094,7 @@
     "badge": "Përkthim PDF me AI",
     "hero_title_1": "Përkthe Çdo PDF",
     "hero_title_2": "Me Layout të Ruajtur",
-    "hero_subtitle": "Përkthim AI i klasit enterprise që ruan numrin dhe formatin e faqeve të dokumentit — fuqizuar nga GPT-4o.",
+    "hero_subtitle": "Përkthim AI i klasit enterprise që ruan numrin dhe formatin e faqeve të dokumentit.",
     "cta_primary": "🌍 Përkthe PDF Falas",
     "stat_languages": "Gjuhë",
     "stat_scanned": "PDF të Skanuar",
@@ -1103,7 +1103,7 @@
     "feature_layout_title": "Faqosje Besnike ndaj Origjinalit",
     "feature_layout_desc": "Ruan të njëjtin numër faqesh dhe të njëjtën përmasë si origjinali, faqe për faqe — jo fontet apo imazhet origjinale.",
     "feature_ai_title": "Përkthim Cilësi AI",
-    "feature_ai_desc": "Fuqizuar nga GPT-4o, përkthim bllok-për-bllok me prompt të ndërgjegjshëm ndaj strukturës.",
+    "feature_ai_desc": "Përkthim me AI bllok-për-bllok me prompt të ndërgjegjshëm ndaj strukturës.",
     "feature_ocr_title": "OCR për PDF të Skanuar",
     "feature_ocr_desc": "Zbulon automatikisht PDF me bazë imazhe dhe i përpunon nëpërmjet pipeline OCR.",
     "feature_langs_title": "12 Gjuhë",
@@ -1163,7 +1163,7 @@
     "upload_aria": "Ngarko një skedar PDF",
     "remove_file": "Hiq skedarin",
     "seo_title": "Përkthyes PDF me AI — Përkthim Duke Ruajtur Faqet Origjinale",
-    "seo_description": "Përkthe çdo PDF në 12 gjuhë duke ruajtur të njëjtin numër faqesh dhe format. Përkthim AI i nivelit enterprise me GPT-4o. Falas online, pa regjistrim."
+    "seo_description": "Përkthe çdo PDF në 12 gjuhë duke ruajtur të njëjtin numër faqesh dhe format. Përkthim AI i nivelit enterprise. Falas online, pa regjistrim."
   },
   "pdf_search": {
     "title": "Kërko PDF",
@@ -1420,7 +1420,7 @@
     "my_files_title": "Skedarët e mi",
     "my_files_desc": "Gjej rezultatet që ke ruajtur nga mjetet AI",
     "seo_title": "Mjete Falas PDF dhe AI — Përkthim, Përmbledhje, Prezantime",
-    "seo_description": "Mjete online falas me AI: përkthyes PDF, gjenerues prezantimesh, formatues teksti dhe përmbledhës PDF. Mjete profesionale me GPT-4o. Pa regjistrim."
+    "seo_description": "Mjete online falas me AI: përkthyes PDF, gjenerues prezantimesh, formatues teksti dhe përmbledhës PDF. Mjete profesionale për dokumentet. Pa regjistrim."
   },
   "about_manage": {
     "title": "Seksioni About",

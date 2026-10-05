@@ -37,6 +37,36 @@ export function rankTags(posts: PostSummary[]): string[] {
     .map(t => t.label);
 }
 
+/** Tonalità ben distinte tra loro (blu, viola, ciano, verde acqua, arancio, rosa, ambra, verde). */
+const COVER_HUES = [228, 265, 192, 162, 22, 330, 44, 138];
+
+/** Tonalità stabile per un testo (stesso tag → stesso colore di copertina), da una palette fissa. */
+export function coverHue(seed: string): number {
+  let h = 0x811c9dc5; // FNV-1a: distribuisce bene anche le parole brevi
+  for (const ch of seed.trim().toLowerCase()) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return COVER_HUES[h % COVER_HUES.length];
+}
+
+/** Icona Material per la copertina generata, scelta dall'argomento principale. */
+export function coverIcon(tag: string | undefined): string {
+  const t = (tag ?? '').toLowerCase();
+  const rules: [RegExp, string][] = [
+    [/pdf|ocr|document|scanner|word|docx/, 'picture_as_pdf'],
+    [/seo|google|indicizz|search/, 'travel_explore'],
+    [/\b(ai|ia)\b|intelligenza|llm|prompt/, 'auto_awesome'],
+    [/sicurezza|security|jwt|csp|segreti/, 'shield'],
+    [/performance|core web vitals|ottimizz/, 'speed'],
+    [/cesium|gis|3d|webgl/, 'public'],
+    [/colloqui|carriera|freelance|clienti/, 'work'],
+    [/accessibil|wcag/, 'accessibility_new'],
+    [/angular|typescript|rxjs|signals|nestjs|javascript|css|react/, 'code'],
+  ];
+  return rules.find(([re]) => re.test(t))?.[1] ?? 'article';
+}
+
 @Component({
   selector: 'app-blog-list',
   standalone: true,
@@ -64,6 +94,9 @@ export class BlogListComponent implements OnInit {
     if (this.activeTag && !top.includes(this.activeTag)) top.push(this.activeTag);
     return top;
   }
+
+  coverHueOf(post: PostSummary): number { return coverHue(post.tags?.[0] ?? post.slug ?? ''); }
+  coverIconOf(post: PostSummary): string { return coverIcon(post.tags?.[0]); }
 
   get hiddenTagCount(): number {
     return Math.max(0, this.allTags.length - this.topTagCount);
