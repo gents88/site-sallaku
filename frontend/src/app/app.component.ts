@@ -19,18 +19,20 @@ import { OnboardingTourService } from './core/onboarding/onboarding-tour.service
 import { SessionTimeoutModalComponent } from './shared/components/session-timeout-modal/session-timeout-modal.component';
 import { ChatbotComponent } from './features/chatbot/chatbot.component';
 import { SearchOverlayComponent } from './shared/components/search-overlay/search-overlay.component';
+import { OfflineBannerComponent } from './shared/components/offline-banner/offline-banner.component';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent],
   template: `
     <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
     <app-navbar />
     <app-consent-banner />
     <app-sidebar />
     <app-search-overlay />
+    <app-offline-banner />
     <main id="main-content" tabindex="-1">
       <router-outlet />
     </main>

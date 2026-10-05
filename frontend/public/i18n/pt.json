@@ -2108,5 +2108,15 @@
         "body": "Podes rever este guia quando quiseres a partir da ligação «Guia» no fundo da página."
       }
     }
+  },
+  "offline": {
+    "banner": "Você está offline. Os artigos que já leu continuam disponíveis.",
+    "see_articles": "Ver artigos",
+    "back_online": "Online novamente",
+    "list_unavailable": "Você está offline: a lista de artigos não está disponível",
+    "load_error": "Não foi possível carregar os artigos",
+    "recent_title": "Você já leu estes e pode abri-los mesmo sem conexão:",
+    "no_recent": "Os artigos que você abre ficam salvos para leitura offline.",
+    "retry": "Tentar novamente"
   }
 }

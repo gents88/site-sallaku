@@ -86,7 +86,30 @@
       }
     </div>
 
-    @if (!filteredPosts.length) {
+    @if (loadError) {
+      <section class="offline-panel" aria-labelledby="offline-panel-title">
+        <mat-icon class="empty-icon" aria-hidden="true">{{ network.online() ? 'cloud_off' : 'wifi_off' }}</mat-icon>
+        <h2 id="offline-panel-title" class="empty-title">
+          {{ (network.online() ? 'offline.load_error' : 'offline.list_unavailable') | translate }}
+        </h2>
+        @if (readOffline.length) {
+          <p class="empty-message">{{ 'offline.recent_title' | translate }}</p>
+          <ul class="offline-panel__list">
+            @for (entry of readOffline; track entry.slug) {
+              <li>
+                <a [routerLink]="('/blog/' + entry.slug) | langUrl">{{ entry.title }}</a>
+                @if (entry.excerpt) { <span class="text-muted">{{ entry.excerpt }}</span> }
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty-message">{{ 'offline.no_recent' | translate }}</p>
+        }
+        <button type="button" class="btn btn-ghost" (click)="reload()">
+          <mat-icon>refresh</mat-icon> {{ 'offline.retry' | translate }}
+        </button>
+      </section>
+    } @else if (!filteredPosts.length) {
       <div class="empty-state-illustrated">
         <mat-icon class="empty-icon">search_off</mat-icon>
         <h3 class="empty-title">{{ 'blog.empty.title' | translate }}</h3>
