@@ -12,11 +12,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
+import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, NewsletterSignupComponent],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, NewsletterSignupComponent, ViewTransitionNameOnClickDirective],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -97,6 +98,19 @@ export class BlogListComponent implements OnInit {
       },
       error: () => {},
     });
+  }
+
+  private readonly prefetched = new Set<string>();
+
+  /**
+   * Scalda la cache del post mentre il puntatore è sulla card: all'apertura
+   * il dettaglio è già pronto e la view transition trova subito il titolo.
+   */
+  prefetch(post: PostSummary): void {
+    const slug = this.postSlug(post);
+    if (this.prefetched.has(slug)) return;
+    this.prefetched.add(slug);
+    this.blogService.getBySlug(slug).subscribe({ error: () => this.prefetched.delete(slug) });
   }
 
   /** URL slug in the current language, so /sq/blog/... links carry the Albanian slug. */

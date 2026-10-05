@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { importProvidersFrom } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlogListComponent } from './blog-list.component';
 import { BlogService } from '../../../core/services/blog.service';
@@ -114,5 +114,46 @@ describe('BlogListComponent search', () => {
 
     expect(component.searchQuery).toBe('aggiornare angular');
     expect(component.filteredPosts).toEqual([migrationPost]);
+  });
+});
+
+describe('BlogListComponent prefetch', () => {
+  it('warms the detail cache once per post, using the slug of the current language', () => {
+    const getBySlug = vi.fn(() => of({}));
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])), getBySlug } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
+        { provide: LanguageService, useValue: { current: () => 'sq' } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
+      ],
+    });
+    const component = TestBed.createComponent(BlogListComponent).componentInstance;
+    const p = post({ slug: 'titulli-it', slug_sq: 'titulli' } as Partial<PostSummary>);
+
+    component.prefetch(p);
+    component.prefetch(p);
+
+    expect(getBySlug).toHaveBeenCalledTimes(1);
+    expect(getBySlug).toHaveBeenCalledWith('titulli');
+  });
+
+  it('retries a prefetch that failed', () => {
+    const getBySlug = vi.fn(() => throwError(() => new Error('offline')));
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])), getBySlug } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
+        { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
+      ],
+    });
+    const component = TestBed.createComponent(BlogListComponent).componentInstance;
+    const p = post({ slug: 'a' });
+    component.prefetch(p);
+    component.prefetch(p);
+    expect(getBySlug).toHaveBeenCalledTimes(2);
   });
 });

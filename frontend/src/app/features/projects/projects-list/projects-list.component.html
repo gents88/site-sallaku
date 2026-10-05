@@ -22,7 +22,13 @@
       }
       <div class="projects-grid">
         @for (p of filteredProjects(); track p._id) {
-          <div class="project-card glass-card">
+          <div
+            class="project-card glass-card"
+            appVtNameOnClick="project-title"
+            vtTarget=".project-title"
+            (pointerenter)="prefetch(p)"
+            (focusin)="prefetch(p)"
+          >
             @if (p.images[0]) {
               <div class="project-visual project-visual--image"><img [src]="p.images[0]" [alt]="p.title" loading="lazy" /></div>
             }

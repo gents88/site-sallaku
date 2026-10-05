@@ -936,9 +936,32 @@ app-library {
   animation: 260ms cubic-bezier(0.4, 0, 0.2, 1) vt-fade-in;
 }
 
+/* Elementi condivisi (direttive appVtName / appVtNameOnClick): il titolo
+   della card "vola" fino al titolo della pagina di dettaglio. Le due
+   istantanee hanno proporzioni diverse (testo piccolo su più righe → h1):
+   altezza piena e larghezza automatica evitano che il testo si deformi. */
+::view-transition-group(post-title),
+::view-transition-group(project-title) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-old(post-title),
+::view-transition-new(post-title),
+::view-transition-old(project-title),
+::view-transition-new(project-title) {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  object-position: left top;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
     animation: none;
   }
 }
