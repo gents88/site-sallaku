@@ -656,6 +656,8 @@
   "blog": {
     "readMore": "Lexo më shumë",
     "loadMore": "Ngarko më shumë",
+    "tags_more": "Shfaq të gjitha etiketat (+{{count}})",
+    "tags_less": "Shfaq më pak etiketa",
     "views_singular": "{{count}} lexim",
     "views_plural": "{{count}} lexime",
     "empty": {

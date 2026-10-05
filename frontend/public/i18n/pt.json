@@ -656,6 +656,8 @@
   "blog": {
     "readMore": "Ler mais",
     "loadMore": "Carregar mais",
+    "tags_more": "Mostrar todas as tags (+{{count}})",
+    "tags_less": "Mostrar menos tags",
     "views_singular": "{{count}} visualização",
     "views_plural": "{{count}} visualizações",
     "empty": {
