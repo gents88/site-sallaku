@@ -2118,5 +2118,14 @@
     "recent_title": "Ya leíste estos y puedes abrirlos sin conexión:",
     "no_recent": "Los artículos que abres se guardan para leerlos sin conexión.",
     "retry": "Reintentar"
+  },
+  "install": {
+    "title": "Instala el Lab como app",
+    "text": "Abre las herramientas de PDF e IA con un toque, a pantalla completa y sin conexión en las páginas ya visitadas.",
+    "ios_text_before": "Toca",
+    "ios_share": "Compartir",
+    "ios_text_after": "y luego «Añadir a pantalla de inicio».",
+    "cta": "Instalar",
+    "later": "Ahora no"
   }
 }

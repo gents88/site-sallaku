@@ -2118,5 +2118,14 @@
     "recent_title": "You've already read these and can open them without a connection:",
     "no_recent": "Articles you open are saved for offline reading.",
     "retry": "Try again"
+  },
+  "install": {
+    "title": "Install the Lab as an app",
+    "text": "Open the PDF and AI tools in one tap, full screen, and offline for pages you've already visited.",
+    "ios_text_before": "Tap",
+    "ios_share": "Share",
+    "ios_text_after": "then \"Add to Home Screen\".",
+    "cta": "Install",
+    "later": "Not now"
   }
 }

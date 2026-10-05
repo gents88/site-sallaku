@@ -2118,5 +2118,14 @@
     "recent_title": "Këto i ke lexuar tashmë dhe mund t'i hapësh edhe pa lidhje:",
     "no_recent": "Artikujt që hap ruhen për lexim jashtë linje.",
     "retry": "Provo përsëri"
+  },
+  "install": {
+    "title": "Instalo Lab-in si aplikacion",
+    "text": "Hap mjetet PDF dhe AI me një prekje, në ekran të plotë dhe pa lidhje për faqet që ke vizituar.",
+    "ios_text_before": "Prek",
+    "ios_share": "Shpërndaj",
+    "ios_text_after": "dhe pastaj «Shto në ekranin bazë».",
+    "cta": "Instalo",
+    "later": "Jo tani"
   }
 }

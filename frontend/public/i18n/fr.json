@@ -2118,5 +2118,14 @@
     "recent_title": "Vous les avez déjà lus et pouvez les ouvrir sans connexion :",
     "no_recent": "Les articles que vous ouvrez sont enregistrés pour une lecture hors ligne.",
     "retry": "Réessayer"
+  },
+  "install": {
+    "title": "Installez le Lab comme une app",
+    "text": "Ouvrez les outils PDF et IA en un geste, en plein écran, et hors ligne pour les pages déjà visitées.",
+    "ios_text_before": "Touchez",
+    "ios_share": "Partager",
+    "ios_text_after": "puis « Sur l'écran d'accueil ».",
+    "cta": "Installer",
+    "later": "Plus tard"
   }
 }
