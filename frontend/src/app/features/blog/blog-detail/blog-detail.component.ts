@@ -22,6 +22,7 @@ import { TocEntry, addHeadingAnchors, applyHeadingIds, extractToc } from '../../
 import { rankRelated } from '../../../shared/utils/related-content';
 import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { environment } from '../../../../environments/environment';
 
 /**
  * Quanto del testo è stato letto, da 0 a 1: 0 finché l'inizio del testo non
@@ -31,6 +32,22 @@ export function readingProgressOf(rect: { top: number; height: number }, viewpor
   const scrollable = rect.height - viewportHeight;
   if (scrollable <= 0) return rect.top <= 0 ? 1 : 0;
   return Math.min(1, Math.max(0, -rect.top / scrollable));
+}
+
+/**
+ * Immagine per l'anteprima sui social (og:image): la copertina se c'è,
+ * altrimenti la stessa cartolina della lista del blog, generata dal backend
+ * in PNG nella lingua della pagina. v= cambia a ogni modifica del post, così
+ * le piattaforme non restano sulla versione vecchia in cache.
+ */
+export function postShareImageUrl(
+  post: { slug: string; coverImage?: string | null; updatedAt?: string },
+  lang: Lang,
+  apiUrl: string,
+): string {
+  if (post.coverImage) return post.coverImage;
+  const version = (Date.parse(post.updatedAt ?? '') || 0).toString(36);
+  return `${apiUrl}/blog/posts/${encodeURIComponent(post.slug)}/og.png?lang=${lang}&v=${version}`;
 }
 
 /** Distanza dalla cima dello schermo oltre la quale un titolo conta come "già letto". */
@@ -389,10 +406,11 @@ export class BlogDetailComponent implements OnInit, OnChanges {
         const localizedPath = withLangPrefix(alternatePaths[this.currentLang()], this.currentLang());
         this.pageUrl = `${SITE_ORIGIN}${localizedPath}`;
         const pageUrl = this.pageUrl;
+        const shareImage = postShareImageUrl(post, this.currentLang(), environment.apiUrl);
         this.seo.update({
           title: this.localizedMetaTitle,
           description: this.localizedMetaDescription,
-          image: post.coverImage,
+          image: shareImage,
           type: 'article',
           url: pageUrl,
           alternatePaths,
@@ -408,7 +426,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
             '@id': `${pageUrl}#article`,
             headline: this.localizedMetaTitle,
             description: this.localizedMetaDescription,
-            image: post.coverImage ? [post.coverImage] : undefined,
+            image: [shareImage],
             url: pageUrl,
             datePublished: post.publishedAt,
             dateModified: post.updatedAt ?? post.publishedAt,
