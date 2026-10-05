@@ -2133,5 +2133,12 @@
     "ios_text_after": "dhe pastaj «Shto në ekranin bazë».",
     "cta": "Instalo",
     "later": "Jo tani"
+  },
+  "lab_next": {
+    "ready": "«{{name}}» është gati.",
+    "continue_with": "Vazhdo me:",
+    "close": "Mbyll sugjerimet",
+    "resume_title": "Vazhdo nga ku e le",
+    "pending": "Ke «{{name}}» gati në hapësirën e punës. Hape në:"
   }
 }

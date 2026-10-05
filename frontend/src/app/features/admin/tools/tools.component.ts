@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -8,6 +8,10 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 import { sidebarGroups } from '../../../core/navigation/nav-registry';
 import { NavIconComponent, navIconColor } from '../../../shared/components/nav-icon/nav-icon.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { LabActivityService } from '../../../core/services/lab-activity.service';
+import { WorkspaceService } from '../../../core/services/workspace.service';
+import { labToolEntry, labToolsAccepting, workspaceInput } from '../../../core/navigation/lab-tools';
+import { NavEntry } from '../../../core/navigation/nav-registry';
 
 interface ToolCard {
   id: string;
@@ -41,6 +45,40 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
         <h1>{{ 'tools.heading' | translate }}</h1>
         <p>{{ 'tools.subtitle' | translate }}</p>
       </header>
+
+      @if (pending() || recentTools().length) {
+        <section class="tools-section resume" aria-labelledby="resume-title">
+          <h2 id="resume-title" class="section-title">
+            <span class="section-emoji" aria-hidden="true">⏱️</span> {{ 'lab_next.resume_title' | translate }}
+          </h2>
+          @if (pending(); as p) {
+            <div class="resume-pending">
+              <p>{{ 'lab_next.pending' | translate: { name: p.filename } }}</p>
+              <div class="resume-chips">
+                @for (step of pendingSteps(); track step.id) {
+                  <a [routerLink]="step.route | langUrl" class="resume-chip">
+                    <span class="icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(step.icon)"><app-nav-icon [name]="step.icon" [size]="14" /></span>
+                    {{ (step.searchTitleKey ?? step.labelKey) | translate }}
+                  </a>
+                }
+              </div>
+            </div>
+          }
+          @if (recentTools().length) {
+            <div class="cards-grid">
+              @for (tool of recentTools(); track tool.id) {
+                <a [routerLink]="tool.route | langUrl" class="tool-card tool-card--recent icon-tile--lift">
+                  <div class="card-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(tool.icon)"><app-nav-icon [name]="tool.icon" [size]="22" /></div>
+                  <div class="card-body">
+                    <h3>{{ (tool.searchTitleKey ?? tool.labelKey) | translate }}</h3>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </a>
+              }
+            </div>
+          }
+        </section>
+      }
 
       <a [routerLink]="'/lab/workspace' | langUrl" class="workspace-banner">
         <div class="workspace-banner-icon">🔗</div>
@@ -158,6 +196,24 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
       h2 { font-size: 1.1rem; font-weight: 800; margin: 0 0 .3rem; color: var(--text-primary, #e6edf3); background: none; -webkit-text-fill-color: initial; }
       p { font-size: .85rem; color: var(--text-secondary, #8b949e); margin: 0; line-height: 1.5; }
     }
+
+    /* ─── Continua da dove eri rimasto ─── */
+    .resume-pending {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem;
+      padding: .9rem 1.1rem; margin-bottom: 1rem;
+      border: 1px dashed rgba(108,99,255,.45); border-radius: 14px;
+      background: rgba(108,99,255,.06);
+      p { margin: 0; font-size: .9rem; color: var(--text-primary, #e6edf3); }
+    }
+    .resume-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .resume-chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      padding: .3rem .65rem .3rem .35rem; border-radius: 999px;
+      border: 1px solid var(--border-color, #30363d);
+      color: var(--text-primary, #e6edf3); font-size: .8rem; text-decoration: none;
+      &:hover, &:focus-visible { border-color: rgba(108,99,255,.6); }
+    }
+    .tool-card--recent { padding: .8rem 1rem; }
 
     /* ─── Section ─── */
     .tools-section { margin-bottom: 3rem; }
@@ -286,6 +342,22 @@ export class ToolsComponent implements OnInit {
   }
 
   readonly iconColor = navIconColor;
+  private readonly labActivity = inject(LabActivityService);
+  private readonly workspace = inject(WorkspaceService);
+
+  /** Strumenti aperti di recente su questo dispositivo (localStorage). */
+  readonly recentTools = computed(() =>
+    this.labActivity.recent()
+      .map(t => labToolEntry(t.id))
+      .filter((e): e is NavEntry => !!e),
+  );
+  /** Risultato in attesa nel workspace (solo in memoria, sparisce al reload). */
+  readonly pending = this.workspace.current;
+  readonly pendingSteps = computed(() => {
+    const item = this.pending();
+    return item ? labToolsAccepting(workspaceInput(item), item.fromTool) : [];
+  });
+
   readonly aiCards = cardsFor('ai');
   readonly toolCards = cardsFor('tools');
 }

@@ -2133,5 +2133,12 @@
     "ios_text_after": "e poi «Aggiungi alla schermata Home».",
     "cta": "Installa",
     "later": "Non ora"
+  },
+  "lab_next": {
+    "ready": "«{{name}}» è pronto.",
+    "continue_with": "Continua con:",
+    "close": "Chiudi suggerimenti",
+    "resume_title": "Continua da dove eri rimasto",
+    "pending": "Hai «{{name}}» pronto nel workspace. Aprilo in:"
   }
 }

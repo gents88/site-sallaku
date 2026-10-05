@@ -2133,5 +2133,12 @@
     "ios_text_after": "then \"Add to Home Screen\".",
     "cta": "Install",
     "later": "Not now"
+  },
+  "lab_next": {
+    "ready": "\"{{name}}\" is ready.",
+    "continue_with": "Continue with:",
+    "close": "Close suggestions",
+    "resume_title": "Pick up where you left off",
+    "pending": "You have \"{{name}}\" ready in the workspace. Open it in:"
   }
 }

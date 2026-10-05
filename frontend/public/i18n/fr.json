@@ -2133,5 +2133,12 @@
     "ios_text_after": "puis « Sur l'écran d'accueil ».",
     "cta": "Installer",
     "later": "Plus tard"
+  },
+  "lab_next": {
+    "ready": "« {{name}} » est prêt.",
+    "continue_with": "Continuer avec :",
+    "close": "Fermer les suggestions",
+    "resume_title": "Reprenez là où vous en étiez",
+    "pending": "« {{name}} » est prêt dans l'espace de travail. Ouvrez-le dans :"
   }
 }
