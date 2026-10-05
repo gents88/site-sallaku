@@ -674,7 +674,8 @@
       "copyLink": "Copia link",
       "linkCopied": "Link copiato!"
     },
-    "reading_time": "{{count}} min di lettura"
+    "reading_time": "{{count}} min di lettura",
+    "toc_title": "In questo articolo"
   },
   "notes": {
     "title": "Note dei lettori",

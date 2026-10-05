@@ -674,7 +674,8 @@
       "copyLink": "Kopjo lidhjen",
       "linkCopied": "Lidhja u kopjua!"
     },
-    "reading_time": "{{count}} min lexim"
+    "reading_time": "{{count}} min lexim",
+    "toc_title": "Në këtë artikull"
   },
   "notes": {
     "title": "Shënime nga lexuesit",
