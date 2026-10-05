@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { applyHeadingIds, extractToc, headingText, slugifyHeading } from './article-toc';
+import { describe, expect, it, vi } from 'vitest';
+import { addHeadingAnchors, applyHeadingIds, extractToc, headingText, slugifyHeading } from './article-toc';
 
 describe('slugifyHeading', () => {
   it('drops accents and punctuation', () => {
@@ -64,5 +64,34 @@ describe('applyHeadingIds', () => {
     root.innerHTML = '<h2>A</h2><h2>B</h2>';
     expect(applyHeadingIds(root, extractToc('<h2>A</h2>')).length).toBe(1);
     expect(root.querySelectorAll('h2')[1].id).toBe('');
+  });
+});
+
+describe('addHeadingAnchors', () => {
+  function headings() {
+    const root = document.createElement('div');
+    root.innerHTML = '<h2>Intro</h2><h3>Dettaglio</h3>';
+    return applyHeadingIds(root, extractToc(root.innerHTML));
+  }
+
+  it('appends an accessible "#" link to each heading that calls back with its id', () => {
+    const hs = headings();
+    const onActivate = vi.fn();
+    addHeadingAnchors(hs, 'Copia link', onActivate);
+    const anchor = hs[1].querySelector<HTMLAnchorElement>('.heading-anchor')!;
+    expect(anchor.getAttribute('href')).toBe('#dettaglio');
+    expect(anchor.getAttribute('aria-label')).toBe('Copia link: Dettaglio');
+    anchor.click();
+    expect(onActivate).toHaveBeenCalledWith('dettaglio', expect.any(MouseEvent));
+  });
+
+  it('is idempotent and skips headings without an id', () => {
+    const hs = headings();
+    const bare = document.createElement('h2');
+    bare.textContent = 'Senza id';
+    addHeadingAnchors([...hs, bare], 'x', () => {});
+    addHeadingAnchors(hs, 'x', () => {});
+    expect(hs[0].querySelectorAll('.heading-anchor').length).toBe(1);
+    expect(bare.querySelector('.heading-anchor')).toBeNull();
   });
 });

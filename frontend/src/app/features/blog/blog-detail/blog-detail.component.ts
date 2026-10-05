@@ -17,7 +17,7 @@ import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
 import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
-import { TocEntry, applyHeadingIds, extractToc } from '../../../shared/utils/article-toc';
+import { TocEntry, addHeadingAnchors, applyHeadingIds, extractToc } from '../../../shared/utils/article-toc';
 import { rankRelated } from '../../../shared/utils/related-content';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 
@@ -185,6 +185,16 @@ export class BlogDetailComponent implements OnInit, OnChanges {
     });
   }
 
+  /** Click sul "#" di un titolo: copia il link diretto alla sezione e lo mette nell'URL. */
+  copyHeadingLink(id: string, event: Event): void {
+    event.preventDefault();
+    history.replaceState(history.state, '', `#${id}`);
+    const url = `${this.pageUrl || location.href.split('#')[0]}#${id}`;
+    const done = (key: string) => this.snackBar.open(this.translate.instant(key), undefined, { duration: 2500 });
+    if (!navigator.clipboard?.writeText) return;
+    navigator.clipboard.writeText(url).then(() => done('blog.link_copied'), () => done('blog.copy_failed'));
+  }
+
   /**
    * Solo nel browser: in prerender sarebbe una richiesta in più per ogni
    * post × lingua, proprio quella che fa scattare il throttle del backend.
@@ -207,8 +217,13 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   private enhanceContent(): void {
     const article: HTMLElement | null = this.el.nativeElement.querySelector('.post-article__content');
     if (!article) return;
+    // Etichette del pulsante "Copia" della toolbar Prism (di default in inglese).
+    article.dataset['prismjsCopy'] = this.translate.instant('blog.copy_code');
+    article.dataset['prismjsCopySuccess'] = this.translate.instant('blog.copied');
+    article.dataset['prismjsCopyError'] = this.translate.instant('blog.copy_failed');
     this.prismService.highlightAllUnder(article);
     const headings = applyHeadingIds(article, this.toc);
+    addHeadingAnchors(headings, this.translate.instant('blog.copy_section_link'), (id, event) => this.copyHeadingLink(id, event));
     this.observeHeadings(headings);
     // L'anchorScrolling del router scatta prima che il post sia caricato:
     // con un link diretto a /blog/x#sezione lo scroll va rifatto qui.
