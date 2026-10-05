@@ -2108,5 +2108,15 @@
         "body": "You can replay this guide any time from the \"Guide\" link at the bottom of the page."
       }
     }
+  },
+  "offline": {
+    "banner": "You're offline. Articles you've already read are still available.",
+    "see_articles": "See articles",
+    "back_online": "Back online",
+    "list_unavailable": "You're offline: the article list isn't available",
+    "load_error": "The articles couldn't be loaded",
+    "recent_title": "You've already read these and can open them without a connection:",
+    "no_recent": "Articles you open are saved for offline reading.",
+    "retry": "Try again"
   }
 }

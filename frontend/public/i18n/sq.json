@@ -2108,5 +2108,15 @@
         "body": "Mund ta rishikosh këtë udhëzues kurdo nga lidhja «Udhëzuesi» në fund të faqes."
       }
     }
+  },
+  "offline": {
+    "banner": "Je jashtë linje. Artikujt që ke lexuar mbeten të disponueshëm.",
+    "see_articles": "Shiko artikujt",
+    "back_online": "Përsëri në linjë",
+    "list_unavailable": "Je jashtë linje: lista e artikujve nuk është e disponueshme",
+    "load_error": "Artikujt nuk u ngarkuan dot",
+    "recent_title": "Këto i ke lexuar tashmë dhe mund t'i hapësh edhe pa lidhje:",
+    "no_recent": "Artikujt që hap ruhen për lexim jashtë linje.",
+    "retry": "Provo përsëri"
   }
 }

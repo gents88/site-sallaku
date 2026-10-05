@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription, finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
+import { ReadingHistoryService } from '../../../core/services/reading-history.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { Lang, LanguageService, NON_DEFAULT_LANGS, withLangPrefix } from '../../../core/services/language.service';
 import { Post, PostSummary, localizedPostText, localizedSlug } from '../../../core/models/post.model';
@@ -53,6 +54,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly location = inject(Location);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly readingHistory = inject(ReadingHistoryService);
   publishing = false;
   readonly currentLang = this.langService.current;
 
@@ -299,6 +301,13 @@ export class BlogDetailComponent implements OnInit, OnChanges {
         if (this.isBrowser) {
           this.blogService.trackView(post.slug).subscribe({ error: () => {} });
           this.loadRelated(post);
+          // Per la pagina blog offline: questi sono i post che il service worker ha in cache.
+          this.readingHistory.record({
+            slug: localizedSlug(post, this.currentLang()),
+            lang: this.currentLang(),
+            title: this.localizedTitle,
+            excerpt: this.localizedExcerpt,
+          });
         }
         // Self-referencing canonical: previously always pointed at the
         // Italian URL regardless of currentLang(), which was wrong for

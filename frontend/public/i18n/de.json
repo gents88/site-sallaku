@@ -2108,5 +2108,15 @@
         "body": "Sie können diese Anleitung jederzeit über den Link „Anleitung“ unten auf der Seite erneut ansehen."
       }
     }
+  },
+  "offline": {
+    "banner": "Du bist offline. Bereits gelesene Artikel bleiben verfügbar.",
+    "see_articles": "Artikel ansehen",
+    "back_online": "Wieder online",
+    "list_unavailable": "Du bist offline: Die Artikelliste ist nicht verfügbar",
+    "load_error": "Die Artikel konnten nicht geladen werden",
+    "recent_title": "Diese hast du bereits gelesen und kannst sie auch ohne Verbindung öffnen:",
+    "no_recent": "Geöffnete Artikel werden zum Offline-Lesen gespeichert.",
+    "retry": "Erneut versuchen"
   }
 }

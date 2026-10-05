@@ -2108,5 +2108,15 @@
         "body": "Vous pouvez revoir ce guide à tout moment grâce au lien « Guide » en bas de page."
       }
     }
+  },
+  "offline": {
+    "banner": "Vous êtes hors ligne. Les articles déjà lus restent disponibles.",
+    "see_articles": "Voir les articles",
+    "back_online": "De nouveau en ligne",
+    "list_unavailable": "Vous êtes hors ligne : la liste des articles n'est pas disponible",
+    "load_error": "Impossible de charger les articles",
+    "recent_title": "Vous les avez déjà lus et pouvez les ouvrir sans connexion :",
+    "no_recent": "Les articles que vous ouvrez sont enregistrés pour une lecture hors ligne.",
+    "retry": "Réessayer"
   }
 }

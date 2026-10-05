@@ -1,14 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BlogListComponent } from './blog-list.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { PostSummary } from '../../../core/models/post.model';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
 
 /** Minimal PostSummary fixture — only the fields filter()/matchScore() read. */
 function post(overrides: Partial<PostSummary>): PostSummary {
@@ -155,5 +156,57 @@ describe('BlogListComponent prefetch', () => {
     component.prefetch(p);
     component.prefetch(p);
     expect(getBySlug).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('BlogListComponent offline', () => {
+  function setup(getPublishedAll: () => unknown, history: { slug: string; lang: string; title: string }[] = []) {
+    localStorage.setItem('gs.reading-history', JSON.stringify(history.map(h => ({ ...h, readAt: 1 }))));
+    const online = signal(false);
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        provideRouter([]),
+        { provide: BlogService, useValue: { getPublishedAll: vi.fn(getPublishedAll) } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
+        { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: NetworkStatusService, useValue: { online } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
+      ],
+    });
+    const fixture = TestBed.createComponent(BlogListComponent);
+    fixture.detectChanges();
+    return { fixture, component: fixture.componentInstance, el: fixture.nativeElement as HTMLElement, online };
+  }
+
+  afterEach(() => localStorage.clear());
+
+  it('offers the articles already read in this language when the list cannot load', () => {
+    const { el, component } = setup(() => throwError(() => new Error('offline')), [
+      { slug: 'letto', lang: 'it', title: 'Articolo letto' },
+      { slug: 'read', lang: 'en', title: 'Read in English' },
+    ]);
+    expect(component.loadError).toBe(true);
+    const links = Array.from(el.querySelectorAll<HTMLAnchorElement>('.offline-panel__list a'));
+    expect(links.map(a => a.textContent?.trim())).toEqual(['Articolo letto']);
+    expect(links[0].getAttribute('href')).toBe('/blog/letto');
+  });
+
+  it('explains offline reading when nothing has been read yet', () => {
+    const { el } = setup(() => throwError(() => new Error('offline')));
+    expect(el.querySelector('.offline-panel')?.textContent).toContain('offline.no_recent');
+  });
+
+  it('reloads the list by itself when the connection comes back', () => {
+    let fail = true;
+    const posts = [post({ title: 'Nuovo' })];
+    const { fixture, component, online } = setup(() => (fail ? throwError(() => new Error('offline')) : of(posts)));
+    expect(component.loadError).toBe(true);
+    fail = false;
+    online.set(true);
+    TestBed.tick();
+    fixture.detectChanges();
+    expect(component.loadError).toBe(false);
+    expect(component.posts).toEqual(posts);
   });
 });

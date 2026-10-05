@@ -10,6 +10,7 @@ import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
+import { ReadingHistoryService } from '../../../core/services/reading-history.service';
 
 const post = {
   _id: '1', slug: 'blinisht', slug_sq: 'blinishti', title: 'Blinisht', title_sq: 'Blinishti', excerpt: '', tags: [],
@@ -55,6 +56,14 @@ describe('BlogDetailComponent view tracking', () => {
     const { component, blogService } = create('browser');
     expect(component.post).toBe(post);
     expect(blogService.trackView).toHaveBeenCalledWith('blinisht');
+  });
+
+  it('remembers the post for offline reading, with its slug and title in the current language', () => {
+    localStorage.clear();
+    create('browser');
+    const [entry] = TestBed.inject(ReadingHistoryService).entries();
+    expect(entry).toMatchObject({ slug: 'blinishti', lang: 'sq', title: 'Blinishti' });
+    localStorage.clear();
   });
 
   it('does not count a view while prerendering on the server', () => {

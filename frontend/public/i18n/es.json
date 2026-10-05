@@ -2108,5 +2108,15 @@
         "body": "Puedes volver a ver esta guía cuando quieras desde el enlace «Guía» al pie de la página."
       }
     }
+  },
+  "offline": {
+    "banner": "Estás sin conexión. Los artículos que ya leíste siguen disponibles.",
+    "see_articles": "Ver artículos",
+    "back_online": "Conexión restablecida",
+    "list_unavailable": "Estás sin conexión: la lista de artículos no está disponible",
+    "load_error": "No se pudieron cargar los artículos",
+    "recent_title": "Ya leíste estos y puedes abrirlos sin conexión:",
+    "no_recent": "Los artículos que abres se guardan para leerlos sin conexión.",
+    "retry": "Reintentar"
   }
 }
