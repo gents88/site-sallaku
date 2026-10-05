@@ -1094,7 +1094,7 @@
     "badge": "Traduction PDF par IA",
     "hero_title_1": "Traduisez N'importe Quel PDF",
     "hero_title_2": "Avec la Mise en Page Préservée",
-    "hero_subtitle": "Traduction IA de niveau entreprise qui conserve le nombre et le format de pages de votre document — powered by GPT-4o.",
+    "hero_subtitle": "Traduction IA de niveau entreprise qui conserve le nombre et le format de pages de votre document.",
     "cta_primary": "🌍 Traduire le PDF Gratuitement",
     "stat_languages": "Langues",
     "stat_scanned": "PDF Numérisés",
@@ -1103,7 +1103,7 @@
     "feature_layout_title": "Mise en Page Fidèle",
     "feature_layout_desc": "Conserve le même nombre de pages et le même format que l'original, page par page — pas les polices ni les images d'origine.",
     "feature_ai_title": "Traduction Qualité IA",
-    "feature_ai_desc": "Powered by GPT-4o, traduction bloc par bloc avec des invites conscientes de la structure.",
+    "feature_ai_desc": "Traduction par IA bloc par bloc avec des invites conscientes de la structure.",
     "feature_ocr_title": "OCR pour PDF Numérisés",
     "feature_ocr_desc": "Détecte automatiquement les PDFs basés sur des images et les traite via pipeline OCR.",
     "feature_langs_title": "12 Langues",
@@ -1163,7 +1163,7 @@
     "upload_aria": "Importer un fichier PDF",
     "remove_file": "Supprimer le fichier",
     "seo_title": "Traducteur de PDF avec IA — Traduction en Préservant les Pages",
-    "seo_description": "Traduisez n'importe quel PDF en 12 langues en conservant le même nombre de pages et la mise en forme. Traduction IA de niveau entreprise avec GPT-4o. Gratuit en ligne, sans inscription."
+    "seo_description": "Traduisez n'importe quel PDF en 12 langues en conservant le même nombre de pages et la mise en forme. Traduction IA de niveau entreprise. Gratuit en ligne, sans inscription."
   },
   "pdf_search": {
     "title": "Recherche PDF",
@@ -1420,7 +1420,7 @@
     "my_files_title": "Mes fichiers",
     "my_files_desc": "Retrouve les résultats que tu as enregistrés depuis les outils IA",
     "seo_title": "Outils PDF et IA Gratuits — Traduction, Résumé, Présentations",
-    "seo_description": "Outils en ligne gratuits basés sur l'IA : traducteur PDF, générateur de présentations, formateur de texte et résumeur de PDF. Outils professionnels avec GPT-4o. Sans inscription."
+    "seo_description": "Outils en ligne gratuits basés sur l'IA : traducteur PDF, générateur de présentations, formateur de texte et résumeur de PDF. Outils professionnels pour vos documents. Sans inscription."
   },
   "about_manage": {
     "title": "Section À propos",
