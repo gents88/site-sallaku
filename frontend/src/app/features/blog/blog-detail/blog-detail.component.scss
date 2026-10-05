@@ -303,8 +303,14 @@
       z-index: 2;
     }
 
-    &:hover .toolbar {
+    &:hover .toolbar,
+    &:focus-within .toolbar {
       opacity: 1;
+    }
+
+    // Su touch non c'è hover: senza questo il pulsante "Copia" era invisibile.
+    @media (hover: none) {
+      .toolbar { opacity: 1; }
     }
 
     .toolbar-item button,
@@ -334,5 +340,37 @@
       cursor: default;
       &:hover { background: #2d2d30; color: #569cd6; }
     }
+  }
+}
+
+// ===========================================================
+// Link "#" ai titoli (aggiunti nel browser dentro [innerHTML])
+// ===========================================================
+:host ::ng-deep .post-article__content {
+  h2, h3 { position: relative; }
+
+  .heading-anchor {
+    margin-left: 0.4em;
+    padding: 0 0.2em;
+    color: var(--color-primary);
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+
+    &:focus-visible { opacity: 1; }
+  }
+
+  h2:hover .heading-anchor,
+  h3:hover .heading-anchor { opacity: 0.7; }
+
+  .heading-anchor:hover { opacity: 1; }
+
+  @media (hover: none) {
+    .heading-anchor { opacity: 0.5; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .heading-anchor { transition: none; }
   }
 }

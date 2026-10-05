@@ -4,7 +4,7 @@ import { importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
 import { of } from 'rxjs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import { BlogDetailComponent } from './blog-detail.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -242,7 +242,9 @@ describe('BlogDetailComponent table of contents', () => {
 
   it('scrolls to the heading, marks it active and writes the hash on click', async () => {
     const scroll = vi.fn();
+    const original = Element.prototype.scrollIntoView;
     Element.prototype.scrollIntoView = scroll;
+    onTestFinished(() => { Element.prototype.scrollIntoView = original; });
     const { fixture, component } = createWithToc('it');
     await fixture.whenStable();
     const event = new Event('click', { cancelable: true });
@@ -253,6 +255,32 @@ describe('BlogDetailComponent table of contents', () => {
     expect(scroll).toHaveBeenCalled();
     expect((scroll.mock.contexts.at(-1) as HTMLElement).id).toBe('dettagli');
     expect(component.activeTocId()).toBe('dettagli');
+    expect(location.hash).toBe('#dettagli');
+    history.replaceState(history.state, '', location.pathname);
+  });
+
+  it('adds "#" links to the headings and localizes the code copy button', async () => {
+    const { fixture } = createWithToc('it');
+    await fixture.whenStable();
+    const content: HTMLElement = fixture.nativeElement.querySelector('.post-article__content');
+    expect(content.querySelectorAll('.heading-anchor').length).toBe(3);
+    expect(content.querySelector('h3 .heading-anchor')?.getAttribute('href')).toBe('#dettagli');
+    expect(content.dataset['prismjsCopy']).toBe('blog.copy_code');
+    expect(content.dataset['prismjsCopySuccess']).toBe('blog.copied');
+  });
+
+  it('copies the direct link to a section', async () => {
+    const writeText = vi.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    onTestFinished(() => { delete (navigator as { clipboard?: unknown }).clipboard; });
+    const { component } = createWithToc('it');
+    component.pageUrl = 'https://gentsallaku.it/blog/post';
+    const event = new Event('click', { cancelable: true });
+
+    component.copyHeadingLink('dettagli', event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(writeText).toHaveBeenCalledWith('https://gentsallaku.it/blog/post#dettagli');
     expect(location.hash).toBe('#dettagli');
     history.replaceState(history.state, '', location.pathname);
   });

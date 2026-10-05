@@ -676,7 +676,12 @@
     },
     "reading_time": "{{count}} min de lectura",
     "toc_title": "En este artículo",
-    "related_title": "Sigue leyendo"
+    "related_title": "Sigue leyendo",
+    "copy_code": "Copiar",
+    "copied": "¡Copiado!",
+    "copy_failed": "No se pudo copiar",
+    "copy_section_link": "Copiar enlace a la sección",
+    "link_copied": "Enlace a la sección copiado"
   },
   "notes": {
     "title": "Notas de los lectores",
