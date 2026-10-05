@@ -2140,5 +2140,11 @@
     "close": "Close suggestions",
     "resume_title": "Pick up where you left off",
     "pending": "You have \"{{name}}\" ready in the workspace. Open it in:"
+  },
+  "lab_drop": {
+    "hint": "Drop a file anywhere on the page and I'll suggest the right tools. It stays in your browser.",
+    "pick": "Choose file",
+    "release": "Drop the file to see what you can do with it",
+    "only_first": "Only the first file is used ({{count}} ignored)."
   }
 }

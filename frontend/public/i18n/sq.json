@@ -2140,5 +2140,11 @@
     "close": "Mbyll sugjerimet",
     "resume_title": "Vazhdo nga ku e le",
     "pending": "Ke «{{name}}» gati në hapësirën e punës. Hape në:"
+  },
+  "lab_drop": {
+    "hint": "Tërhiq një skedar kudo në faqe dhe të sugjeroj mjetet e duhura. Mbetet në shfletuesin tënd.",
+    "pick": "Zgjidh skedarin",
+    "release": "Lësho skedarin për të parë çfarë mund të bësh me të",
+    "only_first": "Përdoret vetëm skedari i parë ({{count}} u shpërfillën)."
   }
 }

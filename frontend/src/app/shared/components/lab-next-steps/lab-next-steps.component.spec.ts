@@ -65,4 +65,12 @@ describe('LabNextStepsComponent', () => {
     render();
     expect(el.querySelector('.next-steps')).toBeNull();
   });
+
+  it('stays hidden on the /lab page, which shows the same suggestions inline', async () => {
+    const { workspace, el, render, router } = await setup();
+    await router.navigateByUrl('/en/lab');
+    workspace.send({ kind: 'file', filename: 'a.pdf', mime: 'application/pdf', fromTool: 'lab' });
+    render();
+    expect(el.querySelector('.next-steps')).toBeNull();
+  });
 });
