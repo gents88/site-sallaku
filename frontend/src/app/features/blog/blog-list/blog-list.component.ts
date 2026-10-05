@@ -13,6 +13,8 @@ import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
+import { ReadEntry, ReadingHistoryService } from '../../../core/services/reading-history.service';
 
 @Component({
   selector: 'app-blog-list',
@@ -30,6 +32,12 @@ export class BlogListComponent implements OnInit {
   activeTag: string | null = null;
   searchQuery = '';
   loading = true;
+  /** La lista non è arrivata (tipicamente: offline senza copia in cache). */
+  loadError = false;
+  readonly network = inject(NetworkStatusService);
+  private readonly readingHistory = inject(ReadingHistoryService);
+  /** Articoli già letti in questa lingua: quelli che il service worker può servire offline. */
+  get readOffline(): ReadEntry[] { return this.readingHistory.forLang(this.currentLang()); }
 
   readonly skeletonItems = Array.from({ length: 6 }, (_, i) => i);
   private pageSize = 6;
@@ -55,6 +63,8 @@ export class BlogListComponent implements OnInit {
   ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+    // Tornata la connessione, il pannello offline si rimpiazza da solo con la lista.
+    effect(() => { if (this.network.online() && this.loadError) this.reload(); });
   }
 
   ngOnInit(): void {
@@ -83,6 +93,17 @@ export class BlogListComponent implements OnInit {
     // arriving via Google's sitelinks search box saw the full unfiltered list.
     this.searchQuery = this.route.snapshot.queryParamMap.get('q') ?? '';
 
+    this.fetchPosts();
+  }
+
+  /** "Riprova" del pannello offline. */
+  reload(): void {
+    this.loading = true;
+    this.loadError = false;
+    this.fetchPosts();
+  }
+
+  private fetchPosts(): void {
     this.blogService.getPublishedAll().pipe(
       // No retry() — see blog-detail.component.ts for why: it trades a
       // clean failure for a worse one (page stuck on the loading spinner)
@@ -91,12 +112,13 @@ export class BlogListComponent implements OnInit {
       finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: posts => {
+        this.loadError = false;
         this.posts = posts;
         const tagsSet = new Set(posts.flatMap(p => p.tags));
         this.allTags = Array.from(tagsSet).sort();
         this.filter();
       },
-      error: () => {},
+      error: () => { this.loadError = true; },
     });
   }
 
