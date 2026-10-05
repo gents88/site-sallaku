@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
-import { BlogDetailComponent, activeHeadingIndex, readingProgressOf } from './blog-detail.component';
+import { BlogDetailComponent, activeHeadingIndex, postShareImageUrl, readingProgressOf } from './blog-detail.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
@@ -135,6 +135,13 @@ describe('BlogDetailComponent view tracking', () => {
       expect(data.alternatePaths.sq).toBe('/blog/blinishti');
       expect(data.alternatePaths.it).toBe('/blog/blinisht');
       expect(data.alternatePaths.en).toBe('/blog/blinisht'); // no slug_en → Italian fallback
+    });
+
+    it('senza copertina condivide la cartolina generata, nella lingua della pagina', () => {
+      const { seo } = create('browser', 'blinishti');
+      const image: string = seo.update.mock.calls[0][0].image;
+      expect(image).toMatch(/\/blog\/posts\/blinisht\/og\.png\?lang=sq&v=/);
+      expect(seo.injectJsonLd.mock.calls[0][0][0].image).toEqual([image]);
     });
 
     it('corrects an old Italian-slug link to the Albanian URL in the browser', () => {
@@ -360,5 +367,24 @@ describe('activeHeadingIndex', () => {
 
   it('senza titoli restituisce -1', () => {
     expect(activeHeadingIndex([], 120, true)).toBe(-1);
+  });
+});
+
+describe('postShareImageUrl', () => {
+  const api = 'https://api.example.com/api/v1';
+
+  it('usa la copertina quando il post ne ha una', () => {
+    expect(postShareImageUrl({ slug: 'x', coverImage: 'https://cdn/x.jpg', updatedAt: '2026-10-05T00:00:00Z' }, 'en', api)).toBe('https://cdn/x.jpg');
+  });
+
+  it('altrimenti punta alla PNG generata, con lingua e versione', () => {
+    const url = postShareImageUrl({ slug: 'perché sì', updatedAt: '2026-10-05T00:00:00Z' }, 'de', api);
+    expect(url).toBe(`${api}/blog/posts/perch%C3%A9%20s%C3%AC/og.png?lang=de&v=${Date.parse('2026-10-05T00:00:00Z').toString(36)}`);
+  });
+
+  it('cambia URL quando il post viene modificato', () => {
+    const a = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-05T00:00:00Z' }, 'it', api);
+    const b = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-06T00:00:00Z' }, 'it', api);
+    expect(a).not.toBe(b);
   });
 });
