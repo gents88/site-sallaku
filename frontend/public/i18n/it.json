@@ -1094,7 +1094,7 @@
     "badge": "Traduzione PDF AI",
     "hero_title_1": "Traduci Qualsiasi PDF",
     "hero_title_2": "Con Layout Preservato",
-    "hero_subtitle": "Traduzione AI di livello enterprise che mantiene numero e formato delle pagine del tuo documento — powered by GPT-4o.",
+    "hero_subtitle": "Traduzione AI di livello enterprise che mantiene numero e formato delle pagine del tuo documento.",
     "cta_primary": "🌍 Traduci PDF Gratis",
     "stat_languages": "Lingue",
     "stat_scanned": "PDF Scansionati",
@@ -1103,7 +1103,7 @@
     "feature_layout_title": "Pagine Fedeli all'Originale",
     "feature_layout_desc": "Mantiene lo stesso numero di pagine e le stesse dimensioni dell'originale, pagina per pagina — non i font o le immagini originali.",
     "feature_ai_title": "Traduzione Qualità AI",
-    "feature_ai_desc": "Alimentato da GPT-4o, traduzione blocco per blocco con prompt strutturali.",
+    "feature_ai_desc": "Traduzione con IA blocco per blocco con prompt strutturali.",
     "feature_ocr_title": "OCR per PDF Scansionati",
     "feature_ocr_desc": "Rileva automaticamente PDF basati su immagini ed elabora tramite pipeline OCR.",
     "feature_langs_title": "12 Lingue",
@@ -1163,7 +1163,7 @@
     "upload_aria": "Carica un file PDF",
     "remove_file": "Rimuovi file",
     "seo_title": "Traduttore PDF con AI — Traduzione Mantenendo le Pagine Originali",
-    "seo_description": "Traduci qualsiasi PDF in 12 lingue mantenendo lo stesso numero di pagine e la stessa formattazione. Traduzione AI di livello enterprise con GPT-4o. Gratuito online, nessuna registrazione."
+    "seo_description": "Traduci qualsiasi PDF in 12 lingue mantenendo lo stesso numero di pagine e la stessa formattazione. Traduzione AI di livello enterprise. Gratuito online, nessuna registrazione."
   },
   "pdf_search": {
     "title": "Ricerca PDF",
@@ -1420,7 +1420,7 @@
     "my_files_title": "I miei file",
     "my_files_desc": "Ritrova i risultati che hai salvato dai tool AI",
     "seo_title": "Strumenti PDF e AI Gratuiti — Traduzione, Riassunto, Presentazioni",
-    "seo_description": "Strumenti online gratuiti basati su AI: traduttore PDF, generatore di presentazioni, formattatore di testo e riassuntore PDF. Strumenti professionali powered by GPT-4o. Nessuna registrazione."
+    "seo_description": "Strumenti online gratuiti basati su AI: traduttore PDF, generatore di presentazioni, formattatore di testo e riassuntore PDF. Strumenti professionali per i tuoi documenti. Nessuna registrazione."
   },
   "about_manage": {
     "title": "Sezione About",
