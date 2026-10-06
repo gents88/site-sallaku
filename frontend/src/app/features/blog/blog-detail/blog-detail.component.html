@@ -107,7 +107,7 @@
       }
 
       @if (!isPreview) {
-        <app-social-share [url]="pageUrl" [title]="localizedTitle" />
+        <app-social-share [url]="pageUrl" [title]="localizedTitle" [image]="shareImage" [description]="localizedMetaDescription" />
 
         @if (related.length) {
           <section class="related" aria-labelledby="related-title">

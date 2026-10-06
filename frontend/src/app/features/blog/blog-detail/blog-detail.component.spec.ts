@@ -379,7 +379,7 @@ describe('postShareImageUrl', () => {
 
   it('altrimenti punta alla PNG generata, con lingua e versione', () => {
     const url = postShareImageUrl({ slug: 'perché sì', updatedAt: '2026-10-05T00:00:00Z' }, 'de', api);
-    expect(url).toBe(`${api}/blog/posts/perch%C3%A9%20s%C3%AC/og.png?lang=de&v=${Date.parse('2026-10-05T00:00:00Z').toString(36)}`);
+    expect(url).toBe(`${api}/blog/posts/perch%C3%A9%20s%C3%AC/og.png?lang=de&v=${Date.parse('2026-10-05T00:00:00Z').toString(36)}-2`);
   });
 
   it('cambia URL quando il post viene modificato', () => {

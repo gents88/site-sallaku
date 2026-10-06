@@ -63,37 +63,52 @@ export function hslToHex(h: number, s: number, l: number): string {
   return '#' + [0, 8, 4].map(n => Math.round(f(n) * 255).toString(16).padStart(2, '0')).join('');
 }
 
-export function escapeXml(text: string): string {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
-}
-
 /** Toglie le emoji (nei titoli capitano, es. "🔐 Sicurezza…"): il font del server non le ha. */
 export function stripEmoji(text: string): string {
   return text.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
 }
 
-/** Spezza il titolo a parole in righe da maxChars, al massimo maxLines (l'ultima con "…" se avanza testo). */
-export function wrapTitle(title: string, maxChars: number, maxLines: number): string[] {
+/**
+ * Disegna il testo come <path> (font incluso nel progetto, vedi og-image.service):
+ * con <text> il risultato dipendeva dai font installati sul server, e su
+ * Railway uscivano solo quadratini.
+ */
+export interface TextShaper {
+  width(text: string, size: number, bold: boolean): number;
+  /** Path SVG del testo con la linea di base in (x, y), allineato a sinistra. */
+  path(text: string, x: number, y: number, size: number, bold: boolean): string;
+}
+
+/**
+ * Spezza il titolo a parole in righe che rientrano in fits(), al massimo
+ * maxLines; se avanza testo l'ultima riga finisce con "…".
+ */
+export function wrapTitle(title: string, fits: (line: string) => boolean, maxLines: number): string[] {
+  const words = title.split(' ').filter(Boolean);
   const lines: string[] = [];
   let line = '';
-  const words = title.split(' ').filter(Boolean);
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i];
-    const candidate = line ? `${line} ${word}` : word;
-    if (candidate.length <= maxChars || !line) {
+  let i = 0;
+  for (; i < words.length; i++) {
+    const candidate = line ? `${line} ${words[i]}` : words[i];
+    if (fits(candidate) || !line) {
       line = candidate;
       continue;
     }
     lines.push(line);
-    line = word;
-    if (lines.length === maxLines) {
-      line = '';
-      lines[maxLines - 1] = `${lines[maxLines - 1].replace(/[\s,.:;—-]+$/, '')}…`;
-      break;
-    }
+    line = words[i];
+    if (lines.length === maxLines) break;
   }
-  if (line) lines.push(line);
-  return lines.map(l => (l.length > maxChars + 8 ? `${l.slice(0, maxChars).trimEnd()}…` : l));
+  if (lines.length < maxLines) {
+    if (line) lines.push(line);
+    i = words.length;
+  }
+  if (i < words.length) {
+    // Testo avanzato: accorcia l'ultima riga finché ci sta anche "…".
+    let last = lines[maxLines - 1].replace(/[\s,.:;—-]+$/, '');
+    while (last.includes(' ') && !fits(`${last}…`)) last = last.slice(0, last.lastIndexOf(' ')).replace(/[\s,.:;—-]+$/, '');
+    lines[maxLines - 1] = `${last}…`;
+  }
+  return lines;
 }
 
 export interface OgCardInput {
@@ -103,23 +118,28 @@ export interface OgCardInput {
   slug: string;
 }
 
-export function buildOgSvg({ title, tag, slug }: OgCardInput): string {
+const TITLE_SIZE = 58;
+const TITLE_LINE_HEIGHT = 72;
+const TITLE_MAX_WIDTH = 1040;
+
+export function buildOgSvg({ title, tag, slug }: OgCardInput, shaper: TextShaper): string {
   const hue = coverHue(tag ?? slug ?? '');
   const iconPath = ICON_PATHS[coverIcon(tag)];
-  const lines = wrapTitle(stripEmoji(title), 27, 3); // 27 caratteri: DejaVu Sans Bold (server) è più largo di Helvetica
-  const titleSize = 56;
-  const lineHeight = 72;
+  const lines = wrapTitle(stripEmoji(title), l => shaper.width(l, TITLE_SIZE, true) <= TITLE_MAX_WIDTH, 3);
+  const centered = (text: string, y: number, size: number, bold: boolean) =>
+    shaper.path(text, (OG_WIDTH - shaper.width(text, size, bold)) / 2, y, size, bold);
+
   // Blocco verticale centrato: icona, #tag, titolo; firma in basso.
-  const blockHeight = 120 + 36 + (tag ? 62 : 0) + lines.length * lineHeight;
+  const blockHeight = 120 + 36 + (tag ? 62 : 0) + lines.length * TITLE_LINE_HEIGHT;
   let y = Math.max(40, (OG_HEIGHT - 70 - blockHeight) / 2);
   const iconY = y;
   y += 120 + 36;
   const tagLabel = tag ? `#${stripEmoji(tag)}` : '';
-  const tagWidth = Math.min(900, Math.round(tagLabel.length * 17.5 + 56));
+  const tagWidth = Math.min(900, Math.round(shaper.width(tagLabel, 28, true) + 56));
   const tagY = y;
   if (tag) y += 62;
-  const titleY = y + titleSize;
-
+  const titleY = y + TITLE_SIZE;
+  const titlePath = lines.map((l, i) => centered(l, titleY + i * TITLE_LINE_HEIGHT, TITLE_SIZE, true)).join(' ');
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_WIDTH}" height="${OG_HEIGHT}" viewBox="0 0 ${OG_WIDTH} ${OG_HEIGHT}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
@@ -151,10 +171,8 @@ export function buildOgSvg({ title, tag, slug }: OgCardInput): string {
     <path d="${iconPath}"/>
   </g>
   ${tag ? `<rect x="${(OG_WIDTH - tagWidth) / 2}" y="${tagY}" width="${tagWidth}" height="46" rx="23" fill="#ffffff" fill-opacity="0.12"/>
-  <text x="${OG_WIDTH / 2}" y="${tagY + 32}" text-anchor="middle" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="28" font-weight="700" fill="#ffffff">${escapeXml(tagLabel)}</text>` : ''}
-  <text x="${OG_WIDTH / 2}" y="${titleY}" text-anchor="middle" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="${titleSize}" font-weight="700" fill="#ffffff">${lines
-    .map((l, i) => `<tspan x="${OG_WIDTH / 2}" dy="${i ? lineHeight : 0}">${escapeXml(l)}</tspan>`)
-    .join('')}</text>
-  <text x="${OG_WIDTH / 2}" y="${OG_HEIGHT - 42}" text-anchor="middle" font-family="DejaVu Sans, Helvetica, Arial, sans-serif" font-size="26" fill="#ffffff" fill-opacity="0.75">Gent Sallaku · gentsallaku.it</text>
+  <path d="${centered(tagLabel, tagY + 33, 28, true)}" fill="#ffffff"/>` : ''}
+  <path d="${titlePath}" fill="#ffffff"/>
+  <path d="${centered('Gent Sallaku · gentsallaku.it', OG_HEIGHT - 42, 26, false)}" fill="#ffffff" fill-opacity="0.75"/>
 </svg>`;
 }

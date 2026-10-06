@@ -35,6 +35,13 @@ export function readingProgressOf(rect: { top: number; height: number }, viewpor
 }
 
 /**
+ * Versione del disegno dell'immagine generata: va incrementata quando cambia
+ * il rendering nel backend, altrimenti le piattaforme tengono la vecchia in
+ * cache (la 1 aveva il testo a quadratini su Railway).
+ */
+const OG_IMAGE_REVISION = 2;
+
+/**
  * Immagine per l'anteprima sui social (og:image): la copertina se c'è,
  * altrimenti la stessa cartolina della lista del blog, generata dal backend
  * in PNG nella lingua della pagina. v= cambia a ogni modifica del post, così
@@ -46,7 +53,7 @@ export function postShareImageUrl(
   apiUrl: string,
 ): string {
   if (post.coverImage) return post.coverImage;
-  const version = (Date.parse(post.updatedAt ?? '') || 0).toString(36);
+  const version = `${(Date.parse(post.updatedAt ?? '') || 0).toString(36)}-${OG_IMAGE_REVISION}`;
   return `${apiUrl}/blog/posts/${encodeURIComponent(post.slug)}/og.png?lang=${lang}&v=${version}`;
 }
 
@@ -181,6 +188,11 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   relatedTitle(post: PostSummary): string { return localizedPostText(post, 'title', this.currentLang()); }
   relatedExcerpt(post: PostSummary): string { return localizedPostText(post, 'excerpt', this.currentLang()); }
   relatedSlug(post: PostSummary): string { return localizedSlug(post, this.currentLang()); }
+
+  /** Immagine dell'anteprima social (og:image), mostrata anche nel box "Condividi". */
+  get shareImage(): string {
+    return this.post ? postShareImageUrl(this.post, this.currentLang(), environment.apiUrl) : '';
+  }
 
   /** Estimated reading time of the content in the current language. */
   get readingMinutes(): number {
@@ -406,7 +418,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
         const localizedPath = withLangPrefix(alternatePaths[this.currentLang()], this.currentLang());
         this.pageUrl = `${SITE_ORIGIN}${localizedPath}`;
         const pageUrl = this.pageUrl;
-        const shareImage = postShareImageUrl(post, this.currentLang(), environment.apiUrl);
+        const shareImage = this.shareImage;
         this.seo.update({
           title: this.localizedMetaTitle,
           description: this.localizedMetaDescription,
