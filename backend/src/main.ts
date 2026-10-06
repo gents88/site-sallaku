@@ -116,7 +116,14 @@ async function bootstrap() {
         return;
       }
 
-      callback(new Error('Origin not allowed by CORS'));
+      // Dev: accept any loopback origin (localhost / 127.0.0.1, any port), so
+      // e.g. http://127.0.0.1:4200 or a second ng serve port don't get a 500.
+      if (!isProduction && /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin not allowed by CORS: ${origin}`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
