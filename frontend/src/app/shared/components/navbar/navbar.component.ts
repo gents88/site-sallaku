@@ -31,10 +31,11 @@ function basePathOf(url: string): string {
   return stripLangPrefix(url.split('?')[0].split('#')[0]).basePath;
 }
 
+import { ProfilePhotoComponent } from '../profile-photo/profile-photo.component';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, TranslateModule, MatIconModule, MatButtonModule, ThemeToggleComponent, LangSwitcherComponent, LangUrlPipe, NotificationBellComponent, NavIconComponent],
+  imports: [RouterLink, TranslateModule, MatIconModule, MatButtonModule, ThemeToggleComponent, LangSwitcherComponent, LangUrlPipe, NotificationBellComponent, NavIconComponent, ProfilePhotoComponent],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
