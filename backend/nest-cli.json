@@ -6,6 +6,9 @@
     "deleteOutDir": true,
     "webpack": false,
     "tsConfigPath": "tsconfig.build.json",
-    "assets": [{ "include": "mail/templates/**/*.hbs", "watchAssets": true }]
+    "assets": [
+      { "include": "mail/templates/**/*.hbs", "watchAssets": true },
+      { "include": "blog/og-image/fonts/*" }
+    ]
   }
 }

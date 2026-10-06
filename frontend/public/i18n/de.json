@@ -667,6 +667,7 @@
     },
     "share": {
       "title": "Diesen Artikel teilen",
+      "preview_alt": "Vorschau des Artikels, wie sie beim Teilen erscheint",
       "facebook": "Auf Facebook teilen",
       "linkedin": "Auf LinkedIn teilen",
       "twitter": "Auf X teilen",
