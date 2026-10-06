@@ -11,11 +11,12 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
 
+import { ProfilePhotoComponent } from '../../../../shared/components/profile-photo/profile-photo.component';
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
+  imports: [ProfilePhotoComponent, 
     CommonModule, ReactiveFormsModule, RouterLink,
     MatInputModule, MatFormFieldModule, MatButtonModule, MatIconModule, MatSnackBarModule,
     TranslateModule,
