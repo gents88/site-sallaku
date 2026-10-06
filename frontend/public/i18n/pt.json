@@ -667,6 +667,7 @@
     },
     "share": {
       "title": "Compartilhe este artigo",
+      "preview_alt": "Prévia do artigo como aparece quando você o compartilha",
       "facebook": "Compartilhar no Facebook",
       "linkedin": "Compartilhar no LinkedIn",
       "twitter": "Compartilhar no X",
