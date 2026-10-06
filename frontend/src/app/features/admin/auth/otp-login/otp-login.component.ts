@@ -23,11 +23,12 @@ function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | nul
   return isEmail || isPhone ? null : { phoneOrEmail: true };
 }
 
+import { ProfilePhotoComponent } from '../../../../shared/components/profile-photo/profile-photo.component';
 @Component({
   selector: 'app-otp-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [
+  imports: [ProfilePhotoComponent, 
     CommonModule,
     ReactiveFormsModule,
     RouterLink,

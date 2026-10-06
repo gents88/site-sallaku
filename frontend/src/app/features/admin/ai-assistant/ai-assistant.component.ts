@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
   inject,
   OnDestroy,
@@ -54,11 +55,13 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
  * Uses the current project's ChatbotService (backend-proxied AI) instead of
  * the source's ChatService (direct GROQ calls), preserving the same visual layout.
  */
+import { AuthService } from '../../../core/services/auth.service';
+import { ProfilePhotoComponent } from '../../../shared/components/profile-photo/profile-photo.component';
 @Component({
   selector: 'app-ai-assistant',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, ProfilePhotoComponent],
   template: `
     <div class="chat-shell">
 
@@ -131,7 +134,11 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
                 </div>
               </div>
               @if (msg.role === 'user') {
-                <div class="avatar user-avatar" aria-hidden="true">U</div>
+                @if (isAdmin()) {
+                  <div class="avatar user-avatar user-avatar--photo" aria-hidden="true"><app-profile-photo /></div>
+                } @else {
+                  <div class="avatar user-avatar" aria-hidden="true">U</div>
+                }
               }
             </div>
           }
@@ -323,6 +330,7 @@ const SUGGESTED_PROMPTS: ReadonlyArray<string> = [
 
     .ai-avatar   { background: linear-gradient(135deg, #7c6cfc, #a78bfa); color: white; }
     .user-avatar { background: var(--accent-user, #3b82f6); color: white; }
+    .user-avatar--photo { padding: 2px; overflow: hidden; }
 
     .bubble {
       position: relative;
@@ -511,6 +519,9 @@ export class AiAssistantComponent implements OnInit, OnDestroy, AfterViewChecked
 
   private readonly chatbot = inject(ChatbotService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly auth = inject(AuthService);
+  /** Da admin la propria foto al posto della "U" accanto ai messaggi. */
+  readonly isAdmin = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
 
   messages: ChatMessage[] = [];
   isLoading = false;

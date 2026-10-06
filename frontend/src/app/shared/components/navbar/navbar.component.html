@@ -67,7 +67,11 @@
       }
       @if (auth.isLoggedIn()) {
         <button type="button" class="nav-link nav-link--account nav-link--button" (click)="openAccountModal()">
-          <span class="nav-account__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</span>
+          @if (isAdminUser()) {
+            <span class="nav-account__avatar nav-account__avatar--photo"><app-profile-photo /></span>
+          } @else {
+            <span class="nav-account__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</span>
+          }
           <span class="nav-account__label">{{ auth.currentUser()?.name || 'Admin' }}</span>
         </button>
       }
