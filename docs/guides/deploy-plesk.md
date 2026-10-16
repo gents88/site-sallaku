@@ -92,8 +92,10 @@ Rilanciarlo serve ad aggiornare le versioni (in cima allo script).
 ## Cutover da Railway (fatto il 2026-10-16)
 
 Stato dopo il cutover: il sito usa solo Plesk. Il backend su Railway è fermo (`railway down`) e scollegato da
-GitHub (`railway service source disconnect`), quindi i push non lo ridistribuiscono più. Il MongoDB di
-Railway è ancora acceso e contiene i dati fino al momento del cutover.
+GitHub (`railway service source disconnect`), quindi i push non lo ridistribuiscono più. Anche il MongoDB
+di Railway è fermo (`railway down`): il volume con i dati del cutover resta collegato al servizio, e si
+riaccende con un redeploy dal pannello. Il workflow `mongo-backup.yml`, che faceva il backup di quel
+database, è disattivato su GitHub (`gh workflow disable`). Ultimi dump sul Mac in `backups/railway-*`.
 
 Passi eseguiti, utili come riferimento per un eventuale ritorno indietro:
 
