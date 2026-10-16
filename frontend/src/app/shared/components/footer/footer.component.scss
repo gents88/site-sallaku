@@ -122,6 +122,12 @@
     cursor: pointer;
     font-family: inherit;
   }
+
+  /* Il tour guidato non c'è su mobile (TOUR_MOBILE_QUERY in
+     onboarding-tour.service.ts): stessa soglia, niente link che non fa nulla. */
+  &__guide {
+    @media (max-width: 900px) { display: none; }
+  }
 }
 
 // Social
