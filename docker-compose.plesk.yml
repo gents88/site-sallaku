@@ -1,15 +1,15 @@
 # ─────────────────────────────────────────────────────────
-#  DEPLOY SU PLESK — Setup semplice
+#  DEPLOY SU PLESK — backend + MongoDB + Redis
 #
-#  Avvia backend NestJS + MongoDB sul server Plesk.
 #  Il backend risponde su 127.0.0.1:3000 (non raggiungibile da fuori).
-#  Plesk nginx fa da reverse proxy: /api/* → localhost:3000
+#  Plesk nginx fa da reverse proxy: /api/* e /socket.io/* → localhost:3000
+#  (direttive in docs/guides/plesk-nginx-directives.conf).
+#  Il frontend resta statico in httpdocs/ (FileZilla): il servizio
+#  `frontend` SSR qui sotto parte solo con `--profile ssr`.
 #
-#  SUL SERVER (una volta clonato il repo):
-#    docker compose -f docker-compose.plesk.yml up -d --build
-#
-#  Per aggiornare dopo una modifica:
-#    docker compose -f docker-compose.plesk.yml up -d --build backend
+#  Rilascio dal Mac:      ./scripts/release-backend-plesk.sh
+#  Sul server, a mano:    ./scripts/deploy-plesk-backend.sh
+#  Guida completa:        docs/guides/deploy-plesk.md
 # ─────────────────────────────────────────────────────────
 
 services:
@@ -29,6 +29,21 @@ services:
     networks:
       - portfolio_net
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    # Porta NON esposta: accessibile solo nella rete Docker interna
+    networks:
+      - portfolio_net
+
   backend:
     build:
       context: ./backend
@@ -39,13 +54,16 @@ services:
     environment:
       PORT: "3000"
       NODE_ENV: production
-      # Sovrascrive qualsiasi MONGODB_URI nell'env file con quello del container Docker
+      # Sovrascrive qualsiasi MONGODB_URI/REDIS_URL nell'env file con quello del container Docker
       MONGODB_URI: mongodb://mongo:27017/portfolio
+      REDIS_URL: redis://redis:6379
     ports:
       # Solo localhost: Plesk nginx fa da proxy, non esposto a internet
       - "127.0.0.1:3000:3000"
     depends_on:
       mongo:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/v1/system/health"]
@@ -56,7 +74,10 @@ services:
     networks:
       - portfolio_net
 
+  # Angular SSR: alternativa al deploy statico FileZilla, non attivo di default.
+  #   docker compose -f docker-compose.plesk.yml --profile ssr up -d frontend
   frontend:
+    profiles: ["ssr"]
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -83,6 +104,7 @@ services:
 
 volumes:
   mongo_data:
+  redis_data:
 
 networks:
   portfolio_net:

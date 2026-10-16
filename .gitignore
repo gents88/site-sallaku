@@ -5,6 +5,7 @@ node_modules/
 .env.plesk
 .env.uat
 .env.prod
+.env.deploy
 .DS_Store
 npm-debug.log
 dist/

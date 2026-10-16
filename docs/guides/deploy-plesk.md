@@ -1,372 +1,233 @@
-# Deploy Backend su Plesk — Guida completa
+# Backend + MongoDB su Plesk (addio Railway)
 
-## Come funziona dopo la migrazione
-
-Attualmente il frontend su Plesk chiama il backend su Railway tramite URL assoluto.
-L'obiettivo è far girare backend + MongoDB + Redis su Plesk nello stesso server,
-con nginx che fa da "ponte" tra le richieste in arrivo e il backend Docker.
+## Come sarà dopo la migrazione
 
 ```
-Browser
-  │
-  ▼
-Plesk nginx (porta 443, HTTPS)
-  ├── /api/*   →  proxya a  http://127.0.0.1:3000  (NestJS in Docker)
-  └── /*       →  serve i file Angular SSR / statici
-                         │
-              ┌──────────┴──────────┐
-              ▼                     ▼
-         MongoDB :27017         Redis :6379
-         (Docker, interno)    (Docker, interno)
+Browser ──HTTPS──▶ Plesk (gentsallaku.it)
+                     ├── /api/*        ─┐
+                     ├── /socket.io/*  ─┴─▶ 127.0.0.1:3000  NestJS   (Docker)
+                     └── tutto il resto ──▶ httpdocs/        Angular  (statico, FileZilla)
+                                                 │
+                                    rete Docker interna, nessuna porta esposta
+                                         ├── mongo  (MongoDB 7, volume mongo_data)
+                                         └── redis  (Redis 7, volume redis_data)
 ```
 
-MongoDB e Redis NON sono raggiungibili da fuori: vivono nella rete Docker privata
-e comunicano col backend tramite hostname `mongo` e `redis`.
+- **Frontend**: non cambia niente, continui con `build-frontend-filezilla.sh` + FileZilla.
+- **Backend**: rilasci dal Mac con `./scripts/release-backend-plesk.sh`. Carica il codice via SSH,
+  ricostruisce il container sul server e aspetta l'health check. Non serve più fare push su `develop` per rilasciare.
+- **Database**: MongoDB gira in un container sullo stesso server. Il backup è un cron notturno sul server.
+
+Il codice del progetto sul server sta in **`/opt/site-sallaku`**, **mai dentro `httpdocs/`**:
+la web root è pubblica e `.env.plesk` (con tutti i segreti) sarebbe scaricabile da chiunque.
 
 ---
 
-## Ordine degli step
+## Ordine dei passi
 
-| # | Dove si fa | Cosa |
-|---|-----------|------|
-| 1 | Locale | Compila le variabili d'ambiente |
-| 2 | Locale → Server | Esporta il DB da Railway e lo copia su Plesk |
-| 3 | Server Plesk | Avvia Docker (backend + mongo + redis) |
-| 4 | Pannello Plesk | Configura il reverse proxy nginx |
-| 5 | Locale | Rebuilda il frontend con i nuovi URL |
-| 6 | Browser | Verifica che tutto funzioni |
+| # | Dove | Cosa | Il sito live cambia? |
+|---|------|------|----------------------|
+| 1 | Server | Docker e cartella del progetto | No |
+| 2 | Mac → Server | Carica il codice e crea `.env.plesk` | No |
+| 3 | Server | Avvia mongo + redis + backend | No |
+| 4 | Pannello Plesk | Proxy nginx `/api/` e `/socket.io/` | No (il frontend chiama ancora Railway) |
+| 5 | Mac → Server | **Cutover**: copia dei dati + frontend su `/api/v1` | **Sì** |
+| 6 | Server / Railway | Backup cron, spegnimento Railway | No |
 
----
-
-## 1. Compila le variabili d'ambiente
-
-Il file `.env.plesk` nella root del progetto contiene tutti i parametri di configurazione.
-**Non ha valori reali di default** — devi compilarlo prima di avviare Docker.
-
-### 1a. Connettiti al server via SSH
-
-```bash
-ssh user@tuo-server-plesk
-cd /path/to/project   # es. /var/www/vhosts/gentsallaku.it/site-sallaku
-```
-
-### 1b. Apri il file e sostituisci i placeholder
-
-```bash
-nano .env.plesk
-```
-
-I valori **obbligatori** da cambiare:
-
-| Variabile | Come ottenerla |
-|-----------|---------------|
-| `JWT_SECRET` | Genera sul server: `openssl rand -base64 48` |
-| `ADMIN_PASSWORD` | Scegli una password sicura (min. 12 caratteri) |
-| `SMTP_USER` | Il tuo indirizzo Gmail |
-| `SMTP_PASS` | Una "App Password" Gmail (non la password normale) — [crea qui](https://myaccount.google.com/apppasswords) |
-
-> **Lascia invariati** `MONGODB_URI=mongodb://mongo:27017/portfolio` e `REDIS_URL=redis://redis:6379`.
-> Questi hostname (`mongo`, `redis`) funzionano solo dentro la rete Docker interna.
-
-Esempio del blocco JWT:
-```
-JWT_SECRET=u7Kx9mP2qR5vTw8yAzBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789==
-JWT_EXPIRES_IN=7d
-```
+I passi 1–4 si possono fare con calma, anche in giorni diversi: finché il frontend punta a
+Railway, il backend su Plesk gira "in parallelo" e nessun visitatore lo usa.
 
 ---
 
-## 2. Migrazione dati da Railway
-
-Questo step esporta il database MongoDB attuale su Railway e lo importa su Plesk.
-Se preferisci partire con un DB vuoto, salta al passo 3.
-
-### 2a. Recupera la MongoDB URI da Railway
-
-1. Vai su [railway.com](https://railway.com) → il tuo progetto
-2. Clicca sul servizio **MongoDB**
-3. Vai in **Variables** e copia il valore di `MONGODB_URL`
-
-Sarà qualcosa come:
-```
-mongodb://mongo:AbCdEfGh@roundhouse.proxy.rlwy.net:12345/railway
-```
-
-### 2b. Esegui il dump (dalla tua macchina locale, a progetto clonato)
+## 1. Prepara il server (una volta sola)
 
 ```bash
-cd /Users/gent/projects/site-sallaku
+ssh root@gentsallaku.it        # o l'utente sudo che usi
 
-MONGO_URI="mongodb://mongo:AbCdEfGh@roundhouse.proxy.rlwy.net:12345/railway" \
-  ./scripts/mongo-dump.sh
+# Docker (se `docker compose version` non risponde già)
+curl -fsSL https://get.docker.com | sh
+docker compose version
+
+# RAM: il build del backend usa fino a ~3 GB. Con meno di 4 GB totali aggiungi swap:
+free -h
+fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+
+mkdir -p /opt/site-sallaku
 ```
 
-Lo script usa Docker internamente — non serve `mongodump` installato localmente.
-Al termine crea il file: `backups/mongo-backup-YYYYMMDD-HHMMSS.archive.gz`
+> In alternativa a `get.docker.com` puoi usare **Plesk → Estensioni → Docker**, che installa lo stesso motore.
 
-Verifica che il file esista:
-```bash
-ls -lh backups/
-```
+## 2. Carica il codice e crea `.env.plesk`
 
-### 2c. Copia il backup sul server Plesk
-
-```bash
-# Sostituisci user, indirizzo e percorso con i tuoi valori reali
-scp backups/mongo-backup-*.archive.gz \
-  user@tuo-server-plesk:/path/to/project/backups/
-```
-
-### 2d. Avvia solo MongoDB su Plesk (temporaneamente, per il restore)
+Sul Mac, nella root del progetto, crea `.env.deploy` (è in `.gitignore`):
 
 ```bash
-# Sul server Plesk via SSH
-cd /path/to/project
-docker compose -f docker-compose.plesk.yml up -d mongo
-
-# Aspetta che MongoDB sia pronto (cerca "healthy" nella colonna STATUS)
-docker compose -f docker-compose.plesk.yml ps
+PLESK_SSH=root@gentsallaku.it
+PLESK_DIR=/opt/site-sallaku
 ```
 
-Se dopo 40 secondi lo stato è ancora `starting`, controlla i log:
-```bash
-docker compose -f docker-compose.plesk.yml logs mongo
-```
-
-### 2e. Importa il backup in MongoDB
+Poi carica il codice senza avviare niente:
 
 ```bash
-# Sul server Plesk via SSH, nella root del progetto
-TARGET_URI="mongodb://localhost:27017" \
-  ./scripts/mongo-restore.sh backups/mongo-backup-YYYYMMDD-HHMMSS.archive.gz
+./scripts/release-backend-plesk.sh --upload-only
 ```
 
-Lo script trova automaticamente l'ultimo backup se non specifichi il nome del file:
+**`.env.plesk`**: il modo più sicuro per non dimenticare variabili (chiavi AI, Google, Twilio, SMTP...)
+è partire da quelle che oggi usa Railway:
+
 ```bash
-TARGET_URI="mongodb://localhost:27017" ./scripts/mongo-restore.sh
+# Sul Mac (se serve prima: railway login)
+railway variables --service portfolio-backend --kv > /tmp/railway.env
+scp /tmp/railway.env root@gentsallaku.it:/opt/site-sallaku/.env.plesk
+rm /tmp/railway.env
 ```
+
+Sul server sistemalo con `nano /opt/site-sallaku/.env.plesk`:
+
+- **togli** `RAILWAY_*`, `PORT`, `MONGODB_URI` e `REDIS_URL` (li imposta `docker-compose.plesk.yml`);
+- **cambia** `PUBLIC_API_URL=https://gentsallaku.it/api/v1`;
+- controlla che ci siano `CORS_ORIGIN=https://gentsallaku.it,https://www.gentsallaku.it` e `FRONTEND_URL=https://gentsallaku.it`;
+- **consigliato**: genera un nuovo `JWT_SECRET` (`openssl rand -base64 48`), perché quello vecchio è finito nella history git.
+  Effetto collaterale: chi è loggato dovrà rifare il login.
+
+```bash
+chmod 600 /opt/site-sallaku/.env.plesk
+```
+
+> Senza Railway CLI c'è `./scripts/server-setup.sh`: chiede SMTP/admin e genera il JWT. Però scrive
+> solo le variabili base, e quelle delle funzioni AI/Google vanno aggiunte a mano.
+
+## 3. Avvia il backend sul server
+
+Dal Mac:
+
+```bash
+./scripts/release-backend-plesk.sh
+```
+
+Il comando carica il codice e lancia `scripts/deploy-plesk-backend.sh` sul server. Quello fa il build dell'immagine, avvia
+`mongo`, `redis` e `backend` e aspetta che `http://127.0.0.1:3000/api/v1/system/health` risponda.
+Alla fine il controllo pubblico su `https://gentsallaku.it/api/...` fallirà: è normale, il proxy non esiste ancora.
+
+Il database a questo punto è **vuoto**: all'avvio il backend crea solo l'utente admin da `.env.plesk`. I dati veri arrivano al passo 5.
+
+## 4. Proxy nginx nel pannello Plesk
+
+1. **Plesk → Siti web e domini → gentsallaku.it → Apache & nginx Settings**.
+2. Controlla che **"Proxy mode"** di nginx sia attivo. Oggi le risposte riportano `Server: Apache`: se nella pagina
+   non trovi il campo "Additional nginx directives", nginx è disattivato a livello server
+   (**Strumenti e impostazioni → Servizi** oppure **Aggiornamenti → Componenti → Web hosting → nginx**).
+3. In **"Additional nginx directives"** incolla il contenuto di
+   [`plesk-nginx-directives.conf`](plesk-nginx-directives.conf): contiene `/api/` e `/socket.io/`.
+   Il secondo blocco serve alla chat live: senza, il WebSocket non si collega.
+4. OK, poi verifica dal Mac:
+
+```bash
+curl -s https://gentsallaku.it/api/v1/system/health
+# deve restituire JSON ({"status":"ok",...}), NON l'HTML di index.html
+```
+
+Il resto del sito (pagine, asset, `.htaccess`) continua a essere servito da `httpdocs/` come prima.
+
+## 5. Cutover
+
+Da qui in poi il traffico vero passa su Plesk. Conviene farlo in un momento tranquillo, in un'unica sessione.
+
+### 5a. Copia i dati da Railway (subito prima dello switch)
+
+```bash
+# Sul Mac: la stessa MONGODB_URI che oggi usa il backend su Railway. Se punta a un host interno
+# (*.railway.internal) usa la URI pubblica del servizio MongoDB (Variables → MONGO_PUBLIC_URL).
+# Il database deve essere portfolio_prod.
+MONGO_URI="mongodb://...@HOST:PORTA/portfolio_prod?authSource=admin" ./scripts/mongo-dump.sh
+scp backups/mongo-backup-*.archive.gz root@gentsallaku.it:/opt/site-sallaku/backups/
+
+# Sul server: importa portfolio_prod → portfolio (chiede conferma, sostituisce le collezioni)
+cd /opt/site-sallaku
+./scripts/plesk-mongo-restore.sh backups/mongo-backup-AAAAMMGG-HHMMSS.archive.gz
+```
+
+`mongo-dump.sh` usa `mongodump` in un container Docker sul Mac, quindi serve colima/Docker Desktop acceso.
+Il restore stampa il numero di documenti per collezione: confrontalo con Railway.
+
+### 5b. Punta il frontend a `/api/v1`
+
+Va fatto **nello stesso momento**, mai prima del passo 4 verificato. L'ultima volta che `apiUrl` è diventato
+relativo senza proxy attivo, login e POST sono rimasti rotti per settimane.
+
+File da aggiornare (URL Railway → relativo o `https://gentsallaku.it`):
+
+| File | Cosa |
+|------|------|
+| `frontend/src/environments/environment.prod.ts` | `apiUrl: '/api/v1'` |
+| `frontend/ngsw-config.json` | `dataGroups` con URL Railway → `/api/v1/...` |
+| `frontend/public/.htaccess` | CSP: togli Railway da `connect-src`/`frame-src` (`'self'` copre anche `wss://` dello stesso host) |
+| `frontend/src/app/app.routes.server.ts`, `scripts/generate-sitemap.js`, `scripts/generate-rss.js`, `scripts/prefetch-blog-posts.js` | default `https://gentsallaku.it/api/v1` |
+| `backend/src/newsletter/campaigns/newsletter-campaigns.service.ts` | default di `PUBLIC_API_URL` |
+
+Poi build e upload FileZilla come sempre (`./scripts/build-frontend-filezilla.sh`). Verifica **da una finestra
+in incognito** (il service worker in cache può mascherare errori):
+
+- login admin (POST, non va in cache: è il test che conta);
+- invio di un messaggio dal form contatti;
+- chat live: "Vuoi parlare con Gent?" → il socket si connette;
+- upload di un PDF in un tool `/lab`.
+
+**Rollback**: ripristina `apiUrl` all'URL Railway e ricarica il frontend. Railway è ancora acceso, finché non lo spegni al passo 6.
+
+## 6. Dopo il cutover
+
+```bash
+# Sul server: backup notturno alle 03:00
+crontab -e
+0 3 * * * /opt/site-sallaku/scripts/plesk-mongo-backup-cron.sh >> /var/log/mongo-backup.log 2>&1
+```
+
+Configura anche `RCLONE_REMOTE` per avere una copia fuori dal server (vedi l'intestazione dello script).
+Senza, un guasto del disco porta via sia il DB sia i backup.
+
+Dopo 1–2 settimane senza problemi:
+
+1. **Railway**: scollega l'auto-deploy dal branch `develop`, poi elimina i servizi backend e MongoDB.
+   Finché resta collegato, ogni push su `develop` continua a ridistribuire lì, e il frontend non lo usa più.
+2. Disattiva `.github/workflows/mongo-backup.yml`: punta al Mongo di Railway.
+3. Rimuovi dal repo `Dockerfile` e `railway.json` in root, `backend/railway.json`, `backend/nixpacks.toml`.
+4. Ruota le credenziali finite nella history git: Gmail App Password, password admin
+   (vedi `scripts/server-setup.sh` nella history).
 
 ---
 
-## 3. Avvia il backend completo
+## Rilasci di tutti i giorni
+
+| Cosa | Comando (dal Mac) |
+|------|-------------------|
+| Backend | `./scripts/release-backend-plesk.sh` |
+| Frontend | `./scripts/build-frontend-filezilla.sh` + upload FileZilla |
+
+Lo script del backend rilascia solo codice committato (con modifiche locali si ferma, salvo `ALLOW_DIRTY=1`)
+e scrive sul server, in `/opt/site-sallaku/.release`, quale commit è in produzione.
+
+## Comandi utili sul server
 
 ```bash
-# Sul server Plesk via SSH, nella root del progetto
-./scripts/deploy-plesk-backend.sh
+cd /opt/site-sallaku
+C="docker compose -f docker-compose.plesk.yml"
+
+$C ps                          # stato dei container
+$C logs -f backend             # log in tempo reale
+$C up -d backend               # applica modifiche a .env.plesk (restart da solo NON le rilegge)
+cat .release                   # commit attualmente in produzione
+
+./scripts/plesk-mongo-backup-cron.sh                                  # backup manuale
+SOURCE_DB=portfolio ./scripts/plesk-mongo-restore.sh backups/xxx.gz   # ripristino da un backup del server
+$C exec mongo mongosh portfolio                                       # shell Mongo
+
+$C pull mongo redis && $C up -d mongo redis    # aggiornamenti di sicurezza delle immagini
 ```
 
-Lo script:
-1. verifica che `.env.plesk` sia compilato correttamente
-2. builda l'immagine Docker del backend NestJS
-3. avvia backend + mongo + redis con `docker compose`
-4. attende che il backend sia "healthy" prima di uscire
+### Frontend SSR (alternativa, non in uso)
 
-Controlla lo stato finale:
-```bash
-docker compose -f docker-compose.plesk.yml ps
-```
-
-Dovresti vedere tutti e tre i servizi con `STATUS = healthy`:
-```
-NAME        IMAGE     STATUS              PORTS
-mongo       mongo:7   Up 2 minutes (healthy)
-redis       redis:7   Up 2 minutes (healthy)
-backend     ...       Up 1 minute  (healthy)   127.0.0.1:3000->3000/tcp
-```
-
-Test rapido diretto (senza passare da nginx):
-```bash
-curl http://localhost:3000/api/v1/system/health
-# Risposta attesa: {"status":"ok", ...}
-```
-
----
-
-## 4. Configura il Reverse Proxy su Plesk
-
-Questo è il passaggio che "collega" il dominio `gentsallaku.it` al backend Docker.
-Plesk usa nginx come proxy: le richieste a `/api/...` vengono girate alla porta 3000.
-
-### Come farlo dalla GUI Plesk
-
-1. Apri **Plesk → Domini → gentsallaku.it**
-2. Clicca su **Apache & nginx Settings**
-3. Scorri fino alla sezione **"Additional nginx directives"** (o "Direttive nginx aggiuntive")
-4. Incolla questo blocco nel campo di testo:
-
-```nginx
-# Backend API
-location /api/ {
-    proxy_pass         http://127.0.0.1:3000;
-    proxy_http_version 1.1;
-    proxy_set_header   Upgrade $http_upgrade;
-    proxy_set_header   Connection 'upgrade';
-    proxy_set_header   Host $host;
-    proxy_set_header   X-Real-IP $remote_addr;
-    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header   X-Forwarded-Proto $scheme;
-    proxy_cache_bypass $http_upgrade;
-    proxy_read_timeout 60s;
-}
-
-# Frontend Angular SSR (porta 4000)
-location / {
-    proxy_pass         http://127.0.0.1:4000;
-    proxy_http_version 1.1;
-    proxy_set_header   Upgrade $http_upgrade;
-    proxy_set_header   Connection 'upgrade';
-    proxy_set_header   Host $host;
-    proxy_set_header   X-Real-IP $remote_addr;
-    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header   X-Forwarded-Proto $scheme;
-    proxy_cache_bypass $http_upgrade;
-    proxy_read_timeout 60s;
-}
-```
-
-5. Clicca **OK** in fondo alla pagina.
-
-> **Cosa fa questo blocco:** le richieste a `/api/...` vanno al backend Docker (porta 3000),
-> tutte le altre (pagine, assets) vanno al frontend Angular SSR (porta 4000).
-
----
-
-## 5. Aggiorna il Frontend
-
-Ci sono due modalità. Usa quella che preferisci.
-
----
-
-### 5A. Metodo FileZilla (file statici — attualmente in uso)
-
-Il frontend viene compilato in locale e caricato via FTP/SFTP. **Nessun container Docker** per il frontend.
-
-#### 5A.1 — Build locale
-
-```bash
-# Dalla root del progetto
-./scripts/build-frontend-filezilla.sh
-```
-
-Lo script:
-1. Esegue `ng build --configuration production`
-2. Crea `frontend-deploy.zip` nella root del progetto con il contenuto di `dist/portfolio-frontend/browser/`
-
-#### 5A.2 — Carica su Plesk via FileZilla
-
-1. Apri FileZilla e connettiti al server Plesk via **SFTP** (porta 22)
-2. Naviga nella web root del dominio:
-   ```
-   /var/www/vhosts/gentsallaku.it/httpdocs/
-   ```
-3. **Estrai e carica** il contenuto di `frontend-deploy.zip` (non la cartella, ma i file dentro)
-   — in FileZilla puoi trascinare i file direttamente dalla cartella `frontend/dist/portfolio-frontend/browser/`
-
-#### 5A.3 — Nginx Plesk (solo prima volta o se cambia)
-
-In **Plesk → Domini → gentsallaku.it → Apache & nginx Settings → Additional nginx directives**
-usa questo blocco (sostituisce quello del passo 4 se hai il proxy a porta 4000):
-
-```nginx
-# Proxy API requests to backend Docker (porta 3000)
-location /api/ {
-    proxy_pass         http://127.0.0.1:3000;
-    proxy_http_version 1.1;
-    proxy_set_header   Host $host;
-    proxy_set_header   X-Real-IP $remote_addr;
-    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header   X-Forwarded-Proto $scheme;
-    proxy_read_timeout 60s;
-}
-
-# Serve Angular SPA assets con cache aggressiva (filenames hash-ati)
-location ~* \.(js|css|woff2?|ttf|eot|ico|png|jpg|jpeg|webp|gif|svg)$ {
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-    try_files $uri =404;
-}
-
-# i18n JSON: cache breve (cambiano ad ogni deploy)
-location ~* ^/i18n/ {
-    expires 10m;
-    add_header Cache-Control "public, must-revalidate";
-    try_files $uri =404;
-}
-
-# SPA fallback: restituisce index.html per tutte le route Angular
-location / {
-    add_header Cache-Control "no-cache, no-store, must-revalidate";
-    try_files $uri $uri/ /index.html;
-}
-```
-
-> **Nota:** con questo config il container Docker del frontend (porta 4000) **non serve**.
-> Puoi fermarlo: `docker compose -f docker-compose.plesk.yml stop frontend`
-
----
-
-### 5B. Metodo Docker SSR (alternativa futura)
-
-Il frontend gira in un container Docker (porta 4000) con Angular SSR.
-
-**Primo avvio o aggiornamento codice:**
-```bash
-# Sul server Plesk via SSH, nella root del progetto
-docker compose -f docker-compose.plesk.yml build frontend
-docker compose -f docker-compose.plesk.yml up -d --no-deps frontend
-```
-
-Il browser usa `/api/v1` (URL relativo gestito dal proxy nginx di Plesk).
-
----
-
-## 6. Verifica finale
-
-```bash
-# 1. Backend raggiungibile tramite nginx (HTTPS pubblico)
-curl https://gentsallaku.it/api/v1/system/health
-
-# 2. Test endpoint contatti
-curl -X POST https://gentsallaku.it/api/v1/contact \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Test","email":"test@test.it","message":"Verifica deploy Plesk"}'
-# Risposta attesa: {"message":"..."}
-
-# 3. Controlla che il frontend carichi correttamente
-curl -I https://gentsallaku.it
-# Risposta attesa: HTTP/2 200
-```
-
-Se qualcosa non funziona, guarda i log:
-```bash
-docker compose -f docker-compose.plesk.yml logs --tail=50 backend
-docker compose -f docker-compose.plesk.yml logs --tail=50 frontend
-```
-
----
-
-## Comandi utili post-deploy
-
-```bash
-# Log in tempo reale
-docker compose -f docker-compose.plesk.yml logs -f backend
-docker compose -f docker-compose.plesk.yml logs -f frontend
-
-# Riavvia solo il backend (dopo una modifica al codice)
-docker compose -f docker-compose.plesk.yml build backend && \
-docker compose -f docker-compose.plesk.yml up -d --no-deps backend
-
-# Riavvia solo il frontend (dopo una modifica al codice)
-docker compose -f docker-compose.plesk.yml build frontend && \
-docker compose -f docker-compose.plesk.yml up -d --no-deps frontend
-
-# Aggiorna le immagini base (sicurezza)
-docker compose -f docker-compose.plesk.yml pull
-docker compose -f docker-compose.plesk.yml up -d
-
-# Backup MongoDB su Plesk
-MONGO_URI="mongodb://localhost:27017/portfolio" ./scripts/mongo-dump.sh
-
-# Stop completo
-docker compose -f docker-compose.plesk.yml down
-```
+Il servizio `frontend` in `docker-compose.plesk.yml` (Angular SSR sulla porta 4000) parte solo con
+`--profile ssr`. Per usarlo al posto di `httpdocs/` servirebbe anche una `location /` verso `127.0.0.1:4000`
+nelle direttive nginx.
