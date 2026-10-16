@@ -1,33 +1,69 @@
 name: MongoDB Backup
 
+# Copia fuori dal server del backup notturno di MongoDB.
+#
+# Sul server Plesk ~/app/bin/mongo-backup.sh fa un dump ogni notte alle 03:30
+# UTC in ~/app/backups, sullo stesso disco del database. Questo workflow prende
+# l'ultimo dump, lo CIFRA con age e lo salva come artifact (30 giorni): se il
+# server si guasta i backup restano su GitHub.
+#
+# Il repository è pubblico e gli artifact sono scaricabili da chiunque abbia un
+# account GitHub, per questo il dump viene cifrato con la chiave PUBBLICA qui
+# sotto. La chiave privata per decifrarlo esiste solo sul Mac
+# (~/.config/age/gentsallaku-backup.key): conservane una copia nel gestore di
+# password, senza quella i backup qui non si possono aprire.
+#
+# Fallisce (e GitHub manda un'email) anche se il dump più recente sul server ha
+# più di 26 ore, cioè se il backup notturno sul server si è fermato.
+#
+# Ripristino: docs/guides/deploy-plesk.md, sezione "Backup".
+
 on:
   schedule:
-    - cron: '0 20 */3 * *' # ogni 3 giorni (giorni 1,4,7,10...) alle 22:00 ora italiana (20:00 UTC, CEST). In inverno (CET, UTC+1) scatta alle 21:00 locali
+    - cron: '15 4 * * *'  # 04:15 UTC, 45 minuti dopo il dump notturno sul server
   workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+env:
+  AGE_RECIPIENT: age1g7pu5dv88mxzfkw49dn6yarcg65qwyfljgvu7qncecjqc8m6a5pqqpm9zt
 
 jobs:
   backup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - name: Dump portfolio_prod
-        env:
-          MONGO_URI: ${{ secrets.MONGO_BACKUP_URI }}
+      - name: SSH key
         run: |
-          mkdir -p backups
-          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
-          echo "ARCHIVE_NAME=mongo-backup-${TIMESTAMP}.archive.gz" >> "$GITHUB_ENV"
-          docker run --rm \
-            -v "${{ github.workspace }}/backups:/backup" \
-            mongo:7 \
-            mongodump \
-              --uri="${MONGO_URI}" \
-              --archive="/backup/mongo-backup-${TIMESTAMP}.archive.gz" \
-              --gzip \
-              --quiet
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "${{ secrets.PLESK_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.PLESK_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
-      - name: Upload backup artifact
+      - name: Ultimo dump dal server
+        env:
+          PLESK_SSH: ${{ vars.PLESK_SSH }}
+        run: |
+          LATEST=$(ssh "$PLESK_SSH" 'ls -t ~/app/backups/mongo-backup-*.archive.gz 2>/dev/null | head -1')
+          [ -n "$LATEST" ] || { echo "::error::Nessun dump in ~/app/backups sul server"; exit 1; }
+          AGE_H=$(ssh "$PLESK_SSH" "echo \$(( (\$(date +%s) - \$(stat -c %Y '$LATEST')) / 3600 ))")
+          echo "Dump: $(basename "$LATEST") (di ${AGE_H} ore fa)"
+          [ "$AGE_H" -le 26 ] || { echo "::error::Il dump più recente ha ${AGE_H} ore: il backup notturno sul server non sta girando"; exit 1; }
+          scp -q "$PLESK_SSH:$LATEST" dump.archive.gz
+          echo "ARCHIVE_NAME=$(basename "$LATEST" .archive.gz)" >> "$GITHUB_ENV"
+
+      - name: Cifra con age
+        run: |
+          sudo apt-get install -y -qq age >/dev/null
+          age -r "$AGE_RECIPIENT" -o "$ARCHIVE_NAME.archive.gz.age" dump.archive.gz
+          rm -f dump.archive.gz
+          ls -l "$ARCHIVE_NAME.archive.gz.age"
+
+      - name: Salva come artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARCHIVE_NAME }}
-          path: backups/${{ env.ARCHIVE_NAME }}
+          path: ${{ env.ARCHIVE_NAME }}.archive.gz.age
           retention-days: 30
+          if-no-files-found: error
