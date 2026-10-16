@@ -93,6 +93,12 @@
     width: var(--sidebar-rail-width-expanded, 268px);
   }
 
+  /* Aperta solo dal passaggio del mouse: si sovrappone al contenuto (che resta
+     fermo) invece di spingerlo, quindi serve un'ombra che la stacchi. */
+  &.hover-open {
+    box-shadow: 24px 0 56px rgba(2, 6, 23, 0.32), inset 0 1px 0 var(--glass-hi);
+  }
+
   /* Filo verticale d'accento: dà alla colonna un bordo "vivo" invece del
      grigio piatto che la faceva sparire nello sfondo. */
   &::after {
@@ -182,7 +188,7 @@
 }
 
 /* La freccia punta verso l'azione: → per espandere, ← per comprimere. */
-.app-sidebar.expanded .rail-toggle svg {
+.app-sidebar.expanded:not(.hover-open) .rail-toggle svg {
   transform: rotate(180deg);
 }
 

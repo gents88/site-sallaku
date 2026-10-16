@@ -15,7 +15,7 @@ function setup(admin: boolean) {
     providers: [
       provideRouter([]),
       { provide: AuthService, useValue: { isLoggedIn: signal(admin), isAdmin: signal(admin) } },
-      { provide: DrawerService, useValue: { mode: signal('rail'), drawerOpen: signal(false), expanded: signal(true), close: vi.fn(), toggleRail: vi.fn() } },
+      { provide: DrawerService, useValue: { mode: signal('rail'), drawerOpen: signal(false), expanded: signal(true), railExpanded: signal(true), setHover: vi.fn(), close: vi.fn(), toggleRail: vi.fn() } },
       { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
       { provide: LanguageService, useValue: { current: () => 'it' } },
     ],

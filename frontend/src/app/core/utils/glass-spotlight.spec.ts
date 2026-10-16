@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { initGlassSpotlight } from './glass-spotlight';
 
 function fakeMatchMedia(matches: boolean): void {
-  window.matchMedia = vi.fn().mockReturnValue({ matches }) as unknown as typeof window.matchMedia;
+  const noop = () => undefined;
+  window.matchMedia = vi.fn().mockReturnValue({
+    matches, addListener: noop, removeListener: noop, addEventListener: noop, removeEventListener: noop,
+  }) as unknown as typeof window.matchMedia;
 }
 
 function pointerMove(target: Element, x: number, y: number): void {

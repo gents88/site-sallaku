@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
@@ -13,6 +13,10 @@ interface RailTooltip {
   labelKey: string;
   top: number;
 }
+
+/** Ritardi dell'apertura al passaggio: evitano aperture/chiusure involontarie sfiorando il bordo. */
+export const RAIL_HOVER_OPEN_DELAY_MS = 90;
+export const RAIL_HOVER_CLOSE_DELAY_MS = 220;
 
 /** Voce fittizia per il tracciamento del CTA "Esplora il Lab". */
 const LAB_CTA = { route: '/lab' } as const;
@@ -34,6 +38,13 @@ export class SidebarComponent {
   readonly mode = this.drawer.mode;
   readonly drawerOpen = this.drawer.drawerOpen;
   readonly expanded = this.drawer.expanded;
+  /** Rail agganciata (pin) con il pulsante: sposta il contenuto invece di sovrapporsi. */
+  readonly pinned = this.drawer.railExpanded;
+  /** Aperta solo dal passaggio del mouse / tastiera: si sovrappone al contenuto. */
+  readonly hoverOpen = computed(() => this.expanded() && !this.pinned());
+
+  private pointerInside = false;
+  private hoverTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly tooltip = signal<RailTooltip | null>(null);
 
@@ -49,6 +60,8 @@ export class SidebarComponent {
   readonly itemCount = computed(() => this.navGroups().reduce((total, group) => total + group.items.length, 0));
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.clearHoverTimer());
+
     // All'apertura del drawer overlay il focus tastiera restava sul trigger dietro
     // il backdrop (quindi "sulla pagina"): lo sposta dentro il drawer, sul close-btn.
     // In modalità rail non c'è nessuna trappola di focus da gestire.
@@ -70,7 +83,7 @@ export class SidebarComponent {
   }
 
   toggleRail(): void {
-    const next = !this.expanded();
+    const next = !this.pinned();
     this.drawer.toggleRail();
     this.tooltip.set(null);
     this.analytics.trackClick('sidebar', next ? 'sidebar_rail_expand' : 'sidebar_rail_collapse');
@@ -84,6 +97,46 @@ export class SidebarComponent {
       item.route,
     );
     if (this.mode() === 'overlay') this.drawer.close();
+  }
+
+  /** Solo mouse: un tocco su schermi touch grandi non deve aprire la rail (c'è il pulsante). */
+  onPointerEnter(event: PointerEvent): void {
+    if (this.mode() !== 'rail' || event.pointerType !== 'mouse') return;
+    this.pointerInside = true;
+    this.scheduleHover(true, RAIL_HOVER_OPEN_DELAY_MS);
+  }
+
+  onPointerLeave(event: PointerEvent): void {
+    if (this.mode() !== 'rail' || event.pointerType !== 'mouse') return;
+    this.pointerInside = false;
+    this.scheduleHover(false, RAIL_HOVER_CLOSE_DELAY_MS);
+  }
+
+  /** Tastiera: raggiungere una voce con Tab apre la rail, così le etichette sono visibili. */
+  onFocusIn(event: FocusEvent): void {
+    if (this.mode() !== 'rail') return;
+    const target = event.target as HTMLElement | null;
+    if (!target?.matches?.(':focus-visible')) return;
+    this.scheduleHover(true, 0);
+  }
+
+  private scheduleHover(open: boolean, delayMs: number): void {
+    this.clearHoverTimer();
+    if (delayMs === 0) {
+      this.drawer.setHover(open);
+      return;
+    }
+    this.hoverTimer = setTimeout(() => {
+      this.hoverTimer = null;
+      this.drawer.setHover(open);
+    }, delayMs);
+  }
+
+  private clearHoverTimer(): void {
+    if (this.hoverTimer !== null) {
+      clearTimeout(this.hoverTimer);
+      this.hoverTimer = null;
+    }
   }
 
   showTooltip(event: Event, labelKey: string): void {
@@ -101,6 +154,8 @@ export class SidebarComponent {
   @HostListener('window:keydown.escape')
   onEscape(): void {
     this.tooltip.set(null);
+    this.clearHoverTimer();
+    this.drawer.setHover(false);
     this.drawer.close();
   }
 
@@ -124,6 +179,14 @@ export class SidebarComponent {
   @HostListener('focusout', ['$event'])
   onFocusOut(event: FocusEvent): void {
     this.tooltip.set(null);
+    // Rail: il focus esce dalla colonna e il mouse non c'è → richiudi.
+    if (this.mode() === 'rail') {
+      const next = event.relatedTarget as HTMLElement | null;
+      if (!this.pointerInside && !(next && this.elementRef.nativeElement.contains(next))) {
+        this.scheduleHover(false, RAIL_HOVER_CLOSE_DELAY_MS);
+      }
+      return;
+    }
     if (this.mode() !== 'overlay' || !this.drawerOpen()) return;
     const nextFocus = event.relatedTarget as HTMLElement | null;
     if (nextFocus && this.elementRef.nativeElement.contains(nextFocus)) return;

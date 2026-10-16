@@ -11,6 +11,10 @@
   [class.is-rail]="mode() === 'rail'"
   [class.open]="drawerOpen()"
   [class.expanded]="expanded()"
+  [class.hover-open]="hoverOpen()"
+  (pointerenter)="onPointerEnter($event)"
+  (pointerleave)="onPointerLeave($event)"
+  (focusin)="onFocusIn($event)"
 >
   <div class="sidebar-header">
     <div class="sidebar-brand">
@@ -23,10 +27,10 @@
         class="rail-toggle"
         type="button"
         (click)="toggleRail()"
-        [attr.aria-expanded]="expanded()"
+        [attr.aria-expanded]="pinned()"
         aria-controls="app-sidebar"
-        [attr.aria-label]="(expanded() ? 'sidebar.collapse_menu' : 'sidebar.expand_menu') | translate"
-        [attr.title]="(expanded() ? 'sidebar.collapse_icons' : 'sidebar.expand_icons') | translate"
+        [attr.aria-label]="(pinned() ? 'sidebar.collapse_menu' : 'sidebar.expand_menu') | translate"
+        [attr.title]="(pinned() ? 'sidebar.collapse_icons' : 'sidebar.expand_icons') | translate"
       >
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9 6l6 6-6 6" />

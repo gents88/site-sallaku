@@ -28,8 +28,8 @@
       (function () {
         try {
           if (!window.matchMedia('(min-width: 1200px)').matches) return;
-          var expanded = localStorage.getItem('gs-sidebar-expanded') === '1';
-          document.documentElement.setAttribute('data-sidebar', expanded ? 'rail-expanded' : 'rail');
+          var pinned = localStorage.getItem('gs-sidebar-pinned') === '1';
+          document.documentElement.setAttribute('data-sidebar', pinned ? 'rail-expanded' : 'rail');
         } catch (e) { /* storage/matchMedia non disponibili: nessun offset iniziale */ }
       })();
     </script>
