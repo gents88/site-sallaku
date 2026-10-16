@@ -161,7 +161,7 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
     </div>
   `,
   styles: [`
-    :host { display: block; min-height: 100vh; background: var(--bg-primary, #0d1117); }
+    :host { display: block; min-height: 100vh; /* fondo trasparente: lascia vedere .ambient-bg */ }
 
     .page { padding: 2rem; max-width: 1100px; margin: 0 auto; }
 
@@ -202,7 +202,9 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
     .workspace-banner {
       display: flex; align-items: center; gap: 1.25rem;
       padding: 1.5rem 1.75rem; margin-bottom: 3rem;
-      background: linear-gradient(120deg, rgba(108,99,255,.12), rgba(99,179,255,.06));
+      background: linear-gradient(120deg, rgba(108,99,255,.18), rgba(99,179,255,.08));
+      -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
+      box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
       border: 1px solid rgba(108,99,255,.35);
       border-radius: 16px; text-decoration: none;
       transition: border-color .2s, transform .2s;
@@ -296,16 +298,19 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
     .tool-card {
       display: flex; align-items: center; gap: 1rem;
       padding: 1.1rem 1.25rem;
-      background: var(--bg-secondary, #161b22);
-      border: 1px solid var(--border-color, #30363d);
+      background: linear-gradient(160deg, var(--glass-fill-1), var(--glass-fill-2));
+      border: 1px solid var(--glass-edge);
+      box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
+      -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur);
       border-radius: 14px; text-decoration: none;
-      transition: border-color .2s, transform .2s, background .2s;
+      transition: border-color .2s, transform .2s, background .2s, box-shadow .2s;
       position: relative; overflow: hidden;
       cursor: pointer;
 
       &:hover {
         border-color: rgba(108,99,255,.55);
-        background: rgba(108,99,255,.05);
+        background: linear-gradient(160deg, rgba(108,99,255,.14), var(--glass-fill-2));
+        box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow-up);
         transform: translateY(-2px);
         .card-arrow { opacity: 1; transform: translateX(3px); }
       }

@@ -1,7 +1,9 @@
 .footer {
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--glass-edge);
   padding: 16px 0 12px;
-  background: var(--bg-secondary, #0f1424);
+  background: var(--glass-fill-soft);
+  -webkit-backdrop-filter: var(--glass-blur-soft);
+  backdrop-filter: var(--glass-blur-soft);
   position: relative;
   overflow: hidden;
 

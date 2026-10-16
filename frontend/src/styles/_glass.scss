@@ -1,0 +1,114 @@
+/* ═══════════════════════════════════════════════
+   Glass material (vetro) + sfondo vivo
+   Token dei due temi e layer ambientale. Il vetro ha senso solo se dietro
+   c'è qualcosa da sfocare: .ambient-bg (in app.component) dipinge le sfere
+   di colore, le card e i pannelli le sfocano. Le sfere derivano da
+   --primary-500 / --accent-500, quindi seguono anche l'accento albanese.
+   Solo token e layer: i mixin per i componenti stanno in _glass-mixins.scss
+   (nessun output CSS, per non duplicare queste regole in ogni componente).
+   ═══════════════════════════════════════════════ */
+
+:root {
+  /* superfici */
+  --glass-fill-1: rgba(255, 255, 255, 0.09);
+  --glass-fill-2: rgba(255, 255, 255, 0.025);
+  --glass-fill-soft: rgba(255, 255, 255, 0.06);
+  --glass-fill-hover: rgba(255, 255, 255, 0.12);
+  --glass-edge: rgba(255, 255, 255, 0.12);
+  --glass-hi: rgba(255, 255, 255, 0.16);
+  --glass-blur: blur(22px) saturate(160%);
+  --glass-blur-soft: blur(14px) saturate(150%);
+
+  /* rilievo */
+  --glass-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+  --glass-shadow-up: 0 22px 50px rgba(0, 0, 0, 0.45), 0 0 40px rgba(139, 92, 246, 0.18);
+  --glass-glow: rgba(167, 139, 250, 0.22);
+  --glass-btn-shadow: 0 8px 28px rgba(79, 106, 245, 0.45);
+
+  /* sfere dello sfondo */
+  --ambient-a: color-mix(in srgb, var(--primary-500) 50%, transparent);
+  --ambient-b: color-mix(in srgb, var(--accent-500) 46%, transparent);
+  --ambient-c: color-mix(in srgb, var(--cyan-500) 26%, transparent);
+}
+
+[data-theme='light'] {
+  /* latte, non grigio: un vetro grigio sporca lo sfondo chiaro */
+  --glass-fill-1: rgba(255, 255, 255, 0.72);
+  --glass-fill-2: rgba(255, 255, 255, 0.38);
+  --glass-fill-soft: rgba(255, 255, 255, 0.55);
+  --glass-fill-hover: rgba(255, 255, 255, 0.85);
+  --glass-edge: rgba(255, 255, 255, 0.9);
+  --glass-hi: rgba(255, 255, 255, 1);
+
+  /* ombre colorate invece che nere */
+  --glass-shadow: 0 14px 40px rgba(79, 106, 245, 0.14), 0 2px 6px rgba(15, 23, 42, 0.05);
+  --glass-shadow-up: 0 24px 54px rgba(79, 106, 245, 0.24), 0 0 0 1px rgba(139, 92, 246, 0.2);
+  --glass-glow: rgba(139, 92, 246, 0.16);
+  --glass-btn-shadow: 0 8px 24px rgba(79, 106, 245, 0.32);
+
+  --ambient-a: color-mix(in srgb, var(--primary-500) 36%, transparent);
+  --ambient-b: color-mix(in srgb, var(--accent-400) 46%, transparent);
+  --ambient-c: color-mix(in srgb, var(--cyan-400) 30%, transparent);
+}
+
+/* Con l'accento albanese html dipinge il proprio sfondo e il body resta
+   opaco sopra: nasconderebbe le sfere (z-index negativo). Lo rendiamo
+   trasparente così si vedono i gradienti già pensati per quell'accento. */
+html[data-accent='albanian'] body {
+  background-color: transparent;
+}
+
+/* ── Sfondo vivo ─────────────────────────────────────
+   Gradienti radiali (non filter: blur) per non pesare sulla GPU: il bordo
+   morbido è nel gradiente stesso. Solo transform in animazione. */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+
+  > i {
+    position: absolute;
+    border-radius: 50%;
+    will-change: transform;
+  }
+
+  > i:nth-child(1) {
+    width: 52vmax;
+    height: 52vmax;
+    left: -14vmax;
+    top: 4vh;
+    background: radial-gradient(circle, var(--ambient-a) 0%, transparent 68%);
+    animation: ambient-drift 28s ease-in-out infinite alternate;
+  }
+
+  > i:nth-child(2) {
+    width: 46vmax;
+    height: 46vmax;
+    right: -12vmax;
+    top: 34vh;
+    background: radial-gradient(circle, var(--ambient-b) 0%, transparent 68%);
+    animation: ambient-drift 34s ease-in-out infinite alternate-reverse;
+  }
+
+  > i:nth-child(3) {
+    width: 38vmax;
+    height: 38vmax;
+    left: 36%;
+    bottom: -16vmax;
+    background: radial-gradient(circle, var(--ambient-c) 0%, transparent 68%);
+    animation: ambient-drift 40s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes ambient-drift {
+  to { transform: translate3d(5vmax, -4vmax, 0) scale(1.12); }
+}
+
+/* Telefoni e dispositivi che risparmiano dati: sfere ferme (nessuna animazione
+   continua) e meno lavoro per la GPU. Il vetro resta. */
+@media (max-width: 768px), (prefers-reduced-data: reduce) {
+  .ambient-bg > i { animation: none; }
+}
