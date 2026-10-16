@@ -48,7 +48,7 @@ ARCHIVE_FILE="$(basename "$ARCHIVE")"
 echo ""
 echo "▶ Ripristino backup: ${ARCHIVE_FILE}"
 echo "  → destinazione: ${TARGET_URI}"
-echo "  (usa container Docker mongo:7 — nessuna installazione locale necessaria)"
+echo "  (usa container Docker mongo:8.0 — nessuna installazione locale necessaria)"
 echo ""
 
 # host.docker.internal funziona su macOS/Windows;
@@ -56,7 +56,7 @@ echo ""
 docker run --rm \
   --add-host=host.docker.internal:host-gateway \
   -v "${ARCHIVE_DIR}:/backup" \
-  mongo:7 \
+  mongo:8.0 \
   mongorestore \
     --uri="${TARGET_URI}" \
     --archive="/backup/${ARCHIVE_FILE}" \
