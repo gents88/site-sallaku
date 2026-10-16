@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
+import { createHash } from 'crypto';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { OtpService } from './otp.service';
@@ -27,6 +28,8 @@ function makeUser(overrides: Partial<{
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────────
+
+const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -165,7 +168,7 @@ describe('AuthService', () => {
   describe('refreshAccessToken', () => {
     it('should issue a new token pair when refresh token is valid', async () => {
       const rawRefresh = 'raw-refresh-token';
-      const hash = await bcrypt.hash(rawRefresh, 10);
+      const hash = await bcrypt.hash(sha256(rawRefresh), 10);
       const user = makeUser({ refreshTokenHash: hash });
 
       jwtService.verify.mockReturnValue({
@@ -187,6 +190,36 @@ describe('AuthService', () => {
       jwtService.verify.mockReturnValue({ sub: 'id', type: 'access' } as any);
 
       await expect(service.refreshAccessToken('bad-token')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('detects reuse of a rotated token even when it shares the first 72 bytes with the current one', async () => {
+      // Due refresh token JWT dello stesso utente: header e inizio del payload
+      // identici (> 72 byte), cambiano solo iat/exp e la firma. bcrypt sul token
+      // grezzo li considerava uguali.
+      const prefix = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLWlkLTEiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwidHlwZSI6InJlZnJlc2gi';
+      const current = `${prefix}LCJpYXQiOjIwMDAwMDAwMDB9.firma-attuale`;
+      const rotated = `${prefix}LCJpYXQiOjE5OTk5OTk5OTl9.firma-vecchia`;
+      expect(prefix.length).toBeGreaterThan(72);
+
+      const user = makeUser({ refreshTokenHash: await bcrypt.hash(sha256(current), 10) });
+      jwtService.verify.mockReturnValue({ sub: 'user-id-1', email: user.email, role: user.role, type: 'refresh' } as any);
+      usersService.findByIdWithRefreshToken.mockResolvedValue(user as any);
+      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+
+      await expect(service.refreshAccessToken(rotated)).rejects.toThrow('Refresh token reuse detected');
+      expect(usersService.saveRefreshToken).toHaveBeenCalledWith('user-id-1', null);
+    });
+
+    it('stores the SHA-256 of the new refresh token, not the raw token', async () => {
+      const user = makeUser({ refreshTokenHash: await bcrypt.hash(sha256('raw-refresh-token'), 10) });
+      jwtService.verify.mockReturnValue({ sub: 'user-id-1', email: user.email, role: user.role, type: 'refresh' } as any);
+      usersService.findByIdWithRefreshToken.mockResolvedValue(user as any);
+      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+
+      const result = await service.refreshAccessToken('raw-refresh-token');
+
+      const storedHash = usersService.saveRefreshToken.mock.calls.at(-1)![1] as string;
+      expect(await bcrypt.compare(sha256(result.refresh_token as string), storedHash)).toBe(true);
     });
 
     it('should revoke token and throw on hash mismatch (token reuse)', async () => {
