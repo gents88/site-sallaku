@@ -31,6 +31,10 @@
             "polyfills": [],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "define": {
+              "__BUILD_COMMIT__": "'dev'",
+              "__BUILD_TIME__": "''"
+            },
             "allowedCommonJsDependencies": [
               "prismjs",
               "prismjs/components/prism-typescript",
