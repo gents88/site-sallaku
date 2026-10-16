@@ -52,7 +52,7 @@ export class SeoService {
   private readonly siteName = 'Gent Sallaku';
   private readonly defaultDescription =
     'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.';
-  private readonly defaultImage = 'https://gentsallaku.it/assets/og-image.png?v=2';
+  private readonly defaultImage = 'https://gentsallaku.it/assets/og-image.png?v=3';
   private lastTrackedPath: string | null = null;
   /** alternatePaths of the page they were declared for (see alternatePath()). */
   private alternates: { forPath: string; paths: Record<Lang, string> } | null = null;
