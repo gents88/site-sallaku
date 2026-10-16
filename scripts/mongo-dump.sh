@@ -11,7 +11,7 @@
 #
 #  Output: ./backups/mongo-backup-YYYYMMDD-HHMMSS.archive.gz
 #
-#  Requisiti: Docker installato (usa mongo:7 per eseguire mongodump)
+#  Requisiti: Docker installato (usa mongo:8.0 per eseguire mongodump)
 # ─────────────────────────────────────────────────────────────
 
 set -euo pipefail
@@ -47,12 +47,12 @@ fi
 
 echo ""
 echo "▶ Avvio dump MongoDB → ${BACKUP_DIR}/${ARCHIVE_NAME}"
-echo "  (usa container Docker mongo:7 — nessuna installazione locale necessaria)"
+echo "  (usa container Docker mongo:8.0 — nessuna installazione locale necessaria)"
 echo ""
 
 docker run --rm \
   -v "${BACKUP_DIR}:/backup" \
-  mongo:7 \
+  mongo:8.0 \
   mongodump \
     --uri="${MONGO_URI}" \
     --archive="/backup/${ARCHIVE_NAME}" \
