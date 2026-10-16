@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────
-#  start-local.sh  –  Avvia Backend (NestJS) e Frontend (Angular) in locale
-#  Il DB è quello remoto Railway (database "portfolio_dev"), condiviso
-#  con l'ambiente di sviluppo — non viene avviato nessun MongoDB locale.
+#  start-local.sh  –  Avvia MongoDB, Backend (NestJS) e Frontend (Angular) in locale
+#  Il DB è un MongoDB 8.0 locale (database "portfolio_dev") in Docker via
+#  colima, servizio "mongo" di docker-compose.local.yml su localhost:27017.
+#  Railway non si usa più (dal 2026-10-16 la produzione è su Plesk).
 #  Uso: ./start-local.sh
 #  Ogni avvio termina prima le eventuali istanze precedenti (backend,
 #  frontend) e riparte da zero, cosi non si accumulano processi orfani.
@@ -44,9 +45,22 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 # ─────────────────────────────────────────────────────────────────
-# 1. Backend .env — forza sempre il DB Railway "portfolio_dev"
+# 1. MongoDB locale (colima + docker-compose.local.yml) e backend .env
 # ─────────────────────────────────────────────────────────────────
-RAILWAY_MONGO_URI="mongodb://mongo:OCLbPjcLuqyKXHNrRHzrSUyentMFuMCz@caboose.proxy.rlwy.net:17308/portfolio_dev?authSource=admin"
+LOCAL_MONGO_URI="mongodb://localhost:27017/portfolio_dev"
+
+if ! docker info >/dev/null 2>&1; then
+  command -v colima >/dev/null 2>&1 || die "Docker non attivo e colima non installato (brew install colima docker)."
+  log "Avvio colima (Docker)..."
+  colima start
+fi
+log "Avvio MongoDB locale..."
+docker compose -f "$ROOT/docker-compose.local.yml" up -d mongo >/dev/null
+for _ in $(seq 1 30); do
+  docker compose -f "$ROOT/docker-compose.local.yml" exec -T mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' >/dev/null 2>&1 && break
+  sleep 2
+done
+ok "MongoDB locale attivo su localhost:27017."
 
 if [[ ! -f "$BACKEND/.env" ]]; then
   warn "Nessun .env trovato nel backend. Creo da .env.example..."
@@ -61,15 +75,15 @@ else
 fi
 
 CURRENT_MONGO_URI="$(grep -m1 '^MONGODB_URI=' "$BACKEND/.env" | cut -d= -f2-)"
-if [[ "$CURRENT_MONGO_URI" != "$RAILWAY_MONGO_URI" ]]; then
-  warn "MONGODB_URI nel .env non corrisponde al DB Railway portfolio_dev. Lo correggo."
+if [[ "$CURRENT_MONGO_URI" != "$LOCAL_MONGO_URI" ]]; then
+  warn "MONGODB_URI nel .env non punta al MongoDB locale. Lo correggo."
   if grep -q '^MONGODB_URI=' "$BACKEND/.env"; then
-    sed -i '' "s|^MONGODB_URI=.*|MONGODB_URI=${RAILWAY_MONGO_URI}|" "$BACKEND/.env"
+    sed -i '' "s|^MONGODB_URI=.*|MONGODB_URI=${LOCAL_MONGO_URI}|" "$BACKEND/.env"
   else
-    echo "MONGODB_URI=${RAILWAY_MONGO_URI}" >> "$BACKEND/.env"
+    echo "MONGODB_URI=${LOCAL_MONGO_URI}" >> "$BACKEND/.env"
   fi
 fi
-ok "Backend userà il DB Railway: portfolio_dev"
+ok "Backend userà il DB locale: portfolio_dev"
 
 # Porta del backend: quella impostata in .env (default 3000 se assente)
 BACKEND_PORT="$(grep -m1 '^PORT=' "$BACKEND/.env" | cut -d= -f2-)"
@@ -117,7 +131,7 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo -e "  Frontend  →  ${CYAN}http://localhost:4200${NC}"
 echo -e "  Backend   →  ${CYAN}http://localhost:${BACKEND_PORT}${NC}"
 echo -e "  Swagger   →  ${CYAN}http://localhost:${BACKEND_PORT}/api${NC}"
-echo -e "  MongoDB   →  ${CYAN}Railway (portfolio_dev)${NC}"
+echo -e "  MongoDB   →  ${CYAN}mongodb://localhost:27017/portfolio_dev${NC} (Compass)"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "  Premi  ${YELLOW}Ctrl+C${NC}  per fermare tutto."
 echo ""
