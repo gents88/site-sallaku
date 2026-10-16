@@ -54,7 +54,7 @@ if [[ -n "$(git status --porcelain -- backend docker-compose.plesk.yml scripts)"
   exit 1
 fi
 
-COMMIT="$(git rev-parse --short HEAD) ($(git branch --show-current))"
+COMMIT="$(git rev-parse --short HEAD) (${RELEASE_BRANCH:-$(git branch --show-current)})"
 
 echo ""
 echo "══════════════════════════════════════════════"
