@@ -25,11 +25,12 @@ import { InstallPromptService } from './core/services/install-prompt.service';
 import { LabActivityService } from './core/services/lab-activity.service';
 import { LabNextStepsComponent } from './shared/components/lab-next-steps/lab-next-steps.component';
 
+import { ProfilePhotoComponent } from './shared/components/profile-photo/profile-photo.component';
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent, InstallPromptComponent, LabNextStepsComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent, InstallPromptComponent, LabNextStepsComponent, ProfilePhotoComponent],
   template: `
     <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
     <app-navbar />
@@ -62,7 +63,11 @@ import { LabNextStepsComponent } from './shared/components/lab-next-steps/lab-ne
           ×
         </button>
         <div class="account-modal__hero">
-          <div class="account-modal__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</div>
+          @if (auth.isAdmin()) {
+            <div class="account-modal__avatar account-modal__avatar--photo"><app-profile-photo /></div>
+          } @else {
+            <div class="account-modal__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</div>
+          }
           <div class="account-modal__identity">
             @if (auth.isAdmin()) {
               <span class="account-modal__badge">{{ 'account_modal.badge_admin' | translate }}</span>
@@ -198,6 +203,11 @@ import { LabNextStepsComponent } from './shared/components/lab-next-steps/lab-ne
       color: #fff;
       background: linear-gradient(135deg, #4f6af5, #06b6d4 55%, #38bdf8);
       box-shadow: 0 14px 34px rgba(79, 106, 245, 0.28);
+    }
+
+    .account-modal__avatar--photo {
+      padding: 3px;
+      overflow: hidden;
     }
 
     .account-modal__badge {

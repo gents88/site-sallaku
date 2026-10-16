@@ -8,6 +8,7 @@ import { BlogAiService } from './services/blog-ai.service';
 import { BlogGenerationService } from './services/blog-generation.service';
 import { TranslationService } from './services/translation.service';
 import { AuditModule } from '../audit/audit.module';
+import { OgImageService } from './og-image/og-image.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { AuditModule } from '../audit/audit.module';
     AuditModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService, PdfExtractionService, BlogAiService, BlogGenerationService, TranslationService],
+  providers: [BlogService, PdfExtractionService, BlogAiService, BlogGenerationService, TranslationService, OgImageService],
   exports: [BlogService],
 })
 export class BlogModule {}

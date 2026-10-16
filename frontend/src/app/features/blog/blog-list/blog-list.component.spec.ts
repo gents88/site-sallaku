@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { importProvidersFrom, signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BlogListComponent, rankTags } from './blog-list.component';
+import { BlogListComponent, coverHue, coverIcon, rankTags } from './blog-list.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
@@ -271,5 +271,26 @@ describe('BlogListComponent tags', () => {
     component.setTag('Angular');
 
     expect(component.filteredPosts).toEqual([lower, upper]);
+  });
+});
+
+describe('generated covers', () => {
+  it('gives the same tag the same hue, whatever the case', () => {
+    expect(coverHue('Angular')).toBe(coverHue('angular'));
+    expect(coverHue('Angular')).toBeGreaterThanOrEqual(0);
+    expect(coverHue('Angular')).toBeLessThan(360);
+  });
+
+  it('gives different topics different hues', () => {
+    expect(coverHue('PDF')).not.toBe(coverHue('SEO'));
+  });
+
+  it('picks an icon from the main topic, with a generic fallback', () => {
+    expect(coverIcon('PDF')).toBe('picture_as_pdf');
+    expect(coverIcon('SEO')).toBe('travel_explore');
+    expect(coverIcon('Angular')).toBe('code');
+    expect(coverIcon('Sicurezza')).toBe('shield');
+    expect(coverIcon(undefined)).toBe('article');
+    expect(coverIcon('Cucina')).toBe('article');
   });
 });

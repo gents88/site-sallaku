@@ -314,6 +314,12 @@
   text-transform: uppercase;
 }
 
+/* Admin: foto profilo con un sottile anello del gradiente */
+.nav-account__avatar--photo {
+  padding: 1.5px;
+  overflow: hidden;
+}
+
 .nav-account__avatar--login {
   background: rgba(79, 106, 245, 0.14);
   color: var(--text-primary, #f0f4ff);
