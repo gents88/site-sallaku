@@ -67,7 +67,9 @@
   z-index: 1499;
   width: min(400px, calc(100vw - 40px));
   height: min(600px, calc(100vh - 140px));
-  background: var(--cb-bg);
+  background: color-mix(in srgb, var(--cb-bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
   border-radius: var(--cb-radius);
   box-shadow: var(--cb-shadow);
   border: 1px solid var(--cb-border);

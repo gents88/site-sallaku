@@ -39,8 +39,10 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background: var(--bg-secondary, #0f1424);
-  border: 1px solid var(--border-color, var(--glass-border, #30363d));
+  background: color-mix(in srgb, var(--bg-secondary, #0f1424) 78%, transparent);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-edge);
   border-left: none;
   /* Il pannello non scrolla mai: scorre solo .sidebar-nav, così header e CTA
      restano ancorati e non finiscono sopra le ultime voci dell'elenco. */
