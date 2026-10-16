@@ -6,7 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { UsersService } from '../users/users.service';
 import { OtpService } from './otp.service';
 import { LoginDto } from './dto/login.dto';
@@ -15,6 +15,17 @@ import { Types } from 'mongoose';
 
 const REFRESH_TOKEN_EXPIRY = '7d';
 const BCRYPT_REFRESH_ROUNDS = 10;
+
+/**
+ * bcrypt considera solo i primi 72 byte. Un refresh token JWT ne ha ~116 e i
+ * primi 72 (header + inizio del payload) sono uguali per tutti i token dello
+ * stesso utente: confrontando il token grezzo, bcrypt accettava anche un token
+ * già ruotato e il rilevamento del riuso non scattava mai. Si salva e confronta
+ * lo SHA-256 (64 caratteri), che dipende dall'intero token.
+ */
+function refreshTokenDigest(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
 
 /** Minimum shape required to issue a JWT pair. */
 interface AuthUser {
@@ -110,7 +121,7 @@ export class AuthService {
       throw new UnauthorizedException('Refresh token has been revoked');
     }
 
-    const hashMatch = await bcrypt.compare(refreshToken, user.refreshTokenHash);
+    const hashMatch = await bcrypt.compare(refreshTokenDigest(refreshToken), user.refreshTokenHash);
     if (!hashMatch) {
       // Potential token reuse — revoke immediately (token rotation security)
       await this.usersService.saveRefreshToken(payload.sub, null);
@@ -148,7 +159,7 @@ export class AuthService {
     });
 
     // Store bcrypt hash of refresh token — never store plaintext
-    const hash = await bcrypt.hash(refresh_token, BCRYPT_REFRESH_ROUNDS);
+    const hash = await bcrypt.hash(refreshTokenDigest(refresh_token), BCRYPT_REFRESH_ROUNDS);
     await this.usersService.saveRefreshToken(user._id.toString(), hash);
 
     return {
