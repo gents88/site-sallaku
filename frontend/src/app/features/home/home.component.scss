@@ -1,3 +1,5 @@
+@use '../../../styles/glass-mixins' as g;
+
 /* ══ HERO ══════════════════════════════════════════════ */
 .hero {
   min-height: 100vh;
@@ -86,12 +88,10 @@
   gap: 12px;
   min-width: 140px;
   padding: 12px 16px;
-  background: var(--card-soft-bg);
-  border: 1px solid var(--card-soft-border);
+  @include g.surface;
   border-radius: 12px;
   text-align: center;
   flex-direction: column;
-  box-shadow: var(--card-soft-shadow);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 
   &:hover { transform: translateY(-6px); box-shadow: var(--shadow-glow); }
@@ -184,10 +184,8 @@
   gap: 20px;
   align-items: flex-start;
   padding: 20px 22px;
-  border: 1px solid var(--glass-border);
-  background: var(--panel-gradient-soft);
+  @include g.surface;
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
   margin-bottom: 18px;
 
   @media (max-width: 900px) { flex-direction: column; align-items: center; }
@@ -290,11 +288,12 @@
 
 /* Code window */
 .code-window {
+  /* resta più opaco delle card: contiene codice, il contrasto viene prima */
   background: var(--bg-tertiary);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--glass-edge);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
 }
 
 .code-header {
@@ -347,14 +346,12 @@
 }
 
 .tech-category {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  @include g.surface;
   border-radius: var(--radius-lg);
   padding: 32px;
-  backdrop-filter: blur(8px);
   transition: var(--transition-base);
 
-  &:hover { border-color: var(--glass-border-hover); box-shadow: var(--shadow-glow); }
+  &:hover { border-color: var(--glass-border-hover); box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow-up); }
 }
 
 .tech-category-title {

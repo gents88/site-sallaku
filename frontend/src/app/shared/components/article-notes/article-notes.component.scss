@@ -47,9 +47,11 @@
 /* ── Form Section (glass-card style) ────────────────── */
 .notes-form-wrapper {
   margin-bottom: 2rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(160deg, var(--glass-fill-1), var(--glass-fill-2));
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
   border-radius: 0.75rem;
   padding: 2rem;
 

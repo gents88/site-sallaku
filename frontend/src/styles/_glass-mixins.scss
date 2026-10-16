@@ -1,0 +1,35 @@
+/* Mixin del vetro per gli stili dei componenti. Non emette CSS da sola.
+   I token (--glass-fill-1, --glass-edge, …) sono in _glass.scss e cambiano
+   con [data-theme], quindi i componenti non hanno bisogno di blocchi per tema.
+
+   Uso:  @use '<percorso>/styles/glass-mixins' as g;
+         .pannello { @include g.surface; @include g.lift; } */
+
+/* Superficie in vetro per card e pannelli. */
+@mixin surface {
+  background: linear-gradient(160deg, var(--glass-fill-1), var(--glass-fill-2));
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* Più leggera: barre, chip, controlli. */
+@mixin surface-soft {
+  background: var(--glass-fill-soft);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-hi);
+  -webkit-backdrop-filter: var(--glass-blur-soft);
+  backdrop-filter: var(--glass-blur-soft);
+}
+
+/* Solleva la superficie in hover (solo dove esiste un vero hover). */
+@mixin lift {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-4px);
+      border-color: var(--glass-border-hover);
+      box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow-up);
+    }
+  }
+}
