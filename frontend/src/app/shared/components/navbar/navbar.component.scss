@@ -507,28 +507,37 @@
     bottom: 0;
     z-index: 10050;
     height: var(--bottom-tabbar-height, 60px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    background: color-mix(in srgb, var(--bg-primary) 62%, transparent);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    /* content-box: l'altezza resta 60px più la safe area, come assumono FAB,
+       pannello del chatbot e footer (--bottom-tabbar-height). */
+    padding: 0 6px env(safe-area-inset-bottom, 0px);
+    box-sizing: content-box;
+    /* Vetro vero: fondo a metà, così sotto si intravede la pagina. Prima su
+       iOS/Android il fondo era al 75–85% (--glass-bg) e il vetro non si vedeva. */
+    background: color-mix(in srgb, var(--bg-primary) 50%, transparent);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-top: 1px solid var(--glass-edge);
+    box-shadow: inset 0 1px 0 var(--glass-hi);
   }
 }
 
-/* iOS/Android: stesso trattamento vetro già applicato alla navbar in alto. */
-:host-context(html[data-os='ios']) .bottom-tabbar {
-  background: var(--glass-bg);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
+/* Chiaro: un filo più pieno, il testo scuro sopra le immagini resta leggibile. */
+:host-context([data-theme='light']) .bottom-tabbar {
+  @media (max-width: 900px) {
+    background: color-mix(in srgb, var(--bg-primary) 55%, transparent);
+  }
 }
 
+/* Android (Material 3): stessa trasparenza, sfocatura più leggera e senza
+   aumento di saturazione, come i materiali di sistema. */
 :host-context(html[data-os='android']) .bottom-tabbar {
-  background: color-mix(in srgb, var(--glass-bg) 72%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .tab-item {
+  position: relative;
+  isolation: isolate;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -551,13 +560,38 @@
 
   &:focus-visible {
     outline: 2px solid var(--primary-500, #4f6af5);
+    border-radius: 14px;
+  }
+
+  /* Pastiglia di vetro dietro la voce attiva */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 5px 3px;
+    z-index: -1;
+    border-radius: 14px;
+    background: var(--glass-fill-hover);
+    border: 1px solid var(--glass-edge);
+    box-shadow: inset 0 1px 0 var(--glass-hi);
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   &.active {
     color: var(--primary-400, #6b8afc);
 
+    &::before { opacity: 1; transform: scale(1); }
+
     svg { filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.7)); }
   }
+}
+
+/* Chiaro: #6b8afc su fondo chiaro non ha abbastanza contrasto. */
+:host-context([data-theme='light']) .tab-item.active { color: var(--primary-600, #3b4cea); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-item::before { transition: none; }
 }
 
 .tab-avatar {
