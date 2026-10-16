@@ -44,6 +44,12 @@ describe('CSP di deploy — connect-src', () => {
     it('non punta più al vecchio backend Railway', () => {
       expect(csp).not.toContain('railway.app');
     });
+
+    it('permette il captcha Cloudflare Turnstile (script e iframe da challenges.cloudflare.com)', () => {
+      const directive = (name: string) => csp!.split(';').map((d) => d.trim()).find((d) => d.startsWith(name)) ?? '';
+      expect(directive('script-src')).toContain('https://challenges.cloudflare.com');
+      expect(directive('frame-src')).toContain('https://challenges.cloudflare.com');
+    });
   });
 
   describe('server.js (CSP del server SSR)', () => {
