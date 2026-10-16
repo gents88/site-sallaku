@@ -110,6 +110,20 @@ describe('BlogService', () => {
       expect(modelMock.find).toHaveBeenCalledWith({ published: true, tags: 'angular' });
     });
 
+    it('should exclude the article body in every language from the list', async () => {
+      const chain = { sort: jest.fn(), skip: jest.fn(), limit: jest.fn(), select: jest.fn(), lean: jest.fn(), exec: jest.fn().mockResolvedValue([]) };
+      Object.keys(chain).forEach(k => { if (k !== 'exec') (chain as any)[k].mockReturnValue(chain); });
+      modelMock.find.mockReturnValue(chain);
+      modelMock.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(0) });
+
+      await service.findPublished(undefined, 1, 10);
+
+      const excluded = (chain.select.mock.calls[0][0] as string).split(' ');
+      for (const field of ['content', 'content_en', 'content_sq', 'content_pt', 'content_es', 'content_fr', 'content_de']) {
+        expect(excluded).toContain(`-${field}`);
+      }
+    });
+
     it('should clamp limit to max 50', async () => {
       const chain = { sort: jest.fn(), skip: jest.fn(), limit: jest.fn(), select: jest.fn(), lean: jest.fn(), exec: jest.fn().mockResolvedValue([]) };
       Object.keys(chain).forEach(k => { if (k !== 'exec') (chain as any)[k].mockReturnValue(chain); });
