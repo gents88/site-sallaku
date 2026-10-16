@@ -15,7 +15,7 @@
 services:
 
   mongo:
-    image: mongo:7
+    image: mongo:8.0   # stessa major di Railway (mongo:8.0): dump/restore compatibili
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
