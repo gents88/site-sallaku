@@ -1,0 +1,57 @@
+name: Uptime
+
+# Controllo esterno che gentsallaku.it sia online, ogni 15 minuti.
+#
+# Sito, backend e database girano tutti sul server Plesk: se il server o un
+# processo si ferma, nessuno se ne accorge finché non lo nota un visitatore.
+# Questo job fallisce se una delle verifiche non passa (con 3 tentativi, per non
+# segnalare un singolo intoppo di rete) e GitHub manda un'email all'autore
+# dell'ultima modifica a questo file (Settings → Notifications → Actions).
+#
+# Nota: GitHub sospende i workflow pianificati dopo 60 giorni senza attività
+# sul repository; in quel caso si riattiva dalla scheda Actions.
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Sito, backend, database e certificato
+        run: |
+          fail=0
+
+          # url, testo atteso nella risposta, descrizione
+          check() {
+            for attempt in 1 2 3; do
+              if curl -fsS --max-time 20 "$1" 2>/dev/null | grep -q -- "$2"; then
+                echo "OK   $3"
+                return 0
+              fi
+              sleep 20
+            done
+            echo "::error::KO $3 ($1)"
+            fail=1
+          }
+
+          check 'https://gentsallaku.it/'                           '<app-root'  'pagine del sito (Apache)'
+          check 'https://gentsallaku.it/api/v1/system/health'       '"ok":true'  'backend (pm2)'
+          check 'https://gentsallaku.it/api/v1/blog/posts?limit=1'  '"total":'   'database (MongoDB)'
+
+          # Certificato Let's Encrypt: Plesk lo rinnova da solo, qui si verifica che lo faccia
+          end=$(echo | openssl s_client -servername gentsallaku.it -connect gentsallaku.it:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          days=$(( ($(date -d "$end" +%s) - $(date +%s)) / 86400 ))
+          if [ "$days" -lt 14 ]; then
+            echo "::error::Il certificato HTTPS scade tra $days giorni ($end)"
+            fail=1
+          else
+            echo "OK   certificato HTTPS (scade tra $days giorni)"
+          fi
+
+          exit $fail

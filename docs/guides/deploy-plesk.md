@@ -149,8 +149,33 @@ source ~/app/shared/mongo.env      # shell Mongo
 mongosh "mongodb://$MONGO_ROOT_USER:$MONGO_ROOT_PASS@127.0.0.1:27017/portfolio?authSource=admin"
 ```
 
-I backup stanno sullo stesso disco del database: ogni tanto scaricane uno sul Mac
-(`scp plesk-gentsallaku:app/backups/<file> backups/`).
+---
+
+## Backup e monitoraggio
+
+| Cosa | Dove | Quando |
+|------|------|--------|
+| Dump del database sul server | `~/app/backups` (ultimi 14 giorni) | ogni notte 03:30 UTC (cron, `mongo-backup.sh`) |
+| Copia **cifrata** fuori dal server | artifact del workflow **MongoDB Backup** su GitHub (30 giorni) | ogni notte 04:15 UTC |
+| Controllo che il sito sia online | workflow **Uptime**: pagine, backend, database, scadenza HTTPS | ogni 15 minuti |
+
+Se un controllo fallisce, GitHub manda un'email (Settings → Notifications → Actions). Il workflow di backup
+fallisce anche se sul server non c'è un dump delle ultime 26 ore.
+
+Il repository è pubblico, quindi gli artifact vengono cifrati con [age](https://age-encryption.org)
+usando la chiave pubblica scritta nel workflow. **La chiave privata esiste solo in
+`~/.config/age/gentsallaku-backup.key` sul Mac: conservane una copia nel gestore di password**, senza quella
+i backup su GitHub non si possono aprire.
+
+Ripristino da GitHub (es. server perso):
+
+```bash
+gh run list --workflow mongo-backup.yml --limit 5          # scegli una run riuscita
+gh run download <run-id> --dir backups/                    # scarica l'artifact .age
+age -d -i ~/.config/age/gentsallaku-backup.key backups/<nome>/<file>.archive.gz.age > backups/ripristino.archive.gz
+scp backups/ripristino.archive.gz plesk-gentsallaku:app/incoming/
+ssh plesk-gentsallaku '~/app/bin/mongo-restore.sh ~/app/incoming/ripristino.archive.gz portfolio'
+```
 
 ---
 
