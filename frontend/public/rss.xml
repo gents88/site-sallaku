@@ -6,7 +6,204 @@
   <atom:link href="https://gentsallaku.it/rss.xml" rel="self" type="application/rss+xml" />
   <description>Articoli su sviluppo front-end, Angular, TypeScript e data visualization.</description>
   <language>it-it</language>
-  <lastBuildDate>Sat, 12 Sep 2026 13:01:21 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 16 Oct 2026 11:38:05 GMT</lastBuildDate>
+  <item>
+    <title>Da RxJS a Signals: guida pratica alla migrazione dello stato in Angular</title>
+    <link>https://gentsallaku.it/blog/da-rxjs-a-signals-guida-pratica-migrazione-stato-angular</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/da-rxjs-a-signals-guida-pratica-migrazione-stato-angular</guid>
+    <pubDate>Sun, 11 Oct 2026 20:57:43 GMT</pubDate>
+    <description>Come e quando rifattorizzare la gestione dello stato da RxJS a Signals in Angular: differenze tra i due paradigmi, un refactoring completo passo per passo con signal, computed ed effect, il ponte rxjs-interop e un piccolo store basato sui Signals.</description>
+      <category>Angular</category>
+      <category>Signals</category>
+      <category>RxJS</category>
+      <category>State Management</category>
+      <category>Refactoring</category>
+      <category>TypeScript</category>
+      <category>Zoneless</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Capire un paper scientifico in inglese in 5 minuti (e quando non fidarsi del riassunto)</title>
+    <link>https://gentsallaku.it/blog/capire-paper-scientifico-in-5-minuti</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/capire-paper-scientifico-in-5-minuti</guid>
+    <pubDate>Sun, 11 Oct 2026 20:56:47 GMT</pubDate>
+    <description>Un metodo in cinque minuti per decidere se un paper scientifico vale la lettura completa: trovarlo su fonti open access, leggerne le parti giuste, farsi aiutare da un riassunto con IA e sapere esattamente cosa controllare a mano.</description>
+      <category>AI</category>
+      <category>PDF</category>
+      <category>Riassunto</category>
+      <category>Ricerca</category>
+      <category>arXiv</category>
+      <category>Open Access</category>
+      <category>Produttività</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Angular con Looker Embedded: come azzerare il boilerplate e le interfacce TypeScript per le tue tabelle dati</title>
+    <link>https://gentsallaku.it/blog/angular-con-looker-embedded-zero-boilerplate-tabelle-dati</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/angular-con-looker-embedded-zero-boilerplate-tabelle-dati</guid>
+    <pubDate>Mon, 05 Oct 2026 08:49:24 GMT</pubDate>
+    <description>Interfacce, DTO, componenti tabella, paginazione, filtri ed export scritti a mano per ogni dataset: con Angular e Looker Embedded il contratto dati vive nel modello LookML e un solo componente generico mostra qualsiasi tabella. Codice, vantaggi, sicurezza e limiti.</description>
+      <category>Angular</category>
+      <category>Looker</category>
+      <category>Looker Embedded</category>
+      <category>Business Intelligence</category>
+      <category>LookML</category>
+      <category>TypeScript</category>
+      <category>Architettura</category>
+      <category>Enterprise</category>
+  </item>
+  <item>
+    <title>Come ho costruito un laboratorio di 13 strumenti PDF e IA che lavorano insieme</title>
+    <link>https://gentsallaku.it/blog/case-study-laboratorio-strumenti-pdf-e-ia</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/case-study-laboratorio-strumenti-pdf-e-ia</guid>
+    <pubDate>Sat, 03 Oct 2026 21:08:57 GMT</pubDate>
+    <description>Il case study del laboratorio di questo sito: 13 strumenti PDF e IA in 7 lingue, cosa gira nel browser e cosa sul server, i limiti dichiarati invece che nascosti, le quote sull&apos;IA e gli errori da cui ho imparato di più.</description>
+      <category>Case Study</category>
+      <category>Angular</category>
+      <category>NestJS</category>
+      <category>PDF</category>
+      <category>AI</category>
+      <category>OCR</category>
+      <category>Privacy</category>
+      <category>Architettura</category>
+  </item>
+  <item>
+    <title>Un blog in 7 lingue con URL tradotti: com&apos;è fatto questo sito</title>
+    <link>https://gentsallaku.it/blog/case-study-blog-multilingua-url-tradotti</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/case-study-blog-multilingua-url-tradotti</guid>
+    <pubDate>Fri, 02 Oct 2026 22:28:12 GMT</pubDate>
+    <description>Il case study del blog che stai leggendo: articoli in sette lingue, uno slug tradotto per ogni lingua che non cambia mai, link vecchi che continuano a funzionare e una traduzione automatica che rompeva i blocchi di codice finché non ho capito perché.</description>
+      <category>Case Study</category>
+      <category>Multilingua</category>
+      <category>i18n</category>
+      <category>SEO</category>
+      <category>Hreflang</category>
+      <category>Angular</category>
+      <category>NestJS</category>
+      <category>MongoDB</category>
+  </item>
+  <item>
+    <title>Password finite nella history di git: come le ho rimosse (e perché non basta)</title>
+    <link>https://gentsallaku.it/blog/segreti-nella-history-di-git-come-rimuoverli</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/segreti-nella-history-di-git-come-rimuoverli</guid>
+    <pubDate>Fri, 02 Oct 2026 22:26:27 GMT</pubDate>
+    <description>Durante un controllo del mio progetto ho trovato un file con password vere nella history di git. Come l&apos;ho rimosso da tutti i branch, perché riscrivere la history non basta, cosa va ruotato subito e le abitudini che evitano che succeda di nuovo.</description>
+      <category>Sicurezza</category>
+      <category>Git</category>
+      <category>Segreti</category>
+      <category>DevOps</category>
+      <category>Best Practice</category>
+      <category>Case Study</category>
+  </item>
+  <item>
+    <title>Angular o React per un gestionale aziendale nel 2026: la mia scelta</title>
+    <link>https://gentsallaku.it/blog/angular-o-react-per-un-gestionale-aziendale</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/angular-o-react-per-un-gestionale-aziendale</guid>
+    <pubDate>Fri, 02 Oct 2026 22:22:07 GMT</pubDate>
+    <description>Per un gestionale con decine di moduli, ruoli e anni di vita davanti scelgo Angular. Spiego perché, in quali casi sceglierei invece React, e dichiaro subito il mio limite: lavoro con Angular da anni.</description>
+      <category>Angular</category>
+      <category>React</category>
+      <category>Frontend</category>
+      <category>Architettura</category>
+      <category>Enterprise</category>
+      <category>Gestionale</category>
+      <category>Opinione</category>
+  </item>
+  <item>
+    <title>Manutenzione di un sito dopo il rilascio: cosa include e perché serve</title>
+    <link>https://gentsallaku.it/blog/manutenzione-sito-dopo-il-rilascio-cosa-include</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/manutenzione-sito-dopo-il-rilascio-cosa-include</guid>
+    <pubDate>Fri, 02 Oct 2026 22:19:24 GMT</pubDate>
+    <description>Un sito non finisce il giorno in cui va online. Cosa comprende davvero la manutenzione — aggiornamenti, backup verificati, monitoraggio, sicurezza, SEO — con una checklist mensile, trimestrale e annuale ed esempi presi dal mio sito.</description>
+      <category>Manutenzione</category>
+      <category>Sicurezza</category>
+      <category>Backup</category>
+      <category>Sviluppo Web</category>
+      <category>SEO</category>
+      <category>PMI</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Quanto costa un sito o una web app su misura nel 2026 (e da cosa dipende il prezzo)</title>
+    <link>https://gentsallaku.it/blog/quanto-costa-sito-web-app-su-misura-2026</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/quanto-costa-sito-web-app-su-misura-2026</guid>
+    <pubDate>Fri, 02 Oct 2026 21:42:40 GMT</pubDate>
+    <description>Da poche migliaia a decine di migliaia di euro: il prezzo di un sito o di una web app dipende da fattori precisi. Fasce indicative, un preventivo scomposto voce per voce, i costi ricorrenti che nessuno dice e come riconoscere un preventivo poco chiaro.</description>
+      <category>Sviluppo Web</category>
+      <category>Preventivo</category>
+      <category>Prezzi</category>
+      <category>Web App</category>
+      <category>E-commerce</category>
+      <category>Freelance</category>
+      <category>PMI</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Sito statico, SSR o CMS: quale scegliere per una piccola attività (il mio caso reale)</title>
+    <link>https://gentsallaku.it/blog/sito-statico-ssr-o-cms-quale-scegliere-piccola-attivita</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/sito-statico-ssr-o-cms-quale-scegliere-piccola-attivita</guid>
+    <pubDate>Fri, 02 Oct 2026 21:41:55 GMT</pubDate>
+    <description>Statico, rendering lato server o CMS? Lo racconto partendo dal mio sito: un&apos;app Angular pubblicata come statica, quattro articoli indicizzati su 32, centinaia di pagine da prerenderizzare. Cosa ho imparato e cosa consiglio a una piccola attività.</description>
+      <category>Sviluppo Web</category>
+      <category>SSR</category>
+      <category>Angular</category>
+      <category>CMS</category>
+      <category>Sito Statico</category>
+      <category>SEO</category>
+      <category>PMI</category>
+      <category>Case Study</category>
+  </item>
+  <item>
+    <title>PDF accessibili: cosa serve davvero (quello che ho imparato costruendo un OCR)</title>
+    <link>https://gentsallaku.it/blog/pdf-accessibili-cosa-serve-davvero</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/pdf-accessibili-cosa-serve-davvero</guid>
+    <pubDate>Fri, 02 Oct 2026 21:41:06 GMT</pubDate>
+    <description>Costruendo l&apos;OCR e il viewer del mio sito ho scoperto quanti PDF sono solo fotografie di pagine. Cosa rende davvero accessibile un PDF, i controlli pratici che faccio in cinque minuti e come crearne di accessibili fin dall&apos;inizio.</description>
+      <category>PDF</category>
+      <category>Accessibilità</category>
+      <category>OCR</category>
+      <category>WCAG</category>
+      <category>PDF/UA</category>
+      <category>Documenti</category>
+      <category>European Accessibility Act</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>IA: uno strumento di lavoro o qualcuno che farà il nostro lavoro?</title>
+    <link>https://gentsallaku.it/blog/ia-strumento-di-lavoro-o-sostituto</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/ia-strumento-di-lavoro-o-sostituto</guid>
+    <pubDate>Fri, 02 Oct 2026 21:20:28 GMT</pubDate>
+    <description>Ogni pochi mesi qualcuno annuncia che l&apos;IA sostituirà gli sviluppatori. La uso ogni giorno e la vedo in un altro modo: uno strumento potentissimo, ma pur sempre uno strumento. Cosa fa bene, dove si ferma, con esempi reali e cinque regole per usarla davvero.</description>
+      <category>AI</category>
+      <category>Carriera</category>
+      <category>Produttività</category>
+      <category>Sviluppo Software</category>
+      <category>Futuro del Lavoro</category>
+      <category>Code Review</category>
+      <category>Opinione</category>
+  </item>
+  <item>
+    <title>Colloqui tecnici nell&apos;era dell&apos;IA: ha ancora senso fare le domande classiche?</title>
+    <link>https://gentsallaku.it/blog/colloqui-tecnici-era-ia-domande-classiche-hanno-ancora-senso</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/colloqui-tecnici-era-ia-domande-classiche-hanno-ancora-senso</guid>
+    <pubDate>Fri, 02 Oct 2026 21:03:00 GMT</pubDate>
+    <description>Se una risposta da colloquio si ottiene in due secondi da un assistente IA, quella domanda non misura più la competenza. Cosa cambia per mid e senior, quali domande sostituire e come impostare un colloquio per junior che valuti il ragionamento, non la memoria.</description>
+      <category>Colloqui</category>
+      <category>Carriera</category>
+      <category>AI</category>
+      <category>Recruiting</category>
+      <category>Code Review</category>
+      <category>Junior</category>
+      <category>Senior</category>
+      <category>Guida</category>
+  </item>
+  <item>
+    <title>Colloquio di Lavoro per Front End Developer: Domande, Risposte e Consigli Pratici</title>
+    <link>https://gentsallaku.it/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</guid>
+    <pubDate>Fri, 02 Oct 2026 20:57:56 GMT</pubDate>
+    <description>Il ruolo di Front End Developer è tra i più ricercati nel mercato del lavoro IT. Le aziende cercano professionisti in grado di sviluppare interfacce moderne, responsive e intuitive utilizzando…</description>
+  </item>
   <item>
     <title>Collegare più strumenti PDF senza scaricare e ricaricare ogni volta</title>
     <link>https://gentsallaku.it/blog/collegare-strumenti-pdf-senza-scaricare-e-ricaricare</link>
@@ -162,6 +359,20 @@
       <category>Indicizzazione</category>
   </item>
   <item>
+    <title>Come ho diagnosticato e risolto una crisi di indicizzazione SEO in produzione: Case Study</title>
+    <link>https://gentsallaku.it/blog/case-study-crisi-indicizzazione-seo-angular-produzione</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/case-study-crisi-indicizzazione-seo-angular-produzione</guid>
+    <pubDate>Sat, 15 Aug 2026 20:44:54 GMT</pubDate>
+    <description>Zero pagine indicizzate su Google nonostante mesi online. Questo case study racconta, con numeri e codice reali, come ho diagnosticato una catena di problemi concatenati su un portfolio Angular + NestJS in produzione: un database che si chiamava letteralmente &quot;test&quot;</description>
+      <category>Case Study</category>
+      <category>SEO</category>
+      <category>Angular</category>
+      <category>NestJS</category>
+      <category>Debugging</category>
+      <category>Produzione</category>
+      <category>MongoDB</category>
+  </item>
+  <item>
     <title>Angular Signals vs Zone.js: Perché Angular sta diventando Zoneless</title>
     <link>https://gentsallaku.it/blog/angular-signals-vs-zonejs-perche-angular-diventa-zoneless</link>
     <guid isPermaLink="true">https://gentsallaku.it/blog/angular-signals-vs-zonejs-perche-angular-diventa-zoneless</guid>
@@ -193,11 +404,11 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/pdf-ai-translation-guide-2026</guid>
     <pubDate>Fri, 14 Aug 2026 13:39:22 GMT</pubDate>
     <description>Guida completa alla traduzione PDF basata sull&apos;intelligenza artificiale con approcci moderni e best practice.</description>
-      <category>pdf</category>
-      <category>translation</category>
-      <category>ai</category>
-      <category>automation</category>
-      <category>guide</category>
+      <category>PDF</category>
+      <category>Traduzione</category>
+      <category>AI</category>
+      <category>Automazione</category>
+      <category>Guida</category>
   </item>
   <item>
     <title>Come essere indicizzati da Google search: Guida completa SEO 2026</title>
@@ -208,7 +419,7 @@
       <category>SEO</category>
       <category>Indicizzazione</category>
       <category>Google Search</category>
-      <category>GoogleBot</category>
+      <category>Googlebot</category>
       <category>Core Web Vitals</category>
       <category>E-E-A-T</category>
       <category>Link Building</category>
@@ -234,8 +445,8 @@
     <pubDate>Fri, 14 Aug 2026 13:35:35 GMT</pubDate>
     <description>Guida passo-passo per scrivere title tag e meta description che aumentano il CTR nei risultati di ricerca. Include checklist operativa e errori comuni da evitare.</description>
       <category>SEO</category>
-      <category>title-tag</category>
-      <category>meta-description</category>
+      <category>Title Tag</category>
+      <category>Meta Description</category>
       <category>CTR</category>
       <category>SERP</category>
   </item>
@@ -245,12 +456,12 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/scss-vs-utility-css-quando-usare-cosa</guid>
     <pubDate>Sat, 08 Aug 2026 21:09:55 GMT</pubDate>
     <description>Component class (SCSS, BEM, CSS Modules) e utility class (atomic CSS in stile Tailwind) risolvono lo stesso problema con architetture opposte: le prime nascondono i dettagli di stile dietro un nome semantico, le seconde espongono ogni proprietà come classe atomica componibile nel markup. Questo articolo confronta le due strategie su manutenibilità, performance del bundle CSS, leggibilità del markup e learning curve, con esempi pratici in SCSS/BEM/CSS Modules e utility-style, mappe SCSS per generare utility coerenti, e il pattern ibrido che combina component class per l&apos;identità strutturale con utility per le variazioni contestuali. Include tre casi di studio realistici (small app, team design system, monorepo enterprise), best practice su naming e nesting SCSS, tecniche di performance come purge e critical CSS, strategie di testing visivo, e oltre dieci errori comuni con soluzioni rapide per team che devono scegliere o combinare le due architetture di styling nei propri progetti.</description>
-      <category>css</category>
-      <category>scss</category>
-      <category>tailwind</category>
-      <category>frontend</category>
-      <category>design-system</category>
-      <category>performance</category>
+      <category>CSS</category>
+      <category>SCSS</category>
+      <category>Tailwind CSS</category>
+      <category>Frontend</category>
+      <category>Design System</category>
+      <category>Performance</category>
   </item>
   <item>
     <title>npm, yarn o pnpm: Quando scegliere quale Package Manager</title>
@@ -261,8 +472,8 @@
       <category>npm</category>
       <category>yarn</category>
       <category>pnpm</category>
-      <category>nodejs</category>
-      <category>devops</category>
+      <category>Node.js</category>
+      <category>DevOps</category>
       <category>monorepo</category>
   </item>
   <item>
@@ -271,11 +482,11 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/novita-angular-22</guid>
     <pubDate>Sat, 08 Aug 2026 20:55:22 GMT</pubDate>
     <description>Angular 22, rilasciato il 3 giugno 2026, è la versione stabile più recente del framework. Rispetto ad Angular 21, che aveva reso zoneless il default e introdotto Signal Forms come API sperimentale, questa release consolida in stabile e production-ready tutto ciò che era ancora in developer preview: Signal Forms, Resource API e Angular Aria diventano ufficialmente utilizzabili in produzione. Questo articolo copre tutte le novità principali: OnPush come default per la change detection, Fetch API come default per HttpClient, il nuovo decoratore @Service, injectAsync() per il lazy loading di servizi, i breaking change su TypeScript 6 e Node 22 minimo, i cambi al router e ai Signal Forms, il tooling AI/MCP integrato nella CLI, la migrazione automatica da Karma a Vitest, l&apos;impatto su performance e bundle, e un piano operativo pratico per l&apos;upgrade. Include sei snippet di codice pronti all&apos;uso, due casi d&apos;uso realistici, una matrice di compatibilità, FAQ e una sezione di verifica tecnica per chi sta pianificando l&apos;aggiornamento da versioni precedenti.</description>
-      <category>angular</category>
-      <category>angular-22</category>
-      <category>signals</category>
-      <category>release-notes</category>
-      <category>typescript</category>
+      <category>Angular</category>
+      <category>Angular 22</category>
+      <category>Signals</category>
+      <category>Release Notes</category>
+      <category>TypeScript</category>
   </item>
   <item>
     <title>Microfrontend con Angular: Architettura, implementazione e Best Practice</title>
@@ -283,12 +494,12 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/microfrontend-angular-architettura-implementazione-best-practice</guid>
     <pubDate>Sat, 08 Aug 2026 20:37:31 GMT</pubDate>
     <description>Un microfrontend applica il principio dei microservizi allo strato di presentazione: invece di un&apos;unica applicazione Angular monolitica, il frontend viene diviso in pezzi indipendenti, spesso allineati a team di prodotto separati, ognuno con la propria pipeline di build, deploy e ciclo di rilascio. Questa guida completa confronta i pattern di integrazione (client-side con Module Federation, server-side, edge/reverse proxy, Web Components, iframe) e mostra come implementarli in Angular: configurazione shell e remote con Webpack 5 Module Federation, Single-SPA, Angular Elements, condivisione di dipendenze come singleton, design system centralizzato, routing globale vs locale, comunicazione tra microfrontend con RxJS, pipeline CI/CD indipendenti, performance con prefetch e bundle analysis, sicurezza con CSP e fallback UX, e rollback basato su manifest versionato. Include oltre dieci snippet di codice pronti all&apos;uso, due case study con effort realistico in ore/persona, una checklist pre-avvio, un piano operativo 30/60/90 giorni con KPI misurabili, più di dieci FAQ e altrettanti errori comuni da evitare per team che valutano o stanno già adottando un&apos;architettura a microfrontend.</description>
-      <category>angular</category>
-      <category>microfrontend</category>
-      <category>module-federation</category>
-      <category>architecture</category>
-      <category>webpack</category>
-      <category>devops</category>
+      <category>Angular</category>
+      <category>Microfrontend</category>
+      <category>Module Federation</category>
+      <category>Architettura</category>
+      <category>Webpack</category>
+      <category>DevOps</category>
   </item>
   <item>
     <title>Migrazione Angular da v10 a v21: Guida completa versione per versione</title>
@@ -296,12 +507,11 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/migrazione-angular-10-21-guida-completa</guid>
     <pubDate>Fri, 07 Aug 2026 21:46:55 GMT</pubDate>
     <description>Migrare un&apos;applicazione da Angular 10 ad Angular 21 significa attraversare undici major release, ognuna con breaking change propri: farlo in un salto unico non è mai un&apos;opzione realistica, e il team Angular stesso raccomanda upgrade sequenziali con ng update, una major alla volta. Questa guida copre l&apos;intero percorso pratico: la matrice di compatibilità TypeScript/RxJS/Node/CLI/Material per ogni versione, i breaking change principali da Angular 11 a 21 (Ivy everywhere, rimozione di View Engine, standalone components, il nuovo control flow @if/@for, Signals, zoneless change detection, incremental hydration), i comandi ng update con i relativi flag e rischi, la migrazione di monorepo Nx con librerie interne, il passaggio da Protractor a Cypress, l&apos;impatto su performance e bundle size, e uno script di automazione per upgrade sequenziali con report. Include oltre venti snippet di codice pronti all&apos;uso, due case study con effort realistico in ore/persona, una checklist pre-upgrade e di rollback, un piano operativo 30/60/90 giorni con KPI misurabili, più di dieci FAQ e altrettanti errori comuni da evitare per pianificare un upgrade multi-major a basso rischio.</description>
-      <category>angular</category>
-      <category>migration</category>
-      <category>upgrade</category>
-      <category>typescript</category>
-      <category>nx</category>
-      <category>testing</category>
+      <category>Angular</category>
+      <category>Migrazione</category>
+      <category>TypeScript</category>
+      <category>Nx</category>
+      <category>Testing</category>
   </item>
   <item>
     <title>Best Practice combinate per applicazioni Web moderne: Sicurezza, cache e Websocket</title>
@@ -309,12 +519,12 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/best-practice-sicurezza-performance-web-combinate</guid>
     <pubDate>Fri, 07 Aug 2026 21:38:39 GMT</pubDate>
     <description>Le singole best practice di sicurezza e performance web sono ampiamente documentate, ma raramente vengono spiegate insieme come un sistema coerente. Questa guida pratica copre dieci pratiche che, applicate insieme, riducono davvero la superficie di attacco senza sacrificare le performance: HTTPS/WSS obbligatorio con TLS 1.2/1.3 e HSTS, cookie di sessione con HttpOnly/Secure/SameSite, l&apos;eliminazione del JWT da localStorage a favore di HttpOnly cookie e refresh token, fingerprinting degli asset statici con cache immutable, header no-store per le risposte con dati personali, uso corretto di s-maxage per separare TTL di CDN e browser, token refresh con revoca reale anche per le connessioni WebSocket, rate limiting e size limit sui canali real-time, monitoring con Prometheus/Grafana ed ELK, e test di privacy e accessibilità. Include oltre otto snippet di codice pronti all&apos;uso (Nginx, Express, NestJS, WebSocket), una checklist operativa a priorità, un piano 30/60/90 giorni con KPI misurabili, FAQ ed errori comuni da evitare per team che vogliono una base di sicurezza e performance coerente.</description>
-      <category>sicurezza</category>
-      <category>websocket</category>
-      <category>caching</category>
-      <category>performance</category>
-      <category>nginx</category>
-      <category>nestjs</category>
+      <category>Sicurezza</category>
+      <category>WebSocket</category>
+      <category>Cache</category>
+      <category>Performance</category>
+      <category>Nginx</category>
+      <category>NestJS</category>
   </item>
   <item>
     <title>Cookie, cache e Websocket: Guida pratica per sviluppatori</title>
@@ -325,9 +535,9 @@
       <category>Cookie</category>
       <category>Cache</category>
       <category>WebSocket</category>
-      <category>Security</category>
+      <category>Sicurezza</category>
       <category>Performance</category>
-      <category>WebDevelopment</category>
+      <category>Sviluppo Web</category>
       <category>DevOps</category>
   </item>
   <item>
@@ -336,12 +546,12 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/ui-ux-angular-interfacce-usabili-accessibili-performanti</guid>
     <pubDate>Fri, 07 Aug 2026 21:27:39 GMT</pubDate>
     <description>L&apos;UI/UX in un&apos;applicazione Angular non è uno strato estetico aggiunto alla fine: è l&apos;insieme delle decisioni architetturali e di interazione che determinano se un utente completa un task o abbandona il flusso. Questa guida completa mostra come progettare interfacce usabili, accessibili e performanti in Angular: principi di design applicati al framework, architettura di un design system con token e component library, pattern UX-friendly per form, modali, notifiche e stati di loading/empty/error, checklist di accessibilità con esempi ARIA concreti e focus management, animazioni con Angular Animations, tecniche per la performance percepita legate alle Core Web Vitals, testing UX con Storybook e visual regression, e il workflow di collaborazione tra designer e sviluppatori basato su design token da Figma. Include oltre dieci snippet di codice pronti all&apos;uso, cinque mini-guide pratiche, due case study con metriche realistiche (aumento conversioni, riduzione tempo di completamento), una checklist operativa 30/60/90 giorni con KPI misurabili ed errori comuni da evitare per team che vogliono migliorare in modo sistematico la qualità UX delle proprie applicazioni Angular.</description>
-      <category>angular</category>
-      <category>ui-ux</category>
-      <category>accessibilita</category>
-      <category>design-system</category>
-      <category>storybook</category>
-      <category>performance</category>
+      <category>Angular</category>
+      <category>UI/UX</category>
+      <category>Accessibilità</category>
+      <category>Design System</category>
+      <category>Storybook</category>
+      <category>Performance</category>
   </item>
   <item>
     <title>Costruire un Design System con Angular: Componenti, schematics, Storybook e publishing su npm</title>
@@ -349,11 +559,11 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/design-system-angular-componenti-storybook-npm</guid>
     <pubDate>Fri, 07 Aug 2026 21:17:57 GMT</pubDate>
     <description>Un design system non è una semplice libreria di componenti UI: è il contratto condiviso tra design e sviluppo che garantisce coerenza visiva, comportamentale e di accessibilità su tutti i prodotti di un&apos;organizzazione. Questa guida completa mostra come costruire un design system Angular partendo da zero: architettura monorepo o repo separato, component design con OnPush e Signal inputs, schematics custom per ridurre l&apos;attrito di adozione, setup di Storybook con addon di accessibilità, packaging e publishing su npm con ng-packagr e peerDependencies corrette, testing unit/visual/E2E, pipeline CI/CD per build e publish automatizzati, design token per il theming, governance delle breaking change e checklist di accessibilità con esempi ARIA concreti. Include oltre quindici snippet di codice pronti all&apos;uso, cinque mini-guide pratiche, due case study con metriche realistiche e misurabili, una checklist operativa 30/60/90 giorni con KPI chiari ed errori comuni da evitare per chi sta valutando o già costruendo una libreria di componenti condivisa tra più team.</description>
-      <category>angular</category>
-      <category>design-system</category>
-      <category>storybook</category>
+      <category>Angular</category>
+      <category>Design System</category>
+      <category>Storybook</category>
       <category>npm</category>
-      <category>typescript</category>
+      <category>TypeScript</category>
       <category>ng-packagr</category>
   </item>
   <item>
@@ -364,11 +574,11 @@
     <description>Guida completa alla migrazione da AngularJS ad Angular moderno: audit del codice legacy, strategia big bang vs strangler pattern, ngUpgrade per il bootstrap ibrido, mapping dei concetti, autenticazione JWT, testing e un piano operativo 30/60/90 giorni con KPI misurabili.</description>
       <category>AngularJS</category>
       <category>Angular</category>
-      <category>Migration</category>
+      <category>Migrazione</category>
       <category>TypeScript</category>
       <category>ngUpgrade</category>
-      <category>WebDevelopment</category>
-      <category>FrontendDevelopment</category>
+      <category>Sviluppo Web</category>
+      <category>Frontend</category>
   </item>
   <item>
     <title>SEO nel 2026: La guida completa per essere trovati da Google e citati dall&apos;AI</title>
@@ -377,11 +587,11 @@
     <pubDate>Fri, 07 Aug 2026 20:38:56 GMT</pubDate>
     <description>Una guida pratica alla SEO nel 2026: ricerca keyword, struttura pillar/cluster, dati strutturati, featured snippet e ottimizzazione per ChatGPT e assistenti AI. Con 5 esempi pronti, FAQ e piano operativo 30/60/90 giorni.</description>
       <category>SEO</category>
-      <category>ContentMarketing</category>
-      <category>SchemaOrg</category>
-      <category>FeaturedSnippet</category>
-      <category>AIOverview</category>
-      <category>DigitalMarketing</category>
+      <category>Content Marketing</category>
+      <category>Schema.org</category>
+      <category>Featured Snippet</category>
+      <category>AI Overview</category>
+      <category>Digital Marketing</category>
   </item>
   <item>
     <title>25 domande da colloquio per frontend / Angular developer: Da junior a lead (con risposte)</title>
@@ -389,13 +599,13 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/25-domande-colloquio-frontend-angular-developer-junior-lead</guid>
     <pubDate>Fri, 07 Aug 2026 20:26:22 GMT</pubDate>
     <description>25 domande da colloquio per Frontend/Angular Developer, organizzate per livello — Junior, Mid-level, Senior, Expert/Lead — con risposte complete su HTML, CSS, JavaScript, TypeScript, RxJS, Signals, change detection, architettura e sicurezza.</description>
-      <category>angular</category>
-      <category>frontend</category>
-      <category>job-interview</category>
-      <category>typescript</category>
-      <category>javascript</category>
-      <category>rxjs</category>
-      <category>career</category>
+      <category>Angular</category>
+      <category>Frontend</category>
+      <category>Colloqui</category>
+      <category>TypeScript</category>
+      <category>JavaScript</category>
+      <category>RxJS</category>
+      <category>Carriera</category>
   </item>
   <item>
     <title>Performance Angular, Nestjs e Node.js: La guida definitiva 2026</title>
@@ -403,14 +613,14 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/performance-angular-nestjs-nodejs-guida-2026</guid>
     <pubDate>Fri, 07 Aug 2026 15:32:28 GMT</pubDate>
     <description>Come ottimizzare davvero applicazioni Angular, NestJS e Node.js in produzione: caching Redis, change detection, connection pooling, worker threads, benchmark reali e gli errori che rallentano la maggior parte dei progetti full-stack.</description>
-      <category>angular</category>
-      <category>nestjs</category>
-      <category>nodejs</category>
-      <category>performance</category>
-      <category>typescript</category>
-      <category>backend</category>
-      <category>redis</category>
-      <category>postgresql</category>
+      <category>Angular</category>
+      <category>NestJS</category>
+      <category>Node.js</category>
+      <category>Performance</category>
+      <category>TypeScript</category>
+      <category>Backend</category>
+      <category>Redis</category>
+      <category>PostgreSQL</category>
   </item>
   <item>
     <title>Creare una REST API completa con Nestjs: Guida definitiva a Typeorm, JWT, RBAC e sicurezza</title>
@@ -419,17 +629,17 @@
     <pubDate>Fri, 07 Aug 2026 14:41:18 GMT</pubDate>
     <description>Guida completa e pratica alla creazione di REST API con NestJS: architettura, TypeORM, autenticazione JWT con refresh token, RBAC, upload file, sicurezza, performance, 20 errori comuni e 25 FAQ, con un esempio reale di API Blog.</description>
       <category>NestJS</category>
-      <category>NodeJS</category>
+      <category>Node.js</category>
       <category>TypeScript</category>
-      <category>RESTAPI</category>
+      <category>REST API</category>
       <category>TypeORM</category>
       <category>PostgreSQL</category>
       <category>JWT</category>
       <category>RBAC</category>
-      <category>BackendDevelopment</category>
-      <category>WebDevelopment</category>
+      <category>Backend</category>
+      <category>Sviluppo Web</category>
       <category>API</category>
-      <category>Security</category>
+      <category>Sicurezza</category>
   </item>
   <item>
     <title>Test e Debugging in Angular: Guida completa a Jest, Jasmine/Karma, Cypress, Playwright e Angular Devtools</title>
@@ -439,17 +649,15 @@
     <description>Una guida pratica e approfondita a test e debugging in Angular: come scrivere unit test efficaci con Jest e Jasmine/Karma, testare flussi utente completi con Cypress e Playwright, e usare Angular DevTools per trovare colli di bottiglia nelle performance.</description>
       <category>Angular</category>
       <category>Testing</category>
-      <category>UnitTesting</category>
       <category>Jest</category>
       <category>Jasmine</category>
       <category>Karma</category>
       <category>Cypress</category>
       <category>Playwright</category>
-      <category>E2ETesting</category>
-      <category>AngularDevTools</category>
+      <category>Angular DevTools</category>
       <category>Debugging</category>
       <category>Performance</category>
-      <category>WebDevelopment</category>
+      <category>Sviluppo Web</category>
   </item>
   <item>
     <title>Guide How-to Angular: Tailwind CSS, chart.js, Signals, ngrx e reactive forms avanzati</title>
@@ -494,12 +702,12 @@
     <description>Perché l&apos;accessibilità web è un obbligo etico, legale e professionale. Guida pratica con WCAG 2.1, AGID, HTML semantico, attributi ARIA, esempi di form e menu accessibili ed errori comuni da evitare.</description>
       <category>Accessibilità</category>
       <category>WCAG</category>
-      <category>WebDevelopment</category>
+      <category>Sviluppo Web</category>
       <category>HTML</category>
       <category>ARIA</category>
       <category>SEO</category>
       <category>UX</category>
-      <category>InclusiveDesign</category>
+      <category>Inclusive Design</category>
       <category>CSS</category>
   </item>
   <item>
@@ -510,13 +718,12 @@
     <description>AOT, tree shaking, lazy loading, OnPush, Signals, cache HTTP, NgOptimizedImage e profiling con Lighthouse e Angular DevTools: tutte le tecniche per rendere Angular veloce.</description>
       <category>Angular</category>
       <category>Performance</category>
-      <category>LazyLoading</category>
-      <category>ChangeDetection</category>
+      <category>Lazy Loading</category>
+      <category>Change Detection</category>
       <category>Signals</category>
-      <category>WebDevelopment</category>
-      <category>FrontendDevelopment</category>
+      <category>Sviluppo Web</category>
+      <category>Frontend</category>
       <category>Lighthouse</category>
-      <category>Optimization</category>
   </item>
   <item>
     <title>Operatori RXJS: Guida pratica con casi d&apos;uso reali</title>
@@ -524,11 +731,11 @@
     <guid isPermaLink="true">https://gentsallaku.it/blog/operatori-rxjs-guida-pratica-con-casi-duso-reali</guid>
     <pubDate>Mon, 30 Mar 2026 21:28:18 GMT</pubDate>
     <description>Scopri i 13 operatori RxJS più utilizzati in Angular con casi d&apos;uso pratici: dalla ricerca con debounce al caricamento parallelo di dati, fino alla gestione degli errori e al cleanup dei memory leak.</description>
-      <category>rxjs</category>
-      <category>angular</category>
-      <category>reactive-programming</category>
-      <category>typescript</category>
-      <category>frontend</category>
+      <category>RxJS</category>
+      <category>Angular</category>
+      <category>Programmazione Reattiva</category>
+      <category>TypeScript</category>
+      <category>Frontend</category>
   </item>
   <item>
     <title>Intelligenza artificiale: Uso quotidiano, casi reali e limiti da conoscere</title>
@@ -560,11 +767,18 @@
       <category>Angular</category>
       <category>Guards</category>
       <category>Interceptor</category>
-      <category>WebDevelopment</category>
-      <category>FrontendDevelopment</category>
+      <category>Sviluppo Web</category>
+      <category>Frontend</category>
       <category>JWT</category>
       <category>TypeScript</category>
-      <category>Security</category>
+      <category>Sicurezza</category>
+  </item>
+  <item>
+    <title>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi</title>
+    <link>https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</guid>
+    <pubDate>Fri, 16 Oct 2026 11:38:05 GMT</pubDate>
+    <description>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi Introduzione Nel cuore della Zadrima, tra Lezhë e Shkodër, si trova Blinisht, un territorio dalla…</description>
   </item>
 </channel>
 </rss>
