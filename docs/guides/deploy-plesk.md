@@ -89,7 +89,13 @@ Rilanciarlo serve ad aggiornare le versioni (in cima allo script).
 
 ---
 
-## Cutover da Railway
+## Cutover da Railway (fatto il 2026-10-16)
+
+Stato dopo il cutover: il sito usa solo Plesk. Il backend su Railway è fermo (`railway down`) e scollegato da
+GitHub (`railway service source disconnect`), quindi i push non lo ridistribuiscono più. Il MongoDB di
+Railway è ancora acceso e contiene i dati fino al momento del cutover.
+
+Passi eseguiti, utili come riferimento per un eventuale ritorno indietro:
 
 1. **Dati**: dump di `portfolio_prod` da Railway, upload in `~/app/incoming/` e ripristino con
    `~/app/bin/mongo-restore.sh <file> portfolio_prod`. Lo script stampa i documenti per collezione:
@@ -109,10 +115,15 @@ Rilanciarlo serve ad aggiornare le versioni (in cima allo script).
 | `frontend/src/app/app.routes.server.ts`, `scripts/generate-sitemap.js`, `scripts/generate-rss.js`, `scripts/prefetch-blog-posts.js` | default `https://gentsallaku.it/api/v1` |
 | `backend/src/newsletter/campaigns/newsletter-campaigns.service.ts` | default di `PUBLIC_API_URL` |
 
-**Rollback**: si ripristina `apiUrl` all'URL di Railway, si ricarica il frontend e si riavvia il backend su Railway.
+**Rollback**:
+1. Ricollega e riavvia Railway: `railway service source connect` sul repo `gents88/site-sallaku`,
+   branch `develop`, oppure un redeploy dal pannello.
+2. Ripristina `apiUrl` e la CSP con l'URL di Railway, poi ricompila e ricarica il frontend.
+3. I dati scritti su Plesk dopo il cutover vanno riportati su Railway con un dump di `portfolio` e un
+   restore in `portfolio_prod`.
 
 Dopo 1–2 settimane senza problemi:
-- scollega Railway da GitHub ed elimina i servizi;
+- elimina i servizi su Railway (backend e MongoDB, dopo un ultimo dump di sicurezza);
 - disattiva `.github/workflows/mongo-backup.yml`;
 - rimuovi `Dockerfile`, `railway.json`, `backend/railway.json` e `backend/nixpacks.toml`.
 

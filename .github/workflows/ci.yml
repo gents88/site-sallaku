@@ -47,6 +47,15 @@ jobs:
         env:
           NODE_ENV: test
           JWT_SECRET: ci-test-secret-at-least-32-chars-long
+
+      # pdf-parse fa un import() dinamico che Jest supporta solo con
+      # --experimental-vm-modules, flag che però rompe altre suite: i test che
+      # leggono PDF veri girano a parte (npm test li esclude).
+      - name: Test PDF (experimental-vm-modules)
+        run: npm run test:pdf -- --forceExit
+        env:
+          NODE_ENV: test
+          JWT_SECRET: ci-test-secret-at-least-32-chars-long
           MONGODB_URI: mongodb://localhost:27017/portfolio_test
 
   # ── Frontend ──────────────────────────────────────────
