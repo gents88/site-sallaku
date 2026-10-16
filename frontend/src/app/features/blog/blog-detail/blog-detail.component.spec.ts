@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
 import { of } from 'rxjs';
 import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
-import { BlogDetailComponent } from './blog-detail.component';
+import { BlogDetailComponent, activeHeadingIndex, postShareImageUrl, readingProgressOf } from './blog-detail.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
@@ -135,6 +135,13 @@ describe('BlogDetailComponent view tracking', () => {
       expect(data.alternatePaths.sq).toBe('/blog/blinishti');
       expect(data.alternatePaths.it).toBe('/blog/blinisht');
       expect(data.alternatePaths.en).toBe('/blog/blinisht'); // no slug_en → Italian fallback
+    });
+
+    it('senza copertina condivide la cartolina generata, nella lingua della pagina', () => {
+      const { seo } = create('browser', 'blinishti');
+      const image: string = seo.update.mock.calls[0][0].image;
+      expect(image).toMatch(/\/blog\/posts\/blinisht\/og\.png\?lang=sq&v=/);
+      expect(seo.injectJsonLd.mock.calls[0][0][0].image).toEqual([image]);
     });
 
     it('corrects an old Italian-slug link to the Albanian URL in the browser', () => {
@@ -314,8 +321,70 @@ describe('BlogDetailComponent table of contents', () => {
   it('leaves the default link behaviour alone when the heading does not exist', () => {
     const { component } = createWithToc('it');
     const event = new Event('click', { cancelable: true });
+    const before = component.activeTocId();
     component.scrollToHeading(event, 'manca');
     expect(event.defaultPrevented).toBe(false);
-    expect(component.activeTocId()).toBeNull();
+    expect(component.activeTocId()).toBe(before);
+  });
+});
+
+describe('readingProgressOf', () => {
+  it('is 0 before the text reaches the top of the screen', () => {
+    expect(readingProgressOf({ top: 300, height: 3000 }, 800)).toBe(0);
+  });
+
+  it('grows while scrolling through the text', () => {
+    expect(readingProgressOf({ top: -1100, height: 3000 }, 800)).toBeCloseTo(0.5);
+  });
+
+  it('is 1 once the end of the text is visible, and never goes beyond', () => {
+    expect(readingProgressOf({ top: -2200, height: 3000 }, 800)).toBe(1);
+    expect(readingProgressOf({ top: -5000, height: 3000 }, 800)).toBe(1);
+  });
+
+  it('handles a text shorter than the screen', () => {
+    expect(readingProgressOf({ top: 100, height: 400 }, 800)).toBe(0);
+    expect(readingProgressOf({ top: -10, height: 400 }, 800)).toBe(1);
+  });
+});
+
+describe('activeHeadingIndex', () => {
+  it('nessuna voce attiva prima del primo titolo', () => {
+    expect(activeHeadingIndex([300, 900, 1500], 120, false)).toBe(-1);
+  });
+
+  it("attiva l'ultimo titolo già salito oltre la linea di lettura", () => {
+    expect(activeHeadingIndex([-800, -200, 400], 120, false)).toBe(1);
+  });
+
+  it('risalendo torna al titolo precedente', () => {
+    expect(activeHeadingIndex([-50, 500, 1100], 120, false)).toBe(0);
+  });
+
+  it("in fondo alla pagina attiva l'ultimo anche se non ha raggiunto la linea", () => {
+    expect(activeHeadingIndex([-900, -300, 500], 120, true)).toBe(2);
+  });
+
+  it('senza titoli restituisce -1', () => {
+    expect(activeHeadingIndex([], 120, true)).toBe(-1);
+  });
+});
+
+describe('postShareImageUrl', () => {
+  const api = 'https://api.example.com/api/v1';
+
+  it('usa la copertina quando il post ne ha una', () => {
+    expect(postShareImageUrl({ slug: 'x', coverImage: 'https://cdn/x.jpg', updatedAt: '2026-10-05T00:00:00Z' }, 'en', api)).toBe('https://cdn/x.jpg');
+  });
+
+  it('altrimenti punta alla PNG generata, con lingua e versione', () => {
+    const url = postShareImageUrl({ slug: 'perché sì', updatedAt: '2026-10-05T00:00:00Z' }, 'de', api);
+    expect(url).toBe(`${api}/blog/posts/perch%C3%A9%20s%C3%AC/og.png?lang=de&v=${Date.parse('2026-10-05T00:00:00Z').toString(36)}-2`);
+  });
+
+  it('cambia URL quando il post viene modificato', () => {
+    const a = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-05T00:00:00Z' }, 'it', api);
+    const b = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-06T00:00:00Z' }, 'it', api);
+    expect(a).not.toBe(b);
   });
 });

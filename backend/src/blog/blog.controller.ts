@@ -1,7 +1,7 @@
 import {
   Controller, Get, Post, Put, Delete,
   Param, Body, Query, UseGuards, HttpCode, HttpStatus, UploadedFile,
-  UseInterceptors, ParseFilePipeBuilder, BadRequestException,
+  UseInterceptors, ParseFilePipeBuilder, BadRequestException, Header, StreamableFile,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -23,6 +23,7 @@ import { CacheControlInterceptor } from '../common/interceptors/cache-control.in
 import { AuditInterceptor } from '../audit/interceptors/audit.interceptor';
 import { BlogPublishedQueryDto } from './dto/blog-published-query.dto';
 import { PageLimitDto } from '../common/dto/pagination.dto';
+import { OgImageService } from './og-image/og-image.service';
 
 @ApiTags('Blog')
 @Controller('blog')
@@ -32,6 +33,7 @@ export class BlogController {
     private readonly blogGenerationService: BlogGenerationService,
     private readonly pdfExtractionService: PdfExtractionService,
     private readonly translationService: TranslationService,
+    private readonly ogImageService: OgImageService,
   ) {}
 
   // ── Public ──────────────────────────────────────────
@@ -58,6 +60,21 @@ export class BlogController {
   @ApiOperation({ summary: 'Get published post by slug (public)' })
   findBySlug(@Param('slug') slug: string) {
     return this.blogService.findBySlug(slug);
+  }
+
+  // Anteprima per i social (og:image) degli articoli senza copertina: la
+  // stessa cartolina generata della lista del blog. CORP cross-origin perché
+  // helmet di default (same-origin) la bloccherebbe se incorporata altrove.
+  @Get('posts/:slug/og.png')
+  @Throttle({ default: { limit: 120, ttl: 60000 } })
+  @Header('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800')
+  @Header('Cross-Origin-Resource-Policy', 'cross-origin')
+  @ApiOperation({ summary: 'Social preview image (PNG 1200×630) of a published post (public)' })
+  @ApiQuery({ name: 'lang', required: false, enum: ['it', 'en', 'sq', 'pt', 'es', 'fr', 'de'] })
+  async ogImage(@Param('slug') slug: string, @Query('lang') lang?: string): Promise<StreamableFile> {
+    const post = await this.blogService.findBySlug(slug);
+    const png = await this.ogImageService.render(post.toObject(), lang);
+    return new StreamableFile(png, { type: 'image/png', length: png.length });
   }
 
   @Post('posts/:slug/view')

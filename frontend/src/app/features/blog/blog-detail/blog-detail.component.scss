@@ -127,9 +127,25 @@
   }
 }
 
-// Su schermi larghi l'indice esce dalla colonna di lettura e resta visibile
+// Quando c'è spazio l'indice esce dalla colonna di lettura e resta fisso
 // mentre si scorre (il wrapper assoluto copre tutta l'altezza del testo).
-@media (min-width: 1340px) {
+// Si misura lo spazio reale (container query), non la finestra: con la
+// sidebar aperta una media query lo faceva uscire dallo schermo.
+// Niente container-type sull'host: renderebbe l'host il riferimento della
+// .reading-progress (position: fixed).
+.post-layout { container: post-layout / inline-size; }
+
+// Articolo (780) + distacco, colonna indice e margine dal bordo (290).
+$toc-side-room: 1070px;
+
+@container post-layout (min-width: #{$toc-side-room + 32px}) {
+  // Centrato se a destra restano 290px, altrimenti spostato a sinistra
+  // quanto basta per farci stare l'indice (solo se l'articolo ne ha uno).
+  .post-layout--toc .post-article {
+    margin-left: min(calc((100cqw - 780px) / 2), calc(100cqw - #{$toc-side-room}));
+    margin-right: auto;
+  }
+
   .post-article__body { position: relative; }
 
   .post-toc {
@@ -429,5 +445,30 @@
 
   @media (prefers-reduced-motion: reduce) {
     .heading-anchor { transition: none; }
+  }
+}
+
+// ===========================================================
+// Barra di avanzamento della lettura, fissa in cima allo schermo
+// ===========================================================
+.reading-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 3px;
+  z-index: 1100;
+  pointer-events: none;
+
+  &__bar {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), color-mix(in srgb, var(--color-primary) 55%, #a78bfa));
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.08s linear;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &__bar { transition: none; }
   }
 }
