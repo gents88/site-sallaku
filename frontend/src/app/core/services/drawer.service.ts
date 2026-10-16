@@ -3,14 +3,19 @@ import { Injectable, PLATFORM_ID, computed, effect, inject, signal } from '@angu
 
 /**
  * `overlay` — drawer off-canvas sopra il contenuto, con backdrop (mobile/tablet).
- * `rail`    — colonna agganciata sempre visibile che spinge il contenuto (desktop).
+ * `rail`    — colonna sempre visibile, collassata a icone (desktop). Si apre al
+ *             passaggio del mouse sopra il contenuto, oppure resta agganciata
+ *             (pin) e spinge il contenuto.
  */
 export type SidebarMode = 'overlay' | 'rail';
 
 /** Sotto questa soglia non c'è larghezza per una rail agganciata senza comprimere il contenuto. */
 const RAIL_MIN_WIDTH = 1200;
 
-const EXPANDED_KEY = 'gs-sidebar-expanded';
+// Chiave nuova (era 'gs-sidebar-expanded'): da quando la rail si apre al
+// passaggio del mouse, un vecchio "espansa" salvato la terrebbe aperta per
+// sempre. Il pin è una scelta esplicita e riparte da "non agganciata".
+const PINNED_KEY = 'gs-sidebar-pinned';
 
 /**
  * Unico proprietario dello stato della sidebar.
@@ -36,15 +41,21 @@ export class DrawerService {
   /** Aperto/chiuso del drawer off-canvas. Significativo solo in modalità overlay. */
   readonly drawerOpen = signal(false);
 
-  /** Rail espansa (icone + etichette) invece che collassata a sole icone. */
+  /** Rail agganciata aperta (pin): spinge il contenuto e resta aperta senza mouse. */
   readonly railExpanded = signal(false);
 
-  /** True quando la rail è visibile ed espansa: usato per label, tooltip e offset. */
-  readonly expanded = computed(() => this.mode() === 'rail' && this.railExpanded());
+  /**
+   * Rail aperta temporaneamente da mouse o tastiera. Non sposta il contenuto:
+   * si sovrappone, così il layout non "salta" a ogni passaggio del puntatore.
+   */
+  readonly hoverOpen = signal(false);
+
+  /** True quando la rail mostra le etichette (agganciata o aperta al passaggio). */
+  readonly expanded = computed(() => this.mode() === 'rail' && (this.railExpanded() || this.hoverOpen()));
 
   constructor() {
     if (this.isBrowser) {
-      this.railExpanded.set(this.readFlag(EXPANDED_KEY));
+      this.railExpanded.set(this.readFlag(PINNED_KEY));
 
       // matchMedia invece di window:resize: notifica solo all'attraversamento
       // della soglia, senza un listener che gira a ogni pixel di ridimensionamento.
@@ -55,11 +66,13 @@ export class DrawerService {
         // Passando a rail il drawer overlay non ha più senso: chiudilo, altrimenti
         // resterebbe un backdrop orfano sopra la pagina.
         if (event.matches) this.drawerOpen.set(false);
+        else this.hoverOpen.set(false);
       });
     }
 
     effect(() => {
       if (!this.isBrowser) return;
+      // Solo il pin sposta il layout: l'apertura al passaggio sta sopra il contenuto.
       const state = this.mode() === 'rail' ? (this.railExpanded() ? 'rail-expanded' : 'rail') : 'overlay';
       this.document.documentElement.setAttribute('data-sidebar', state);
     });
@@ -87,9 +100,14 @@ export class DrawerService {
     this.setRailExpanded(!this.railExpanded());
   }
 
+  /** Apre/chiude la rail al passaggio del mouse o al focus da tastiera. Solo in modalità rail. */
+  setHover(value: boolean): void {
+    this.hoverOpen.set(value && this.mode() === 'rail');
+  }
+
   private setRailExpanded(value: boolean): void {
     this.railExpanded.set(value);
-    this.writeFlag(EXPANDED_KEY, value);
+    this.writeFlag(PINNED_KEY, value);
   }
 
   // localStorage è preferenza funzionale di UI (stessa classe del tema), non
