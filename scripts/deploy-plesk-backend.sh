@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────
-#  deploy-plesk-backend.sh  —  Deploy backend + MongoDB su Plesk
+#  deploy-plesk-backend.sh  —  Build e (ri)avvio backend + MongoDB + Redis
 #
-#  USO (sul server Plesk, nella root del progetto):
-#    chmod +x scripts/deploy-plesk-backend.sh
+#  USO (sul server Plesk, nella cartella del progetto):
 #    ./scripts/deploy-plesk-backend.sh
 #
+#  Di norma non lo lanci a mano: lo esegue scripts/release-backend-plesk.sh
+#  dal Mac dopo aver caricato il codice.
+#
 #  PREREQUISITI:
-#    - Docker installato sul server
-#    - File .env.plesk presente nella root del progetto
+#    - Docker + docker compose sul server
+#    - .env.plesk nella cartella del progetto (creato da server-setup.sh,
+#      mai committato: è in .gitignore)
 # ─────────────────────────────────────────────────────────────
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-COMPOSE_FILE="${ROOT_DIR}/docker-compose.plesk.yml"
+COMPOSE=(docker compose -f "${ROOT_DIR}/docker-compose.plesk.yml")
 ENV_FILE="${ROOT_DIR}/.env.plesk"
+HEALTH_URL="http://127.0.0.1:3000/api/v1/system/health"
 
 echo ""
 echo "══════════════════════════════════════════════"
-echo "  Deploy Backend + MongoDB su Plesk"
+echo "  Deploy Backend + MongoDB + Redis su Plesk"
 echo "══════════════════════════════════════════════"
 
 # ── Verifica prerequisiti ─────────────────────────
@@ -31,73 +35,50 @@ fi
 
 if [[ ! -f "$ENV_FILE" ]]; then
   echo "❌ File .env.plesk non trovato in: ${ROOT_DIR}" >&2
-  echo "   Deve essere già presente nel repo. Controlla git pull." >&2
+  echo "   Crealo con: ./scripts/server-setup.sh (non è nel repo di proposito)." >&2
   exit 1
 fi
 
 cd "$ROOT_DIR"
 
-# ── Pull immagine MongoDB e build backend ─────────
+# ── Pull immagini base e build backend ────────────
 echo ""
-echo "→ Scarico immagine MongoDB..."
-docker compose -f "$COMPOSE_FILE" pull mongo
+echo "→ Scarico immagini MongoDB e Redis..."
+"${COMPOSE[@]}" pull --quiet mongo redis
 
 echo ""
 echo "→ Build immagine backend NestJS..."
-docker compose -f "$COMPOSE_FILE" build backend
+"${COMPOSE[@]}" build backend
 
 # ── Avvio ─────────────────────────────────────────
+# Servizi elencati esplicitamente: il frontend SSR (profilo "ssr") resta spento.
 echo ""
-echo "→ Avvio container (backend + mongo)..."
-docker compose -f "$COMPOSE_FILE" up -d
+echo "→ Avvio container (mongo + redis + backend)..."
+"${COMPOSE[@]}" up -d mongo redis backend
 
 # ── Health check ──────────────────────────────────
 echo ""
-echo "⏳ Attendo che MongoDB sia pronto..."
-RETRIES=24   # 24 × 5s = 2 minuti
-until docker compose -f "$COMPOSE_FILE" ps mongo | grep -q "(healthy)" || [[ $RETRIES -eq 0 ]]; do
-  sleep 5
-  RETRIES=$((RETRIES - 1))
-  echo "   ... ($RETRIES tentativi rimanenti)"
-done
-
-echo ""
 echo "⏳ Attendo che il backend risponda..."
-RETRIES=24
-until curl -sf http://127.0.0.1:3000/api/v1/system/health &>/dev/null || [[ $RETRIES -eq 0 ]]; do
-  sleep 5
+RETRIES=36   # 36 × 5s = 3 minuti
+until curl -sf "$HEALTH_URL" &>/dev/null; do
   RETRIES=$((RETRIES - 1))
-  echo "   ... ($RETRIES tentativi rimanenti)"
+  if [[ $RETRIES -eq 0 ]]; then
+    echo ""
+    echo "⚠️  Il backend non risponde entro il timeout."
+    echo "   Log: docker compose -f docker-compose.plesk.yml logs --tail=50 backend"
+    exit 1
+  fi
+  sleep 5
 done
-
-if [[ $RETRIES -eq 0 ]]; then
-  echo ""
-  echo "⚠️  Il backend non risponde entro il timeout."
-  echo "   Controlla i log: docker compose -f docker-compose.plesk.yml logs --tail=50 backend"
-  exit 1
-fi
 
 echo ""
 echo "✅  Backend attivo su http://127.0.0.1:3000"
+curl -s "$HEALTH_URL"
 echo ""
-echo "── Health check ──────────────────────────────"
-curl -s http://127.0.0.1:3000/api/v1/system/health | python3 -m json.tool 2>/dev/null \
-  || curl -s http://127.0.0.1:3000/api/v1/system/health
+
+# Le immagini vecchie del backend si accumulano a ogni build
+docker image prune -f >/dev/null
 
 echo ""
 echo "── Stato container ───────────────────────────"
-docker compose -f "$COMPOSE_FILE" ps
-
-echo ""
-echo "══════════════════════════════════════════════"
-echo "  FATTO! Prossimo passo:"
-echo "  Nel pannello Plesk → Apache & nginx Settings"
-echo "  aggiungi questa direttiva nginx:"
-echo ""
-echo '  location /api/ {'
-echo '    proxy_pass         http://127.0.0.1:3000;'
-echo '    proxy_http_version 1.1;'
-echo '    proxy_set_header   Host $host;'
-echo '    proxy_set_header   X-Real-IP $remote_addr;'
-echo '  }'
-echo "══════════════════════════════════════════════"
+"${COMPOSE[@]}" ps
