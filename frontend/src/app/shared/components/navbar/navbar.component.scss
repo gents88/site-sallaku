@@ -95,14 +95,24 @@
 }
 
 .nav-logo {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 1.4rem;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.75rem;
   color: var(--text-primary, #f0f4ff);
   text-decoration: none;
-  letter-spacing: -0.5px;
 
-  .logo-bracket { color: var(--primary-500, #4f6af5); }
+  .logo-mark {
+    display: block;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(14, 165, 233, 0.35);
+    transition: transform var(--transition-base, 0.3s ease), box-shadow var(--transition-base, 0.3s ease);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .logo-mark { transform: translateY(-1px) scale(1.04); box-shadow: 0 10px 26px rgba(14, 165, 233, 0.5); }
+  }
 }
 
 /* Full-screen backdrop (closes menu on tap outside links) */
