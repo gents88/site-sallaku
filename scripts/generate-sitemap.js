@@ -7,7 +7,7 @@ function formatDate(d) {
 
 const API_BASE_URL = process.env.SITEMAP_API_URL
   || process.env.API_BASE_URL
-  || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
+  || 'https://gentsallaku.it/api/v1';
 
 // Keep in sync with frontend/src/app/core/services/language.service.ts's NON_DEFAULT_LANGS.
 const NON_DEFAULT_LANGS = ['en', 'sq', 'es', 'pt', 'fr', 'de'];
