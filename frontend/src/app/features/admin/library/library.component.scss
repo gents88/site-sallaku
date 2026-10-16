@@ -1,4 +1,4 @@
-:host { display: block; min-height: 100vh; background: var(--bg-primary, #0d1117); }
+:host { display: block; min-height: 100vh; /* fondo trasparente: lascia vedere .ambient-bg */ }
 
 .page { padding: 2rem; max-width: 1240px; margin: 0 auto; }
 

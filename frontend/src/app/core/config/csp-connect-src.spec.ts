@@ -3,16 +3,18 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
- * La chat live apre un WebSocket verso il backend Railway. La CSP confronta anche
- * lo SCHEMA, quindi `connect-src https://host` NON autorizza `wss://host`: senza
- * la voce wss:// il browser blocca il socket con una violazione connect-src e la
- * chat resta bloccata su "Connessione in corso" per sempre — un guasto silenzioso,
+ * Il backend risponde sullo stesso host del sito (Apache su gentsallaku.it fa da
+ * proxy per /api e /socket.io): le chiamate REST rientrano in 'self', ma per il
+ * WebSocket della chat live non basta. La CSP confronta anche lo SCHEMA e non
+ * tutti i browser (Safari in testa) considerano `wss://` dello stesso host
+ * coperto da 'self': senza la voce wss:// esplicita il socket viene bloccato e la
+ * chat resta su "Connessione in corso" per sempre — un guasto silenzioso,
  * invisibile in locale (dove la CSP di produzione non è applicata) e già costato
  * due giri di debug. Questi test bloccano la regressione.
  */
 describe('CSP di deploy — connect-src', () => {
   const repoRoot = join(__dirname, '..', '..', '..', '..', '..');
-  const backendHost = 'portfolio-backend-production-e76d.up.railway.app';
+  const backendHost = 'gentsallaku.it';
 
   function connectSrcOf(csp: string): string {
     const directive = csp
@@ -31,12 +33,22 @@ describe('CSP di deploy — connect-src', () => {
       expect(csp).toBeDefined();
     });
 
-    it('autorizza il backend su https (REST + polling Socket.IO)', () => {
-      expect(connectSrcOf(csp!)).toContain(`https://${backendHost}`);
+    it("autorizza il backend sullo stesso host ('self': REST + polling Socket.IO)", () => {
+      expect(connectSrcOf(csp!)).toContain("'self'");
     });
 
     it('autorizza il backend su wss (WebSocket della chat live)', () => {
       expect(connectSrcOf(csp!)).toContain(`wss://${backendHost}`);
+    });
+
+    it('non punta più al vecchio backend Railway', () => {
+      expect(csp).not.toContain('railway.app');
+    });
+
+    it('permette il captcha Cloudflare Turnstile (script e iframe da challenges.cloudflare.com)', () => {
+      const directive = (name: string) => csp!.split(';').map((d) => d.trim()).find((d) => d.startsWith(name)) ?? '';
+      expect(directive('script-src')).toContain('https://challenges.cloudflare.com');
+      expect(directive('frame-src')).toContain('https://challenges.cloudflare.com');
     });
   });
 
@@ -44,8 +56,8 @@ describe('CSP di deploy — connect-src', () => {
     const serverJs = readFileSync(join(repoRoot, 'server.js'), 'utf8');
     const csp = serverJs.match(/"connect-src [^"]+"/)?.[0] ?? '';
 
-    it('autorizza il backend su https (REST + polling Socket.IO)', () => {
-      expect(csp).toContain(`https://${backendHost}`);
+    it("autorizza il backend sullo stesso host ('self': REST + polling Socket.IO)", () => {
+      expect(csp).toContain("'self'");
     });
 
     it('autorizza il backend su wss (WebSocket della chat live)', () => {

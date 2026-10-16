@@ -11,6 +11,7 @@
 @use './styles/platform/android';
 @use './styles/onboarding-tour';
 @use './styles/article-content';
+@use './styles/glass';
 
 /* ── CSS custom properties ─────────────────────── */
 :root {
@@ -366,7 +367,8 @@ img { max-width: 100%; display: block; }
 .section { padding: var(--section-padding); position: relative; }
 
 .section-alt {
-  background: var(--bg-secondary);
+  /* velo semitrasparente: la fascia si distingue ma lo sfondo vivo passa */
+  background: color-mix(in srgb, var(--bg-secondary) 50%, transparent);
   &::before, &::after {
     content: '';
     position: absolute;
@@ -387,18 +389,25 @@ img { max-width: 100%; display: block; }
 }
 
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
+  /* --mx/--my li scrive glass-spotlight.ts mentre il puntatore è sopra la card;
+     --glass-spot è trasparente a riposo e si accende solo in hover. */
+  --glass-spot: transparent;
+  background:
+    radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), var(--glass-spot), transparent 70%),
+    linear-gradient(160deg, var(--glass-fill-1), var(--glass-fill-2));
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
   border-radius: var(--radius-lg);
   transition: var(--transition-base);
   position: relative;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
+      --glass-spot: var(--glass-glow);
       border-color: var(--glass-border-hover);
-      box-shadow: var(--shadow-glow);
+      box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow-up);
     }
   }
 
@@ -419,11 +428,11 @@ img { max-width: 100%; display: block; }
   }
 }
 
-/* iOS: authentic frosted-glass material (blur + saturate is the classic
-   Apple-material recipe — plain blur alone reads as "smudged", not "glass"). */
+/* iOS: il materiale è già blur + saturate (--glass-blur); qui solo più blur,
+   come i materiali Apple, che sfocano più degli altri sistemi. */
 html[data-os='ios'] .glass-card {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
 }
 
 /* ── Buttons ───────────────────────────────────────── */
@@ -446,18 +455,21 @@ html[data-os='ios'] .glass-card {
   &.btn-primary, &-primary {
     background: var(--gradient-primary);
     color: white;
-    box-shadow: 0 4px 20px rgba(79,106,245,0.35);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), var(--glass-btn-shadow);
     @media (hover: hover) and (pointer: fine) {
       &:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79,106,245,0.5); color: white; }
     }
   }
 
   &.btn-outline, &-outline {
-    background: transparent;
+    background: var(--glass-fill-soft);
     color: var(--text-primary);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--glass-edge);
+    box-shadow: inset 0 1px 0 var(--glass-hi);
+    -webkit-backdrop-filter: var(--glass-blur-soft);
+    backdrop-filter: var(--glass-blur-soft);
     @media (hover: hover) and (pointer: fine) {
-      &:hover { border-color: var(--primary-500); background: rgba(79,106,245,0.08); color: var(--primary-400); transform: translateY(-2px); }
+      &:hover { border-color: var(--primary-500); background: var(--glass-fill-hover); color: var(--primary-400); transform: translateY(-2px); }
     }
   }
 
@@ -532,13 +544,15 @@ html[data-os='android'][data-input='touch'] .btn:active {
 
 /* ── Card ─────────────────────────────────────────── */
 .card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(160deg, var(--glass-fill-1), var(--glass-fill-2));
+  border: 1px solid var(--glass-edge);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   padding: 1.5rem;
   transition: box-shadow var(--transition-base);
-  &:hover { box-shadow: var(--shadow-md); }
+  &:hover { box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow-up); }
 }
 
 /* ── Pagination ───────────────────────────────────────

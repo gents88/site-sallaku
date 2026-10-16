@@ -4,12 +4,13 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 import { appConfig } from './app.config';
-import { serverRoutes } from './app.routes.server';
+import { API_BASE_URL, serverRoutes } from './app.routes.server';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { SwRegistrationOptions } from '@angular/service-worker';
 import { PRERENDER_BLOG_POSTS } from './core/interceptors/prerender-blog-cache.interceptor';
+import { SERVER_API_BASE_URL } from './core/interceptors/server-api-base.interceptor';
 import { allSlugs, readPrerenderBlogPosts } from './prerender-blog-posts';
 
 /**
@@ -62,6 +63,9 @@ const serverConfig: ApplicationConfig = {
     { provide: SwRegistrationOptions, useValue: { enabled: false } },
     // Posts prefetched once before the build (scripts/prefetch-blog-posts.js),
     // served to blog-detail by prerenderBlogCacheInterceptor.
+    // The browser's apiUrl is relative (/api/v1): prerendering runs in Node
+    // with no origin, so API calls go to the absolute base instead.
+    { provide: SERVER_API_BASE_URL, useValue: API_BASE_URL },
     { provide: PRERENDER_BLOG_POSTS, useFactory: () => new Map(readPrerenderBlogPosts().flatMap(p => allSlugs(p).map(slug => [slug, p] as const))) },
   ],
 };

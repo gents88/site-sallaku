@@ -10,6 +10,17 @@
   RewriteEngine On
   RewriteBase /
 
+  # ── Backend NestJS (pm2 su 127.0.0.1:3000, vedi docs/guides/deploy-plesk.md)
+  # Apache fa da reverse proxy per le API e per il WebSocket della chat live
+  # (socket.io): niente nginx su questo server e niente accesso al pannello
+  # admin, quindi il proxy vive qui. Prima di ogni altra regola, così le API non
+  # finiscono mai nei .br/.gz o nel fallback SPA.
+  # La query string viene aggiunta da Apache: metterla nella sostituzione
+  # (es. da THE_REQUEST) fa scattare il 403 della fix CVE-2023-25690.
+  RewriteCond %{HTTP:Upgrade} =websocket [NC]
+  RewriteRule ^socket\.io/(.*)$ ws://127.0.0.1:3000/socket.io/$1 [P,L]
+  RewriteRule ^(api|socket\.io)/(.*)$ http://127.0.0.1:3000/$1/$2 [P,L]
+
   # ── Pre-compressed assets ────────────────────────────────────
   # This server has no mod_brotli (requesting `Accept-Encoding: br` alone
   # returns an uncompressed response), and a FileZilla deploy can't enable
@@ -155,5 +166,5 @@
   # anche lo schema, quindi `https://host` NON autorizza `wss://host` — senza la
   # riga wss:// il browser blocca il socket con una violazione connect-src e la
   # chat live resta bloccata su "Connessione in corso" per sempre.
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' https://portfolio-backend-production-e76d.up.railway.app wss://portfolio-backend-production-e76d.up.railway.app https://*.google-analytics.com https://www.googletagmanager.com https://ipwho.is; frame-src 'self' blob: https://archive.org https://*.archive.org https://arxiv.org https://portfolio-backend-production-e76d.up.railway.app; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https:; connect-src 'self' wss://gentsallaku.it https://*.google-analytics.com https://www.googletagmanager.com https://ipwho.is; frame-src 'self' blob: https://archive.org https://*.archive.org https://arxiv.org https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
 </IfModule>

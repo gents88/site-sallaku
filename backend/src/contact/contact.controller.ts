@@ -7,7 +7,7 @@ import { ContactAdminQueryDto } from './dto/contact-admin-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
-import * as geoip from 'geoip-lite';
+import { geoLookup } from '../common/utils/geoip-disk';
 
 @ApiTags('Contact')
 @Controller('contact')
@@ -27,7 +27,7 @@ export class ContactController {
     // Resolve geo location from IP (best-effort)
     let location: string | undefined;
     try {
-      const geo = geoip.lookup(ip);
+      const geo = geoLookup(ip);
       if (geo) {
         location = [geo.city, geo.country].filter(Boolean).join(', ') || undefined;
       }
