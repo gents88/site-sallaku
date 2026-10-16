@@ -14,8 +14,9 @@ Browser ──HTTPS──▶ Plesk (gentsallaku.it)
 ```
 
 - **Frontend**: non cambia niente, continui con `build-frontend-filezilla.sh` + FileZilla.
-- **Backend**: rilasci dal Mac con `./scripts/release-backend-plesk.sh`. Carica il codice via SSH,
-  ricostruisce il container sul server e aspetta l'health check. Non serve più fare push su `develop` per rilasciare.
+- **Backend**: **push su `develop`** → la CI esegue i test del backend e, se passano, rilascia su Plesk
+  (job `deploy-backend` in `.github/workflows/ci.yml`). In alternativa, a mano dal Mac: `./scripts/release-backend-plesk.sh`.
+  Entrambi caricano il codice via SSH, ricostruiscono il container sul server e aspettano l'health check.
 - **Database**: MongoDB gira in un container sullo stesso server. Il backup è un cron notturno sul server.
 
 Il codice del progetto sul server sta in **`/opt/site-sallaku`**, **mai dentro `httpdocs/`**:
@@ -30,6 +31,7 @@ la web root è pubblica e `.env.plesk` (con tutti i segreti) sarebbe scaricabile
 | 1 | Server | Docker e cartella del progetto | No |
 | 2 | Mac → Server | Carica il codice e crea `.env.plesk` | No |
 | 3 | Server | Avvia mongo + redis + backend | No |
+| 3b | GitHub | Rilascio automatico a ogni push su `develop` | No |
 | 4 | Pannello Plesk | Proxy nginx `/api/` e `/socket.io/` | No (il frontend chiama ancora Railway) |
 | 5 | Mac → Server | **Cutover**: copia dei dati + frontend su `/api/v1` | **Sì** |
 | 6 | Server / Railway | Backup cron, spegnimento Railway | No |
@@ -87,6 +89,7 @@ Sul server sistemalo con `nano /opt/site-sallaku/.env.plesk`:
 
 - **togli** `RAILWAY_*`, `PORT`, `MONGODB_URI` e `REDIS_URL` (li imposta `docker-compose.plesk.yml`);
 - **cambia** `PUBLIC_API_URL=https://gentsallaku.it/api/v1`;
+- verifica che ci sia `GROQ_API_KEY`: senza, il backend si rifiuta di partire;
 - controlla che ci siano `CORS_ORIGIN=https://gentsallaku.it,https://www.gentsallaku.it` e `FRONTEND_URL=https://gentsallaku.it`;
 - **consigliato**: genera un nuovo `JWT_SECRET` (`openssl rand -base64 48`), perché quello vecchio è finito nella history git.
   Effetto collaterale: chi è loggato dovrà rifare il login.
@@ -112,6 +115,41 @@ Alla fine il controllo pubblico su `https://gentsallaku.it/api/...` fallirà: è
 
 Il database a questo punto è **vuoto**: all'avvio il backend crea solo l'utente admin da `.env.plesk`. I dati veri arrivano al passo 5.
 
+## 3b. Rilascio automatico a ogni push su `develop`
+
+Una volta che il passo 3 funziona a mano, attiva il deploy dalla CI.
+
+```bash
+# Sul Mac: coppia di chiavi usata SOLO dalla CI
+ssh-keygen -t ed25519 -N "" -C "github-deploy" -f ~/.ssh/plesk_deploy
+ssh-copy-id -i ~/.ssh/plesk_deploy.pub root@gentsallaku.it
+ssh-keyscan gentsallaku.it          # output → secret PLESK_KNOWN_HOSTS
+cat ~/.ssh/plesk_deploy             # chiave privata → secret PLESK_SSH_KEY
+```
+
+Su GitHub, in **Settings → Secrets and variables → Actions**:
+
+| Tipo | Nome | Valore |
+|------|------|--------|
+| Variable | `PLESK_SSH` | `root@gentsallaku.it` |
+| Variable | `PLESK_DIR` | `/opt/site-sallaku` (facoltativa, è il default) |
+| Secret | `PLESK_SSH_KEY` | contenuto di `~/.ssh/plesk_deploy` |
+| Secret | `PLESK_KNOWN_HOSTS` | output di `ssh-keyscan` |
+
+Da quel momento, a ogni push su `develop`:
+
+1. la CI esegue build e test del backend;
+2. se passano, e il push tocca `backend/`, `docker-compose.plesk.yml` o `scripts/deploy-plesk-backend.sh`,
+   il job **Deploy backend (Plesk)** rilascia: carica il codice, ricostruisce il backend, aggiorna se serve
+   le immagini di MongoDB/Redis e aspetta l'health check;
+3. un push di solo frontend non riavvia niente.
+
+I dati di MongoDB vivono nel volume `mongo_data` e sopravvivono a ogni rilascio. Finché `PLESK_SSH` non è
+impostata il job viene saltato, senza errori.
+
+> Finché Railway è collegato a `develop`, ogni push rilascia **anche** lì. Non fa danni: il sito usa
+> il backend a cui punta il frontend. Scollegalo al passo 6.
+
 ## 4. Proxy nginx nel pannello Plesk
 
 1. **Plesk → Siti web e domini → gentsallaku.it → Apache & nginx Settings**.
@@ -125,7 +163,7 @@ Il database a questo punto è **vuoto**: all'avvio il backend crea solo l'utente
 
 ```bash
 curl -s https://gentsallaku.it/api/v1/system/health
-# deve restituire JSON ({"status":"ok",...}), NON l'HTML di index.html
+# deve restituire JSON ({"ok":true,"service":"portfolio-backend",...}), NON l'HTML di index.html
 ```
 
 Il resto del sito (pagine, asset, `.htaccess`) continua a essere servito da `httpdocs/` come prima.
@@ -202,7 +240,7 @@ Dopo 1–2 settimane senza problemi:
 
 | Cosa | Comando (dal Mac) |
 |------|-------------------|
-| Backend | `./scripts/release-backend-plesk.sh` |
+| Backend + DB | `git push` su `develop` (automatico), oppure `./scripts/release-backend-plesk.sh` |
 | Frontend | `./scripts/build-frontend-filezilla.sh` + upload FileZilla |
 
 Lo script del backend rilascia solo codice committato (con modifiche locali si ferma, salvo `ALLOW_DIRTY=1`)
