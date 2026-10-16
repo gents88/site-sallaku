@@ -6,6 +6,11 @@ on:
   schedule:
     - cron: '0 3 * * *' # daily at 03:00 UTC
 
+# Il job fa commit e push della sitemap/RSS rigenerati: senza permesso di
+# scrittura il token di default è in sola lettura e il push fallisce (403).
+permissions:
+  contents: write
+
 jobs:
   generate:
     runs-on: ubuntu-latest

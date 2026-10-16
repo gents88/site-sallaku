@@ -18,6 +18,13 @@ function anySlug(slug: string) {
   return { $or: BLOG_SLUG_FIELDS.map(field => ({ [field]: slug })) };
 }
 
+/**
+ * La lista pubblica serve solo titolo, estratto, copertina e slug (PostSummary
+ * nel frontend): il corpo dell'articolo in tutte le lingue pesava ~66 KB a post,
+ * ~5 MB per 50 articoli, e finiva incorporato nell'HTML prerenderizzato di /blog.
+ */
+const LIST_EXCLUDED_FIELDS = '-content -content_en -content_sq -content_pt -content_es -content_fr -content_de';
+
 @Injectable()
 export class BlogService implements OnApplicationBootstrap {
   private readonly logger = new Logger(BlogService.name);
@@ -122,7 +129,7 @@ export class BlogService implements OnApplicationBootstrap {
         .sort({ publishedAt: -1 })
         .skip(skip)
         .limit(safeLimit)
-        .select('-content')
+        .select(LIST_EXCLUDED_FIELDS)
         .lean()
         .exec() as unknown as Promise<PostDocument[]>,
       this.postModel.countDocuments(filter).exec(),

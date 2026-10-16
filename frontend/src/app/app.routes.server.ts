@@ -19,9 +19,11 @@ const PRERENDER_PAGES = prerenderPaths();
 // Same API base resolution + pagination + failure fallback as
 // scripts/generate-sitemap.js, so a backend outage at build time degrades
 // to "no blog slugs prerendered" instead of failing the whole build.
-const API_BASE_URL = process.env['SITEMAP_API_URL']
+// Also the base for every API call made while prerendering (SERVER_API_BASE_URL
+// in app.config.server.ts), since the browser build uses a relative apiUrl.
+export const API_BASE_URL = process.env['SITEMAP_API_URL']
   || process.env['API_BASE_URL']
-  || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
+  || 'https://gentsallaku.it/api/v1';
 
 async function fetchBlogPosts(): Promise<PostSlugs[]> {
   // Prefer the posts scripts/prefetch-blog-posts.js already downloaded before

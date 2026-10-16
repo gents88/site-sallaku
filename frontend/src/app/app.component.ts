@@ -25,6 +25,7 @@ import { InstallPromptService } from './core/services/install-prompt.service';
 import { LabActivityService } from './core/services/lab-activity.service';
 import { LabNextStepsComponent } from './shared/components/lab-next-steps/lab-next-steps.component';
 
+import { initGlassSpotlight } from './core/utils/glass-spotlight';
 import { ProfilePhotoComponent } from './shared/components/profile-photo/profile-photo.component';
 @Component({
   selector: 'app-root',
@@ -33,6 +34,7 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
   imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent, InstallPromptComponent, LabNextStepsComponent, ProfilePhotoComponent],
   template: `
     <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
+    <div class="ambient-bg" aria-hidden="true"><i></i><i></i><i></i></div>
     <app-navbar />
     <app-consent-banner />
     <app-sidebar />
@@ -470,6 +472,7 @@ export class AppComponent implements OnInit {
       this.labActivity.init();
       this.adminNotifications.init();
       this.onboardingTour.scheduleAutoStart();
+      initGlassSpotlight(document);
     }
     this.seoService.trackPageViews();
     this.analyticsTracking.init();

@@ -35,12 +35,11 @@ echo ""
 # Cerca la directory che contiene docker-compose.plesk.yml
 PROJECT_DIR=""
 for candidate in \
+  /opt/site-sallaku \
   /var/www/vhosts/gentsallaku.it/site-sallaku \
-  /var/www/vhosts/gentsallaku.it/httpdocs \
   /home/gentsallaku.it_wdv9je9vcto/site-sallaku \
   /home/gentsallaku/site-sallaku \
-  "$HOME/site-sallaku" \
-  "$HOME/httpdocs/site-sallaku"; do
+  "$HOME/site-sallaku"; do
   if [[ -f "${candidate}/docker-compose.plesk.yml" ]]; then
     PROJECT_DIR="$candidate"
     break
@@ -49,7 +48,7 @@ done
 
 if [[ -z "$PROJECT_DIR" ]]; then
   # Ricerca più ampia
-  PROJECT_DIR=$(find /var/www /home "$HOME" -maxdepth 5 -name "docker-compose.plesk.yml" 2>/dev/null | head -1 | xargs dirname || true)
+  PROJECT_DIR=$(find /opt /var/www /home "$HOME" -maxdepth 5 -name "docker-compose.plesk.yml" 2>/dev/null | head -1 | xargs dirname || true)
 fi
 
 if [[ -z "$PROJECT_DIR" ]]; then
@@ -76,26 +75,42 @@ fi
 ok "Docker disponibile — compose: $DOCKER_COMPOSE_CMD"
 
 # ── 3. Scrivi .env.plesk ──────────────────────────────────────────────────────
-info "Scrittura .env.plesk con valori di produzione..."
+if [[ -f .env.plesk ]]; then
+  ok ".env.plesk già presente — non lo sovrascrivo (evita di perdere segreti già ruotati)."
+else
+  info "Nessun .env.plesk trovato: lo creo chiedendo i valori richiesti."
+  warn "Le credenziali NON vengono mai scritte in questo script: le inserisci ora a runtime."
 
-cat > .env.plesk << 'ENVEOF'
-# Generato automaticamente da server-setup.sh — NON committare su git
+  read -rp "SMTP_USER (email Gmail mittente): " SMTP_USER_INPUT
+  read -rsp "SMTP_PASS (Gmail App Password, non la password normale): " SMTP_PASS_INPUT; echo ""
+  read -rp "ADMIN_EMAIL [admin@gentsallaku.it]: " ADMIN_EMAIL_INPUT
+  ADMIN_EMAIL_INPUT="${ADMIN_EMAIL_INPUT:-admin@gentsallaku.it}"
+  read -rsp "ADMIN_PASSWORD (lascia vuoto per generarne una casuale): " ADMIN_PASSWORD_INPUT; echo ""
+  if [[ -z "$ADMIN_PASSWORD_INPUT" ]]; then
+    ADMIN_PASSWORD_INPUT="$(openssl rand -base64 18)"
+    info "ADMIN_PASSWORD generata: ${ADMIN_PASSWORD_INPUT}  (salvala ora, non verrà ristampata)"
+  fi
+
+  JWT_SECRET_GENERATED="$(openssl rand -base64 48)"
+
+  cat > .env.plesk << ENVEOF
+# Generato da server-setup.sh il $(date -u +%Y-%m-%dT%H:%M:%SZ) — NON committare su git
 PORT=3000
 NODE_ENV=production
 MONGODB_URI=mongodb://mongo:27017/portfolio
 REDIS_URL=redis://redis:6379
-JWT_SECRET=bnR/NTyWdndH58LrYMSwvF8VkHlaRfnobVPZwEebW0QXIRECrLPaexivtrEa27Ft
+JWT_SECRET=${JWT_SECRET_GENERATED}
 JWT_EXPIRES_IN=7d
 ADMIN_NAME=Admin
-ADMIN_EMAIL=admin@gentsallaku.it
-ADMIN_PASSWORD=sPLBAZ9ZLXhjqv6v
+ADMIN_EMAIL=${ADMIN_EMAIL_INPUT}
+ADMIN_PASSWORD=${ADMIN_PASSWORD_INPUT}
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
-SMTP_USER=gentsallaku@gmail.com
-SMTP_PASS=xp1I6p73&
-EMAIL_FROM="Portfolio Contact <gentsallaku@gmail.com>"
-EMAIL_TO=admin@gentsallaku.it
+SMTP_USER=${SMTP_USER_INPUT}
+SMTP_PASS=${SMTP_PASS_INPUT}
+EMAIL_FROM="Portfolio Contact <${SMTP_USER_INPUT}>"
+EMAIL_TO=${ADMIN_EMAIL_INPUT}
 FRONTEND_URL=https://gentsallaku.it
 CORS_ORIGIN=https://gentsallaku.it,https://www.gentsallaku.it
 GSC_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
@@ -103,7 +118,9 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----
 GSC_SITE_URL=https://gentsallaku.it
 ENVEOF
 
-ok ".env.plesk scritto"
+  chmod 600 .env.plesk
+  ok ".env.plesk scritto (permessi 600)"
+fi
 
 # ── 4. Pull immagini base ─────────────────────────────────────────────────────
 info "Download immagini Docker (mongo, redis)..."
@@ -115,7 +132,7 @@ $DOCKER_COMPOSE_CMD -f docker-compose.plesk.yml build backend
 
 # ── 6. Avvio stack ────────────────────────────────────────────────────────────
 info "Avvio stack Docker (mongo + redis + backend)..."
-$DOCKER_COMPOSE_CMD -f docker-compose.plesk.yml up -d
+$DOCKER_COMPOSE_CMD -f docker-compose.plesk.yml up -d mongo redis backend
 
 # ── 7. Attesa health check ────────────────────────────────────────────────────
 info "Attesa backend healthy (max 90 secondi)..."
@@ -163,20 +180,7 @@ echo ""
 echo "  1. Apri Plesk → Domini → gentsallaku.it → Apache & nginx Settings"
 echo "  2. Scorri a 'Additional nginx directives' e incolla:"
 echo ""
-cat << 'NGINXEOF'
-location /api/ {
-    proxy_pass         http://127.0.0.1:3000;
-    proxy_http_version 1.1;
-    proxy_set_header   Upgrade $http_upgrade;
-    proxy_set_header   Connection 'upgrade';
-    proxy_set_header   Host $host;
-    proxy_set_header   X-Real-IP $remote_addr;
-    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header   X-Forwarded-Proto $scheme;
-    proxy_cache_bypass $http_upgrade;
-    proxy_read_timeout 60s;
-}
-NGINXEOF
+cat "${PROJECT_DIR}/docs/guides/plesk-nginx-directives.conf"
 echo ""
 echo "  3. Clicca OK / Salva"
 echo ""

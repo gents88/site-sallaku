@@ -44,7 +44,7 @@ scripts/             → Build, deploy, sitemap, backup Mongo, ottimizzazione as
 .github/workflows/   → CI, generazione sitemap, backup MongoDB
 index.html           → Landing page statica legacy (vedi nota sotto)
 server.js            → Express standalone: static host + /api/send-email + /sitemap.xml
-docker-compose*.yml  → Stack locale / prod / uat / plesk
+docker-compose*.yml  → Stack locale / uat / plesk
 Dockerfile           → Immagine backend usata da Railway
 railway.json         → Config deploy Railway (builder DOCKERFILE)
 ```

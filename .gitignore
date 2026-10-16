@@ -5,6 +5,7 @@ node_modules/
 .env.plesk
 .env.uat
 .env.prod
+.env.deploy
 .DS_Store
 npm-debug.log
 dist/
@@ -27,3 +28,4 @@ frontend-deploy/
 
 # Blog posts prefetched before prerendering (scripts/prefetch-blog-posts.js)
 frontend/.prerender-cache/
+.bundle-build/

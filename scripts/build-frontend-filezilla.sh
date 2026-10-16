@@ -53,11 +53,16 @@ npm run build:prod
 
 # Con SSR abilitato, l'application builder genera "index.csr.html"
 # (il fallback per hosting statico) invece di "index.html" nella
-# cartella browser. Per il deploy statico via FileZilla serve
-# "index.html", quindi lo rinominiamo qui.
+# cartella browser. Servono ENTRAMBI: "index.html" per il deploy statico
+# e "index.csr.html" perché è il fallback SPA del .htaccess (rotte non
+# prerenderizzate, es. /admin/login). Con un semplice rename il server
+# teneva un index.csr.html vecchio che caricava una build precedente.
 if [[ ! -f "$DIST/index.html" && -f "$DIST/index.csr.html" ]]; then
-  log "Rinomino index.csr.html in index.html (deploy statico, SSR non usato)..."
-  mv "$DIST/index.csr.html" "$DIST/index.html"
+  log "Copio index.csr.html in index.html (deploy statico, SSR non usato)..."
+  cp "$DIST/index.csr.html" "$DIST/index.html"
+fi
+if [[ ! -f "$DIST/index.csr.html" && -f "$DIST/index.html" ]]; then
+  cp "$DIST/index.html" "$DIST/index.csr.html"
 fi
 
 [[ -f "$DIST/index.html" ]] || die "index.html non trovato nel dist."

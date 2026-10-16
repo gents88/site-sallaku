@@ -7,7 +7,7 @@ const FEED_DESCRIPTION = 'Articoli su sviluppo front-end, Angular, TypeScript e 
 
 const API_BASE_URL = process.env.SITEMAP_API_URL
   || process.env.API_BASE_URL
-  || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
+  || 'https://gentsallaku.it/api/v1';
 
 function escapeXml(str) {
   return String(str ?? '')

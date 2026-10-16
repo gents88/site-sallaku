@@ -202,7 +202,7 @@ export class NewsletterCampaignsService {
   /** Corpo + footer con disiscrizione personale + header List-Unsubscribe (one-click, RFC 8058). */
   renderEmail(campaign: Pick<NewsletterCampaign, 'subject' | 'html'>, to: string, unsubscribeToken: string) {
     const frontend = this.config.get<string>('FRONTEND_URL', 'https://gentsallaku.it');
-    const api = this.config.get<string>('PUBLIC_API_URL', 'https://portfolio-backend-production-e76d.up.railway.app/api/v1');
+    const api = this.config.get<string>('PUBLIC_API_URL', 'https://gentsallaku.it/api/v1');
     const token = encodeURIComponent(unsubscribeToken);
     const unsubscribePage = `${frontend}/newsletter/unsubscribe?token=${token}`;
     const oneClick = `${api}/newsletter/unsubscribe?token=${token}`;

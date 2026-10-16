@@ -1,6 +1,8 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://portfolio-backend-production-e76d.up.railway.app/api/v1',
+  // Relativo: Apache su gentsallaku.it fa da proxy verso il backend (regole in
+  // public/.htaccess). Il prerender usa SERVER_API_BASE_URL (app.config.server.ts).
+  apiUrl: '/api/v1',
   // Replace with your real GA4 Measurement ID (format: G-XXXXXXXXXX)
   googleAnalyticsId: 'G-ENE1XXREY6',
   blogPdfUploadEnabled: true,
@@ -8,9 +10,9 @@ export const environment = {
   // Left empty until then — Sentry.init() no-ops on an empty DSN.
   sentryDsn: '',
   turnstileSiteKey: '',
-  // Refresh token in cookie httpOnly invece che in localStorage (backend:
-  // AUTH_REFRESH_COOKIE=true). Da accendere solo quando l'API è sullo stesso
-  // sito del frontend (es. api.gentsallaku.it): con *.up.railway.app il
-  // cookie sarebbe di terze parti e Safari lo bloccherebbe.
-  authRefreshCookie: false,
+  // Refresh token in cookie httpOnly invece che in localStorage: un XSS non lo
+  // può leggere. Va in coppia con AUTH_REFRESH_COOKIE=true nel backend
+  // (~/app/shared/backend.env sul server). Possibile da quando l'API è sullo
+  // stesso host del sito (/api/v1 via proxy), quindi il cookie è di prima parte.
+  authRefreshCookie: true,
 };
