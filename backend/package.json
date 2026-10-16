@@ -12,7 +12,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "NODE_ENV=prod node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=4096' jest",
+    "test": "jest",
+    "test:pdf": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=4096' jest ai/ai\\.service\\.spec\\.ts$ --testPathIgnorePatterns=/node_modules/",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
   },
@@ -94,6 +95,10 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/ai/ai\\.service\\.spec\\.ts$"
+    ],
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
