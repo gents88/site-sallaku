@@ -10,7 +10,7 @@ const path = require('path');
 
 const API_BASE_URL = process.env.SITEMAP_API_URL
   || process.env.API_BASE_URL
-  || 'https://portfolio-backend-production-e76d.up.railway.app/api/v1';
+  || 'https://gentsallaku.it/api/v1';
 
 const OUT_DIR = path.join(__dirname, '..', 'frontend', '.prerender-cache');
 const OUT_FILE = path.join(OUT_DIR, 'blog-posts.json');

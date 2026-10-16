@@ -11,6 +11,7 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { cacheInterceptor } from './core/interceptors/cache.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { prerenderBlogCacheInterceptor } from './core/interceptors/prerender-blog-cache.interceptor';
+import { serverApiBaseInterceptor } from './core/interceptors/server-api-base.interceptor';
 import { GlobalErrorHandler } from './core/error-handling/global-error.handler';
 import { SelectivePreloadStrategy } from './core/strategies/selective-preload.strategy';
 import { environment } from '../environments/environment';
@@ -51,7 +52,7 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
       withPreloading(SelectivePreloadStrategy),
     ),
-    provideHttpClient(withInterceptors([prerenderBlogCacheInterceptor, authInterceptor, cacheInterceptor, errorInterceptor]), withFetch()),
+    provideHttpClient(withInterceptors([serverApiBaseInterceptor, prerenderBlogCacheInterceptor, authInterceptor, cacheInterceptor, errorInterceptor]), withFetch()),
     provideAnimationsAsync(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: environment.production,
