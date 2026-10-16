@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import * as geoip from 'geoip-lite';
+import { geoLookup } from './geoip-disk';
 import { isProductionEnv } from './runtime-env';
 
 /**
@@ -102,7 +102,7 @@ export function resolveGeo(ip: string): { country: string; city: string; region:
   }
 
   try {
-    const geo = geoip.lookup(normalizedIp);
+    const geo = geoLookup(normalizedIp);
     const countryCode = geo?.country ?? '';
     let countryName = countryCode;
     try {
