@@ -2244,5 +2244,23 @@
     "default_message": "Estou a fazer alguns trabalhos no site. Volta daqui a pouco!",
     "admin_login": "Acesso de administrador",
     "admin_notice": "Manutenção ativa: os visitantes veem o aviso"
+  },
+  "ops_health": {
+    "section": "Saúde operacional"
+  },
+  "ai_usage": {
+    "title": "Consumo de IA",
+    "desc": "Hoje (UTC) e últimos 7 dias",
+    "switch_on": "Ferramentas de IA ligadas",
+    "switch_off": "Ferramentas de IA desligadas (interruptor de emergência)",
+    "tokens_today": "Tokens usados hoje",
+    "calls_today": "Pedidos às ferramentas",
+    "chatbot_tokens": "Tokens do chatbot",
+    "rejected_ip": "Bloqueados por IP (mais de {{cap}} por dia)",
+    "rejected_budget": "Bloqueados, orçamento esgotado",
+    "capped_ips": "{{n}} IPs diferentes atingiram o limite hoje.",
+    "last_7_days": "Tokens, últimos 7 dias",
+    "by_tool": "Pedidos por ferramenta",
+    "no_calls": "Nenhum pedido hoje."
   }
 }

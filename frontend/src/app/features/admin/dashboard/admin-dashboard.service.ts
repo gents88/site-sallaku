@@ -142,6 +142,20 @@ export interface OperationsInfo {
   cronJobs: Array<{ name: string; nextRun: string | null; running: boolean }>;
 }
 
+export interface AiUsageOverview {
+  date: string;
+  tokens: number;
+  calls: number;
+  byEndpoint: Array<{ endpoint: string; calls: number }>;
+  tokensBySource: { tools: number; chatbot: number };
+  rejectedIpCap: number;
+  rejectedBudget: number;
+  cappedIps: number;
+  history: Array<{ date: string; tokens: number; calls: number }>;
+  quota: { dailyTokenBudget: number; maxCallsPerIpPerDay: number };
+  enabled: boolean;
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -207,6 +221,12 @@ const EMPTY_CONSENT: ConsentStats = {
   total: 0, analytics: 0, marketing: 0, preferences: 0, analyticsRate: 0, marketingRate: 0, preferencesRate: 0,
 };
 
+const EMPTY_AI_USAGE: AiUsageOverview = {
+  date: '', tokens: 0, calls: 0, byEndpoint: [], tokensBySource: { tools: 0, chatbot: 0 },
+  rejectedIpCap: 0, rejectedBudget: 0, cappedIps: 0, history: [],
+  quota: { dailyTokenBudget: 0, maxCallsPerIpPerDay: 0 }, enabled: true,
+};
+
 const EMPTY_GSC: SearchConsoleSummary = {
   configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
 };
@@ -233,6 +253,7 @@ export interface DashboardOverviewData {
   systemHealth: SystemHealth | null;
   systemDetails: SystemDetails | null;
   systemOps: OperationsInfo | null;
+  aiUsage: AiUsageOverview;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -268,6 +289,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   systemHealth: null,
   systemDetails: null,
   systemOps: null,
+  aiUsage: EMPTY_AI_USAGE,
 };
 
 /**

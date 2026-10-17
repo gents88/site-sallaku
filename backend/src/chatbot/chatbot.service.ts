@@ -401,7 +401,7 @@ export class ChatbotService {
       ]);
       const raw = await this.aiProvider.chatCompletion(
         [{ role: 'system', content: buildSystemPrompt(about, projects, postsPage.data) }, ...messages],
-        { model: 'openai/gpt-oss-120b', maxTokens: 900, timeoutMs: 20_000 },
+        { model: 'openai/gpt-oss-120b', maxTokens: 900, timeoutMs: 20_000, source: 'chatbot' },
       );
       if (!raw) return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
       return { ...parseAIReply(raw), usedFallback: false };

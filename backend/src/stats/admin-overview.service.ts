@@ -14,6 +14,9 @@ import { LiveHandoffService } from '../live-handoff/live-handoff.service';
 import { SystemInfoService } from '../system/system-info.service';
 import { TestimonialsService } from '../testimonials/services/testimonials.service';
 import { NotesService } from '../notes/services/notes.service';
+import { AiUsageService, AiUsageSummary } from '../common/services/ai-usage.service';
+import { AiQuotaConfig, AiQuotaService } from '../common/services/ai-quota.service';
+import { SettingsService } from '../common/settings/settings.service';
 
 interface StatsContactPoint {
   date: string;
@@ -38,6 +41,12 @@ export interface AdminDashboardStatsResponse {
     uniqueVisitors: number;
     viewsByDay: StatsContactPoint[];
   };
+}
+
+export interface AiUsageOverview extends AiUsageSummary {
+  quota: AiQuotaConfig;
+  /** Interruttore d'emergenza (feature flag aiEnabled). */
+  enabled: boolean;
 }
 
 export interface NotificationSummary {
@@ -88,6 +97,9 @@ export class AdminOverviewService {
     private readonly systemInfo: SystemInfoService,
     private readonly testimonials: TestimonialsService,
     private readonly notes: NotesService,
+    private readonly aiUsage: AiUsageService,
+    private readonly aiQuota: AiQuotaService,
+    private readonly settings: SettingsService,
   ) {}
 
   /**
@@ -132,6 +144,12 @@ export class AdminOverviewService {
     };
   }
 
+  /** Consumo AI di oggi + ultimi 7 giorni, con i limiti in vigore e lo stato dell'interruttore. */
+  async aiUsageOverview(): Promise<AiUsageOverview> {
+    const [summary, enabled] = await Promise.all([this.aiUsage.getSummary(7), this.settings.isEnabled('aiEnabled')]);
+    return { ...summary, quota: this.aiQuota.getConfig(), enabled };
+  }
+
   async getOverview(fresh = false, now = Date.now()): Promise<AdminOverviewResponse> {
     if (!fresh && this.cached && now - this.cached.at < OVERVIEW_TTL_MS) return this.cached.value;
     // Richieste concorrenti (più schede allo scadere del TTL) condividono un solo calcolo.
@@ -168,6 +186,7 @@ export class AdminOverviewService {
       systemHealth: () => this.systemInfo.health(),
       systemDetails: () => this.systemInfo.version(),
       systemOps: () => this.systemInfo.ops(),
+      aiUsage: () => this.aiUsageOverview(),
     };
 
     const keys = Object.keys(loaders);
