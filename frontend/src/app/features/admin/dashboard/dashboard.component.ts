@@ -31,12 +31,14 @@ import {
   AiUsageOverview,
   ServerErrorSummary,
   ServerHealth,
+  TranslationHealth,
 } from './admin-dashboard.service';
 import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
 import { FeatureFlagsPanelComponent } from './panels/feature-flags-panel.component';
 import { AiUsagePanelComponent } from './panels/ai-usage-panel.component';
 import { ServerErrorsPanelComponent } from './panels/server-errors-panel.component';
 import { ServerHealthPanelComponent } from './panels/server-health-panel.component';
+import { TranslationHealthPanelComponent } from './panels/translation-health-panel.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -65,7 +67,7 @@ interface ChartBar {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent, TranslationHealthPanelComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -142,6 +144,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   aiUsage!: AiUsageOverview;
   serverErrors!: ServerErrorSummary;
   serverHealth: ServerHealth | null = null;
+  translationHealth!: TranslationHealth;
   totalContacts = 0;
 
   // Google Search Console
@@ -304,6 +307,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.aiUsage = data.aiUsage;
     this.serverErrors = data.serverErrors;
     this.serverHealth = data.serverHealth;
+    this.translationHealth = data.translationHealth;
     this.gscSummary = data.gsc;
 
     this.consentTotal = consentStats.total;

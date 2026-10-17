@@ -193,6 +193,7 @@ export class AdminOverviewService {
       aiUsage: () => this.aiUsageOverview(),
       serverErrors: () => this.errorLog.summary(),
       serverHealth: () => this.serverHealth.snapshot(),
+      translationHealth: () => this.blog.getTranslationHealth(),
     };
 
     const keys = Object.keys(loaders);

@@ -5,7 +5,7 @@ function makeService(overrides: Record<string, Record<string, jest.Mock>> = {}) 
   const deps = {
     users: { count: ok(3) },
     contacts: { count: ok(10), countUnread: ok(2), findAll: ok([]), countByDay: ok([{ date: '2026-10-01', count: 1 }]) },
-    blog: { getContentSummary: ok({ total: 4, published: 3, drafts: 1 }), getTopPostsByViews: ok([{ title: 'A', slug: 'a', viewCount: 9 }]) },
+    blog: { getContentSummary: ok({ total: 4, published: 3, drafts: 1 }), getTopPostsByViews: ok([{ title: 'A', slug: 'a', viewCount: 9 }]), getTranslationHealth: ok({ posts: 4, missing: 1, items: [] }) },
     projects: { findAll: ok([{}, {}]) },
     experiences: { findAll: ok([{}]) },
     analytics: {
@@ -48,8 +48,9 @@ describe('AdminOverviewService', () => {
     expect(res.sections.core).toEqual(expect.objectContaining({ users: 3, contacts: 10, unreadContacts: 2 }));
     expect(Object.keys(res.sections)).toEqual(expect.arrayContaining([
       'topPosts', 'advanced', 'analyticsStats', 'topPages', 'monthlyHistory', 'toolConversion', 'auditLogs',
-      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors', 'serverHealth',
+      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors', 'serverHealth', 'translationHealth',
     ]));
+    expect(res.sections.translationHealth).toEqual(expect.objectContaining({ posts: 4, missing: 1 }));
     expect(res.sections.serverHealth).toEqual({ warnings: ['backup_stale'] });
     expect(res.sections.serverErrors).toEqual(expect.objectContaining({ open: 2, today: 5 }));
   });

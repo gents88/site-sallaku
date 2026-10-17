@@ -2301,5 +2301,17 @@
     "uptime_checks": "über {{n}} Prüfungen (ca. 25 Stunden)",
     "github_unavailable": "GitHub ist gerade nicht erreichbar.",
     "load": "Durchschnittslast (1, 5, 15 min)"
+  },
+  "translation_health": {
+    "title": "Blog-Übersetzungen",
+    "desc": "Die 6 Sprachen im Vergleich zum Italienischen",
+    "missing": "Fehlend",
+    "stale": "Veraltet",
+    "structure": "Abweichende Struktur",
+    "legend": "✕ fehlt · ⟳ vor der letzten Änderung am italienischen Text übersetzt · ≠ Blöcke (Überschriften, Code, Tabellen, Listen) oder Länge weichen vom Italienischen ab. Für Details mit der Maus über ein Label fahren.",
+    "all_ok": "Alle {{n}} Artikel sind übersetzt und auf dem Stand des Italienischen."
+  },
+  "content_health": {
+    "section": "Inhalte"
   }
 }
