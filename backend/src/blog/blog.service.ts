@@ -6,6 +6,7 @@ import { Post, PostDocument } from './schemas/post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { BLOG_SLUG_FIELDS, DEFAULT_BLOG_LANGUAGE, TRANSLATED_BLOG_LANGUAGES } from './blog.constants';
+import { PostForHealth, PostTranslationHealth, TranslationHealthSummary, summarizeAnalyzed, toPostHealth } from './translation-health';
 
 interface ContentSummary {
   total: number;
@@ -25,9 +26,37 @@ function anySlug(slug: string) {
  */
 const LIST_EXCLUDED_FIELDS = '-content -content_en -content_sq -content_pt -content_es -content_fr -content_de';
 
+/** Il controllo traduzioni legge il corpo di ogni post in 7 lingue: si ricalcola al massimo ogni 10 minuti o dopo una modifica. */
+const TRANSLATION_HEALTH_TTL_MS = 10 * 60_000;
+const TRANSLATION_HEALTH_FIELDS = [
+  'title', 'slug', 'published', 'content', 'sourceUpdatedAt', 'translationsUpdatedAt',
+  ...TRANSLATED_BLOG_LANGUAGES.flatMap(l => [`title_${l}`, `content_${l}`]),
+].join(' ');
+
+/**
+ * Date da aggiornare in un salvataggio: sourceUpdatedAt se cambiano titolo o
+ * contenuto italiani, translationsUpdatedAt.xx se cambia quella traduzione.
+ * L'autosave rimanda tutto il form ogni pochi secondi: conta solo ciò che è
+ * davvero diverso da quanto salvato.
+ */
+export function translationTimestamps(
+  dto: Record<string, unknown>,
+  existing: Record<string, unknown>,
+  now: Date,
+): Record<string, Date> {
+  const changed = (field: string) => dto[field] !== undefined && (dto[field] ?? '') !== (existing[field] ?? '');
+  const out: Record<string, Date> = {};
+  if (changed('title') || changed('content')) out.sourceUpdatedAt = now;
+  for (const lang of TRANSLATED_BLOG_LANGUAGES) {
+    if (changed(`title_${lang}`) || changed(`content_${lang}`)) out[`translationsUpdatedAt.${lang}`] = now;
+  }
+  return out;
+}
+
 @Injectable()
 export class BlogService implements OnApplicationBootstrap {
   private readonly logger = new Logger(BlogService.name);
+  private translationHealthCache: { at: number; value: TranslationHealthSummary } | null = null;
 
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
 
@@ -173,6 +202,11 @@ export class BlogService implements OnApplicationBootstrap {
     const excerpt = dto.excerpt || this.autoExcerpt(dto.content);
     const localizedSlugs: Record<string, unknown> = {};
     await this.fillLocalizedSlugs(localizedSlugs, dto);
+    const now = new Date();
+    const translationsUpdatedAt = Object.fromEntries(
+      TRANSLATED_BLOG_LANGUAGES.filter(l => (dto as unknown as Record<string, unknown>)[`content_${l}`]).map(l => [l, now]),
+    );
+    this.translationHealthCache = null;
     return this.postModel.create({
       ...dto,
       ...localizedSlugs,
@@ -180,6 +214,8 @@ export class BlogService implements OnApplicationBootstrap {
       excerpt,
       language: dto.language || DEFAULT_BLOG_LANGUAGE,
       publishedAt,
+      sourceUpdatedAt: now,
+      translationsUpdatedAt,
     });
   }
 
@@ -194,6 +230,7 @@ export class BlogService implements OnApplicationBootstrap {
     }
 
     await this.fillLocalizedSlugs(update, existing.toObject(), id);
+    Object.assign(update, translationTimestamps(dto as unknown as Record<string, unknown>, existing.toObject() as unknown as Record<string, unknown>, new Date()));
 
     // Publishing stamps the date once; going back to draft keeps it (and viewCount,
     // which is never part of the update) so re-publishing restores the article as it was.
@@ -203,12 +240,29 @@ export class BlogService implements OnApplicationBootstrap {
 
     const post = await this.postModel.findByIdAndUpdate(id, update, { new: true }).exec();
     if (!post) throw new NotFoundException(`Post #${id} not found`);
+    this.translationHealthCache = null;
     return post;
   }
 
   async remove(id: string): Promise<void> {
     const result = await this.postModel.findByIdAndDelete(id).exec();
     if (!result) throw new NotFoundException(`Post #${id} not found`);
+    this.translationHealthCache = null;
+  }
+
+  /** Admin: traduzioni mancanti, non aggiornate o con struttura diversa dall'italiano. */
+  async getTranslationHealth(now = Date.now()): Promise<TranslationHealthSummary> {
+    if (this.translationHealthCache && now - this.translationHealthCache.at < TRANSLATION_HEALTH_TTL_MS) {
+      return this.translationHealthCache.value;
+    }
+    // Un post alla volta (cursore) tenendo solo l'esito: il corpo in 7 lingue
+    // pesa ~66 KB a post e il server ha poca RAM.
+    const analyzed: PostTranslationHealth[] = [];
+    const cursor = this.postModel.find({}, TRANSLATION_HEALTH_FIELDS).lean().cursor();
+    for await (const doc of cursor) analyzed.push(toPostHealth(doc as unknown as PostForHealth));
+    const value = summarizeAnalyzed(analyzed);
+    this.translationHealthCache = { at: now, value };
+    return value;
   }
 
   /** Public: increment view count atomically. Fire-and-forget safe. */

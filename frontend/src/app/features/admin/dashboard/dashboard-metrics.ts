@@ -43,6 +43,7 @@ export const SECTION_LABEL_KEYS: Record<OverviewSection, string> = {
   aiUsage: 'ai_usage.title',
   serverErrors: 'server_errors.title',
   serverHealth: 'server_health.title',
+  translationHealth: 'translation_health.title',
 };
 
 /** Etichette uniche (le tre sezioni di sistema condividono lo stesso pannello). */
