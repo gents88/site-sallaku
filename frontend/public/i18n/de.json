@@ -2262,5 +2262,20 @@
     "last_7_days": "Tokens, letzte 7 Tage",
     "by_tool": "Anfragen pro Tool",
     "no_calls": "Heute keine Anfragen."
+  },
+  "server_errors": {
+    "title": "Serverfehler",
+    "desc": "Gruppierte 5xx-Fehler, letzte 30 Tage",
+    "open": "Offene Gruppen",
+    "today": "Vorkommen heute",
+    "week": "Letzte 7 Tage",
+    "total": "Vorkommen insgesamt",
+    "last_seen": "Zuletzt:",
+    "today_count": "{{n}} heute",
+    "show_stack": "Stack anzeigen",
+    "hide_stack": "Stack ausblenden",
+    "resolve": "Als gelöst markieren",
+    "resolve_all": "Alle als gelöst markieren",
+    "none": "Keine offenen Fehler. Ein gelöster Fehler erscheint wieder, wenn er erneut auftritt."
   }
 }
