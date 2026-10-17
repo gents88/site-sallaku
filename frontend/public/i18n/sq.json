@@ -344,7 +344,12 @@
     "settings_title": "Cilësimet e cookies",
     "settings_desc": "Aktivizo ose çaktivizo kategoritë. Cookies e nevojshme janë gjithmonë aktive.",
     "consent_saved": "Preferencat u ruajtën",
-    "default_denied_note": "Parazgjedhje: vetëm cookies funksionale (nevojitet pëlqimi për analytics dhe marketing)."
+    "default_denied_note": "Parazgjedhje: vetëm cookies funksionale (nevojitet pëlqimi për analytics dhe marketing).",
+    "necessary_desc": "Të domosdoshme për funksionimin e faqes: siguria, hyrja dhe ruajtja e këtyre zgjedhjeve.",
+    "analytics_desc": "Na ndihmojnë të kuptojmë si përdoret faqja, me statistika të përmbledhura (Google Analytics).",
+    "marketing_desc": "Përdoren për të matur fushatat reklamuese dhe për të shfaqur reklama të përshtatshme (Google Ads).",
+    "preferences_desc": "Mbajnë mend zgjedhjet e tua, si gjuha dhe pamja, për të personalizuar përvojën.",
+    "always_active": "Gjithmonë aktive"
   },
   "skip": {
     "link": "Kalo te përmbajtja kryesore"
