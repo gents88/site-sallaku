@@ -285,9 +285,26 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
       timeout(15000),
       finalize(() => { this.loading = false; this.cdr.detectChanges(); }),
     ).subscribe({
-      next: posts => { this.posts = posts; },
+      next: posts => {
+        this.posts = posts;
+        this.openFromQuery();
+      },
       error: () => {},
     });
+  }
+
+  /**
+   * ?edit=<id> (dalla dashboard: traduzioni da sistemare, palette Ctrl+K):
+   * apre quel post una volta caricata la lista, poi toglie il parametro così
+   * un ricaricamento della lista non riapre il form.
+   */
+  private openFromQuery(): void {
+    const id = this.route.snapshot.queryParamMap.get('edit');
+    if (!id || this.showForm) return;
+    const post = this.posts.find(p => p._id === id);
+    if (!post) return;
+    this.openEdit(post);
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { edit: null }, queryParamsHandling: 'merge', replaceUrl: true });
   }
 
   switchTab(lang: BlogLanguage): void {

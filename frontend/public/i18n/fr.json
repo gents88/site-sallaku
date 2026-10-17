@@ -2301,5 +2301,17 @@
     "uptime_checks": "sur {{n}} contrôles (environ 25 heures)",
     "github_unavailable": "GitHub n'est pas joignable pour le moment.",
     "load": "Charge moyenne (1, 5, 15 min)"
+  },
+  "translation_health": {
+    "title": "Traductions du blog",
+    "desc": "Les 6 langues comparées à l'italien",
+    "missing": "Manquantes",
+    "stale": "Pas à jour",
+    "structure": "Structure différente",
+    "legend": "✕ manquante · ⟳ traduite avant la dernière modification du texte italien · ≠ blocs (titres, code, tableaux, listes) ou longueur différents de l'italien. Survole une étiquette pour les détails.",
+    "all_ok": "Les {{n}} articles sont traduits et alignés sur l'italien."
+  },
+  "content_health": {
+    "section": "Contenus"
   }
 }

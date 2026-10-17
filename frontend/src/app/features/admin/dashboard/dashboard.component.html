@@ -162,6 +162,21 @@
       </section>
     </div>
 
+    <!-- ── Contenuti: traduzioni, pubblicazioni programmate, link rotti ── -->
+    <h2 class="section-label"><mat-icon>edit_note</mat-icon>{{ 'content_health.section' | translate }}</h2>
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'translation_health.title' | translate }}</h2>
+            <p class="text-muted">{{ 'translation_health.desc' | translate }}</p>
+          </div>
+          <mat-icon>translate</mat-icon>
+        </div>
+        <app-translation-health-panel [data]="translationHealth" [failed]="isFailed('translationHealth')" />
+      </section>
+    </div>
+
     <div class="analytics-grid">
       <section class="analytics-card card">
         <div class="analytics-card__header">

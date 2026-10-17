@@ -209,6 +209,24 @@ export interface ServerHealth {
   warnings: string[];
 }
 
+export type TranslationLang = 'en' | 'sq' | 'pt' | 'es' | 'fr' | 'de';
+
+export interface TranslationIssue {
+  lang: TranslationLang;
+  kind: 'missing' | 'stale' | 'structure';
+  detail?: string[];
+}
+
+export interface TranslationHealth {
+  posts: number;
+  postsWithIssues: number;
+  missing: number;
+  stale: number;
+  structure: number;
+  byLang: Record<TranslationLang, { missing: number; stale: number; structure: number }>;
+  items: Array<{ _id: string; title: string; slug: string; published: boolean; issues: TranslationIssue[] }>;
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -282,6 +300,12 @@ const EMPTY_AI_USAGE: AiUsageOverview = {
 
 const EMPTY_SERVER_ERRORS: ServerErrorSummary = { open: 0, today: 0, week: 0, recent: [] };
 
+const EMPTY_LANG_COUNTS = { missing: 0, stale: 0, structure: 0 };
+const EMPTY_TRANSLATION_HEALTH: TranslationHealth = {
+  posts: 0, postsWithIssues: 0, missing: 0, stale: 0, structure: 0, items: [],
+  byLang: { en: EMPTY_LANG_COUNTS, sq: EMPTY_LANG_COUNTS, pt: EMPTY_LANG_COUNTS, es: EMPTY_LANG_COUNTS, fr: EMPTY_LANG_COUNTS, de: EMPTY_LANG_COUNTS },
+};
+
 const EMPTY_GSC: SearchConsoleSummary = {
   configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
 };
@@ -311,6 +335,7 @@ export interface DashboardOverviewData {
   aiUsage: AiUsageOverview;
   serverErrors: ServerErrorSummary;
   serverHealth: ServerHealth | null;
+  translationHealth: TranslationHealth;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -349,6 +374,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   aiUsage: EMPTY_AI_USAGE,
   serverErrors: EMPTY_SERVER_ERRORS,
   serverHealth: null,
+  translationHealth: EMPTY_TRANSLATION_HEALTH,
 };
 
 /**

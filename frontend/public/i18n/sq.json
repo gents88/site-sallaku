@@ -2301,5 +2301,17 @@
     "uptime_checks": "në {{n}} kontrolle (rreth 25 orë)",
     "github_unavailable": "GitHub nuk është i arritshëm tani.",
     "load": "Ngarkesa mesatare (1, 5, 15 min)"
+  },
+  "translation_health": {
+    "title": "Përkthimet e blogut",
+    "desc": "6 gjuhët krahasuar me italishten",
+    "missing": "Mungojnë",
+    "stale": "Të pa përditësuara",
+    "structure": "Strukturë e ndryshme",
+    "legend": "✕ mungon · ⟳ përkthyer para ndryshimit të fundit të tekstit italisht · ≠ blloqet (tituj, kod, tabela, lista) ose gjatësia ndryshojnë nga italishtja. Kalo mbi një etiketë për detajet.",
+    "all_ok": "Të gjithë {{n}} artikujt janë të përkthyer dhe në linjë me italishten."
+  },
+  "content_health": {
+    "section": "Përmbajtja"
   }
 }
