@@ -12,6 +12,8 @@ import { PageView, PageViewSchema } from './schemas/page-view.schema';
 import { AnalyticsStats, AnalyticsStatsSchema } from './schemas/analytics-stats.schema';
 import { MonthlyHistory, MonthlyHistorySchema } from './schemas/monthly-history.schema';
 import { ClickEvent, ClickEventSchema } from './schemas/click-event.schema';
+import { NotFoundHit, NotFoundHitSchema } from './not-found/not-found-hit.schema';
+import { NotFoundService } from './not-found/not-found.service';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { ClickEvent, ClickEventSchema } from './schemas/click-event.schema';
       { name: AnalyticsStats.name, schema: AnalyticsStatsSchema },
       { name: MonthlyHistory.name, schema: MonthlyHistorySchema },
       { name: ClickEvent.name, schema: ClickEventSchema },
+      { name: NotFoundHit.name, schema: NotFoundHitSchema },
     ]),
   ],
   controllers: [AnalyticsController],
@@ -31,7 +34,8 @@ import { ClickEvent, ClickEventSchema } from './schemas/click-event.schema';
     AnalyticsExportService,
     SearchConsoleService,
     AdminTrackingBypassInterceptor,
+    NotFoundService,
   ],
-  exports: [AnalyticsTrackingService, AnalyticsQueryService, AnalyticsExportService, SearchConsoleService],
+  exports: [AnalyticsTrackingService, AnalyticsQueryService, AnalyticsExportService, SearchConsoleService, NotFoundService],
 })
 export class AnalyticsModule {}

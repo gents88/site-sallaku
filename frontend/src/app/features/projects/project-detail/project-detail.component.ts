@@ -12,6 +12,7 @@ import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
+import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
 
 type LoadState = 'loading' | 'ready' | 'not-found' | 'error';
 
@@ -38,6 +39,7 @@ export class ProjectDetailComponent {
   private readonly t = inject(TranslateService);
 
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly notFoundReporter = inject(NotFoundReporterService);
 
   readonly state = signal<LoadState>('loading');
   private readonly raw = signal<Project | null>(null);
@@ -96,6 +98,7 @@ export class ProjectDetailComponent {
     this.projects.getBySlug(slug).pipe(
       catchError((err: { status?: number }) => {
         this.state.set(err?.status === 404 ? 'not-found' : 'error');
+        if (err?.status === 404) this.notFoundReporter.report(withLangPrefix(`/projects/${slug}`, this.langService.current()), 'project');
         return of(null);
       }),
     ).subscribe(project => {
