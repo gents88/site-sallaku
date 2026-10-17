@@ -344,7 +344,12 @@
     "settings_title": "Configuración de cookies",
     "settings_desc": "Activa o desactiva categorías. Las cookies necesarias siempre están activas.",
     "consent_saved": "Preferencias guardadas",
-    "default_denied_note": "Predeterminado: solo cookies funcionales (se requiere consentimiento para analytics y marketing)."
+    "default_denied_note": "Predeterminado: solo cookies funcionales (se requiere consentimiento para analytics y marketing).",
+    "necessary_desc": "Imprescindibles para el funcionamiento del sitio: seguridad, inicio de sesión y memorización de estas opciones.",
+    "analytics_desc": "Nos ayudan a entender cómo se usa el sitio mediante estadísticas agregadas (Google Analytics).",
+    "marketing_desc": "Sirven para medir las campañas publicitarias y mostrar anuncios relevantes (Google Ads).",
+    "preferences_desc": "Recuerdan tus preferencias, como el idioma y la apariencia, para personalizar tu experiencia.",
+    "always_active": "Siempre activas"
   },
   "skip": {
     "link": "Ir al contenido principal"

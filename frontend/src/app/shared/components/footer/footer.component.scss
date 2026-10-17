@@ -42,8 +42,9 @@
     padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 140px);
   }
 
-  @media (max-width: 480px) {
-    padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 260px);
+  /* Il banner va in colonna sotto i 600px ed è alto ~220px. */
+  @media (max-width: 600px) {
+    padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 240px);
   }
 }
 

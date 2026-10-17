@@ -344,7 +344,12 @@
     "settings_title": "Cookie settings",
     "settings_desc": "Enable or disable categories. Necessary cookies are always active.",
     "consent_saved": "Preferences saved",
-    "default_denied_note": "Default: functional cookies only (consent required for analytics and marketing)."
+    "default_denied_note": "Default: functional cookies only (consent required for analytics and marketing).",
+    "necessary_desc": "Required for the site to work: security, sign-in and remembering these choices.",
+    "analytics_desc": "Help us understand how the site is used through aggregated statistics (Google Analytics).",
+    "marketing_desc": "Used to measure ad campaigns and show relevant ads (Google Ads).",
+    "preferences_desc": "Remember your choices, such as language and appearance, to personalise your experience.",
+    "always_active": "Always active"
   },
   "skip": {
     "link": "Skip to main content"
