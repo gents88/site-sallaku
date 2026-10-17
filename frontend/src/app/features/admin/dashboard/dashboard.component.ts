@@ -34,6 +34,7 @@ import {
   TranslationHealth,
   ScheduledPost,
   LeadStats,
+  NotFoundSummary,
 } from './admin-dashboard.service';
 import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
 import { FeatureFlagsPanelComponent } from './panels/feature-flags-panel.component';
@@ -43,6 +44,7 @@ import { ServerHealthPanelComponent } from './panels/server-health-panel.compone
 import { TranslationHealthPanelComponent } from './panels/translation-health-panel.component';
 import { ScheduledPostsPanelComponent } from './panels/scheduled-posts-panel.component';
 import { LeadsPanelComponent } from './panels/leads-panel.component';
+import { NotFoundPanelComponent } from './panels/not-found-panel.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -71,7 +73,7 @@ interface ChartBar {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent, TranslationHealthPanelComponent, ScheduledPostsPanelComponent, LeadsPanelComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent, TranslationHealthPanelComponent, ScheduledPostsPanelComponent, LeadsPanelComponent, NotFoundPanelComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -151,6 +153,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   translationHealth!: TranslationHealth;
   scheduledPosts: ScheduledPost[] = [];
   leads!: LeadStats;
+  notFound: NotFoundSummary = { open: 0, top: [] };
   totalContacts = 0;
 
   // Google Search Console
@@ -316,6 +319,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.translationHealth = data.translationHealth;
     this.scheduledPosts = data.scheduledPosts;
     this.leads = data.leads;
+    this.notFound = data.notFound;
     this.gscSummary = data.gsc;
 
     this.consentTotal = consentStats.total;

@@ -24,6 +24,7 @@ import { rankRelated } from '../../../shared/utils/related-content';
 import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { environment } from '../../../../environments/environment';
+import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
 
 /**
  * Quanto del testo è stato letto, da 0 a 1: 0 finché l'inizio del testo non
@@ -105,6 +106,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly location = inject(Location);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly notFoundReporter = inject(NotFoundReporterService);
   private readonly readingHistory = inject(ReadingHistoryService);
   publishing = false;
   readonly currentLang = this.langService.current;
@@ -474,7 +476,12 @@ export class BlogDetailComponent implements OnInit, OnChanges {
           { label: this.localizedMetaTitle },
         ];
       },
-      error: () => { this.notFound = true; this.cdr.markForCheck(); },
+      error: (err: { status?: number }) => {
+        this.notFound = true;
+        // Uno slug che il backend non conosce è un link rotto da sistemare (lista 404 della dashboard).
+        if (err?.status === 404 && !this.isPreview) this.notFoundReporter.report(this.location.path(), 'blog');
+        this.cdr.markForCheck();
+      },
     });
   }
 }
