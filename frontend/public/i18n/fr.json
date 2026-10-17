@@ -2244,5 +2244,23 @@
     "default_message": "Je fais quelques travaux sur le site. Reviens dans un instant !",
     "admin_login": "Accès administrateur",
     "admin_notice": "Maintenance active : les visiteurs voient l'avis"
+  },
+  "ops_health": {
+    "section": "Santé opérationnelle"
+  },
+  "ai_usage": {
+    "title": "Consommation IA",
+    "desc": "Aujourd'hui (UTC) et les 7 derniers jours",
+    "switch_on": "Outils IA actifs",
+    "switch_off": "Outils IA coupés (interrupteur d'urgence)",
+    "tokens_today": "Jetons utilisés aujourd'hui",
+    "calls_today": "Requêtes aux outils",
+    "chatbot_tokens": "Jetons du chatbot",
+    "rejected_ip": "Bloquées par IP (plus de {{cap}} par jour)",
+    "rejected_budget": "Bloquées, budget épuisé",
+    "capped_ips": "{{n}} IP différentes ont atteint la limite aujourd'hui.",
+    "last_7_days": "Jetons, 7 derniers jours",
+    "by_tool": "Requêtes par outil",
+    "no_calls": "Aucune requête aujourd'hui."
   }
 }
