@@ -309,7 +309,8 @@
       "note": "Mesazhi dërgohet direkt nga faqja, pa hapur aplikacione të jashtme.",
       "privacy_checkbox": "Kam lexuar dhe pranoj politikën e privatësisë për trajtimin e të dhënave të mia.",
       "privacy_link_text": "Politika e Privatësisë",
-      "privacy_err": "Duhet të pranoni politikën e privatësisë për të dërguar mesazhin"
+      "privacy_err": "Duhet të pranoni politikën e privatësisë për të dërguar mesazhin",
+      "disabled_notice": "Formulari i kontaktit është përkohësisht i çaktivizuar. Mund të më shkruash në LinkedIn ose me email."
     },
     "info": {
       "title": "Le të lidhemi",
@@ -438,7 +439,8 @@
     "err_too_many": "Shumë përpjekje. Prit një minutë dhe provo përsëri.",
     "err_otp_wrong": "Kod i gabuar. Përpjekje të mbetura: {{count}}.",
     "err_otp_locked": "Shumë përpjekje të gabuara. Kërko një kod të ri.",
-    "err_server": "Serveri nuk përgjigjet. Provo përsëri pas pak."
+    "err_server": "Serveri nuk përgjigjet. Provo përsëri pas pak.",
+    "registration_closed": "Regjistrimet janë përkohësisht të mbyllura."
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2215,5 +2217,32 @@
     "pick": "Zgjidh skedarin",
     "release": "Lësho skedarin për të parë çfarë mund të bësh me të",
     "only_first": "Përdoret vetëm skedari i parë ({{count}} u shpërfillën)."
+  },
+  "feature_flags": {
+    "title": "Funksionet e faqes",
+    "desc": "Ndez dhe fik pjesë të faqes pa deploy",
+    "maintenanceMode": "Modaliteti i mirëmbajtjes",
+    "maintenanceMode_desc": "Vizitorët shohin një njoftim në të gjithë faqen; ti vazhdon ta shohësh faqen.",
+    "aiEnabled": "Mjetet AI",
+    "aiEnabled_desc": "Mjetet AI të Lab-it. Kur janë të fikura, chatbot-i përgjigjet me mesazhet e paracaktuara.",
+    "chatbotEnabled": "Chatbot",
+    "chatbotEnabled_desc": "Flluska e bisedës poshtë djathtas.",
+    "liveHandoffEnabled": "Bisedë live",
+    "liveHandoffEnabled_desc": "Propozimi \"Do të flasësh me Gent?\" brenda chatbot-it.",
+    "contactFormEnabled": "Formulari i kontaktit",
+    "contactFormEnabled_desc": "I dobishëm gjatë një vale spam-i.",
+    "newsletterSignupEnabled": "Regjistrimet në newsletter",
+    "newsletterSignupEnabled_desc": "Formulari i regjistrimit në fund të blogut.",
+    "registrationEnabled": "Regjistrimi i përdoruesve",
+    "registrationEnabled_desc": "Krijimi i llogarive të reja nga faqja e regjistrimit.",
+    "maintenance_message": "Mesazhi i mirëmbajtjes",
+    "save_message": "Ruaj mesazhin",
+    "save_error": "Ruajtja dështoi, provo përsëri."
+  },
+  "maintenance": {
+    "title": "Faqja në mirëmbajtje",
+    "default_message": "Po bëj disa punë në faqe. Kthehu pas pak!",
+    "admin_login": "Hyrja e adminit",
+    "admin_notice": "Mirëmbajtja aktive: vizitorët shohin njoftimin"
   }
 }
