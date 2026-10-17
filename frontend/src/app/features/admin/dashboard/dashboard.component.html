@@ -149,6 +149,17 @@
         </div>
         <app-server-errors-panel [data]="serverErrors" [failed]="isFailed('serverErrors')" (changed)="refresh()" />
       </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'server_health.title' | translate }}</h2>
+            <p class="text-muted">{{ 'server_health.desc' | translate }}</p>
+          </div>
+          <mat-icon>backup</mat-icon>
+        </div>
+        <app-server-health-panel [data]="serverHealth" [failed]="isFailed('serverHealth')" />
+      </section>
     </div>
 
     <div class="analytics-grid">

@@ -2277,5 +2277,29 @@
     "resolve": "Als gelöst markieren",
     "resolve_all": "Alle als gelöst markieren",
     "none": "Keine offenen Fehler. Ein gelöster Fehler erscheint wieder, wenn er erneut auftritt."
+  },
+  "server_health": {
+    "title": "Server und Backups",
+    "desc": "MongoDB-Dumps, Serverressourcen, externe Prüfungen",
+    "all_ok": "Alles in Ordnung.",
+    "warn_backup_stale": "Der letzte Datenbank-Dump ist älter als 26 Stunden (oder fehlt): prüfe den Cron um 03:30.",
+    "warn_memory_low": "RAM fast erschöpft: Der Server hat keinen Swap, ein Prozess könnte beendet werden.",
+    "warn_disk_low": "Speicherplatz unter 10 %.",
+    "warn_offsite_backup_failed": "Das letzte verschlüsselte externe Backup (GitHub Actions) ist fehlgeschlagen.",
+    "warn_uptime_failed": "Die letzte externe Uptime-Prüfung ist fehlgeschlagen.",
+    "backup_age": "Alter des letzten Dumps ({{size}})",
+    "backup_none": "Kein Dump gefunden",
+    "backup_not_configured": "Backup-Ordner fehlt (normal in der Entwicklung)",
+    "ram_free": "Verfügbarer RAM von {{total}} MB",
+    "disk_free": "Freier Speicher (belegt {{pct}} %)",
+    "mongo_ram": "MongoDB-RAM",
+    "ram_used": "Belegter RAM",
+    "external": "Externe Prüfungen (GitHub Actions)",
+    "offsite_backup": "Verschlüsseltes externes Backup",
+    "running": "läuft",
+    "uptime": "Uptime",
+    "uptime_checks": "über {{n}} Prüfungen (ca. 25 Stunden)",
+    "github_unavailable": "GitHub ist gerade nicht erreichbar.",
+    "load": "Durchschnittslast (1, 5, 15 min)"
   }
 }
