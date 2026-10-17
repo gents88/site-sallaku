@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
@@ -10,18 +10,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
+import { phoneOrEmailValidator } from '../auth-form.utils';
 
 const OTP_EXPIRY_SECONDS = 300; // matches backend 5-minute window
 const RESEND_COOLDOWN_SECONDS = 60;
-
-/** Validates that the value is either a valid E.164 phone OR a valid email. */
-function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | null {
-  const v: string = (control.value ?? '').trim();
-  if (!v) return { required: true };
-  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-  const isPhone = /^\+[1-9]\d{6,14}$/.test(v);
-  return isEmail || isPhone ? null : { phoneOrEmail: true };
-}
 
 import { ProfilePhotoComponent } from '../../../../shared/components/profile-photo/profile-photo.component';
 @Component({
