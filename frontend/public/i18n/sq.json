@@ -2244,5 +2244,23 @@
     "default_message": "Po bëj disa punë në faqe. Kthehu pas pak!",
     "admin_login": "Hyrja e adminit",
     "admin_notice": "Mirëmbajtja aktive: vizitorët shohin njoftimin"
+  },
+  "ops_health": {
+    "section": "Shëndeti operativ"
+  },
+  "ai_usage": {
+    "title": "Konsumi i AI",
+    "desc": "Sot (UTC) dhe 7 ditët e fundit",
+    "switch_on": "Mjetet AI aktive",
+    "switch_off": "Mjetet AI të fikura (çelësi i emergjencës)",
+    "tokens_today": "Token të përdorur sot",
+    "calls_today": "Kërkesa te mjetet",
+    "chatbot_tokens": "Token të chatbot-it",
+    "rejected_ip": "Të bllokuara për IP (mbi {{cap}} në ditë)",
+    "rejected_budget": "Të bllokuara, buxheti i mbaruar",
+    "capped_ips": "{{n}} IP të ndryshme kanë arritur kufirin sot.",
+    "last_7_days": "Token, 7 ditët e fundit",
+    "by_tool": "Kërkesa për mjet",
+    "no_calls": "Asnjë kërkesë sot."
   }
 }

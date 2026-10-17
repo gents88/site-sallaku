@@ -2244,5 +2244,23 @@
     "default_message": "I'm doing some work on the site. Please come back shortly!",
     "admin_login": "Admin login",
     "admin_notice": "Maintenance on: visitors see the notice"
+  },
+  "ops_health": {
+    "section": "Operational health"
+  },
+  "ai_usage": {
+    "title": "AI usage",
+    "desc": "Today (UTC) and the last 7 days",
+    "switch_on": "AI tools on",
+    "switch_off": "AI tools off (emergency switch)",
+    "tokens_today": "Tokens used today",
+    "calls_today": "Tool requests",
+    "chatbot_tokens": "Chatbot tokens",
+    "rejected_ip": "Blocked per IP (over {{cap}} a day)",
+    "rejected_budget": "Blocked, budget exhausted",
+    "capped_ips": "{{n}} different IPs hit the limit today.",
+    "last_7_days": "Tokens, last 7 days",
+    "by_tool": "Requests per tool",
+    "no_calls": "No requests today."
   }
 }

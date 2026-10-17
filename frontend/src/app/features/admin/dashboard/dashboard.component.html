@@ -125,6 +125,21 @@
       }
     </section>
 
+    <!-- ── Salute operativa: costi AI, errori del server, backup e risorse ── -->
+    <h2 class="section-label"><mat-icon>monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}</h2>
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'ai_usage.title' | translate }}</h2>
+            <p class="text-muted">{{ 'ai_usage.desc' | translate }}</p>
+          </div>
+          <mat-icon>bolt</mat-icon>
+        </div>
+        <app-ai-usage-panel [data]="aiUsage" [failed]="isFailed('aiUsage')" />
+      </section>
+    </div>
+
     <div class="analytics-grid">
       <section class="analytics-card card">
         <div class="analytics-card__header">

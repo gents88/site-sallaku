@@ -21,12 +21,16 @@ function makeService(overrides: Record<string, Record<string, jest.Mock>> = {}) 
     systemInfo: { health: jest.fn(() => ({ ok: true })), version: jest.fn(() => ({})), ops: jest.fn(() => ({})) },
     testimonials: { getStats: ok({ total: 5, approved: 2, pending: 3, spam: 0, featured: 1 }) },
     notes: { getAllForAdmin: ok({ data: [], total: 4 }) },
+    aiUsage: { getSummary: ok({ date: '2026-10-17', tokens: 500, calls: 3, history: [] }) },
+    aiQuota: { getConfig: jest.fn(() => ({ dailyTokenBudget: 300_000, maxCallsPerIpPerDay: 30 })) },
+    settings: { isEnabled: ok(true) },
   };
   for (const [k, v] of Object.entries(overrides)) Object.assign((deps as Record<string, object>)[k], v);
   const d = deps as unknown as Record<string, never>;
   const service = new AdminOverviewService(
     d.users, d.contacts, d.blog, d.projects, d.experiences, d.analytics, d.analyticsExport,
     d.searchConsole, d.audit, d.chatbot, d.consent, d.liveHandoff, d.systemInfo, d.testimonials, d.notes,
+    d.aiUsage, d.aiQuota, d.settings,
   );
   return { service, deps };
 }
@@ -42,8 +46,18 @@ describe('AdminOverviewService', () => {
     expect(res.sections.core).toEqual(expect.objectContaining({ users: 3, contacts: 10, unreadContacts: 2 }));
     expect(Object.keys(res.sections)).toEqual(expect.arrayContaining([
       'topPosts', 'advanced', 'analyticsStats', 'topPages', 'monthlyHistory', 'toolConversion', 'auditLogs',
-      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps',
+      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage',
     ]));
+  });
+
+  it('aiUsage unisce consumo, limiti in vigore e stato dell’interruttore', async () => {
+    const { service } = makeService({ settings: { isEnabled: jest.fn().mockResolvedValue(false) } });
+    const res = await service.getOverview();
+    expect(res.sections.aiUsage).toEqual(expect.objectContaining({
+      tokens: 500,
+      enabled: false,
+      quota: { dailyTokenBudget: 300_000, maxCallsPerIpPerDay: 30 },
+    }));
   });
 
   it('isolates a failing section: null + listed in errors, the others still load', async () => {

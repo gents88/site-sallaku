@@ -2244,5 +2244,23 @@
     "default_message": "Ich arbeite gerade an der Website. Schau gleich wieder vorbei!",
     "admin_login": "Admin-Login",
     "admin_notice": "Wartung aktiv: Besucher sehen den Hinweis"
+  },
+  "ops_health": {
+    "section": "Betriebszustand"
+  },
+  "ai_usage": {
+    "title": "KI-Verbrauch",
+    "desc": "Heute (UTC) und die letzten 7 Tage",
+    "switch_on": "KI-Tools aktiv",
+    "switch_off": "KI-Tools aus (Notschalter)",
+    "tokens_today": "Heute verbrauchte Tokens",
+    "calls_today": "Tool-Anfragen",
+    "chatbot_tokens": "Chatbot-Tokens",
+    "rejected_ip": "Pro IP blockiert (über {{cap}} pro Tag)",
+    "rejected_budget": "Blockiert, Budget aufgebraucht",
+    "capped_ips": "{{n}} verschiedene IPs haben heute das Limit erreicht.",
+    "last_7_days": "Tokens, letzte 7 Tage",
+    "by_tool": "Anfragen pro Tool",
+    "no_calls": "Heute keine Anfragen."
   }
 }
