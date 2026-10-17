@@ -2262,5 +2262,20 @@
     "last_7_days": "Tokens, last 7 days",
     "by_tool": "Requests per tool",
     "no_calls": "No requests today."
+  },
+  "server_errors": {
+    "title": "Server errors",
+    "desc": "Grouped 5xx errors, last 30 days",
+    "open": "Open groups",
+    "today": "Occurrences today",
+    "week": "Last 7 days",
+    "total": "Total occurrences",
+    "last_seen": "Last seen:",
+    "today_count": "{{n}} today",
+    "show_stack": "Show stack",
+    "hide_stack": "Hide stack",
+    "resolve": "Mark resolved",
+    "resolve_all": "Mark all resolved",
+    "none": "No open errors. A resolved error comes back here if it happens again."
   }
 }

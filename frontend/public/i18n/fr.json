@@ -2262,5 +2262,20 @@
     "last_7_days": "Jetons, 7 derniers jours",
     "by_tool": "Requêtes par outil",
     "no_calls": "Aucune requête aujourd'hui."
+  },
+  "server_errors": {
+    "title": "Erreurs du serveur",
+    "desc": "Erreurs 5xx regroupées, 30 derniers jours",
+    "open": "Groupes ouverts",
+    "today": "Occurrences aujourd'hui",
+    "week": "7 derniers jours",
+    "total": "Occurrences totales",
+    "last_seen": "Dernière fois :",
+    "today_count": "{{n}} aujourd'hui",
+    "show_stack": "Afficher la pile",
+    "hide_stack": "Masquer la pile",
+    "resolve": "Marquer comme résolu",
+    "resolve_all": "Tout marquer comme résolu",
+    "none": "Aucune erreur ouverte. Une erreur résolue revient ici si elle se reproduit."
   }
 }

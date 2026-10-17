@@ -10,6 +10,13 @@ import {
 import { Request, Response } from 'express';
 import * as Sentry from '@sentry/node';
 import { isProductionEnv } from '../utils/runtime-env';
+import { FeatureUnavailableException } from '../settings/feature-flags';
+import type { ErrorOccurrence } from '../../error-log/error-log.service';
+
+/** Ciò che serve al filtro del registro errori (ErrorLogService), senza dipendere da Mongoose. */
+export interface ErrorSink {
+  record(o: ErrorOccurrence): Promise<void>;
+}
 
 interface ApiErrorResponse {
   success: boolean;
@@ -25,6 +32,9 @@ interface ApiErrorResponse {
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
   private readonly isDev = !isProductionEnv();
+
+  /** Creato a mano in main.ts: il registro arriva dal container (app.get(ErrorLogService)). */
+  constructor(private readonly errorSink?: ErrorSink) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -71,6 +81,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
           request: { method: request.method, url: request.url, requestId: this.extractRequestId(request) },
         },
       });
+    }
+
+    // Registro degli errori per la dashboard: solo i 5xx veri, non i 503 voluti
+    // (funzione spenta, budget AI finito). Senza attesa: la risposta non aspetta Mongo.
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR && this.errorSink && !(exception instanceof FeatureUnavailableException)) {
+      void this.errorSink.record({
+        method: request.method,
+        url: request.originalUrl || request.url,
+        status,
+        name: exception instanceof Error ? exception.name : 'Error',
+        message: exception instanceof Error ? exception.message : message,
+        stack: exception instanceof Error ? exception.stack : undefined,
+        requestId: this.extractRequestId(request),
+      }).catch(() => undefined);
     }
 
     // Risposta standardizzata
