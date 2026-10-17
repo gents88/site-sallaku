@@ -2277,5 +2277,29 @@
     "resolve": "Marquer comme résolu",
     "resolve_all": "Tout marquer comme résolu",
     "none": "Aucune erreur ouverte. Une erreur résolue revient ici si elle se reproduit."
+  },
+  "server_health": {
+    "title": "Serveur et sauvegardes",
+    "desc": "Dumps MongoDB, ressources du serveur, contrôles externes",
+    "all_ok": "Tout va bien.",
+    "warn_backup_stale": "Le dernier dump de la base date de plus de 26 heures (ou manque) : vérifie le cron de 03:30.",
+    "warn_memory_low": "RAM presque épuisée : le serveur n'a pas de swap, un processus pourrait être arrêté.",
+    "warn_disk_low": "Espace disque sous les 10 %.",
+    "warn_offsite_backup_failed": "La dernière sauvegarde externe chiffrée (GitHub Actions) a échoué.",
+    "warn_uptime_failed": "Le dernier contrôle externe de disponibilité a échoué.",
+    "backup_age": "Âge du dernier dump ({{size}})",
+    "backup_none": "Aucun dump trouvé",
+    "backup_not_configured": "Dossier des sauvegardes absent (normal en développement)",
+    "ram_free": "RAM disponible sur {{total}} Mo",
+    "disk_free": "Disque libre (utilisé à {{pct}} %)",
+    "mongo_ram": "RAM de MongoDB",
+    "ram_used": "RAM utilisée",
+    "external": "Contrôles externes (GitHub Actions)",
+    "offsite_backup": "Sauvegarde externe chiffrée",
+    "running": "en cours",
+    "uptime": "Disponibilité",
+    "uptime_checks": "sur {{n}} contrôles (environ 25 heures)",
+    "github_unavailable": "GitHub n'est pas joignable pour le moment.",
+    "load": "Charge moyenne (1, 5, 15 min)"
   }
 }

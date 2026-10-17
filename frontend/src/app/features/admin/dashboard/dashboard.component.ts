@@ -30,11 +30,13 @@ import {
   ToolConversionRow,
   AiUsageOverview,
   ServerErrorSummary,
+  ServerHealth,
 } from './admin-dashboard.service';
 import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
 import { FeatureFlagsPanelComponent } from './panels/feature-flags-panel.component';
 import { AiUsagePanelComponent } from './panels/ai-usage-panel.component';
 import { ServerErrorsPanelComponent } from './panels/server-errors-panel.component';
+import { ServerHealthPanelComponent } from './panels/server-health-panel.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -63,7 +65,7 @@ interface ChartBar {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -139,6 +141,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   systemOps: OperationsInfo | null = null;
   aiUsage!: AiUsageOverview;
   serverErrors!: ServerErrorSummary;
+  serverHealth: ServerHealth | null = null;
   totalContacts = 0;
 
   // Google Search Console
@@ -300,6 +303,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.systemOps = data.systemOps;
     this.aiUsage = data.aiUsage;
     this.serverErrors = data.serverErrors;
+    this.serverHealth = data.serverHealth;
     this.gscSummary = data.gsc;
 
     this.consentTotal = consentStats.total;

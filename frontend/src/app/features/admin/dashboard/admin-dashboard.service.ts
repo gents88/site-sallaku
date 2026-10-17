@@ -179,6 +179,36 @@ export interface ServerErrorSummary {
   recent: ServerErrorView[];
 }
 
+export interface WorkflowRun {
+  name: string;
+  conclusion: string | null;
+  status: string;
+  at: string;
+  url: string;
+}
+
+export interface ServerHealth {
+  backups: {
+    configured: boolean;
+    dir: string;
+    count: number;
+    totalBytes: number;
+    latest: { file: string; sizeBytes: number; at: string; ageHours: number } | null;
+    stale: boolean;
+  };
+  memory: { totalMb: number; availableMb: number; usedPct: number; low: boolean };
+  disk: { path: string; totalGb: number; freeGb: number; usedPct: number; low: boolean } | null;
+  mongo: { residentMb: number | null; connections: number | null; uptimeHours: number | null };
+  load: number[];
+  github: {
+    configured: boolean;
+    offsiteBackup: WorkflowRun | null;
+    uptime: { last: WorkflowRun | null; successPct: number | null; checks: number };
+  };
+  /** backup_stale | memory_low | disk_low | offsite_backup_failed | uptime_failed */
+  warnings: string[];
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -280,6 +310,7 @@ export interface DashboardOverviewData {
   systemOps: OperationsInfo | null;
   aiUsage: AiUsageOverview;
   serverErrors: ServerErrorSummary;
+  serverHealth: ServerHealth | null;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -317,6 +348,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   systemOps: null,
   aiUsage: EMPTY_AI_USAGE,
   serverErrors: EMPTY_SERVER_ERRORS,
+  serverHealth: null,
 };
 
 /**
