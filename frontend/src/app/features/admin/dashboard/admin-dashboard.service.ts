@@ -227,6 +227,14 @@ export interface TranslationHealth {
   items: Array<{ _id: string; title: string; slug: string; published: boolean; issues: TranslationIssue[] }>;
 }
 
+export interface ScheduledPost {
+  _id: string;
+  title: string;
+  slug: string;
+  scheduledAt: string;
+  notifySubscribers: boolean;
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -336,6 +344,7 @@ export interface DashboardOverviewData {
   serverErrors: ServerErrorSummary;
   serverHealth: ServerHealth | null;
   translationHealth: TranslationHealth;
+  scheduledPosts: ScheduledPost[];
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -375,6 +384,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   serverErrors: EMPTY_SERVER_ERRORS,
   serverHealth: null,
   translationHealth: EMPTY_TRANSLATION_HEALTH,
+  scheduledPosts: [],
 };
 
 /**

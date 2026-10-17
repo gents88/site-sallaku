@@ -19,6 +19,7 @@ import { AiQuotaConfig, AiQuotaService } from '../common/services/ai-quota.servi
 import { SettingsService } from '../common/settings/settings.service';
 import { ErrorLogService } from '../error-log/error-log.service';
 import { ServerHealthService } from '../system/server-health.service';
+import { BlogSchedulerService } from '../blog/blog-scheduler.service';
 
 interface StatsContactPoint {
   date: string;
@@ -104,6 +105,7 @@ export class AdminOverviewService {
     private readonly settings: SettingsService,
     private readonly errorLog: ErrorLogService,
     private readonly serverHealth: ServerHealthService,
+    private readonly blogScheduler: BlogSchedulerService,
   ) {}
 
   /**
@@ -194,6 +196,7 @@ export class AdminOverviewService {
       serverErrors: () => this.errorLog.summary(),
       serverHealth: () => this.serverHealth.snapshot(),
       translationHealth: () => this.blog.getTranslationHealth(),
+      scheduledPosts: () => this.blogScheduler.upcoming(5),
     };
 
     const keys = Object.keys(loaders);
