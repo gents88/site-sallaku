@@ -298,6 +298,54 @@ describe('BlogService', () => {
     });
   });
 
+  // ── pubblicazione programmata ───────────────────────────────────────────────
+
+  describe('programmazione', () => {
+    function existing(published: boolean) {
+      return { ...makePost({ published }), toObject() { return this; } };
+    }
+    function mockUpdate(post: unknown) {
+      modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(post) });
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(post) });
+    }
+
+    it('una bozza con scheduledAt viene programmata', async () => {
+      mockUpdate(existing(false));
+      await service.update('1', { published: false, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      expect(modelMock.findByIdAndUpdate.mock.calls[0][1].scheduledAt).toEqual(new Date('2026-10-20T08:00:00.000Z'));
+    });
+
+    it('null toglie la programmazione', async () => {
+      mockUpdate(existing(false));
+      await service.update('1', { scheduledAt: null } as any);
+      expect(modelMock.findByIdAndUpdate.mock.calls[0][1].scheduledAt).toBeNull();
+    });
+
+    it('un post già pubblicato (es. dallo scheduler) non torna programmato con un autosave', async () => {
+      mockUpdate(existing(true));
+      await service.update('1', { title: 'Test Post', scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
+      expect(update.scheduledAt).toBeNull();
+      expect(update).not.toHaveProperty('published');
+    });
+
+    it('pubblicare subito cancella la programmazione', async () => {
+      mockUpdate(existing(false));
+      await service.update('1', { published: true, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      expect(modelMock.findByIdAndUpdate.mock.calls[0][1].scheduledAt).toBeNull();
+    });
+
+    it('create: scheduledAt vale solo per le bozze', async () => {
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.create.mockResolvedValue({});
+      await service.create({ title: 'Nuovo post', content: 'Contenuto abbastanza lungo', published: false, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      await service.create({ title: 'Altro post', content: 'Contenuto abbastanza lungo', published: true, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      expect(modelMock.create.mock.calls[0][0].scheduledAt).toEqual(new Date('2026-10-20T08:00:00.000Z'));
+      expect(modelMock.create.mock.calls[1][0].scheduledAt).toBeNull();
+    });
+  });
+
   // ── backfillLocalizedSlugs ──────────────────────────────────────────────────
 
   describe('backfillLocalizedSlugs', () => {

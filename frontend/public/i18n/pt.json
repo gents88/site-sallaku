@@ -1878,7 +1878,15 @@
     "filter_label": "Filtrar por estado",
     "filter_all": "Todos",
     "empty_drafts": "Sem rascunhos.",
-    "empty_published": "Nenhum artigo publicado."
+    "empty_published": "Nenhum artigo publicado.",
+    "schedule_label": "Publicação agendada",
+    "schedule_hint": "À hora definida o artigo fica público sozinho (verificação a cada minuto). Vazio = sem agendamento.",
+    "schedule_btn": "Agendar",
+    "schedule_clear": "Remover agendamento",
+    "notify_label": "Quando sair, enviar uma newsletter aos subscritores",
+    "scheduled_badge": "Agendado",
+    "scheduled_msg": "Artigo agendado.",
+    "schedule_past": "Escolhe uma data e hora no futuro."
   },
   "privacy": {
     "title": "Política de Privacidade",
@@ -2313,5 +2321,12 @@
   },
   "content_health": {
     "section": "Conteúdos"
+  },
+  "scheduled_posts": {
+    "title": "Publicações agendadas",
+    "desc": "Artigos que saem sozinhos à hora definida",
+    "none": "Nenhum artigo agendado.",
+    "notify": "+ newsletter",
+    "new_post": "Agendar um artigo"
   }
 }

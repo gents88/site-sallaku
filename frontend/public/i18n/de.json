@@ -1878,7 +1878,15 @@
     "filter_label": "Nach Status filtern",
     "filter_all": "Alle",
     "empty_drafts": "Keine Entwürfe.",
-    "empty_published": "Keine veröffentlichten Artikel."
+    "empty_published": "Keine veröffentlichten Artikel.",
+    "schedule_label": "Geplante Veröffentlichung",
+    "schedule_hint": "Zur festgelegten Zeit wird der Beitrag von selbst veröffentlicht (Prüfung jede Minute). Leer = nicht geplant.",
+    "schedule_btn": "Planen",
+    "schedule_clear": "Planung entfernen",
+    "notify_label": "Beim Erscheinen einen Newsletter an die Abonnenten senden",
+    "scheduled_badge": "Geplant",
+    "scheduled_msg": "Beitrag geplant.",
+    "schedule_past": "Wähle ein Datum und eine Uhrzeit in der Zukunft."
   },
   "privacy": {
     "title": "Datenschutzerklärung",
@@ -2313,5 +2321,12 @@
   },
   "content_health": {
     "section": "Inhalte"
+  },
+  "scheduled_posts": {
+    "title": "Geplante Beiträge",
+    "desc": "Beiträge, die zur festgelegten Zeit von selbst erscheinen",
+    "none": "Keine geplanten Beiträge.",
+    "notify": "+ Newsletter",
+    "new_post": "Beitrag planen"
   }
 }

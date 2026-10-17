@@ -1878,7 +1878,15 @@
     "filter_label": "Filtra per stato",
     "filter_all": "Tutti",
     "empty_drafts": "Nessuna bozza.",
-    "empty_published": "Nessun articolo pubblicato."
+    "empty_published": "Nessun articolo pubblicato.",
+    "schedule_label": "Pubblicazione programmata",
+    "schedule_hint": "All'orario indicato l'articolo diventa pubblico da solo (controllo ogni minuto). Vuoto = nessuna programmazione.",
+    "schedule_btn": "Programma",
+    "schedule_clear": "Togli programmazione",
+    "notify_label": "Quando esce, invia una newsletter agli iscritti",
+    "scheduled_badge": "Programmato",
+    "scheduled_msg": "Articolo programmato.",
+    "schedule_past": "Scegli una data e un'ora nel futuro."
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -2313,5 +2321,12 @@
   },
   "content_health": {
     "section": "Contenuti"
+  },
+  "scheduled_posts": {
+    "title": "Pubblicazioni programmate",
+    "desc": "Articoli che escono da soli all'orario indicato",
+    "none": "Nessun articolo programmato.",
+    "notify": "+ newsletter",
+    "new_post": "Programma un articolo"
   }
 }

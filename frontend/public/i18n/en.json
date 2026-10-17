@@ -1878,7 +1878,15 @@
     "filter_label": "Filter by status",
     "filter_all": "All",
     "empty_drafts": "No drafts.",
-    "empty_published": "No published articles."
+    "empty_published": "No published articles.",
+    "schedule_label": "Scheduled publishing",
+    "schedule_hint": "At the set time the post goes public on its own (checked every minute). Empty = not scheduled.",
+    "schedule_btn": "Schedule",
+    "schedule_clear": "Remove schedule",
+    "notify_label": "When it goes live, send a newsletter to subscribers",
+    "scheduled_badge": "Scheduled",
+    "scheduled_msg": "Post scheduled.",
+    "schedule_past": "Pick a date and time in the future."
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -2313,5 +2321,12 @@
   },
   "content_health": {
     "section": "Content"
+  },
+  "scheduled_posts": {
+    "title": "Scheduled posts",
+    "desc": "Posts that go live on their own at the set time",
+    "none": "No scheduled posts.",
+    "notify": "+ newsletter",
+    "new_post": "Schedule a post"
   }
 }

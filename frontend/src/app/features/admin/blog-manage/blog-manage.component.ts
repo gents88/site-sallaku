@@ -41,6 +41,22 @@ interface PdfPreview {
 
 export type BlogStatusFilter = 'all' | 'published' | 'draft';
 
+/** ISO → valore di <input type="datetime-local"> nell'ora locale del browser. */
+export function toLocalDateTimeInput(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** Valore di datetime-local (ora locale) → ISO; null se vuoto o non valido. */
+export function fromLocalDateTimeInput(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 @Component({
   selector: 'app-blog-manage',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -151,6 +167,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
     coverImage:      [''],
     metaTitle:       ['', [Validators.maxLength(this.META_TITLE_MAX)]],
     metaDescription: ['', [Validators.maxLength(this.META_DESCRIPTION_MAX)]],
+    // Pubblicazione programmata (datetime-local, ora del browser)
+    scheduledAt:     [''],
+    notifySubscribers: [false],
     // Translations
     title_en:        ['', [Validators.maxLength(this.TITLE_MAX)]],
     title_sq:        ['', [Validators.maxLength(this.TITLE_MAX)]],
@@ -324,7 +343,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
     this.activeTab = 'it';
     this.pdfPreview = null;
     this.resetGenerationState();
-    this.form.reset({ language: 'it' });
+    this.form.reset({ language: 'it', scheduledAt: '', notifySubscribers: false });
     this.showForm = true;
     this.dirty.mark(this.buildPayload(false));
     this.setupAutoSave();
@@ -347,6 +366,8 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
       content: post.content, excerpt: post.excerpt,
       coverImage: post.coverImage, metaTitle: post.metaTitle,
       metaDescription: post.metaDescription,
+      scheduledAt: post.published ? '' : toLocalDateTimeInput(post.scheduledAt),
+      notifySubscribers: !!post.notifySubscribers,
       title_en: post.title_en || '', title_sq: post.title_sq || '', title_pt: post.title_pt || '',
       title_es: post.title_es || '', title_fr: post.title_fr || '', title_de: post.title_de || '',
       content_en: post.content_en || '', content_sq: post.content_sq || '', content_pt: post.content_pt || '',
@@ -417,6 +438,10 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
   private performAutoSave(): void {
     if (this.saving || this.autoSaving) return;
     const payload = this.buildPayload(false);
+    // L'autosave non cambia mai lo stato di pubblicazione: prima rimandava
+    // published: false e un post online tornava bozza mentre lo si correggeva
+    // (o appena pubblicato dallo scheduler, con l'editor ancora aperto).
+    if (this.editingId) delete payload.published;
     this.autoSaving = true;
     this.autosaveStatus = 'saving';
     const autosaved = payload;
@@ -447,7 +472,26 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
   saveDraft(): void { this.save(false); }
   publish(): void { this.save(true); }
 
-  save(published: boolean): void {
+  /** Salva come bozza programmata: l'orario deve essere nel futuro. */
+  schedule(): void {
+    const iso = fromLocalDateTimeInput(this.form.get('scheduledAt')?.value);
+    if (!iso || new Date(iso).getTime() <= Date.now()) {
+      this.snackBar.open(this.t.instant('blog_manage.schedule_past'), this.t.instant('common.close'), { duration: 3500 });
+      return;
+    }
+    this.save(false, 'blog_manage.scheduled_msg');
+  }
+
+  clearSchedule(): void {
+    this.form.patchValue({ scheduledAt: '', notifySubscribers: false });
+    this.form.markAsDirty();
+  }
+
+  isScheduled(post: Post): boolean {
+    return !post.published && !!post.scheduledAt;
+  }
+
+  save(published: boolean, successKey?: string): void {
     if (this.form.get('title')?.invalid || this.form.get('content')?.invalid) {
       this.form.get('title')?.markAsTouched();
       this.form.get('content')?.markAsTouched();
@@ -479,7 +523,7 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
         this.autosaveStatus = 'idle';
         this.cdr.markForCheck();
         this.snackBar.open(
-          this.t.instant(published ? 'blog_manage.published_msg' : 'blog_manage.draft_saved_msg'),
+          this.t.instant(successKey ?? (published ? 'blog_manage.published_msg' : 'blog_manage.draft_saved_msg')),
           this.t.instant('common.close'),
           { duration: 3000 },
         );
@@ -646,6 +690,9 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
       content,
       language: raw.language || 'it',
       published,
+      // null esplicito: svuotare il campo toglie la programmazione già salvata.
+      scheduledAt: published ? null : fromLocalDateTimeInput(raw.scheduledAt),
+      notifySubscribers: !!raw.notifySubscribers,
     };
 
     if (subtitle)        payload.subtitle = subtitle;

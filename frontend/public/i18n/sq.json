@@ -1878,7 +1878,15 @@
     "filter_label": "Filtro sipas statusit",
     "filter_all": "Të gjitha",
     "empty_drafts": "Asnjë draft.",
-    "empty_published": "Asnjë artikull i publikuar."
+    "empty_published": "Asnjë artikull i publikuar.",
+    "schedule_label": "Publikim i programuar",
+    "schedule_hint": "Në orën e caktuar artikulli bëhet publik vetë (kontroll çdo minutë). Bosh = pa programim.",
+    "schedule_btn": "Programo",
+    "schedule_clear": "Hiq programimin",
+    "notify_label": "Kur del, dërgo një newsletter te abonentët",
+    "scheduled_badge": "I programuar",
+    "scheduled_msg": "Artikulli u programua.",
+    "schedule_past": "Zgjidh një datë dhe orë në të ardhmen."
   },
   "privacy": {
     "title": "Politika e Privatësisë",
@@ -2313,5 +2321,12 @@
   },
   "content_health": {
     "section": "Përmbajtja"
+  },
+  "scheduled_posts": {
+    "title": "Publikime të programuara",
+    "desc": "Artikuj që dalin vetë në orën e caktuar",
+    "none": "Asnjë artikull i programuar.",
+    "notify": "+ newsletter",
+    "new_post": "Programo një artikull"
   }
 }
