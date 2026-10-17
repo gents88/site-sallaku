@@ -2262,5 +2262,20 @@
     "last_7_days": "Token, ultimi 7 giorni",
     "by_tool": "Richieste per strumento",
     "no_calls": "Nessuna richiesta oggi."
+  },
+  "server_errors": {
+    "title": "Errori del server",
+    "desc": "Errori 5xx raggruppati, ultimi 30 giorni",
+    "open": "Gruppi aperti",
+    "today": "Occorrenze oggi",
+    "week": "Ultimi 7 giorni",
+    "total": "Occorrenze totali",
+    "last_seen": "Ultima volta:",
+    "today_count": "{{n}} oggi",
+    "show_stack": "Mostra stack",
+    "hide_stack": "Nascondi stack",
+    "resolve": "Segna risolto",
+    "resolve_all": "Segna tutti risolti",
+    "none": "Nessun errore aperto. Un errore risolto torna qui se si ripete."
   }
 }

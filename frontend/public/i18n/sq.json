@@ -2262,5 +2262,20 @@
     "last_7_days": "Token, 7 ditët e fundit",
     "by_tool": "Kërkesa për mjet",
     "no_calls": "Asnjë kërkesë sot."
+  },
+  "server_errors": {
+    "title": "Gabimet e serverit",
+    "desc": "Gabime 5xx të grupuara, 30 ditët e fundit",
+    "open": "Grupe të hapura",
+    "today": "Ndodhi sot",
+    "week": "7 ditët e fundit",
+    "total": "Ndodhi gjithsej",
+    "last_seen": "Herën e fundit:",
+    "today_count": "{{n}} sot",
+    "show_stack": "Shfaq stack-un",
+    "hide_stack": "Fshih stack-un",
+    "resolve": "Shëno si të zgjidhur",
+    "resolve_all": "Shëno të gjitha si të zgjidhura",
+    "none": "Asnjë gabim i hapur. Një gabim i zgjidhur kthehet këtu nëse përsëritet."
   }
 }

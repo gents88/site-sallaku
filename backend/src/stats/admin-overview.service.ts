@@ -17,6 +17,7 @@ import { NotesService } from '../notes/services/notes.service';
 import { AiUsageService, AiUsageSummary } from '../common/services/ai-usage.service';
 import { AiQuotaConfig, AiQuotaService } from '../common/services/ai-quota.service';
 import { SettingsService } from '../common/settings/settings.service';
+import { ErrorLogService } from '../error-log/error-log.service';
 
 interface StatsContactPoint {
   date: string;
@@ -100,6 +101,7 @@ export class AdminOverviewService {
     private readonly aiUsage: AiUsageService,
     private readonly aiQuota: AiQuotaService,
     private readonly settings: SettingsService,
+    private readonly errorLog: ErrorLogService,
   ) {}
 
   /**
@@ -187,6 +189,7 @@ export class AdminOverviewService {
       systemDetails: () => this.systemInfo.version(),
       systemOps: () => this.systemInfo.ops(),
       aiUsage: () => this.aiUsageOverview(),
+      serverErrors: () => this.errorLog.summary(),
     };
 
     const keys = Object.keys(loaders);

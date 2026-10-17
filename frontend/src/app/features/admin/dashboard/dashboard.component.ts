@@ -29,10 +29,12 @@ import {
   LiveHandoffSession,
   ToolConversionRow,
   AiUsageOverview,
+  ServerErrorSummary,
 } from './admin-dashboard.service';
 import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
 import { FeatureFlagsPanelComponent } from './panels/feature-flags-panel.component';
 import { AiUsagePanelComponent } from './panels/ai-usage-panel.component';
+import { ServerErrorsPanelComponent } from './panels/server-errors-panel.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -61,7 +63,7 @@ interface ChartBar {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -136,6 +138,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   systemDetails: SystemDetails | null = null;
   systemOps: OperationsInfo | null = null;
   aiUsage!: AiUsageOverview;
+  serverErrors!: ServerErrorSummary;
   totalContacts = 0;
 
   // Google Search Console
@@ -296,6 +299,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.systemDetails = data.systemDetails;
     this.systemOps = data.systemOps;
     this.aiUsage = data.aiUsage;
+    this.serverErrors = data.serverErrors;
     this.gscSummary = data.gsc;
 
     this.consentTotal = consentStats.total;

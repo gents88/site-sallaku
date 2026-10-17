@@ -24,13 +24,14 @@ function makeService(overrides: Record<string, Record<string, jest.Mock>> = {}) 
     aiUsage: { getSummary: ok({ date: '2026-10-17', tokens: 500, calls: 3, history: [] }) },
     aiQuota: { getConfig: jest.fn(() => ({ dailyTokenBudget: 300_000, maxCallsPerIpPerDay: 30 })) },
     settings: { isEnabled: ok(true) },
+    errorLog: { summary: ok({ open: 2, today: 5, week: 9, recent: [] }) },
   };
   for (const [k, v] of Object.entries(overrides)) Object.assign((deps as Record<string, object>)[k], v);
   const d = deps as unknown as Record<string, never>;
   const service = new AdminOverviewService(
     d.users, d.contacts, d.blog, d.projects, d.experiences, d.analytics, d.analyticsExport,
     d.searchConsole, d.audit, d.chatbot, d.consent, d.liveHandoff, d.systemInfo, d.testimonials, d.notes,
-    d.aiUsage, d.aiQuota, d.settings,
+    d.aiUsage, d.aiQuota, d.settings, d.errorLog,
   );
   return { service, deps };
 }
@@ -46,8 +47,9 @@ describe('AdminOverviewService', () => {
     expect(res.sections.core).toEqual(expect.objectContaining({ users: 3, contacts: 10, unreadContacts: 2 }));
     expect(Object.keys(res.sections)).toEqual(expect.arrayContaining([
       'topPosts', 'advanced', 'analyticsStats', 'topPages', 'monthlyHistory', 'toolConversion', 'auditLogs',
-      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage',
+      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors',
     ]));
+    expect(res.sections.serverErrors).toEqual(expect.objectContaining({ open: 2, today: 5 }));
   });
 
   it('aiUsage unisce consumo, limiti in vigore e stato dell’interruttore', async () => {

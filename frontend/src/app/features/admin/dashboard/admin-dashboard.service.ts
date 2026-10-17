@@ -156,6 +156,29 @@ export interface AiUsageOverview {
   enabled: boolean;
 }
 
+export interface ServerErrorView {
+  _id: string;
+  method: string;
+  route: string;
+  path: string;
+  status: number;
+  name: string;
+  message: string;
+  stack: string;
+  count: number;
+  today: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  resolvedAt: string | null;
+}
+
+export interface ServerErrorSummary {
+  open: number;
+  today: number;
+  week: number;
+  recent: ServerErrorView[];
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -227,6 +250,8 @@ const EMPTY_AI_USAGE: AiUsageOverview = {
   quota: { dailyTokenBudget: 0, maxCallsPerIpPerDay: 0 }, enabled: true,
 };
 
+const EMPTY_SERVER_ERRORS: ServerErrorSummary = { open: 0, today: 0, week: 0, recent: [] };
+
 const EMPTY_GSC: SearchConsoleSummary = {
   configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
 };
@@ -254,6 +279,7 @@ export interface DashboardOverviewData {
   systemDetails: SystemDetails | null;
   systemOps: OperationsInfo | null;
   aiUsage: AiUsageOverview;
+  serverErrors: ServerErrorSummary;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -290,6 +316,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   systemDetails: null,
   systemOps: null,
   aiUsage: EMPTY_AI_USAGE,
+  serverErrors: EMPTY_SERVER_ERRORS,
 };
 
 /**
@@ -381,6 +408,15 @@ export class AdminDashboardService {
 
   exportAnalyticsCsv(): Observable<Blob> {
     return this.http.get(`${this.api}/analytics/export/csv`, { responseType: 'blob' });
+  }
+
+  /** Segna risolto un gruppo di errori 5xx: torna aperto se si ripete. */
+  resolveServerError(id: string): Observable<{ success: boolean }> {
+    return this.http.post<{ success: boolean }>(`${this.api}/system/errors/${id}/resolve`, {});
+  }
+
+  resolveAllServerErrors(): Observable<{ resolved: number }> {
+    return this.http.post<{ resolved: number }>(`${this.api}/system/errors/resolve-all`, {});
   }
 
   getToolConversion(days = 30): Observable<ToolConversionRow[]> {

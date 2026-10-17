@@ -18,6 +18,7 @@ import helmet from 'helmet';
 import * as compression from 'compression';
 import * as express from 'express';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { ErrorLogService } from './error-log/error-log.service';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { isProductionEnv } from './common/utils/runtime-env';
 
@@ -147,7 +148,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggingInterceptor());
 
   // ── Global filters ───────────────────────────────────
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(app.get(ErrorLogService)));
 
   // ── Swagger (dev & staging only) ─────────────────────
   if (!isProduction) {
