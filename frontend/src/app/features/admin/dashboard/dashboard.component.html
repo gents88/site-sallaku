@@ -175,6 +175,17 @@
         </div>
         <app-translation-health-panel [data]="translationHealth" [failed]="isFailed('translationHealth')" />
       </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'scheduled_posts.title' | translate }}</h2>
+            <p class="text-muted">{{ 'scheduled_posts.desc' | translate }}</p>
+          </div>
+          <mat-icon>event_upcoming</mat-icon>
+        </div>
+        <app-scheduled-posts-panel [posts]="scheduledPosts" [failed]="isFailed('scheduledPosts')" />
+      </section>
     </div>
 
     <div class="analytics-grid">

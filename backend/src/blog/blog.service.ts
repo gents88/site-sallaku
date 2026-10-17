@@ -199,6 +199,7 @@ export class BlogService implements OnApplicationBootstrap {
   async create(dto: CreatePostDto): Promise<PostDocument> {
     const slug = await this.ensureUniqueSlug(dto.slug || dto.title);
     const publishedAt = dto.published ? new Date() : null;
+    const scheduledAt = dto.published || !dto.scheduledAt ? null : new Date(dto.scheduledAt);
     const excerpt = dto.excerpt || this.autoExcerpt(dto.content);
     const localizedSlugs: Record<string, unknown> = {};
     await this.fillLocalizedSlugs(localizedSlugs, dto);
@@ -214,6 +215,7 @@ export class BlogService implements OnApplicationBootstrap {
       excerpt,
       language: dto.language || DEFAULT_BLOG_LANGUAGE,
       publishedAt,
+      scheduledAt,
       sourceUpdatedAt: now,
       translationsUpdatedAt,
     });
@@ -236,6 +238,15 @@ export class BlogService implements OnApplicationBootstrap {
     // which is never part of the update) so re-publishing restores the article as it was.
     if (dto.published) {
       update.publishedAt = existing.publishedAt || new Date();
+    }
+
+    // Programmazione: vale solo per una bozza. Un post pubblicato (anche dallo
+    // scheduler mentre l'editor era aperto) non torna "programmato" per un autosave.
+    const willBePublished = dto.published ?? existing.published;
+    if (willBePublished) {
+      update.scheduledAt = null;
+    } else if (dto.scheduledAt !== undefined) {
+      update.scheduledAt = dto.scheduledAt ? new Date(dto.scheduledAt) : null;
     }
 
     const post = await this.postModel.findByIdAndUpdate(id, update, { new: true }).exec();

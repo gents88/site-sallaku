@@ -58,6 +58,14 @@ export class Post {
   @Prop({ default: null })
   publishedAt: Date;
 
+  /** Pubblicazione programmata: a quest'ora BlogSchedulerService lo rende pubblico (null = nessuna). */
+  @Prop({ type: Date, default: null })
+  scheduledAt: Date | null;
+
+  /** All'uscita programmata, crea e invia una campagna newsletter con il post. */
+  @Prop({ type: Boolean, default: false })
+  notifySubscribers: boolean;
+
   // Multilanguage translations (title/content/excerpt default to Italian)
   @Prop({ default: '' })
   title_en: string;
@@ -140,6 +148,7 @@ export class Post {
 export const PostSchema = SchemaFactory.createForClass(Post);
 PostSchema.index({ tags: 1 });
 PostSchema.index({ published: 1, publishedAt: -1 });
+PostSchema.index({ published: 1, scheduledAt: 1 });
 /**
  * Indice full-text per /search (ricerca completa, ordinata per pertinenza).
  * default_language 'none': i post sono in 7 lingue, niente stemming di una
