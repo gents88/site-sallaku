@@ -309,7 +309,8 @@
       "note": "Il messaggio viene inviato direttamente dal sito, senza aprire app esterne.",
       "privacy_checkbox": "Ho letto e accetto l'informativa sulla privacy per il trattamento dei miei dati.",
       "privacy_link_text": "Privacy Policy",
-      "privacy_err": "Devi accettare l'informativa privacy per inviare il messaggio"
+      "privacy_err": "Devi accettare l'informativa privacy per inviare il messaggio",
+      "disabled_notice": "Il modulo di contatto è temporaneamente disattivato. Puoi scrivermi su LinkedIn o via email."
     },
     "info": {
       "title": "Connettiamoci",
@@ -438,7 +439,8 @@
     "err_too_many": "Troppi tentativi. Attendi un minuto e riprova.",
     "err_otp_wrong": "Codice errato. Tentativi rimasti: {{count}}.",
     "err_otp_locked": "Troppi tentativi errati. Richiedi un nuovo codice.",
-    "err_server": "Il server non risponde. Riprova tra poco."
+    "err_server": "Il server non risponde. Riprova tra poco.",
+    "registration_closed": "Le registrazioni sono temporaneamente chiuse."
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2215,5 +2217,32 @@
     "pick": "Scegli file",
     "release": "Rilascia il file per vedere cosa puoi farci",
     "only_first": "Uso solo il primo file ({{count}} ignorati)."
+  },
+  "feature_flags": {
+    "title": "Funzionalità del sito",
+    "desc": "Accendi e spegni parti del sito senza deploy",
+    "maintenanceMode": "Modalità manutenzione",
+    "maintenanceMode_desc": "I visitatori vedono un avviso a tutta pagina; tu continui a vedere il sito.",
+    "aiEnabled": "Strumenti AI",
+    "aiEnabled_desc": "Strumenti AI del Lab. Spenti, il chatbot risponde con i messaggi predefiniti.",
+    "chatbotEnabled": "Chatbot",
+    "chatbotEnabled_desc": "Il fumetto della chat in basso a destra.",
+    "liveHandoffEnabled": "Chat dal vivo",
+    "liveHandoffEnabled_desc": "La proposta \"Vuoi parlare con Gent?\" dentro il chatbot.",
+    "contactFormEnabled": "Modulo di contatto",
+    "contactFormEnabled_desc": "Utile durante un'ondata di spam.",
+    "newsletterSignupEnabled": "Iscrizioni alla newsletter",
+    "newsletterSignupEnabled_desc": "Il modulo di iscrizione in fondo al blog.",
+    "registrationEnabled": "Registrazione utenti",
+    "registrationEnabled_desc": "Creazione di nuovi account dalla pagina di registrazione.",
+    "maintenance_message": "Messaggio di manutenzione",
+    "save_message": "Salva messaggio",
+    "save_error": "Salvataggio non riuscito, riprova."
+  },
+  "maintenance": {
+    "title": "Sito in manutenzione",
+    "default_message": "Sto facendo qualche lavoro sul sito. Torna tra poco!",
+    "admin_login": "Accesso admin",
+    "admin_notice": "Manutenzione attiva: i visitatori vedono l'avviso"
   }
 }

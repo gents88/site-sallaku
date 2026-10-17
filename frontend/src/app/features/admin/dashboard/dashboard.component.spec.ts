@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DashboardComponent } from './dashboard.component';
 import { AdminDashboardService, DashboardOverview, normalizeOverview } from './admin-dashboard.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { provideFeatureFlagsStub } from '../../../core/services/feature-flags.testing';
 
 function overview(errors: string[] = [], sections: Record<string, unknown> = {}): DashboardOverview {
   const base = {
@@ -30,6 +31,7 @@ function setup(load: AdminDashboardService['loadOverview']) {
     providers: [
       provideRouter([]),
       provideNoopAnimations(),
+      provideFeatureFlagsStub(),
       { provide: AuthService, useValue: { currentUser: signal(null), isAdmin: signal(true), logout: vi.fn() } },
       { provide: AdminDashboardService, useValue: { loadOverview, getTodaySessions: vi.fn(() => of({ data: [], total: 0, page: 1, totalPages: 1 })) } },
     ],

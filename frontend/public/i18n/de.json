@@ -309,7 +309,8 @@
       "note": "Die Nachricht wird direkt von der Website gesendet, ohne externe Apps zu öffnen.",
       "privacy_checkbox": "Ich habe die Datenschutzerklärung zur Verarbeitung meiner Daten gelesen und akzeptiere sie.",
       "privacy_link_text": "Datenschutzerklärung",
-      "privacy_err": "Sie müssen die Datenschutzerklärung akzeptieren, um die Nachricht zu senden"
+      "privacy_err": "Sie müssen die Datenschutzerklärung akzeptieren, um die Nachricht zu senden",
+      "disabled_notice": "Das Kontaktformular ist vorübergehend deaktiviert. Du kannst mir auf LinkedIn oder per E-Mail schreiben."
     },
     "info": {
       "title": "Lassen Sie uns vernetzen",
@@ -438,7 +439,8 @@
     "err_too_many": "Zu viele Versuche. Warte eine Minute und versuche es erneut.",
     "err_otp_wrong": "Falscher Code. Verbleibende Versuche: {{count}}.",
     "err_otp_locked": "Zu viele Fehlversuche. Fordere einen neuen Code an.",
-    "err_server": "Der Server antwortet nicht. Versuche es gleich noch einmal."
+    "err_server": "Der Server antwortet nicht. Versuche es gleich noch einmal.",
+    "registration_closed": "Registrierungen sind vorübergehend geschlossen."
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2215,5 +2217,32 @@
     "pick": "Datei auswählen",
     "release": "Lass die Datei los, um zu sehen, was du damit machen kannst",
     "only_first": "Nur die erste Datei wird verwendet ({{count}} ignoriert)."
+  },
+  "feature_flags": {
+    "title": "Website-Funktionen",
+    "desc": "Teile der Website ohne Deploy ein- und ausschalten",
+    "maintenanceMode": "Wartungsmodus",
+    "maintenanceMode_desc": "Besucher sehen einen ganzseitigen Hinweis; du siehst die Website weiterhin.",
+    "aiEnabled": "KI-Tools",
+    "aiEnabled_desc": "Die KI-Tools im Lab. Ausgeschaltet antwortet der Chatbot mit seinen Standardnachrichten.",
+    "chatbotEnabled": "Chatbot",
+    "chatbotEnabled_desc": "Die Chat-Blase unten rechts.",
+    "liveHandoffEnabled": "Live-Chat",
+    "liveHandoffEnabled_desc": "Das Angebot „Möchtest du mit Gent sprechen?“ im Chatbot.",
+    "contactFormEnabled": "Kontaktformular",
+    "contactFormEnabled_desc": "Nützlich während einer Spam-Welle.",
+    "newsletterSignupEnabled": "Newsletter-Anmeldungen",
+    "newsletterSignupEnabled_desc": "Das Anmeldeformular am Ende des Blogs.",
+    "registrationEnabled": "Benutzerregistrierung",
+    "registrationEnabled_desc": "Neue Konten über die Registrierungsseite.",
+    "maintenance_message": "Wartungsnachricht",
+    "save_message": "Nachricht speichern",
+    "save_error": "Speichern fehlgeschlagen, bitte erneut versuchen."
+  },
+  "maintenance": {
+    "title": "Website in Wartung",
+    "default_message": "Ich arbeite gerade an der Website. Schau gleich wieder vorbei!",
+    "admin_login": "Admin-Login",
+    "admin_notice": "Wartung aktiv: Besucher sehen den Hinweis"
   }
 }

@@ -16,6 +16,7 @@ import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/v
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { ReadEntry, ReadingHistoryService } from '../../../core/services/reading-history.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 
 /**
  * Tag unici ordinati per numero di articoli. Unisce le varianti che
@@ -105,6 +106,7 @@ export class BlogListComponent implements OnInit {
   /** La lista non è arrivata (tipicamente: offline senza copia in cache). */
   loadError = false;
   readonly network = inject(NetworkStatusService);
+  readonly flags = inject(FeatureFlagsService);
   private readonly readingHistory = inject(ReadingHistoryService);
   /** Articoli già letti in questa lingua: quelli che il service worker può servire offline. */
   get readOffline(): ReadEntry[] { return this.readingHistory.forLang(this.currentLang()); }

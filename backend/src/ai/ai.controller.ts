@@ -18,6 +18,7 @@ import { AiService } from './ai.service';
 import { AiQuotaService } from '../common/services/ai-quota.service';
 import { AskDocumentDto } from './dto/ask-document.dto';
 import { clientIp } from '../common/utils/request-ip.util';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 
 const ALLOWED_MIMES = new Set([
   'application/pdf',
@@ -42,6 +43,7 @@ const upload = (maxMb: number) => FileInterceptor('file', {
 });
 
 @ApiTags('AI')
+@RequireFeature('aiEnabled')
 @Controller('ai')
 export class AiController {
   constructor(

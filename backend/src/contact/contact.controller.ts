@@ -8,6 +8,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { geoLookup } from '../common/utils/geoip-disk';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 
 @ApiTags('Contact')
 @Controller('contact')
@@ -16,6 +17,7 @@ export class ContactController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
+  @RequireFeature('contactFormEnabled')
   @ApiOperation({ summary: 'Send a contact message (public)' })
   sendMessage(@Req() req: Request, @Body() dto: ContactDto) {
     // IP is already rate-limited by the global ThrottlerGuard (8 req / 60 s)

@@ -309,7 +309,8 @@
       "note": "A mensagem é enviada diretamente do site, sem abrir aplicativos externos.",
       "privacy_checkbox": "Li e aceito a política de privacidade para o tratamento dos meus dados.",
       "privacy_link_text": "Política de Privacidade",
-      "privacy_err": "Tem de aceitar a política de privacidade para enviar a mensagem"
+      "privacy_err": "Tem de aceitar a política de privacidade para enviar a mensagem",
+      "disabled_notice": "O formulário de contacto está temporariamente desativado. Podes escrever-me no LinkedIn ou por email."
     },
     "info": {
       "title": "Vamos nos conectar",
@@ -438,7 +439,8 @@
     "err_too_many": "Muitas tentativas. Aguarde um minuto e tente novamente.",
     "err_otp_wrong": "Código incorreto. Tentativas restantes: {{count}}.",
     "err_otp_locked": "Muitas tentativas incorretas. Solicite um novo código.",
-    "err_server": "O servidor não está respondendo. Tente novamente em instantes."
+    "err_server": "O servidor não está respondendo. Tente novamente em instantes.",
+    "registration_closed": "Os registos estão temporariamente fechados."
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2215,5 +2217,32 @@
     "pick": "Escolher arquivo",
     "release": "Solte o arquivo para ver o que pode fazer com ele",
     "only_first": "Só o primeiro arquivo é usado ({{count}} ignorados)."
+  },
+  "feature_flags": {
+    "title": "Funcionalidades do site",
+    "desc": "Liga e desliga partes do site sem deploy",
+    "maintenanceMode": "Modo de manutenção",
+    "maintenanceMode_desc": "Os visitantes veem um aviso de página inteira; tu continuas a ver o site.",
+    "aiEnabled": "Ferramentas de IA",
+    "aiEnabled_desc": "As ferramentas de IA do Lab. Desligadas, o chatbot responde com as mensagens predefinidas.",
+    "chatbotEnabled": "Chatbot",
+    "chatbotEnabled_desc": "O balão do chat no canto inferior direito.",
+    "liveHandoffEnabled": "Chat ao vivo",
+    "liveHandoffEnabled_desc": "A proposta \"Queres falar com o Gent?\" dentro do chatbot.",
+    "contactFormEnabled": "Formulário de contacto",
+    "contactFormEnabled_desc": "Útil durante uma vaga de spam.",
+    "newsletterSignupEnabled": "Inscrições na newsletter",
+    "newsletterSignupEnabled_desc": "O formulário de inscrição no fundo do blog.",
+    "registrationEnabled": "Registo de utilizadores",
+    "registrationEnabled_desc": "Criação de novas contas a partir da página de registo.",
+    "maintenance_message": "Mensagem de manutenção",
+    "save_message": "Guardar mensagem",
+    "save_error": "Não foi possível guardar, tenta de novo."
+  },
+  "maintenance": {
+    "title": "Site em manutenção",
+    "default_message": "Estou a fazer alguns trabalhos no site. Volta daqui a pouco!",
+    "admin_login": "Acesso de administrador",
+    "admin_notice": "Manutenção ativa: os visitantes veem o aviso"
   }
 }

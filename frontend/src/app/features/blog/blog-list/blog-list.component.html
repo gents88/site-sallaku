@@ -145,7 +145,7 @@
 
     <!-- Dopo gli articoli e non prima: su mobile la newsletter occupava
          l'intero primo schermo e non si vedeva nemmeno un articolo. -->
-    @if (!loadError) {
+    @if (!loadError && flags.newsletterSignupEnabled()) {
       <div class="blog-newsletter">
         <app-newsletter-signup></app-newsletter-signup>
       </div>

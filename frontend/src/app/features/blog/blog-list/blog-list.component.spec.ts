@@ -10,6 +10,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { PostSummary } from '../../../core/models/post.model';
 import { NetworkStatusService } from '../../../core/services/network-status.service';
+import { provideFeatureFlagsStub } from '../../../core/services/feature-flags.testing';
 
 /** Minimal PostSummary fixture — only the fields filter()/matchScore() read. */
 function post(overrides: Partial<PostSummary>): PostSummary {
@@ -32,6 +33,7 @@ describe('BlogListComponent search', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of(posts)) } },
         {
           provide: SeoService,
@@ -124,6 +126,7 @@ describe('BlogListComponent prefetch', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])), getBySlug } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: LanguageService, useValue: { current: () => 'sq' } },
@@ -145,6 +148,7 @@ describe('BlogListComponent prefetch', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])), getBySlug } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: LanguageService, useValue: { current: () => 'it' } },
@@ -166,6 +170,7 @@ describe('BlogListComponent offline', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         provideRouter([]),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(getPublishedAll) } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
@@ -216,6 +221,7 @@ describe('BlogListComponent tags', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])) } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: LanguageService, useValue: { current: () => 'it' } },
@@ -300,6 +306,7 @@ describe('BlogListComponent layout', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         provideRouter([]),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of(posts)), getBySlug: vi.fn(() => of({})) } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
