@@ -45,6 +45,7 @@ export const SECTION_LABEL_KEYS: Record<OverviewSection, string> = {
   serverHealth: 'server_health.title',
   translationHealth: 'translation_health.title',
   scheduledPosts: 'scheduled_posts.title',
+  leads: 'leads.title',
 };
 
 /** Etichette uniche (le tre sezioni di sistema condividono lo stesso pannello). */

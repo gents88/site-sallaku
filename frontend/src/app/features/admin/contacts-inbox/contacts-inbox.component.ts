@@ -1,10 +1,28 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { AdminDashboardService, RecentContact } from '../dashboard/admin-dashboard.service';
+import {
+  AdminDashboardService, LEAD_STATUSES, LeadStatus, RecentContact, effectiveLeadStatus,
+} from '../dashboard/admin-dashboard.service';
+
+/** <input type="date"> → ISO alle 9:00 locali (un promemoria "del giorno"); null se vuoto. */
+export function followUpFromDateInput(value: string): string | null {
+  if (!value) return null;
+  const d = new Date(`${value}T09:00`);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+/** ISO → valore di <input type="date"> nel giorno locale. */
+export function followUpToDateInput(iso: string | null | undefined): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
 
 /**
  * Inbox dei messaggi di contatto. Prima i contatti erano visibili solo come
@@ -22,6 +40,10 @@ import { AdminDashboardService, RecentContact } from '../dashboard/admin-dashboa
 export class ContactsInboxComponent {
   private readonly api = inject(AdminDashboardService);
   private readonly t = inject(TranslateService);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly leadStatuses = LEAD_STATUSES;
+  readonly statusOf = effectiveLeadStatus;
 
   readonly limit = 20;
   readonly page = signal(1);
@@ -29,6 +51,9 @@ export class ContactsInboxComponent {
   /** Testo nel campo di ricerca; `query` è la versione con debounce che parte verso il server. */
   readonly search = signal('');
   readonly query = signal('');
+  /** Filtri lead: stato (null = tutti) e solo follow-up scaduti. */
+  readonly status = signal<LeadStatus | null>(null);
+  readonly followUpsDue = signal(false);
 
   readonly items = signal<RecentContact[]>([]);
   readonly total = signal(0);
@@ -44,11 +69,28 @@ export class ContactsInboxComponent {
   readonly sending = signal(false);
   readonly feedbackKey = signal<string | null>(null);
 
+  /** Bozza dei campi lead del messaggio aperto, salvata con "Salva". */
+  readonly leadStatus = signal<LeadStatus>('new');
+  readonly leadFollowUp = signal('');
+  readonly leadNote = signal('');
+  readonly savingLead = signal(false);
+
   private loadSub: Subscription | null = null;
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    effect(() => this.load(this.page(), this.unreadOnly(), this.query()));
+    // Link da dashboard, campanello e palette: ?q=, ?status=, ?followups=1.
+    const params = this.route.snapshot.queryParamMap;
+    const q = params.get('q')?.trim();
+    if (q) {
+      this.search.set(q);
+      this.query.set(q);
+    }
+    const status = params.get('status') as LeadStatus | null;
+    if (status && LEAD_STATUSES.includes(status)) this.status.set(status);
+    if (params.get('followups') === '1') this.followUpsDue.set(true);
+
+    effect(() => this.load(this.page(), this.unreadOnly(), this.query(), this.status(), this.followUpsDue()));
     inject(DestroyRef).onDestroy(() => {
       this.loadSub?.unsubscribe();
       if (this.searchTimer) clearTimeout(this.searchTimer);
@@ -69,19 +111,32 @@ export class ContactsInboxComponent {
     this.unreadOnly.set(value);
   }
 
+  setStatus(value: string): void {
+    this.page.set(1);
+    this.status.set(LEAD_STATUSES.includes(value as LeadStatus) ? (value as LeadStatus) : null);
+  }
+
+  setFollowUpsDue(value: boolean): void {
+    this.page.set(1);
+    this.followUpsDue.set(value);
+  }
+
   goTo(page: number): void {
     if (page < 1 || page > this.totalPages()) return;
     this.page.set(page);
   }
 
   reload(): void {
-    this.load(this.page(), this.unreadOnly(), this.query());
+    this.load(this.page(), this.unreadOnly(), this.query(), this.status(), this.followUpsDue());
   }
 
   open(contact: RecentContact): void {
     this.selected.set(contact);
     this.replyText.set('');
     this.feedbackKey.set(null);
+    this.leadStatus.set(effectiveLeadStatus(contact));
+    this.leadFollowUp.set(followUpToDateInput(contact.followUpAt));
+    this.leadNote.set(contact.internalNote ?? '');
     // Aprire un messaggio non letto lo segna come letto, come in qualsiasi client di posta.
     if (contact._id && !contact.read) this.setRead(contact, true);
   }
@@ -110,12 +165,37 @@ export class ContactsInboxComponent {
       next: ({ repliedAt }) => {
         this.sending.set(false);
         this.replyText.set('');
-        this.patchLocal(contact._id!, { repliedAt, replyText: text, read: true });
+        // Come il backend: rispondere a un lead nuovo lo porta in trattativa.
+        const status = effectiveLeadStatus(contact) === 'new' ? 'in_progress' : effectiveLeadStatus(contact);
+        this.patchLocal(contact._id!, { repliedAt, replyText: text, read: true, status });
+        this.leadStatus.set(status);
         this.feedbackKey.set('admin.reply_sent');
       },
       error: () => {
         this.sending.set(false);
         this.feedbackKey.set('admin.reply_error');
+      },
+    });
+  }
+
+  saveLead(): void {
+    const contact = this.selected();
+    if (!contact?._id || this.savingLead()) return;
+    const patch = {
+      status: this.leadStatus(),
+      followUpAt: followUpFromDateInput(this.leadFollowUp()),
+      internalNote: this.leadNote().trim(),
+    };
+    this.savingLead.set(true);
+    this.api.updateLead(contact._id, patch).subscribe({
+      next: () => {
+        this.savingLead.set(false);
+        this.patchLocal(contact._id!, patch);
+        this.feedbackKey.set('contacts_inbox.lead_saved');
+      },
+      error: () => {
+        this.savingLead.set(false);
+        this.feedbackKey.set('contacts_inbox.action_error');
       },
     });
   }
@@ -155,11 +235,11 @@ export class ContactsInboxComponent {
     });
   }
 
-  private load(page: number, unreadOnly: boolean, q: string): void {
+  private load(page: number, unreadOnly: boolean, q: string, status: LeadStatus | null, followUpsDue: boolean): void {
     this.loading.set(true);
     this.loadError.set(false);
     this.loadSub?.unsubscribe();
-    this.loadSub = this.api.listContacts({ page, limit: this.limit, unreadOnly, q }).subscribe({
+    this.loadSub = this.api.listContacts({ page, limit: this.limit, unreadOnly, q, status, followUpsDue }).subscribe({
       next: res => {
         this.items.set(res.data);
         this.total.set(res.total);

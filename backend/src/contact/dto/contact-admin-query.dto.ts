@@ -1,4 +1,5 @@
-import { IsBoolean, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsBoolean, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+import { LEAD_STATUSES, LeadStatus } from '../lead';
 import { Transform } from 'class-transformer';
 import { PageLimitDto } from '../../common/dto/pagination.dto';
 
@@ -13,4 +14,14 @@ export class ContactAdminQueryDto extends PageLimitDto {
   @IsString()
   @MaxLength(100)
   q?: string;
+
+  @IsOptional()
+  @IsIn(LEAD_STATUSES)
+  status?: LeadStatus;
+
+  /** Solo i follow-up scaduti o di oggi, ancora aperti. */
+  @IsOptional()
+  @Transform(({ value }) => value === true || value === 'true')
+  @IsBoolean()
+  followUpsDue?: boolean;
 }

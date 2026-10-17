@@ -2025,7 +2025,16 @@
     "select": "Sélectionner",
     "pagination": "Pagination",
     "replied_at": "Répondu le {{date}}",
-    "action_error": "L'opération a échoué, réessayez."
+    "action_error": "L'opération a échoué, réessayez.",
+    "filter_status": "Statut",
+    "filter_followups": "Relances à faire",
+    "lead_box": "Suivi du prospect",
+    "status_label": "Statut",
+    "followup_label": "Me le rappeler le",
+    "note_label": "Note interne",
+    "note_placeholder": "Rien que pour toi : budget, prochaines étapes…",
+    "save_lead": "Enregistrer",
+    "lead_saved": "Prospect mis à jour."
   },
   "users_manage": {
     "title": "Utilisateurs inscrits",
@@ -2079,7 +2088,8 @@
     "type_contact": "Nouveau message",
     "type_testimonial": "Nouveau témoignage",
     "type_note": "Nouvelle note",
-    "type_live_handoff": "Chat en direct demandé"
+    "type_live_handoff": "Chat en direct demandé",
+    "followups_due": "Relances à faire"
   },
   "newsletter_campaigns": {
     "title": "Campagnes",
@@ -2328,5 +2338,22 @@
     "none": "Aucun article programmé.",
     "notify": "+ newsletter",
     "new_post": "Programmer un article"
+  },
+  "leads": {
+    "title": "Prospects",
+    "desc": "Les messages de contact comme opportunités",
+    "status_new": "Nouveau",
+    "status_in_progress": "En négociation",
+    "status_won": "Conclu, gagné",
+    "status_lost": "Conclu, perdu",
+    "avg_response": "Première réponse, en moyenne",
+    "avg_response_hint": "90 derniers jours",
+    "no_replies": "Aucune réponse ces 90 derniers jours",
+    "win_rate": "Taux de conclusion gagnée",
+    "followups_due": "Relances à faire",
+    "followups_none": "Aucune relance à faire.",
+    "overdue": "en retard",
+    "due_today": "aujourd'hui",
+    "open_followups": "Voir toutes les relances"
   }
 }
