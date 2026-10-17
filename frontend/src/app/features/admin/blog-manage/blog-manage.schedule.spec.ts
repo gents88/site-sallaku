@@ -4,7 +4,7 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 import { BehaviorSubject, of } from 'rxjs';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import { BlogManageComponent, fromLocalDateTimeInput, toLocalDateTimeInput } from './blog-manage.component';
 import { BlogService } from '../../../core/services/blog.service';
 import { PrismService } from '../../../shared/services/prism.service';
@@ -13,7 +13,23 @@ import { Post } from '../../../core/models/post.model';
 const post = (overrides: Partial<Post> = {}) =>
   ({ _id: 'p1', title: 'Titolo del post', slug: 'titolo', content: 'Contenuto abbastanza lungo', tags: [], published: true, ...overrides }) as unknown as Post;
 
+/**
+ * L'ambiente dei test è condiviso tra file: un altro spec può aver lasciato un
+ * matchMedia finto senza addListener, che il BreakpointObserver del CDK usa
+ * quando si apre il form. Qui se ne mette uno completo, ripristinato a fine test.
+ */
+function stubMatchMedia(): void {
+  const original = window.matchMedia;
+  window.matchMedia = ((query: string) => ({
+    matches: false, media: query, onchange: null,
+    addListener: () => undefined, removeListener: () => undefined,
+    addEventListener: () => undefined, removeEventListener: () => undefined, dispatchEvent: () => false,
+  })) as unknown as typeof window.matchMedia;
+  onTestFinished(() => { window.matchMedia = original; });
+}
+
 async function setup() {
+  stubMatchMedia();
   const params = new BehaviorSubject(convertToParamMap({}));
   const blog = {
     getAll: vi.fn(() => of([post()])),
