@@ -7,6 +7,9 @@ import { DonutItem } from '../../../shared/components/donut-chart/donut-chart.co
 
 // ── Exported types (shared between service and component) ──────────────────────
 
+export type LeadStatus = 'new' | 'in_progress' | 'won' | 'lost';
+export const LEAD_STATUSES: readonly LeadStatus[] = ['new', 'in_progress', 'won', 'lost'];
+
 export interface RecentContact {
   _id?: string;
   name: string;
@@ -17,6 +20,23 @@ export interface RecentContact {
   read?: boolean;
   repliedAt?: string | null;
   replyText?: string | null;
+  /** Assente nei messaggi salvati prima degli stati: vedi effectiveLeadStatus. */
+  status?: LeadStatus;
+  followUpAt?: string | null;
+  internalNote?: string;
+}
+
+/** Stessa regola del backend: senza stato, risposto = in trattativa, altrimenti nuovo. */
+export function effectiveLeadStatus(c: Pick<RecentContact, 'status' | 'repliedAt'>): LeadStatus {
+  return c.status ?? (c.repliedAt ? 'in_progress' : 'new');
+}
+
+export interface LeadStats {
+  byStatus: Record<LeadStatus, number>;
+  avgFirstResponseHours: number | null;
+  winRate: number | null;
+  followUpsDue: number;
+  followUps: Array<{ _id: string; name: string; subject: string; followUpAt: string; status: LeadStatus }>;
 }
 
 /** Sessione di chat live che Gent può (ri)aprire dalla dashboard. */
@@ -314,6 +334,10 @@ const EMPTY_TRANSLATION_HEALTH: TranslationHealth = {
   byLang: { en: EMPTY_LANG_COUNTS, sq: EMPTY_LANG_COUNTS, pt: EMPTY_LANG_COUNTS, es: EMPTY_LANG_COUNTS, fr: EMPTY_LANG_COUNTS, de: EMPTY_LANG_COUNTS },
 };
 
+const EMPTY_LEADS: LeadStats = {
+  byStatus: { new: 0, in_progress: 0, won: 0, lost: 0 }, avgFirstResponseHours: null, winRate: null, followUpsDue: 0, followUps: [],
+};
+
 const EMPTY_GSC: SearchConsoleSummary = {
   configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
 };
@@ -345,6 +369,7 @@ export interface DashboardOverviewData {
   serverHealth: ServerHealth | null;
   translationHealth: TranslationHealth;
   scheduledPosts: ScheduledPost[];
+  leads: LeadStats;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -385,6 +410,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   serverHealth: null,
   translationHealth: EMPTY_TRANSLATION_HEALTH,
   scheduledPosts: [],
+  leads: EMPTY_LEADS,
 };
 
 /**
@@ -443,11 +469,18 @@ export class AdminDashboardService {
   }
 
   /** Inbox contatti (/dashboard/contacts): paginata, filtro non letti e ricerca. */
-  listContacts(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string }): Observable<ContactsPage> {
+  listContacts(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string; status?: LeadStatus | null; followUpsDue?: boolean }): Observable<ContactsPage> {
     let params = new HttpParams().set('page', opts.page).set('limit', opts.limit);
     if (opts.unreadOnly) params = params.set('unreadOnly', 'true');
     if (opts.q?.trim()) params = params.set('q', opts.q.trim());
+    if (opts.status) params = params.set('status', opts.status);
+    if (opts.followUpsDue) params = params.set('followUpsDue', 'true');
     return this.http.get<ContactsPage>(`${this.api}/contact`, { params });
+  }
+
+  /** Stato del lead, promemoria (ISO, null = nessuno) e nota interna. */
+  updateLead(contactId: string, patch: { status?: LeadStatus; followUpAt?: string | null; internalNote?: string }): Observable<RecentContact> {
+    return this.http.patch<RecentContact>(`${this.api}/contact/${contactId}/lead`, patch);
   }
 
   markContactRead(contactId: string, read: boolean = true): Observable<RecentContact> {

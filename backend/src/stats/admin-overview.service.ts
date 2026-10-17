@@ -57,6 +57,8 @@ export interface NotificationSummary {
   testimonialsPending: number;
   notesPending: number;
   liveHandoffsWaiting: number;
+  /** Follow-up dei lead scaduti o di oggi. */
+  followUpsDue: number;
 }
 
 /** TTL breve: la dashboard fa polling ogni 60s e più schede aperte condividono lo stesso snapshot. */
@@ -113,17 +115,19 @@ export class AdminOverviewService {
    * login e ricaricato a ogni evento WebSocket 'admin_notification'.
    */
   async notificationSummary(): Promise<NotificationSummary> {
-    const [contactsUnread, testimonialStats, pendingNotes, active] = await Promise.all([
+    const [contactsUnread, testimonialStats, pendingNotes, active, followUpsDue] = await Promise.all([
       this.contacts.countUnread(),
       this.testimonials.getStats(),
       this.notes.getAllForAdmin('pending', 1, 0),
       this.liveHandoff.listActive(),
+      this.contacts.countFollowUpsDue(),
     ]);
     return {
       contactsUnread,
       testimonialsPending: testimonialStats.pending,
       notesPending: pendingNotes.total,
       liveHandoffsWaiting: active.filter((h) => h.status === 'requested' || h.status === 'notified').length,
+      followUpsDue,
     };
   }
 
@@ -197,6 +201,7 @@ export class AdminOverviewService {
       serverHealth: () => this.serverHealth.snapshot(),
       translationHealth: () => this.blog.getTranslationHealth(),
       scheduledPosts: () => this.blogScheduler.upcoming(5),
+      leads: () => this.contacts.leadStats(),
     };
 
     const keys = Object.keys(loaders);

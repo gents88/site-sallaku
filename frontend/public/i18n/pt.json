@@ -2025,7 +2025,16 @@
     "select": "Selecionar",
     "pagination": "Paginação",
     "replied_at": "Respondido em {{date}}",
-    "action_error": "A operação falhou, tente novamente."
+    "action_error": "A operação falhou, tente novamente.",
+    "filter_status": "Estado",
+    "filter_followups": "Follow-ups a vencer",
+    "lead_box": "Gestão do lead",
+    "status_label": "Estado",
+    "followup_label": "Lembrar-me a",
+    "note_label": "Nota interna",
+    "note_placeholder": "Só para ti: orçamento, próximos passos…",
+    "save_lead": "Guardar",
+    "lead_saved": "Lead atualizado."
   },
   "users_manage": {
     "title": "Utilizadores registados",
@@ -2079,7 +2088,8 @@
     "type_contact": "Nova mensagem",
     "type_testimonial": "Novo testemunho",
     "type_note": "Nova nota",
-    "type_live_handoff": "Chat ao vivo pedido"
+    "type_live_handoff": "Chat ao vivo pedido",
+    "followups_due": "Follow-ups a fazer"
   },
   "newsletter_campaigns": {
     "title": "Campanhas",
@@ -2328,5 +2338,22 @@
     "none": "Nenhum artigo agendado.",
     "notify": "+ newsletter",
     "new_post": "Agendar um artigo"
+  },
+  "leads": {
+    "title": "Leads",
+    "desc": "As mensagens de contacto como oportunidades",
+    "status_new": "Novo",
+    "status_in_progress": "Em negociação",
+    "status_won": "Fechado, ganho",
+    "status_lost": "Fechado, perdido",
+    "avg_response": "Primeira resposta, em média",
+    "avg_response_hint": "Últimos 90 dias",
+    "no_replies": "Nenhuma resposta nos últimos 90 dias",
+    "win_rate": "Taxa de fecho ganho",
+    "followups_due": "Follow-ups a fazer",
+    "followups_none": "Nenhum follow-up a vencer.",
+    "overdue": "atrasado",
+    "due_today": "hoje",
+    "open_followups": "Ver todos os follow-ups"
   }
 }
