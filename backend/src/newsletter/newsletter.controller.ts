@@ -22,6 +22,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { clientIp } from '../common/utils/request-ip.util';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 
 @ApiTags('Newsletter')
 @Controller('newsletter')
@@ -30,6 +31,7 @@ export class NewsletterController {
 
   @Post('subscribe')
   @HttpCode(HttpStatus.OK)
+  @RequireFeature('newsletterSignupEnabled')
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiOperation({ summary: 'Subscribe to the newsletter (public, double opt-in)' })
   subscribe(@Req() req: Request, @Body() dto: SubscribeDto) {

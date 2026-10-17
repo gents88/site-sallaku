@@ -6,6 +6,7 @@ import { CreateLiveHandoffDto } from './dto/live-handoff.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 
 @ApiTags('Live Handoff')
 @Controller('chatbot')
@@ -14,6 +15,7 @@ export class LiveHandoffController {
 
   @Post(':sessionId/live-handoff')
   @HttpCode(HttpStatus.CREATED)
+  @RequireFeature('liveHandoffEnabled')
   @Throttle({ default: { limit: 3, ttl: 600_000 } })
   @ApiOperation({ summary: 'Request a live handoff to Gent for this chat session' })
   create(

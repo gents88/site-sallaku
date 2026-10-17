@@ -20,6 +20,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotService, ChatMessage } from '../../core/services/chatbot.service';
 import { LanguageService } from '../../core/services/language.service';
 import { LiveHandoffService, LiveHandoffState } from '../../core/services/live-handoff.service';
+import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 import { LiveHandoffPromptComponent } from '../../shared/components/live-handoff-prompt/live-handoff-prompt.component';
 import {
   ExitConfirmStep,
@@ -83,6 +84,7 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   readonly chatbot: ChatbotService = inject(ChatbotService);
   readonly liveHandoff: LiveHandoffService = inject(LiveHandoffService);
+  readonly flags: FeatureFlagsService = inject(FeatureFlagsService);
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly langService: LanguageService = inject(LanguageService);
   private readonly translate: TranslateService = inject(TranslateService);
@@ -218,7 +220,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.subs.add(
       this.typing$.pipe(debounceTime(TYPING_DEBOUNCE_MS)).subscribe(() => {
         const sessionId = this.chatbot.currentSessionId;
-        if (sessionId) {
+        // Chat dal vivo spenta dalla dashboard: niente banner "Vuoi parlare con Gent?".
+        if (sessionId && this.flags.liveHandoffEnabled()) {
           this.liveHandoff.notifyTyping(sessionId, this.chatbot.hasMessages);
         }
       }),

@@ -309,7 +309,8 @@
       "note": "Le message est envoyé directement depuis le site web, sans ouvrir d'applications externes.",
       "privacy_checkbox": "J'ai lu et j'accepte la politique de confidentialité pour le traitement de mes données.",
       "privacy_link_text": "Politique de confidentialité",
-      "privacy_err": "Vous devez accepter la politique de confidentialité pour envoyer le message"
+      "privacy_err": "Vous devez accepter la politique de confidentialité pour envoyer le message",
+      "disabled_notice": "Le formulaire de contact est temporairement désactivé. Tu peux m'écrire sur LinkedIn ou par email."
     },
     "info": {
       "title": "Connectons-nous",
@@ -438,7 +439,8 @@
     "err_too_many": "Trop de tentatives. Patientez une minute et réessayez.",
     "err_otp_wrong": "Code incorrect. Tentatives restantes : {{count}}.",
     "err_otp_locked": "Trop de tentatives erronées. Demandez un nouveau code.",
-    "err_server": "Le serveur ne répond pas. Réessayez dans un instant."
+    "err_server": "Le serveur ne répond pas. Réessayez dans un instant.",
+    "registration_closed": "Les inscriptions sont temporairement fermées."
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2215,5 +2217,32 @@
     "pick": "Choisir un fichier",
     "release": "Déposez le fichier pour voir ce que vous pouvez en faire",
     "only_first": "Seul le premier fichier est utilisé ({{count}} ignorés)."
+  },
+  "feature_flags": {
+    "title": "Fonctionnalités du site",
+    "desc": "Active et désactive des parties du site sans déploiement",
+    "maintenanceMode": "Mode maintenance",
+    "maintenanceMode_desc": "Les visiteurs voient un avis en pleine page ; toi, tu continues à voir le site.",
+    "aiEnabled": "Outils IA",
+    "aiEnabled_desc": "Les outils IA du Lab. Désactivés, le chatbot répond avec ses messages par défaut.",
+    "chatbotEnabled": "Chatbot",
+    "chatbotEnabled_desc": "La bulle de chat en bas à droite.",
+    "liveHandoffEnabled": "Chat en direct",
+    "liveHandoffEnabled_desc": "La proposition « Tu veux parler à Gent ? » dans le chatbot.",
+    "contactFormEnabled": "Formulaire de contact",
+    "contactFormEnabled_desc": "Utile pendant une vague de spam.",
+    "newsletterSignupEnabled": "Inscriptions à la newsletter",
+    "newsletterSignupEnabled_desc": "Le formulaire d'inscription en bas du blog.",
+    "registrationEnabled": "Inscription des utilisateurs",
+    "registrationEnabled_desc": "Création de nouveaux comptes depuis la page d'inscription.",
+    "maintenance_message": "Message de maintenance",
+    "save_message": "Enregistrer le message",
+    "save_error": "Enregistrement impossible, réessaie."
+  },
+  "maintenance": {
+    "title": "Site en maintenance",
+    "default_message": "Je fais quelques travaux sur le site. Reviens dans un instant !",
+    "admin_login": "Accès administrateur",
+    "admin_notice": "Maintenance active : les visiteurs voient l'avis"
   }
 }

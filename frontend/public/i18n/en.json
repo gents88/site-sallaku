@@ -309,7 +309,8 @@
       "note": "The message is sent directly from the website, without opening external apps.",
       "privacy_checkbox": "I have read and accept the privacy policy for the processing of my data.",
       "privacy_link_text": "Privacy Policy",
-      "privacy_err": "You must accept the privacy policy to send the message"
+      "privacy_err": "You must accept the privacy policy to send the message",
+      "disabled_notice": "The contact form is temporarily disabled. You can reach me on LinkedIn or by email."
     },
     "info": {
       "title": "Let’s connect",
@@ -438,7 +439,8 @@
     "err_too_many": "Too many attempts. Wait a minute and try again.",
     "err_otp_wrong": "Wrong code. Attempts left: {{count}}.",
     "err_otp_locked": "Too many wrong attempts. Request a new code.",
-    "err_server": "The server is not responding. Try again shortly."
+    "err_server": "The server is not responding. Try again shortly.",
+    "registration_closed": "Registration is temporarily closed."
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2215,5 +2217,32 @@
     "pick": "Choose file",
     "release": "Drop the file to see what you can do with it",
     "only_first": "Only the first file is used ({{count}} ignored)."
+  },
+  "feature_flags": {
+    "title": "Site features",
+    "desc": "Switch parts of the site on and off without a deploy",
+    "maintenanceMode": "Maintenance mode",
+    "maintenanceMode_desc": "Visitors see a full-page notice; you keep seeing the site.",
+    "aiEnabled": "AI tools",
+    "aiEnabled_desc": "The Lab's AI tools. When off, the chatbot answers with its default messages.",
+    "chatbotEnabled": "Chatbot",
+    "chatbotEnabled_desc": "The chat bubble in the bottom-right corner.",
+    "liveHandoffEnabled": "Live chat",
+    "liveHandoffEnabled_desc": "The \"Want to talk to Gent?\" offer inside the chatbot.",
+    "contactFormEnabled": "Contact form",
+    "contactFormEnabled_desc": "Useful during a spam wave.",
+    "newsletterSignupEnabled": "Newsletter sign-ups",
+    "newsletterSignupEnabled_desc": "The sign-up form at the bottom of the blog.",
+    "registrationEnabled": "User registration",
+    "registrationEnabled_desc": "New accounts created from the sign-up page.",
+    "maintenance_message": "Maintenance message",
+    "save_message": "Save message",
+    "save_error": "Could not save, please try again."
+  },
+  "maintenance": {
+    "title": "Site under maintenance",
+    "default_message": "I'm doing some work on the site. Please come back shortly!",
+    "admin_login": "Admin login",
+    "admin_notice": "Maintenance on: visitors see the notice"
   }
 }

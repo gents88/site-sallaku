@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
@@ -10,6 +10,7 @@ import { AboutDocument } from '../about/schemas/about.schema';
 import { AiProviderService } from '../common/services/ai-provider.service';
 import { ProjectsService } from '../projects/projects.service';
 import { BlogService } from '../blog/blog.service';
+import { SettingsService } from '../common/settings/settings.service';
 
 interface PromptProject {
   title?: string;
@@ -218,6 +219,8 @@ export class ChatbotService {
     private readonly aiProvider: AiProviderService,
     private readonly projectsService: ProjectsService,
     private readonly blogService: BlogService,
+    // @Optional: i test che costruiscono il servizio a mano non devono conoscere i flag.
+    @Optional() private readonly settings?: SettingsService,
   ) {}
 
   async sendMessage(
@@ -384,7 +387,9 @@ export class ChatbotService {
     messages: { role: string; content: string }[],
   ): Promise<{ content: string; suggestions?: string[]; liveOffer?: boolean; usedFallback: boolean }> {
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
-    if (!apiKey) {
+    // AI spenta dalla dashboard (interruttore d'emergenza): risposte predefinite.
+    const aiEnabled = (await this.settings?.isEnabled('aiEnabled').catch(() => true)) ?? true;
+    if (!apiKey || !aiEnabled) {
       return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
     }
 

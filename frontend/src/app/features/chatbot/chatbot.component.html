@@ -160,7 +160,7 @@
                   }
                 </div>
               }
-              @if (msg.liveOffer && (liveState === 'idle' || liveState === 'prompt_shown')) {
+              @if (msg.liveOffer && flags.liveHandoffEnabled() && (liveState === 'idle' || liveState === 'prompt_shown')) {
                 <button type="button" class="cb-msg__live-cta" (click)="acceptLiveHandoff()">
                   <span class="cb-msg__live-photo" aria-hidden="true"><app-profile-photo /></span>
                   <span class="cb-msg__live-text">

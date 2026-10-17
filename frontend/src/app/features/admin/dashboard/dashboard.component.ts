@@ -30,6 +30,7 @@ import {
   ToolConversionRow,
 } from './admin-dashboard.service';
 import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
+import { FeatureFlagsPanelComponent } from './panels/feature-flags-panel.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -58,7 +59,7 @@ interface ChartBar {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -166,8 +167,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   replyText = '';
   sendingReply = false;
   replyResult: 'success' | 'error' | null = null;
-
-  readonly featureEntries = (f: Record<string, boolean>) => Object.entries(f);
 
   readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
   readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
