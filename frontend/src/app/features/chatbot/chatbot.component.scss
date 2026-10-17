@@ -992,6 +992,13 @@
   .cb-fab { bottom: calc(28px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); }
   .cb-panel,
   .cb-teaser { bottom: calc(102px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px)); }
+
+  /* Finché il banner cookie è aperto (consent-banner.component.ts mette
+     [data-cookie-banner-open] su <html>) FAB e teaser occupano lo stesso
+     angolo dei suoi bottoni: su iPhone SE coprivano "Accetta tutto".
+     Ricompaiono appena il visitatore sceglie. */
+  :host-context([data-cookie-banner-open]) .cb-fab,
+  :host-context([data-cookie-banner-open]) .cb-teaser { display: none; }
 }
 
 /* ── Mobile: foglio a tutto schermo che sale dal basso ──────

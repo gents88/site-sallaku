@@ -347,7 +347,12 @@
     "settings_title": "Impostazioni cookie",
     "settings_desc": "Abilita o disabilita le categorie. I cookie necessari sono sempre attivi.",
     "consent_saved": "Preferenze salvate",
-    "default_denied_note": "Predefinito: solo cookie funzionali (consenso richiesto per analytics e marketing)."
+    "default_denied_note": "Predefinito: solo cookie funzionali (consenso richiesto per analytics e marketing).",
+    "necessary_desc": "Indispensabili per il funzionamento del sito: sicurezza, accesso e memorizzazione di queste scelte.",
+    "analytics_desc": "Ci aiutano a capire come viene usato il sito, con statistiche aggregate (Google Analytics).",
+    "marketing_desc": "Servono a misurare le campagne pubblicitarie e a mostrare annunci pertinenti (Google Ads).",
+    "preferences_desc": "Ricordano le tue scelte, come lingua e aspetto, per personalizzare l'esperienza.",
+    "always_active": "Sempre attivi"
   },
   "footer": {
     "designed": "Progettato & Sviluppato da",
