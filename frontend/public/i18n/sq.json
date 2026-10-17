@@ -2025,7 +2025,16 @@
     "select": "Zgjidh",
     "pagination": "Faqosja",
     "replied_at": "U përgjigj më {{date}}",
-    "action_error": "Veprimi dështoi, provo përsëri."
+    "action_error": "Veprimi dështoi, provo përsëri.",
+    "filter_status": "Statusi",
+    "filter_followups": "Follow-up në afat",
+    "lead_box": "Menaxhimi i lead-it",
+    "status_label": "Statusi",
+    "followup_label": "Më kujto më",
+    "note_label": "Shënim i brendshëm",
+    "note_placeholder": "Vetëm për ty: buxheti, hapat e ardhshëm…",
+    "save_lead": "Ruaj",
+    "lead_saved": "Lead-i u përditësua."
   },
   "users_manage": {
     "title": "Përdoruesit e regjistruar",
@@ -2079,7 +2088,8 @@
     "type_contact": "Mesazh i ri",
     "type_testimonial": "Dëshmi e re",
     "type_note": "Shënim i ri",
-    "type_live_handoff": "Kërkohet bisedë live"
+    "type_live_handoff": "Kërkohet bisedë live",
+    "followups_due": "Follow-up për t'u bërë"
   },
   "newsletter_campaigns": {
     "title": "Fushatat",
@@ -2328,5 +2338,22 @@
     "none": "Asnjë artikull i programuar.",
     "notify": "+ newsletter",
     "new_post": "Programo një artikull"
+  },
+  "leads": {
+    "title": "Lead-et",
+    "desc": "Mesazhet e kontaktit si mundësi",
+    "status_new": "I ri",
+    "status_in_progress": "Në negociim",
+    "status_won": "Mbyllur, fituar",
+    "status_lost": "Mbyllur, humbur",
+    "avg_response": "Përgjigjja e parë, mesatarisht",
+    "avg_response_hint": "90 ditët e fundit",
+    "no_replies": "Asnjë përgjigje në 90 ditët e fundit",
+    "win_rate": "Shkalla e fitores",
+    "followups_due": "Follow-up për t'u bërë",
+    "followups_none": "Asnjë follow-up në afat.",
+    "overdue": "me vonesë",
+    "due_today": "sot",
+    "open_followups": "Shiko të gjitha follow-up-et"
   }
 }

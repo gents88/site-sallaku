@@ -125,6 +125,20 @@
       }
     </section>
 
+    <!-- ── Lead: pipeline dei contatti e follow-up ── -->
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'leads.title' | translate }}</h2>
+            <p class="text-muted">{{ 'leads.desc' | translate }}</p>
+          </div>
+          <mat-icon>handshake</mat-icon>
+        </div>
+        <app-leads-panel [data]="leads" [failed]="isFailed('leads')" />
+      </section>
+    </div>
+
     <!-- ── Salute operativa: costi AI, errori del server, backup e risorse ── -->
     <h2 class="section-label"><mat-icon>monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}</h2>
     <div class="analytics-grid">

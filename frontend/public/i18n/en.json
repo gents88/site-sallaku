@@ -2025,7 +2025,16 @@
     "select": "Select",
     "pagination": "Pagination",
     "replied_at": "Replied on {{date}}",
-    "action_error": "Action failed, please retry."
+    "action_error": "Action failed, please retry.",
+    "filter_status": "Status",
+    "filter_followups": "Follow-ups due",
+    "lead_box": "Lead management",
+    "status_label": "Status",
+    "followup_label": "Remind me on",
+    "note_label": "Internal note",
+    "note_placeholder": "Just for you: budget, next steps…",
+    "save_lead": "Save",
+    "lead_saved": "Lead updated."
   },
   "users_manage": {
     "title": "Registered users",
@@ -2079,7 +2088,8 @@
     "type_contact": "New message",
     "type_testimonial": "New testimonial",
     "type_note": "New note",
-    "type_live_handoff": "Live chat requested"
+    "type_live_handoff": "Live chat requested",
+    "followups_due": "Follow-ups due"
   },
   "newsletter_campaigns": {
     "title": "Campaigns",
@@ -2328,5 +2338,22 @@
     "none": "No scheduled posts.",
     "notify": "+ newsletter",
     "new_post": "Schedule a post"
+  },
+  "leads": {
+    "title": "Leads",
+    "desc": "Contact messages as opportunities",
+    "status_new": "New",
+    "status_in_progress": "In progress",
+    "status_won": "Closed, won",
+    "status_lost": "Closed, lost",
+    "avg_response": "First reply, on average",
+    "avg_response_hint": "Last 90 days",
+    "no_replies": "No replies in the last 90 days",
+    "win_rate": "Win rate",
+    "followups_due": "Follow-ups due",
+    "followups_none": "No follow-ups due.",
+    "overdue": "overdue",
+    "due_today": "today",
+    "open_followups": "See all follow-ups"
   }
 }

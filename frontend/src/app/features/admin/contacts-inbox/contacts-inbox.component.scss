@@ -53,3 +53,26 @@
 .ci-reply-label { font-weight: 600; font-size: .9rem; display: block; margin-bottom: .35rem; }
 .ci-reply { width: 100%; padding: .75rem; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); resize: vertical; }
 .ci-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .75rem; }
+
+.ci-select {
+  min-height: 38px; padding: .4rem .7rem; border-radius: 10px; font: inherit; font-size: .85rem;
+  border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);
+  color-scheme: light dark;
+}
+.ci-check { display: inline-flex; align-items: center; gap: .4rem; font-size: .85rem; color: var(--text-secondary); cursor: pointer; }
+
+.ci-lead {
+  margin-left: auto; flex-shrink: 0; padding: .05rem .5rem; border-radius: 999px; font-size: .7rem; font-weight: 700;
+  background: rgba(127, 127, 127, .14); color: var(--text-secondary);
+  &--in_progress { background: rgba(79, 106, 245, .14); color: #4f6af5; }
+  &--won { background: rgba(16, 185, 129, .14); color: #059669; }
+  &--lost { background: rgba(239, 68, 68, .12); color: #dc2626; }
+}
+
+.ci-leadbox {
+  margin: 0 0 1.25rem; padding: .75rem 1rem 1rem; border: 1px solid var(--border-color); border-radius: 12px;
+  legend { padding: 0 .35rem; font-weight: 600; font-size: .9rem; }
+  label { display: grid; gap: .3rem; font-size: .82rem; color: var(--text-secondary); }
+  &__row { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: .75rem; }
+  &__note { margin-bottom: .6rem; }
+}

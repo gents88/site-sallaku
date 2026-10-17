@@ -2025,7 +2025,16 @@
     "select": "Auswählen",
     "pagination": "Seitennavigation",
     "replied_at": "Beantwortet am {{date}}",
-    "action_error": "Aktion fehlgeschlagen, bitte erneut versuchen."
+    "action_error": "Aktion fehlgeschlagen, bitte erneut versuchen.",
+    "filter_status": "Status",
+    "filter_followups": "Fällige Follow-ups",
+    "lead_box": "Lead-Verwaltung",
+    "status_label": "Status",
+    "followup_label": "Erinnere mich am",
+    "note_label": "Interne Notiz",
+    "note_placeholder": "Nur für dich: Budget, nächste Schritte…",
+    "save_lead": "Speichern",
+    "lead_saved": "Lead aktualisiert."
   },
   "users_manage": {
     "title": "Registrierte Benutzer",
@@ -2079,7 +2088,8 @@
     "type_contact": "Neue Nachricht",
     "type_testimonial": "Neue Referenz",
     "type_note": "Neue Notiz",
-    "type_live_handoff": "Live-Chat angefragt"
+    "type_live_handoff": "Live-Chat angefragt",
+    "followups_due": "Fällige Follow-ups"
   },
   "newsletter_campaigns": {
     "title": "Kampagnen",
@@ -2328,5 +2338,22 @@
     "none": "Keine geplanten Beiträge.",
     "notify": "+ Newsletter",
     "new_post": "Beitrag planen"
+  },
+  "leads": {
+    "title": "Leads",
+    "desc": "Kontaktnachrichten als Chancen",
+    "status_new": "Neu",
+    "status_in_progress": "In Verhandlung",
+    "status_won": "Abgeschlossen, gewonnen",
+    "status_lost": "Abgeschlossen, verloren",
+    "avg_response": "Erste Antwort, im Schnitt",
+    "avg_response_hint": "Letzte 90 Tage",
+    "no_replies": "Keine Antworten in den letzten 90 Tagen",
+    "win_rate": "Abschlussquote",
+    "followups_due": "Fällige Follow-ups",
+    "followups_none": "Keine fälligen Follow-ups.",
+    "overdue": "überfällig",
+    "due_today": "heute",
+    "open_followups": "Alle Follow-ups ansehen"
   }
 }

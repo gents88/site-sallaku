@@ -4,7 +4,10 @@ function makeService(overrides: Record<string, Record<string, jest.Mock>> = {}) 
   const ok = (v: unknown) => jest.fn().mockResolvedValue(v);
   const deps = {
     users: { count: ok(3) },
-    contacts: { count: ok(10), countUnread: ok(2), findAll: ok([]), countByDay: ok([{ date: '2026-10-01', count: 1 }]) },
+    contacts: {
+      count: ok(10), countUnread: ok(2), findAll: ok([]), countByDay: ok([{ date: '2026-10-01', count: 1 }]),
+      countFollowUpsDue: ok(1), leadStats: ok({ byStatus: { new: 3, in_progress: 1, won: 1, lost: 0 }, followUpsDue: 1 }),
+    },
     blog: { getContentSummary: ok({ total: 4, published: 3, drafts: 1 }), getTopPostsByViews: ok([{ title: 'A', slug: 'a', viewCount: 9 }]), getTranslationHealth: ok({ posts: 4, missing: 1, items: [] }) },
     projects: { findAll: ok([{}, {}]) },
     experiences: { findAll: ok([{}]) },
@@ -49,8 +52,9 @@ describe('AdminOverviewService', () => {
     expect(res.sections.core).toEqual(expect.objectContaining({ users: 3, contacts: 10, unreadContacts: 2 }));
     expect(Object.keys(res.sections)).toEqual(expect.arrayContaining([
       'topPosts', 'advanced', 'analyticsStats', 'topPages', 'monthlyHistory', 'toolConversion', 'auditLogs',
-      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors', 'serverHealth', 'translationHealth', 'scheduledPosts',
+      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors', 'serverHealth', 'translationHealth', 'scheduledPosts', 'leads',
     ]));
+    expect(res.sections.leads).toEqual(expect.objectContaining({ followUpsDue: 1 }));
     expect(res.sections.scheduledPosts).toEqual([expect.objectContaining({ _id: 'p9' })]);
     expect(res.sections.translationHealth).toEqual(expect.objectContaining({ posts: 4, missing: 1 }));
     expect(res.sections.serverHealth).toEqual({ warnings: ['backup_stale'] });
@@ -114,7 +118,7 @@ describe('AdminOverviewService', () => {
       liveHandoff: { listActive: jest.fn().mockResolvedValue([{ status: 'requested' }, { status: 'live' }, { status: 'notified' }]) },
     });
     await expect(service.notificationSummary()).resolves.toEqual({
-      contactsUnread: 2, testimonialsPending: 3, notesPending: 4, liveHandoffsWaiting: 2,
+      contactsUnread: 2, testimonialsPending: 3, notesPending: 4, liveHandoffsWaiting: 2, followUpsDue: 1,
     });
     expect(deps.notes.getAllForAdmin).toHaveBeenCalledWith('pending', 1, 0);
   });

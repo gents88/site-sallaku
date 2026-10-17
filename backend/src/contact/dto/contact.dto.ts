@@ -1,5 +1,6 @@
-import { IsString, IsEmail, MaxLength, MinLength, IsArray, ArrayNotEmpty, ArrayMaxSize, IsOptional } from 'class-validator';
+import { IsString, IsEmail, MaxLength, MinLength, IsArray, ArrayNotEmpty, ArrayMaxSize, IsOptional, IsIn, IsDateString, ValidateIf } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { LEAD_NOTE_MAX, LEAD_STATUSES, LeadStatus } from '../lead';
 
 export class ContactDto {
   @ApiProperty({ example: 'Jane Smith' })
@@ -53,4 +54,24 @@ export class BulkDeleteDto {
   @ArrayMaxSize(100)
   @IsString({ each: true })
   ids: string[];
+}
+
+export class UpdateLeadDto {
+  @ApiPropertyOptional({ enum: LEAD_STATUSES })
+  @IsOptional()
+  @IsIn(LEAD_STATUSES)
+  status?: LeadStatus;
+
+  /** ISO; null toglie il promemoria. */
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, v) => v !== null)
+  @IsDateString()
+  followUpAt?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(LEAD_NOTE_MAX)
+  internalNote?: string;
 }
