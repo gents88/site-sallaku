@@ -2277,5 +2277,29 @@
     "resolve": "Shëno si të zgjidhur",
     "resolve_all": "Shëno të gjitha si të zgjidhura",
     "none": "Asnjë gabim i hapur. Një gabim i zgjidhur kthehet këtu nëse përsëritet."
+  },
+  "server_health": {
+    "title": "Serveri dhe backup-et",
+    "desc": "Dump-et e MongoDB, burimet e serverit, kontrollet e jashtme",
+    "all_ok": "Gjithçka në rregull.",
+    "warn_backup_stale": "Dump-i i fundit i bazës së të dhënave është më i vjetër se 26 orë (ose mungon): kontrollo cron-in e orës 03:30.",
+    "warn_memory_low": "RAM-i pothuajse i mbaruar: serveri nuk ka swap, një proces mund të ndalet.",
+    "warn_disk_low": "Hapësira në disk nën 10%.",
+    "warn_offsite_backup_failed": "Backup-i i fundit i jashtëm i enkriptuar (GitHub Actions) dështoi.",
+    "warn_uptime_failed": "Kontrolli i fundit i jashtëm i uptime-it dështoi.",
+    "backup_age": "Mosha e dump-it të fundit ({{size}})",
+    "backup_none": "Asnjë dump i gjetur",
+    "backup_not_configured": "Dosja e backup-eve mungon (normale gjatë zhvillimit)",
+    "ram_free": "RAM i disponueshëm nga {{total}} MB",
+    "disk_free": "Disk i lirë (i përdorur {{pct}}%)",
+    "mongo_ram": "RAM-i i MongoDB",
+    "ram_used": "RAM i përdorur",
+    "external": "Kontrolle të jashtme (GitHub Actions)",
+    "offsite_backup": "Backup i jashtëm i enkriptuar",
+    "running": "në ekzekutim",
+    "uptime": "Uptime",
+    "uptime_checks": "në {{n}} kontrolle (rreth 25 orë)",
+    "github_unavailable": "GitHub nuk është i arritshëm tani.",
+    "load": "Ngarkesa mesatare (1, 5, 15 min)"
   }
 }

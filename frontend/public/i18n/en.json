@@ -2277,5 +2277,29 @@
     "resolve": "Mark resolved",
     "resolve_all": "Mark all resolved",
     "none": "No open errors. A resolved error comes back here if it happens again."
+  },
+  "server_health": {
+    "title": "Server and backups",
+    "desc": "MongoDB dumps, server resources, external checks",
+    "all_ok": "All good.",
+    "warn_backup_stale": "The latest database dump is older than 26 hours (or missing): check the 03:30 cron.",
+    "warn_memory_low": "RAM almost exhausted: the server has no swap, a process could be killed.",
+    "warn_disk_low": "Disk space below 10%.",
+    "warn_offsite_backup_failed": "The latest encrypted off-site backup (GitHub Actions) failed.",
+    "warn_uptime_failed": "The latest external uptime check failed.",
+    "backup_age": "Age of the latest dump ({{size}})",
+    "backup_none": "No dump found",
+    "backup_not_configured": "Backup folder missing (normal in development)",
+    "ram_free": "RAM available out of {{total}} MB",
+    "disk_free": "Free disk (used {{pct}}%)",
+    "mongo_ram": "MongoDB RAM",
+    "ram_used": "RAM used",
+    "external": "External checks (GitHub Actions)",
+    "offsite_backup": "Encrypted off-site backup",
+    "running": "running",
+    "uptime": "Uptime",
+    "uptime_checks": "over {{n}} checks (about 25 hours)",
+    "github_unavailable": "GitHub is not reachable right now.",
+    "load": "Load average (1, 5, 15 min)"
   }
 }

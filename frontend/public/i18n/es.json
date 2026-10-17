@@ -2277,5 +2277,29 @@
     "resolve": "Marcar como resuelto",
     "resolve_all": "Marcar todos como resueltos",
     "none": "Ningún error abierto. Un error resuelto vuelve aquí si se repite."
+  },
+  "server_health": {
+    "title": "Servidor y copias de seguridad",
+    "desc": "Dumps de MongoDB, recursos del servidor, comprobaciones externas",
+    "all_ok": "Todo en orden.",
+    "warn_backup_stale": "El último dump de la base de datos tiene más de 26 horas (o falta): revisa el cron de las 03:30.",
+    "warn_memory_low": "RAM casi agotada: el servidor no tiene swap, un proceso podría terminarse.",
+    "warn_disk_low": "Espacio en disco por debajo del 10%.",
+    "warn_offsite_backup_failed": "La última copia externa cifrada (GitHub Actions) ha fallado.",
+    "warn_uptime_failed": "La última comprobación externa de uptime ha fallado.",
+    "backup_age": "Antigüedad del último dump ({{size}})",
+    "backup_none": "No se encontró ningún dump",
+    "backup_not_configured": "Falta la carpeta de copias (normal en desarrollo)",
+    "ram_free": "RAM disponible de {{total}} MB",
+    "disk_free": "Disco libre (usado {{pct}}%)",
+    "mongo_ram": "RAM de MongoDB",
+    "ram_used": "RAM usada",
+    "external": "Comprobaciones externas (GitHub Actions)",
+    "offsite_backup": "Copia externa cifrada",
+    "running": "en curso",
+    "uptime": "Uptime",
+    "uptime_checks": "en {{n}} comprobaciones (unas 25 horas)",
+    "github_unavailable": "GitHub no está accesible en este momento.",
+    "load": "Carga media (1, 5, 15 min)"
   }
 }
