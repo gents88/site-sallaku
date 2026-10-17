@@ -2355,5 +2355,16 @@
     "overdue": "en retard",
     "due_today": "aujourd'hui",
     "open_followups": "Voir toutes les relances"
+  },
+  "not_found": {
+    "title": "Liens cassés (404)",
+    "desc": "Pages et articles inexistants vus par les visiteurs, 90 derniers jours",
+    "open": "Chemins à corriger",
+    "kind_route": "page",
+    "kind_blog": "article",
+    "kind_project": "projet",
+    "from": "depuis",
+    "dismiss": "Ignorer",
+    "none": "Aucun lien cassé enregistré."
   }
 }

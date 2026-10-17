@@ -2355,5 +2355,16 @@
     "overdue": "me vonesë",
     "due_today": "sot",
     "open_followups": "Shiko të gjitha follow-up-et"
+  },
+  "not_found": {
+    "title": "Lidhje të prishura (404)",
+    "desc": "Faqe dhe artikuj që nuk ekzistojnë, të parë nga vizitorët, 90 ditët e fundit",
+    "open": "Shtigje për t'u rregulluar",
+    "kind_route": "faqe",
+    "kind_blog": "artikull",
+    "kind_project": "projekt",
+    "from": "nga",
+    "dismiss": "Injoro",
+    "none": "Asnjë lidhje e prishur e regjistruar."
   }
 }

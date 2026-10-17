@@ -2355,5 +2355,16 @@
     "overdue": "atrasado",
     "due_today": "hoje",
     "open_followups": "Ver todos os follow-ups"
+  },
+  "not_found": {
+    "title": "Links quebrados (404)",
+    "desc": "Páginas e artigos inexistentes vistos pelos visitantes, últimos 90 dias",
+    "open": "Caminhos a corrigir",
+    "kind_route": "página",
+    "kind_blog": "artigo",
+    "kind_project": "projeto",
+    "from": "de",
+    "dismiss": "Ignorar",
+    "none": "Nenhum link quebrado registado."
   }
 }

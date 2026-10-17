@@ -20,6 +20,7 @@ import { SettingsService } from '../common/settings/settings.service';
 import { ErrorLogService } from '../error-log/error-log.service';
 import { ServerHealthService } from '../system/server-health.service';
 import { BlogSchedulerService } from '../blog/blog-scheduler.service';
+import { NotFoundService } from '../analytics/not-found/not-found.service';
 
 interface StatsContactPoint {
   date: string;
@@ -108,6 +109,7 @@ export class AdminOverviewService {
     private readonly errorLog: ErrorLogService,
     private readonly serverHealth: ServerHealthService,
     private readonly blogScheduler: BlogSchedulerService,
+    private readonly notFound: NotFoundService,
   ) {}
 
   /**
@@ -202,6 +204,7 @@ export class AdminOverviewService {
       translationHealth: () => this.blog.getTranslationHealth(),
       scheduledPosts: () => this.blogScheduler.upcoming(5),
       leads: () => this.contacts.leadStats(),
+      notFound: () => this.notFound.summary(10),
     };
 
     const keys = Object.keys(loaders);

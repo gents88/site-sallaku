@@ -2355,5 +2355,16 @@
     "overdue": "in ritardo",
     "due_today": "oggi",
     "open_followups": "Vedi tutti i follow-up"
+  },
+  "not_found": {
+    "title": "Link rotti (404)",
+    "desc": "Pagine e articoli inesistenti visti dai visitatori, ultimi 90 giorni",
+    "open": "Percorsi da sistemare",
+    "kind_route": "pagina",
+    "kind_blog": "articolo",
+    "kind_project": "progetto",
+    "from": "da",
+    "dismiss": "Ignora",
+    "none": "Nessun link rotto registrato."
   }
 }

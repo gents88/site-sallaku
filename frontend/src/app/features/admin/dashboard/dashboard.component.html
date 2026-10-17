@@ -200,6 +200,17 @@
         </div>
         <app-scheduled-posts-panel [posts]="scheduledPosts" [failed]="isFailed('scheduledPosts')" />
       </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'not_found.title' | translate }}</h2>
+            <p class="text-muted">{{ 'not_found.desc' | translate }}</p>
+          </div>
+          <mat-icon>link_off</mat-icon>
+        </div>
+        <app-not-found-panel [data]="notFound" [failed]="isFailed('notFound')" (changed)="refresh()" />
+      </section>
     </div>
 
     <div class="analytics-grid">

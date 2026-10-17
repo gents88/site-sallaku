@@ -255,6 +255,21 @@ export interface ScheduledPost {
   notifySubscribers: boolean;
 }
 
+export interface NotFoundEntry {
+  _id: string;
+  path: string;
+  kind: 'route' | 'blog' | 'project';
+  count: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  lastReferrer: string;
+}
+
+export interface NotFoundSummary {
+  open: number;
+  top: NotFoundEntry[];
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -370,6 +385,7 @@ export interface DashboardOverviewData {
   translationHealth: TranslationHealth;
   scheduledPosts: ScheduledPost[];
   leads: LeadStats;
+  notFound: NotFoundSummary;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -411,6 +427,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   translationHealth: EMPTY_TRANSLATION_HEALTH,
   scheduledPosts: [],
   leads: EMPTY_LEADS,
+  notFound: { open: 0, top: [] },
 };
 
 /**
@@ -509,6 +526,11 @@ export class AdminDashboardService {
 
   exportAnalyticsCsv(): Observable<Blob> {
     return this.http.get(`${this.api}/analytics/export/csv`, { responseType: 'blob' });
+  }
+
+  /** Nasconde un 404 dalla lista: torna se i visitatori lo incontrano di nuovo. */
+  dismissNotFound(id: string): Observable<{ success: boolean }> {
+    return this.http.post<{ success: boolean }>(`${this.api}/analytics/not-found/${id}/dismiss`, {});
   }
 
   /** Segna risolto un gruppo di errori 5xx: torna aperto se si ripete. */

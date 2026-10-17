@@ -2355,5 +2355,16 @@
     "overdue": "overdue",
     "due_today": "today",
     "open_followups": "See all follow-ups"
+  },
+  "not_found": {
+    "title": "Broken links (404)",
+    "desc": "Missing pages and posts hit by visitors, last 90 days",
+    "open": "Paths to fix",
+    "kind_route": "page",
+    "kind_blog": "post",
+    "kind_project": "project",
+    "from": "from",
+    "dismiss": "Dismiss",
+    "none": "No broken links recorded."
   }
 }

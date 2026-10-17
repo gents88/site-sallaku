@@ -2355,5 +2355,16 @@
     "overdue": "überfällig",
     "due_today": "heute",
     "open_followups": "Alle Follow-ups ansehen"
+  },
+  "not_found": {
+    "title": "Defekte Links (404)",
+    "desc": "Von Besuchern aufgerufene, nicht existierende Seiten und Beiträge, letzte 90 Tage",
+    "open": "Zu behebende Pfade",
+    "kind_route": "Seite",
+    "kind_blog": "Beitrag",
+    "kind_project": "Projekt",
+    "from": "von",
+    "dismiss": "Ignorieren",
+    "none": "Keine defekten Links erfasst."
   }
 }
