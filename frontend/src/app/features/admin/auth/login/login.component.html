@@ -1,70 +1,306 @@
 <div class="auth-page" [class.auth-page--embedded]="embedded" (click)="closeModal()">
   <div
-    class="auth-card card fade-in-up"
+    #card
+    class="auth-card fade-in-up"
     role="dialog"
     aria-modal="true"
-    [attr.aria-label]="(embedded ? 'auth.login_title_generic' : 'auth.login_subtitle') | translate"
+    aria-labelledby="auth-title"
+    aria-describedby="auth-subtitle"
     (click)="$event.stopPropagation()"
     (keydown.tab)="onModalTabKey($event)"
   >
-    <div class="auth-card__accent" aria-hidden="true"></div>
+    <span class="auth-card__border" aria-hidden="true"></span>
+    <span class="auth-card__glow" aria-hidden="true"></span>
+
     <button type="button" class="auth-card__close" (click)="closeModal()" [attr.aria-label]="'common.close' | translate">
       <mat-icon>close</mat-icon>
     </button>
-    <div class="auth-card__header">
+
+    <header class="auth-card__header">
       <div class="auth-avatar" aria-hidden="true"><app-profile-photo /></div>
       <div class="auth-card__header-copy">
         @if (!embedded) {
-          <span class="auth-chip">{{ 'auth.login_chip_admin' | translate }}</span>
-          <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
-          <p class="text-muted">{{ 'auth.login_subtitle' | translate }}</p>
+          <span class="auth-chip"><mat-icon>shield</mat-icon>{{ 'auth.login_chip_admin' | translate }}</span>
+        }
+        <h1 id="auth-title" class="auth-title">
+          @if (embedded) {
+            {{ 'auth.login_title_generic' | translate }}
+          } @else {
+            <span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span>
+          }
+        </h1>
+        <p id="auth-subtitle" class="auth-subtitle">
+          {{ (embedded ? 'saved_results.login_prompt_title' : 'auth.login_subtitle') | translate }}
+        </p>
+      </div>
+    </header>
+
+    @if (success()) {
+      <div class="auth-success" role="status" aria-live="polite">
+        <svg class="auth-success__check" viewBox="0 0 52 52" aria-hidden="true">
+          <circle cx="26" cy="26" r="24" />
+          <path d="M15 27l7 7 15-15" />
+        </svg>
+        <p class="auth-success__title">{{ 'auth.success_title' | translate }}</p>
+        <p class="auth-success__text">
+          @if (userName()) {
+            {{ 'auth.success_hello' | translate: { name: userName() } }}
+          } @else {
+            {{ 'auth.success_redirect' | translate }}
+          }
+        </p>
+      </div>
+    } @else {
+      <div
+        class="auth-tabs"
+        [class.auth-tabs--code]="mode() === 'code'"
+        role="tablist"
+        [attr.aria-label]="'auth.login_title_generic' | translate"
+        (keydown)="onTabsKeydown($event)"
+      >
+        <span class="auth-tabs__thumb" aria-hidden="true"></span>
+        <button
+          type="button"
+          role="tab"
+          id="auth-tab-password"
+          aria-controls="auth-panel"
+          [attr.aria-selected]="mode() === 'password'"
+          [attr.tabindex]="mode() === 'password' ? 0 : -1"
+          (click)="setMode('password')"
+        >
+          <mat-icon>lock</mat-icon>{{ 'auth.tab_password' | translate }}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="auth-tab-code"
+          aria-controls="auth-panel"
+          [attr.aria-selected]="mode() === 'code'"
+          [attr.tabindex]="mode() === 'code' ? 0 : -1"
+          (click)="setMode('code')"
+        >
+          <mat-icon>mark_email_unread</mat-icon>{{ 'auth.tab_code' | translate }}
+        </button>
+      </div>
+
+      <div
+        id="auth-panel"
+        class="auth-panel"
+        role="tabpanel"
+        [attr.aria-labelledby]="mode() === 'password' ? 'auth-tab-password' : 'auth-tab-code'"
+      >
+        @if (error(); as err) {
+          <div class="auth-alert" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <div class="auth-alert__body">
+              <span>{{ err.key | translate: err.params }}</span>
+              @if (err.action === 'verify-email') {
+                <button type="button" class="auth-link" (click)="sendVerificationCode()" [disabled]="loading()">
+                  {{ 'auth.verify_email_action' | translate }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (mode() === 'password') {
+          <form class="auth-form" [formGroup]="form" (ngSubmit)="login()" novalidate>
+            <div class="field" [class.field--invalid]="showError('email')">
+              <label class="field__label" for="auth-email">{{ 'auth.email' | translate }}</label>
+              <div class="field__control">
+                <mat-icon class="field__icon" aria-hidden="true">mail</mat-icon>
+                <input
+                  id="auth-email"
+                  formControlName="email"
+                  type="email"
+                  inputmode="email"
+                  autocomplete="email"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  [placeholder]="'auth.email_placeholder' | translate"
+                  [attr.aria-invalid]="showError('email')"
+                  [attr.aria-describedby]="showError('email') ? 'auth-email-error' : null"
+                />
+              </div>
+              @if (showError('email')) {
+                <p class="field__error" id="auth-email-error">{{ 'auth.email_required' | translate }}</p>
+              }
+            </div>
+
+            <div class="field" [class.field--invalid]="showError('password')">
+              <div class="field__label-row">
+                <label class="field__label" for="auth-password">{{ 'auth.password' | translate }}</label>
+                <button type="button" class="auth-link auth-link--small" (click)="forgotPassword()">
+                  {{ 'auth.forgot_password' | translate }}
+                </button>
+              </div>
+              <div class="field__control">
+                <mat-icon class="field__icon" aria-hidden="true">lock</mat-icon>
+                <input
+                  id="auth-password"
+                  formControlName="password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  placeholder="••••••••"
+                  (keydown)="onPasswordKey($event)"
+                  (keyup)="onPasswordKey($event)"
+                  (blur)="capsLock.set(false)"
+                  [attr.aria-invalid]="showError('password')"
+                  [attr.aria-describedby]="showError('password') ? 'auth-password-error' : (capsLock() ? 'auth-caps' : null)"
+                />
+                <button
+                  type="button"
+                  class="field__toggle"
+                  (click)="togglePassword()"
+                  [attr.aria-pressed]="showPassword()"
+                  [attr.aria-label]="(showPassword() ? 'auth.hide_password' : 'auth.show_password') | translate"
+                >
+                  <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </div>
+              @if (capsLock()) {
+                <p class="field__hint field__hint--warn" id="auth-caps">
+                  <span class="caps-key" aria-hidden="true">⇪</span>{{ 'auth.caps_lock_on' | translate }}
+                </p>
+              }
+              @if (showError('password')) {
+                <p class="field__error" id="auth-password-error">{{ 'auth.password_required' | translate }}</p>
+              }
+            </div>
+
+            <label class="auth-check">
+              <input type="checkbox" formControlName="remember" />
+              <span class="auth-check__box" aria-hidden="true"></span>
+              <span>{{ 'auth.remember_email' | translate }}</span>
+            </label>
+
+            <button type="submit" class="submit-btn" [disabled]="loading()" [attr.aria-busy]="loading()">
+              @if (loading()) {
+                <span class="submit-btn__spinner" aria-hidden="true"></span>{{ 'auth.logging_in' | translate }}
+              } @else {
+                {{ 'auth.login_btn' | translate }}<mat-icon>arrow_forward</mat-icon>
+              }
+            </button>
+          </form>
+        } @else if (codeStep() === 'identifier') {
+          <form class="auth-form" [formGroup]="codeForm" (ngSubmit)="requestCode()" novalidate>
+            <p class="auth-note">
+              <mat-icon aria-hidden="true">{{ forgotFlow() ? 'shield' : 'send' }}</mat-icon>
+              <span>{{ (forgotFlow() ? 'auth.forgot_hint' : 'auth.code_hint') | translate }}</span>
+            </p>
+
+            <div class="field" [class.field--invalid]="showIdentifierError()">
+              <label class="field__label" for="auth-identifier">{{ 'auth.phone_or_email' | translate }}</label>
+              <div class="field__control">
+                <mat-icon class="field__icon" aria-hidden="true">alternate_email</mat-icon>
+                <input
+                  id="auth-identifier"
+                  formControlName="identifier"
+                  type="text"
+                  inputmode="email"
+                  autocomplete="username"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  [placeholder]="'auth.identifier_placeholder' | translate"
+                  [attr.aria-invalid]="showIdentifierError()"
+                  [attr.aria-describedby]="showIdentifierError() ? 'auth-identifier-error' : null"
+                />
+              </div>
+              @if (showIdentifierError()) {
+                <p class="field__error" id="auth-identifier-error">{{ 'auth.phone_or_email_required' | translate }}</p>
+              }
+            </div>
+
+            <button type="submit" class="submit-btn" [disabled]="loading()" [attr.aria-busy]="loading()">
+              @if (loading()) {
+                <span class="submit-btn__spinner" aria-hidden="true"></span>{{ 'auth.sending' | translate }}
+              } @else {
+                {{ 'auth.send_otp' | translate }}<mat-icon>send</mat-icon>
+              }
+            </button>
+          </form>
         } @else {
-          <h1 class="logo">{{ 'auth.login_title_generic' | translate }}</h1>
-          <p class="text-muted">{{ 'saved_results.login_prompt_title' | translate }}</p>
+          <form class="auth-form" (ngSubmit)="verifyCode()" novalidate>
+            <div class="code-sent">
+              <span class="code-sent__icon" aria-hidden="true">
+                <mat-icon>{{ codeByEmail() ? 'mark_email_read' : 'sms' }}</mat-icon>
+              </span>
+              <div class="code-sent__text">
+                <span>{{ (codeByEmail() ? 'auth.otp_sent_to_email' : 'auth.otp_sent_to') | translate }}</span>
+                <strong>{{ codeTarget() }}</strong>
+              </div>
+              <button type="button" class="auth-link auth-link--small" (click)="changeIdentifier()" [disabled]="loading()">
+                {{ 'auth.change' | translate }}
+              </button>
+            </div>
+
+            <div class="otp" [class.otp--disabled]="codeExpired()" (click)="focusOtp()">
+              <input
+                class="otp__input"
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                pattern="[0-9]*"
+                maxlength="6"
+                [value]="otpValue()"
+                [disabled]="codeExpired()"
+                [attr.aria-label]="'auth.code_digits_label' | translate"
+                (input)="onOtpInput($event)"
+                (focus)="otpFocused.set(true)"
+                (blur)="otpFocused.set(false)"
+              />
+              <div class="otp__slots" aria-hidden="true">
+                @for (i of otpSlots; track i) {
+                  <span
+                    class="otp__slot"
+                    [class.otp__slot--filled]="i < otpValue().length"
+                    [class.otp__slot--active]="otpFocused() && i === activeSlot()"
+                    [class.otp__slot--caret]="otpFocused() && i === otpValue().length"
+                  >{{ otpValue()[i] }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="code-meta">
+              @if (!codeExpired()) {
+                <span class="code-meta__timer" [class.code-meta__timer--warn]="countdown() <= 60" role="timer">
+                  <mat-icon aria-hidden="true">timer</mat-icon>{{ 'auth.otp_expires_in' | translate }} {{ countdownLabel() }}
+                </span>
+              } @else {
+                <span class="code-meta__timer code-meta__timer--expired" role="alert">
+                  <mat-icon aria-hidden="true">timer_off</mat-icon>{{ 'auth.otp_expired' | translate }}
+                </span>
+              }
+              <button type="button" class="auth-link auth-link--small" [disabled]="resendIn() > 0 || loading()" (click)="resendCode()">
+                <mat-icon aria-hidden="true">refresh</mat-icon>
+                @if (resendIn() > 0) {
+                  {{ 'auth.resend_in' | translate }} {{ resendIn() }}s
+                } @else {
+                  {{ 'auth.resend_code' | translate }}
+                }
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              class="submit-btn"
+              [disabled]="loading() || codeExpired() || otpValue().length < 6"
+              [attr.aria-busy]="loading()"
+            >
+              @if (loading()) {
+                <span class="submit-btn__spinner" aria-hidden="true"></span>{{ 'auth.verifying' | translate }}
+              } @else {
+                {{ 'auth.verify_and_login' | translate }}<mat-icon>verified_user</mat-icon>
+              }
+            </button>
+          </form>
         }
       </div>
-    </div>
 
-    <form [formGroup]="form" (ngSubmit)="login()" novalidate>
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ 'auth.email' | translate }}</mat-label>
-        <input #emailInput matInput formControlName="email" type="email" autocomplete="email" placeholder="admin@portfolio.com" />
-        <mat-icon matSuffix>email</mat-icon>
-        @if (form.get('email')?.invalid && form.get('email')?.touched) {
-          <mat-error>{{ 'auth.email_required' | translate }}</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="form-field">
-        <mat-label>{{ 'auth.password' | translate }}</mat-label>
-        <input matInput formControlName="password" [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="showPassword = !showPassword"
-          [attr.aria-label]="(showPassword ? 'auth.hide_password' : 'auth.show_password') | translate"
-        >
-          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
-        @if (form.get('password')?.invalid && form.get('password')?.touched) {
-          <mat-error>{{ 'auth.password_required' | translate }}</mat-error>
-        }
-      </mat-form-field>
-
-      <button mat-raised-button color="primary" type="submit" [disabled]="loading" class="submit-btn">
-        @if (loading) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>login</mat-icon> }
-        {{ (loading ? 'auth.logging_in' : 'auth.login_btn') | translate }}
-      </button>
-    </form>
-
-    <p class="auth-card__footer text-muted">
-      {{ 'auth.no_account' | translate }}
-      <a routerLink="/dashboard/register">{{ 'auth.create_one' | translate }}</a>
-    </p>
-    <p class="auth-card__footer text-muted">
-      {{ 'auth.or' | translate }}
-      <a routerLink="/dashboard/login/otp">{{ 'auth.login_with_otp' | translate }}</a>
-    </p>
+      <footer class="auth-card__footer">
+        <span>{{ 'auth.no_account' | translate }}</span>
+        <a routerLink="/dashboard/register" (click)="leaveModal()">{{ 'auth.create_one' | translate }}</a>
+      </footer>
+    }
   </div>
 </div>

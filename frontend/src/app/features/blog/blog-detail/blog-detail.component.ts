@@ -15,6 +15,7 @@ import { PrismService } from '../../../shared/services/prism.service';
 import { TrackClickDirective } from '../../../shared/directives/track-click.directive';
 import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
 import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
@@ -76,7 +77,7 @@ export function activeHeadingIndex(tops: number[], readingLine: number, atBottom
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective, LocalDatePipe],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
