@@ -47,7 +47,13 @@
 
   <!-- Unico landmark: prima <aside role="navigation"> conteneva questo <nav>,
        due landmark annidati con lo stesso scopo. -->
-  <nav class="sidebar-nav" [attr.aria-label]="brandLabelKey() | translate">
+  <nav
+    class="sidebar-nav"
+    [class.fade-top]="scrollEdges().top"
+    [class.fade-bottom]="scrollEdges().bottom"
+    [attr.aria-label]="brandLabelKey() | translate"
+    (scroll)="updateScrollEdges()"
+  >
     @for (group of navGroups(); track group.id) {
       <div class="nav-group" [attr.data-tour-group]="group.id">
         <div class="nav-group-label">
@@ -68,6 +74,12 @@
           >
             <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
             <span class="nav-label">{{ item.labelKey | translate }}</span>
+            @if (badges()[item.id]; as badge) {
+              <!-- Il numero è decorativo: lo screen reader legge la frase completa
+                   ("2 Messaggi da leggere, 1 Follow-up da fare") subito dopo l'etichetta. -->
+              <span class="nav-badge" [class.nav-badge--urgent]="badge.urgent" aria-hidden="true">{{ badgeText(badge.count) }}</span>
+              <span class="nav-badge-sr">@for (part of badge.parts; track part.labelKey) {, {{ part.count }} {{ part.labelKey | translate }}}</span>
+            }
           </a>
         }
       </div>

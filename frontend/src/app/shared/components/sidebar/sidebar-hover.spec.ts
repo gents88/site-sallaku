@@ -7,6 +7,7 @@ import { RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent }
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { AdminNotificationsService } from '../../../core/services/admin-notifications.service';
 import { LanguageService } from '../../../core/services/language.service';
 
 function pointer(type: 'pointerenter' | 'pointerleave', pointerType = 'mouse'): Event {
@@ -36,6 +37,7 @@ function setup(mode: 'rail' | 'overlay' = 'rail', pinned = false) {
       { provide: AuthService, useValue: { isLoggedIn: signal(false), isAdmin: signal(false) } },
       { provide: DrawerService, useValue: drawer },
       { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
+      { provide: AdminNotificationsService, useValue: { summary: signal({ contactsUnread: 0, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 }) } },
       { provide: LanguageService, useValue: { current: () => 'it' } },
     ],
   });

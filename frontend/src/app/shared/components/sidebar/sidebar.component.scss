@@ -211,6 +211,28 @@
   scrollbar-color: var(--border-color, #30363d) transparent;
 }
 
+/* Sfumatura sul bordo che ha altro contenuto: segnala che la lista continua.
+   Le classi le accende il componente (scrollEdges) solo quando serve, così una
+   lista che entra tutta non perde nitidezza in cima e in fondo. */
+.sidebar-nav {
+  --nav-fade: 28px;
+
+  &.fade-top {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade));
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade));
+  }
+
+  &.fade-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--nav-fade)), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - var(--nav-fade)), transparent);
+  }
+
+  &.fade-top.fade-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade), #000 calc(100% - var(--nav-fade)), transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade), #000 calc(100% - var(--nav-fade)), transparent);
+  }
+}
+
 .sidebar-nav::-webkit-scrollbar {
   width: 6px;
 }
@@ -309,6 +331,53 @@
   text-overflow: ellipsis;
 }
 
+/* ─── Badge (contatori del campanello sulle voci admin) ─────────── */
+.nav-badge {
+  flex-shrink: 0;
+  min-width: 20px;
+  height: 20px;
+  margin-left: auto;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  /* Bianco su accent-600 (#7c3aed): 5.7:1. Il rosso del campanello (#ef4444)
+     col bianco sta sotto 4.5:1, qui si usa #dc2626. */
+  background: var(--accent-600, #7c3aed);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+
+  &--urgent {
+    background: #dc2626;
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55);
+    animation: navBadgePulse 2s ease-out infinite;
+  }
+}
+
+@keyframes navBadgePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); }
+  70%  { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-badge--urgent {
+    animation: none;
+  }
+}
+
+.nav-badge-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ─── CTA in fondo ───────────────────────────────────────────────── */
 .sidebar-cta {
   display: flex;
@@ -377,14 +446,27 @@
     padding-bottom: 0.75rem;
   }
 
-  .brand-label,
-  .group-title {
+  .brand-label {
     /* width:0 + opacity invece di display:none: mantiene il testo nell'albero
        di accessibilità e rende l'apertura una transizione, non un salto. */
     width: 0;
     opacity: 0;
     overflow: hidden;
     pointer-events: none;
+  }
+
+  /* Il titolo di gruppo con width:0 teneva l'altezza e andava a capo parola per
+     parola: "Flusso di lavoro" occupava 72px invece di 31 e, sommato agli altri
+     titoli, spingeva 4 strumenti su 14 sotto la piega a 1440×900. Stesso
+     pattern sr-only della CTA: fuori dal flusso ma letto dagli screen reader.
+     Fra i gruppi resta il separatore (sotto). */
+  .group-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* La CTA è su due righe: azzerarne solo la larghezza ne lascerebbe l'altezza,
@@ -400,8 +482,9 @@
   }
 
   /* Ritmo verticale compresso: senza etichette le voci non hanno bisogno del
-     respiro della modalità espansa, e così tutte e 10 entrano senza scroll
-     anche su un portatile con barra dei segnalibri (~750px di viewport). */
+     respiro della modalità espansa. Con 14 voci (24 per l'admin) su schermi
+     bassi la lista scorre comunque: la voce attiva viene portata in vista e i
+     bordi sfumano (vedi .fade-top/.fade-bottom). */
   .nav-item,
   .sidebar-cta {
     justify-content: center;
@@ -411,6 +494,21 @@
 
   .nav-item {
     margin-bottom: 2px;
+  }
+
+  /* Badge sull'angolo della tessera: in flusso, accanto all'icona, la
+     spostava fuori asse rispetto alle altre. */
+  .nav-badge {
+    position: absolute;
+    top: 0;
+    left: calc(50% + 6px);
+    min-width: 16px;
+    height: 16px;
+    margin-left: 0;
+    padding: 0 4px;
+    font-size: 0.6rem;
+    line-height: 16px;
+    outline: 2px solid var(--bg-secondary, #0f1424);
   }
 
   .rail-toggle {
@@ -424,10 +522,7 @@
   }
 
   .nav-group-label {
-    justify-content: center;
-    padding: 0.4rem 0 0.25rem;
-    font-size: 12px;
-    letter-spacing: 0;
+    padding: 0;
   }
 
   .sidebar-cta {
@@ -504,6 +599,13 @@
 :host-context(html[data-theme='light']) {
   .app-sidebar {
     background: var(--bg-secondary, #f8fafc);
+  }
+
+  /* accent-400 (#a78bfa) sul fondo lilla della voce attiva dava ~2.5:1, sotto
+     WCAG AA. accent-600 scurito resta sopra 4.5:1 e segue l'accento attivo
+     (anche quello albanese). */
+  .nav-item.active {
+    color: color-mix(in srgb, var(--accent-600, #7c3aed) 80%, #000);
   }
 
 
