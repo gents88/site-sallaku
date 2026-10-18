@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   PREFETCH_INTENT_MS, RAIL_HINT_DELAY_MS, RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent, isSidebarShortcut,
+  swipeCloses,
 } from './sidebar.component';
 import { RoutePrefetchService } from '../../../core/navigation/route-prefetch.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -376,5 +377,116 @@ describe('SidebarComponent: prefetch della pagina puntata', () => {
 
     item(fixture, '/lab/scanner').dispatchEvent(new MouseEvent('pointerdown'));
     expect(prefetch).toHaveBeenLastCalledWith('/lab/scanner');
+  });
+});
+
+describe('swipeCloses', () => {
+  it('chiude oltre un terzo della larghezza, anche lentamente', () => {
+    expect(swipeCloses(-100, 2000, 272)).toBe(true);
+    expect(swipeCloses(-80, 2000, 272)).toBe(false);
+  });
+
+  it('chiude con un colpo rapido anche se breve', () => {
+    expect(swipeCloses(-50, 60, 272)).toBe(true);
+    expect(swipeCloses(-20, 10, 272)).toBe(false);
+  });
+
+  it('non chiude mai trascinando verso destra', () => {
+    expect(swipeCloses(120, 50, 272)).toBe(false);
+  });
+});
+
+describe('SidebarComponent: swipe per chiudere il drawer', () => {
+  function ptr(type: string, x: number, y: number, t: number, pointerType = 'touch'): Event {
+    const event = new MouseEvent(type, { clientX: x, clientY: y, bubbles: true });
+    Object.defineProperty(event, 'pointerType', { value: pointerType });
+    Object.defineProperty(event, 'pointerId', { value: 1 });
+    Object.defineProperty(event, 'isPrimary', { value: true });
+    Object.defineProperty(event, 'timeStamp', { value: t });
+    return event;
+  }
+
+  function openDrawer() {
+    const ctx = setup('overlay');
+    ctx.drawer.drawerOpen.set(true);
+    ctx.fixture.detectChanges();
+    ctx.aside.getBoundingClientRect = () => ({ width: 272 }) as DOMRect;
+    return ctx;
+  }
+
+  it('il drawer segue il dito e, trascinato oltre un terzo, si chiude', () => {
+    const { aside, drawer, fixture } = openDrawer();
+    aside.dispatchEvent(ptr('pointerdown', 200, 300, 0));
+    aside.dispatchEvent(ptr('pointermove', 150, 302, 100));
+    fixture.detectChanges();
+    expect(aside.style.transform).toBe('translateX(-50px)');
+    expect(aside.classList).toContain('dragging');
+
+    aside.dispatchEvent(ptr('pointermove', 80, 305, 600));
+    aside.dispatchEvent(ptr('pointerup', 80, 305, 700));
+    fixture.detectChanges();
+    expect(drawer.close).toHaveBeenCalled();
+    expect(aside.style.transform).toBe('');
+    expect(aside.classList).not.toContain('dragging');
+  });
+
+  it('un trascinamento breve e lento lo riporta al suo posto', () => {
+    const { aside, drawer, fixture } = openDrawer();
+    aside.dispatchEvent(ptr('pointerdown', 200, 300, 0));
+    aside.dispatchEvent(ptr('pointermove', 160, 300, 400));
+    aside.dispatchEvent(ptr('pointerup', 160, 300, 800));
+    fixture.detectChanges();
+    expect(drawer.close).not.toHaveBeenCalled();
+    expect(aside.style.transform).toBe('');
+  });
+
+  it('lo scroll verticale della lista non muove il drawer', () => {
+    const { aside, drawer, fixture } = openDrawer();
+    aside.dispatchEvent(ptr('pointerdown', 200, 300, 0));
+    aside.dispatchEvent(ptr('pointermove', 190, 200, 50));
+    aside.dispatchEvent(ptr('pointermove', 60, 100, 100));
+    aside.dispatchEvent(ptr('pointerup', 60, 100, 120));
+    fixture.detectChanges();
+    expect(aside.style.transform).toBe('');
+    expect(drawer.close).not.toHaveBeenCalled();
+  });
+
+  it('se il browser si prende il gesto (pointercancel) torna solo a posto', () => {
+    const { aside, drawer, fixture } = openDrawer();
+    aside.dispatchEvent(ptr('pointerdown', 200, 300, 0));
+    aside.dispatchEvent(ptr('pointermove', 60, 300, 50));
+    aside.dispatchEvent(ptr('pointercancel', 60, 300, 60));
+    fixture.detectChanges();
+    expect(drawer.close).not.toHaveBeenCalled();
+    expect(aside.style.transform).toBe('');
+  });
+
+  it('il click generato a fine trascinamento non apre la voce sotto il dito', () => {
+    const { aside } = openDrawer();
+    const link = aside.querySelector('a.nav-item') as HTMLElement;
+    aside.dispatchEvent(ptr('pointerdown', 200, 300, 0));
+    aside.dispatchEvent(ptr('pointermove', 150, 300, 300));
+    aside.dispatchEvent(ptr('pointerup', 150, 300, 900));
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+    link.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(true);
+  });
+
+  it('ignora il mouse', () => {
+    const { aside, drawer, fixture } = openDrawer();
+    aside.dispatchEvent(ptr('pointerdown', 200, 300, 0, 'mouse'));
+    aside.dispatchEvent(ptr('pointermove', 40, 300, 50, 'mouse'));
+    aside.dispatchEvent(ptr('pointerup', 40, 300, 60, 'mouse'));
+    fixture.detectChanges();
+    expect(drawer.close).not.toHaveBeenCalled();
+    expect(aside.style.transform).toBe('');
+  });
+
+  it('nella rail non fa nulla', () => {
+    const rail = setup('rail', true);
+    rail.aside.dispatchEvent(ptr('pointerdown', 200, 300, 0));
+    rail.aside.dispatchEvent(ptr('pointermove', 40, 300, 50));
+    rail.fixture.detectChanges();
+    expect(rail.aside.style.transform).toBe('');
   });
 });
