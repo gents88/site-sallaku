@@ -146,10 +146,14 @@ jobs:
           retention-days: 7
 
   # ── Docker build smoke test ───────────────────────────
+  # Solo l'immagine del backend (variante Docker di docker-compose.plesk.yml).
+  # Quella del frontend non si costruisce: con contesto ./frontend il prebuild
+  # non trova ../scripts, e in produzione il frontend è statico su Apache (lo
+  # compila e lo rilascia già il job Frontend → deploy-frontend).
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
-    needs: [backend, frontend, frontend-e2e]
+    needs: [backend]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -168,16 +172,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: backend:ci
-
-      - name: Build frontend image (cache check)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: frontend:ci
 
   # ── Deploy backend su Plesk ──────────────────────────
   # Push su develop → se i test del backend passano e sono cambiati file del
