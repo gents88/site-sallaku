@@ -75,28 +75,45 @@
           <span class="group-title">{{ group.titleKey | translate }}</span>
         </div>
         @for (item of group.items; track item.id) {
-          <a
-            [routerLink]="item.route | langUrl"
-            routerLinkActive="active"
-            ariaCurrentWhenActive="page"
-            [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
-            class="nav-item icon-tile--lift"
-            (click)="onNavigate(item)"
-            (mouseenter)="onItemEnter($event, item)"
-            (mouseleave)="onItemLeave()"
-            (focus)="onItemEnter($event, item)"
-            (blur)="onItemLeave()"
-            (pointerdown)="prefetch(item)"
-          >
-            <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
-            <span class="nav-label">{{ item.labelKey | translate }}</span>
-            @if (badges()[item.id]; as badge) {
-              <!-- Il numero è decorativo: lo screen reader legge la frase completa
-                   ("2 Messaggi da leggere, 1 Follow-up da fare") subito dopo l'etichetta. -->
-              <span class="nav-badge" [class.nav-badge--urgent]="badge.urgent" aria-hidden="true">{{ badgeText(badge.count) }}</span>
-              <span class="nav-badge-sr">@for (part of badge.parts; track part.labelKey) {, {{ part.count }} {{ part.labelKey | translate }}}</span>
+          <div class="nav-row">
+            <a
+              [routerLink]="item.route | langUrl"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+              class="nav-item icon-tile--lift"
+              (click)="onNavigate(item)"
+              (mouseenter)="onItemEnter($event, item)"
+              (mouseleave)="onItemLeave()"
+              (focus)="onItemEnter($event, item)"
+              (blur)="onItemLeave()"
+              (pointerdown)="prefetch(item)"
+            >
+              <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
+              <span class="nav-label">{{ item.labelKey | translate }}</span>
+              @if (badges()[item.id]; as badge) {
+                <!-- Il numero è decorativo: lo screen reader legge la frase completa
+                     ("2 Messaggi da leggere, 1 Follow-up da fare") subito dopo l'etichetta. -->
+                <span class="nav-badge" [class.nav-badge--urgent]="badge.urgent" aria-hidden="true">{{ badgeText(badge.count) }}</span>
+                <span class="nav-badge-sr">@for (part of badge.parts; track part.labelKey) {, {{ part.count }} {{ part.labelKey | translate }}}</span>
+              }
+            </a>
+            @if (item.quickActionKey) {
+              <!-- Fratello e non figlio della voce: un link dentro un link non è HTML valido. -->
+              <a
+                class="nav-quick"
+                [routerLink]="item.route | langUrl"
+                [queryParams]="{ new: 1 }"
+                [attr.aria-label]="item.quickActionKey | translate"
+                [attr.title]="item.quickActionKey | translate"
+                (click)="onQuickAction(item)"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </a>
             }
-          </a>
+          </div>
         }
       </div>
     }

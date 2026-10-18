@@ -346,6 +346,51 @@
   text-overflow: ellipsis;
 }
 
+/* ─── "+" di creazione rapida (Blog, Progetti) ──────────────────── */
+.nav-row {
+  position: relative;
+}
+
+.nav-quick {
+  position: absolute;
+  top: calc(50% - 1.5px);
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  box-sizing: border-box;
+  transform: translateY(-50%);
+  border: 1px solid var(--border-color, rgba(148, 163, 184, 0.2));
+  border-radius: 7px;
+  background: var(--bg-secondary, #0f1424);
+  color: var(--text-secondary, #94a3b8);
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    color: var(--accent-400, #a78bfa);
+    border-color: rgba(139, 92, 246, 0.45);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-500, #4f6af5);
+    outline-offset: 2px;
+  }
+}
+
+/* Col mouse compare passando sulla riga (o col focus); sul touch resta visibile. */
+@media (hover: hover) {
+  .nav-quick {
+    opacity: 0;
+  }
+
+  .nav-row:hover .nav-quick,
+  .nav-row:focus-within .nav-quick {
+    opacity: 1;
+  }
+}
+
 /* ─── Badge (contatori del campanello sulle voci admin) ─────────── */
 .nav-badge {
   flex-shrink: 0;
@@ -509,6 +554,11 @@
 
   .nav-item {
     margin-bottom: 2px;
+  }
+
+  /* Nessuno spazio per il "+" accanto alle sole icone. */
+  .nav-quick {
+    display: none;
   }
 
   /* Badge sull'angolo della tessera: in flusso, accanto all'icona, la
