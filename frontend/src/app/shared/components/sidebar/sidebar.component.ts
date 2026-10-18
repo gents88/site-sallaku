@@ -1,12 +1,29 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListener, computed, effect, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  HostListener,
+  Injector,
+  afterNextRender,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { filter } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { AdminNotificationsService } from '../../../core/services/admin-notifications.service';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
-import { NavEntry, sidebarGroups } from '../../../core/navigation/nav-registry';
+import { NavEntry, NavGroupId, sidebarGroups } from '../../../core/navigation/nav-registry';
 import { NavIconComponent, navIconColor } from '../nav-icon/nav-icon.component';
+import { badgeText, navBadges } from './nav-badges';
 
 /** Tooltip della rail collassata: posizione calcolata dall'item sotto il puntatore/focus. */
 interface RailTooltip {
@@ -21,6 +38,37 @@ export const RAIL_HOVER_CLOSE_DELAY_MS = 220;
 /** Voce fittizia per il tracciamento del CTA "Esplora il Lab". */
 const LAB_CTA = { route: '/lab' } as const;
 
+/**
+ * Gruppi contati dal CTA "N strumenti disponibili": le stesse voci che la
+ * pagina /lab mostra come strumenti. Contare tutti i gruppi faceva leggere
+ * all'admin "24 strumenti", Dashboard, Contatti e Blog compresi.
+ */
+const LAB_TOOL_GROUPS: ReadonlySet<NavGroupId> = new Set<NavGroupId>(['ai', 'workspace', 'tools']);
+
+/** Spazio lasciato attorno alla voce attiva quando la si porta in vista: la tiene fuori dalla sfumatura dei bordi. */
+export const REVEAL_MARGIN_PX = 28;
+
+export interface ScrollEdges {
+  top: boolean;
+  bottom: boolean;
+}
+
+/**
+ * scrollTop che porta la voce [top, top + height] (coordinate del contenuto
+ * scorrevole) dentro l'area visibile con un margine; null se è già visibile.
+ */
+export function revealScrollTop(scrollTop: number, viewHeight: number, top: number, height: number, margin = REVEAL_MARGIN_PX): number | null {
+  let target = scrollTop;
+  if (top - margin < scrollTop) target = Math.max(0, top - margin);
+  else if (top + height + margin > scrollTop + viewHeight) target = top + height + margin - viewHeight;
+  return target === scrollTop ? null : target;
+}
+
+/** Su quali bordi c'è altro da scorrere (1px di tolleranza per gli arrotondamenti subpixel). */
+export function scrollEdgesOf(scrollTop: number, scrollHeight: number, clientHeight: number): ScrollEdges {
+  return { top: scrollTop > 1, bottom: scrollTop + clientHeight < scrollHeight - 1 };
+}
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -33,6 +81,10 @@ export class SidebarComponent {
   private readonly auth = inject(AuthService);
   private readonly drawer = inject(DrawerService);
   private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly notifications = inject(AdminNotificationsService);
+  private readonly router = inject(Router);
+  private readonly injector = inject(Injector);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly mode = this.drawer.mode;
@@ -56,11 +108,46 @@ export class SidebarComponent {
   readonly labCta = LAB_CTA;
   readonly iconColor = navIconColor;
 
-  /** Numero di voci realmente esposte: alimenta il testo del nudge senza hardcodarlo. */
-  readonly itemCount = computed(() => this.navGroups().reduce((total, group) => total + group.items.length, 0));
+  /** Strumenti del Lab realmente esposti: alimenta il testo del CTA senza hardcodarlo. */
+  readonly itemCount = computed(() =>
+    this.navGroups()
+      .filter(group => LAB_TOOL_GROUPS.has(group.id))
+      .reduce((total, group) => total + group.items.length, 0),
+  );
+
+  /** Contatori del campanello sulle voci admin (per id del registro). */
+  readonly badges = computed(() => (this.isAdminUser() ? navBadges(this.notifications.summary()) : {}));
+  readonly badgeText = badgeText;
+
+  /** Bordi della lista con altro contenuto da scorrere: accendono la sfumatura in CSS. */
+  readonly scrollEdges = signal<ScrollEdges>({ top: false, bottom: false });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.clearHoverTimer());
+    this.destroyRef.onDestroy(() => this.clearHoverTimer());
+
+    // La voce attiva va portata in vista: con 14+ voci la lista scorre (nella
+    // rail compressa già a 1440×900) e aprendo /lab/scanner la voce evidenziata
+    // restava sotto la piega, senza nessun segnale che la lista continuasse.
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed())
+      .subscribe(() => this.afterRender(() => this.revealActive()));
+
+    // Le voci cambiano col ruolo (login/logout admin): bordi e voce attiva vanno
+    // ricalcolati sul nuovo elenco. Al primo giro copre anche il caricamento.
+    effect(() => {
+      this.navGroups();
+      untracked(() => this.afterRender(() => this.revealActive()));
+    });
+
+    // Finestra ridimensionata, rail che si espande o si comprime, passaggio
+    // overlay↔rail: cambia l'altezza visibile, quindi anche i bordi da sfumare.
+    afterNextRender(() => {
+      const nav = this.navElement();
+      if (!nav || typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver(() => this.updateScrollEdges());
+      observer.observe(nav);
+      this.destroyRef.onDestroy(() => observer.disconnect());
+    });
 
     // All'apertura del drawer overlay il focus tastiera restava sul trigger dietro
     // il backdrop (quindi "sulla pagina"): lo sposta dentro il drawer, sul close-btn.
@@ -80,6 +167,39 @@ export class SidebarComponent {
 
   closeDrawer(): void {
     this.drawer.close();
+  }
+
+  updateScrollEdges(): void {
+    const nav = this.navElement();
+    if (!nav) return;
+    const next = scrollEdgesOf(nav.scrollTop, nav.scrollHeight, nav.clientHeight);
+    const prev = this.scrollEdges();
+    if (next.top !== prev.top || next.bottom !== prev.bottom) this.scrollEdges.set(next);
+  }
+
+  /**
+   * Scorre solo la lista, a mano: scrollIntoView() farebbe scorrere anche gli
+   * antenati, pagina compresa, pur essendo la sidebar position:fixed.
+   */
+  private revealActive(): void {
+    const nav = this.navElement();
+    const item = nav?.querySelector<HTMLElement>('.nav-item.active');
+    if (nav && item) {
+      const navTop = nav.getBoundingClientRect().top;
+      const rect = item.getBoundingClientRect();
+      const target = revealScrollTop(nav.scrollTop, nav.clientHeight, rect.top - navTop + nav.scrollTop, rect.height);
+      if (target !== null) nav.scrollTop = target;
+    }
+    this.updateScrollEdges();
+  }
+
+  private navElement(): HTMLElement | null {
+    return this.elementRef.nativeElement.querySelector<HTMLElement>('.sidebar-nav');
+  }
+
+  /** Dopo il prossimo render: routerLinkActive e le nuove voci devono essere già nel DOM. */
+  private afterRender(fn: () => void): void {
+    afterNextRender(fn, { injector: this.injector });
   }
 
   toggleRail(): void {
