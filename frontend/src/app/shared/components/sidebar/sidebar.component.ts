@@ -321,6 +321,13 @@ export class SidebarComponent {
     if (this.mode() === 'overlay') this.drawer.close();
   }
 
+  /** "+" accanto a Blog e Progetti: tracciato a parte dalla voce, poi come una navigazione normale. */
+  onQuickAction(item: Pick<NavEntry, 'id' | 'route'>): void {
+    this.analytics.trackClick('sidebar_nav', `sidebar_quick_${item.id.replace(/-/g, '_')}`, `${item.route}?new=1`);
+    this.hideHint();
+    if (this.mode() === 'overlay') this.drawer.close();
+  }
+
   /** Solo mouse: un tocco su schermi touch grandi non deve aprire la rail (c'è il pulsante). */
   onPointerEnter(event: PointerEvent): void {
     if (this.mode() !== 'rail' || event.pointerType !== 'mouse') return;

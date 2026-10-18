@@ -195,3 +195,28 @@ describe('SidebarComponent: lista che scorre', () => {
     expect(nav.scrollTop).toBe(scannerIndex * 40 + 36 + REVEAL_MARGIN_PX - 200);
   });
 });
+
+describe('SidebarComponent: "+" di creazione rapida', () => {
+  it('compare solo accanto a Blog e Progetti e porta al form di creazione', () => {
+    const el = setupFixture(true).nativeElement as HTMLElement;
+    const quick = Array.from(el.querySelectorAll<HTMLAnchorElement>('a.nav-quick'));
+    expect(quick.map(a => a.getAttribute('href'))).toEqual(['/dashboard/projects?new=1', '/dashboard/blog?new=1']);
+    expect(quick.map(a => a.getAttribute('aria-label'))).toEqual(['palette.action_new_project', 'palette.action_new_post']);
+    // Fratello della voce, non annidato: un link dentro un link non è HTML valido.
+    expect(el.querySelector('a.nav-item a')).toBeNull();
+  });
+
+  it('non compare ai visitatori', () => {
+    const el = setupFixture(false).nativeElement as HTMLElement;
+    expect(el.querySelector('a.nav-quick')).toBeNull();
+  });
+
+  it('traccia il click separatamente dalla voce e naviga con ?new=1', async () => {
+    const fixture = setupFixture(true, NO_NOTIFICATIONS, [{ path: '**', children: [] }]);
+    const analytics = TestBed.inject(AnalyticsTrackingService) as unknown as { trackClick: ReturnType<typeof vi.fn> };
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('a.nav-quick[href="/dashboard/blog?new=1"]')?.click();
+    await fixture.whenStable();
+    expect(analytics.trackClick).toHaveBeenCalledWith('sidebar_nav', 'sidebar_quick_admin_blog', '/dashboard/blog?new=1');
+    expect(TestBed.inject(Router).url).toBe('/dashboard/blog?new=1');
+  });
+});

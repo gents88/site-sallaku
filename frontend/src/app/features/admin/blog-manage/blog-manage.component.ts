@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, AfterViewChecked, ChangeDetectorRef, Component, HostListener, inject, OnInit, OnDestroy, ViewChild, ElementRef, DestroyRef } from '@angular/core';
 import { HasUnsavedChanges, warnOnUnload } from '../../../core/guards/unsaved-changes.guard';
 import { DirtyTracker } from '../../../shared/utils/dirty-tracker';
+import { watchNewItemParam } from '../../../shared/utils/new-item-param';
 import { PrismService } from '../../../shared/services/prism.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormControl, Validators } from '@angular/forms';
@@ -282,8 +283,12 @@ export class BlogManageComponent implements OnInit, OnDestroy, AfterViewChecked,
       this.statusFilter = status === 'draft' || status === 'published' ? status : 'all';
       this.cdr.markForCheck();
     });
-    // ?new=1 dalla palette Ctrl+K ("Nuovo articolo"): apre direttamente il form.
-    if (this.route.snapshot.queryParamMap.get('new') === '1') this.openCreate();
+    // ?new=1 dalla palette Ctrl+K o dal "+" della sidebar ("Nuovo articolo"): apre il form.
+    watchNewItemParam(this.route, this.router, this.destroyRef, () => {
+      if (this.hasUnsavedChanges() && !confirm(this.t.instant('common.unsaved_confirm'))) return;
+      this.openCreate();
+      this.cdr.markForCheck();
+    });
   }
 
   ngAfterViewChecked(): void {
