@@ -8,7 +8,7 @@
 
 :host {
   /* Nessun transform/filter qui: creerebbe un containing block e ritaglierebbe
-     il tooltip position:fixed della rail collassata. */
+     la scheda position:fixed delle voci (.rail-hint). */
   display: contents;
 }
 
@@ -558,26 +558,32 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ─── Tooltip della rail collassata ──────────────────────────────── */
-.rail-tooltip {
+/* ─── Scheda della voce (rail aperta) ────────────────────────────── */
+.rail-hint {
   position: fixed;
-  left: calc(var(--sidebar-rail-width, 76px) + 8px);
+  /* Accanto alla rail aperta (agganciata o al passaggio): la scheda esiste solo lì. */
+  left: calc(var(--sidebar-rail-width-expanded, 268px) + 10px);
   z-index: 1400;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 260px;
+  padding: 0.6rem 0.75rem;
   transform: translateY(-50%);
-  padding: 0.4rem 0.65rem;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm, 10px);
   border: 1px solid var(--glass-border, rgba(99, 102, 241, 0.25));
   background: var(--bg-tertiary, #141a2e);
   box-shadow: var(--shadow-md, 0 8px 32px rgba(0, 0, 0, 0.4));
   color: var(--text-primary, #f1f5f9);
   font-size: 0.8rem;
-  font-weight: 600;
-  white-space: nowrap;
+  line-height: 1.4;
   pointer-events: none;
-  animation: tooltipIn 0.14s ease-out both;
+  animation: hintIn 0.16s ease-out both;
 }
 
-.rail-tooltip::before {
+.rail-hint::before {
   content: '';
   position: absolute;
   left: -4px;
@@ -590,9 +596,37 @@
   background: var(--bg-tertiary, #141a2e);
 }
 
-@keyframes tooltipIn {
+.rail-hint__title {
+  font-weight: 700;
+}
+
+.rail-hint__desc {
+  color: var(--text-secondary, #94a3b8);
+}
+
+.rail-hint__counts {
+  margin: 0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  li + li {
+    margin-top: 0.1rem;
+  }
+
+  strong {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes hintIn {
   from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
   to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-hint {
+    animation: none;
+  }
 }
 
 /* ─── Tema chiaro ────────────────────────────────────────────────── */
@@ -609,8 +643,8 @@
   }
 
 
-  .rail-tooltip,
-  .rail-tooltip::before {
+  .rail-hint,
+  .rail-hint::before {
     background: var(--bg-secondary, #ffffff);
   }
 }
