@@ -11,6 +11,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
 import { ReadingHistoryService } from '../../../core/services/reading-history.service';
+import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
 
 const post = {
   _id: '1', slug: 'blinisht', slug_sq: 'blinishti', title: 'Blinisht', title_sq: 'Blinishti', excerpt: '', tags: [],
@@ -46,6 +47,7 @@ describe('BlogDetailComponent view tracking', () => {
         { provide: SeoService, useValue: seo },
         { provide: Location, useValue: location },
         { provide: LanguageService, useValue: { current: () => 'sq' } },
+        { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -177,6 +179,7 @@ describe('BlogDetailComponent publish from preview', () => {
         { provide: BlogService, useValue: blogService },
         { provide: SeoService, useValue: { update: vi.fn() } },
         { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -236,6 +239,7 @@ describe('BlogDetailComponent table of contents', () => {
         { provide: BlogService, useValue: { getOne: vi.fn(() => of(article)) } },
         { provide: SeoService, useValue: { update: vi.fn() } },
         { provide: LanguageService, useValue: { current: () => lang } },
+        { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);

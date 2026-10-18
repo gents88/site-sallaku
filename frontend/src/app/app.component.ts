@@ -24,6 +24,8 @@ import { InstallPromptComponent } from './shared/components/install-prompt/insta
 import { InstallPromptService } from './core/services/install-prompt.service';
 import { LabActivityService } from './core/services/lab-activity.service';
 import { LabNextStepsComponent } from './shared/components/lab-next-steps/lab-next-steps.component';
+import { MaintenanceOverlayComponent } from './shared/components/maintenance-overlay/maintenance-overlay.component';
+import { FeatureFlagsService } from './core/services/feature-flags.service';
 
 import { initGlassSpotlight } from './core/utils/glass-spotlight';
 import { ProfilePhotoComponent } from './shared/components/profile-photo/profile-photo.component';
@@ -31,7 +33,7 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent, InstallPromptComponent, LabNextStepsComponent, ProfilePhotoComponent],
+  imports: [RouterOutlet, TranslateModule, NavbarComponent, FooterComponent, SidebarComponent, LoginComponent, SessionTimeoutModalComponent, ChatbotComponent, ConsentBannerComponent, SearchOverlayComponent, OfflineBannerComponent, InstallPromptComponent, LabNextStepsComponent, ProfilePhotoComponent, MaintenanceOverlayComponent],
   template: `
     <a class="skip-link" href="#main-content">{{ 'skip.link' | translate }}</a>
     <div class="ambient-bg" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -42,6 +44,7 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
     <app-offline-banner />
     <app-install-prompt />
     <app-lab-next-steps />
+    <app-maintenance-overlay />
     <main id="main-content" tabindex="-1">
       <router-outlet />
     </main>
@@ -106,8 +109,10 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
         (stayLoggedIn)="extendSession()"
         (logoutNow)="logoutFromTimeout()" />
     }
-    @defer (on idle) {
-      <app-chatbot />
+    @if (featureFlags.chatbotEnabled()) {
+      @defer (on idle) {
+        <app-chatbot />
+      }
     }
     @if (showBackToTop()) {
       <button class="back-to-top" (click)="scrollToTop()" [attr.aria-label]="'nav.back_to_top' | translate">
@@ -459,6 +464,7 @@ export class AppComponent implements OnInit {
     private analyticsTracking: AnalyticsTrackingService,
     private router: Router,
     private translate: TranslateService,
+    public featureFlags: FeatureFlagsService,
     @Inject(PLATFORM_ID) private platformId: object,
   ) {}
 

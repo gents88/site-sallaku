@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { Injectable, InjectionToken, PLATFORM_ID, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import type { DriveStep, Driver } from 'driver.js';
@@ -18,6 +18,25 @@ const CHATBOT_WAIT_MS = 4000;
 /** Durata della transizione di larghezza della rail (sidebar.component.scss). */
 const RAIL_TRANSITION_MS = 320;
 
+/**
+ * Layout mobile: sotto i 900px la navbar diventa la bottom tab bar e le voci di
+ * menu stanno nel foglio "Altro" (navbar.component.scss), la sidebar è un drawer
+ * fuori schermo. Gli step del tour indicherebbero elementi che lì non si vedono,
+ * quindi su mobile il tour non si mostra (né da solo né dal link "Guida", che il
+ * footer nasconde alla stessa soglia).
+ */
+export const TOUR_MOBILE_QUERY = '(max-width: 900px)';
+
+/**
+ * "Siamo sul layout mobile?" come token DI e non come chiamata diretta a
+ * window.matchMedia: gli unit test girano in un ambiente condiviso tra file e
+ * altri spec sostituiscono matchMedia, quindi lo si inietta per poterlo fissare.
+ */
+export const TOUR_IS_MOBILE = new InjectionToken<() => boolean>('TOUR_IS_MOBILE', {
+  providedIn: 'root',
+  factory: () => () => typeof window !== 'undefined' && !!window.matchMedia?.(TOUR_MOBILE_QUERY).matches,
+});
+
 /** Rotte dell'area admin: il tour è pensato per i visitatori del sito pubblico. */
 const ADMIN_ROUTE = /(^|\/)dashboard(\/|$|\?)/;
 
@@ -28,6 +47,8 @@ const ADMIN_ROUTE = /(^|\/)dashboard(\/|$|\?)/;
  *   con il banner del consenso aperto: il banner resta sotto l'overlay e si
  *   ritrova alla chiusura del tour. Mai nell'area admin né per un admin loggato.
  * - `start()` lo riavvia a mano (link "Guida" nel footer) ignorando il flag.
+ * - Mai su mobile (TOUR_MOBILE_QUERY): il flag non viene scritto, così chi
+ *   torna da desktop lo vede.
  * - Driver.js è caricato con import() dinamico: chi non vede mai il tour non
  *   ne scarica il codice.
  */
@@ -40,6 +61,7 @@ export class OnboardingTourService {
   private readonly auth = inject(AuthService);
   private readonly drawer = inject(DrawerService);
   private readonly analytics = inject(AnalyticsTrackingService);
+  private readonly isMobile = inject(TOUR_IS_MOBILE);
 
   private instance: Driver | null = null;
   private autoStartTimer: ReturnType<typeof setTimeout> | null = null;
@@ -58,7 +80,7 @@ export class OnboardingTourService {
 
   /** Avvia (o riavvia) il tour. Ritorna quando il primo step è a schermo. */
   async start(): Promise<void> {
-    if (!this.isBrowser || this.active()) return;
+    if (!this.isBrowser || this.active() || this.isMobileLayout()) return;
     this.active.set(true);
     if (this.autoStartTimer) {
       clearTimeout(this.autoStartTimer);
@@ -171,8 +193,14 @@ export class OnboardingTourService {
     }
   }
 
+  /** True sul layout mobile, dove il tour non è disponibile. */
+  isMobileLayout(): boolean {
+    return this.isMobile();
+  }
+
   private shouldAutoStart(): boolean {
     if (this.hasSeen()) return false;
+    if (this.isMobileLayout()) return false;
     if (this.auth.isLoggedIn() && this.auth.isAdmin()) return false;
     return !ADMIN_ROUTE.test(this.router.url);
   }

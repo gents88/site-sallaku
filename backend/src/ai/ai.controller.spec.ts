@@ -37,7 +37,7 @@ describe('AiController — quota giornaliera AI', () => {
   it('summarize-file: verifica il budget con l’IP del chiamante prima di chiamare il servizio', async () => {
     await controller.summarizeFile(fakeRequest({ ip: '198.51.100.9' }), pdfFile, 'it', 'short');
 
-    expect(aiQuota.assertWithinBudget).toHaveBeenCalledWith('198.51.100.9');
+    expect(aiQuota.assertWithinBudget).toHaveBeenCalledWith('198.51.100.9', 'summarize-file');
     expect(aiService.summarizeFile).toHaveBeenCalled();
   });
 
@@ -82,7 +82,7 @@ describe('AiController — quota giornaliera AI', () => {
   it('translate-pdf: verifica il budget con l’IP del chiamante prima di tradurre', async () => {
     await controller.translatePdf(fakeRequest({ ip: '10.0.0.5' }), pdfFile, 'italian', 'true');
 
-    expect(aiQuota.assertWithinBudget).toHaveBeenCalledWith('10.0.0.5');
+    expect(aiQuota.assertWithinBudget).toHaveBeenCalledWith('10.0.0.5', 'translate-pdf');
     expect(aiService.translatePdf).toHaveBeenCalled();
   });
 
@@ -94,6 +94,6 @@ describe('AiController — quota giornaliera AI', () => {
       'short',
     );
 
-    expect(aiQuota.assertWithinBudget).toHaveBeenCalledWith('203.0.113.99');
+    expect(aiQuota.assertWithinBudget).toHaveBeenCalledWith('203.0.113.99', 'summarize-file');
   });
 });

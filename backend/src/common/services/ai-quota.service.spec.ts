@@ -2,6 +2,8 @@ import { HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiQuotaService } from './ai-quota.service';
 import { CacheService } from './cache.service';
+import { AiUsageService } from './ai-usage.service';
+import { FeatureUnavailableException } from '../settings/feature-flags';
 
 describe('AiQuotaService', () => {
   let cache: jest.Mocked<Pick<CacheService, 'getCounter' | 'increment'>>;
@@ -62,6 +64,59 @@ describe('AiQuotaService', () => {
 
     it('un IP mancante non fa lanciare hashIp', async () => {
       await expect(service.assertWithinBudget('')).resolves.toBeUndefined();
+    });
+  });
+
+  describe('con lo storico su Mongo (AiUsageService)', () => {
+    let usage: jest.Mocked<Pick<AiUsageService, 'tokensToday' | 'recordCall' | 'recordRejected' | 'recordTokens'>>;
+    let withUsage: AiQuotaService;
+
+    beforeEach(() => {
+      usage = {
+        tokensToday: jest.fn().mockResolvedValue(0),
+        recordCall: jest.fn().mockResolvedValue(undefined),
+        recordRejected: jest.fn().mockResolvedValue(undefined),
+        recordTokens: jest.fn().mockResolvedValue(undefined),
+      };
+      withUsage = new AiQuotaService(cache as unknown as CacheService, config as unknown as ConfigService, usage as unknown as AiUsageService);
+    });
+
+    it('dopo un riavvio (cache vuota) il budget resta esaurito se lo dice il DB', async () => {
+      cache.getCounter.mockResolvedValue(0);
+      usage.tokensToday.mockResolvedValue(300_000);
+
+      const err = await withUsage.assertWithinBudget('1.2.3.4', 'format-text').catch((e) => e);
+
+      expect(err).toBeInstanceOf(FeatureUnavailableException);
+      expect(usage.recordRejected).toHaveBeenCalledWith('budget');
+      expect(usage.recordCall).not.toHaveBeenCalled();
+    });
+
+    it('se il DB non risponde (null) vale il contatore in memoria', async () => {
+      cache.getCounter.mockResolvedValue(10);
+      usage.tokensToday.mockResolvedValue(null);
+      await expect(withUsage.assertWithinBudget('1.2.3.4')).resolves.toBeUndefined();
+    });
+
+    it('conta la chiamata accettata per strumento', async () => {
+      await withUsage.assertWithinBudget('1.2.3.4', 'summarize-file');
+      expect(usage.recordCall).toHaveBeenCalledWith('summarize-file');
+    });
+
+    it('conta il rifiuto per IP con il solo hash dell’indirizzo', async () => {
+      cache.increment.mockResolvedValue(31);
+      await expect(withUsage.assertWithinBudget('8.8.8.8')).rejects.toMatchObject({ status: HttpStatus.TOO_MANY_REQUESTS });
+      expect(usage.recordRejected).toHaveBeenCalledWith('ipCap', withUsage.hashIp('8.8.8.8'));
+    });
+
+    it('recordTokens salva anche la provenienza', async () => {
+      await withUsage.recordTokens(90, 'chatbot');
+      expect(usage.recordTokens).toHaveBeenCalledWith(90, 'chatbot');
+    });
+
+    it('getConfig espone budget e tetto per IP configurati', () => {
+      config.get.mockImplementation((key: string, fallback: unknown) => (key === 'AI_DAILY_TOKEN_BUDGET' ? 1000 : fallback));
+      expect(withUsage.getConfig()).toEqual({ dailyTokenBudget: 1000, maxCallsPerIpPerDay: 30 });
     });
   });
 

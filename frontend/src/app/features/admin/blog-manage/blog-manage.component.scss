@@ -359,6 +359,31 @@
   border-radius: 999px;
   &--published { background: rgba(16, 185, 129, 0.12); color: #047857; }
   &--draft     { background: rgba(245, 158, 11, 0.12);  color: #b45309; }
+  &--scheduled { background: rgba(99, 102, 241, 0.14);  color: #4f46e5; }
+}
+
+.schedule-box {
+  margin: 1.25rem 0 0;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+
+  legend { padding: 0 0.4rem; font-weight: 600; font-size: 0.9rem; }
+
+  &__row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
+
+  &__input {
+    min-height: 40px;
+    padding: 0.4rem 0.7rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    color-scheme: light dark;
+  }
+
+  &__notify { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; font-size: 0.88rem; cursor: pointer; }
 }
 
 .badge--language { color: #2563eb; font-size: 0.75rem; font-weight: 600; }

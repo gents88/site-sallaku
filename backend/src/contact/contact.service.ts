@@ -8,6 +8,30 @@ import { ContactMessage, ContactMessageDocument } from './schemas/contact-messag
 import { TurnstileService } from '../common/services/turnstile.service';
 import { escapeRegex } from '../common/utils/escape-regex';
 import { AdminEventsService } from '../common/services/admin-events.service';
+import {
+  LEAD_STATUSES, LEAD_STATUS_EXPR, LeadStatus, OPEN_LEAD_STATUSES, averageResponseHours, endOfTodayRome,
+} from './lead';
+
+export interface LeadFollowUp {
+  _id: string;
+  name: string;
+  subject: string;
+  followUpAt: Date;
+  status: LeadStatus;
+}
+
+export interface LeadStats {
+  byStatus: Record<LeadStatus, number>;
+  /** Ore medie fra arrivo e prima risposta, ultimi 90 giorni; null senza risposte. */
+  avgFirstResponseHours: number | null;
+  /** Vinti / (vinti + persi), in %; null se non c'è ancora nulla di chiuso. */
+  winRate: number | null;
+  followUpsDue: number;
+  followUps: LeadFollowUp[];
+}
+
+/** I duplicati (stesso messaggio entro 60 s) non sono lead a parte. */
+const NOT_DUPLICATE = { duplicateOf: { $exists: false } };
 
 interface ContactCountByDay {
   date: string;
@@ -156,11 +180,76 @@ export class ContactService {
     contact.repliedAt = new Date();
     contact.replyText = replyText;
     contact.read = true;
+    // Rispondere a un lead nuovo lo porta "in trattativa"; uno già chiuso resta com'è.
+    if (!contact.status || contact.status === 'new') contact.status = 'in_progress';
     return contact.save();
   }
 
+  /** Stato, promemoria e nota interna di un messaggio. */
+  async updateLead(id: string, dto: { status?: LeadStatus; followUpAt?: string | null; internalNote?: string }) {
+    const set: Record<string, unknown> = {};
+    if (dto.status !== undefined) set.status = dto.status;
+    if (dto.followUpAt !== undefined) set.followUpAt = dto.followUpAt ? new Date(dto.followUpAt) : null;
+    if (dto.internalNote !== undefined) set.internalNote = dto.internalNote.trim();
+    const contact = await this.contactModel.findByIdAndUpdate(id, { $set: set }, { new: true }).exec();
+    if (!contact) throw new NotFoundException('Contact message not found');
+    return contact;
+  }
+
+  private followUpsDueFilter(now: Date): Record<string, unknown> {
+    return {
+      ...NOT_DUPLICATE,
+      followUpAt: { $ne: null, $lte: endOfTodayRome(now) },
+      $expr: { $in: [LEAD_STATUS_EXPR, [...OPEN_LEAD_STATUSES]] },
+    };
+  }
+
+  /** Per il campanello: follow-up scaduti o di oggi, su lead ancora aperti. */
+  async countFollowUpsDue(now = new Date()): Promise<number> {
+    return this.contactModel.countDocuments(this.followUpsDueFilter(now)).exec();
+  }
+
+  async leadStats(now = new Date()): Promise<LeadStats> {
+    const since = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const [grouped, replied, followUps, followUpsDue] = await Promise.all([
+      this.contactModel.aggregate<{ _id: LeadStatus; count: number }>([
+        { $match: NOT_DUPLICATE },
+        { $group: { _id: LEAD_STATUS_EXPR, count: { $sum: 1 } } },
+      ]).exec(),
+      this.contactModel
+        .find({ ...NOT_DUPLICATE, createdAt: { $gte: since }, repliedAt: { $ne: null } }, 'createdAt repliedAt')
+        .lean()
+        .exec(),
+      this.contactModel
+        .find(this.followUpsDueFilter(now), 'name subject followUpAt status repliedAt')
+        .sort({ followUpAt: 1 })
+        .limit(5)
+        .lean()
+        .exec(),
+      this.countFollowUpsDue(now),
+    ]);
+
+    const byStatus = Object.fromEntries(LEAD_STATUSES.map((s) => [s, 0])) as Record<LeadStatus, number>;
+    for (const row of grouped) if (row._id in byStatus) byStatus[row._id] = row.count;
+    const closed = byStatus.won + byStatus.lost;
+
+    return {
+      byStatus,
+      avgFirstResponseHours: averageResponseHours(replied as Array<{ createdAt?: Date; repliedAt?: Date | null }>),
+      winRate: closed ? Math.round((byStatus.won / closed) * 100) : null,
+      followUpsDue,
+      followUps: followUps.map((f) => ({
+        _id: String(f._id),
+        name: f.name,
+        subject: f.subject,
+        followUpAt: f.followUpAt as Date,
+        status: (f.status as LeadStatus | undefined) ?? (f.repliedAt ? 'in_progress' : 'new'),
+      })),
+    };
+  }
+
   /** Paginated list for the admin dashboard — avoids returning unbounded collections. */
-  async findPaginated(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string }): Promise<{
+  async findPaginated(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string; status?: LeadStatus; followUpsDue?: boolean }): Promise<{
     data: ContactMessageDocument[];
     total: number;
     page: number;
@@ -170,6 +259,12 @@ export class ContactService {
     const safeLimit = Math.min(Math.max(limit, 1), 100);
     const skip = (Math.max(page, 1) - 1) * safeLimit;
     const filter: Record<string, unknown> = unreadOnly ? { read: false } : {};
+    if (opts.followUpsDue) Object.assign(filter, this.followUpsDueFilter(new Date()));
+    // Lo stato si confronta con la stessa regola dei messaggi vecchi senza `status`.
+    if (opts.status) {
+      const byStatus = { $eq: [LEAD_STATUS_EXPR, opts.status] };
+      filter.$expr = filter.$expr ? { $and: [filter.$expr, byStatus] } : byStatus;
+    }
     const q = opts.q?.trim();
     if (q) {
       const re = new RegExp(escapeRegex(q), 'i');

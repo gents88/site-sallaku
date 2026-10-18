@@ -28,7 +28,7 @@
             formControlName="identifier"
             type="text"
             autocomplete="username"
-            placeholder="+12025551234 or admin@email.com"
+            [placeholder]="'auth.identifier_placeholder' | translate"
           />
           <mat-icon matSuffix>{{ identifierIcon }}</mat-icon>
           @if (identifierForm.get('identifier')?.invalid && identifierForm.get('identifier')?.touched) {

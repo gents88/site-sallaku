@@ -125,6 +125,94 @@
       }
     </section>
 
+    <!-- ── Lead: pipeline dei contatti e follow-up ── -->
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'leads.title' | translate }}</h2>
+            <p class="text-muted">{{ 'leads.desc' | translate }}</p>
+          </div>
+          <mat-icon>handshake</mat-icon>
+        </div>
+        <app-leads-panel [data]="leads" [failed]="isFailed('leads')" />
+      </section>
+    </div>
+
+    <!-- ── Salute operativa: costi AI, errori del server, backup e risorse ── -->
+    <h2 class="section-label"><mat-icon>monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}</h2>
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'ai_usage.title' | translate }}</h2>
+            <p class="text-muted">{{ 'ai_usage.desc' | translate }}</p>
+          </div>
+          <mat-icon>bolt</mat-icon>
+        </div>
+        <app-ai-usage-panel [data]="aiUsage" [failed]="isFailed('aiUsage')" />
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'server_errors.title' | translate }}</h2>
+            <p class="text-muted">{{ 'server_errors.desc' | translate }}</p>
+          </div>
+          <mat-icon>bug_report</mat-icon>
+        </div>
+        <app-server-errors-panel [data]="serverErrors" [failed]="isFailed('serverErrors')" (changed)="refresh()" />
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'server_health.title' | translate }}</h2>
+            <p class="text-muted">{{ 'server_health.desc' | translate }}</p>
+          </div>
+          <mat-icon>backup</mat-icon>
+        </div>
+        <app-server-health-panel [data]="serverHealth" [failed]="isFailed('serverHealth')" />
+      </section>
+    </div>
+
+    <!-- ── Contenuti: traduzioni, pubblicazioni programmate, link rotti ── -->
+    <h2 class="section-label"><mat-icon>edit_note</mat-icon>{{ 'content_health.section' | translate }}</h2>
+    <div class="analytics-grid">
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'translation_health.title' | translate }}</h2>
+            <p class="text-muted">{{ 'translation_health.desc' | translate }}</p>
+          </div>
+          <mat-icon>translate</mat-icon>
+        </div>
+        <app-translation-health-panel [data]="translationHealth" [failed]="isFailed('translationHealth')" />
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'scheduled_posts.title' | translate }}</h2>
+            <p class="text-muted">{{ 'scheduled_posts.desc' | translate }}</p>
+          </div>
+          <mat-icon>event_upcoming</mat-icon>
+        </div>
+        <app-scheduled-posts-panel [posts]="scheduledPosts" [failed]="isFailed('scheduledPosts')" />
+      </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'not_found.title' | translate }}</h2>
+            <p class="text-muted">{{ 'not_found.desc' | translate }}</p>
+          </div>
+          <mat-icon>link_off</mat-icon>
+        </div>
+        <app-not-found-panel [data]="notFound" [failed]="isFailed('notFound')" (changed)="refresh()" />
+      </section>
+    </div>
+
     <div class="analytics-grid">
       <section class="analytics-card card">
         <div class="analytics-card__header">
@@ -785,30 +873,16 @@
         </div>
       </mat-expansion-panel>
 
-      <!-- 3. Backend Feature Flags -->
+      <!-- 3. Interruttori del sito (feature flag + manutenzione) -->
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <mat-icon class="utility-panel-icon">auto_awesome</mat-icon>
-            {{ 'admin.utility_content' | translate }}
+            <mat-icon class="utility-panel-icon">toggle_on</mat-icon>
+            {{ 'feature_flags.title' | translate }}
           </mat-panel-title>
-          <mat-panel-description>{{ 'admin.utility_content_desc' | translate }}</mat-panel-description>
+          <mat-panel-description>{{ 'feature_flags.desc' | translate }}</mat-panel-description>
         </mat-expansion-panel-header>
-
-        @if (systemDetails?.features && featureEntries(systemDetails!.features).length > 0) {
-          <div class="utility-tags" style="margin-top: 0.25rem">
-            @for (entry of featureEntries(systemDetails!.features); track entry[0]) {
-              <span class="utility-tag" [class.utility-tag--off]="!entry[1]">
-                <mat-icon style="font-size:13px;height:13px;width:13px;vertical-align:middle;margin-right:3px">
-                  {{ entry[1] ? 'check_circle' : 'cancel' }}
-                </mat-icon>
-                {{ entry[0] }}
-              </span>
-            }
-          </div>
-        } @else {
-          <p class="text-muted" style="margin-top: 0.5rem">—</p>
-        }
+        <app-feature-flags-panel />
       </mat-expansion-panel>
 
       <!-- 4. Quick Actions -->

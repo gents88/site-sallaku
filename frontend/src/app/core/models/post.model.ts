@@ -38,6 +38,9 @@ export interface Post {
   tags: string[];
   published: boolean;
   publishedAt: string | null;
+  /** Bozza programmata: diventa pubblica da sola a quest'ora (ISO). */
+  scheduledAt?: string | null;
+  notifySubscribers?: boolean;
   metaTitle: string;
   metaDescription: string;
   viewCount?: number;
@@ -69,6 +72,9 @@ export interface CreatePostPayload {
   coverImage?: string;
   tags?: string[];
   published?: boolean;
+  /** ISO; null toglie la programmazione. */
+  scheduledAt?: string | null;
+  notifySubscribers?: boolean;
   metaTitle?: string;
   metaDescription?: string;
   // Multilanguage translations

@@ -2,6 +2,7 @@ import { Route, Routes } from '@angular/router';
 import { adminRoutes } from './features/admin/admin.routes';
 import { langCanMatchGuard } from './core/routing/lang-can-match.guard';
 import { langResolver } from './core/routing/lang.resolver';
+import { notFoundGuard } from './core/routing/not-found.guard';
 
 // Shared by both the unprefixed (Italian default) and /:lang-prefixed route
 // trees below — same component references, listed once. langResolver on
@@ -219,5 +220,6 @@ export const routes: Routes = [
   },
 
   // ── Fallback ──────────────────────────────────────
-  { path: '**', redirectTo: '' },
+  // Home come prima, ma il percorso finisce nella lista 404 della dashboard.
+  { path: '**', canActivate: [notFoundGuard], children: [] },
 ];

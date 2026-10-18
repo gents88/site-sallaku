@@ -1,18 +1,35 @@
+<!-- ── Fumetto d'invito (una volta sola, vedi TEASER_DELAY_MS) ── -->
+@if (teaserVisible && !isOpen) {
+  <div class="cb-teaser" role="status">
+    <button type="button" class="cb-teaser__body" (click)="openFromTeaser()">
+      <span class="cb-teaser__avatar" aria-hidden="true"><app-profile-photo /></span>
+      <span class="cb-teaser__text">
+        <strong>{{ 'chatbot_ui.teaser_title' | translate }}</strong>
+        <span>{{ 'chatbot_ui.teaser_text' | translate }}</span>
+      </span>
+    </button>
+    <button type="button" class="cb-teaser__close" (click)="hideTeaser()" [attr.aria-label]="'chatbot_ui.teaser_close' | translate">
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+}
+
 <!-- ── Floating toggle button ──────────────────────── -->
 <button
   class="cb-fab"
   [class.cb-fab--panel-open]="isOpen"
-  (click)="chatbot.toggleOpen()"
+  (click)="onFabClick()"
   [attr.aria-label]="isOpen ? ('chatbot_ui.close' | translate) : ('chatbot_ui.open' | translate)"
   [attr.aria-expanded]="isOpen"
   aria-haspopup="dialog"
 >
   @if (!isOpen) {
+    <span class="cb-fab__ring" aria-hidden="true"></span>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="26" height="26" aria-hidden="true">
       <path d="M12 2C6.477 2 2 6.115 2 11.188c0 2.756 1.274 5.226 3.294 6.934L4 22l4.832-2.118A11.08 11.08 0 0 0 12 20.375c5.523 0 10-4.115 10-9.187S17.523 2 12 2Z"/>
     </svg>
-    @if (unreadCount > 0) {
-      <span class="cb-fab__badge" [attr.aria-label]="'chatbot_ui.unread_badge' | translate:{count: unreadCount}">{{ unreadCount }}</span>
+    @if (badgeCount > 0) {
+      <span class="cb-fab__badge" [attr.aria-label]="'chatbot_ui.unread_badge' | translate:{count: badgeCount}">{{ badgeCount }}</span>
     }
   } @else {
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true">
@@ -30,15 +47,17 @@
     [attr.aria-label]="'chatbot_ui.title' | translate"
     (keydown.tab)="onPanelTabKey($event)"
   >
+    <!-- Maniglia del foglio (solo mobile) -->
+    <span class="cb-handle" aria-hidden="true"></span>
+
     <!-- Header -->
     <div class="cb-header">
       <div class="cb-header__left">
         <span class="cb-header__avatar" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-            <path d="M12 2C6.477 2 2 6.115 2 11.188c0 2.756 1.274 5.226 3.294 6.934L4 22l4.832-2.118A11.08 11.08 0 0 0 12 20.375c5.523 0 10-4.115 10-9.187S17.523 2 12 2Z"/>
-          </svg>
+          <app-profile-photo />
+          <i class="cb-header__dot" [class.cb-header__dot--live]="liveState === 'live'"></i>
         </span>
-        <div>
+        <div class="cb-header__text">
           <span class="cb-header__title">{{ 'chatbot_ui.title' | translate }}</span>
           <span class="cb-header__subtitle" [class.cb-header__subtitle--live]="liveState === 'live'">
             @if (liveState === 'live') {
@@ -46,7 +65,7 @@
             } @else if (isLoading) {
               {{ 'chatbot_ui.typing' | translate }}
             } @else {
-              {{ 'chatbot_ui.online' | translate }}
+              <span class="cb-ai-tag">AI</span> {{ 'chatbot_ui.instant' | translate }}
             }
           </span>
         </div>
@@ -54,39 +73,29 @@
       <div class="cb-header__actions">
         @if (panelView === 'chat' && chatbot.hasMessages) {
           <button class="cb-icon-btn" (click)="showTranscriptPanel()" [title]="'chatbot_ui.transcript_title' | translate" [attr.aria-label]="'chatbot_ui.transcript_title' | translate">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="17" height="17" aria-hidden="true">
-              <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z"/>
-              <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z"/>
-            </svg>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
           </button>
         }
         @if (chatbot.hasMessages) {
           <button class="cb-icon-btn" (click)="requestClear()" [title]="'chatbot_ui.clear' | translate" [attr.aria-label]="'chatbot_ui.clear' | translate">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="17" height="17" aria-hidden="true">
-              <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/>
-            </svg>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>
           </button>
         }
         <button class="cb-icon-btn" (click)="requestClose()" [attr.aria-label]="'chatbot_ui.close' | translate">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd"/>
-          </svg>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- ── Info banner (always visible, between header and messages) ── -->
-    @if (panelView === 'chat' && liveState === 'idle') {
-      <div class="cb-info-banner" role="note" [attr.aria-label]="'chatbot_ui.info_banner' | translate">
-        <svg class="cb-info-banner__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
-          <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd"/>
-        </svg>
-        <div class="cb-info-banner__body">
-          <p class="cb-info-banner__text">{{ 'chatbot_ui.info_banner' | translate }}</p>
-          <a class="cb-info-banner__cta" routerLink="/contact" (click)="chatbot.close()">
-            {{ 'chatbot_ui.info_cta' | translate }}
-          </a>
-        </div>
+    <!-- ── Avviso: una riga, richiudibile ── -->
+    @if (panelView === 'chat' && liveState === 'idle' && !noticeDismissed) {
+      <div class="cb-notice" role="note">
+        <svg class="cb-notice__icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>
+        <span class="cb-notice__text">{{ 'chatbot_ui.notice_short' | translate }}</span>
+        <a class="cb-notice__cta" [routerLink]="'/contact' | langUrl" (click)="chatbot.close()">{{ 'chatbot_ui.notice_cta' | translate }}</a>
+        <button type="button" class="cb-notice__close" (click)="dismissNotice()" [attr.aria-label]="'chatbot_ui.notice_dismiss' | translate">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
       </div>
     }
 
@@ -95,16 +104,20 @@
       <div class="cb-messages" #messagesContainer (scroll)="onMessagesScroll()" role="log" aria-live="polite" [attr.aria-label]="'chatbot_ui.title' | translate">
         @if (messages.length === 0 && !isLoading) {
           <div class="cb-welcome">
-            <div class="cb-welcome__icon" aria-hidden="true">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
-                <path d="M12 2C6.477 2 2 6.115 2 11.188c0 2.756 1.274 5.226 3.294 6.934L4 22l4.832-2.118A11.08 11.08 0 0 0 12 20.375c5.523 0 10-4.115 10-9.187S17.523 2 12 2Z"/>
-              </svg>
+            <div class="cb-welcome__hello">
+              <img class="cb-welcome__logo" src="/favicon.svg" width="40" height="40" alt="" />
+              <div>
+                <h3 class="cb-welcome__title">{{ 'chatbot_ui.welcome_heading' | translate }}</h3>
+                <p class="cb-welcome__text" [innerHTML]="'chatbot_ui.welcome_text' | translate"></p>
+              </div>
             </div>
-            <h3 class="cb-welcome__title">{{ 'chatbot_ui.welcome_title' | translate }}</h3>
-            <p class="cb-welcome__text" [innerHTML]="'chatbot_ui.welcome_text' | translate"></p>
-            <div class="cb-chips" role="list" [attr.aria-label]="'chatbot_ui.title' | translate">
-              @for (chip of suggestedQuestions(); track chip) {
-                <button class="cb-chip" role="listitem" (click)="sendChip(chip)">{{ chip }}</button>
+            <div class="cb-cards" role="list" [attr.aria-label]="'chatbot_ui.title' | translate">
+              @for (card of suggestionCards; track card.id) {
+                <button type="button" class="cb-card" role="listitem" (click)="sendCard(card)">
+                  <span class="cb-card__icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(card.icon)"><app-nav-icon [name]="card.icon" [size]="15" /></span>
+                  <strong class="cb-card__title">{{ 'chatbot_ui.card_' + card.id + '_title' | translate }}</strong>
+                  <small class="cb-card__desc">{{ 'chatbot_ui.card_' + card.id + '_desc' | translate }}</small>
+                </button>
               }
             </div>
           </div>
@@ -116,28 +129,48 @@
             [class.cb-msg--assistant]="msg.role === 'assistant'"
             [class.cb-msg--agent]="msg.role === 'agent'">
             @if (msg.role === 'assistant') {
-              <span class="cb-msg__avatar" aria-hidden="true">AI</span>
+              <img class="cb-msg__avatar cb-msg__avatar--ai" src="/favicon.svg" width="26" height="26" alt="" />
             }
             @if (msg.role === 'agent') {
-              <span class="cb-msg__avatar cb-msg__avatar--agent" aria-hidden="true">G</span>
+              <span class="cb-msg__avatar cb-msg__avatar--agent" aria-hidden="true"><app-profile-photo /></span>
             }
             <div class="cb-msg__bubble">
+              @if (msg.role !== 'user') {
+                <button type="button" class="cb-msg__copy" (click)="copyMessage(msg)" [attr.aria-label]="(copiedMessage === msg ? 'chatbot_ui.copied' : 'chatbot_ui.copy') | translate" [title]="(copiedMessage === msg ? 'chatbot_ui.copied' : 'chatbot_ui.copy') | translate">
+                  @if (copiedMessage === msg) {
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+                  }
+                </button>
+              }
               <p class="cb-msg__content" [innerHTML]="formatMessage(msg.content)"></p>
-              @if (msg.liveOffer && (liveState === 'idle' || liveState === 'prompt_shown')) {
+              @let links = linksFor(msg);
+              @if (links.length > 0) {
+                <div class="cb-links">
+                  @for (link of links; track link.path) {
+                    <a class="cb-link" [routerLink]="link.path | langUrl" (click)="onLinkNavigate()">
+                      <app-nav-icon class="cb-link__icon" [name]="link.icon" [size]="14" />
+                      <span class="cb-link__label">{{ link.labelKey ? (link.labelKey | translate) : link.label }}</span>
+                      @if (link.kindKey) {
+                        <small class="cb-link__kind">{{ link.kindKey | translate }}</small>
+                      }
+                      <svg class="cb-link__arrow" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+                    </a>
+                  }
+                </div>
+              }
+              @if (msg.liveOffer && flags.liveHandoffEnabled() && (liveState === 'idle' || liveState === 'prompt_shown')) {
                 <button type="button" class="cb-msg__live-cta" (click)="acceptLiveHandoff()">
-                  {{ 'chatbot_ui.live_offer_cta' | translate }}
+                  <span class="cb-msg__live-photo" aria-hidden="true"><app-profile-photo /></span>
+                  <span class="cb-msg__live-text">
+                    <strong>{{ 'chatbot_ui.live_offer_cta' | translate }}</strong>
+                    <small>{{ 'chatbot_ui.live_offer_desc' | translate }}</small>
+                  </span>
                 </button>
               }
               <span class="cb-msg__time">{{ msg.timestamp | date:'HH:mm' }}</span>
             </div>
-          </div>
-        }
-
-        @if (followUpSuggestions.length > 0 && !isLoading && liveState !== 'live') {
-          <div class="cb-chips cb-chips--followup" role="list" [attr.aria-label]="'chatbot_ui.title' | translate">
-            @for (chip of followUpSuggestions; track chip) {
-              <button class="cb-chip" role="listitem" (click)="sendChip(chip)">{{ chip }}</button>
-            }
           </div>
         }
 
@@ -155,11 +188,12 @@
 
         @if (isLoading) {
           <div class="cb-msg cb-msg--assistant" [attr.aria-label]="'chatbot_ui.typing' | translate">
-            <span class="cb-msg__avatar" aria-hidden="true">AI</span>
+            <img class="cb-msg__avatar cb-msg__avatar--ai" src="/favicon.svg" width="26" height="26" alt="" />
             <div class="cb-msg__bubble cb-typing-bubble">
               <span class="cb-dot" aria-hidden="true"></span>
               <span class="cb-dot" aria-hidden="true"></span>
               <span class="cb-dot" aria-hidden="true"></span>
+              <span class="cb-typing-label">{{ 'chatbot_ui.typing' | translate }}</span>
             </div>
           </div>
         }
@@ -170,6 +204,15 @@
           </button>
         }
       </div>
+
+      <!-- Domande successive: una riga che scorre in orizzontale -->
+      @if (followUpSuggestions.length > 0 && !isLoading && liveState !== 'live') {
+        <div class="cb-chips" role="list" [attr.aria-label]="'chatbot_ui.title' | translate">
+          @for (chip of followUpSuggestions; track chip) {
+            <button type="button" class="cb-chip" role="listitem" (click)="sendChip(chip)">{{ chip }}</button>
+          }
+        </div>
+      }
 
       <!-- ── Chat Live Handoff: banner "Vuoi parlare con Gent?" / pillola di stato ── -->
       <app-live-handoff-prompt
@@ -199,21 +242,20 @@
           @if (inputText.length > 800) {
             <span class="cb-char-counter" [class.cb-char-counter--limit]="inputText.length >= 1000">{{ inputText.length }}/1000</span>
           }
+          <button
+            type="submit"
+            class="cb-send-btn"
+            [disabled]="!inputText.trim() || isLoading"
+            [attr.aria-label]="'chatbot_ui.send' | translate"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </button>
         </div>
-        <button
-          type="submit"
-          class="cb-send-btn"
-          [disabled]="!inputText.trim() || isLoading"
-          [attr.aria-label]="'chatbot_ui.send' | translate"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
-            <path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.154.75.75 0 0 0 0-1.115A28.897 28.897 0 0 0 3.105 2.288Z"/>
-          </svg>
-        </button>
       </form>
+      <p class="cb-hint" aria-hidden="true">{{ 'chatbot_ui.input_hint' | translate }}</p>
     }
 
-    <!-- ── Transcript View ─────────────────────────── -->
+<!-- ── Transcript View ─────────────────────────── -->
     @if (panelView === 'transcript') {
       <div class="cb-transcript-panel">
         <button class="cb-back-btn" (click)="panelView = 'chat'" [attr.aria-label]="'chatbot_ui.back' | translate">
