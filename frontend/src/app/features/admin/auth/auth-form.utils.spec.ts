@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
-import { describe, expect, it } from 'vitest';
-import { mapAuthError, normalizeIdentifier, normalizePhone, phoneOrEmailValidator, phoneValidator } from './auth-form.utils';
+import { afterEach, describe, expect, it } from 'vitest';
+import { LAST_LOGIN_ADMIN_KEY, mapAuthError, normalizeIdentifier, normalizePhone, phoneOrEmailValidator, phoneValidator, readLastLoginAdmin, storeLastLoginAdmin } from './auth-form.utils';
 
 const http = (status: number, message?: unknown) => ({ status, error: { message } });
 
@@ -97,5 +97,21 @@ describe('phoneValidator / normalizeIdentifier', () => {
   it('l’email resta com’è (senza spazi), il numero diventa E.164', () => {
     expect(normalizeIdentifier('  mario@example.com ')).toBe('mario@example.com');
     expect(normalizeIdentifier('333 123 4567')).toBe('+393331234567');
+  });
+});
+
+describe('readLastLoginAdmin / storeLastLoginAdmin', () => {
+  afterEach(() => localStorage.removeItem(LAST_LOGIN_ADMIN_KEY));
+
+  it('di default nessun admin ricordato', () => {
+    expect(readLastLoginAdmin()).toBe(false);
+  });
+
+  it('un accesso admin viene ricordato, quello di un altro profilo lo cancella', () => {
+    storeLastLoginAdmin(true);
+    expect(readLastLoginAdmin()).toBe(true);
+    storeLastLoginAdmin(false);
+    expect(readLastLoginAdmin()).toBe(false);
+    expect(localStorage.getItem(LAST_LOGIN_ADMIN_KEY)).toBeNull();
   });
 });
