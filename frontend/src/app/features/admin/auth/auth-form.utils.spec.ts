@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
 import { describe, expect, it } from 'vitest';
-import { mapAuthError, phoneOrEmailValidator } from './auth-form.utils';
+import { mapAuthError, normalizeIdentifier, normalizePhone, phoneOrEmailValidator, phoneValidator } from './auth-form.utils';
 
 const http = (status: number, message?: unknown) => ({ status, error: { message } });
 
@@ -37,6 +37,10 @@ describe('mapAuthError', () => {
     expect(mapAuthError(http(502), 'f').key).toBe('auth.err_server');
   });
 
+  it('SMS non disponibile (503) → invita a usare l’email, non "errore del server"', () => {
+    expect(mapAuthError(http(503, 'SMS delivery is not available. Please use email.'), 'f').key).toBe('auth.err_sms_unavailable');
+  });
+
   it('messaggi sconosciuti o array di validazione → chiave di fallback', () => {
     expect(mapAuthError(http(400, ['email must be an email']), 'auth.login_error').key).toBe('auth.login_error');
     expect(mapAuthError(null, 'auth.otp_send_failed').key).toBe('auth.otp_send_failed');
@@ -46,15 +50,52 @@ describe('mapAuthError', () => {
 describe('phoneOrEmailValidator', () => {
   const check = (v: string) => phoneOrEmailValidator(new FormControl(v));
 
-  it('accetta email e telefono E.164', () => {
+  it('accetta email, telefono E.164 e numeri italiani senza prefisso', () => {
     expect(check('mario@example.com')).toBeNull();
     expect(check('  mario@example.com  ')).toBeNull();
     expect(check('+393331234567')).toBeNull();
+    expect(check('333 123 4567')).toBeNull();
   });
 
   it('rifiuta vuoto e formati non validi', () => {
     expect(check('')).toEqual({ required: true });
     expect(check('mario@')).toEqual({ phoneOrEmail: true });
-    expect(check('3331234567')).toEqual({ phoneOrEmail: true });
+    expect(check('12ab')).toEqual({ phoneOrEmail: true });
+  });
+});
+
+describe('normalizePhone', () => {
+  it('senza prefisso il numero è italiano; spazi, trattini, punti e parentesi vengono tolti', () => {
+    expect(normalizePhone('3331234567')).toBe('+393331234567');
+    expect(normalizePhone(' 333 123 4567 ')).toBe('+393331234567');
+    expect(normalizePhone('333-123.45 67')).toBe('+393331234567');
+    expect(normalizePhone('06 1234 5678')).toBe('+390612345678');
+  });
+
+  it('00 vale come +, e il 39 scritto senza + non viene raddoppiato', () => {
+    expect(normalizePhone('0039 333 1234567')).toBe('+393331234567');
+    expect(normalizePhone('(+39) 333 1234567')).toBe('+393331234567');
+    expect(normalizePhone('393331234567')).toBe('+393331234567');
+    expect(normalizePhone('+44 20 7946 0958')).toBe('+442079460958');
+  });
+
+  it('null per input che non diventano un numero valido', () => {
+    expect(normalizePhone('')).toBeNull();
+    expect(normalizePhone('123')).toBeNull();
+    expect(normalizePhone('333abc4567')).toBeNull();
+    expect(normalizePhone('+0123456789')).toBeNull();
+  });
+});
+
+describe('phoneValidator / normalizeIdentifier', () => {
+  it('il validatore del cellulare usa la stessa normalizzazione', () => {
+    expect(phoneValidator(new FormControl('333 123 4567'))).toBeNull();
+    expect(phoneValidator(new FormControl(''))).toEqual({ required: true });
+    expect(phoneValidator(new FormControl('mario@example.com'))).toEqual({ phone: true });
+  });
+
+  it('l’email resta com’è (senza spazi), il numero diventa E.164', () => {
+    expect(normalizeIdentifier('  mario@example.com ')).toBe('mario@example.com');
+    expect(normalizeIdentifier('333 123 4567')).toBe('+393331234567');
   });
 });

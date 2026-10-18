@@ -30,6 +30,7 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
   private transporter: nodemailer.Transporter;
   private readonly isConfigured: boolean;
+  private readonly smtpConfigured: boolean;
   private readonly smtpUser?: string;
 
   /** When set, all emails are sent via Resend HTTP API instead of SMTP */
@@ -38,20 +39,14 @@ export class MailService {
   constructor(private config: ConfigService) {
     this.resendApiKey = this.config.get<string>('RESEND_API_KEY');
 
-    if (this.resendApiKey) {
-      this.isConfigured = true;
-      this.logger.log('MailService: using Resend HTTP API for delivery.');
-      // Create a no-op transporter — will never be used when resendApiKey is set
-      this.transporter = nodemailer.createTransport({ jsonTransport: true });
-      return;
-    }
-
     const smtpUser = this.config.get<string>('SMTP_USER');
     const smtpPass = this.config.get<string>('SMTP_PASS');
     this.smtpUser = smtpUser;
-    const hasPlaceholderUser = smtpUser === 'la-tua-email@gmail.com';
+    // Valori d'esempio di .env.example: con questi l'autenticazione SMTP fallisce sempre.
+    const hasPlaceholderUser = smtpUser === 'la-tua-email@gmail.com' || smtpUser === 'your-email@gmail.com';
     const hasPlaceholderPass = smtpPass === 'la-tua-app-password-gmail';
-    this.isConfigured = Boolean(smtpUser && smtpPass && !hasPlaceholderUser && !hasPlaceholderPass);
+    this.smtpConfigured = Boolean(smtpUser && smtpPass && !hasPlaceholderUser && !hasPlaceholderPass);
+    this.isConfigured = Boolean(this.resendApiKey) || this.smtpConfigured;
 
     this.transporter = nodemailer.createTransport({
       host:   this.config.get<string>('SMTP_HOST', 'smtp.gmail.com'),
@@ -60,10 +55,12 @@ export class MailService {
       auth: { user: smtpUser, pass: smtpPass },
     });
 
-    if (!this.isConfigured) {
-      this.logger.warn('Neither RESEND_API_KEY nor SMTP credentials are configured. Email delivery is disabled.');
-    } else {
+    if (this.resendApiKey) {
+      this.logger.log(`MailService: using Resend HTTP API for delivery${this.smtpConfigured ? ' (SMTP as fallback)' : ''}.`);
+    } else if (this.smtpConfigured) {
       this.logger.log('MailService: using SMTP for delivery.');
+    } else {
+      this.logger.warn('Neither RESEND_API_KEY nor SMTP credentials are configured. Email delivery is disabled.');
     }
   }
 
@@ -88,7 +85,14 @@ export class MailService {
     }
 
     if (this.resendApiKey) {
-      return this.sendViaResend(opts);
+      const result = await this.sendViaResend(opts);
+      if (result.success || !this.smtpConfigured) return result;
+      // Finché il dominio del mittente non è verificato, Resend consegna solo
+      // all'indirizzo del titolare dell'account e rifiuta tutti gli altri
+      // (es. i codici di accesso dei visitatori): con l'SMTP configurato il
+      // messaggio parte comunque da lì, col mittente della casella SMTP.
+      this.logger.warn(`Resend did not deliver → ${opts.to}, retrying via SMTP.`);
+      return this.sendViaSmtp(opts, `"Gent Sallaku" <${this.smtpUser}>`);
     }
     return this.sendViaSmtp(opts);
   }
@@ -134,8 +138,8 @@ export class MailService {
 
   // ── Nodemailer / SMTP fallback ────────────────────────────────────────────
 
-  private async sendViaSmtp(opts: MailOptions): Promise<MailDeliveryResult> {
-    const from = this.config.get<string>(
+  private async sendViaSmtp(opts: MailOptions, fromOverride?: string): Promise<MailDeliveryResult> {
+    const from = fromOverride ?? this.config.get<string>(
       'EMAIL_FROM',
       this.smtpUser ? `"Gent Sallaku" <${this.smtpUser}>` : '"Gent Sallaku" <noreply@gentsallaku.it>',
     );

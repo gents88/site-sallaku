@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { createHash } from 'crypto';
 import { AuthService } from './auth.service';
@@ -47,6 +47,7 @@ describe('AuthService', () => {
             findByEmail: jest.fn(),
             findByIdWithRefreshToken: jest.fn(),
             create: jest.fn(),
+            deleteById: jest.fn(),
             saveRefreshToken: jest.fn(),
             count: jest.fn(),
           },
@@ -105,6 +106,17 @@ describe('AuthService', () => {
       expect(otpService.requestOtp).toHaveBeenCalledWith(undefined, 'test@example.com');
       expect(result).toEqual({ message: expect.any(String), email: 'test@example.com' });
       expect(result).not.toHaveProperty('access_token');
+    });
+
+    it('annulla l’account appena creato se il codice di verifica non parte', async () => {
+      usersService.findByEmail.mockResolvedValue(null);
+      usersService.create.mockResolvedValue(makeUser({ emailVerified: false }) as any);
+      otpService.requestOtp.mockRejectedValue(new BadRequestException('Failed to send email.'));
+
+      await expect(
+        service.register({ name: 'X', email: 'test@example.com', password: 'StrongPass123!' }),
+      ).rejects.toThrow(BadRequestException);
+      expect(usersService.deleteById).toHaveBeenCalledWith('user-id-1');
     });
 
     it('should throw ConflictException if email already registered', async () => {

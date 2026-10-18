@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { tap, catchError, map } from 'rxjs/operators';
 import { Observable, throwError, BehaviorSubject, filter, take } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginPayload, OtpRequestResponse, RegisterPayload, RegisterResponse, User } from '../models/user.model';
+import { AuthResponse, LoginPayload, OtpChannels, OtpRequestResponse, RegisterPayload, RegisterResponse, User } from '../models/user.model';
 import { LAST_ACTIVITY_KEY } from './inactivity.service';
 
 const TOKEN_KEY = 'portfolio_token';
@@ -84,6 +84,11 @@ export class AuthService implements OnDestroy {
    */
   register(payload: RegisterPayload): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, payload);
+  }
+
+  /** Which channels can deliver a code right now: SMS only once an SMS provider is configured. */
+  getOtpChannels(): Observable<OtpChannels> {
+    return this.http.get<OtpChannels>(`${this.apiUrl}/otp/channels`);
   }
 
   /** Request an OTP sent via SMS (phone) or email. Pass whichever the user entered. */

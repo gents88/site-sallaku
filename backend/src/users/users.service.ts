@@ -14,6 +14,10 @@ export class UsersService {
     return this.userModel.create(data);
   }
 
+  async deleteById(id: string): Promise<void> {
+    await this.userModel.deleteOne({ _id: id }).exec();
+  }
+
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email: email.toLowerCase() }).select('+passwordHash').exec();
   }
