@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { NotFoundException } from '@nestjs/common';
-import { BlogService } from './blog.service';
+import { BlogService, translationTimestamps } from './blog.service';
 import { Post } from './schemas/post.schema';
 
 const anySlugFilter = (slug: string) => ({
@@ -246,6 +246,103 @@ describe('BlogService', () => {
 
       const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
       expect(update.slug_sq).toBeUndefined();
+    });
+  });
+
+  // ── controllo traduzioni ────────────────────────────────────────────────────
+
+  describe('date delle traduzioni', () => {
+    function existingPost(extra: Record<string, unknown> = {}) {
+      return { ...makePost({ title: 'Titolo', content: 'Contenuto italiano' }), title_en: 'Title', content_en: 'English', ...extra, toObject() { return this; } };
+    }
+
+    it('modificare il testo italiano aggiorna sourceUpdatedAt, non le traduzioni', async () => {
+      modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(existingPost()) });
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(existingPost()) });
+
+      await service.update('1', { title: 'Titolo', content: 'Contenuto italiano rivisto', title_en: 'Title', content_en: 'English' } as any);
+
+      const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
+      expect(update.sourceUpdatedAt).toBeInstanceOf(Date);
+      expect(update).not.toHaveProperty('translationsUpdatedAt.en');
+    });
+
+    it('un autosave identico a quanto salvato non tocca nessuna data', async () => {
+      modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(existingPost()) });
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(existingPost()) });
+
+      await service.update('1', { title: 'Titolo', content: 'Contenuto italiano', content_en: 'English', published: false } as any);
+
+      const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
+      expect(update).not.toHaveProperty('sourceUpdatedAt');
+      expect(Object.keys(update).some((k) => k.startsWith('translationsUpdatedAt'))).toBe(false);
+    });
+
+    it('cambiare una traduzione aggiorna solo la sua data', () => {
+      const now = new Date('2026-10-17T10:00:00Z');
+      expect(translationTimestamps({ content_sq: 'nuovo' }, { content_sq: 'vecchio' }, now)).toEqual({ 'translationsUpdatedAt.sq': now });
+    });
+
+    it('getTranslationHealth legge i post con un cursore e tiene il risultato in cache', async () => {
+      const docs = [{ _id: 'p1', title: 'T', slug: 't', published: true, content: '<p>x</p>' }];
+      const cursor = jest.fn(() => (async function* () { yield* docs; })());
+      modelMock.find.mockReturnValue({ lean: () => ({ cursor }) });
+
+      const first = await service.getTranslationHealth(1_000);
+      expect(first.posts).toBe(1);
+      expect(first.missing).toBe(6);
+      await service.getTranslationHealth(2_000);
+      expect(cursor).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // ── pubblicazione programmata ───────────────────────────────────────────────
+
+  describe('programmazione', () => {
+    function existing(published: boolean) {
+      return { ...makePost({ published }), toObject() { return this; } };
+    }
+    function mockUpdate(post: unknown) {
+      modelMock.findById.mockReturnValue({ exec: jest.fn().mockResolvedValue(post) });
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.findByIdAndUpdate.mockReturnValue({ exec: jest.fn().mockResolvedValue(post) });
+    }
+
+    it('una bozza con scheduledAt viene programmata', async () => {
+      mockUpdate(existing(false));
+      await service.update('1', { published: false, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      expect(modelMock.findByIdAndUpdate.mock.calls[0][1].scheduledAt).toEqual(new Date('2026-10-20T08:00:00.000Z'));
+    });
+
+    it('null toglie la programmazione', async () => {
+      mockUpdate(existing(false));
+      await service.update('1', { scheduledAt: null } as any);
+      expect(modelMock.findByIdAndUpdate.mock.calls[0][1].scheduledAt).toBeNull();
+    });
+
+    it('un post già pubblicato (es. dallo scheduler) non torna programmato con un autosave', async () => {
+      mockUpdate(existing(true));
+      await service.update('1', { title: 'Test Post', scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      const update = modelMock.findByIdAndUpdate.mock.calls[0][1];
+      expect(update.scheduledAt).toBeNull();
+      expect(update).not.toHaveProperty('published');
+    });
+
+    it('pubblicare subito cancella la programmazione', async () => {
+      mockUpdate(existing(false));
+      await service.update('1', { published: true, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      expect(modelMock.findByIdAndUpdate.mock.calls[0][1].scheduledAt).toBeNull();
+    });
+
+    it('create: scheduledAt vale solo per le bozze', async () => {
+      modelMock.exists.mockResolvedValue(null);
+      modelMock.create.mockResolvedValue({});
+      await service.create({ title: 'Nuovo post', content: 'Contenuto abbastanza lungo', published: false, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      await service.create({ title: 'Altro post', content: 'Contenuto abbastanza lungo', published: true, scheduledAt: '2026-10-20T08:00:00.000Z' } as any);
+      expect(modelMock.create.mock.calls[0][0].scheduledAt).toEqual(new Date('2026-10-20T08:00:00.000Z'));
+      expect(modelMock.create.mock.calls[1][0].scheduledAt).toBeNull();
     });
   });
 

@@ -1,5 +1,5 @@
 import {
-  IsString, IsArray, IsOptional, IsBoolean, MaxLength, MinLength, Matches, IsIn, IsUrl,
+  IsString, IsArray, IsOptional, IsBoolean, MaxLength, MinLength, Matches, IsIn, IsUrl, IsDateString, ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -58,6 +58,18 @@ export class CreatePostDto {
   @IsBoolean()
   @IsOptional()
   published?: boolean;
+
+  /** ISO; null toglie la programmazione. Ignorato se il post è (o diventa) pubblicato. */
+  @ApiPropertyOptional({ nullable: true, example: '2026-10-20T08:00:00.000Z' })
+  @IsOptional()
+  @ValidateIf((_, v) => v !== null)
+  @IsDateString()
+  scheduledAt?: string | null;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  notifySubscribers?: boolean;
 
   @ApiPropertyOptional()
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))

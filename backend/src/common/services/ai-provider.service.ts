@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiQuotaService } from './ai-quota.service';
+import { AiTokenSource } from './ai-usage.service';
 
 export interface AiChatMessage {
   role: string;
@@ -12,6 +13,8 @@ export interface AiChatOptions {
   maxTokens: number;
   temperature?: number;
   timeoutMs: number;
+  /** Per la dashboard: token degli strumenti /ai/* o del chatbot. Default 'tools'. */
+  source?: AiTokenSource;
 }
 
 /**
@@ -69,7 +72,7 @@ export class AiProviderService {
     }
 
     const tokensUsed = (data.usage?.prompt_tokens ?? 0) + (data.usage?.completion_tokens ?? 0);
-    await this.aiQuota.recordTokens(tokensUsed);
+    await this.aiQuota.recordTokens(tokensUsed, opts.source ?? 'tools');
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }

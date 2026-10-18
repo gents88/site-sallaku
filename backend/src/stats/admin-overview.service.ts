@@ -14,6 +14,13 @@ import { LiveHandoffService } from '../live-handoff/live-handoff.service';
 import { SystemInfoService } from '../system/system-info.service';
 import { TestimonialsService } from '../testimonials/services/testimonials.service';
 import { NotesService } from '../notes/services/notes.service';
+import { AiUsageService, AiUsageSummary } from '../common/services/ai-usage.service';
+import { AiQuotaConfig, AiQuotaService } from '../common/services/ai-quota.service';
+import { SettingsService } from '../common/settings/settings.service';
+import { ErrorLogService } from '../error-log/error-log.service';
+import { ServerHealthService } from '../system/server-health.service';
+import { BlogSchedulerService } from '../blog/blog-scheduler.service';
+import { NotFoundService } from '../analytics/not-found/not-found.service';
 
 interface StatsContactPoint {
   date: string;
@@ -40,11 +47,19 @@ export interface AdminDashboardStatsResponse {
   };
 }
 
+export interface AiUsageOverview extends AiUsageSummary {
+  quota: AiQuotaConfig;
+  /** Interruttore d'emergenza (feature flag aiEnabled). */
+  enabled: boolean;
+}
+
 export interface NotificationSummary {
   contactsUnread: number;
   testimonialsPending: number;
   notesPending: number;
   liveHandoffsWaiting: number;
+  /** Follow-up dei lead scaduti o di oggi. */
+  followUpsDue: number;
 }
 
 /** TTL breve: la dashboard fa polling ogni 60s e più schede aperte condividono lo stesso snapshot. */
@@ -88,6 +103,13 @@ export class AdminOverviewService {
     private readonly systemInfo: SystemInfoService,
     private readonly testimonials: TestimonialsService,
     private readonly notes: NotesService,
+    private readonly aiUsage: AiUsageService,
+    private readonly aiQuota: AiQuotaService,
+    private readonly settings: SettingsService,
+    private readonly errorLog: ErrorLogService,
+    private readonly serverHealth: ServerHealthService,
+    private readonly blogScheduler: BlogSchedulerService,
+    private readonly notFound: NotFoundService,
   ) {}
 
   /**
@@ -95,17 +117,19 @@ export class AdminOverviewService {
    * login e ricaricato a ogni evento WebSocket 'admin_notification'.
    */
   async notificationSummary(): Promise<NotificationSummary> {
-    const [contactsUnread, testimonialStats, pendingNotes, active] = await Promise.all([
+    const [contactsUnread, testimonialStats, pendingNotes, active, followUpsDue] = await Promise.all([
       this.contacts.countUnread(),
       this.testimonials.getStats(),
       this.notes.getAllForAdmin('pending', 1, 0),
       this.liveHandoff.listActive(),
+      this.contacts.countFollowUpsDue(),
     ]);
     return {
       contactsUnread,
       testimonialsPending: testimonialStats.pending,
       notesPending: pendingNotes.total,
       liveHandoffsWaiting: active.filter((h) => h.status === 'requested' || h.status === 'notified').length,
+      followUpsDue,
     };
   }
 
@@ -130,6 +154,12 @@ export class AdminOverviewService {
       content,
       visits,
     };
+  }
+
+  /** Consumo AI di oggi + ultimi 7 giorni, con i limiti in vigore e lo stato dell'interruttore. */
+  async aiUsageOverview(): Promise<AiUsageOverview> {
+    const [summary, enabled] = await Promise.all([this.aiUsage.getSummary(7), this.settings.isEnabled('aiEnabled')]);
+    return { ...summary, quota: this.aiQuota.getConfig(), enabled };
   }
 
   async getOverview(fresh = false, now = Date.now()): Promise<AdminOverviewResponse> {
@@ -168,6 +198,13 @@ export class AdminOverviewService {
       systemHealth: () => this.systemInfo.health(),
       systemDetails: () => this.systemInfo.version(),
       systemOps: () => this.systemInfo.ops(),
+      aiUsage: () => this.aiUsageOverview(),
+      serverErrors: () => this.errorLog.summary(),
+      serverHealth: () => this.serverHealth.snapshot(),
+      translationHealth: () => this.blog.getTranslationHealth(),
+      scheduledPosts: () => this.blogScheduler.upcoming(5),
+      leads: () => this.contacts.leadStats(),
+      notFound: () => this.notFound.summary(10),
     };
 
     const keys = Object.keys(loaders);

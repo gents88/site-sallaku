@@ -290,6 +290,27 @@
           }
         </details>
 
+        <!-- ── Pubblicazione programmata ───────────────────────────── -->
+        <fieldset class="schedule-box">
+          <legend>{{ 'blog_manage.schedule_label' | translate }}</legend>
+          <p class="helper-copy">{{ 'blog_manage.schedule_hint' | translate }}</p>
+          <div class="schedule-box__row">
+            <input type="datetime-local" class="schedule-box__input" formControlName="scheduledAt"
+                   [attr.aria-label]="'blog_manage.schedule_label' | translate" />
+            <button mat-stroked-button type="button" (click)="schedule()" [disabled]="saving || !form.get('scheduledAt')?.value">
+              <mat-icon>schedule</mat-icon>
+              {{ 'blog_manage.schedule_btn' | translate }}
+            </button>
+            @if (form.get('scheduledAt')?.value) {
+              <button mat-button type="button" (click)="clearSchedule()">{{ 'blog_manage.schedule_clear' | translate }}</button>
+            }
+          </div>
+          <label class="schedule-box__notify">
+            <input type="checkbox" formControlName="notifySubscribers" />
+            {{ 'blog_manage.notify_label' | translate }}
+          </label>
+        </fieldset>
+
         <!-- ── Actions ─────────────────────────────────────────────── -->
         <div class="form-actions">
           <button mat-button type="button" (click)="closeForm()">{{ 'common.cancel' | translate }}</button>
@@ -354,6 +375,11 @@
                     [class.status-badge--draft]="!post.published">
                 {{ (post.published ? 'blog_manage.published' : 'blog_manage.draft') | translate }}
               </span>
+              @if (isScheduled(post)) {
+                <span class="status-badge status-badge--scheduled">
+                  {{ 'blog_manage.scheduled_badge' | translate }} · {{ post.scheduledAt | date: 'dd/MM HH:mm' }}
+                </span>
+              }
               <span class="badge badge--language">{{ (post.language || 'it').toUpperCase() }}</span>
               <span class="badge badge--views">
                 <mat-icon>visibility</mat-icon> {{ post.viewCount ?? 0 }}

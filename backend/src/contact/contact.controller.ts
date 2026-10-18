@@ -2,12 +2,14 @@ import { Controller, Post, Body, HttpCode, HttpStatus, Patch, Param, UseGuards, 
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Request } from 'express';
 import { ContactService } from './contact.service';
-import { ContactDto, BulkDeleteDto, ReplyContactDto } from './dto/contact.dto';
+import { ContactDto, BulkDeleteDto, ReplyContactDto, UpdateLeadDto } from './dto/contact.dto';
 import { ContactAdminQueryDto } from './dto/contact-admin-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
 import { geoLookup } from '../common/utils/geoip-disk';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
+import { ParseMongoIdPipe } from '../common/pipes/parse-mongo-id.pipe';
 
 @ApiTags('Contact')
 @Controller('contact')
@@ -16,6 +18,7 @@ export class ContactController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
+  @RequireFeature('contactFormEnabled')
   @ApiOperation({ summary: 'Send a contact message (public)' })
   sendMessage(@Req() req: Request, @Body() dto: ContactDto) {
     // IP is already rate-limited by the global ThrottlerGuard (8 req / 60 s)
@@ -55,6 +58,15 @@ export class ContactController {
     return this.contactService.replyToContact(id, body.replyText);
   }
 
+  @Patch(':id/lead')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Update lead status, follow-up reminder and internal note (admin)' })
+  updateLead(@Param('id', ParseMongoIdPipe) id: string, @Body() dto: UpdateLeadDto) {
+    return this.contactService.updateLead(id, dto);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
@@ -64,8 +76,8 @@ export class ContactController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'unreadOnly', required: false, type: Boolean })
   @ApiQuery({ name: 'q', required: false, type: String })
-  findAll(@Query() { page, limit, unreadOnly, q }: ContactAdminQueryDto) {
-    return this.contactService.findPaginated({ page: page ?? 1, limit: limit ?? 20, unreadOnly, q });
+  findAll(@Query() { page, limit, unreadOnly, q, status, followUpsDue }: ContactAdminQueryDto) {
+    return this.contactService.findPaginated({ page: page ?? 1, limit: limit ?? 20, unreadOnly, q, status, followUpsDue });
   }
 
   @Post('bulk-delete')

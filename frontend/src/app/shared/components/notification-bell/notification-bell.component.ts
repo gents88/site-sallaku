@@ -27,7 +27,7 @@ import { NavIconComponent } from '../nav-icon/nav-icon.component';
         <ul class="nb-list">
           @for (row of rows(); track row.key) {
             <li>
-              <a [routerLink]="row.route" class="nb-row" [class.nb-row--urgent]="row.urgent && row.count > 0" (click)="close()">
+              <a [routerLink]="row.route" [queryParams]="row.query ?? null" class="nb-row" [class.nb-row--urgent]="row.urgent && row.count > 0" (click)="close()">
                 <span>{{ row.labelKey | translate }}</span>
                 <strong>{{ row.count }}</strong>
               </a>
@@ -96,11 +96,12 @@ export class NotificationBellComponent {
   readonly rows = computed(() => {
     const s = this.notifications.summary();
     return [
-      { key: 'live', labelKey: 'notifications.live_waiting', count: s.liveHandoffsWaiting, route: '/dashboard', urgent: true },
+      { key: 'live', labelKey: 'notifications.live_waiting', count: s.liveHandoffsWaiting, route: '/dashboard/live-chat', urgent: true },
       { key: 'contacts', labelKey: 'notifications.contacts_unread', count: s.contactsUnread, route: '/dashboard/contacts', urgent: false },
       { key: 'testimonials', labelKey: 'notifications.testimonials_pending', count: s.testimonialsPending, route: '/dashboard/testimonials', urgent: false },
       { key: 'notes', labelKey: 'notifications.notes_pending', count: s.notesPending, route: '/dashboard/notes', urgent: false },
-    ];
+      { key: 'followups', labelKey: 'notifications.followups_due', count: s.followUpsDue ?? 0, route: '/dashboard/contacts', query: { followups: 1 }, urgent: false },
+    ] as Array<{ key: string; labelKey: string; count: number; route: string; urgent: boolean; query?: Record<string, unknown> }>;
   });
 
   toggle(): void {

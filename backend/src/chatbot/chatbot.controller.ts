@@ -20,6 +20,7 @@ import { SendMessageDto, SendTranscriptDto } from './dto/chat.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 
 @ApiTags('Chatbot')
 @Controller('chatbot')
@@ -28,6 +29,7 @@ export class ChatbotController {
 
   @Post('message')
   @HttpCode(HttpStatus.OK)
+  @RequireFeature('chatbotEnabled')
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @ApiOperation({ summary: 'Send a chat message and receive an AI response' })
   sendMessage(@Req() req: any, @Body() dto: SendMessageDto) {

@@ -327,3 +327,12 @@ textarea.field-input {
 /* ── Animations ──────────────────────────────────── */
 /* @keyframes spin → styles.scss (globale, identico) */
 .spin { animation: spin 1s linear infinite; display: inline-block; }
+
+// Modulo spento dalla dashboard (feature flag): avviso in cima al modulo disattivato.
+.contact-form-off {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--color-warning, #f59e0b);
+  border-radius: 12px;
+  font-size: 0.95rem;
+}

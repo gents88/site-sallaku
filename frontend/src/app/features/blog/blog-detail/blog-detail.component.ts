@@ -15,6 +15,7 @@ import { PrismService } from '../../../shared/services/prism.service';
 import { TrackClickDirective } from '../../../shared/directives/track-click.directive';
 import { AdUnitComponent } from '../../../shared/components/ad-unit/ad-unit.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
+import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { SocialShareComponent } from '../../../shared/components/social-share/social-share.component';
 import { ArticleNotesComponent } from '../../../shared/components/article-notes/article-notes.component';
 import { estimateReadingMinutes } from '../../../shared/utils/reading-time';
@@ -23,6 +24,7 @@ import { rankRelated } from '../../../shared/utils/related-content';
 import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { environment } from '../../../../environments/environment';
+import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
 
 /**
  * Quanto del testo è stato letto, da 0 a 1: 0 finché l'inizio del testo non
@@ -76,7 +78,7 @@ export function activeHeadingIndex(tops: number[], readingLine: number, atBottom
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective, LocalDatePipe],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,6 +106,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly location = inject(Location);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly notFoundReporter = inject(NotFoundReporterService);
   private readonly readingHistory = inject(ReadingHistoryService);
   publishing = false;
   readonly currentLang = this.langService.current;
@@ -473,7 +476,12 @@ export class BlogDetailComponent implements OnInit, OnChanges {
           { label: this.localizedMetaTitle },
         ];
       },
-      error: () => { this.notFound = true; this.cdr.markForCheck(); },
+      error: (err: { status?: number }) => {
+        this.notFound = true;
+        // Uno slug che il backend non conosce è un link rotto da sistemare (lista 404 della dashboard).
+        if (err?.status === 404 && !this.isPreview) this.notFoundReporter.report(this.location.path(), 'blog');
+        this.cdr.markForCheck();
+      },
     });
   }
 }

@@ -7,6 +7,9 @@ import { DonutItem } from '../../../shared/components/donut-chart/donut-chart.co
 
 // ── Exported types (shared between service and component) ──────────────────────
 
+export type LeadStatus = 'new' | 'in_progress' | 'won' | 'lost';
+export const LEAD_STATUSES: readonly LeadStatus[] = ['new', 'in_progress', 'won', 'lost'];
+
 export interface RecentContact {
   _id?: string;
   name: string;
@@ -17,6 +20,23 @@ export interface RecentContact {
   read?: boolean;
   repliedAt?: string | null;
   replyText?: string | null;
+  /** Assente nei messaggi salvati prima degli stati: vedi effectiveLeadStatus. */
+  status?: LeadStatus;
+  followUpAt?: string | null;
+  internalNote?: string;
+}
+
+/** Stessa regola del backend: senza stato, risposto = in trattativa, altrimenti nuovo. */
+export function effectiveLeadStatus(c: Pick<RecentContact, 'status' | 'repliedAt'>): LeadStatus {
+  return c.status ?? (c.repliedAt ? 'in_progress' : 'new');
+}
+
+export interface LeadStats {
+  byStatus: Record<LeadStatus, number>;
+  avgFirstResponseHours: number | null;
+  winRate: number | null;
+  followUpsDue: number;
+  followUps: Array<{ _id: string; name: string; subject: string; followUpAt: string; status: LeadStatus }>;
 }
 
 /** Sessione di chat live che Gent può (ri)aprire dalla dashboard. */
@@ -142,6 +162,114 @@ export interface OperationsInfo {
   cronJobs: Array<{ name: string; nextRun: string | null; running: boolean }>;
 }
 
+export interface AiUsageOverview {
+  date: string;
+  tokens: number;
+  calls: number;
+  byEndpoint: Array<{ endpoint: string; calls: number }>;
+  tokensBySource: { tools: number; chatbot: number };
+  rejectedIpCap: number;
+  rejectedBudget: number;
+  cappedIps: number;
+  history: Array<{ date: string; tokens: number; calls: number }>;
+  quota: { dailyTokenBudget: number; maxCallsPerIpPerDay: number };
+  enabled: boolean;
+}
+
+export interface ServerErrorView {
+  _id: string;
+  method: string;
+  route: string;
+  path: string;
+  status: number;
+  name: string;
+  message: string;
+  stack: string;
+  count: number;
+  today: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  resolvedAt: string | null;
+}
+
+export interface ServerErrorSummary {
+  open: number;
+  today: number;
+  week: number;
+  recent: ServerErrorView[];
+}
+
+export interface WorkflowRun {
+  name: string;
+  conclusion: string | null;
+  status: string;
+  at: string;
+  url: string;
+}
+
+export interface ServerHealth {
+  backups: {
+    configured: boolean;
+    dir: string;
+    count: number;
+    totalBytes: number;
+    latest: { file: string; sizeBytes: number; at: string; ageHours: number } | null;
+    stale: boolean;
+  };
+  memory: { totalMb: number; availableMb: number; usedPct: number; low: boolean };
+  disk: { path: string; totalGb: number; freeGb: number; usedPct: number; low: boolean } | null;
+  mongo: { residentMb: number | null; connections: number | null; uptimeHours: number | null };
+  load: number[];
+  github: {
+    configured: boolean;
+    offsiteBackup: WorkflowRun | null;
+    uptime: { last: WorkflowRun | null; successPct: number | null; checks: number };
+  };
+  /** backup_stale | memory_low | disk_low | offsite_backup_failed | uptime_failed */
+  warnings: string[];
+}
+
+export type TranslationLang = 'en' | 'sq' | 'pt' | 'es' | 'fr' | 'de';
+
+export interface TranslationIssue {
+  lang: TranslationLang;
+  kind: 'missing' | 'stale' | 'structure';
+  detail?: string[];
+}
+
+export interface TranslationHealth {
+  posts: number;
+  postsWithIssues: number;
+  missing: number;
+  stale: number;
+  structure: number;
+  byLang: Record<TranslationLang, { missing: number; stale: number; structure: number }>;
+  items: Array<{ _id: string; title: string; slug: string; published: boolean; issues: TranslationIssue[] }>;
+}
+
+export interface ScheduledPost {
+  _id: string;
+  title: string;
+  slug: string;
+  scheduledAt: string;
+  notifySubscribers: boolean;
+}
+
+export interface NotFoundEntry {
+  _id: string;
+  path: string;
+  kind: 'route' | 'blog' | 'project';
+  count: number;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  lastReferrer: string;
+}
+
+export interface NotFoundSummary {
+  open: number;
+  top: NotFoundEntry[];
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -207,6 +335,24 @@ const EMPTY_CONSENT: ConsentStats = {
   total: 0, analytics: 0, marketing: 0, preferences: 0, analyticsRate: 0, marketingRate: 0, preferencesRate: 0,
 };
 
+const EMPTY_AI_USAGE: AiUsageOverview = {
+  date: '', tokens: 0, calls: 0, byEndpoint: [], tokensBySource: { tools: 0, chatbot: 0 },
+  rejectedIpCap: 0, rejectedBudget: 0, cappedIps: 0, history: [],
+  quota: { dailyTokenBudget: 0, maxCallsPerIpPerDay: 0 }, enabled: true,
+};
+
+const EMPTY_SERVER_ERRORS: ServerErrorSummary = { open: 0, today: 0, week: 0, recent: [] };
+
+const EMPTY_LANG_COUNTS = { missing: 0, stale: 0, structure: 0 };
+const EMPTY_TRANSLATION_HEALTH: TranslationHealth = {
+  posts: 0, postsWithIssues: 0, missing: 0, stale: 0, structure: 0, items: [],
+  byLang: { en: EMPTY_LANG_COUNTS, sq: EMPTY_LANG_COUNTS, pt: EMPTY_LANG_COUNTS, es: EMPTY_LANG_COUNTS, fr: EMPTY_LANG_COUNTS, de: EMPTY_LANG_COUNTS },
+};
+
+const EMPTY_LEADS: LeadStats = {
+  byStatus: { new: 0, in_progress: 0, won: 0, lost: 0 }, avgFirstResponseHours: null, winRate: null, followUpsDue: 0, followUps: [],
+};
+
 const EMPTY_GSC: SearchConsoleSummary = {
   configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
 };
@@ -233,6 +379,13 @@ export interface DashboardOverviewData {
   systemHealth: SystemHealth | null;
   systemDetails: SystemDetails | null;
   systemOps: OperationsInfo | null;
+  aiUsage: AiUsageOverview;
+  serverErrors: ServerErrorSummary;
+  serverHealth: ServerHealth | null;
+  translationHealth: TranslationHealth;
+  scheduledPosts: ScheduledPost[];
+  leads: LeadStats;
+  notFound: NotFoundSummary;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -268,6 +421,13 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   systemHealth: null,
   systemDetails: null,
   systemOps: null,
+  aiUsage: EMPTY_AI_USAGE,
+  serverErrors: EMPTY_SERVER_ERRORS,
+  serverHealth: null,
+  translationHealth: EMPTY_TRANSLATION_HEALTH,
+  scheduledPosts: [],
+  leads: EMPTY_LEADS,
+  notFound: { open: 0, top: [] },
 };
 
 /**
@@ -326,11 +486,18 @@ export class AdminDashboardService {
   }
 
   /** Inbox contatti (/dashboard/contacts): paginata, filtro non letti e ricerca. */
-  listContacts(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string }): Observable<ContactsPage> {
+  listContacts(opts: { page: number; limit: number; unreadOnly?: boolean; q?: string; status?: LeadStatus | null; followUpsDue?: boolean }): Observable<ContactsPage> {
     let params = new HttpParams().set('page', opts.page).set('limit', opts.limit);
     if (opts.unreadOnly) params = params.set('unreadOnly', 'true');
     if (opts.q?.trim()) params = params.set('q', opts.q.trim());
+    if (opts.status) params = params.set('status', opts.status);
+    if (opts.followUpsDue) params = params.set('followUpsDue', 'true');
     return this.http.get<ContactsPage>(`${this.api}/contact`, { params });
+  }
+
+  /** Stato del lead, promemoria (ISO, null = nessuno) e nota interna. */
+  updateLead(contactId: string, patch: { status?: LeadStatus; followUpAt?: string | null; internalNote?: string }): Observable<RecentContact> {
+    return this.http.patch<RecentContact>(`${this.api}/contact/${contactId}/lead`, patch);
   }
 
   markContactRead(contactId: string, read: boolean = true): Observable<RecentContact> {
@@ -359,6 +526,20 @@ export class AdminDashboardService {
 
   exportAnalyticsCsv(): Observable<Blob> {
     return this.http.get(`${this.api}/analytics/export/csv`, { responseType: 'blob' });
+  }
+
+  /** Nasconde un 404 dalla lista: torna se i visitatori lo incontrano di nuovo. */
+  dismissNotFound(id: string): Observable<{ success: boolean }> {
+    return this.http.post<{ success: boolean }>(`${this.api}/analytics/not-found/${id}/dismiss`, {});
+  }
+
+  /** Segna risolto un gruppo di errori 5xx: torna aperto se si ripete. */
+  resolveServerError(id: string): Observable<{ success: boolean }> {
+    return this.http.post<{ success: boolean }>(`${this.api}/system/errors/${id}/resolve`, {});
+  }
+
+  resolveAllServerErrors(): Observable<{ resolved: number }> {
+    return this.http.post<{ resolved: number }>(`${this.api}/system/errors/resolve-all`, {});
   }
 
   getToolConversion(days = 30): Observable<ToolConversionRow[]> {

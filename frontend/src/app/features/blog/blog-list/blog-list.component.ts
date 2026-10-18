@@ -13,8 +13,10 @@ import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
+import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
 import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { ReadEntry, ReadingHistoryService } from '../../../core/services/reading-history.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
 
 /**
  * Tag unici ordinati per numero di articoli. Unisce le varianti che
@@ -70,7 +72,7 @@ export function coverIcon(tag: string | undefined): string {
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, NewsletterSignupComponent, ViewTransitionNameOnClickDirective],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, NewsletterSignupComponent, ViewTransitionNameOnClickDirective, LocalDatePipe],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,8 +85,6 @@ export class BlogListComponent implements OnInit {
   activeTag: string | null = null;
   /** Con ~170 tag la lista copriva gli articoli: si mostrano solo i più usati. */
   readonly topTagCount = 12;
-  /** Tag mostrati su ogni card prima del "+N". */
-  readonly cardTagCount = 3;
   showAllTags = false;
 
   get visibleTags(): string[] {
@@ -106,6 +106,7 @@ export class BlogListComponent implements OnInit {
   /** La lista non è arrivata (tipicamente: offline senza copia in cache). */
   loadError = false;
   readonly network = inject(NetworkStatusService);
+  readonly flags = inject(FeatureFlagsService);
   private readonly readingHistory = inject(ReadingHistoryService);
   /** Articoli già letti in questa lingua: quelli che il service worker può servire offline. */
   get readOffline(): ReadEntry[] { return this.readingHistory.forLang(this.currentLang()); }
@@ -114,12 +115,38 @@ export class BlogListComponent implements OnInit {
   private pageSize = 6;
   private visibleCount = this.pageSize;
 
+  /** Ricerca o tag attivi: la lista è un risultato, non il blog "sfogliato". */
+  get isFiltering(): boolean {
+    return !!this.searchQuery.trim() || !!this.activeTag;
+  }
+
+  /**
+   * L'articolo più recente, in grande sopra la griglia, solo sfogliando:
+   * con un filtro attivo il primo risultato è il più pertinente, non il più
+   * nuovo, e metterlo "in evidenza" sarebbe fuorviante.
+   */
+  get featuredPost(): PostSummary | null {
+    return !this.isFiltering && this.filteredPosts.length ? this.filteredPosts[0] : null;
+  }
+
+  private get gridOffset(): number {
+    return this.featuredPost ? 1 : 0;
+  }
+
   get visiblePosts(): PostSummary[] {
-    return this.filteredPosts.slice(0, this.visibleCount);
+    return this.filteredPosts.slice(this.gridOffset, this.gridOffset + this.visibleCount);
   }
 
   get hasMore(): boolean {
-    return this.visibleCount < this.filteredPosts.length;
+    return this.gridOffset + this.visibleCount < this.filteredPosts.length;
+  }
+
+  /** Copertine che non si sono caricate (es. foto Unsplash rimossa → 404): si mostra quella generata. */
+  readonly brokenCovers = new Set<string>();
+
+  onCoverError(post: PostSummary): void {
+    this.brokenCovers.add(post._id);
+    this.cdr.markForCheck();
   }
 
   private readonly langService = inject(LanguageService);

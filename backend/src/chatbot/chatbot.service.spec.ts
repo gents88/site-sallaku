@@ -190,6 +190,20 @@ describe('ChatbotService', () => {
       expect(result.liveOffer).toBe(true);
     });
 
+    it('usa il fallback senza chiamare l AI quando l interruttore AI della dashboard è spento', async () => {
+      const settings = { isEnabled: jest.fn().mockResolvedValue(false) };
+      const offService = new ChatbotService(
+        mockModel, mockMailService, mockConfig, mockAboutService, mockAiProvider, mockProjectsService, mockBlogService,
+        settings as never,
+      );
+
+      const result = await offService.sendMessage('ciao');
+
+      expect(settings.isEnabled).toHaveBeenCalledWith('aiEnabled');
+      expect(mockAiProvider.chatCompletion).not.toHaveBeenCalled();
+      expect(result.reply).toContain('assistente AI di questo portfolio');
+    });
+
     it('non imposta liveOffer nel fallback quando il messaggio non riguarda il contatto', async () => {
       mockAiProvider.chatCompletion.mockRejectedValue(new Error('boom'));
 

@@ -10,6 +10,7 @@ import { SeoService } from '../../../core/services/seo.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { PostSummary } from '../../../core/models/post.model';
 import { NetworkStatusService } from '../../../core/services/network-status.service';
+import { provideFeatureFlagsStub } from '../../../core/services/feature-flags.testing';
 
 /** Minimal PostSummary fixture — only the fields filter()/matchScore() read. */
 function post(overrides: Partial<PostSummary>): PostSummary {
@@ -32,6 +33,7 @@ describe('BlogListComponent search', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of(posts)) } },
         {
           provide: SeoService,
@@ -124,6 +126,7 @@ describe('BlogListComponent prefetch', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])), getBySlug } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: LanguageService, useValue: { current: () => 'sq' } },
@@ -145,6 +148,7 @@ describe('BlogListComponent prefetch', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])), getBySlug } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: LanguageService, useValue: { current: () => 'it' } },
@@ -166,6 +170,7 @@ describe('BlogListComponent offline', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         provideRouter([]),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(getPublishedAll) } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
@@ -216,6 +221,7 @@ describe('BlogListComponent tags', () => {
     TestBed.configureTestingModule({
       providers: [
         importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
         { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of([])) } },
         { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
         { provide: LanguageService, useValue: { current: () => 'it' } },
@@ -292,5 +298,83 @@ describe('generated covers', () => {
     expect(coverIcon('Sicurezza')).toBe('shield');
     expect(coverIcon(undefined)).toBe('article');
     expect(coverIcon('Cucina')).toBe('article');
+  });
+});
+
+describe('BlogListComponent layout', () => {
+  function setup(posts: PostSummary[]) {
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        provideFeatureFlagsStub(),
+        provideRouter([]),
+        { provide: BlogService, useValue: { getPublishedAll: vi.fn(() => of(posts)), getBySlug: vi.fn(() => of({})) } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) } },
+        { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: { get: () => null } } } },
+      ],
+    });
+    const fixture = TestBed.createComponent(BlogListComponent);
+    fixture.detectChanges();
+    return { fixture, component: fixture.componentInstance, el: fixture.nativeElement as HTMLElement };
+  }
+  const titles = (el: HTMLElement, sel: string) =>
+    Array.from(el.querySelectorAll(`${sel} .post-card__title`)).map(n => n.textContent?.trim());
+  const many = (n: number) => Array.from({ length: n }, (_, i) => post({ title: `Post ${i}`, slug: `post-${i}` }));
+
+  it('mette il più recente in evidenza e non lo ripete nella griglia', () => {
+    const { el } = setup(many(3));
+    expect(titles(el, '.post-card--featured')).toEqual(['Post 0']);
+    expect(titles(el, '.posts-grid')).toEqual(['Post 1', 'Post 2']);
+  });
+
+  it('pagina la griglia a gruppi di 6 dopo l\'articolo in evidenza, senza saltarne nessuno', () => {
+    const { fixture, component, el } = setup(many(14));
+    expect(titles(el, '.posts-grid')).toEqual(['Post 1', 'Post 2', 'Post 3', 'Post 4', 'Post 5', 'Post 6']);
+    expect(component.hasMore).toBe(true);
+    component.loadMore();
+    fixture.detectChanges();
+    expect(titles(el, '.posts-grid').length).toBe(12);
+    component.loadMore();
+    fixture.detectChanges();
+    expect(titles(el, '.posts-grid').at(-1)).toBe('Post 13');
+    expect(component.hasMore).toBe(false);
+  });
+
+  it('con un filtro attivo niente evidenza: il primo risultato è il più pertinente, non il più nuovo', () => {
+    const { fixture, component, el } = setup([
+      post({ title: 'Nuovo', tags: ['css'] }),
+      post({ title: 'Angular vecchio', tags: ['angular'] }),
+    ]);
+    component.setTag('angular');
+    fixture.detectChanges();
+    expect(el.querySelector('.post-card--featured')).toBeNull();
+    expect(titles(el, '.posts-grid')).toEqual(['Angular vecchio']);
+    expect(el.querySelector('.blog-results')?.textContent).toContain('blog.results');
+  });
+
+  it('rende cliccabile tutta la card con un solo link per articolo', () => {
+    const { el } = setup(many(2));
+    const card = el.querySelector('.posts-grid .post-card')!;
+    const links = card.querySelectorAll('a');
+    expect(links.length).toBe(1);
+    expect(links[0].classList).toContain('post-card__link');
+    expect(links[0].getAttribute('href')).toBe('/blog/post-1');
+  });
+
+  it('se la copertina non si carica mostra quella generata', () => {
+    const { fixture, el } = setup([post({ title: 'Con foto', coverImage: 'https://images.example.com/gone.jpg', tags: ['seo'] })]);
+    const img = el.querySelector<HTMLImageElement>('.post-card__cover')!;
+    expect(img).not.toBeNull();
+    img.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(el.querySelector('.post-card__cover')).toBeNull();
+    expect(el.querySelector('.post-card__cover-placeholder')).not.toBeNull();
+  });
+
+  it('nasconde il contatore letture quando è zero', () => {
+    const { el } = setup([post({ title: 'A', viewCount: 0 }), post({ title: 'B', viewCount: 12 })]);
+    expect(el.querySelector('.post-card--featured .post-card__views')).toBeNull();
+    expect(el.querySelector('.posts-grid .post-card__views')?.textContent).toContain('blog.views_plural');
   });
 });

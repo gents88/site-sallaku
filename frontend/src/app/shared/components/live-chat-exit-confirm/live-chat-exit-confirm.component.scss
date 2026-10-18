@@ -16,10 +16,13 @@
   transform: translate(-50%, -50%);
   z-index: 1700;
   width: min(320px, calc(100vw - 48px));
-  background: #0f1729;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 16px;
-  box-shadow: 0 24px 80px rgba(2, 6, 23, 0.6);
+  /* --cb-*: dal chatbot che lo contiene, così segue anche il tema chiaro */
+  background: var(--cb-surface, #0f1729);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--cb-border, rgba(148, 163, 184, 0.16));
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 var(--cb-hi, rgba(255, 255, 255, 0.12)), 0 24px 80px rgba(2, 6, 23, 0.45);
   padding: 22px 20px;
   animation: lecPopIn 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -38,7 +41,7 @@
   margin: 0 0 18px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--cb-text, #e2e8f0);
   text-align: center;
   line-height: 1.5;
 }
@@ -51,7 +54,7 @@
 .lec-btn {
   flex: 1;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 11px 14px;
   font-size: 0.85rem;
   font-weight: 600;
@@ -72,8 +75,9 @@
 }
 
 .lec-btn--secondary {
-  background: rgba(148, 163, 184, 0.12);
-  color: #cbd5e1;
+  background: var(--cb-in-fill, rgba(148, 163, 184, 0.12));
+  border: 1px solid var(--cb-in-edge, transparent);
+  color: var(--cb-text, #cbd5e1);
 }
 
 .lec-btn:hover { opacity: 0.9; }

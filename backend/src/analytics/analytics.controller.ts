@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, Req, Res, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -16,6 +17,9 @@ import { MonthsQueryDto } from './dto/months-query.dto';
 import { ClickStatsQueryDto } from './dto/click-stats-query.dto';
 import { DaysQueryDto } from './dto/days-query.dto';
 import { LimitOnlyDto } from '../common/dto/pagination.dto';
+import { NotFoundService } from './not-found/not-found.service';
+import { TrackNotFoundDto } from './dto/track-not-found.dto';
+import { ParseMongoIdPipe } from '../common/pipes/parse-mongo-id.pipe';
 
 @ApiTags('Analytics')
 @Controller('analytics')
@@ -25,7 +29,35 @@ export class AnalyticsController {
     private readonly query: AnalyticsQueryService,
     private readonly exportService: AnalyticsExportService,
     private readonly searchConsoleService: SearchConsoleService,
+    private readonly notFound: NotFoundService,
   ) {}
+
+  @Post('not-found')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Report a page or slug the visitor could not find (public, feeds the admin 404 list)' })
+  trackNotFound(@Body() dto: TrackNotFoundDto) {
+    return this.notFound.record(dto);
+  }
+
+  @Get('not-found')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Most hit 404 paths, not dismissed (admin only)' })
+  listNotFound(@Query() { limit }: LimitOnlyDto) {
+    return this.notFound.list(limit ?? 50);
+  }
+
+  @Post('not-found/:id/dismiss')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Hide a 404 path; it comes back if visitors hit it again (admin only)' })
+  dismissNotFound(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.notFound.dismiss(id);
+  }
 
   @Post('page-view')
   @HttpCode(HttpStatus.OK)

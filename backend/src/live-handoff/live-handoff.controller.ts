@@ -6,6 +6,7 @@ import { CreateLiveHandoffDto } from './dto/live-handoff.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role, Roles } from '../auth/decorators/roles.decorator';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 
 @ApiTags('Live Handoff')
 @Controller('chatbot')
@@ -14,6 +15,7 @@ export class LiveHandoffController {
 
   @Post(':sessionId/live-handoff')
   @HttpCode(HttpStatus.CREATED)
+  @RequireFeature('liveHandoffEnabled')
   @Throttle({ default: { limit: 3, ttl: 600_000 } })
   @ApiOperation({ summary: 'Request a live handoff to Gent for this chat session' })
   create(
@@ -46,5 +48,16 @@ export class LiveHandoffAdminController {
   })
   listActive() {
     return this.liveHandoffService.listActive();
+  }
+
+  @Get('recent')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'List every live handoff request still retained (last 24h), in any status, newest first (admin only)',
+  })
+  listRecent() {
+    return this.liveHandoffService.listRecent();
   }
 }
