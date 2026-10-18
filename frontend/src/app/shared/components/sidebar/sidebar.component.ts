@@ -95,6 +95,28 @@ export function isSidebarShortcut(event: KeyboardEvent): boolean {
   return !(tag === 'input' || tag === 'textarea' || tag === 'select' || target?.isContentEditable);
 }
 
+/** Movimento minimo prima di decidere se il dito sta scorrendo la lista o trascinando il drawer. */
+export const SWIPE_SLOP_PX = 10;
+
+/**
+ * Fine del trascinamento verso sinistra del drawer: chiude se è andato oltre
+ * un terzo della larghezza, o se è stato un colpo rapido (> 0,5 px/ms).
+ * Altrimenti il drawer torna al suo posto.
+ */
+export function swipeCloses(dx: number, dtMs: number, width: number): boolean {
+  if (dx >= 0) return false;
+  const distance = -dx;
+  return distance > width / 3 || (distance > 30 && distance / Math.max(dtMs, 1) > 0.5);
+}
+
+interface SwipeState {
+  pointerId: number;
+  x: number;
+  y: number;
+  t: number;
+  dragging: boolean;
+}
+
 /** Su quali bordi c'è altro da scorrere (1px di tolleranza per gli arrotondamenti subpixel). */
 export function scrollEdgesOf(scrollTop: number, scrollHeight: number, clientHeight: number): ScrollEdges {
   return { top: scrollTop > 1, bottom: scrollTop + clientHeight < scrollHeight - 1 };
@@ -137,6 +159,11 @@ export class SidebarComponent {
   private pointerInside = false;
   private hoverTimer: ReturnType<typeof setTimeout> | null = null;
   private hintTimer: ReturnType<typeof setTimeout> | null = null;
+  private swipe: SwipeState | null = null;
+  private suppressClick = false;
+  /** Spostamento del drawer mentre il dito lo trascina (0 = a riposo). */
+  readonly dragX = signal(0);
+
   /** Elemento col focus prima di aprire il drawer con la scorciatoia: lo si ritrova alla chiusura. */
   private returnFocus: HTMLElement | null = null;
 
@@ -190,6 +217,21 @@ export class SidebarComponent {
     effect(() => {
       this.navGroups();
       untracked(() => this.afterRender(() => this.revealActive()));
+    });
+
+    // Un trascinamento che finisce sopra una voce non è un tap: il click che
+    // il browser potrebbe ancora generare non deve aprire quella pagina.
+    afterNextRender(() => {
+      const aside = this.elementRef.nativeElement.querySelector<HTMLElement>('#app-sidebar');
+      if (!aside) return;
+      const swallow = (event: Event) => {
+        if (!this.suppressClick) return;
+        this.suppressClick = false;
+        event.preventDefault();
+        event.stopPropagation();
+      };
+      aside.addEventListener('click', swallow, true);
+      this.destroyRef.onDestroy(() => aside.removeEventListener('click', swallow, true));
     });
 
     // Finestra ridimensionata, rail che si espande o si comprime, passaggio
@@ -379,6 +421,51 @@ export class SidebarComponent {
     if (this.hintTimer !== null) {
       clearTimeout(this.hintTimer);
       this.hintTimer = null;
+    }
+  }
+
+  /**
+   * Swipe verso sinistra sul drawer aperto per chiuderlo, col drawer che segue
+   * il dito. Niente swipe dal bordo per aprirlo: su iOS e con la navigazione a
+   * gesti di Android quel gesto è "indietro" e rubarlo romperebbe la navigazione.
+   */
+  onSwipeStart(event: PointerEvent): void {
+    if (this.mode() !== 'overlay' || !this.drawerOpen() || event.pointerType === 'mouse' || !event.isPrimary) return;
+    this.swipe = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, t: event.timeStamp, dragging: false };
+  }
+
+  onSwipeMove(event: PointerEvent): void {
+    const swipe = this.swipe;
+    if (!swipe || event.pointerId !== swipe.pointerId) return;
+    const dx = event.clientX - swipe.x;
+    const dy = event.clientY - swipe.y;
+    if (!swipe.dragging) {
+      if (Math.abs(dx) < SWIPE_SLOP_PX && Math.abs(dy) < SWIPE_SLOP_PX) return;
+      // Verticale: è lo scroll della lista (touch-action: pan-y), il drawer resta fermo.
+      if (Math.abs(dy) >= Math.abs(dx) || dx > 0) {
+        this.swipe = null;
+        return;
+      }
+      swipe.dragging = true;
+      this.hideHint();
+    }
+    this.dragX.set(Math.min(0, dx));
+  }
+
+  /** pointerup decide; pointercancel (il browser si è preso il gesto) riporta solo il drawer a posto. */
+  onSwipeEnd(event: PointerEvent): void {
+    const swipe = this.swipe;
+    if (!swipe || event.pointerId !== swipe.pointerId) return;
+    this.swipe = null;
+    if (!swipe.dragging) return;
+    const width = (event.currentTarget as HTMLElement | null)?.getBoundingClientRect().width ?? 0;
+    const close = event.type === 'pointerup' && swipeCloses(event.clientX - swipe.x, event.timeStamp - swipe.t, width);
+    this.suppressClick = true;
+    setTimeout(() => (this.suppressClick = false), 400);
+    this.dragX.set(0);
+    if (close) {
+      this.drawer.close();
+      this.analytics.trackClick('sidebar', 'sidebar_swipe_close');
     }
   }
 
