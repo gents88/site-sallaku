@@ -32,6 +32,15 @@ export interface ActiveLiveHandoffDto {
   expiresAt: Date;
 }
 
+/** Riga della pagina admin "Live chat": anche le richieste chiuse o scadute, con i tempi. */
+export interface LiveHandoffHistoryDto extends ActiveLiveHandoffDto {
+  respondedAt: Date | null;
+  closedAt: Date | null;
+}
+
+/** Oltre l'indice TTL (24h) non c'è comunque nulla: il limite protegge solo da giornate anomale. */
+const RECENT_LIVE_HANDOFF_LIMIT = 100;
+
 @Injectable()
 export class LiveHandoffService {
   private readonly logger = new Logger(LiveHandoffService.name);
@@ -143,6 +152,33 @@ export class LiveHandoffService {
       locale: doc.locale ?? null,
       requestedAt: doc.createdAt,
       expiresAt: doc.expiresAt,
+    }));
+  }
+
+  /**
+   * Tutte le richieste ancora conservate, in qualunque stato: per la pagina admin
+   * "Live chat", che oltre a quelle aperte mostra quelle chiuse o scadute da poco
+   * (si possono riaprire, vedi markAgentJoining). L'indice TTL sullo schema le
+   * cancella dopo 24 ore, quindi "recenti" vuol dire proprio l'ultimo giorno.
+   */
+  async listRecent(): Promise<LiveHandoffHistoryDto[]> {
+    const docs = await this.model
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(RECENT_LIVE_HANDOFF_LIMIT)
+      .lean()
+      .exec();
+
+    return docs.map((doc: any) => ({
+      requestId: String(doc._id),
+      sessionId: doc.sessionId,
+      status: doc.status,
+      lastUserMessage: doc.lastUserMessage ?? null,
+      locale: doc.locale ?? null,
+      requestedAt: doc.createdAt,
+      expiresAt: doc.expiresAt,
+      respondedAt: doc.respondedAt ?? null,
+      closedAt: doc.closedAt ?? null,
     }));
   }
 
