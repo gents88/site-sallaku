@@ -21,5 +21,7 @@ import {
   ],
   controllers: [NewsletterController, NewsletterCampaignsController],
   providers: [NewsletterService, NewsletterCampaignsService],
+  // Il blog crea la campagna quando esce un post programmato con "avvisa gli iscritti".
+  exports: [NewsletterCampaignsService],
 })
 export class NewsletterModule {}

@@ -21,6 +21,7 @@ import { RequestOtpDto } from './dto/request-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 import { applyRefreshCookie, clearRefreshCookie, readRefreshCookie, refreshCookieEnabled } from './refresh-cookie';
 
 @ApiTags('Auth')
@@ -29,6 +30,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @RequireFeature('registrationEnabled')
   // 5 registration attempts per 60 seconds per IP — prevents account enumeration spam
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Register a new account' })
@@ -43,6 +45,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Login and receive JWT access + refresh tokens' })
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
     return applyRefreshCookie(res, await this.authService.login(dto));
+  }
+
+  @Get('otp/channels')
+  @ApiOperation({ summary: 'Which OTP delivery channels (email, SMS) are currently available' })
+  otpChannels() {
+    return this.authService.otpChannels();
   }
 
   @Post('otp/request')

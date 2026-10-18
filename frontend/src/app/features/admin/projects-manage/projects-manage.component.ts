@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -21,6 +21,7 @@ import { TranslatableField, TranslationsEditorComponent, TranslationsValue, comp
 import { NavIconComponent } from '../../../shared/components/nav-icon/nav-icon.component';
 import { HasUnsavedChanges, warnOnUnload } from '../../../core/guards/unsaved-changes.guard';
 import { DirtyTracker } from '../../../shared/utils/dirty-tracker';
+import { watchNewItemParam } from '../../../shared/utils/new-item-param';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
@@ -61,6 +62,8 @@ export class ProjectsManageComponent implements OnInit, HasUnsavedChanges {
   reordering = false;
   private readonly dirty = new DirtyTracker();
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   private formState() {
     return {
@@ -114,8 +117,12 @@ export class ProjectsManageComponent implements OnInit, HasUnsavedChanges {
 
   ngOnInit(): void {
     this.loadProjects();
-    // ?new=1 dalla palette Ctrl+K ("Nuovo progetto"): apre direttamente il form.
-    if (this.route.snapshot.queryParamMap.get('new') === '1') this.openCreate();
+    // ?new=1 dalla palette Ctrl+K o dal "+" della sidebar ("Nuovo progetto"): apre il form.
+    watchNewItemParam(this.route, this.router, this.destroyRef, () => {
+      if (this.hasUnsavedChanges() && !confirm(this.t.instant('common.unsaved_confirm'))) return;
+      this.openCreate();
+      this.cdr.markForCheck();
+    });
   }
 
   loadProjects(): void {

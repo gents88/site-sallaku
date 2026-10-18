@@ -225,6 +225,54 @@ describe('LiveHandoffService', () => {
     });
   });
 
+  describe('listRecent', () => {
+    function mockFind(docs: any[]) {
+      const chain: any = {
+        sort: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(docs),
+      };
+      mockModel.find.mockReturnValue(chain);
+      return chain;
+    }
+
+    it('include ogni stato, anche chiuse e scadute (la pagina admin le mostra per riaprirle)', async () => {
+      const chain = mockFind([]);
+
+      await service.listRecent();
+
+      expect(mockModel.find).toHaveBeenCalledWith({});
+      expect(chain.sort).toHaveBeenCalledWith({ createdAt: -1 });
+      expect(chain.limit).toHaveBeenCalledWith(100);
+    });
+
+    it('aggiunge al DTO della dashboard i tempi di risposta e di chiusura', async () => {
+      const requestedAt = new Date('2026-10-18T10:00:00Z');
+      const expiresAt = new Date('2026-10-18T10:15:00Z');
+      const respondedAt = new Date('2026-10-18T10:02:00Z');
+      const closedAt = new Date('2026-10-18T10:20:00Z');
+      mockFind([
+        { _id: 'req-1', sessionId: 'sess-1', status: 'closed', lastUserMessage: 'ciao', locale: 'it', createdAt: requestedAt, expiresAt, respondedAt, closedAt },
+      ]);
+
+      expect(await service.listRecent()).toEqual([
+        { requestId: 'req-1', sessionId: 'sess-1', status: 'closed', lastUserMessage: 'ciao', locale: 'it', requestedAt, expiresAt, respondedAt, closedAt },
+      ]);
+    });
+
+    it('normalizza a null i campi mancanti (una richiesta scaduta senza risposta)', async () => {
+      mockFind([{ _id: 'req-2', sessionId: 'sess-2', status: 'expired', createdAt: new Date(), expiresAt: new Date() }]);
+
+      const [row] = await service.listRecent();
+
+      expect(row.lastUserMessage).toBeNull();
+      expect(row.locale).toBeNull();
+      expect(row.respondedAt).toBeNull();
+      expect(row.closedAt).toBeNull();
+    });
+  });
+
   describe('markAgentJoining', () => {
     it('throws NotFoundException when the request does not exist', async () => {
       mockModel.findOne.mockReturnValue({ sort: jest.fn().mockReturnThis(), exec: jest.fn().mockResolvedValue(null) });

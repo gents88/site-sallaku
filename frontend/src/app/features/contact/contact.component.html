@@ -27,6 +27,10 @@
           [formGroup]="form" (ngSubmit)="send()" novalidate
           aria-label="Contact form">
 
+      @if (!flags.contactFormEnabled()) {
+        <p class="contact-form-off" role="status">{{ 'contact.form.disabled_notice' | translate }}</p>
+      }
+
       <div class="form-row">
         <div class="field-group">
           <label class="field-label" for="contact-name">{{ 'contact.form.name' | translate }}</label>
@@ -85,7 +89,7 @@
       </div>
 
       <div class="form-footer">
-        <button class="btn btn-primary submit-btn" type="submit" [disabled]="sending">
+        <button class="btn btn-primary submit-btn" type="submit" [disabled]="sending || !flags.contactFormEnabled()">
           @if (sending) {
             <mat-icon class="spin">sync</mat-icon>
             {{ 'contact.form.sending' | translate }}

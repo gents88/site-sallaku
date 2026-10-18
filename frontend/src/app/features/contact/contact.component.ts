@@ -15,6 +15,7 @@ import { MATERIAL_CSS } from '../../core/utils/vendor-css.generated';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 
 @Component({
   selector: 'app-contact',
@@ -56,6 +57,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
   ) {}
 
   private readonly platformId = inject(PLATFORM_ID);
+  readonly flags = inject(FeatureFlagsService);
 
   ngOnInit(): void {
     // MatSnackBar is the only themed Material component on a public page, and
@@ -115,6 +117,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
   }
 
   send(): void {
+    if (!this.flags.contactFormEnabled()) return;
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
     this.sending = true;

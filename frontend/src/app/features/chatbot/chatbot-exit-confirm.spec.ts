@@ -29,6 +29,7 @@ describe('ChatbotComponent — conferma di chiusura durante una chat live', () =
       currentSessionId: 's1',
       hasMessages: true,
       close: vi.fn(),
+      toggleOpen: vi.fn(),
       clearSession: vi.fn(),
       sendMessage: vi.fn(),
       sendTranscript: vi.fn(),
@@ -60,6 +61,34 @@ describe('ChatbotComponent — conferma di chiusura durante una chat live', () =
   function setLiveState(state: string): void {
     (mockLiveHandoff.state$ as BehaviorSubject<string>).next(state);
   }
+
+  describe('pulsante tondo (FAB)', () => {
+    it('a pannello aperto durante una chat live chiede conferma invece di chiudere', () => {
+      setLiveState('live');
+
+      component.onFabClick();
+
+      expect(mockChatbot.close).not.toHaveBeenCalled();
+      expect(mockChatbot.toggleOpen).not.toHaveBeenCalled();
+      expect(component.exitConfirmStep).toBe('ask_resolved');
+    });
+
+    it('a pannello aperto fuori dalla chat live chiude subito', () => {
+      setLiveState('idle');
+
+      component.onFabClick();
+
+      expect(mockChatbot.close).toHaveBeenCalled();
+    });
+
+    it('a pannello chiuso lo apre', () => {
+      (mockChatbot.isOpen$ as BehaviorSubject<boolean>).next(false);
+
+      component.onFabClick();
+
+      expect(mockChatbot.toggleOpen).toHaveBeenCalled();
+    });
+  });
 
   describe('requestClose', () => {
     it('fuori da una chat live chiude subito, senza chiedere nulla', () => {

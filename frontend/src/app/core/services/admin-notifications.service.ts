@@ -20,6 +20,8 @@ export interface NotificationSummary {
   testimonialsPending: number;
   notesPending: number;
   liveHandoffsWaiting: number;
+  /** Follow-up dei lead scaduti o di oggi (assente con un backend precedente). */
+  followUpsDue?: number;
 }
 
 /** Iniettabile per i test: in produzione è `io()` di socket.io-client. */
@@ -54,7 +56,7 @@ export class AdminNotificationsService {
   readonly connected = signal(false);
   readonly total = computed(() => {
     const s = this.summary();
-    return s.contactsUnread + s.testimonialsPending + s.notesPending + s.liveHandoffsWaiting;
+    return s.contactsUnread + s.testimonialsPending + s.notesPending + s.liveHandoffsWaiting + (s.followUpsDue ?? 0);
   });
 
   private readonly wsOrigin = environment.apiUrl.replace(/\/api\/v\d+\/?$/, '');

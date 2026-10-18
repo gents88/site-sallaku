@@ -21,7 +21,7 @@
 
     <!-- Logo -->
     <a [routerLink]="'/homepage' | langUrl" class="nav-logo" (click)="closeMenu()">
-      <span class="logo-bracket">&lt;</span>GS<span class="logo-bracket"> /&gt;</span>
+      <img class="logo-mark" src="/favicon.svg" width="38" height="38" alt="GS" />
     </a>
 
     <!-- Mobile menu backdrop -->
@@ -58,7 +58,7 @@
       <app-lang-switcher />
       <app-theme-toggle />
       @if (!auth.isLoggedIn()) {
-        <button type="button" class="nav-link nav-link--account nav-link--button" (click)="openLoginModal()">
+        <button type="button" class="nav-link nav-link--account nav-link--login nav-link--button" (click)="openLoginModal()">
           <span class="nav-account__avatar nav-account__avatar--login">
             <mat-icon>login</mat-icon>
           </span>

@@ -81,7 +81,7 @@ export class SystemInfoService {
   }
 
   ops(): OperationsInfo {
-    const cronJobNames = ['daily-summary', 'monthly-analytics-reset'];
+    const cronJobNames = ['daily-summary', 'monthly-analytics-reset', 'blog-scheduled-publish'];
 
     const cronJobs = cronJobNames.map((name): CronJobStatus => {
       try {

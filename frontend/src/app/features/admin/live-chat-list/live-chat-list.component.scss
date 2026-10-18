@@ -1,0 +1,165 @@
+/* Il reset globale non è border-box: padding + larghezze vanno contenuti qui. */
+:host *,
+:host *::before,
+:host *::after {
+  box-sizing: border-box;
+}
+
+.lcl-subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.lcl-refresh {
+  flex-shrink: 0;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover { background: var(--bg-tertiary); }
+  &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 2px; }
+}
+
+.lcl-error {
+  margin: 0 0 1.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.08);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.lcl-section + .lcl-section {
+  margin-top: 2.25rem;
+}
+
+.lcl-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+}
+
+.lcl-count {
+  min-width: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  line-height: 22px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.lcl-empty {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.lcl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lcl-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+  background: var(--panel-surface-soft, rgba(255, 255, 255, 0.03));
+}
+
+/* Qualcuno sta aspettando: è la riga da guardare per prima. */
+.lcl-item--waiting {
+  border-color: rgba(220, 38, 38, 0.45);
+}
+
+.lcl-item--live {
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.lcl-item__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.lcl-item__status {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.lcl-item__msg {
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lcl-item__meta {
+  color: var(--text-tertiary);
+  font-size: 0.75rem;
+}
+
+.lcl-item__cta {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  /* Bianco su accent-600: 5.7:1 (il gradiente ambra della card in dashboard sta sotto 3:1). */
+  background: var(--accent-600, #7c3aed);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 0.9; }
+  &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 2px; }
+
+  mat-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+  }
+}
+
+.lcl-item--waiting .lcl-item__cta {
+  background: #dc2626;
+}
+
+@media (max-width: 640px) {
+  .lcl-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lcl-item__cta {
+    justify-content: center;
+  }
+}

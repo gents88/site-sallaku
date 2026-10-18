@@ -9,6 +9,7 @@ import { ProjectsService } from '../../../core/services/projects.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { Project } from '../../../core/models/project.model';
+import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
 
 const project = {
   _id: '1', slug: 'cms', title: 'Gestionale', description: 'Descrizione', problem: 'Il problema',
@@ -19,6 +20,7 @@ const project = {
 
 async function setup(getBySlug: ProjectsService['getBySlug'], lang: 'it' | 'en' = 'it', all: Project[] = []) {
   const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) };
+  const notFound = { report: vi.fn() };
   TestBed.configureTestingModule({
     imports: [TranslateModule.forRoot()],
     providers: [
@@ -26,6 +28,7 @@ async function setup(getBySlug: ProjectsService['getBySlug'], lang: 'it' | 'en' 
       { provide: ProjectsService, useValue: { getBySlug: vi.fn(getBySlug), getAll: vi.fn(() => of(all)) } },
       { provide: LanguageService, useValue: { current: signal(lang) } },
       { provide: SeoService, useValue: seo },
+      { provide: NotFoundReporterService, useValue: notFound },
     ],
   });
   const fixture = TestBed.createComponent(ProjectDetailComponent);
@@ -33,7 +36,7 @@ async function setup(getBySlug: ProjectsService['getBySlug'], lang: 'it' | 'en' 
   fixture.detectChanges();
   await fixture.whenStable();
   fixture.detectChanges();
-  return { el: fixture.nativeElement as HTMLElement, seo, component: fixture.componentInstance };
+  return { el: fixture.nativeElement as HTMLElement, seo, notFound, component: fixture.componentInstance };
 }
 
 describe('ProjectDetailComponent', () => {
@@ -54,13 +57,16 @@ describe('ProjectDetailComponent', () => {
   });
 
   it('shows a not-found state on 404', async () => {
-    const { el } = await setup(() => throwError(() => ({ status: 404 })));
+    const { el, notFound } = await setup(() => throwError(() => ({ status: 404 })), 'en');
     expect(el.textContent).toContain('project_detail.not_found');
+    // Lo slug inesistente finisce nella lista 404 della dashboard, con il prefisso lingua.
+    expect(notFound.report).toHaveBeenCalledWith('/en/projects/cms', 'project');
   });
 
   it('shows a retryable error on other failures', async () => {
-    const { el } = await setup(() => throwError(() => ({ status: 500 })));
+    const { el, notFound } = await setup(() => throwError(() => ({ status: 500 })));
     expect(el.querySelector('[role="alert"]')?.textContent).toContain('project_detail.load_error');
+    expect(notFound.report).not.toHaveBeenCalled();
   });
 
   describe('related case studies', () => {

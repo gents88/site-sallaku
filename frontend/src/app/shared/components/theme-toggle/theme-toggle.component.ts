@@ -26,8 +26,9 @@ const NEXT = { light: 'dark', dark: 'system', system: 'light' } as const;
   styles: [`
     .tt {
       display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
-      border: none; border-radius: 50%; background: transparent; color: var(--text-primary); cursor: pointer;
-      &:hover { background: rgba(127,127,127,.12); }
+      border: 1px solid transparent; border-radius: 50%; background: transparent; color: var(--text-primary); cursor: pointer;
+      transition: background .25s, border-color .25s, box-shadow .25s;
+      &:hover { background: var(--glass-fill-hover); border-color: var(--glass-edge); box-shadow: inset 0 1px 0 var(--glass-hi); }
       &:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: 2px; }
     }
   `],

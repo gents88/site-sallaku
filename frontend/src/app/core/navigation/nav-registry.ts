@@ -33,6 +33,11 @@ export interface NavEntry {
   access: NavAccess;
   /** Nome di un'icona in NAV_ICONS (shared/components/nav-icon). */
   icon: string;
+  /**
+   * Etichetta del "+" accanto alla voce nella sidebar: porta a `route?new=1`,
+   * che la pagina gestisce aprendo il form di creazione (watchNewItemParam).
+   */
+  quickActionKey?: string;
   navbar?: boolean;
   sidebar?: boolean;
   search?: boolean;

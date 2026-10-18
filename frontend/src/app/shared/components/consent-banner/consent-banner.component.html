@@ -1,0 +1,81 @@
+@if (visible()) {
+  <section class="consent-banner" role="region" aria-labelledby="consent-banner-title">
+    <div class="consent-banner__text">
+      <h2 id="consent-banner-title" class="consent-banner__title">
+        <span class="consent-banner__icon" aria-hidden="true">🍪</span>
+        {{ 'consent.title' | translate }}
+      </h2>
+      <p class="consent-banner__desc">
+        {{ 'consent.desc' | translate }}
+        <a class="consent-link" [routerLink]="'/cookie-policy' | langUrl">{{ 'footer.cookie_link' | translate }}</a>
+      </p>
+    </div>
+    <div class="consent-banner__actions">
+      <button type="button" class="cbtn cbtn--ghost consent-banner__manage" (click)="openPreferences()">{{ 'consent.manage_preferences' | translate }}</button>
+      <button type="button" class="cbtn cbtn--secondary" (click)="rejectAll()">{{ 'consent.reject_all' | translate }}</button>
+      <button type="button" class="cbtn cbtn--primary" (click)="acceptAll()">{{ 'consent.accept_all' | translate }}</button>
+    </div>
+  </section>
+}
+
+@if (modalVisible()) {
+  <div class="consent-modal" (click)="onBackdropClick($event)">
+    <div
+      class="consent-modal__box"
+      #modalBox
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consent-modal-title"
+      aria-describedby="consent-modal-desc"
+      (keydown.tab)="onModalTabKey($event)"
+    >
+      <span class="consent-modal__grabber" aria-hidden="true"></span>
+      <header class="consent-modal__header">
+        <h2 id="consent-modal-title">{{ 'consent.settings_title' | translate }}</h2>
+        <button type="button" class="consent-modal__x" (click)="closeModal()" [attr.aria-label]="'common.close' | translate">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <div class="consent-modal__body">
+        <p id="consent-modal-desc" class="consent-modal__desc">
+          {{ 'consent.settings_desc' | translate }}
+          <a class="consent-link" [routerLink]="'/cookie-policy' | langUrl" (click)="closeModal()">{{ 'footer.cookie_link' | translate }}</a>
+        </p>
+
+        <ul class="pref-list">
+          <li class="pref-row">
+            <div class="pref-row__text">
+              <span class="pref-row__name">{{ 'consent.necessary' | translate }}</span>
+              <span class="pref-row__desc">{{ 'consent.necessary_desc' | translate }}</span>
+            </div>
+            <span class="pref-row__badge">{{ 'consent.always_active' | translate }}</span>
+          </li>
+          @for (cat of categories; track cat; let first = $first) {
+            <li class="pref-row">
+              <label class="pref-row__text" [for]="'consent-' + cat">
+                <span class="pref-row__name">{{ 'consent.' + cat | translate }}</span>
+                <span class="pref-row__desc">{{ 'consent.' + cat + '_desc' | translate }}</span>
+              </label>
+              <input
+                class="switch"
+                type="checkbox"
+                role="switch"
+                [id]="'consent-' + cat"
+                [attr.data-first]="first ? '' : null"
+                [checked]="choices[cat]"
+                (change)="toggle(cat, $event)"
+              />
+            </li>
+          }
+        </ul>
+      </div>
+
+      <footer class="consent-modal__actions">
+        <button type="button" class="cbtn cbtn--secondary" (click)="rejectAll()">{{ 'consent.reject_all' | translate }}</button>
+        <button type="button" class="cbtn cbtn--ghost" (click)="savePreferences()">{{ 'consent.save' | translate }}</button>
+        <button type="button" class="cbtn cbtn--primary" (click)="acceptAll()">{{ 'consent.accept_all' | translate }}</button>
+      </footer>
+    </div>
+  </div>
+}

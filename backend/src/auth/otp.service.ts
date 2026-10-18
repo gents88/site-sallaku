@@ -5,6 +5,7 @@ import {
   HttpStatus,
   UnauthorizedException,
   BadRequestException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -42,6 +43,10 @@ export class OtpService {
   ): Promise<{ message: string }> {
     const { identifier, channel } = this.resolveChannel(phone, email);
 
+    if (channel === 'sms' && !this.smsService.isAvailable()) {
+      throw new ServiceUnavailableException('SMS delivery is not available. Please use email.');
+    }
+
     // Rate limiting: max 3 requests per identifier per 10 minutes
     const windowStart = new Date(Date.now() - REQUEST_WINDOW_MS);
     const recentCount = await this.otpModel.countDocuments({
@@ -75,7 +80,10 @@ export class OtpService {
       if (channel === 'sms') {
         await this.smsService.sendOtp(identifier, otpCode);
       } else {
-        await this.mailService.sendOtpEmail(identifier, otpCode);
+        // MailService non lancia: segnala il rifiuto del provider nel risultato,
+        // che prima veniva ignorato e l'utente si sentiva dire "codice inviato".
+        const delivery = await this.mailService.sendOtpEmail(identifier, otpCode);
+        if (!delivery.success) throw new Error('mail provider did not accept the message');
       }
     } catch (err) {
       this.logger.error(
@@ -167,6 +175,14 @@ export class OtpService {
       `OTP verified via ${channel} for ${this.mask(identifier)}, user: ${user._id}`,
     );
     return user;
+  }
+
+  /** Canali da cui può partire un codice adesso, per mostrare nel login solo quelli funzionanti. */
+  channels(): Record<OtpChannel, boolean> {
+    return {
+      email: this.mailService.getStatus().configured,
+      sms: this.smsService.isAvailable(),
+    };
   }
 
   // ── Helpers ────────────────────────────────────────────────

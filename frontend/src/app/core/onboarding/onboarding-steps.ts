@@ -7,7 +7,8 @@ import type { Alignment, Side } from 'driver.js';
  * preferenza: il servizio evidenzia il primo che esiste ed è visibile.
  * È così che lo stesso step si adatta al layout — sopra i 1200px la sidebar
  * è una rail agganciata (`#app-sidebar.is-rail`), tra 901 e 1199px c'è il
- * trigger in navbar, sotto i 900px la bottom tab bar. Se nessun candidato è
+ * trigger in navbar. Sotto i 900px il tour non parte (TOUR_MOBILE_QUERY in
+ * onboarding-tour.service.ts). Se nessun candidato è
  * visibile lo step diventa un popover centrato senza spotlight: il testo
  * resta utile anche quando l'elemento non è a schermo.
  */
@@ -36,15 +37,15 @@ export const ONBOARDING_STEPS: readonly OnboardingStepDef[] = [
   // 1. Benvenuto: nessuno spotlight, introduce il tour.
   step('welcome'),
 
-  // 2. Navigazione: rail su desktop, trigger del drawer su tablet, tab bar su mobile.
+  // 2. Navigazione: rail su desktop, trigger del drawer su tablet.
   step('navigation', {
-    targets: ['#app-sidebar.is-rail', '.nav-drawer-toggle', '.bottom-tabbar'],
+    targets: ['#app-sidebar.is-rail', '.nav-drawer-toggle'],
     side: 'right',
     align: 'start',
   }),
 
   // 3–6. Una voce per gruppo della sidebar. Il marcatore data-tour-group è
-  // sul template della sidebar; su mobile il drawer è fuori schermo, quindi
+  // sul template della sidebar; su tablet il drawer è fuori schermo, quindi
   // questi step ricadono nel popover centrato con la sola spiegazione.
   ...SIDEBAR_GROUP_IDS.map(group =>
     step(`group_${group}`, {
