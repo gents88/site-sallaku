@@ -3,6 +3,20 @@ import { routes } from '../../app.routes';
 import {
   NAV_REGISTRY, homeSectionIds, homepageRoutes, navbarEntries, prerenderPaths, searchableEntries, sidebarGroups,
 } from './nav-registry';
+import { NAV_ICONS } from '../../shared/components/nav-icon/nav-icon.component';
+import de from '../../../../public/i18n/de.json';
+import en from '../../../../public/i18n/en.json';
+import es from '../../../../public/i18n/es.json';
+import fr from '../../../../public/i18n/fr.json';
+import it_ from '../../../../public/i18n/it.json';
+import pt from '../../../../public/i18n/pt.json';
+import sq from '../../../../public/i18n/sq.json';
+
+const LANGS: Record<string, unknown> = { de, en, es, fr, it: it_, pt, sq };
+
+function lookup(dict: unknown, key: string): unknown {
+  return key.split('.').reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], dict);
+}
 
 /** Tutti i path dichiarati in app.routes.ts, con prefisso dei genitori (es. 'dashboard/projects'). */
 function declaredPaths(): Set<string> {
@@ -54,6 +68,30 @@ describe('NAV_REGISTRY', () => {
     expect(navbarEntries().map(e => e.route)).toEqual([
       '/about', '/tech-stack', '/projects', '/services', '/experience', '/skills', '/contact', '/blog', '/testimonials',
     ]);
+  });
+
+  it('links every parameterless admin page (regression: /dashboard/ai had no link anywhere)', () => {
+    const registered = new Set(NAV_REGISTRY.map(e => e.route.replace(/^\//, '')));
+    const orphans = [...declaredPaths()].filter(
+      p => p.startsWith('dashboard') && !p.includes(':') && !/^dashboard\/(login|register)/.test(p) && !registered.has(p),
+    );
+    expect(orphans).toEqual([]);
+  });
+
+  it('uses only icons that exist in NAV_ICONS (an unknown name renders as a dot)', () => {
+    expect(NAV_REGISTRY.filter(e => !Object.prototype.hasOwnProperty.call(NAV_ICONS, e.icon)).map(e => e.id)).toEqual([]);
+  });
+
+  it('has every label, title and description in every language', () => {
+    const missing: string[] = [];
+    for (const [lang, dict] of Object.entries(LANGS)) {
+      for (const entry of NAV_REGISTRY) {
+        for (const key of [entry.labelKey, entry.searchTitleKey, entry.descKey]) {
+          if (key && typeof lookup(dict, key) !== 'string') missing.push(`${lang}:${key}`);
+        }
+      }
+    }
+    expect(missing).toEqual([]);
   });
 
   it('hides overview/content groups from non-admins', () => {
