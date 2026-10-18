@@ -60,6 +60,21 @@
   padding: 1.1rem 0.75rem 1.25rem;
   transform: translateX(-110%);
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Lo scroll verticale della lista resta al browser; i gesti orizzontali
+     arrivano al componente, che li usa per lo swipe di chiusura. Va ripetuto
+     sulla lista: touch-action conta solo fino al contenitore scorrevole più
+     vicino, e senza il browser si prendeva il gesto (pointercancel). */
+  touch-action: pan-y;
+
+  .sidebar-nav {
+    touch-action: pan-y;
+  }
+
+  /* Mentre il dito trascina, il drawer lo segue senza ritardo. Rilasciato,
+     la transizione riparte dalla posizione raggiunta. */
+  &.dragging {
+    transition: none;
+  }
 
   &.open {
     transform: translateX(0);
