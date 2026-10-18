@@ -53,7 +53,7 @@
     [class.fade-top]="scrollEdges().top"
     [class.fade-bottom]="scrollEdges().bottom"
     [attr.aria-label]="brandLabelKey() | translate"
-    (scroll)="updateScrollEdges()"
+    (scroll)="onNavScroll()"
   >
     @for (group of navGroups(); track group.id) {
       <div class="nav-group" [attr.data-tour-group]="group.id">
@@ -68,10 +68,10 @@
             [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
             class="nav-item icon-tile--lift"
             (click)="onNavigate(item)"
-            (mouseenter)="showTooltip($event, item.labelKey)"
-            (mouseleave)="hideTooltip()"
-            (focus)="showTooltip($event, item.labelKey)"
-            (blur)="hideTooltip()"
+            (mouseenter)="onItemEnter($event, item)"
+            (mouseleave)="hideHint()"
+            (focus)="onItemEnter($event, item)"
+            (blur)="hideHint()"
           >
             <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
             <span class="nav-label">{{ item.labelKey | translate }}</span>
@@ -95,10 +95,6 @@
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
     (click)="onNavigate(labCta)"
-    (mouseenter)="showTooltip($event, 'sidebar.view_all_tools')"
-    (mouseleave)="hideTooltip()"
-    (focus)="showTooltip($event, 'sidebar.view_all_tools')"
-    (blur)="hideTooltip()"
   >
     <span class="cta-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor('rocket')"><app-nav-icon name="rocket" [size]="18" /></span>
     <span class="cta-text">
@@ -108,8 +104,20 @@
   </a>
 </aside>
 
-<!-- Tooltip della rail collassata. Fuori da <aside> perché quello scrolla:
+<!-- Scheda della voce a rail aperta. Fuori da <aside> perché quello scrolla:
      un figlio position:fixed verrebbe comunque ritagliato dall'overflow. -->
-@if (tooltip(); as tip) {
-  <div class="rail-tooltip" role="tooltip" [style.top.px]="tip.top">{{ tip.labelKey | translate }}</div>
+@if (hint(); as tip) {
+  <div class="rail-hint" role="tooltip" [style.top.px]="tip.top">
+    <strong class="rail-hint__title">{{ tip.labelKey | translate }}</strong>
+    @if (tip.descKey) {
+      <span class="rail-hint__desc">{{ tip.descKey | translate }}</span>
+    }
+    @if (tip.badge) {
+      <ul class="rail-hint__counts">
+        @for (part of tip.badge.parts; track part.labelKey) {
+          <li><strong>{{ part.count }}</strong> {{ part.labelKey | translate }}</li>
+        }
+      </ul>
+    }
+  </div>
 }

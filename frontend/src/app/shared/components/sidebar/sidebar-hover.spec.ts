@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent } from './sidebar.component';
+import { RAIL_HINT_DELAY_MS, RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent } from './sidebar.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -16,7 +16,7 @@ function pointer(type: 'pointerenter' | 'pointerleave', pointerType = 'mouse'): 
   return event;
 }
 
-function setup(mode: 'rail' | 'overlay' = 'rail', pinned = false) {
+function setup(mode: 'rail' | 'overlay' = 'rail', pinned = false, admin = false) {
   const modeSig = signal<'rail' | 'overlay'>(mode);
   const railExpanded = signal(pinned);
   const hoverOpen = signal(false);
@@ -34,10 +34,10 @@ function setup(mode: 'rail' | 'overlay' = 'rail', pinned = false) {
     imports: [TranslateModule.forRoot()],
     providers: [
       provideRouter([]),
-      { provide: AuthService, useValue: { isLoggedIn: signal(false), isAdmin: signal(false) } },
+      { provide: AuthService, useValue: { isLoggedIn: signal(admin), isAdmin: signal(admin) } },
       { provide: DrawerService, useValue: drawer },
       { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
-      { provide: AdminNotificationsService, useValue: { summary: signal({ contactsUnread: 0, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 }) } },
+      { provide: AdminNotificationsService, useValue: { summary: signal({ contactsUnread: 2, followUpsDue: 1, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 }) } },
       { provide: LanguageService, useValue: { current: () => 'it' } },
     ],
   });
@@ -163,5 +163,93 @@ describe('SidebarComponent: drawer overlay chiuso fuori dalla tastiera', () => {
   it('la rail resta sempre raggiungibile', () => {
     const { aside } = setup('rail');
     expect(aside.inert).toBe(false);
+  });
+});
+
+describe('SidebarComponent: scheda della voce a rail aperta', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  function hover(fixture: ReturnType<typeof setup>['fixture'], href: string): HTMLElement {
+    const link = (fixture.nativeElement as HTMLElement).querySelector(`a.nav-item[href="${href}"]`) as HTMLElement;
+    link.dispatchEvent(new MouseEvent('mouseenter'));
+    return link;
+  }
+
+  function hint(fixture: ReturnType<typeof setup>['fixture']): HTMLElement | null {
+    fixture.detectChanges();
+    return (fixture.nativeElement as HTMLElement).querySelector('.rail-hint');
+  }
+
+  it('compare solo quando il mouse si ferma sulla voce, con la descrizione dello strumento', () => {
+    const { fixture } = setup('rail', true);
+    hover(fixture, '/lab/library');
+
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS - 10);
+    expect(hint(fixture)).toBeNull();
+
+    vi.advanceTimersByTime(10);
+    expect(hint(fixture)?.textContent).toContain('sidebar.items.library');
+    expect(hint(fixture)?.textContent).toContain('tools.library_desc');
+  });
+
+  it('non compare per le voci che non hanno niente da aggiungere all\'etichetta', () => {
+    const { fixture } = setup('rail', true);
+    hover(fixture, '/lab/i-miei-file');
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
+    expect(hint(fixture)).toBeNull();
+  });
+
+  it('per l\'admin elenca i contatori della voce', () => {
+    const { fixture } = setup('rail', true, true);
+    hover(fixture, '/dashboard/contacts');
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
+    const items = Array.from(hint(fixture)?.querySelectorAll('.rail-hint__counts li') ?? []).map(li => li.textContent?.trim());
+    expect(items).toEqual(['2 notifications.contacts_unread', '1 notifications.followups_due']);
+  });
+
+  it('sparisce uscendo dalla voce', () => {
+    const { fixture } = setup('rail', true);
+    const link = hover(fixture, '/lab/library');
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
+    expect(hint(fixture)).not.toBeNull();
+
+    link.dispatchEvent(new MouseEvent('mouseleave'));
+    expect(hint(fixture)).toBeNull();
+  });
+
+  it('sparisce quando la rail si richiude', () => {
+    const { fixture, drawer } = setup('rail', true);
+    hover(fixture, '/lab/library');
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
+    expect(hint(fixture)).not.toBeNull();
+
+    drawer.railExpanded.set(false);
+    expect(hint(fixture)).toBeNull();
+  });
+
+  it('un passaggio più breve del ritardo non lascia una scheda in arrivo', () => {
+    const { fixture } = setup('rail', true);
+    const link = hover(fixture, '/lab/library');
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS / 2);
+    link.dispatchEvent(new MouseEvent('mouseleave'));
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
+    expect(hint(fixture)).toBeNull();
+  });
+
+  it('con la rail compressa che non si è espansa non compare (niente scheda sopra le icone)', () => {
+    const { fixture } = setup('rail', false);
+    hover(fixture, '/lab/library');
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
+    expect(hint(fixture)).toBeNull();
+  });
+
+  it('nel drawer overlay non compare mai', () => {
+    const { fixture, drawer } = setup('overlay');
+    drawer.drawerOpen.set(true);
+    fixture.detectChanges();
+    hover(fixture, '/lab/library');
+    vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
+    expect(hint(fixture)).toBeNull();
   });
 });
