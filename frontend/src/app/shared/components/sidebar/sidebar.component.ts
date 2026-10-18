@@ -24,6 +24,7 @@ import { AnalyticsTrackingService } from '../../../core/services/analytics-track
 import { AdminNotificationsService } from '../../../core/services/admin-notifications.service';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { NavEntry, NavGroupId, sidebarGroups } from '../../../core/navigation/nav-registry';
+import { RoutePrefetchService } from '../../../core/navigation/route-prefetch.service';
 import { NavIconComponent, navIconColor } from '../nav-icon/nav-icon.component';
 import { NavBadge, badgeText, navBadges } from './nav-badges';
 
@@ -46,6 +47,11 @@ export const RAIL_HOVER_OPEN_DELAY_MS = 90;
 export const RAIL_HOVER_CLOSE_DELAY_MS = 220;
 /** Il mouse deve fermarsi sulla voce: scorrendo l'elenco le schede non devono lampeggiare una dopo l'altra. */
 export const RAIL_HINT_DELAY_MS = 450;
+/**
+ * Mouse sulla voce da almeno 80ms: chi ci passa sopra per scendere nella
+ * lista non scarica ogni pagina che sfiora. Focus e pressione partono subito.
+ */
+export const PREFETCH_INTENT_MS = 80;
 
 /** Voce fittizia per il tracciamento del CTA "Esplora il Lab". */
 const LAB_CTA = { route: '/lab' } as const;
@@ -111,6 +117,8 @@ export class SidebarComponent {
   private readonly injector = inject(Injector);
   private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly routePrefetch = inject(RoutePrefetchService);
+  private prefetchTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly mode = this.drawer.mode;
   readonly drawerOpen = this.drawer.drawerOpen;
@@ -164,6 +172,7 @@ export class SidebarComponent {
     this.destroyRef.onDestroy(() => {
       this.clearHoverTimer();
       this.clearHintTimer();
+      this.clearPrefetchTimer();
     });
 
     // La voce attiva va portata in vista: con 14+ voci la lista scorre (nella
@@ -317,6 +326,7 @@ export class SidebarComponent {
    * mouse e la voce mostra già tutto.
    */
   onItemEnter(event: Event, item: NavEntry): void {
+    this.schedulePrefetch(item, event.type === 'focus' ? 0 : PREFETCH_INTENT_MS);
     this.clearHintTimer();
     const target = event.currentTarget as HTMLElement | null;
     const badge = this.badges()[item.id];
@@ -331,6 +341,33 @@ export class SidebarComponent {
       const rect = target.getBoundingClientRect();
       this.hint.set({ labelKey: item.labelKey, descKey: item.descKey, badge, top: rect.top + rect.height / 2 });
     }, RAIL_HINT_DELAY_MS);
+  }
+
+  onItemLeave(): void {
+    this.clearPrefetchTimer();
+    this.hideHint();
+  }
+
+  /** Il codice della pagina parte prima del click: vedi RoutePrefetchService. */
+  prefetch(item: Pick<NavEntry, 'route'>): void {
+    this.clearPrefetchTimer();
+    this.routePrefetch.prefetch(item.route);
+  }
+
+  private schedulePrefetch(item: Pick<NavEntry, 'route'>, delayMs: number): void {
+    if (delayMs === 0) {
+      this.prefetch(item);
+      return;
+    }
+    this.clearPrefetchTimer();
+    this.prefetchTimer = setTimeout(() => this.prefetch(item), delayMs);
+  }
+
+  private clearPrefetchTimer(): void {
+    if (this.prefetchTimer !== null) {
+      clearTimeout(this.prefetchTimer);
+      this.prefetchTimer = null;
+    }
   }
 
   hideHint(): void {

@@ -3,7 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { RAIL_HINT_DELAY_MS, RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent, isSidebarShortcut } from './sidebar.component';
+import {
+  PREFETCH_INTENT_MS, RAIL_HINT_DELAY_MS, RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent, isSidebarShortcut,
+} from './sidebar.component';
+import { RoutePrefetchService } from '../../../core/navigation/route-prefetch.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -42,13 +45,15 @@ function setup(mode: 'rail' | 'overlay' = 'rail', pinned = false, admin = false)
       { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
       { provide: AdminNotificationsService, useValue: { summary: signal({ contactsUnread: 2, followUpsDue: 1, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 }) } },
       { provide: LanguageService, useValue: { current: () => 'it' } },
+      { provide: RoutePrefetchService, useValue: { prefetch: vi.fn() } },
     ],
   });
   const fixture = TestBed.createComponent(SidebarComponent);
   fixture.detectChanges();
+  const prefetch = TestBed.inject(RoutePrefetchService).prefetch as ReturnType<typeof vi.fn>;
   const analytics = TestBed.inject(AnalyticsTrackingService) as unknown as { trackClick: ReturnType<typeof vi.fn> };
   const aside = (fixture.nativeElement as HTMLElement).querySelector('aside') as HTMLElement;
-  return { fixture, aside, drawer, analytics };
+  return { fixture, aside, drawer, analytics, prefetch };
 }
 
 describe('SidebarComponent: apertura al passaggio del mouse', () => {
@@ -331,5 +336,45 @@ describe('SidebarComponent: scorciatoia Ctrl+B', () => {
     const toggle = aside.querySelector('.rail-toggle') as HTMLElement;
     expect(toggle.getAttribute('title')).toMatch(/(Ctrl\+B|⌘B)$/);
     expect(toggle.getAttribute('aria-keyshortcuts')).toBe('Control+B Meta+B');
+  });
+});
+
+describe('SidebarComponent: prefetch della pagina puntata', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  function item(fixture: ReturnType<typeof setup>['fixture'], href: string): HTMLElement {
+    return (fixture.nativeElement as HTMLElement).querySelector(`a.nav-item[href="${href}"]`) as HTMLElement;
+  }
+
+  it('parte quando il mouse resta sulla voce, non al primo sfioramento', () => {
+    const { fixture, prefetch } = setup('rail', true);
+    item(fixture, '/lab/ocr').dispatchEvent(new MouseEvent('mouseenter'));
+
+    vi.advanceTimersByTime(PREFETCH_INTENT_MS - 1);
+    expect(prefetch).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(prefetch).toHaveBeenCalledWith('/lab/ocr');
+  });
+
+  it('scorrendo la lista col mouse non scarica le voci attraversate', () => {
+    const { fixture, prefetch } = setup('rail', true);
+    for (const href of ['/lab/ocr', '/lab/convert', '/lab/editor']) {
+      const link = item(fixture, href);
+      link.dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(PREFETCH_INTENT_MS / 2);
+      link.dispatchEvent(new MouseEvent('mouseleave'));
+    }
+    vi.advanceTimersByTime(PREFETCH_INTENT_MS);
+    expect(prefetch).not.toHaveBeenCalled();
+  });
+
+  it('parte subito al focus da tastiera e alla pressione (anche al tocco)', () => {
+    const { fixture, prefetch } = setup('overlay');
+    item(fixture, '/lab/ocr').dispatchEvent(new FocusEvent('focus'));
+    expect(prefetch).toHaveBeenLastCalledWith('/lab/ocr');
+
+    item(fixture, '/lab/scanner').dispatchEvent(new MouseEvent('pointerdown'));
+    expect(prefetch).toHaveBeenLastCalledWith('/lab/scanner');
   });
 });

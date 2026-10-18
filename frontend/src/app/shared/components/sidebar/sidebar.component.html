@@ -77,9 +77,10 @@
             class="nav-item icon-tile--lift"
             (click)="onNavigate(item)"
             (mouseenter)="onItemEnter($event, item)"
-            (mouseleave)="hideHint()"
+            (mouseleave)="onItemLeave()"
             (focus)="onItemEnter($event, item)"
-            (blur)="hideHint()"
+            (blur)="onItemLeave()"
+            (pointerdown)="prefetch(item)"
           >
             <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
             <span class="nav-label">{{ item.labelKey | translate }}</span>
