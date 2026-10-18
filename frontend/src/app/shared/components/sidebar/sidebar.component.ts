@@ -23,17 +23,27 @@ import { AdminNotificationsService } from '../../../core/services/admin-notifica
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { NavEntry, NavGroupId, sidebarGroups } from '../../../core/navigation/nav-registry';
 import { NavIconComponent, navIconColor } from '../nav-icon/nav-icon.component';
-import { badgeText, navBadges } from './nav-badges';
+import { NavBadge, badgeText, navBadges } from './nav-badges';
 
-/** Tooltip della rail collassata: posizione calcolata dall'item sotto il puntatore/focus. */
-interface RailTooltip {
+/**
+ * Scheda accanto alla voce, a rail aperta: descrizione dello strumento e
+ * dettaglio dei contatori. Sostituisce il vecchio tooltip della rail
+ * compressa, che da quando la rail si apre al passaggio restava visibile
+ * meno di 90ms (l'espansione lo cancellava): era solo uno sfarfallio.
+ */
+export interface RailHint {
   labelKey: string;
+  descKey?: string;
+  badge?: NavBadge;
+  /** Centro verticale della voce, in coordinate viewport. */
   top: number;
 }
 
 /** Ritardi dell'apertura al passaggio: evitano aperture/chiusure involontarie sfiorando il bordo. */
 export const RAIL_HOVER_OPEN_DELAY_MS = 90;
 export const RAIL_HOVER_CLOSE_DELAY_MS = 220;
+/** Il mouse deve fermarsi sulla voce: scorrendo l'elenco le schede non devono lampeggiare una dopo l'altra. */
+export const RAIL_HINT_DELAY_MS = 450;
 
 /** Voce fittizia per il tracciamento del CTA "Esplora il Lab". */
 const LAB_CTA = { route: '/lab' } as const;
@@ -103,8 +113,9 @@ export class SidebarComponent {
 
   private pointerInside = false;
   private hoverTimer: ReturnType<typeof setTimeout> | null = null;
+  private hintTimer: ReturnType<typeof setTimeout> | null = null;
 
-  readonly tooltip = signal<RailTooltip | null>(null);
+  readonly hint = signal<RailHint | null>(null);
 
   readonly isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
   readonly brandLabelKey = computed(() => (this.isAdminUser() ? 'sidebar.brand_admin' : 'sidebar.brand_tools'));
@@ -129,14 +140,20 @@ export class SidebarComponent {
   readonly scrollEdges = signal<ScrollEdges>({ top: false, bottom: false });
 
   constructor() {
-    this.destroyRef.onDestroy(() => this.clearHoverTimer());
+    this.destroyRef.onDestroy(() => {
+      this.clearHoverTimer();
+      this.clearHintTimer();
+    });
 
     // La voce attiva va portata in vista: con 14+ voci la lista scorre (nella
     // rail compressa già a 1440×900) e aprendo /lab/scanner la voce evidenziata
     // restava sotto la piega, senza nessun segnale che la lista continuasse.
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed())
-      .subscribe(() => this.afterRender(() => this.revealActive()));
+      .subscribe(() => {
+        this.hideHint();
+        this.afterRender(() => this.revealActive());
+      });
 
     // Le voci cambiano col ruolo (login/logout admin): bordi e voce attiva vanno
     // ricalcolati sul nuovo elenco. Al primo giro copre anche il caricamento.
@@ -165,15 +182,21 @@ export class SidebarComponent {
       }
     });
 
-    // La rail collassata non mostra etichette: se cambia stato mentre un tooltip
-    // è visibile va scartato, altrimenti resta appeso sopra la colonna espansa.
+    // La scheda vive solo accanto alla rail aperta: se la rail si richiude o si
+    // passa all'overlay resterebbe appesa sopra il contenuto.
     effect(() => {
-      if (this.expanded() || this.mode() !== 'rail') this.tooltip.set(null);
+      if (!this.expanded() || this.mode() !== 'rail') untracked(() => this.hideHint());
     });
   }
 
   closeDrawer(): void {
     this.drawer.close();
+  }
+
+  /** La lista scorre sotto la scheda: la sua posizione non vale più. */
+  onNavScroll(): void {
+    this.hideHint();
+    this.updateScrollEdges();
   }
 
   updateScrollEdges(): void {
@@ -212,7 +235,7 @@ export class SidebarComponent {
   toggleRail(): void {
     const next = !this.pinned();
     this.drawer.toggleRail();
-    this.tooltip.set(null);
+    this.hideHint();
     this.analytics.trackClick('sidebar', next ? 'sidebar_rail_expand' : 'sidebar_rail_collapse');
   }
 
@@ -266,21 +289,44 @@ export class SidebarComponent {
     }
   }
 
-  showTooltip(event: Event, labelKey: string): void {
-    if (this.mode() !== 'rail' || this.expanded()) return;
+  /**
+   * Mouse fermo su una voce (o focus da tastiera): dopo RAIL_HINT_DELAY_MS
+   * compare la scheda, ma solo se ha qualcosa da aggiungere all'etichetta,
+   * cioè una descrizione o dei contatori. Nell'overlay non c'è passaggio del
+   * mouse e la voce mostra già tutto.
+   */
+  onItemEnter(event: Event, item: NavEntry): void {
+    this.clearHintTimer();
     const target = event.currentTarget as HTMLElement | null;
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
-    this.tooltip.set({ labelKey, top: rect.top + rect.height / 2 });
+    const badge = this.badges()[item.id];
+    if (this.mode() !== 'rail' || !target || (!item.descKey && !badge)) {
+      this.hint.set(null);
+      return;
+    }
+    this.hintTimer = setTimeout(() => {
+      this.hintTimer = null;
+      // Nel frattempo la rail compressa si è espansa: la posizione va letta ora.
+      if (!this.expanded()) return;
+      const rect = target.getBoundingClientRect();
+      this.hint.set({ labelKey: item.labelKey, descKey: item.descKey, badge, top: rect.top + rect.height / 2 });
+    }, RAIL_HINT_DELAY_MS);
   }
 
-  hideTooltip(): void {
-    this.tooltip.set(null);
+  hideHint(): void {
+    this.clearHintTimer();
+    if (this.hint() !== null) this.hint.set(null);
+  }
+
+  private clearHintTimer(): void {
+    if (this.hintTimer !== null) {
+      clearTimeout(this.hintTimer);
+      this.hintTimer = null;
+    }
   }
 
   @HostListener('window:keydown.escape')
   onEscape(): void {
-    this.tooltip.set(null);
+    this.hideHint();
     this.clearHoverTimer();
     this.drawer.setHover(false);
     this.drawer.close();
@@ -305,7 +351,7 @@ export class SidebarComponent {
   // Chiude il drawer overlay quando il focus (tastiera) ne esce.
   @HostListener('focusout', ['$event'])
   onFocusOut(event: FocusEvent): void {
-    this.tooltip.set(null);
+    this.hideHint();
     // Rail: il focus esce dalla colonna e il mouse non c'è → richiudi.
     if (this.mode() === 'rail') {
       const next = event.relatedTarget as HTMLElement | null;
