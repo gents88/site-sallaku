@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
@@ -22,8 +22,12 @@ describe('OtpService', () => {
       create: jest.fn().mockResolvedValue(undefined),
       findOne: jest.fn(),
     };
-    smsService = { sendOtp: jest.fn().mockResolvedValue(undefined) } as any;
-    mailService = { sendOtpEmail: jest.fn().mockResolvedValue(undefined), sendWelcome: jest.fn() } as any;
+    smsService = { sendOtp: jest.fn().mockResolvedValue(undefined), isAvailable: jest.fn().mockReturnValue(true) } as any;
+    mailService = {
+      sendOtpEmail: jest.fn().mockResolvedValue({ success: true, accepted: ['a@b.com'], rejected: [] }),
+      sendWelcome: jest.fn(),
+      getStatus: jest.fn().mockReturnValue({ configured: true, provider: 'resend', smtpUser: null }),
+    } as any;
     usersService = {
       findOrCreateByPhone: jest.fn(),
       findOrCreateByEmailOtp: jest.fn(),
@@ -80,6 +84,29 @@ describe('OtpService', () => {
       mailService.sendOtpEmail.mockRejectedValue(new Error('SES down'));
 
       await expect(service.requestOtp(undefined, 'a@b.com')).rejects.toThrow(BadRequestException);
+    });
+
+    it('fails when the mail provider does not accept the message, instead of reporting it as sent', async () => {
+      // MailService non lancia: un rifiuto di Resend/SMTP arriva come success=false.
+      mailService.sendOtpEmail.mockResolvedValue({ success: false, accepted: [], rejected: ['a@b.com'] });
+
+      await expect(service.requestOtp(undefined, 'a@b.com')).rejects.toThrow(BadRequestException);
+    });
+
+    it('refuses SMS requests up front when no SMS provider is available', async () => {
+      smsService.isAvailable.mockReturnValue(false);
+
+      await expect(service.requestOtp('+393331234567', undefined)).rejects.toThrow(ServiceUnavailableException);
+      expect(otpModel.create).not.toHaveBeenCalled();
+      expect(smsService.sendOtp).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('channels', () => {
+    it('reports email from the mail configuration and SMS from the SMS provider', () => {
+      smsService.isAvailable.mockReturnValue(false);
+
+      expect(service.channels()).toEqual({ email: true, sms: false });
     });
   });
 

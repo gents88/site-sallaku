@@ -18,6 +18,7 @@ describe('LoginComponent', () => {
     login: ReturnType<typeof vi.fn>;
     requestOtp: ReturnType<typeof vi.fn>;
     verifyOtp: ReturnType<typeof vi.fn>;
+    getOtpChannels: ReturnType<typeof vi.fn>;
   };
   let authModal: { closeLogin: ReturnType<typeof vi.fn>; closeAccount: ReturnType<typeof vi.fn> };
 
@@ -31,6 +32,7 @@ describe('LoginComponent', () => {
       login: vi.fn(() => of({})),
       requestOtp: vi.fn(() => of({ message: 'ok' })),
       verifyOtp: vi.fn(() => of({})),
+      getOtpChannels: vi.fn(() => of({ email: true, sms: true })),
     };
     authModal = { closeLogin: vi.fn(), closeAccount: vi.fn() };
   });
@@ -256,6 +258,8 @@ describe('LoginComponent', () => {
     const { $, type, submit, fixture } = setup();
     $<HTMLButtonElement>('#auth-tab-code')!.click();
     fixture.detectChanges();
+    $<HTMLButtonElement>('#auth-channel-sms')!.click();
+    fixture.detectChanges();
     type('#auth-identifier', '+393331234567');
     submit();
     const resend = () => $<HTMLButtonElement>('.code-meta .auth-link')!;
@@ -276,7 +280,95 @@ describe('LoginComponent', () => {
     type('#auth-identifier', '3331234567');
     submit();
     expect(auth.requestOtp).not.toHaveBeenCalled();
-    expect($('#auth-identifier-error')).not.toBeNull();
+    expect($('#auth-identifier-error')!.textContent).toContain('auth.email_required');
+  });
+
+  it('cellulare: un numero italiano scritto con gli spazi parte in formato E.164', () => {
+    const { $, type, submit, fixture } = setup();
+    $<HTMLButtonElement>('#auth-tab-code')!.click();
+    fixture.detectChanges();
+    $<HTMLButtonElement>('#auth-channel-sms')!.click();
+    fixture.detectChanges();
+
+    const input = $<HTMLInputElement>('#auth-identifier')!;
+    expect(input.type).toBe('tel');
+    expect(input.getAttribute('inputmode')).toBe('tel');
+    expect($('#auth-channel-sms')!.getAttribute('aria-pressed')).toBe('true');
+    expect($('.auth-note')!.textContent).toContain('auth.code_hint_sms');
+
+    type('#auth-identifier', '333 123 4567');
+    submit();
+    expect(auth.requestOtp).toHaveBeenCalledWith('+393331234567');
+    expect($('.code-sent strong')!.textContent).toBe('+393331234567');
+    expect($('.code-sent__icon mat-icon')!.textContent).toContain('sms');
+  });
+
+  it('cellulare non valido: errore dedicato e nessun invio', () => {
+    const { $, type, submit, fixture } = setup();
+    $<HTMLButtonElement>('#auth-tab-code')!.click();
+    fixture.detectChanges();
+    $<HTMLButtonElement>('#auth-channel-sms')!.click();
+    fixture.detectChanges();
+    type('#auth-identifier', '12');
+    submit();
+    expect(auth.requestOtp).not.toHaveBeenCalled();
+    expect($('#auth-identifier-error')!.textContent).toContain('auth.mobile_invalid');
+  });
+
+  it('passando da Email a Cellulare e ritorno ciò che era scritto resta', () => {
+    const { $, type, fixture } = setup();
+    $<HTMLButtonElement>('#auth-tab-code')!.click();
+    fixture.detectChanges();
+    type('#auth-identifier', 'mario@example.com');
+    $<HTMLButtonElement>('#auth-channel-sms')!.click();
+    fixture.detectChanges();
+    expect($<HTMLInputElement>('#auth-identifier')!.value).toBe('');
+    type('#auth-identifier', '3331234567');
+    $<HTMLButtonElement>('#auth-channel-email')!.click();
+    fixture.detectChanges();
+    expect($<HTMLInputElement>('#auth-identifier')!.value).toBe('mario@example.com');
+  });
+
+  it('senza provider SMS sul backend la scelta del cellulare non compare', () => {
+    auth.getOtpChannels.mockReturnValue(of({ email: true, sms: false }));
+    const { $, fixture } = setup();
+    $<HTMLButtonElement>('#auth-tab-code')!.click();
+    fixture.detectChanges();
+    expect($('.channel-switch')).toBeNull();
+    expect($<HTMLInputElement>('#auth-identifier')!.getAttribute('inputmode')).toBe('email');
+  });
+
+  it('se la richiesta dei canali fallisce resta l\'email, senza errori', () => {
+    auth.getOtpChannels.mockReturnValue(throwError(() => ({ status: 0 })));
+    const { $, fixture } = setup();
+    $<HTMLButtonElement>('#auth-tab-code')!.click();
+    fixture.detectChanges();
+    expect($('.channel-switch')).toBeNull();
+    expect($('.auth-alert')).toBeNull();
+  });
+
+  it('"Password dimenticata?" resta sull\'email: il cellulare aprirebbe un altro account', () => {
+    const { $, type, fixture } = setup();
+    type('#auth-email', 'mario@example.com');
+    $<HTMLButtonElement>('.field__label-row .auth-link')!.click();
+    fixture.detectChanges();
+    expect($('.channel-switch')).toBeNull();
+  });
+
+  it('SMS non disponibile al momento dell\'invio: messaggio che rimanda all\'email', () => {
+    auth.requestOtp.mockReturnValue(throwError(() => ({
+      status: 503,
+      error: { message: 'SMS delivery is not available. Please use email.' },
+    })));
+    const { $, type, submit, fixture } = setup();
+    $<HTMLButtonElement>('#auth-tab-code')!.click();
+    fixture.detectChanges();
+    $<HTMLButtonElement>('#auth-channel-sms')!.click();
+    fixture.detectChanges();
+    type('#auth-identifier', '3331234567');
+    submit();
+    expect($('.auth-alert')!.textContent).toContain('auth.err_sms_unavailable');
+    expect($('.code-sent')).toBeNull();
   });
 
   it('Bloc Maiusc: avviso visibile solo mentre è attivo', () => {

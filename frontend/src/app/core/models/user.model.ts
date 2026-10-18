@@ -27,6 +27,12 @@ export interface OtpRequestResponse {
   message: string;
 }
 
+/** Canali da cui il backend può inviare il codice in questo momento (GET /auth/otp/channels). */
+export interface OtpChannels {
+  email: boolean;
+  sms: boolean;
+}
+
 /** Returned by /auth/register: the account exists but is unverified — no tokens yet. */
 export interface RegisterResponse {
   message: string;
