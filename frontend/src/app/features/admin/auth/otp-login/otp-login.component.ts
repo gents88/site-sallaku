@@ -10,17 +10,18 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
-import { normalizeIdentifier, phoneOrEmailValidator } from '../auth-form.utils';
+import { normalizeIdentifier, phoneOrEmailValidator, readLastLoginAdmin, storeLastLoginAdmin } from '../auth-form.utils';
 
 const OTP_EXPIRY_SECONDS = 300; // matches backend 5-minute window
 const RESEND_COOLDOWN_SECONDS = 60;
 
 import { ProfilePhotoComponent } from '../../../../shared/components/profile-photo/profile-photo.component';
+import { GenericAvatarComponent } from '../../../../shared/components/generic-avatar/generic-avatar.component';
 @Component({
   selector: 'app-otp-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ProfilePhotoComponent, 
+  imports: [ProfilePhotoComponent, GenericAvatarComponent, 
     CommonModule,
     ReactiveFormsModule,
     RouterLink,
@@ -42,6 +43,11 @@ export class OtpLoginComponent implements OnInit, AfterViewInit, OnDestroy {
   identifier = '';
   loading = false;
   otpExpired = false;
+  /**
+   * Qui arrivano anche i nuovi iscritti subito dopo la registrazione: la foto
+   * di Gent solo se l'ultimo accesso su questo dispositivo è stato dell'admin.
+   */
+  readonly showAdminPhoto = readLastLoginAdmin();
 
   countdownSeconds = OTP_EXPIRY_SECONDS;
   resendCooldownSeconds = 0;
@@ -188,6 +194,7 @@ export class OtpLoginComponent implements OnInit, AfterViewInit, OnDestroy {
       next: () => {
         this.loading = false;
         this.cdr.markForCheck();
+        storeLastLoginAdmin(this.auth.isAdmin());
         if (this.auth.isAdmin()) {
           this.redirectTimeout = setTimeout(() => {
             this.router.navigate(['/dashboard']);

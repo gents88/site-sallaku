@@ -168,7 +168,8 @@
   background: conic-gradient(from 200deg, var(--color-primary), var(--color-accent), #8b5cf6, var(--color-primary));
   box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--color-primary) 65%, transparent);
 
-  app-profile-photo {
+  app-profile-photo,
+  app-generic-avatar {
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid var(--color-surface);
@@ -861,7 +862,8 @@
     margin: 0;
     padding: 2px;
 
-    app-profile-photo { border-width: 2px; }
+    app-profile-photo,
+    app-generic-avatar { border-width: 2px; }
   }
 
   .auth-chip { margin-bottom: 0.3rem; }
