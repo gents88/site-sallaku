@@ -1,0 +1,64 @@
+<div class="admin-page container">
+  <header class="admin-header">
+    <div>
+      <a routerLink="/dashboard" class="back-link"><mat-icon>arrow_back</mat-icon> {{ 'admin.dashboard' | translate }}</a>
+      <h1>{{ 'live_handoff.card_title' | translate }}</h1>
+      <p class="lcl-subtitle">{{ 'live_handoff.list_subtitle' | translate }}</p>
+    </div>
+    <button type="button" class="lcl-refresh" (click)="load()">{{ 'live_handoff.list_refresh' | translate }}</button>
+  </header>
+
+  @if (loadFailed()) {
+    <p class="lcl-error" role="alert">{{ 'live_handoff.list_load_error' | translate }}</p>
+  }
+
+  @if (loading()) {
+    <p class="lcl-empty" aria-live="polite">{{ 'live_handoff.admin_history_loading' | translate }}</p>
+  } @else {
+    <section class="lcl-section" aria-labelledby="lcl-open-title">
+      <h2 id="lcl-open-title">{{ 'live_handoff.list_open' | translate }} <span class="lcl-count">{{ groups().open.length }}</span></h2>
+      @if (groups().open.length === 0) {
+        <p class="lcl-empty">{{ 'live_handoff.card_empty' | translate }}</p>
+      } @else {
+        <ul class="lcl-list">
+          @for (entry of groups().open; track entry.requestId) {
+            <ng-container *ngTemplateOutlet="row; context: { $implicit: entry, open: true }" />
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="lcl-section" aria-labelledby="lcl-past-title">
+      <h2 id="lcl-past-title">{{ 'live_handoff.list_past' | translate }} <span class="lcl-count">{{ groups().past.length }}</span></h2>
+      @if (groups().past.length === 0) {
+        <p class="lcl-empty">{{ 'live_handoff.list_past_empty' | translate }}</p>
+      } @else {
+        <ul class="lcl-list">
+          @for (entry of groups().past; track entry.requestId) {
+            <ng-container *ngTemplateOutlet="row; context: { $implicit: entry, open: false }" />
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>
+
+<ng-template #row let-entry let-open="open">
+  <li class="lcl-item" [class.lcl-item--waiting]="entry.status === 'requested' || entry.status === 'notified'" [class.lcl-item--live]="entry.status === 'live'">
+    <div class="lcl-item__main">
+      <span class="lcl-item__status">{{ statusKey(entry.status) | translate }}</span>
+      <p class="lcl-item__msg">{{ entry.lastUserMessage || ('live_handoff.list_no_message' | translate) }}</p>
+      <span class="lcl-item__meta">
+        <time [attr.datetime]="entry.requestedAt">{{ entry.requestedAt | date: 'dd/MM HH:mm' }}</time>
+        @if (responseMinutes(entry); as minutes) {
+          · {{ 'live_handoff.list_responded_in' | translate: { minutes: minutes } }}
+        }
+        @if (entry.locale) { · {{ entry.locale | uppercase }} }
+      </span>
+    </div>
+    <a class="lcl-item__cta" [routerLink]="route(entry)">
+      {{ (open ? 'live_handoff.card_open' : 'live_handoff.list_reopen') | translate }}
+      <mat-icon>arrow_forward</mat-icon>
+    </a>
+  </li>
+</ng-template>

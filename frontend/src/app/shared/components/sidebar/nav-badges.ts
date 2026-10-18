@@ -16,13 +16,13 @@ export interface NavBadge {
 /**
  * Contatori del campanello (AdminNotificationsService) agganciati alle voci
  * della sidebar, per id del registro. Stesse destinazioni delle righe del
- * campanello: la chat live si prende dalla card della dashboard e i follow-up
+ * campanello: le chat live in attesa sulla pagina Live chat, e i follow-up
  * stanno nella inbox contatti, quindi si sommano ai messaggi da leggere.
  * Le voci a zero non compaiono.
  */
 export function navBadges(summary: NotificationSummary): Partial<Record<string, NavBadge>> {
   const spec: { id: string; urgent: boolean; parts: NavBadgePart[] }[] = [
-    { id: 'dashboard', urgent: true, parts: [{ count: summary.liveHandoffsWaiting, labelKey: 'notifications.live_waiting' }] },
+    { id: 'admin-live-chat', urgent: true, parts: [{ count: summary.liveHandoffsWaiting, labelKey: 'notifications.live_waiting' }] },
     {
       id: 'admin-contacts',
       urgent: false,

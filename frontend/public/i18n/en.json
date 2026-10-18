@@ -68,7 +68,8 @@
       "my_files": "My files",
       "contacts": "Contacts",
       "users": "Users",
-      "ai_assistant": "AI Assistant"
+      "ai_assistant": "AI Assistant",
+      "live_chat": "Live chat"
     }
   },
   "lang": {
@@ -969,6 +970,17 @@
     "card_waiting": "Waiting for a reply",
     "card_open": "Join",
     "card_empty": "No live chat requests right now.",
+    "list_subtitle": "Open requests and chats from the last 24 hours — they're deleted after a day.",
+    "list_refresh": "Refresh",
+    "list_load_error": "Couldn't refresh the list. Try again shortly.",
+    "list_open": "Open",
+    "list_past": "Closed or expired",
+    "list_past_empty": "No closed chats in the last 24 hours.",
+    "list_status_expired": "Expired without a reply",
+    "list_status_closed": "Closed",
+    "list_reopen": "Reopen",
+    "list_responded_in": "answered in {{minutes}} min",
+    "list_no_message": "No message",
     "exit_ask_resolved_title": "Did you solve your problem?",
     "exit_ask_resolved_yes": "Yes",
     "exit_ask_resolved_no": "No, keep going",

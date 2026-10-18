@@ -68,7 +68,8 @@
       "my_files": "Os meus ficheiros",
       "contacts": "Contactos",
       "users": "Utilizadores",
-      "ai_assistant": "Assistente IA"
+      "ai_assistant": "Assistente IA",
+      "live_chat": "Chat ao vivo"
     }
   },
   "lang": {
@@ -969,6 +970,17 @@
     "card_waiting": "Aguardando resposta",
     "card_open": "Entrar",
     "card_empty": "Nenhum pedido de chat ao vivo no momento.",
+    "list_subtitle": "Pedidos abertos e chats das últimas 24 horas: são apagados ao fim de um dia.",
+    "list_refresh": "Atualizar",
+    "list_load_error": "Não foi possível atualizar a lista. Tente novamente daqui a pouco.",
+    "list_open": "Abertas",
+    "list_past": "Fechadas ou expiradas",
+    "list_past_empty": "Nenhum chat fechado nas últimas 24 horas.",
+    "list_status_expired": "Expirada sem resposta",
+    "list_status_closed": "Fechada",
+    "list_reopen": "Reabrir",
+    "list_responded_in": "respondida em {{minutes}} min",
+    "list_no_message": "Sem mensagem",
     "exit_ask_resolved_title": "Resolveu o seu problema?",
     "exit_ask_resolved_yes": "Sim",
     "exit_ask_resolved_no": "Não, continuar",
