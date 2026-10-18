@@ -7,7 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
-import { AuthErrorView, mapAuthError, phoneOrEmailValidator } from '../auth-form.utils';
+import { AuthErrorView, emailValidator, mapAuthError, normalizePhone, phoneValidator } from '../auth-form.utils';
 
 import { ProfilePhotoComponent } from '../../../../shared/components/profile-photo/profile-photo.component';
 
@@ -19,6 +19,7 @@ const RESEND_COOLDOWN_SECONDS = 60;
 export const SUCCESS_DELAY_MS = 700;
 
 type LoginMode = 'password' | 'code';
+type CodeChannel = 'email' | 'sms';
 
 @Component({
   selector: 'app-login',
@@ -38,12 +39,17 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     remember: [false],
   });
 
+  /** Un campo per canale: passando da Email a Cellulare e ritorno, ciò che era scritto resta. */
   codeForm = this.fb.nonNullable.group({
-    identifier: ['', [phoneOrEmailValidator]],
+    email: ['', [emailValidator]],
+    phone: ['', [phoneValidator]],
   });
 
   readonly mode = signal<LoginMode>('password');
   readonly codeStep = signal<'identifier' | 'verify'>('identifier');
+  readonly codeChannel = signal<CodeChannel>('email');
+  /** Il cellulare compare solo se il backend può davvero mandare l'SMS (provider configurato). */
+  readonly smsAvailable = signal(false);
   /** Arrivati al codice da "Password dimenticata?": cambia solo il testo d'aiuto. */
   readonly forgotFlow = signal(false);
   readonly loading = signal(false);
@@ -107,6 +113,13 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     const remembered = this.readRememberedEmail();
     if (remembered) {
       this.form.patchValue({ email: remembered, remember: true });
+    }
+
+    if (this.isBrowser) {
+      this.auth.getOtpChannels().subscribe({
+        next: (channels) => this.smsAvailable.set(channels.sms),
+        error: () => { /* senza risposta resta solo l'email, che funziona sempre */ },
+      });
     }
 
     if (this.embedded && this.isBrowser) {
@@ -229,6 +242,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Non c'è un reset password: si accede con un codice via email, che non richiede la password. */
   forgotPassword(): void {
     this.forgotFlow.set(true);
+    // L'account con password è legato all'email: col cellulare se ne aprirebbe un altro.
+    this.codeChannel.set('email');
     this.setMode('code');
   }
 
@@ -273,28 +288,42 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   sendVerificationCode(): void {
     const email = this.form.controls.email.value.trim();
     if (!email || this.loading()) return;
-    this.codeForm.controls.identifier.setValue(email);
+    this.codeForm.controls.email.setValue(email);
+    this.codeChannel.set('email');
     this.mode.set('code');
     this.sendCode(email);
   }
 
   // ── Login con codice ────────────────────────────────────────────────────────
 
+  /** Il campo del canale scelto: un solo input nel template, legato a email o telefono. */
+  get codeControl() {
+    return this.codeChannel() === 'sms' ? this.codeForm.controls.phone : this.codeForm.controls.email;
+  }
+
+  setChannel(channel: CodeChannel): void {
+    if (this.loading() || this.codeChannel() === channel) return;
+    this.codeChannel.set(channel);
+    this.error.set(null);
+    setTimeout(() => this.focusField('#auth-identifier'), 0);
+  }
+
   showIdentifierError(): boolean {
-    const c = this.codeForm.controls.identifier;
+    const c = this.codeControl;
     return c.invalid && c.touched;
   }
 
   requestCode(): void {
     if (this.loading()) return;
     this.error.set(null);
-    const ctrl = this.codeForm.controls.identifier;
+    const ctrl = this.codeControl;
     if (ctrl.invalid) {
       ctrl.markAsTouched();
       this.focusField('#auth-identifier');
       return;
     }
-    this.sendCode(ctrl.value.trim());
+    // "333 123 4567" → "+393331234567": il backend accetta solo E.164.
+    this.sendCode(this.codeChannel() === 'sms' ? normalizePhone(ctrl.value)! : ctrl.value.trim());
   }
 
   resendCode(): void {
@@ -438,7 +467,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
   private prefillIdentifierFromEmail(): void {
-    const id = this.codeForm.controls.identifier;
+    const id = this.codeForm.controls.email;
     const email = this.form.controls.email;
     if (!id.value && email.valid) id.setValue(email.value.trim());
   }

@@ -1,11 +1,47 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 
-/** Validates that the value is either a valid E.164 phone OR a valid email. */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const E164_RE = /^\+[1-9]\d{6,14}$/;
+
+/**
+ * Porta un numero scritto a mano nel formato E.164 che il backend accetta:
+ * "333 123 4567", "0039 333-1234567", "(+39) 333.1234567" → "+393331234567".
+ * Senza prefisso internazionale il numero si considera italiano. Null se
+ * anche dopo la pulizia non è un numero valido.
+ */
+export function normalizePhone(raw: string): string | null {
+  let v = (raw ?? '').trim().replace(/[\s().\-/]/g, '');
+  if (v.startsWith('00')) v = `+${v.slice(2)}`;
+  // I numeri nazionali italiani arrivano al massimo a 11 cifre: 12 o più che
+  // iniziano con 39 hanno già il prefisso, scritto senza "+".
+  else if (!v.startsWith('+')) v = /^39\d{10,}$/.test(v) ? `+${v}` : `+39${v}`;
+  return E164_RE.test(v) ? v : null;
+}
+
+/** Email da usare per l'invio del codice, o numero già normalizzato in E.164. */
+export function normalizeIdentifier(raw: string): string {
+  const v = (raw ?? '').trim();
+  return v.includes('@') ? v : normalizePhone(v) ?? v;
+}
+
+export function emailValidator(control: AbstractControl): ValidationErrors | null {
+  const v: string = (control.value ?? '').trim();
+  if (!v) return { required: true };
+  return EMAIL_RE.test(v) ? null : { email: true };
+}
+
+export function phoneValidator(control: AbstractControl): ValidationErrors | null {
+  const v: string = (control.value ?? '').trim();
+  if (!v) return { required: true };
+  return normalizePhone(v) ? null : { phone: true };
+}
+
+/** Validates that the value is either a valid phone (see normalizePhone) OR a valid email. */
 export function phoneOrEmailValidator(control: AbstractControl): ValidationErrors | null {
   const v: string = (control.value ?? '').trim();
   if (!v) return { required: true };
-  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-  const isPhone = /^\+[1-9]\d{6,14}$/.test(v);
+  const isEmail = EMAIL_RE.test(v);
+  const isPhone = !v.includes('@') && normalizePhone(v) !== null;
   return isEmail || isPhone ? null : { phoneOrEmail: true };
 }
 
@@ -31,6 +67,7 @@ export function mapAuthError(err: unknown, fallbackKey: string): AuthErrorView {
   const msg = (Array.isArray(raw) ? raw.join(' ') : typeof raw === 'string' ? raw : '').toLowerCase();
 
   if (status === 0) return { key: 'auth.err_network' };
+  if (msg.includes('sms delivery is not available')) return { key: 'auth.err_sms_unavailable' };
   // Prima di "verify your email": anche l'invio fallito dice "Please verify your email address".
   if (msg.includes('failed to send')) return { key: 'auth.otp_send_failed' };
   if (msg.includes('verify your email before')) return { key: 'auth.err_email_not_verified', action: 'verify-email' };

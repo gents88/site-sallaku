@@ -186,28 +186,54 @@
           <form class="auth-form" [formGroup]="codeForm" (ngSubmit)="requestCode()" novalidate>
             <p class="auth-note">
               <mat-icon aria-hidden="true">{{ forgotFlow() ? 'shield' : 'send' }}</mat-icon>
-              <span>{{ (forgotFlow() ? 'auth.forgot_hint' : 'auth.code_hint') | translate }}</span>
+              <span>{{ (forgotFlow() ? 'auth.forgot_hint' : codeChannel() === 'sms' ? 'auth.code_hint_sms' : 'auth.code_hint') | translate }}</span>
             </p>
 
+            @if (smsAvailable() && !forgotFlow()) {
+              <div class="channel-switch" role="group" [attr.aria-label]="'auth.code_channel_label' | translate">
+                <button
+                  type="button"
+                  class="channel-switch__btn"
+                  id="auth-channel-email"
+                  [attr.aria-pressed]="codeChannel() === 'email'"
+                  (click)="setChannel('email')"
+                >
+                  <mat-icon aria-hidden="true">mail</mat-icon>{{ 'auth.channel_email' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="channel-switch__btn"
+                  id="auth-channel-sms"
+                  [attr.aria-pressed]="codeChannel() === 'sms'"
+                  (click)="setChannel('sms')"
+                >
+                  <mat-icon aria-hidden="true">smartphone</mat-icon>{{ 'auth.channel_sms' | translate }}
+                </button>
+              </div>
+            }
+
             <div class="field" [class.field--invalid]="showIdentifierError()">
-              <label class="field__label" for="auth-identifier">{{ 'auth.phone_or_email' | translate }}</label>
+              <label class="field__label" for="auth-identifier">{{ (codeChannel() === 'sms' ? 'auth.mobile_number' : 'auth.email') | translate }}</label>
               <div class="field__control">
-                <mat-icon class="field__icon" aria-hidden="true">alternate_email</mat-icon>
+                <mat-icon class="field__icon" aria-hidden="true">{{ codeChannel() === 'sms' ? 'smartphone' : 'alternate_email' }}</mat-icon>
+                <!-- Tastiera numerica su mobile per il cellulare, con @ per l'email. -->
                 <input
                   id="auth-identifier"
-                  formControlName="identifier"
-                  type="text"
-                  inputmode="email"
-                  autocomplete="username"
+                  [formControl]="codeControl"
+                  [type]="codeChannel() === 'sms' ? 'tel' : 'text'"
+                  [attr.inputmode]="codeChannel() === 'sms' ? 'tel' : 'email'"
+                  [attr.autocomplete]="codeChannel() === 'sms' ? 'tel' : 'username'"
                   autocapitalize="off"
                   spellcheck="false"
-                  [placeholder]="'auth.identifier_placeholder' | translate"
+                  [placeholder]="(codeChannel() === 'sms' ? 'auth.mobile_placeholder' : 'auth.email_placeholder') | translate"
                   [attr.aria-invalid]="showIdentifierError()"
-                  [attr.aria-describedby]="showIdentifierError() ? 'auth-identifier-error' : null"
+                  [attr.aria-describedby]="showIdentifierError() ? 'auth-identifier-error' : codeChannel() === 'sms' ? 'auth-identifier-hint' : null"
                 />
               </div>
               @if (showIdentifierError()) {
-                <p class="field__error" id="auth-identifier-error">{{ 'auth.phone_or_email_required' | translate }}</p>
+                <p class="field__error" id="auth-identifier-error">{{ (codeChannel() === 'sms' ? 'auth.mobile_invalid' : 'auth.email_required') | translate }}</p>
+              } @else if (codeChannel() === 'sms') {
+                <p class="field__hint" id="auth-identifier-hint">{{ 'auth.mobile_hint' | translate }}</p>
               }
             </div>
 

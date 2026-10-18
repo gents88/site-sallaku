@@ -47,6 +47,12 @@ export class AuthController {
     return applyRefreshCookie(res, await this.authService.login(dto));
   }
 
+  @Get('otp/channels')
+  @ApiOperation({ summary: 'Which OTP delivery channels (email, SMS) are currently available' })
+  otpChannels() {
+    return this.authService.otpChannels();
+  }
+
   @Post('otp/request')
   @HttpCode(HttpStatus.OK)
   // Tighter throttle: OTP delivery has a cost, limit abuse

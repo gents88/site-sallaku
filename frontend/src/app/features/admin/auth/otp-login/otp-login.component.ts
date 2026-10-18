@@ -10,7 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
-import { phoneOrEmailValidator } from '../auth-form.utils';
+import { normalizeIdentifier, phoneOrEmailValidator } from '../auth-form.utils';
 
 const OTP_EXPIRY_SECONDS = 300; // matches backend 5-minute window
 const RESEND_COOLDOWN_SECONDS = 60;
@@ -129,7 +129,8 @@ export class OtpLoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
   get identifierIcon(): string {
     const raw = (this.identifierForm.value.identifier ?? '').trim();
-    return raw.includes('@') ? 'email' : 'phone_iphone';
+    // 'smartphone' e non 'phone_iphone': quest'ultima non è nel subset del font (scripts/subset-icon-fonts.py).
+    return raw.includes('@') ? 'email' : 'smartphone';
   }
 
   get formattedCountdown(): string {
@@ -144,7 +145,7 @@ export class OtpLoginComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.loading = true;
-    const id = this.identifierForm.value.identifier!.trim();
+    const id = normalizeIdentifier(this.identifierForm.value.identifier!);
 
     this.auth.requestOtp(id).subscribe({
       next: () => {
