@@ -68,7 +68,8 @@
       "my_files": "Mis archivos",
       "contacts": "Contactos",
       "users": "Usuarios",
-      "ai_assistant": "Asistente IA"
+      "ai_assistant": "Asistente IA",
+      "live_chat": "Chat en vivo"
     }
   },
   "lang": {
@@ -969,6 +970,17 @@
     "card_waiting": "Esperando respuesta",
     "card_open": "Entrar",
     "card_empty": "No hay solicitudes de chat en vivo en este momento.",
+    "list_subtitle": "Solicitudes abiertas y chats de las últimas 24 horas: se eliminan pasado un día.",
+    "list_refresh": "Actualizar",
+    "list_load_error": "No se pudo actualizar la lista. Inténtalo de nuevo en breve.",
+    "list_open": "Abiertas",
+    "list_past": "Cerradas o caducadas",
+    "list_past_empty": "No hay chats cerrados en las últimas 24 horas.",
+    "list_status_expired": "Caducada sin respuesta",
+    "list_status_closed": "Cerrada",
+    "list_reopen": "Reabrir",
+    "list_responded_in": "respondida en {{minutes}} min",
+    "list_no_message": "Sin mensaje",
     "exit_ask_resolved_title": "¿Has resuelto tu problema?",
     "exit_ask_resolved_yes": "Sí",
     "exit_ask_resolved_no": "No, continuar",

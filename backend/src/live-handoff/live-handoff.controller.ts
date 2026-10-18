@@ -49,4 +49,15 @@ export class LiveHandoffAdminController {
   listActive() {
     return this.liveHandoffService.listActive();
   }
+
+  @Get('recent')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'List every live handoff request still retained (last 24h), in any status, newest first (admin only)',
+  })
+  listRecent() {
+    return this.liveHandoffService.listRecent();
+  }
 }

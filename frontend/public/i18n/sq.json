@@ -68,7 +68,8 @@
       "my_files": "Skedarët e mi",
       "contacts": "Kontaktet",
       "users": "Përdoruesit",
-      "ai_assistant": "Asistenti AI"
+      "ai_assistant": "Asistenti AI",
+      "live_chat": "Bisedë live"
     }
   },
   "lang": {
@@ -969,6 +970,17 @@
     "card_waiting": "Në pritje të përgjigjes",
     "card_open": "Hyr",
     "card_empty": "Asnjë kërkesë për bisedë live për momentin.",
+    "list_subtitle": "Kërkesat e hapura dhe bisedat e 24 orëve të fundit: fshihen pas një dite.",
+    "list_refresh": "Rifresko",
+    "list_load_error": "Lista nuk u përditësua dot. Provo përsëri pas pak.",
+    "list_open": "Të hapura",
+    "list_past": "Të mbyllura ose të skaduara",
+    "list_past_empty": "Asnjë bisedë e mbyllur në 24 orët e fundit.",
+    "list_status_expired": "Skadoi pa përgjigje",
+    "list_status_closed": "E mbyllur",
+    "list_reopen": "Rihape",
+    "list_responded_in": "u përgjigj për {{minutes}} min",
+    "list_no_message": "Asnjë mesazh",
     "exit_ask_resolved_title": "E zgjidhe problemin?",
     "exit_ask_resolved_yes": "Po",
     "exit_ask_resolved_no": "Jo, vazhdo",

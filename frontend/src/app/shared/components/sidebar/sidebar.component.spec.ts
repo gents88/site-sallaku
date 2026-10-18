@@ -96,9 +96,10 @@ describe('SidebarComponent: badge sulle voci admin', () => {
     expect(link(el, '/dashboard/blog').querySelector('.nav-badge')).toBeNull();
   });
 
-  it('evidenzia come urgente la chat live in attesa sulla Dashboard', () => {
+  it('evidenzia come urgente la chat live in attesa sulla voce Chat live', () => {
     const el = setupFixture(true, pending).nativeElement as HTMLElement;
-    const badge = link(el, '/dashboard').querySelector('.nav-badge');
+    const badge = link(el, '/dashboard/live-chat').querySelector('.nav-badge');
+    expect(link(el, '/dashboard').querySelector('.nav-badge')).toBeNull();
     expect(badge?.classList).toContain('nav-badge--urgent');
     expect(link(el, '/dashboard/contacts').querySelector('.nav-badge')?.classList).not.toContain('nav-badge--urgent');
   });

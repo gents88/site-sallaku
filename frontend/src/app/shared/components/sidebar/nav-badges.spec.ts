@@ -28,9 +28,10 @@ describe('navBadges', () => {
     expect(navBadges({ ...ZERO, contactsUnread: 1 })['admin-contacts']?.count).toBe(1);
   });
 
-  it('segna come urgente solo la chat live in attesa, sulla Dashboard', () => {
+  it('segna come urgente solo la chat live in attesa, sulla voce Chat live', () => {
     const badges = navBadges({ ...ZERO, liveHandoffsWaiting: 1, testimonialsPending: 2, notesPending: 5 });
-    expect(badges['dashboard']).toMatchObject({ count: 1, urgent: true });
+    expect(badges['admin-live-chat']).toMatchObject({ count: 1, urgent: true });
+    expect(badges['dashboard']).toBeUndefined();
     expect(badges['admin-testimonials']).toMatchObject({ count: 2, urgent: false });
     expect(badges['admin-notes']).toMatchObject({ count: 5, urgent: false });
   });

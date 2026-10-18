@@ -68,7 +68,8 @@
       "my_files": "Meine Dateien",
       "contacts": "Kontakte",
       "users": "Benutzer",
-      "ai_assistant": "KI-Assistent"
+      "ai_assistant": "KI-Assistent",
+      "live_chat": "Live-Chat"
     }
   },
   "lang": {
@@ -969,6 +970,17 @@
     "card_waiting": "Wartet auf Antwort",
     "card_open": "Beitreten",
     "card_empty": "Derzeit keine Live-Chat-Anfragen.",
+    "list_subtitle": "Offene Anfragen und Chats der letzten 24 Stunden – nach einem Tag werden sie gelöscht.",
+    "list_refresh": "Aktualisieren",
+    "list_load_error": "Die Liste konnte nicht aktualisiert werden. Versuche es gleich noch einmal.",
+    "list_open": "Offen",
+    "list_past": "Geschlossen oder abgelaufen",
+    "list_past_empty": "Keine geschlossenen Chats in den letzten 24 Stunden.",
+    "list_status_expired": "Ohne Antwort abgelaufen",
+    "list_status_closed": "Geschlossen",
+    "list_reopen": "Wieder öffnen",
+    "list_responded_in": "nach {{minutes}} Min. beantwortet",
+    "list_no_message": "Keine Nachricht",
     "exit_ask_resolved_title": "Haben Sie Ihr Problem gelöst?",
     "exit_ask_resolved_yes": "Ja",
     "exit_ask_resolved_no": "Nein, weiter",

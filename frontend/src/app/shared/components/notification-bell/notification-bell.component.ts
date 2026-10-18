@@ -96,7 +96,7 @@ export class NotificationBellComponent {
   readonly rows = computed(() => {
     const s = this.notifications.summary();
     return [
-      { key: 'live', labelKey: 'notifications.live_waiting', count: s.liveHandoffsWaiting, route: '/dashboard', urgent: true },
+      { key: 'live', labelKey: 'notifications.live_waiting', count: s.liveHandoffsWaiting, route: '/dashboard/live-chat', urgent: true },
       { key: 'contacts', labelKey: 'notifications.contacts_unread', count: s.contactsUnread, route: '/dashboard/contacts', urgent: false },
       { key: 'testimonials', labelKey: 'notifications.testimonials_pending', count: s.testimonialsPending, route: '/dashboard/testimonials', urgent: false },
       { key: 'notes', labelKey: 'notifications.notes_pending', count: s.notesPending, route: '/dashboard/notes', urgent: false },

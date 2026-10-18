@@ -68,7 +68,8 @@
       "my_files": "Mes fichiers",
       "contacts": "Contacts",
       "users": "Utilisateurs",
-      "ai_assistant": "Assistant IA"
+      "ai_assistant": "Assistant IA",
+      "live_chat": "Chat en direct"
     }
   },
   "lang": {
@@ -969,6 +970,17 @@
     "card_waiting": "En attente d'une réponse",
     "card_open": "Rejoindre",
     "card_empty": "Aucune demande de chat en direct pour le moment.",
+    "list_subtitle": "Demandes ouvertes et chats des dernières 24 heures : ils sont supprimés au bout d'un jour.",
+    "list_refresh": "Actualiser",
+    "list_load_error": "Impossible d'actualiser la liste. Réessayez dans un instant.",
+    "list_open": "Ouvertes",
+    "list_past": "Fermées ou expirées",
+    "list_past_empty": "Aucun chat fermé au cours des dernières 24 heures.",
+    "list_status_expired": "Expirée sans réponse",
+    "list_status_closed": "Fermée",
+    "list_reopen": "Rouvrir",
+    "list_responded_in": "répondu en {{minutes}} min",
+    "list_no_message": "Aucun message",
     "exit_ask_resolved_title": "Avez-vous résolu votre problème ?",
     "exit_ask_resolved_yes": "Oui",
     "exit_ask_resolved_no": "Non, continuer",

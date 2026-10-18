@@ -43,6 +43,7 @@ export const NAV_ICONS: Record<string, string> = {
   swap: '<path d="M4 8h14"/><path d="m14.5 4.5 3.5 3.5-3.5 3.5"/><path d="M20 16H6"/><path d="m9.5 12.5-3.5 3.5 3.5 3.5"/>',
   'text-scan': '<path d="M4 8V5.5a1.5 1.5 0 0 1 1.5-1.5H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><path d="M8.5 8.5h7M12 8.5v7"/>',
   camera: '<path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v9.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.5"/>',
+  headset: '<path d="M4.5 14v-2a7.5 7.5 0 0 1 15 0v2"/><rect x="3.5" y="13.5" width="4" height="6" rx="1.5"/><rect x="16.5" y="13.5" width="4" height="6" rx="1.5"/><path d="M18.5 19.5c0 1.2-1.6 2-4 2H12"/>',
   bot: '<rect x="4.5" y="8" width="15" height="11" rx="2.5"/><path d="M12 5v3"/><circle cx="12" cy="4" r="1"/><path d="M9.5 12.5v1M14.5 12.5v1"/><path d="M9.5 16h5"/><path d="M2.5 12.5v2.5M21.5 12.5v2.5"/>',
   bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
   bolt: '<path d="M13 3 5 13.5h6L10.5 21 19 10.5h-6z"/>',
@@ -70,7 +71,7 @@ export const NAV_ICON_COLORS: Record<string, string> = {
   flask: '#8b5cf6', rocket: '#f97316', dashboard: '#6366f1', 'search-doc': '#3b82f6', books: '#d97706',
   summary: '#0d9488', globe: '#06b6d4', slides: '#f97316', puzzle: '#22c55e', folder: '#f59e0b',
   pen: '#ec4899', eye: '#0ea5e9', pencil: '#ca8a04', swap: '#22c55e', 'text-scan': '#6366f1',
-  camera: '#f43f5e', bot: '#a855f7', palette: '#ec4899', logout: '#ef4444', sun: '#f59e0b', moon: '#818cf8', monitor: '#64748b',
+  camera: '#f43f5e', bot: '#a855f7', headset: '#ef4444', palette: '#ec4899', logout: '#ef4444', sun: '#f59e0b', moon: '#818cf8', monitor: '#64748b',
 };
 
 /** Colore dell'icona, o null per lasciarle il colore del testo. */

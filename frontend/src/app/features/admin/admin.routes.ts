@@ -81,6 +81,12 @@ export const adminRoutes: Routes = [
       import('./about-manage/about-manage.component').then(m => m.AboutManageComponent),
   },
   {
+    path: 'live-chat',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./live-chat-list/live-chat-list.component').then(m => m.LiveChatListComponent),
+  },
+  {
     path: 'live-chat/:sessionId',
     canActivate: [authGuard],
     loadComponent: () =>
