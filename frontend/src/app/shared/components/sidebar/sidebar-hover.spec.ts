@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { RAIL_HINT_DELAY_MS, RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent } from './sidebar.component';
+import { RAIL_HINT_DELAY_MS, RAIL_HOVER_CLOSE_DELAY_MS, RAIL_HOVER_OPEN_DELAY_MS, SidebarComponent, isSidebarShortcut } from './sidebar.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -20,14 +20,17 @@ function setup(mode: 'rail' | 'overlay' = 'rail', pinned = false, admin = false)
   const modeSig = signal<'rail' | 'overlay'>(mode);
   const railExpanded = signal(pinned);
   const hoverOpen = signal(false);
+  const drawerOpen = signal(false);
   const drawer = {
     mode: modeSig,
-    drawerOpen: signal(false),
+    drawerOpen,
     railExpanded,
     hoverOpen,
     expanded: computed(() => modeSig() === 'rail' && (railExpanded() || hoverOpen())),
     close: vi.fn(),
     toggleRail: vi.fn(),
+    // Come DrawerService.toggle(): overlay → drawer, rail → pin.
+    toggle: vi.fn(() => (modeSig() === 'rail' ? railExpanded.update(v => !v) : drawerOpen.update(v => !v))),
     setHover: vi.fn((v: boolean) => hoverOpen.set(v && modeSig() === 'rail')),
   };
   TestBed.configureTestingModule({
@@ -43,8 +46,9 @@ function setup(mode: 'rail' | 'overlay' = 'rail', pinned = false, admin = false)
   });
   const fixture = TestBed.createComponent(SidebarComponent);
   fixture.detectChanges();
+  const analytics = TestBed.inject(AnalyticsTrackingService) as unknown as { trackClick: ReturnType<typeof vi.fn> };
   const aside = (fixture.nativeElement as HTMLElement).querySelector('aside') as HTMLElement;
-  return { fixture, aside, drawer };
+  return { fixture, aside, drawer, analytics };
 }
 
 describe('SidebarComponent: apertura al passaggio del mouse', () => {
@@ -251,5 +255,81 @@ describe('SidebarComponent: scheda della voce a rail aperta', () => {
     hover(fixture, '/lab/library');
     vi.advanceTimersByTime(RAIL_HINT_DELAY_MS);
     expect(hint(fixture)).toBeNull();
+  });
+});
+
+function key(init: KeyboardEventInit, target?: Partial<HTMLElement>): KeyboardEvent {
+  const event = new KeyboardEvent('keydown', { key: 'b', cancelable: true, ...init });
+  if (target) Object.defineProperty(event, 'target', { value: target });
+  return event;
+}
+
+describe('isSidebarShortcut', () => {
+  it('riconosce Ctrl+B e ⌘B', () => {
+    expect(isSidebarShortcut(key({ ctrlKey: true }))).toBe(true);
+    expect(isSidebarShortcut(key({ metaKey: true }))).toBe(true);
+    expect(isSidebarShortcut(key({ ctrlKey: true, key: 'B' }))).toBe(true);
+  });
+
+  it('ignora B senza modificatore e le combinazioni con Shift o Alt', () => {
+    expect(isSidebarShortcut(key({}))).toBe(false);
+    expect(isSidebarShortcut(key({ ctrlKey: true, shiftKey: true }))).toBe(false);
+    expect(isSidebarShortcut(key({ ctrlKey: true, altKey: true }))).toBe(false);
+    expect(isSidebarShortcut(key({ ctrlKey: true, key: 'k' }))).toBe(false);
+  });
+
+  it('lascia Ctrl+B al grassetto nei campi e negli editor', () => {
+    expect(isSidebarShortcut(key({ ctrlKey: true }, { tagName: 'TEXTAREA' }))).toBe(false);
+    expect(isSidebarShortcut(key({ ctrlKey: true }, { tagName: 'INPUT' }))).toBe(false);
+    expect(isSidebarShortcut(key({ ctrlKey: true }, { tagName: 'DIV', isContentEditable: true }))).toBe(false);
+    expect(isSidebarShortcut(key({ ctrlKey: true }, { tagName: 'BUTTON' }))).toBe(true);
+  });
+
+  it('non interviene se il tasto è già stato gestito', () => {
+    const event = key({ ctrlKey: true });
+    event.preventDefault();
+    expect(isSidebarShortcut(event)).toBe(false);
+  });
+});
+
+describe('SidebarComponent: scorciatoia Ctrl+B', () => {
+  it('nella rail aggancia e sgancia la colonna', () => {
+    const { fixture, drawer, analytics } = setup('rail');
+    const event = key({ ctrlKey: true });
+    window.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(true);
+    expect(drawer.railExpanded()).toBe(true);
+    expect(analytics.trackClick).toHaveBeenLastCalledWith('sidebar', 'sidebar_shortcut_expand');
+
+    window.dispatchEvent(key({ metaKey: true }));
+    fixture.detectChanges();
+    expect(drawer.railExpanded()).toBe(false);
+    expect(analytics.trackClick).toHaveBeenLastCalledWith('sidebar', 'sidebar_shortcut_collapse');
+  });
+
+  it('nell\'overlay apre il drawer e, richiudendolo, riporta il focus dove era', async () => {
+    const { fixture, aside, drawer } = setup('overlay');
+    const trigger = document.createElement('button');
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    window.dispatchEvent(key({ ctrlKey: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(drawer.drawerOpen()).toBe(true);
+    expect(document.activeElement).toBe(aside.querySelector('.close-btn'));
+
+    window.dispatchEvent(key({ ctrlKey: true }));
+    fixture.detectChanges();
+    expect(drawer.drawerOpen()).toBe(false);
+    expect(document.activeElement).toBe(trigger);
+    trigger.remove();
+  });
+
+  it('mostra la scorciatoia nel title del pulsante', () => {
+    const { aside } = setup('rail');
+    const toggle = aside.querySelector('.rail-toggle') as HTMLElement;
+    expect(toggle.getAttribute('title')).toMatch(/(Ctrl\+B|⌘B)$/);
+    expect(toggle.getAttribute('aria-keyshortcuts')).toBe('Control+B Meta+B');
   });
 });

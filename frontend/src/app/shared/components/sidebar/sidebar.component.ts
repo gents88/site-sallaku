@@ -5,6 +5,7 @@ import {
   ElementRef,
   HostListener,
   Injector,
+  PLATFORM_ID,
   afterNextRender,
   computed,
   effect,
@@ -12,6 +13,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -74,6 +76,19 @@ export function revealScrollTop(scrollTop: number, viewHeight: number, top: numb
   return target === scrollTop ? null : target;
 }
 
+/**
+ * Ctrl+B / ⌘B apre e chiude il menu, come in VS Code. Non dentro un campo o
+ * un editor, dove è il grassetto (editor di testo del Lab, editor del blog),
+ * né se qualcun altro ha già gestito il tasto.
+ */
+export function isSidebarShortcut(event: KeyboardEvent): boolean {
+  if (event.defaultPrevented || !(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey) return false;
+  if (event.key?.toLowerCase() !== 'b') return false;
+  const target = event.target as HTMLElement | null;
+  const tag = target?.tagName?.toLowerCase();
+  return !(tag === 'input' || tag === 'textarea' || tag === 'select' || target?.isContentEditable);
+}
+
 /** Su quali bordi c'è altro da scorrere (1px di tolleranza per gli arrotondamenti subpixel). */
 export function scrollEdgesOf(scrollTop: number, scrollHeight: number, clientHeight: number): ScrollEdges {
   return { top: scrollTop > 1, bottom: scrollTop + clientHeight < scrollHeight - 1 };
@@ -114,6 +129,12 @@ export class SidebarComponent {
   private pointerInside = false;
   private hoverTimer: ReturnType<typeof setTimeout> | null = null;
   private hintTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Elemento col focus prima di aprire il drawer con la scorciatoia: lo si ritrova alla chiusura. */
+  private returnFocus: HTMLElement | null = null;
+
+  /** Scorciatoia mostrata nel title del pulsante: ⌘B su Apple, Ctrl+B altrove (stessa regola della palette). */
+  readonly toggleShortcut =
+    isPlatformBrowser(inject(PLATFORM_ID)) && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘B' : 'Ctrl+B';
 
   readonly hint = signal<RailHint | null>(null);
 
@@ -322,6 +343,24 @@ export class SidebarComponent {
       clearTimeout(this.hintTimer);
       this.hintTimer = null;
     }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onShortcut(event: KeyboardEvent): void {
+    if (!isSidebarShortcut(event)) return;
+    event.preventDefault();
+    this.hideHint();
+    const overlay = this.mode() === 'overlay';
+    const closing = overlay && this.drawerOpen();
+    if (overlay && !closing) this.returnFocus = this.elementRef.nativeElement.ownerDocument.activeElement as HTMLElement | null;
+    this.drawer.toggle();
+    // Il drawer chiuso diventa inert: il focus rimasto dentro andrebbe perso sul body.
+    if (closing) {
+      if (this.returnFocus?.isConnected) this.returnFocus.focus();
+      this.returnFocus = null;
+    }
+    const opened = overlay ? !closing : this.pinned();
+    this.analytics.trackClick('sidebar', opened ? 'sidebar_shortcut_expand' : 'sidebar_shortcut_collapse');
   }
 
   @HostListener('window:keydown.escape')
