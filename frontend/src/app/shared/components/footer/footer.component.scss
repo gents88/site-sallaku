@@ -42,8 +42,9 @@
     padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 140px);
   }
 
-  @media (max-width: 480px) {
-    padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 260px);
+  /* Il banner va in colonna sotto i 600px ed è alto ~220px. */
+  @media (max-width: 600px) {
+    padding-bottom: calc(12px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px) + 240px);
   }
 }
 
@@ -64,16 +65,13 @@
 }
 
 .footer-logo {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text-primary, #f0f4ff);
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
-  letter-spacing: -0.5px;
   transition: opacity var(--transition-fast);
 
-  &:hover { opacity: 0.8; }
-  .logo-bracket { color: var(--primary-500, #4f6af5); }
+  &:hover { opacity: 0.85; }
+  .logo-mark { display: block; width: 34px; height: 34px; border-radius: 9px; }
 }
 
 .footer-text {
@@ -124,6 +122,12 @@
     padding: 0;
     cursor: pointer;
     font-family: inherit;
+  }
+
+  /* Il tour guidato non c'è su mobile (TOUR_MOBILE_QUERY in
+     onboarding-tour.service.ts): stessa soglia, niente link che non fa nulla. */
+  &__guide {
+    @media (max-width: 900px) { display: none; }
   }
 }
 

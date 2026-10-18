@@ -39,15 +39,17 @@ import { LanguageSwitchService } from '../../../core/services/language-switch.se
     .lang-current {
       display: flex; align-items: center; gap: 6px;
       padding: 6px 12px;
-      background: rgba(79,106,245,0.08);
-      border: 1px solid var(--glass-border);
+      background: var(--glass-fill-soft);
+      border: 1px solid var(--glass-edge);
+      box-shadow: inset 0 1px 0 var(--glass-hi);
+      -webkit-backdrop-filter: var(--glass-blur-soft); backdrop-filter: var(--glass-blur-soft);
       border-radius: var(--radius-sm, 6px);
       cursor: pointer;
       font-family: var(--font-main);
       font-size: 0.8rem;
       color: var(--text-secondary);
       transition: var(--transition-base, 0.2s ease);
-      &:hover { border-color: rgba(99,102,241,0.4); color: var(--text-primary); }
+      &:hover { background: var(--glass-fill-hover); border-color: rgba(167,139,250,0.5); color: var(--text-primary); }
     }
 
     .lang-code { font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; }
@@ -62,15 +64,16 @@ import { LanguageSwitchService } from '../../../core/services/language-switch.se
     .lang-dropdown {
       position: absolute; top: calc(100% + 8px); right: 0;
       min-width: 150px;
-      background: var(--bg-tertiary, #141a2e);
-      border: 1px solid var(--glass-border);
+      background: color-mix(in srgb, var(--bg-tertiary, #141a2e) 72%, transparent);
+      border: 1px solid var(--glass-edge);
       border-radius: var(--radius-md, 10px);
       padding: 6px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow-up);
       opacity: 0; visibility: hidden; transform: translateY(-8px);
       transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
       z-index: 1200;
-      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+      backdrop-filter: blur(24px) saturate(170%);
     }
 
     .lang-switcher.open .lang-dropdown {
@@ -86,8 +89,8 @@ import { LanguageSwitchService } from '../../../core/services/language-switch.se
       color: var(--text-secondary);
       transition: background 0.15s ease, color 0.15s ease;
       text-align: left;
-      &:hover { background: rgba(79,106,245,0.1); color: var(--text-primary); }
-      &.active { background: rgba(79,106,245,0.15); color: var(--primary-400, #818cf8); font-weight: 600; }
+      &:hover { background: var(--glass-fill-hover); box-shadow: inset 0 1px 0 var(--glass-hi); color: var(--text-primary); }
+      &.active { background: linear-gradient(135deg, rgba(79,106,245,0.28), rgba(139,92,246,0.2)); box-shadow: inset 0 1px 0 var(--glass-hi); color: var(--primary-400, #818cf8); font-weight: 600; }
     }
 
     .lang-flag { font-size: 1.1rem; }

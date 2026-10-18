@@ -14,11 +14,13 @@ import { LiveHandoffModule } from '../live-handoff/live-handoff.module';
 import { SystemModule } from '../system/system.module';
 import { TestimonialsModule } from '../testimonials/testimonials.module';
 import { NotesModule } from '../notes/notes.module';
+import { ErrorLogModule } from '../error-log/error-log.module';
 
 @Module({
   imports: [
     UsersModule, ContactModule, BlogModule, AnalyticsModule, ProjectsModule, ExperiencesModule,
     AuditModule, ChatbotModule, ConsentModule, LiveHandoffModule, SystemModule, TestimonialsModule, NotesModule,
+    ErrorLogModule,
   ],
   controllers: [StatsController],
   providers: [AdminOverviewService],

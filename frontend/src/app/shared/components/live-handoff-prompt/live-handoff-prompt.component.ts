@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { LiveHandoffState } from '../../../core/services/live-handoff.service';
+import { ProfilePhotoComponent } from '../profile-photo/profile-photo.component';
 
 @Component({
   selector: 'app-live-handoff-prompt',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, TranslateModule],
+  imports: [CommonModule, TranslateModule, ProfilePhotoComponent],
   templateUrl: './live-handoff-prompt.component.html',
   styleUrl: './live-handoff-prompt.component.scss',
 })

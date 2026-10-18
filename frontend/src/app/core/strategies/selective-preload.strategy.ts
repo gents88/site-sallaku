@@ -4,6 +4,12 @@ import { PreloadingStrategy, Route } from '@angular/router';
 import { Observable, of, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
+/** Data Saver attivo o rete 2G: niente download facoltativi (preload del router, prefetch delle voci). */
+export function isSlowConnection(nav: Navigator | undefined = typeof navigator === 'undefined' ? undefined : navigator): boolean {
+  const conn = (nav as (Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }) | undefined)?.connection;
+  return conn?.saveData === true || conn?.effectiveType === '2g' || conn?.effectiveType === 'slow-2g';
+}
+
 /**
  * Preloads only routes marked with `data: { preload: true }`.
  * Skips preloading entirely on slow connections (2g, slow-2g) or when
@@ -17,13 +23,7 @@ export class SelectivePreloadStrategy implements PreloadingStrategy {
   preload(route: Route, load: () => Observable<unknown>): Observable<unknown> {
     if (!isPlatformBrowser(this.platformId)) return of(null);
 
-    const conn = (navigator as any).connection;
-    const isSlow =
-      conn?.saveData === true ||
-      conn?.effectiveType === '2g' ||
-      conn?.effectiveType === 'slow-2g';
-
-    if (isSlow || route.data?.['preload'] !== true) {
+    if (isSlowConnection() || route.data?.['preload'] !== true) {
       return of(null);
     }
 

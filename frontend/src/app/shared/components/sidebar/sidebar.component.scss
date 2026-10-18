@@ -8,7 +8,7 @@
 
 :host {
   /* Nessun transform/filter qui: creerebbe un containing block e ritaglierebbe
-     il tooltip position:fixed della rail collassata. */
+     la scheda position:fixed delle voci (.rail-hint). */
   display: contents;
 }
 
@@ -60,6 +60,21 @@
   padding: 1.1rem 0.75rem 1.25rem;
   transform: translateX(-110%);
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Lo scroll verticale della lista resta al browser; i gesti orizzontali
+     arrivano al componente, che li usa per lo swipe di chiusura. Va ripetuto
+     sulla lista: touch-action conta solo fino al contenitore scorrevole più
+     vicino, e senza il browser si prendeva il gesto (pointercancel). */
+  touch-action: pan-y;
+
+  .sidebar-nav {
+    touch-action: pan-y;
+  }
+
+  /* Mentre il dito trascina, il drawer lo segue senza ritardo. Rilasciato,
+     la transizione riparte dalla posizione raggiunta. */
+  &.dragging {
+    transition: none;
+  }
 
   &.open {
     transform: translateX(0);
@@ -91,6 +106,12 @@
 
   &.expanded {
     width: var(--sidebar-rail-width-expanded, 268px);
+  }
+
+  /* Aperta solo dal passaggio del mouse: si sovrappone al contenuto (che resta
+     fermo) invece di spingerlo, quindi serve un'ombra che la stacchi. */
+  &.hover-open {
+    box-shadow: 24px 0 56px rgba(2, 6, 23, 0.32), inset 0 1px 0 var(--glass-hi);
   }
 
   /* Filo verticale d'accento: dà alla colonna un bordo "vivo" invece del
@@ -182,7 +203,7 @@
 }
 
 /* La freccia punta verso l'azione: → per espandere, ← per comprimere. */
-.app-sidebar.expanded .rail-toggle svg {
+.app-sidebar.expanded:not(.hover-open) .rail-toggle svg {
   transform: rotate(180deg);
 }
 
@@ -203,6 +224,28 @@
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--border-color, #30363d) transparent;
+}
+
+/* Sfumatura sul bordo che ha altro contenuto: segnala che la lista continua.
+   Le classi le accende il componente (scrollEdges) solo quando serve, così una
+   lista che entra tutta non perde nitidezza in cima e in fondo. */
+.sidebar-nav {
+  --nav-fade: 28px;
+
+  &.fade-top {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade));
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade));
+  }
+
+  &.fade-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--nav-fade)), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - var(--nav-fade)), transparent);
+  }
+
+  &.fade-top.fade-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade), #000 calc(100% - var(--nav-fade)), transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--nav-fade), #000 calc(100% - var(--nav-fade)), transparent);
+  }
 }
 
 .sidebar-nav::-webkit-scrollbar {
@@ -303,6 +346,98 @@
   text-overflow: ellipsis;
 }
 
+/* ─── "+" di creazione rapida (Blog, Progetti) ──────────────────── */
+.nav-row {
+  position: relative;
+}
+
+.nav-quick {
+  position: absolute;
+  top: calc(50% - 1.5px);
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  box-sizing: border-box;
+  transform: translateY(-50%);
+  border: 1px solid var(--border-color, rgba(148, 163, 184, 0.2));
+  border-radius: 7px;
+  background: var(--bg-secondary, #0f1424);
+  color: var(--text-secondary, #94a3b8);
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    color: var(--accent-400, #a78bfa);
+    border-color: rgba(139, 92, 246, 0.45);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-500, #4f6af5);
+    outline-offset: 2px;
+  }
+}
+
+/* Col mouse compare passando sulla riga (o col focus); sul touch resta visibile. */
+@media (hover: hover) {
+  .nav-quick {
+    opacity: 0;
+  }
+
+  .nav-row:hover .nav-quick,
+  .nav-row:focus-within .nav-quick {
+    opacity: 1;
+  }
+}
+
+/* ─── Badge (contatori del campanello sulle voci admin) ─────────── */
+.nav-badge {
+  flex-shrink: 0;
+  min-width: 20px;
+  height: 20px;
+  margin-left: auto;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  /* Bianco su accent-600 (#7c3aed): 5.7:1. Il rosso del campanello (#ef4444)
+     col bianco sta sotto 4.5:1, qui si usa #dc2626. */
+  background: var(--accent-600, #7c3aed);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+
+  &--urgent {
+    background: #dc2626;
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55);
+    animation: navBadgePulse 2s ease-out infinite;
+  }
+}
+
+@keyframes navBadgePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.55); }
+  70%  { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-badge--urgent {
+    animation: none;
+  }
+}
+
+.nav-badge-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ─── CTA in fondo ───────────────────────────────────────────────── */
 .sidebar-cta {
   display: flex;
@@ -371,14 +506,27 @@
     padding-bottom: 0.75rem;
   }
 
-  .brand-label,
-  .group-title {
+  .brand-label {
     /* width:0 + opacity invece di display:none: mantiene il testo nell'albero
        di accessibilità e rende l'apertura una transizione, non un salto. */
     width: 0;
     opacity: 0;
     overflow: hidden;
     pointer-events: none;
+  }
+
+  /* Il titolo di gruppo con width:0 teneva l'altezza e andava a capo parola per
+     parola: "Flusso di lavoro" occupava 72px invece di 31 e, sommato agli altri
+     titoli, spingeva 4 strumenti su 14 sotto la piega a 1440×900. Stesso
+     pattern sr-only della CTA: fuori dal flusso ma letto dagli screen reader.
+     Fra i gruppi resta il separatore (sotto). */
+  .group-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* La CTA è su due righe: azzerarne solo la larghezza ne lascerebbe l'altezza,
@@ -394,8 +542,9 @@
   }
 
   /* Ritmo verticale compresso: senza etichette le voci non hanno bisogno del
-     respiro della modalità espansa, e così tutte e 10 entrano senza scroll
-     anche su un portatile con barra dei segnalibri (~750px di viewport). */
+     respiro della modalità espansa. Con 14 voci (24 per l'admin) su schermi
+     bassi la lista scorre comunque: la voce attiva viene portata in vista e i
+     bordi sfumano (vedi .fade-top/.fade-bottom). */
   .nav-item,
   .sidebar-cta {
     justify-content: center;
@@ -405,6 +554,26 @@
 
   .nav-item {
     margin-bottom: 2px;
+  }
+
+  /* Nessuno spazio per il "+" accanto alle sole icone. */
+  .nav-quick {
+    display: none;
+  }
+
+  /* Badge sull'angolo della tessera: in flusso, accanto all'icona, la
+     spostava fuori asse rispetto alle altre. */
+  .nav-badge {
+    position: absolute;
+    top: 0;
+    left: calc(50% + 6px);
+    min-width: 16px;
+    height: 16px;
+    margin-left: 0;
+    padding: 0 4px;
+    font-size: 0.6rem;
+    line-height: 16px;
+    outline: 2px solid var(--bg-secondary, #0f1424);
   }
 
   .rail-toggle {
@@ -418,10 +587,7 @@
   }
 
   .nav-group-label {
-    justify-content: center;
-    padding: 0.4rem 0 0.25rem;
-    font-size: 12px;
-    letter-spacing: 0;
+    padding: 0;
   }
 
   .sidebar-cta {
@@ -457,26 +623,32 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ─── Tooltip della rail collassata ──────────────────────────────── */
-.rail-tooltip {
+/* ─── Scheda della voce (rail aperta) ────────────────────────────── */
+.rail-hint {
   position: fixed;
-  left: calc(var(--sidebar-rail-width, 76px) + 8px);
+  /* Accanto alla rail aperta (agganciata o al passaggio): la scheda esiste solo lì. */
+  left: calc(var(--sidebar-rail-width-expanded, 268px) + 10px);
   z-index: 1400;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 260px;
+  padding: 0.6rem 0.75rem;
   transform: translateY(-50%);
-  padding: 0.4rem 0.65rem;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm, 10px);
   border: 1px solid var(--glass-border, rgba(99, 102, 241, 0.25));
   background: var(--bg-tertiary, #141a2e);
   box-shadow: var(--shadow-md, 0 8px 32px rgba(0, 0, 0, 0.4));
   color: var(--text-primary, #f1f5f9);
   font-size: 0.8rem;
-  font-weight: 600;
-  white-space: nowrap;
+  line-height: 1.4;
   pointer-events: none;
-  animation: tooltipIn 0.14s ease-out both;
+  animation: hintIn 0.16s ease-out both;
 }
 
-.rail-tooltip::before {
+.rail-hint::before {
   content: '';
   position: absolute;
   left: -4px;
@@ -489,9 +661,37 @@
   background: var(--bg-tertiary, #141a2e);
 }
 
-@keyframes tooltipIn {
+.rail-hint__title {
+  font-weight: 700;
+}
+
+.rail-hint__desc {
+  color: var(--text-secondary, #94a3b8);
+}
+
+.rail-hint__counts {
+  margin: 0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+
+  li + li {
+    margin-top: 0.1rem;
+  }
+
+  strong {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes hintIn {
   from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
   to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-hint {
+    animation: none;
+  }
 }
 
 /* ─── Tema chiaro ────────────────────────────────────────────────── */
@@ -500,9 +700,16 @@
     background: var(--bg-secondary, #f8fafc);
   }
 
+  /* accent-400 (#a78bfa) sul fondo lilla della voce attiva dava ~2.5:1, sotto
+     WCAG AA. accent-600 scurito resta sopra 4.5:1 e segue l'accento attivo
+     (anche quello albanese). */
+  .nav-item.active {
+    color: color-mix(in srgb, var(--accent-600, #7c3aed) 80%, #000);
+  }
 
-  .rail-tooltip,
-  .rail-tooltip::before {
+
+  .rail-hint,
+  .rail-hint::before {
     background: var(--bg-secondary, #ffffff);
   }
 }

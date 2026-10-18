@@ -58,14 +58,21 @@ export class AuthService {
     if (exists) throw new ConflictException('Email already registered');
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
-    await this.usersService.create({
+    const user = await this.usersService.create({
       name: dto.name,
       email: dto.email,
       passwordHash,
       role: 'user',
     });
 
-    await this.otpService.requestOtp(undefined, dto.email);
+    try {
+      await this.otpService.requestOtp(undefined, dto.email);
+    } catch (err) {
+      // Senza codice l'account non si può verificare: lo si annulla, così chi
+      // riprova non trova "Email already registered" su un account inservibile.
+      await this.usersService.deleteById(user._id.toString());
+      throw err;
+    }
 
     return {
       message: 'Account created. Check your email for a verification code.',
@@ -85,6 +92,10 @@ export class AuthService {
     }
 
     return this.issueTokenPair(user);
+  }
+
+  otpChannels() {
+    return this.otpService.channels();
   }
 
   async requestOtp(phone?: string, email?: string): Promise<{ message: string }> {

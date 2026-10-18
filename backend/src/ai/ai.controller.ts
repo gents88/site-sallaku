@@ -18,6 +18,7 @@ import { AiService } from './ai.service';
 import { AiQuotaService } from '../common/services/ai-quota.service';
 import { AskDocumentDto } from './dto/ask-document.dto';
 import { clientIp } from '../common/utils/request-ip.util';
+import { RequireFeature } from '../common/settings/require-feature.decorator';
 
 const ALLOWED_MIMES = new Set([
   'application/pdf',
@@ -42,6 +43,7 @@ const upload = (maxMb: number) => FileInterceptor('file', {
 });
 
 @ApiTags('AI')
+@RequireFeature('aiEnabled')
 @Controller('ai')
 export class AiController {
   constructor(
@@ -62,7 +64,7 @@ export class AiController {
     @Body('lang') lang: string = 'en',
     @Body('mode') mode: string = 'short',
   ) {
-    await this.aiQuota.assertWithinBudget(clientIp(req));
+    await this.aiQuota.assertWithinBudget(clientIp(req), 'summarize-file');
     return this.aiService.summarizeFile(validateFile(file, 20), lang || 'en', mode || 'short');
   }
 
@@ -75,7 +77,7 @@ export class AiController {
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @ApiOperation({ summary: 'Answer a question grounded in caller-supplied document excerpts' })
   async askDocument(@Req() req: Request, @Body() dto: AskDocumentDto) {
-    await this.aiQuota.assertWithinBudget(clientIp(req));
+    await this.aiQuota.assertWithinBudget(clientIp(req), 'ask-document');
     return this.aiService.askDocument(dto.question, dto.passages, dto.lang || 'it');
   }
 
@@ -91,7 +93,7 @@ export class AiController {
     if (!body.text || body.text.trim().length < 10) {
       throw new BadRequestException('text must be at least 10 characters');
     }
-    await this.aiQuota.assertWithinBudget(clientIp(req));
+    await this.aiQuota.assertWithinBudget(clientIp(req), 'format-text');
     return this.aiService.formatText(body.text, body.docType || 'general');
   }
 
@@ -115,7 +117,7 @@ export class AiController {
     if (topic.trim().length > 500) {
       throw new BadRequestException('topic must be at most 500 characters');
     }
-    await this.aiQuota.assertWithinBudget(clientIp(req));
+    await this.aiQuota.assertWithinBudget(clientIp(req), 'generate-ppt');
     const count = Math.min(Math.max(parseInt(slideCount, 10) || 10, 3), 20);
     return this.aiService.generatePpt(topic.trim(), count, style || 'modern', contextFile);
   }
@@ -133,7 +135,7 @@ export class AiController {
     @Body('targetLanguage') targetLanguage: string = 'english',
     @Body('highFidelity') highFidelity: string = 'true',
   ) {
-    await this.aiQuota.assertWithinBudget(clientIp(req));
+    await this.aiQuota.assertWithinBudget(clientIp(req), 'translate-pdf');
     return this.aiService.translatePdf(validateFile(file, 50), targetLanguage || 'english', highFidelity !== 'false');
   }
 }

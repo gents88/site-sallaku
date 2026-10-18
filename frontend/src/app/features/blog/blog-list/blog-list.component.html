@@ -1,97 +1,100 @@
-<div class="container section">
+<div class="container section blog">
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-  <h1 class="page-title">Blog</h1>
+
+  <header class="blog-hero">
+    <span class="blog-hero__eyebrow"><mat-icon aria-hidden="true">article</mat-icon> {{ 'blog.eyebrow' | translate }}</span>
+    <h1 class="blog-hero__title">Blog</h1>
+    <p class="blog-hero__lead">{{ 'blog.lead' | translate }}</p>
+    @if (!loading && posts.length) {
+      <p class="blog-hero__stats">{{ 'blog.stats' | translate: { posts: posts.length, topics: allTags.length } }}</p>
+    }
+  </header>
 
   @if (loading) {
-    <div class="posts-grid">
+    <div class="posts-grid" aria-hidden="true">
       @for (s of skeletonItems; track s) {
-        <div class="skeleton-card card">
+        <div class="skeleton-card">
           <div class="skeleton-cover shimmer"></div>
           <div class="skeleton-body">
-            <div class="skeleton-tag shimmer"></div>
-            <div class="skeleton-line shimmer" style="width:80%"></div>
-            <div class="skeleton-line shimmer" style="width:60%"></div>
-            <div class="skeleton-line shimmer" style="width:90%"></div>
-            <div class="skeleton-footer">
-              <div class="skeleton-line shimmer" style="width:30%"></div>
-              <div class="skeleton-line shimmer" style="width:20%"></div>
-            </div>
+            <div class="skeleton-line shimmer" style="width:35%"></div>
+            <div class="skeleton-line skeleton-line--title shimmer" style="width:85%"></div>
+            <div class="skeleton-line shimmer" style="width:95%"></div>
+            <div class="skeleton-line shimmer" style="width:70%"></div>
           </div>
         </div>
       }
     </div>
   } @else {
-    <app-newsletter-signup></app-newsletter-signup>
-
-    <!-- Search -->
-    <div class="blog-search">
-      <mat-icon>search</mat-icon>
-      <input type="text" placeholder="Search articles…" [(ngModel)]="searchQuery" (input)="filter()" />
-    </div>
-
-    <!-- Tags -->
-    @if (allTags.length) {
-      <div class="tag-filter">
-        <button class="badge" [class.active]="!activeTag" (click)="setTag(null)">All</button>
-        @for (tag of visibleTags; track tag) {
-          <button class="badge" [class.active]="activeTag === tag" (click)="setTag(tag)">#{{ tag }}</button>
-        }
-        @if (hiddenTagCount > 0) {
-          <button class="badge badge--toggle" (click)="toggleTags()" [attr.aria-expanded]="showAllTags">
-            {{ showAllTags ? ('blog.tags_less' | translate) : ('blog.tags_more' | translate: { count: hiddenTagCount }) }}
+    <div class="blog-toolbar">
+      <label class="blog-search">
+        <mat-icon aria-hidden="true">search</mat-icon>
+        <span class="visually-hidden">{{ 'blog.search_placeholder' | translate }}</span>
+        <input type="search" [placeholder]="'blog.search_placeholder' | translate" [(ngModel)]="searchQuery" (input)="filter()" enterkeyhint="search" />
+        @if (searchQuery) {
+          <button type="button" class="blog-search__clear" (click)="searchQuery = ''; filter()" [attr.aria-label]="'blog.clear_search' | translate">
+            <mat-icon aria-hidden="true">close</mat-icon>
           </button>
         }
-      </div>
+      </label>
+
+      @if (allTags.length) {
+        <div class="tag-filter" role="group" [attr.aria-label]="'blog.topics' | translate">
+          <button type="button" class="chip" [class.active]="!activeTag" [attr.aria-pressed]="!activeTag" (click)="setTag(null)">{{ 'blog.all_topics' | translate }}</button>
+          @for (tag of visibleTags; track tag) {
+            <button type="button" class="chip" [class.active]="activeTag === tag" [attr.aria-pressed]="activeTag === tag" (click)="setTag(tag)">#{{ tag }}</button>
+          }
+          @if (hiddenTagCount > 0) {
+            <button type="button" class="chip chip--toggle" (click)="toggleTags()" [attr.aria-expanded]="showAllTags">
+              {{ showAllTags ? ('blog.tags_less' | translate) : ('blog.tags_more' | translate: { count: hiddenTagCount }) }}
+            </button>
+          }
+        </div>
+      }
+
+      @if (isFiltering && !loadError) {
+        <p class="blog-results" aria-live="polite">
+          {{ 'blog.results' | translate: { count: filteredPosts.length } }}
+          <button type="button" class="blog-results__reset" (click)="clearFilters()">{{ 'blog.empty.reset' | translate }}</button>
+        </p>
+      }
+    </div>
+
+    @if (featuredPost; as post) {
+      <article
+        class="post-card post-card--featured fade-in-up"
+        appVtNameOnClick="post-title"
+        vtTarget=".post-card__title"
+        (pointerenter)="prefetch(post)"
+        (focusin)="prefetch(post)"
+      >
+        <ng-container *ngTemplateOutlet="cover; context: { $implicit: post, featured: true }"></ng-container>
+        <div class="post-card__body">
+          <span class="post-card__kicker"><span class="post-card__dot" aria-hidden="true"></span>{{ 'blog.latest' | translate }}</span>
+          <h2 class="post-card__title">
+            <a class="post-card__link" [routerLink]="('/blog/' + postSlug(post)) | langUrl">{{ getLocalizedTitle(post) }}</a>
+          </h2>
+          <p class="post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
+          <ng-container *ngTemplateOutlet="meta; context: { $implicit: post }"></ng-container>
+        </div>
+      </article>
     }
 
     <div class="posts-grid">
       @for (post of visiblePosts; track post._id) {
         <article
-          class="card post-card fade-in-up"
+          class="post-card fade-in-up"
           appVtNameOnClick="post-title"
           vtTarget=".post-card__title"
           (pointerenter)="prefetch(post)"
           (focusin)="prefetch(post)"
         >
-          @if (post.coverImage) {
-            <img [ngSrc]="post.coverImage" [alt]="getLocalizedTitle(post)" class="post-card__cover" width="640" height="360" />
-          } @else {
-            <div class="post-card__cover-placeholder" [style.--cover-hue]="coverHueOf(post)" aria-hidden="true">
-              <mat-icon>{{ coverIconOf(post) }}</mat-icon>
-              @if (post.tags.length) {
-                <span class="post-card__cover-label">#{{ post.tags[0] }}</span>
-              }
-            </div>
-          }
+          <ng-container *ngTemplateOutlet="cover; context: { $implicit: post, featured: false }"></ng-container>
           <div class="post-card__body">
-            <div class="post-card__tags">
-              @for (tag of post.tags.slice(0, cardTagCount); track tag) {
-                <span class="badge">#{{ tag }}</span>
-              }
-              @if (post.tags.length > cardTagCount) {
-                <span class="badge badge--more">+{{ post.tags.length - cardTagCount }}</span>
-              }
-            </div>
             <h2 class="post-card__title">
-              <a [routerLink]="('/blog/' + postSlug(post)) | langUrl">{{ getLocalizedTitle(post) }}</a>
+              <a class="post-card__link" [routerLink]="('/blog/' + postSlug(post)) | langUrl">{{ getLocalizedTitle(post) }}</a>
             </h2>
-            <p class="text-muted post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
-            <div class="post-card__footer">
-              <div class="post-card__meta">
-                <time [dateTime]="post.publishedAt ?? ''" class="text-muted post-card__date">
-                  {{ post.publishedAt | date:'mediumDate' }}
-                </time>
-                @if (post.viewCount != null) {
-                  <span class="text-muted post-card__views">
-                    <mat-icon aria-hidden="true">visibility</mat-icon>
-                    {{ (post.viewCount === 1 ? 'blog.views_singular' : 'blog.views_plural') | translate: { count: post.viewCount } }}
-                  </span>
-                }
-              </div>
-              <a [routerLink]="('/blog/' + postSlug(post)) | langUrl" class="btn btn-ghost btn-sm">
-                {{ 'blog.readMore' | translate }} <mat-icon>arrow_forward</mat-icon>
-              </a>
-            </div>
+            <p class="post-card__excerpt">{{ getLocalizedExcerpt(post) }}</p>
+            <ng-container *ngTemplateOutlet="meta; context: { $implicit: post }"></ng-container>
           </div>
         </article>
       }
@@ -139,5 +142,50 @@
         </button>
       </div>
     }
+
+    <!-- Dopo gli articoli e non prima: su mobile la newsletter occupava
+         l'intero primo schermo e non si vedeva nemmeno un articolo. -->
+    @if (!loadError && flags.newsletterSignupEnabled()) {
+      <div class="blog-newsletter">
+        <app-newsletter-signup></app-newsletter-signup>
+      </div>
+    }
   }
 </div>
+
+<ng-template #cover let-post let-featured="featured">
+  <div class="post-card__media">
+    @if (post.coverImage && !brokenCovers.has(post._id)) {
+      <img
+        [ngSrc]="post.coverImage"
+        alt=""
+        class="post-card__cover"
+        [width]="featured ? 1200 : 640"
+        [height]="featured ? 630 : 360"
+        [priority]="featured"
+        (error)="onCoverError(post)"
+      />
+    } @else {
+      <div class="post-card__cover-placeholder" [style.--cover-hue]="coverHueOf(post)" aria-hidden="true">
+        <mat-icon>{{ coverIconOf(post) }}</mat-icon>
+      </div>
+    }
+    @if (post.tags.length) {
+      <span class="post-card__topic">#{{ post.tags[0] }}</span>
+    }
+  </div>
+</ng-template>
+
+<ng-template #meta let-post>
+  <div class="post-card__meta">
+    <time [dateTime]="post.publishedAt ?? ''">{{ post.publishedAt | localDate: currentLang() }}</time>
+    @if (post.viewCount) {
+      <span class="post-card__meta-sep" aria-hidden="true">·</span>
+      <span class="post-card__views">
+        <mat-icon aria-hidden="true">visibility</mat-icon>
+        {{ (post.viewCount === 1 ? 'blog.views_singular' : 'blog.views_plural') | translate: { count: post.viewCount } }}
+      </span>
+    }
+    <span class="post-card__arrow" aria-hidden="true"><mat-icon>arrow_forward</mat-icon></span>
+  </div>
+</ng-template>

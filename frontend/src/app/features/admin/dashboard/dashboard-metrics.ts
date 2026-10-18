@@ -40,6 +40,13 @@ export const SECTION_LABEL_KEYS: Record<OverviewSection, string> = {
   systemHealth: 'admin.utility_section',
   systemDetails: 'admin.utility_section',
   systemOps: 'admin.utility_section',
+  aiUsage: 'ai_usage.title',
+  serverErrors: 'server_errors.title',
+  serverHealth: 'server_health.title',
+  translationHealth: 'translation_health.title',
+  scheduledPosts: 'scheduled_posts.title',
+  leads: 'leads.title',
+  notFound: 'not_found.title',
 };
 
 /** Etichette uniche (le tre sezioni di sistema condividono lo stesso pannello). */
