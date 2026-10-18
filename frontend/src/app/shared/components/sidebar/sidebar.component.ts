@@ -94,6 +94,12 @@ export class SidebarComponent {
   readonly pinned = this.drawer.railExpanded;
   /** Aperta solo dal passaggio del mouse / tastiera: si sovrappone al contenuto. */
   readonly hoverOpen = computed(() => this.expanded() && !this.pinned());
+  /**
+   * Drawer overlay chiuso: è solo spostato fuori schermo, quindi senza `inert`
+   * Tab attraversava 16 elementi invisibili (chiusura, voci, CTA) e gli screen
+   * reader li leggevano. La rail invece è sempre visibile e resta raggiungibile.
+   */
+  readonly closedOffCanvas = computed(() => this.mode() === 'overlay' && !this.drawerOpen());
 
   private pointerInside = false;
   private hoverTimer: ReturnType<typeof setTimeout> | null = null;
@@ -152,9 +158,10 @@ export class SidebarComponent {
     // All'apertura del drawer overlay il focus tastiera restava sul trigger dietro
     // il backdrop (quindi "sulla pagina"): lo sposta dentro il drawer, sul close-btn.
     // In modalità rail non c'è nessuna trappola di focus da gestire.
+    // Dopo il render: prima il drawer è ancora `inert` e il focus verrebbe rifiutato.
     effect(() => {
       if (this.mode() === 'overlay' && this.drawerOpen()) {
-        this.elementRef.nativeElement.querySelector<HTMLElement>('.close-btn')?.focus();
+        untracked(() => this.afterRender(() => this.elementRef.nativeElement.querySelector<HTMLElement>('.close-btn')?.focus()));
       }
     });
 

@@ -12,6 +12,7 @@
   [class.open]="drawerOpen()"
   [class.expanded]="expanded()"
   [class.hover-open]="hoverOpen()"
+  [inert]="closedOffCanvas()"
   (pointerenter)="onPointerEnter($event)"
   (pointerleave)="onPointerLeave($event)"
   (focusin)="onFocusIn($event)"
