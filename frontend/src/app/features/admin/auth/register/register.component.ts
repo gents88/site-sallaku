@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/services/auth.service';
+import { FeatureFlagsService } from '../../../../core/services/feature-flags.service';
 
 function passwordsMatch(ctrl: AbstractControl) {
   const pw = ctrl.get('password')?.value;
@@ -32,6 +33,9 @@ function passwordsMatch(ctrl: AbstractControl) {
           <h1 class="logo"><span class="logo-bracket">&lt;</span>Admin<span class="logo-bracket">/&gt;</span></h1>
           <p class="text-muted">{{ 'auth.register_subtitle' | translate }}</p>
         </div>
+        @if (!flags.registrationEnabled()) {
+          <p class="feature-off-notice" role="status">{{ 'auth.registration_closed' | translate }}</p>
+        }
 
         <form [formGroup]="form" (ngSubmit)="register()" novalidate>
           <mat-form-field appearance="outline" class="form-field">
@@ -69,7 +73,7 @@ function passwordsMatch(ctrl: AbstractControl) {
             }
           </mat-form-field>
 
-          <button mat-raised-button color="primary" type="submit" [disabled]="loading" class="submit-btn">
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading || !flags.registrationEnabled()" class="submit-btn">
             @if (loading) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>person_add</mat-icon> }
             {{ (loading ? 'auth.registering' : 'auth.register_btn') | translate }}
           </button>
@@ -90,6 +94,7 @@ function passwordsMatch(ctrl: AbstractControl) {
     .logo { font-size:1.8rem; font-weight:800; margin-bottom:0.5rem; }
     .logo-bracket { color:var(--primary-500); }
     .form-field { width:100%; margin-bottom:0.5rem; }
+    .feature-off-notice { margin:0 0 1rem; padding:0.75rem 1rem; border-radius:12px; border:1px solid var(--color-warning, #f59e0b); font-size:0.9rem; }
     .submit-btn { width:100%; margin-top:0.75rem; padding:0.75rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
     .text-muted { color:var(--text-secondary); }
     @keyframes spin { to { transform:rotate(360deg); } } .spin { animation:spin 1s linear infinite; }
@@ -113,9 +118,11 @@ export class RegisterComponent {
     private snackBar: MatSnackBar,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
+    readonly flags: FeatureFlagsService,
   ) {}
 
   register(): void {
+    if (!this.flags.registrationEnabled()) return;
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.loading = true;
 

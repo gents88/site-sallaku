@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { DEFAULT_BLOG_LANGUAGE, BLOG_LANGUAGES, BlogLanguage } from '../blog.constants';
 
 export type PostDocument = Post & Document;
@@ -43,7 +43,7 @@ export class Post {
   @Prop({ default: '' })
   excerpt: string;
 
-  @Prop({ enum: BLOG_LANGUAGES, default: DEFAULT_BLOG_LANGUAGE })
+  @Prop({ type: String, enum: BLOG_LANGUAGES, default: DEFAULT_BLOG_LANGUAGE })
   language: BlogLanguage;
 
   @Prop({ default: '' })
@@ -57,6 +57,14 @@ export class Post {
 
   @Prop({ default: null })
   publishedAt: Date;
+
+  /** Pubblicazione programmata: a quest'ora BlogSchedulerService lo rende pubblico (null = nessuna). */
+  @Prop({ type: Date, default: null })
+  scheduledAt: Date | null;
+
+  /** All'uscita programmata, crea e invia una campagna newsletter con il post. */
+  @Prop({ type: Boolean, default: false })
+  notifySubscribers: boolean;
 
   // Multilanguage translations (title/content/excerpt default to Italian)
   @Prop({ default: '' })
@@ -123,11 +131,24 @@ export class Post {
   // Analytics
   @Prop({ default: 0 })
   viewCount: number;
+
+  /**
+   * Ultima modifica a titolo/contenuto italiani e, per lingua, ultima
+   * modifica della traduzione: se la traduzione è più vecchia è "non
+   * aggiornata" (dashboard, controllo traduzioni). null nei post salvati
+   * prima che esistessero.
+   */
+  @Prop({ type: Date, default: null })
+  sourceUpdatedAt: Date | null;
+
+  @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
+  translationsUpdatedAt: Record<string, Date>;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 PostSchema.index({ tags: 1 });
 PostSchema.index({ published: 1, publishedAt: -1 });
+PostSchema.index({ published: 1, scheduledAt: 1 });
 /**
  * Indice full-text per /search (ricerca completa, ordinata per pertinenza).
  * default_language 'none': i post sono in 7 lingue, niente stemming di una

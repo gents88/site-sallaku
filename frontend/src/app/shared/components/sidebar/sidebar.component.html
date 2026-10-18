@@ -11,6 +11,17 @@
   [class.is-rail]="mode() === 'rail'"
   [class.open]="drawerOpen()"
   [class.expanded]="expanded()"
+  [class.hover-open]="hoverOpen()"
+  [inert]="closedOffCanvas()"
+  [class.dragging]="dragX() !== 0"
+  [style.transform]="dragX() ? 'translateX(' + dragX() + 'px)' : null"
+  (pointerdown)="onSwipeStart($event)"
+  (pointermove)="onSwipeMove($event)"
+  (pointerup)="onSwipeEnd($event)"
+  (pointercancel)="onSwipeEnd($event)"
+  (pointerenter)="onPointerEnter($event)"
+  (pointerleave)="onPointerLeave($event)"
+  (focusin)="onFocusIn($event)"
 >
   <div class="sidebar-header">
     <div class="sidebar-brand">
@@ -23,17 +34,25 @@
         class="rail-toggle"
         type="button"
         (click)="toggleRail()"
-        [attr.aria-expanded]="expanded()"
+        [attr.aria-expanded]="pinned()"
         aria-controls="app-sidebar"
-        [attr.aria-label]="(expanded() ? 'sidebar.collapse_menu' : 'sidebar.expand_menu') | translate"
-        [attr.title]="(expanded() ? 'sidebar.collapse_icons' : 'sidebar.expand_icons') | translate"
+        [attr.aria-label]="(pinned() ? 'sidebar.collapse_menu' : 'sidebar.expand_menu') | translate"
+        [attr.title]="((pinned() ? 'sidebar.collapse_icons' : 'sidebar.expand_icons') | translate) + ' · ' + toggleShortcut"
+        aria-keyshortcuts="Control+B Meta+B"
       >
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9 6l6 6-6 6" />
         </svg>
       </button>
     } @else {
-      <button class="close-btn" type="button" [attr.aria-label]="'sidebar.close_menu' | translate" (click)="closeDrawer()">
+      <button
+        class="close-btn"
+        type="button"
+        [attr.aria-label]="'sidebar.close_menu' | translate"
+        [attr.title]="('sidebar.close_menu' | translate) + ' · ' + toggleShortcut"
+        aria-keyshortcuts="Control+B Meta+B"
+        (click)="closeDrawer()"
+      >
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <path d="M18 6 6 18M6 6l12 12" />
         </svg>
@@ -43,28 +62,58 @@
 
   <!-- Unico landmark: prima <aside role="navigation"> conteneva questo <nav>,
        due landmark annidati con lo stesso scopo. -->
-  <nav class="sidebar-nav" [attr.aria-label]="brandLabelKey() | translate">
+  <nav
+    class="sidebar-nav"
+    [class.fade-top]="scrollEdges().top"
+    [class.fade-bottom]="scrollEdges().bottom"
+    [attr.aria-label]="brandLabelKey() | translate"
+    (scroll)="onNavScroll()"
+  >
     @for (group of navGroups(); track group.id) {
       <div class="nav-group" [attr.data-tour-group]="group.id">
         <div class="nav-group-label">
           <span class="group-title">{{ group.titleKey | translate }}</span>
         </div>
         @for (item of group.items; track item.id) {
-          <a
-            [routerLink]="item.route | langUrl"
-            routerLinkActive="active"
-            ariaCurrentWhenActive="page"
-            [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
-            class="nav-item icon-tile--lift"
-            (click)="onNavigate(item)"
-            (mouseenter)="showTooltip($event, item.labelKey)"
-            (mouseleave)="hideTooltip()"
-            (focus)="showTooltip($event, item.labelKey)"
-            (blur)="hideTooltip()"
-          >
-            <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
-            <span class="nav-label">{{ item.labelKey | translate }}</span>
-          </a>
+          <div class="nav-row">
+            <a
+              [routerLink]="item.route | langUrl"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+              class="nav-item icon-tile--lift"
+              (click)="onNavigate(item)"
+              (mouseenter)="onItemEnter($event, item)"
+              (mouseleave)="onItemLeave()"
+              (focus)="onItemEnter($event, item)"
+              (blur)="onItemLeave()"
+              (pointerdown)="prefetch(item)"
+            >
+              <span class="nav-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor(item.icon)"><app-nav-icon [name]="item.icon" [size]="16" /></span>
+              <span class="nav-label">{{ item.labelKey | translate }}</span>
+              @if (badges()[item.id]; as badge) {
+                <!-- Il numero è decorativo: lo screen reader legge la frase completa
+                     ("2 Messaggi da leggere, 1 Follow-up da fare") subito dopo l'etichetta. -->
+                <span class="nav-badge" [class.nav-badge--urgent]="badge.urgent" aria-hidden="true">{{ badgeText(badge.count) }}</span>
+                <span class="nav-badge-sr">@for (part of badge.parts; track part.labelKey) {, {{ part.count }} {{ part.labelKey | translate }}}</span>
+              }
+            </a>
+            @if (item.quickActionKey) {
+              <!-- Fratello e non figlio della voce: un link dentro un link non è HTML valido. -->
+              <a
+                class="nav-quick"
+                [routerLink]="item.route | langUrl"
+                [queryParams]="{ new: 1 }"
+                [attr.aria-label]="item.quickActionKey | translate"
+                [attr.title]="item.quickActionKey | translate"
+                (click)="onQuickAction(item)"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+              </a>
+            }
+          </div>
         }
       </div>
     }
@@ -78,10 +127,6 @@
     routerLinkActive="active"
     [routerLinkActiveOptions]="{ exact: true }"
     (click)="onNavigate(labCta)"
-    (mouseenter)="showTooltip($event, 'sidebar.view_all_tools')"
-    (mouseleave)="hideTooltip()"
-    (focus)="showTooltip($event, 'sidebar.view_all_tools')"
-    (blur)="hideTooltip()"
   >
     <span class="cta-icon icon-tile" aria-hidden="true" [style.--icon-color]="iconColor('rocket')"><app-nav-icon name="rocket" [size]="18" /></span>
     <span class="cta-text">
@@ -91,8 +136,20 @@
   </a>
 </aside>
 
-<!-- Tooltip della rail collassata. Fuori da <aside> perché quello scrolla:
+<!-- Scheda della voce a rail aperta. Fuori da <aside> perché quello scrolla:
      un figlio position:fixed verrebbe comunque ritagliato dall'overflow. -->
-@if (tooltip(); as tip) {
-  <div class="rail-tooltip" role="tooltip" [style.top.px]="tip.top">{{ tip.labelKey | translate }}</div>
+@if (hint(); as tip) {
+  <div class="rail-hint" role="tooltip" [style.top.px]="tip.top">
+    <strong class="rail-hint__title">{{ tip.labelKey | translate }}</strong>
+    @if (tip.descKey) {
+      <span class="rail-hint__desc">{{ tip.descKey | translate }}</span>
+    }
+    @if (tip.badge) {
+      <ul class="rail-hint__counts">
+        @for (part of tip.badge.parts; track part.labelKey) {
+          <li><strong>{{ part.count }}</strong> {{ part.labelKey | translate }}</li>
+        }
+      </ul>
+    }
+  </div>
 }

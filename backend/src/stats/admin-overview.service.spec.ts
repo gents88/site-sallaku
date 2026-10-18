@@ -4,8 +4,11 @@ function makeService(overrides: Record<string, Record<string, jest.Mock>> = {}) 
   const ok = (v: unknown) => jest.fn().mockResolvedValue(v);
   const deps = {
     users: { count: ok(3) },
-    contacts: { count: ok(10), countUnread: ok(2), findAll: ok([]), countByDay: ok([{ date: '2026-10-01', count: 1 }]) },
-    blog: { getContentSummary: ok({ total: 4, published: 3, drafts: 1 }), getTopPostsByViews: ok([{ title: 'A', slug: 'a', viewCount: 9 }]) },
+    contacts: {
+      count: ok(10), countUnread: ok(2), findAll: ok([]), countByDay: ok([{ date: '2026-10-01', count: 1 }]),
+      countFollowUpsDue: ok(1), leadStats: ok({ byStatus: { new: 3, in_progress: 1, won: 1, lost: 0 }, followUpsDue: 1 }),
+    },
+    blog: { getContentSummary: ok({ total: 4, published: 3, drafts: 1 }), getTopPostsByViews: ok([{ title: 'A', slug: 'a', viewCount: 9 }]), getTranslationHealth: ok({ posts: 4, missing: 1, items: [] }) },
     projects: { findAll: ok([{}, {}]) },
     experiences: { findAll: ok([{}]) },
     analytics: {
@@ -21,12 +24,20 @@ function makeService(overrides: Record<string, Record<string, jest.Mock>> = {}) 
     systemInfo: { health: jest.fn(() => ({ ok: true })), version: jest.fn(() => ({})), ops: jest.fn(() => ({})) },
     testimonials: { getStats: ok({ total: 5, approved: 2, pending: 3, spam: 0, featured: 1 }) },
     notes: { getAllForAdmin: ok({ data: [], total: 4 }) },
+    aiUsage: { getSummary: ok({ date: '2026-10-17', tokens: 500, calls: 3, history: [] }) },
+    aiQuota: { getConfig: jest.fn(() => ({ dailyTokenBudget: 300_000, maxCallsPerIpPerDay: 30 })) },
+    settings: { isEnabled: ok(true) },
+    errorLog: { summary: ok({ open: 2, today: 5, week: 9, recent: [] }) },
+    serverHealth: { snapshot: ok({ warnings: ['backup_stale'] }) },
+    blogScheduler: { upcoming: ok([{ _id: 'p9', title: 'Domani', scheduledAt: '2026-10-18T08:00:00Z' }]) },
+    notFound: { summary: ok({ open: 3, top: [] }) },
   };
   for (const [k, v] of Object.entries(overrides)) Object.assign((deps as Record<string, object>)[k], v);
   const d = deps as unknown as Record<string, never>;
   const service = new AdminOverviewService(
     d.users, d.contacts, d.blog, d.projects, d.experiences, d.analytics, d.analyticsExport,
     d.searchConsole, d.audit, d.chatbot, d.consent, d.liveHandoff, d.systemInfo, d.testimonials, d.notes,
+    d.aiUsage, d.aiQuota, d.settings, d.errorLog, d.serverHealth, d.blogScheduler, d.notFound,
   );
   return { service, deps };
 }
@@ -42,8 +53,24 @@ describe('AdminOverviewService', () => {
     expect(res.sections.core).toEqual(expect.objectContaining({ users: 3, contacts: 10, unreadContacts: 2 }));
     expect(Object.keys(res.sections)).toEqual(expect.arrayContaining([
       'topPosts', 'advanced', 'analyticsStats', 'topPages', 'monthlyHistory', 'toolConversion', 'auditLogs',
-      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps',
+      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors', 'serverHealth', 'translationHealth', 'scheduledPosts', 'leads', 'notFound',
     ]));
+    expect(res.sections.notFound).toEqual({ open: 3, top: [] });
+    expect(res.sections.leads).toEqual(expect.objectContaining({ followUpsDue: 1 }));
+    expect(res.sections.scheduledPosts).toEqual([expect.objectContaining({ _id: 'p9' })]);
+    expect(res.sections.translationHealth).toEqual(expect.objectContaining({ posts: 4, missing: 1 }));
+    expect(res.sections.serverHealth).toEqual({ warnings: ['backup_stale'] });
+    expect(res.sections.serverErrors).toEqual(expect.objectContaining({ open: 2, today: 5 }));
+  });
+
+  it('aiUsage unisce consumo, limiti in vigore e stato dell’interruttore', async () => {
+    const { service } = makeService({ settings: { isEnabled: jest.fn().mockResolvedValue(false) } });
+    const res = await service.getOverview();
+    expect(res.sections.aiUsage).toEqual(expect.objectContaining({
+      tokens: 500,
+      enabled: false,
+      quota: { dailyTokenBudget: 300_000, maxCallsPerIpPerDay: 30 },
+    }));
   });
 
   it('isolates a failing section: null + listed in errors, the others still load', async () => {
@@ -93,7 +120,7 @@ describe('AdminOverviewService', () => {
       liveHandoff: { listActive: jest.fn().mockResolvedValue([{ status: 'requested' }, { status: 'live' }, { status: 'notified' }]) },
     });
     await expect(service.notificationSummary()).resolves.toEqual({
-      contactsUnread: 2, testimonialsPending: 3, notesPending: 4, liveHandoffsWaiting: 2,
+      contactsUnread: 2, testimonialsPending: 3, notesPending: 4, liveHandoffsWaiting: 2, followUpsDue: 1,
     });
     expect(deps.notes.getAllForAdmin).toHaveBeenCalledWith('pending', 1, 0);
   });

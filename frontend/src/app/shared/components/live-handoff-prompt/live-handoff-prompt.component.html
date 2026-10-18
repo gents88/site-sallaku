@@ -9,7 +9,7 @@
         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd"/>
       </svg>
     </button>
-    <div class="lhp-banner__avatar" aria-hidden="true">G</div>
+    <div class="lhp-banner__avatar" aria-hidden="true"><app-profile-photo /></div>
     <div class="lhp-banner__body">
       <p class="lhp-banner__text">{{ 'live_handoff.prompt_title' | translate }}</p>
       <div class="lhp-banner__actions">
@@ -34,7 +34,7 @@
     @if (isWaiting) {
       <span class="lhp-pill__spinner" aria-hidden="true"></span>
     } @else {
-      <span class="lhp-pill__avatar" aria-hidden="true">G</span>
+      <span class="lhp-pill__avatar" aria-hidden="true"><app-profile-photo /></span>
     }
     <span class="lhp-pill__text">
       @switch (state) {

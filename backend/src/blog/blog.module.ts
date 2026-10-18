@@ -9,14 +9,17 @@ import { BlogGenerationService } from './services/blog-generation.service';
 import { TranslationService } from './services/translation.service';
 import { AuditModule } from '../audit/audit.module';
 import { OgImageService } from './og-image/og-image.service';
+import { BlogSchedulerService } from './blog-scheduler.service';
+import { NewsletterModule } from '../newsletter/newsletter.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
     AuditModule,
+    NewsletterModule,
   ],
   controllers: [BlogController],
-  providers: [BlogService, PdfExtractionService, BlogAiService, BlogGenerationService, TranslationService, OgImageService],
-  exports: [BlogService],
+  providers: [BlogService, PdfExtractionService, BlogAiService, BlogGenerationService, TranslationService, OgImageService, BlogSchedulerService],
+  exports: [BlogService, BlogSchedulerService],
 })
 export class BlogModule {}

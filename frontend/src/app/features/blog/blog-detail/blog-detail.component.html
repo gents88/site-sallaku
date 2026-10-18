@@ -3,8 +3,8 @@
 } @else if (notFound) {
   <div class="container section not-found">
     <mat-icon>article</mat-icon>
-    <h1>Post not found</h1>
-    <a [routerLink]="'/blog' | langUrl" class="btn btn-primary">← Back to Blog</a>
+    <h1>{{ 'blog.not_found' | translate }}</h1>
+    <a [routerLink]="'/blog' | langUrl" class="btn btn-primary">← {{ 'blog.back_to_blog' | translate }}</a>
   </div>
 } @else if (post) {
   <div class="reading-progress" aria-hidden="true">
@@ -36,7 +36,7 @@
           }
         </div>
       } @else {
-        <a [routerLink]="'/blog' | langUrl" class="back-link" appTrackClick eventType="blog" label="blog_back_link"><mat-icon>arrow_back</mat-icon> All posts</a>
+        <a [routerLink]="'/blog' | langUrl" class="back-link" appTrackClick eventType="blog" label="blog_back_link"><mat-icon>arrow_back</mat-icon> {{ 'blog.all_posts' | translate }}</a>
       }
 
       @if (post.coverImage) {
@@ -52,9 +52,9 @@
         <h1 appVtName="post-title">{{ localizedTitle }}</h1>
         <p class="text-muted post-article__meta">
           @if (post.published && post.publishedAt) {
-            <time [dateTime]="post.publishedAt">{{ post.publishedAt | date:'longDate' }}</time>
+            <time [dateTime]="post.publishedAt">{{ post.publishedAt | localDate: currentLang() : 'long' }}</time>
           } @else {
-            <time [dateTime]="post.updatedAt">Bozza — ultimo salvataggio {{ post.updatedAt | date:'longDate' }}</time>
+            <time [dateTime]="post.updatedAt">Bozza — ultimo salvataggio {{ post.updatedAt | localDate: currentLang() : 'long' }}</time>
           }
           <span class="post-article__views">
             <mat-icon aria-hidden="true">schedule</mat-icon>
@@ -126,7 +126,7 @@
                       <span class="related__tag">#{{ item.tags[0] }}</span>
                     }
                     @if (item.publishedAt) {
-                      <time class="related__date" [dateTime]="item.publishedAt">{{ item.publishedAt | date:'mediumDate' }}</time>
+                      <time class="related__date" [dateTime]="item.publishedAt">{{ item.publishedAt | localDate: currentLang() }}</time>
                     }
                   </div>
                   <h3>{{ relatedTitle(item) }}</h3>

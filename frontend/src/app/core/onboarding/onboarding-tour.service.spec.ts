@@ -8,7 +8,7 @@ import { AnalyticsTrackingService } from '../services/analytics-tracking.service
 import { AuthService } from '../services/auth.service';
 import { DrawerService } from '../services/drawer.service';
 import { ONBOARDING_STEPS } from './onboarding-steps';
-import { ONBOARDING_STORAGE_KEY, OnboardingTourService } from './onboarding-tour.service';
+import { ONBOARDING_STORAGE_KEY, OnboardingTourService, TOUR_IS_MOBILE } from './onboarding-tour.service';
 
 /** Driver.js finto: registra la config e simula gli hook che il servizio usa. */
 const fake = vi.hoisted(() => {
@@ -46,6 +46,8 @@ describe('OnboardingTourService', () => {
   let auth: { isLoggedIn: ReturnType<typeof signal<boolean>>; isAdmin: ReturnType<typeof signal<boolean>> };
   let drawer: { mode: ReturnType<typeof signal<'rail' | 'overlay'>>; railExpanded: ReturnType<typeof signal<boolean>>; open: ReturnType<typeof vi.fn>; toggleRail: ReturnType<typeof vi.fn> };
   let analytics: { trackClick: ReturnType<typeof vi.fn> };
+  /** Layout simulato: false = desktop/tablet. */
+  let mobile = false;
 
   /** Monta nel DOM gli elementi bersaglio; quelli con data-hidden risultano non visibili. */
   function mountTargets(html: string) {
@@ -59,6 +61,7 @@ describe('OnboardingTourService', () => {
         { provide: AuthService, useValue: auth },
         { provide: DrawerService, useValue: drawer },
         { provide: AnalyticsTrackingService, useValue: analytics },
+        { provide: TOUR_IS_MOBILE, useValue: () => mobile },
         { provide: TranslateService, useValue: { instant: (key: string, params?: Record<string, string>) => (params ? `${key}:${JSON.stringify(params)}` : key) } },
       ],
     });
@@ -68,6 +71,7 @@ describe('OnboardingTourService', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     localStorage.clear();
+    mobile = false;
     fake.state.config = null;
     fake.state.activeIndex = 0;
     vi.clearAllMocks();
@@ -135,6 +139,44 @@ describe('OnboardingTourService', () => {
       TestBed.tick();
       await vi.advanceTimersByTimeAsync(5000);
       expect(fake.instance.drive).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('mobile (tab bar con menu "Altro")', () => {
+    /** Simula una viewport sotto i 900px. */
+    function mobileViewport() {
+      mobile = true;
+    }
+
+    it('non parte da solo e non segna il tour come visto (da desktop lo si vedrà)', async () => {
+      mobileViewport();
+      const tour = setup();
+      tour.scheduleAutoStart();
+      await vi.advanceTimersByTimeAsync(5000);
+
+      expect(fake.instance.drive).not.toHaveBeenCalled();
+      expect(tour.active()).toBe(false);
+      expect(localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBeNull();
+    });
+
+    it('non si apre nemmeno a mano', async () => {
+      mobileViewport();
+      const tour = setup();
+
+      await tour.start();
+
+      expect(fake.instance.drive).not.toHaveBeenCalled();
+      expect(tour.active()).toBe(false);
+      expect(tour.isMobileLayout()).toBe(true);
+    });
+
+    it('sopra i 900px resta disponibile', async () => {
+      const tour = setup();
+
+      await tour.start();
+
+      expect(tour.isMobileLayout()).toBe(false);
+      expect(fake.instance.drive).toHaveBeenCalledOnce();
     });
   });
 
@@ -222,8 +264,7 @@ describe('OnboardingTourService', () => {
     it('evidenzia il primo candidato visibile e ricade sul popover centrato se nessuno lo è', async () => {
       mountTargets(`
         <aside id="app-sidebar" class="is-overlay" data-hidden></aside>
-        <button class="nav-drawer-toggle" data-hidden></button>
-        <nav class="bottom-tabbar"></nav>
+        <button class="nav-drawer-toggle"></button>
         <main id="main-content"><section id="hero"></section></main>
         <button class="cb-fab"></button>`);
       const tour = setup();
@@ -233,8 +274,8 @@ describe('OnboardingTourService', () => {
       const byId = (id: string) => steps[ONBOARDING_STEPS.findIndex(s => s.id === id)];
       expect(steps).toHaveLength(ONBOARDING_STEPS.length);
       expect(byId('welcome').element).toBeUndefined();
-      expect(byId('navigation').element).toBe(document.querySelector('.bottom-tabbar'));
-      // Su mobile i gruppi della sidebar sono fuori schermo: spiegazione senza spotlight.
+      expect(byId('navigation').element).toBe(document.querySelector('.nav-drawer-toggle'));
+      // Su tablet i gruppi della sidebar sono fuori schermo: spiegazione senza spotlight.
       expect(byId('group_ai').element).toBeUndefined();
       expect(byId('group_ai').popover!.side).toBeUndefined();
       expect(byId('main').element).toBe(document.getElementById('hero'));

@@ -37,3 +37,17 @@
 .breadcrumb__current {
   color: var(--text-primary, #e2e8f0);
 }
+
+/* Titoli lunghi (articoli del blog): su mobile la voce corrente andava a capo
+   su due-tre righe in monospace. Una riga sola con i puntini; il titolo
+   completo è comunque l'h1 subito sotto. */
+.breadcrumb__item:last-child {
+  flex: 1 1 0;
+  min-width: 0;
+
+  .breadcrumb__current {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}

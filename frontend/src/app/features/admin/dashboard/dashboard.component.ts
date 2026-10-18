@@ -28,8 +28,23 @@ import {
   RecentContact,
   LiveHandoffSession,
   ToolConversionRow,
+  AiUsageOverview,
+  ServerErrorSummary,
+  ServerHealth,
+  TranslationHealth,
+  ScheduledPost,
+  LeadStats,
+  NotFoundSummary,
 } from './admin-dashboard.service';
 import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
+import { FeatureFlagsPanelComponent } from './panels/feature-flags-panel.component';
+import { AiUsagePanelComponent } from './panels/ai-usage-panel.component';
+import { ServerErrorsPanelComponent } from './panels/server-errors-panel.component';
+import { ServerHealthPanelComponent } from './panels/server-health-panel.component';
+import { TranslationHealthPanelComponent } from './panels/translation-health-panel.component';
+import { ScheduledPostsPanelComponent } from './panels/scheduled-posts-panel.component';
+import { LeadsPanelComponent } from './panels/leads-panel.component';
+import { NotFoundPanelComponent } from './panels/not-found-panel.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -58,7 +73,7 @@ interface ChartBar {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent, TranslationHealthPanelComponent, ScheduledPostsPanelComponent, LeadsPanelComponent, NotFoundPanelComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -132,6 +147,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   systemHealth: SystemHealth | null = null;
   systemDetails: SystemDetails | null = null;
   systemOps: OperationsInfo | null = null;
+  aiUsage!: AiUsageOverview;
+  serverErrors!: ServerErrorSummary;
+  serverHealth: ServerHealth | null = null;
+  translationHealth!: TranslationHealth;
+  scheduledPosts: ScheduledPost[] = [];
+  leads!: LeadStats;
+  notFound: NotFoundSummary = { open: 0, top: [] };
   totalContacts = 0;
 
   // Google Search Console
@@ -166,8 +188,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   replyText = '';
   sendingReply = false;
   replyResult: 'success' | 'error' | null = null;
-
-  readonly featureEntries = (f: Record<string, boolean>) => Object.entries(f);
 
   readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
   readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
@@ -293,6 +313,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.systemHealth = data.systemHealth;
     this.systemDetails = data.systemDetails;
     this.systemOps = data.systemOps;
+    this.aiUsage = data.aiUsage;
+    this.serverErrors = data.serverErrors;
+    this.serverHealth = data.serverHealth;
+    this.translationHealth = data.translationHealth;
+    this.scheduledPosts = data.scheduledPosts;
+    this.leads = data.leads;
+    this.notFound = data.notFound;
     this.gscSummary = data.gsc;
 
     this.consentTotal = consentStats.total;

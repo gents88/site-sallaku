@@ -15,6 +15,16 @@
       <button type="button" [class.active]="!unreadOnly()" [attr.aria-pressed]="!unreadOnly()" (click)="setUnreadOnly(false)">{{ 'contacts_inbox.filter_all' | translate }}</button>
       <button type="button" [class.active]="unreadOnly()" [attr.aria-pressed]="unreadOnly()" (click)="setUnreadOnly(true)">{{ 'admin.status_unread' | translate }}</button>
     </div>
+    <select class="ci-select" [ngModel]="status() ?? ''" (ngModelChange)="setStatus($event)" [attr.aria-label]="'contacts_inbox.filter_status' | translate">
+      <option value="">{{ 'contacts_inbox.filter_status' | translate }}: {{ 'contacts_inbox.filter_all' | translate }}</option>
+      @for (s of leadStatuses; track s) {
+        <option [value]="s">{{ 'leads.status_' + s | translate }}</option>
+      }
+    </select>
+    <label class="ci-check">
+      <input type="checkbox" [ngModel]="followUpsDue()" (ngModelChange)="setFollowUpsDue($event)" />
+      {{ 'contacts_inbox.filter_followups' | translate }}
+    </label>
     @if (selectedIds().size) {
       <button type="button" class="btn btn-sm ci-danger" (click)="deleteSelected()">
         {{ 'admin.delete_selected' | translate }} ({{ selectedIds().size }})
@@ -36,7 +46,7 @@
       } @else if (loading() && !items().length) {
         @for (i of [1, 2, 3, 4]; track i) { <div class="ci-skeleton"></div> }
       } @else if (!items().length) {
-        <p class="ci-state">{{ (query() || unreadOnly() ? 'contacts_inbox.empty_filtered' : 'contacts_inbox.empty') | translate }}</p>
+        <p class="ci-state">{{ (query() || unreadOnly() || status() || followUpsDue() ? 'contacts_inbox.empty_filtered' : 'contacts_inbox.empty') | translate }}</p>
       } @else {
         <label class="ci-selectall">
           <input type="checkbox" [checked]="allSelected()" (change)="toggleSelectAll()" />
@@ -55,6 +65,7 @@
                 <span class="ci-item__subject">
                   @if (!c.read) { <span class="ci-dot" [attr.aria-label]="'admin.status_unread' | translate"></span> }
                   {{ c.subject }}
+                  <span class="ci-lead ci-lead--{{ statusOf(c) }}">{{ 'leads.status_' + statusOf(c) | translate }}</span>
                 </span>
                 <span class="ci-item__preview">{{ c.message }}</span>
               </button>
@@ -89,6 +100,30 @@
             @if (c.replyText) { <p>{{ c.replyText }}</p> }
           </div>
         }
+
+        <fieldset class="ci-leadbox">
+          <legend>{{ 'contacts_inbox.lead_box' | translate }}</legend>
+          <div class="ci-leadbox__row">
+            <label>
+              <span>{{ 'contacts_inbox.status_label' | translate }}</span>
+              <select class="ci-select" [ngModel]="leadStatus()" (ngModelChange)="leadStatus.set($event)">
+                @for (s of leadStatuses; track s) {
+                  <option [value]="s">{{ 'leads.status_' + s | translate }}</option>
+                }
+              </select>
+            </label>
+            <label>
+              <span>{{ 'contacts_inbox.followup_label' | translate }}</span>
+              <input type="date" class="ci-select" [ngModel]="leadFollowUp()" (ngModelChange)="leadFollowUp.set($event)" />
+            </label>
+          </div>
+          <label class="ci-leadbox__note">
+            <span>{{ 'contacts_inbox.note_label' | translate }}</span>
+            <textarea rows="2" maxlength="2000" class="ci-reply" [ngModel]="leadNote()" (ngModelChange)="leadNote.set($event)"
+                      [placeholder]="'contacts_inbox.note_placeholder' | translate"></textarea>
+          </label>
+          <button type="button" class="btn btn-sm" [disabled]="savingLead()" (click)="saveLead()">{{ 'contacts_inbox.save_lead' | translate }}</button>
+        </fieldset>
 
         <label class="ci-reply-label" for="ci-reply">{{ 'admin.reply' | translate }}</label>
         <textarea id="ci-reply" rows="5" class="ci-reply" [ngModel]="replyText()" (ngModelChange)="replyText.set($event)"

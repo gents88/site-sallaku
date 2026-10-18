@@ -44,7 +44,20 @@ describe('AiProviderService', () => {
     });
 
     expect(result).toBe('Ciao!');
-    expect(aiQuota.recordTokens).toHaveBeenCalledWith(165);
+    expect(aiQuota.recordTokens).toHaveBeenCalledWith(165, 'tools');
+  });
+
+  it('attribuisce i token alla provenienza indicata (chatbot) per la dashboard', async () => {
+    fetchMock.mockResolvedValue(groqResponse('Ciao!', 10, 5));
+
+    await service.chatCompletion([{ role: 'user', content: 'hey' }], {
+      model: 'openai/gpt-oss-120b',
+      maxTokens: 100,
+      timeoutMs: 5000,
+      source: 'chatbot',
+    });
+
+    expect(aiQuota.recordTokens).toHaveBeenCalledWith(15, 'chatbot');
   });
 
   it('registra 0 quando Groq non riporta usage (nessun crash)', async () => {
@@ -60,7 +73,7 @@ describe('AiProviderService', () => {
       timeoutMs: 5000,
     });
 
-    expect(aiQuota.recordTokens).toHaveBeenCalledWith(0);
+    expect(aiQuota.recordTokens).toHaveBeenCalledWith(0, 'tools');
   });
 
   it('non registra token e propaga l’errore quando Groq risponde con un errore HTTP', async () => {
