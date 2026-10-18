@@ -6,7 +6,7 @@
   <atom:link href="https://gentsallaku.it/rss.xml" rel="self" type="application/rss+xml" />
   <description>Articoli su sviluppo front-end, Angular, TypeScript e data visualization.</description>
   <language>it-it</language>
-  <lastBuildDate>Sun, 18 Oct 2026 11:53:41 GMT</lastBuildDate>
+  <lastBuildDate>Sun, 18 Oct 2026 12:00:15 GMT</lastBuildDate>
   <item>
     <title>Da RxJS a Signals: guida pratica alla migrazione dello stato in Angular</title>
     <link>https://gentsallaku.it/blog/da-rxjs-a-signals-guida-pratica-migrazione-stato-angular</link>
@@ -777,7 +777,7 @@
     <title>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi</title>
     <link>https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</link>
     <guid isPermaLink="true">https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</guid>
-    <pubDate>Sun, 18 Oct 2026 11:53:41 GMT</pubDate>
+    <pubDate>Sun, 18 Oct 2026 12:00:15 GMT</pubDate>
     <description>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi Introduzione Nel cuore della Zadrima, tra Lezhë e Shkodër, si trova Blinisht, un territorio dalla…</description>
   </item>
 </channel>
