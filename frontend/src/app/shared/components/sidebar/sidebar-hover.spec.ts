@@ -141,3 +141,27 @@ describe('SidebarComponent: apertura al passaggio del mouse', () => {
     expect(drawer.setHover).toHaveBeenCalledWith(false);
   });
 });
+
+describe('SidebarComponent: drawer overlay chiuso fuori dalla tastiera', () => {
+  it('è inert quando è chiuso, così Tab e screen reader non entrano nelle voci invisibili', () => {
+    const { aside, drawer, fixture } = setup('overlay');
+    expect(aside.inert).toBe(true);
+
+    drawer.drawerOpen.set(true);
+    fixture.detectChanges();
+    expect(aside.inert).toBe(false);
+  });
+
+  it('all\'apertura sposta il focus sul pulsante di chiusura', async () => {
+    const { aside, drawer, fixture } = setup('overlay');
+    drawer.drawerOpen.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(aside.querySelector('.close-btn'));
+  });
+
+  it('la rail resta sempre raggiungibile', () => {
+    const { aside } = setup('rail');
+    expect(aside.inert).toBe(false);
+  });
+});
