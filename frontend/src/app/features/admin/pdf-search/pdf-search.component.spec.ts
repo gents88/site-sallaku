@@ -31,6 +31,10 @@ describe('PdfSearchComponent', () => {
     has: ReturnType<typeof vi.fn>;
   };
   let pdfjsMock: { openDocument: ReturnType<typeof vi.fn>; extractPages: ReturnType<typeof vi.fn>; renderPageToBlob: ReturnType<typeof vi.fn> };
+  // L'ambiente è condiviso tra i file di test: il matchMedia finto qui sotto non
+  // ha addListener e, se resta, il BreakpointObserver del CDK va in errore negli
+  // spec successivi (es. blog-manage.status-filter). Va ripristinato.
+  const originalMatchMedia = window.matchMedia;
 
   function configure(): void {
     searchMock = vi.fn().mockReturnValue(of([]));
@@ -81,6 +85,7 @@ describe('PdfSearchComponent', () => {
     localStorage.clear();
     vi.useRealTimers();
     vi.restoreAllMocks();
+    window.matchMedia = originalMatchMedia;
   });
 
   describe('displayResults', () => {

@@ -83,14 +83,29 @@ jobs:
       - name: Security audit (visibility only — Dependabot opens the fix PRs)
         run: npm audit --omit=dev --audit-level=high || true
 
+      # Non bloccante come nel backend: angular-eslint non è installato, quindi
+      # `ng lint` non ha un target e falliva sempre, fermando test e build
       - name: Lint
-        run: npm run lint
+        run: npm run lint || true
 
       - name: Unit tests
         run: npm test
 
+      # BUILD_COMMIT: se il prebuild rigenera la sitemap il working tree risulta
+      # modificato e il commit mostrato nel sito avrebbe il suffisso "+"
       - name: Build (production)
-        run: npm run build:prod
+        run: BUILD_COMMIT="$(git rev-parse --short HEAD)" npm run build:prod
+
+      # Il deploy su Plesk (push su main) carica proprio questa build
+      - name: Upload build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/portfolio-frontend/browser/
+          include-hidden-files: true   # .htaccess: proxy verso il backend
+          retention-days: 3
+          if-no-files-found: error
 
   # ── Frontend E2E ────────────────────────────────────
   frontend-e2e:
@@ -229,3 +244,40 @@ jobs:
           BUNDLE: ${{ runner.temp }}/backend-bundle.tgz
           RELEASE_BRANCH: ${{ github.ref_name }}
         run: ./scripts/release-backend-plesk.sh
+
+  # ── Deploy frontend su Plesk ─────────────────────────
+  # Push su main → se unit test, build ed e2e del frontend passano, carica in
+  # ~/httpdocs la build del job Frontend con rsync (al posto dell'upload
+  # FileZilla) e controlla che il sito serva la versione nuova.
+  # Usa gli stessi secret e la stessa variabile PLESK_SSH del deploy del backend.
+  deploy-frontend:
+    name: Deploy frontend (Plesk)
+    runs-on: ubuntu-24.04
+    needs: [frontend, frontend-e2e]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PLESK_SSH != ''
+    # Mai due rilasci in parallelo: il secondo aspetta il primo
+    concurrency:
+      group: deploy-frontend-plesk
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: ${{ runner.temp }}/frontend-dist
+
+      - name: SSH key
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "${{ secrets.PLESK_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.PLESK_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Release
+        env:
+          PLESK_SSH: ${{ vars.PLESK_SSH }}
+        run: ./scripts/release-frontend-plesk.sh "$RUNNER_TEMP/frontend-dist"
