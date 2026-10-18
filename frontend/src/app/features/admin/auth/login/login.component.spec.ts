@@ -7,6 +7,7 @@ import { NEVER, of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LAST_LOGIN_EMAIL_KEY, LoginComponent, SUCCESS_DELAY_MS } from './login.component';
 import { AuthService } from '../../../../core/services/auth.service';
+import { LAST_LOGIN_ADMIN_KEY } from '../auth-form.utils';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
 
@@ -71,12 +72,54 @@ describe('LoginComponent', () => {
     return { fixture, el, $, type, submit, cmp: fixture.componentInstance };
   }
 
-  it('mostra la foto profilo nella card al posto delle iniziali', () => {
-    const avatar = setup().$('.auth-avatar');
+  const expectPhoto = (avatar: HTMLElement | null) => {
     expect(avatar?.textContent?.trim()).toBe('');
     expect(avatar?.querySelector('img')?.getAttribute('src')).toBe('assets/profil-440.jpg');
     const sources = Array.from(avatar?.querySelectorAll('source') ?? []).map(s => s.getAttribute('type'));
     expect(sources).toEqual(['image/avif', 'image/webp']);
+  };
+  const expectGenericAvatar = (avatar: HTMLElement | null) => {
+    expect(avatar?.querySelector('app-generic-avatar svg')).not.toBeNull();
+    expect(avatar?.querySelector('img')).toBeNull();
+  };
+
+  it('modale: per gli altri profili un avatar generico, non la foto di Gent', () => {
+    expectGenericAvatar(setup().$('.auth-avatar'));
+  });
+
+  it('pagina admin /dashboard/login: resta la foto profilo', () => {
+    expectPhoto(setup(false).$('.auth-avatar'));
+  });
+
+  it('modale su un dispositivo dove l\'ultimo accesso è stato dell\'admin: la foto profilo', () => {
+    localStorage.setItem(LAST_LOGIN_ADMIN_KEY, '1');
+    expectPhoto(setup().$('.auth-avatar'));
+  });
+
+  it('accesso admin riuscito: mostra la foto e la ricorda per la prossima apertura', () => {
+    vi.useFakeTimers();
+    const { $, type, submit } = setup();
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    auth.login.mockImplementation(() => {
+      auth.isAdmin.mockReturnValue(true);
+      return of({});
+    });
+    type('#auth-email', 'admin@example.com');
+    type('#auth-password', 'segreta123');
+    submit();
+    expectPhoto($('.auth-avatar'));
+    expect(localStorage.getItem(LAST_LOGIN_ADMIN_KEY)).toBe('1');
+  });
+
+  it('accesso di un altro profilo: resta l\'avatar generico e la foto non viene più ricordata', () => {
+    vi.useFakeTimers();
+    localStorage.setItem(LAST_LOGIN_ADMIN_KEY, '1');
+    const { $, type, submit } = setup();
+    type('#auth-email', 'mario@example.com');
+    type('#auth-password', 'segreta123');
+    submit();
+    expectGenericAvatar($('.auth-avatar'));
+    expect(localStorage.getItem(LAST_LOGIN_ADMIN_KEY)).toBeNull();
   });
 
   it('form non valido: niente chiamata al backend, errori sotto i campi', () => {

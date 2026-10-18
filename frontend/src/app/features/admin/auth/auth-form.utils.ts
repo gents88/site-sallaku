@@ -81,3 +81,26 @@ export function mapAuthError(err: unknown, fallbackKey: string): AuthErrorView {
   if (status !== undefined && status >= 500) return { key: 'auth.err_server' };
   return { key: fallbackKey };
 }
+
+/**
+ * Su questo dispositivo l'ultimo accesso riuscito è stato dell'admin: le card
+ * di login ripartono con la foto di Gent invece dell'avatar generico. Un
+ * accesso di un altro profilo lo cancella.
+ */
+export const LAST_LOGIN_ADMIN_KEY = 'portfolio_last_login_admin';
+
+export function readLastLoginAdmin(): boolean {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem(LAST_LOGIN_ADMIN_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function storeLastLoginAdmin(isAdmin: boolean): void {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    if (isAdmin) localStorage.setItem(LAST_LOGIN_ADMIN_KEY, '1');
+    else localStorage.removeItem(LAST_LOGIN_ADMIN_KEY);
+  } catch { /* storage bloccato: si riparte solo con l'avatar generico */ }
+}
