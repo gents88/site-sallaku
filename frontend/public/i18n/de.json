@@ -2010,6 +2010,7 @@
     "uploading": "Datei wird hochgeladen…",
     "processing": "Wird verarbeitet…",
     "cancel": "Abbrechen",
+    "retry": "Erneut versuchen",
     "cancelled": "Vorgang abgebrochen."
   },
   "project_detail": {
@@ -2229,6 +2230,7 @@
     "banner": "Du bist offline. Bereits gelesene Artikel bleiben verfügbar.",
     "see_articles": "Artikel ansehen",
     "back_online": "Wieder online",
+    "tool_needs_connection": "Dieses Tool verarbeitet Dateien auf dem Server und braucht daher eine Verbindung. Versuche es erneut, sobald du wieder online bist.",
     "list_unavailable": "Du bist offline: Die Artikelliste ist nicht verfügbar",
     "load_error": "Die Artikel konnten nicht geladen werden",
     "recent_title": "Diese hast du bereits gelesen und kannst sie auch ohne Verbindung öffnen:",

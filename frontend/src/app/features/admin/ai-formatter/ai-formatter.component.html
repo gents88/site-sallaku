@@ -149,9 +149,11 @@
         </textarea>
 
         @if (error()) {
-          <div class="error-msg">⚠️ {{ error() }}</div>
+          <div class="error-msg" role="alert">⚠️ {{ error() }}</div>
+          <app-request-retry [request]="req" (retry)="format()" />
         }
 
+        <app-offline-tool-hint />
         <div class="input-actions">
           <button class="btn-sample" (click)="useSampleText()" [disabled]="loading()">
             {{ 'ai_formatter.btn_sample' | translate }}
@@ -164,7 +166,7 @@
           <button
             class="btn-format"
             [class.is-loading]="loading()"
-            [disabled]="!text() || loading()"
+            [disabled]="!text() || loading() || !network.online()"
             (click)="format()">
             @if (loading()) {
               <span class="spinner"></span> {{ 'ai_formatter.btn_formatting' | translate }}
