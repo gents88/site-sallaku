@@ -14,6 +14,7 @@ import { loadStylesheetOnce } from '../../core/utils/load-stylesheet';
 import { MATERIAL_CSS } from '../../core/utils/vendor-css.generated';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
+import { FocusFirstInvalidDirective } from '../../shared/directives/focus-first-invalid.directive';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 
@@ -24,7 +25,7 @@ import { FeatureFlagsService } from '../../core/services/feature-flags.service';
   imports: [
     CommonModule, ReactiveFormsModule, TranslateModule,
     MatIconModule, MatSnackBarModule, TurnstileWidgetComponent,
-    RouterLink, LangUrlPipe, BreadcrumbComponent,
+    RouterLink, LangUrlPipe, BreadcrumbComponent, FocusFirstInvalidDirective,
   ],
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
@@ -131,7 +132,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
         // mutation inside an HTTP callback, so the success state would never
         // reach the template without this.
         this.cdr.markForCheck();
-        this.snackBar.open('Message sent! I\'ll get back to you soon.', 'Close', { duration: 5000 });
+        this.snackBar.open(this.translate.instant('contact.form_sent'), this.translate.instant('common.close'), { duration: 5000 });
         this.analytics.trackClick('lead', 'contact_form');
       },
       error: () => {
@@ -142,7 +143,7 @@ export class ContactComponent implements OnInit, AfterViewInit {
         const subject = encodeURIComponent(v.subject ?? '');
         const body = encodeURIComponent(`Name: ${v.name}\nEmail: ${v.email}\n\n${v.message}`);
         window.open(`mailto:gentsallaku@gmail.com?subject=${subject}&body=${body}`, '_blank');
-        this.snackBar.open('Opening your email client as fallback…', 'OK', { duration: 5000 });
+        this.snackBar.open(this.translate.instant('contact.form_error'), this.translate.instant('common.close'), { duration: 5000 });
       },
     });
   }
