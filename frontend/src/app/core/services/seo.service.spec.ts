@@ -84,6 +84,33 @@ describe('SeoService', () => {
     expect(ogLocale?.getAttribute('content')).toBe('sq_AL');
   });
 
+  describe('injectJsonLd', () => {
+    afterEach(() => document.querySelectorAll('script[data-json-ld]').forEach(el => el.remove()));
+
+    it('does not let a value containing </script> break out of the JSON-LD element', () => {
+      const seo = configure();
+      const hostile = '</script><img src=x onerror=alert(1)>';
+
+      seo.injectJsonLd({ '@type': 'Review', reviewBody: hostile });
+
+      const script = document.querySelector('script[data-json-ld="0"]') as HTMLScriptElement;
+      expect(script.textContent).not.toContain('<');
+      // Serialized markup keeps a single script element and no injected <img>.
+      expect(document.head.querySelectorAll('img').length).toBe(0);
+      expect(script.outerHTML.match(/<\/script>/gi)?.length).toBe(1);
+    });
+
+    it('still round-trips to the exact original object', () => {
+      const seo = configure();
+      const data = { '@type': 'Review', reviewBody: 'a < b </script> & "c"' };
+
+      seo.injectJsonLd(data);
+
+      const script = document.querySelector('script[data-json-ld="0"]') as HTMLScriptElement;
+      expect(JSON.parse(script.textContent ?? '')).toEqual(data);
+    });
+  });
+
   describe('translated paths (blog slugs)', () => {
     const alternatePaths = {
       it: '/blog/blinisht-storia', en: '/blog/blinisht-history', sq: '/blog/blinishti-historia',

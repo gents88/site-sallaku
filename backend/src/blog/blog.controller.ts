@@ -125,7 +125,7 @@ export class BlogController {
       },
     },
   })
-  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: MAX_PDF_UPLOAD_SIZE } }))
   generateFromPdf(
     @UploadedFile(
       new ParseFilePipeBuilder()
@@ -157,7 +157,7 @@ export class BlogController {
       properties: { file: { type: 'string', format: 'binary' } },
     },
   })
-  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: MAX_PDF_UPLOAD_SIZE } }))
   extractPdf(
     @UploadedFile(
       new ParseFilePipeBuilder()
