@@ -8,6 +8,7 @@ import {
   ChatbotComponent,
   NOTICE_DISMISSED_KEY,
   TEASER_DELAY_MS,
+  TEASER_VISIBLE_MS,
   TEASER_DISMISSED_KEY,
 } from './chatbot.component';
 import { ChatbotService, ChatMessage } from '../../core/services/chatbot.service';
@@ -202,6 +203,89 @@ describe('ChatbotComponent — pannello rinnovato', () => {
       f.detectChanges();
 
       expect(el(f).querySelector('.cb-teaser')).not.toBeNull();
+    });
+
+    describe('scadenza automatica', () => {
+      const shown = (f: ComponentFixture<ChatbotComponent>) => {
+        vi.advanceTimersByTime(TEASER_DELAY_MS);
+        f.detectChanges();
+      };
+      const badge = (f: ComponentFixture<ChatbotComponent>) => el(f).querySelector('.cb-fab__badge');
+      const teaser = (f: ComponentFixture<ChatbotComponent>) => el(f).querySelector('.cb-teaser');
+
+      afterEach(() => document.documentElement.removeAttribute('data-cookie-banner-open'));
+
+      it('dura solo alcuni secondi, non resta fisso sopra i contenuti', () => {
+        expect(TEASER_VISIBLE_MS).toBeGreaterThanOrEqual(3000);
+        expect(TEASER_VISIBLE_MS).toBeLessThanOrEqual(15000);
+      });
+
+      it('compare subito e dopo TEASER_VISIBLE_MS sparisce insieme al numero sul pulsante', () => {
+        const f = create(false);
+        shown(f);
+        expect(teaser(f)).not.toBeNull();
+        expect(badge(f)?.textContent?.trim()).toBe('1');
+
+        vi.advanceTimersByTime(TEASER_VISIBLE_MS - 1);
+        f.detectChanges();
+        expect(teaser(f)).not.toBeNull();
+
+        vi.advanceTimersByTime(1);
+        f.detectChanges();
+        expect(teaser(f)).toBeNull();
+        expect(badge(f)).toBeNull();
+      });
+
+      it('scaduto, non ricompare per il resto della visita', () => {
+        const f = create(false);
+        shown(f);
+        vi.advanceTimersByTime(TEASER_VISIBLE_MS);
+
+        expect(sessionStorage.getItem(TEASER_DISMISSED_KEY)).toBe('1');
+      });
+
+      it('con il puntatore sul fumetto non scade; uscito, riparte il conto', () => {
+        const f = create(false);
+        shown(f);
+        const box = teaser(f) as HTMLElement;
+
+        box.dispatchEvent(new Event('mouseenter'));
+        vi.advanceTimersByTime(TEASER_VISIBLE_MS * 3);
+        f.detectChanges();
+        expect(teaser(f)).not.toBeNull();
+
+        box.dispatchEvent(new Event('mouseleave'));
+        vi.advanceTimersByTime(TEASER_VISIBLE_MS);
+        f.detectChanges();
+        expect(teaser(f)).toBeNull();
+        expect(badge(f)).toBeNull();
+      });
+
+      it('non scade finché il banner cookie lo nasconde', () => {
+        const f = create(false);
+        document.documentElement.setAttribute('data-cookie-banner-open', '');
+        shown(f);
+
+        vi.advanceTimersByTime(TEASER_VISIBLE_MS * 2);
+        f.detectChanges();
+        expect(teaser(f)).not.toBeNull();
+
+        document.documentElement.removeAttribute('data-cookie-banner-open');
+        vi.advanceTimersByTime(TEASER_VISIBLE_MS);
+        f.detectChanges();
+        expect(teaser(f)).toBeNull();
+      });
+
+      it('aprendo la chat prima della scadenza non resta nessun timer che la disturbi', () => {
+        const f = create(false);
+        shown(f);
+        el(f).querySelector<HTMLButtonElement>('.cb-teaser__body')!.click();
+        f.detectChanges();
+
+        vi.advanceTimersByTime(TEASER_VISIBLE_MS * 2);
+        f.detectChanges();
+        expect(teaser(f)).toBeNull();
+      });
     });
 
     it('compare subito dopo il caricamento, senza far aspettare il visitatore', () => {
