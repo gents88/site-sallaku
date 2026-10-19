@@ -11,7 +11,7 @@ import {
   PLATFORM_ID,
   inject,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
@@ -39,10 +39,15 @@ const TYPING_DEBOUNCE_MS = 1200;
 /**
  * Il fumetto "Hai domande su Gent?" accompagna il pulsante a ogni visita: compare
  * subito dopo il caricamento (il breve ritardo serve solo all'animazione d'ingresso)
- * e resta finché il visitatore non apre la chat o lo chiude. Il "chiuso" vale per
- * la visita (sessionStorage): alla visita successiva ricompare.
+ * e dopo TEASER_VISIBLE_MS sparisce da solo, insieme al pallino col numero: è un
+ * invito, non deve restare sopra i contenuti. Si ferma finché il puntatore o il
+ * focus sono sul fumetto, e non scade mentre il banner cookie lo nasconde.
+ * Chiuso (a mano o per scadenza) non torna per il resto della visita
+ * (sessionStorage); alla visita successiva ricompare.
  */
 export const TEASER_DELAY_MS = 800;
+/** Quanto resta a schermo il fumetto (e il numero sul pulsante) prima di sparire da solo. */
+export const TEASER_VISIBLE_MS = 8000;
 export const TEASER_DISMISSED_KEY = 'gs-chat-teaser-dismissed';
 export const NOTICE_DISMISSED_KEY = 'gs-chat-notice-dismissed';
 const COPIED_FEEDBACK_MS = 1500;
@@ -89,6 +94,7 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   private readonly langService: LanguageService = inject(LanguageService);
   private readonly translate: TranslateService = inject(TranslateService);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly document = inject(DOCUMENT);
 
   messages: ChatMessage[] = [];
   liveMessages: ChatMessage[] = [];
@@ -134,6 +140,9 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
    */
   inviteUnread = false;
   private teaserTimer: ReturnType<typeof setTimeout> | null = null;
+  private teaserHideTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Puntatore o focus sul fumetto: la scadenza aspetta. */
+  private teaserHeld = false;
 
   /** Messaggio appena copiato: il pulsante mostra "Copiato" per un attimo. */
   copiedMessage: ChatMessage | null = null;
@@ -291,6 +300,7 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
     if (this.teaserTimer) clearTimeout(this.teaserTimer);
+    if (this.teaserHideTimer) clearTimeout(this.teaserHideTimer);
     if (this.copiedTimer) clearTimeout(this.copiedTimer);
   }
 
@@ -303,8 +313,32 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
       if (this.isOpen || this.chatbot.hasMessages) return;
       this.teaserVisible = true;
       this.inviteUnread = true;
+      this.armTeaserExpiry();
       this.cdr.markForCheck();
     }, TEASER_DELAY_MS);
+  }
+
+  private armTeaserExpiry(): void {
+    if (this.teaserHideTimer) clearTimeout(this.teaserHideTimer);
+    this.teaserHideTimer = setTimeout(() => {
+      this.teaserHideTimer = null;
+      // Non scade se il visitatore ci sta sopra o se il banner cookie lo nasconde
+      // (display:none): altrimenti sparirebbe senza che nessuno l'abbia visto.
+      if (this.teaserHeld || this.document.documentElement.hasAttribute('data-cookie-banner-open')) {
+        this.armTeaserExpiry();
+        return;
+      }
+      this.hideTeaser();
+      // Il numero sul pulsante è parte dell'invito: sparisce con il fumetto.
+      this.inviteUnread = false;
+      this.cdr.markForCheck();
+    }, TEASER_VISIBLE_MS);
+  }
+
+  /** Puntatore o focus entrano/escono dal fumetto: la scadenza si ferma e riparte. */
+  holdTeaser(held: boolean): void {
+    this.teaserHeld = held;
+    if (!held && this.teaserVisible) this.armTeaserExpiry();
   }
 
   /** Chiude il fumetto per il resto della visita. */
@@ -313,6 +347,11 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
       clearTimeout(this.teaserTimer);
       this.teaserTimer = null;
     }
+    if (this.teaserHideTimer) {
+      clearTimeout(this.teaserHideTimer);
+      this.teaserHideTimer = null;
+    }
+    this.teaserHeld = false;
     this.writeFlag(TEASER_DISMISSED_KEY, 'session');
     this.teaserVisible = false;
   }
