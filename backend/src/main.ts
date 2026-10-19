@@ -21,6 +21,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ErrorLogService } from './error-log/error-log.service';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { isProductionEnv } from './common/utils/runtime-env';
+import { isCorsOriginAllowed } from './common/utils/cors-origin';
 
 function parseCorsOrigins(rawOrigins?: string): string[] {
   return (rawOrigins ?? '')
@@ -54,7 +55,7 @@ async function bootstrap() {
 
   // ── Body parser limit ─────────────────────────────────────────
   // Global limit kept small to reduce DoS exposure.
-  // The blog PDF-upload route registers its own 50 MB limit via FileInterceptor/multer.
+  // The blog PDF-upload routes enforce their own limit (MAX_PDF_UPLOAD_SIZE) via FileInterceptor/multer.
   app.use(express.json({ limit: '1mb' }));
   app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
@@ -100,31 +101,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow server-to-server / curl requests (no Origin header)
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-
-      // Dev/staging with no explicit allowlist → allow all origins
-      if (!isProduction && allowedOrigins.length === 0) {
-        callback(null, true);
-        return;
-      }
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      // Dev: accept any loopback origin (localhost / 127.0.0.1, any port), so
-      // e.g. http://127.0.0.1:4200 or a second ng serve port don't get a 500.
-      if (!isProduction && /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error(`Origin not allowed by CORS: ${origin}`));
+      // `false` (non un Error): vedi isCorsOriginAllowed.
+      callback(null, isCorsOriginAllowed(origin, { isProduction, allowedOrigins }));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
