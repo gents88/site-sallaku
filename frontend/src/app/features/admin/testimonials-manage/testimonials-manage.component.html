@@ -60,6 +60,13 @@
               @if (item.featured) {
                 <span class="badge badge--featured">{{ 'testimonials_manage.featured_on' | translate }}</span>
               }
+              @if (item.verified) {
+                <span class="badge badge--verified">{{ 'testimonials_manage.verified_badge' | translate }}</span>
+              }
+              @if (safeLinkedin(item); as href) {
+                <a class="testimonial-row__linkedin" [href]="href" target="_blank" rel="noopener noreferrer nofollow"
+                   [matTooltip]="'testimonials_manage.linkedin_open' | translate">LinkedIn ↗</a>
+              }
               <span class="testimonial-row__score" [matTooltip]="'testimonials_manage.spam_score_tooltip' | translate">
                 {{ 'testimonials_manage.spam_score' | translate }}: {{ item.spamScore }}
               </span>
@@ -107,6 +114,13 @@
               <button mat-icon-button [color]="item.featured ? 'accent' : ''" [disabled]="actioningId === item.id"
                       (click)="toggleFeatured(item)" [attr.title]="'testimonials_manage.toggle_featured' | translate">
                 <mat-icon>{{ item.featured ? 'star' : 'star_border' }}</mat-icon>
+              </button>
+            }
+            @if (!item.isSpam) {
+              <button mat-stroked-button class="verify-btn" [disabled]="actioningId === item.id"
+                      (click)="toggleVerified(item)"
+                      [matTooltip]="'testimonials_manage.verify_tooltip' | translate">
+                {{ (item.verified ? 'testimonials_manage.unverify' : 'testimonials_manage.verify') | translate }}
               </button>
             }
             @if (!item.isSpam) {

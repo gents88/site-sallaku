@@ -23,6 +23,12 @@ export class TestimonialAdminItemDto {
 
   featured: boolean;
 
+  linkedinUrl?: string;
+
+  verified: boolean;
+
+  verifiedAt?: Date | null;
+
   userIp?: string;
 
   createdAt: Date;
