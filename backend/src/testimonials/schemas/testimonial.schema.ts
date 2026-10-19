@@ -31,6 +31,20 @@ export class Testimonial {
   @Prop({ trim: true, maxlength: 500 })
   avatarUrl?: string;
 
+  /** Profilo LinkedIn indicato da chi scrive (normalizzato). Pubblico solo se `verified`. */
+  @Prop({ trim: true, maxlength: 300 })
+  linkedinUrl?: string;
+
+  /**
+   * "Verificata dall'admin": l'identità dell'autore è stata controllata a mano.
+   * Lo imposta solo l'admin (mai il form pubblico) e di default è false.
+   */
+  @Prop({ default: false })
+  verified: boolean;
+
+  @Prop({ type: Date, default: null })
+  verifiedAt?: Date | null;
+
   @Prop({ default: false })
   isApproved: boolean;
 

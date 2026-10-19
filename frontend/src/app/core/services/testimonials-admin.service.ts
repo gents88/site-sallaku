@@ -40,6 +40,10 @@ export class TestimonialsAdminService {
     return this.http.patch<AdminTestimonial>(`${this.url}/${id}/feature`, { featured });
   }
 
+  setVerified(id: string, verified: boolean): Observable<AdminTestimonial> {
+    return this.http.patch<AdminTestimonial>(`${this.url}/${id}/verify`, { verified });
+  }
+
   updateContent(id: string, content: string): Observable<AdminTestimonial> {
     return this.http.patch<AdminTestimonial>(`${this.url}/${id}/content`, { content });
   }
