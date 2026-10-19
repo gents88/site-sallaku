@@ -121,6 +121,11 @@ export class OnboardingTourService {
         nextBtnText: t('onboarding.next'),
         prevBtnText: t('onboarding.back'),
         doneBtnText: t('onboarding.done'),
+        // Driver.js marca l'elemento evidenziato con aria-haspopup/expanded/controls,
+        // anche l'elemento fittizio (div senza ruolo, invisibile) dei passi centrati:
+        // su un div generico sono attributi non ammessi (axe: aria-allowed-attr,
+        // "critical"). Il microtask gira dopo che la libreria li ha scritti.
+        onHighlightStarted: () => queueMicrotask(() => this.stripDummyAria()),
         onPopoverRender: (popover, { driver: d }) => {
           if (d.isLastStep()) return;
           const skip = this.document.createElement('button');
@@ -160,6 +165,11 @@ export class OnboardingTourService {
       this.active.set(false);
       restoreLayout();
     }
+  }
+
+  private stripDummyAria(): void {
+    const dummy = this.document.getElementById('driver-dummy-element');
+    for (const attr of ['aria-haspopup', 'aria-expanded', 'aria-controls']) dummy?.removeAttribute(attr);
   }
 
   /** Chiude il tour se aperto (es. su cambio rotta pilotato dal codice). */

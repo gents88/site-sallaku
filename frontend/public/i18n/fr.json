@@ -2010,6 +2010,7 @@
     "uploading": "Envoi du fichier…",
     "processing": "Traitement en cours…",
     "cancel": "Annuler",
+    "retry": "Réessayer",
     "cancelled": "Opération annulée."
   },
   "project_detail": {
@@ -2229,6 +2230,7 @@
     "banner": "Vous êtes hors ligne. Les articles déjà lus restent disponibles.",
     "see_articles": "Voir les articles",
     "back_online": "De nouveau en ligne",
+    "tool_needs_connection": "Cet outil traite les fichiers sur le serveur : une connexion est nécessaire. Réessayez une fois de nouveau en ligne.",
     "list_unavailable": "Vous êtes hors ligne : la liste des articles n'est pas disponible",
     "load_error": "Impossible de charger les articles",
     "recent_title": "Vous les avez déjà lus et pouvez les ouvrir sans connexion :",

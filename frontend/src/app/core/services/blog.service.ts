@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpContext, HttpEvent, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SKIP_CACHE_INTERCEPTOR } from '../interceptors/cache.interceptor';
 import {
@@ -31,17 +31,28 @@ export class BlogService {
   constructor(private http: HttpClient, private cache: ApiCacheService) {}
 
   // Public (cached, paginated)
-  getPublished(tag?: string, page = 1, limit = 10): Observable<PaginatedPosts> {
-    const key = `${CACHE_PREFIX}:p${page}:l${limit}${tag ? ':tag:' + tag : ''}`;
+  getPublished(tag?: string, page = 1, limit = 10, lang?: string): Observable<PaginatedPosts> {
+    const key = `${CACHE_PREFIX}:p${page}:l${limit}${tag ? ':tag:' + tag : ''}${lang ? ':lang:' + lang : ''}`;
     let params = new HttpParams().set('page', page).set('limit', limit);
     if (tag) params = params.set('tag', tag);
+    // Con `lang` il backend omette titolo ed estratto delle altre lingue: la
+    // lista (e il suo TransferState nell'HTML prerenderizzato) pesa molto meno.
+    if (lang) params = params.set('lang', lang);
     const context = new HttpContext().set(SKIP_CACHE_INTERCEPTOR, true);
-    return this.cache.get(key, () => this.http.get<PaginatedPosts>(this.publicUrl, { params, context }), TTL);
+    const fetchList = () => this.http.get<PaginatedPosts>(this.publicUrl, { params, context }).pipe(
+      // Backend più vecchio del frontend (ambienti non ancora allineati): rifiuta
+      // il parametro sconosciuto con 400. Si ripiega sulla lista completa invece
+      // di lasciare il blog vuoto.
+      catchError(err => lang && err?.status === 400
+        ? this.http.get<PaginatedPosts>(this.publicUrl, { params: params.delete('lang'), context })
+        : throwError(() => err)),
+    );
+    return this.cache.get(key, fetchList, TTL);
   }
 
   /** Convenience: get just the first page of posts (backwards compatibility). */
-  getPublishedAll(tag?: string): Observable<PostSummary[]> {
-    return this.getPublished(tag, 1, 50).pipe(map(r => r.data));
+  getPublishedAll(tag?: string, lang?: string): Observable<PostSummary[]> {
+    return this.getPublished(tag, 1, 50, lang).pipe(map(r => r.data));
   }
 
   getBySlug(slug: string): Observable<Post> {
