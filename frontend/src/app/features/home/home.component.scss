@@ -809,71 +809,21 @@ details[open] .faq-chevron { transform: rotate(180deg); color: var(--primary-400
 .contact-arrow   { color: var(--primary-400); opacity: 0; transition: var(--transition-base); }
 .contact-card:hover .contact-arrow { opacity: 1; transform: translateX(4px); }
 
-/* Contact form */
-.contact-form-wrapper {
+/* Contact CTA: il form vero vive in /contact (Turnstile, consenso privacy, flag) */
+.contact-cta {
   max-width: 700px;
   margin: 0 auto;
-  padding: 48px;
-
-  h3 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 32px; }
-}
-
-.contact-form {
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
-
-  input, textarea {
-    background: var(--input-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
-    font-family: var(--font-main);
-    font-size: 0.95rem;
-    color: var(--text-primary);
-    transition: var(--transition-base);
-    width: 100%;
-
-    &::placeholder { color: var(--text-muted); }
-    &:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(79,106,245,0.1); }
-  }
-
-  textarea { resize: vertical; min-height: 140px; }
-}
-
-.hp-field { display: none !important; }
-
-.contact-form button[disabled] {
-  opacity: 0.8;
-  cursor: wait;
-}
-
-.form-note { font-size: 0.8rem; color: var(--text-muted); }
-
-.form-success {
-  font-size: 0.9rem;
-  color: #22c55e;
-  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+  text-align: center;
+
+  h3 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
 }
 
-.form-error {
-  font-size: 0.9rem;
-  color: #f87171;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.form-note { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
 
 /* ══ SERVICES SECTION ══════════════════════════════════ */
 .section-subtitle {

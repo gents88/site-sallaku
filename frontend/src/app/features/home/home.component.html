@@ -440,7 +440,7 @@
       <div class="section-line"></div>
     </div>
     <div class="contact-grid">
-      <a href="mailto:gent.sallaku@email.com" class="contact-card reveal glass-card">
+      <a href="mailto:gentsallaku@gmail.com" class="contact-card reveal glass-card">
         <div class="contact-icon"><i class="fas fa-envelope"></i></div>
         <h3>{{ 'contact.card.email.title' | translate }}</h3>
         <p>{{ 'contact.card.email.desc' | translate }}</p>
@@ -471,40 +471,12 @@
         <span class="contact-arrow"><i class="fas fa-arrow-right"></i></span>
       </a>
     </div>
-    <div class="contact-form-wrapper reveal glass-card">
+    <div class="contact-cta reveal glass-card">
       <h3>{{ 'contact.form.title' | translate }}</h3>
-      <form class="contact-form" (ngSubmit)="submitContact()" #contactF="ngForm" novalidate>
-        <input type="text" name="honeypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" [(ngModel)]="honeypot" />
-        <label>
-          <span>{{ 'contact.form.name' | translate }}</span>
-          <input type="text" name="name" required autocomplete="name" [placeholder]="'contact.form.name_placeholder' | translate" [(ngModel)]="contactForm.name" />
-        </label>
-        <label>
-          <span>{{ 'contact.form.email' | translate }}</span>
-          <input type="email" name="email" required autocomplete="email" [placeholder]="'contact.form.email_placeholder' | translate" [(ngModel)]="contactForm.email" />
-        </label>
-        <label>
-          <span>{{ 'contact.form.message' | translate }}</span>
-          <textarea name="message" rows="5" required minlength="10" [placeholder]="'contact.form.message' | translate" [(ngModel)]="contactForm.message"></textarea>
-        </label>
-        <button type="submit" class="btn btn-primary" [disabled]="contactSending">
-          @if (contactSending) {
-            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> {{ 'contact.form.sending' | translate }}
-          } @else {
-            <i class="fas fa-paper-plane" aria-hidden="true"></i> {{ 'contact.form.submit' | translate }}
-          }
-        </button>
-        <p class="form-note">{{ 'contact.form.note' | translate }}</p>
-        @if (contactInvalid) {
-          <p class="form-error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> {{ 'contact.form_invalid' | translate }}</p>
-        }
-        @if (contactSent) {
-          <p class="form-success" role="status"><i class="fas fa-check-circle" aria-hidden="true"></i> {{ 'contact.form_sent' | translate }}</p>
-        }
-        @if (contactError) {
-          <p class="form-error" role="alert"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> {{ 'contact.form_error' | translate }}</p>
-        }
-      </form>
+      <p class="form-note">{{ 'contact.form.note' | translate }}</p>
+      <a class="btn btn-primary" [routerLink]="'/contact' | langUrl" appTrackClick eventType="cta" label="home_contact_form" destination="/contact">
+        <i class="fas fa-paper-plane" aria-hidden="true"></i> {{ 'contact.form.submit' | translate }}
+      </a>
     </div>
   </div>
 
