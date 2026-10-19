@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TestimonialsComponent } from './testimonials.component';
+import { SeoService } from '../../core/services/seo.service';
 
 describe('TestimonialsComponent — validazione accessibile', () => {
   beforeEach(() => {
@@ -45,5 +46,111 @@ describe('TestimonialsComponent — validazione accessibile', () => {
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('#testimonial-name')?.getAttribute('autocomplete')).toBe('name');
     expect(el.querySelector('#testimonial-email')?.getAttribute('autocomplete')).toBe('email');
+  });
+});
+
+describe('TestimonialsComponent — verifica e LinkedIn', () => {
+  const LINK = 'https://www.linkedin.com/in/mario-rossi';
+  const base = { rating: 5, content: 'Ottimo lavoro, davvero consigliato.', featured: false, createdAt: '2026-10-01T00:00:00Z' };
+  const list = [
+    { id: '1', authorName: 'Mario Verificato', ...base, verified: true, linkedinUrl: LINK },
+    { id: '2', authorName: 'Anna Non Verificata', ...base, verified: false },
+    { id: '3', authorName: 'Vecchia Senza Campi', ...base },
+  ];
+
+  let http: HttpTestingController;
+
+  beforeEach(() => {
+    vi.stubGlobal('IntersectionObserver', class { observe() {} unobserve() {} disconnect() {} });
+    TestBed.configureTestingModule({
+      imports: [TestimonialsComponent, TranslateModule.forRoot()],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  function renderWithList() {
+    const jsonLd = vi.spyOn(TestBed.inject(SeoService), 'injectJsonLd');
+    const fixture = TestBed.createComponent(TestimonialsComponent);
+    fixture.detectChanges();
+    http.expectOne(r => r.url.includes('/testimonials')).flush({ data: list, total: list.length });
+    fixture.detectChanges();
+    return { fixture, el: fixture.nativeElement as HTMLElement, jsonLd };
+  }
+
+  it('solo la testimonianza verificata mostra badge e link LinkedIn', () => {
+    const { el } = renderWithList();
+    const cards = Array.from(el.querySelectorAll('.testimonial-card'));
+    const byName = (n: string) => cards.find(c => c.textContent?.includes(n))!;
+
+    expect(byName('Mario Verificato').querySelector('.tp__badge')).not.toBeNull();
+    expect(byName('Mario Verificato').querySelector('a.tp__link')?.getAttribute('href')).toBe(LINK);
+    expect(byName('Anna Non Verificata').querySelector('.tp__badge, .tp__link')).toBeNull();
+    expect(byName('Vecchia Senza Campi').querySelector('.tp__badge, .tp__link')).toBeNull();
+  });
+
+  it('nei dati strutturati il profilo LinkedIn (sameAs) c\'è solo per l\'autore verificato', () => {
+    const { jsonLd } = renderWithList();
+    const nodes = jsonLd.mock.calls[0][0] as Array<Record<string, any>>;
+    const reviews = nodes.filter(n => n['@type'] === 'Review');
+
+    expect(reviews.find(r => r['author'].name === 'Mario Verificato')!['author'].sameAs).toBe(LINK);
+    expect(reviews.find(r => r['author'].name === 'Anna Non Verificata')!['author']).not.toHaveProperty('sameAs');
+    expect(reviews.find(r => r['author'].name === 'Vecchia Senza Campi')!['author']).not.toHaveProperty('sameAs');
+  });
+
+  describe('campo LinkedIn del form', () => {
+    function fill(cmp: TestimonialsComponent, linkedin: string) {
+      cmp.form.patchValue({ authorName: 'Mario Rossi', rating: 5, content: 'Ottimo lavoro, davvero consigliato.', linkedinUrl: linkedin });
+    }
+
+    it('è facoltativo: lasciato vuoto il form resta valido e non invia il campo', () => {
+      const fixture = TestBed.createComponent(TestimonialsComponent);
+      fixture.detectChanges();
+      http.expectOne(r => r.url.includes('/testimonials')).flush({ data: [], total: 0 });
+      fill(fixture.componentInstance, '');
+
+      fixture.componentInstance.submit();
+
+      const post = http.expectOne(r => r.method === 'POST');
+      expect(post.request.body.linkedinUrl).toBeUndefined();
+    });
+
+    it('manda il link normalizzato (https://www.linkedin.com/in/…)', () => {
+      const fixture = TestBed.createComponent(TestimonialsComponent);
+      fixture.detectChanges();
+      http.expectOne(r => r.url.includes('/testimonials')).flush({ data: [], total: 0 });
+      fill(fixture.componentInstance, 'linkedin.com/in/mario-rossi/?trk=x');
+
+      fixture.componentInstance.submit();
+
+      expect(http.expectOne(r => r.method === 'POST').request.body.linkedinUrl).toBe(LINK);
+    });
+
+    it('un link che non è un profilo LinkedIn blocca l\'invio e mostra l\'errore collegato al campo', () => {
+      const fixture = TestBed.createComponent(TestimonialsComponent);
+      fixture.detectChanges();
+      http.expectOne(r => r.url.includes('/testimonials')).flush({ data: [], total: 0 });
+      fill(fixture.componentInstance, 'https://evil.example/in/mario-rossi');
+
+      fixture.componentInstance.submit();
+      fixture.detectChanges();
+
+      http.expectNone(r => r.method === 'POST');
+      const input = (fixture.nativeElement as HTMLElement).querySelector('#testimonial-linkedin')!;
+      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(input.getAttribute('aria-describedby')).toContain('testimonial-linkedin-err');
+      expect((fixture.nativeElement as HTMLElement).querySelector('#testimonial-linkedin-err')?.getAttribute('role')).toBe('alert');
+    });
+
+    it('spiega che il link compare solo se l\'admin verifica la testimonianza', () => {
+      const fixture = TestBed.createComponent(TestimonialsComponent);
+      fixture.detectChanges();
+      http.expectOne(r => r.url.includes('/testimonials')).flush({ data: [], total: 0 });
+      const hint = (fixture.nativeElement as HTMLElement).querySelector('#testimonial-linkedin-hint');
+      expect(hint).not.toBeNull();
+    });
   });
 });
