@@ -2010,6 +2010,7 @@
     "uploading": "Po ngarkohet skedari…",
     "processing": "Duke u përpunuar…",
     "cancel": "Anulo",
+    "retry": "Provo përsëri",
     "cancelled": "Veprimi u anulua."
   },
   "project_detail": {
@@ -2229,6 +2230,7 @@
     "banner": "Je jashtë linje. Artikujt që ke lexuar mbeten të disponueshëm.",
     "see_articles": "Shiko artikujt",
     "back_online": "Përsëri në linjë",
+    "tool_needs_connection": "Ky mjet i përpunon skedarët në server, prandaj kërkon lidhje me internetin. Provo përsëri kur të jesh sërish online.",
     "list_unavailable": "Je jashtë linje: lista e artikujve nuk është e disponueshme",
     "load_error": "Artikujt nuk u ngarkuan dot",
     "recent_title": "Këto i ke lexuar tashmë dhe mund t'i hapësh edhe pa lidhje:",

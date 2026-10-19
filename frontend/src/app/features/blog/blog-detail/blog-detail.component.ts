@@ -288,7 +288,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
    * La lista è la stessa (in cache) della pagina /blog.
    */
   private loadRelated(post: Post): void {
-    this.blogService.getPublishedAll().subscribe({
+    this.blogService.getPublishedAll(undefined, this.currentLang()).subscribe({
       next: posts => {
         this.related = rankRelated<PostSummary>(post, posts, {
           id: p => p._id,

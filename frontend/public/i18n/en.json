@@ -2010,6 +2010,7 @@
     "uploading": "Uploading file…",
     "processing": "Processing…",
     "cancel": "Cancel",
+    "retry": "Retry",
     "cancelled": "Operation cancelled."
   },
   "project_detail": {
@@ -2229,6 +2230,7 @@
     "banner": "You're offline. Articles you've already read are still available.",
     "see_articles": "See articles",
     "back_online": "Back online",
+    "tool_needs_connection": "This tool processes files on the server, so it needs a connection. Try again when you're back online.",
     "list_unavailable": "You're offline: the article list isn't available",
     "load_error": "The articles couldn't be loaded",
     "recent_title": "You've already read these and can open them without a connection:",
