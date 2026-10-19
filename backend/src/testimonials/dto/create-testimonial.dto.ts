@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsUrl,
   IsInt,
+  Matches,
   Min,
   Max,
   MinLength,
@@ -11,6 +12,7 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { normalizeLinkedinProfileUrl } from '../../common/utils/linkedin-url';
 
 const withProtocol = (value?: string) => {
   const trimmed = value?.trim();
@@ -36,6 +38,19 @@ export class CreateTestimonialDto {
   @MaxLength(500)
   @Transform(({ value }) => withProtocol(value))
   companyUrl?: string;
+
+  /**
+   * Profilo LinkedIn personale (facoltativo). Si normalizza a
+   * https://www.linkedin.com/in/<slug>; qualunque altro link resta com'è e viene
+   * respinto dal controllo sotto. Compare sul sito solo se l'admin verifica la testimonianza.
+   */
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value !== 'string' || !value.trim()) return undefined;
+    return normalizeLinkedinProfileUrl(value) ?? value.trim();
+  })
+  @Matches(/^https:\/\/www\.linkedin\.com\/in\/[^/?#\s]{3,300}$/, { message: 'Link LinkedIn non valido: usa il link al tuo profilo personale (linkedin.com/in/…)' })
+  linkedinUrl?: string;
 
   @IsOptional()
   @IsEmail({}, { message: 'Email non valida' })

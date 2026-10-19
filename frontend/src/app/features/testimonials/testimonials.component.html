@@ -42,6 +42,7 @@
                 @if (t.role) {
                   <span class="author-role">{{ t.role }}</span>
                 }
+                <app-testimonial-proof [verified]="t.verified" [linkedinUrl]="t.linkedinUrl" [name]="t.authorName" />
                 @if (t.companyUrl) {
                   <a class="author-link" [href]="t.companyUrl" target="_blank" rel="nofollow ugc noopener">
                     {{ t.companyUrl }}
@@ -110,6 +111,19 @@
             <span class="field-error" id="testimonial-email-err" role="alert">{{ getErrorMessage('email') }}</span>
           }
         </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="testimonial-linkedin">{{ 'testimonials.form.linkedin' | translate }}</label>
+        <input class="field-input" id="testimonial-linkedin" type="text" inputmode="url" autocomplete="off"
+               formControlName="linkedinUrl" maxlength="300"
+               [placeholder]="'testimonials.form.linkedin_ph' | translate"
+               [attr.aria-invalid]="getErrorMessage('linkedinUrl') ? 'true' : null"
+               [attr.aria-describedby]="getErrorMessage('linkedinUrl') ? 'testimonial-linkedin-err testimonial-linkedin-hint' : 'testimonial-linkedin-hint'" />
+        <span class="field-hint" id="testimonial-linkedin-hint">{{ 'testimonials.form.linkedin_hint' | translate }}</span>
+        @if (getErrorMessage('linkedinUrl')) {
+          <span class="field-error" id="testimonial-linkedin-err" role="alert">{{ getErrorMessage('linkedinUrl') }}</span>
+        }
       </div>
 
       <div class="field-group">

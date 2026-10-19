@@ -5,13 +5,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { TestimonialsService } from '../../../core/services/testimonials.service';
 import { Testimonial } from '../../../core/models/testimonial.model';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
+import { TestimonialProofComponent } from '../testimonial-proof/testimonial-proof.component';
 import { RatingStarsComponent } from '../rating-stars/rating-stars.component';
 
 @Component({
   selector: 'app-testimonials-wall',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, LangUrlPipe, RatingStarsComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, LangUrlPipe, RatingStarsComponent, TestimonialProofComponent],
   templateUrl: './testimonials-wall.component.html',
   styleUrls: ['./testimonials-wall.component.scss'],
 })
