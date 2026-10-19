@@ -7,9 +7,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AuthModalService } from '../../../../core/services/auth-modal.service';
 import { SnackbarService } from '../../../../core/services/snackbar.service';
-import { AuthErrorView, emailValidator, mapAuthError, normalizePhone, phoneValidator } from '../auth-form.utils';
+import { AuthErrorView, emailValidator, mapAuthError, normalizePhone, phoneValidator, readLastLoginAdmin, storeLastLoginAdmin } from '../auth-form.utils';
 
 import { ProfilePhotoComponent } from '../../../../shared/components/profile-photo/profile-photo.component';
+import { GenericAvatarComponent } from '../../../../shared/components/generic-avatar/generic-avatar.component';
 
 /** Ultima email usata, salvata solo se l'utente spunta "Ricorda la mia email". */
 export const LAST_LOGIN_EMAIL_KEY = 'portfolio_last_login_email';
@@ -25,7 +26,7 @@ type CodeChannel = 'email' | 'sms';
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [ProfilePhotoComponent, CommonModule, ReactiveFormsModule, RouterLink, MatIconModule, TranslateModule],
+  imports: [ProfilePhotoComponent, GenericAvatarComponent, CommonModule, ReactiveFormsModule, RouterLink, MatIconModule, TranslateModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -73,6 +74,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
   });
   readonly userName = computed(() => this.auth.currentUser()?.name?.split(' ')[0] ?? '');
+  /** Ultimo accesso riuscito su questo dispositivo fatto dall'admin. */
+  private readonly lastLoginAdmin = readLastLoginAdmin();
 
   private readonly isBrowser: boolean;
   private finishTimeoutId: number | null = null;
@@ -213,6 +216,17 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   leaveModal(): void {
     if (this.embedded) this.authModal.closeLogin();
+  }
+
+  /**
+   * La foto di Gent solo dove ad accedere è lui: la pagina admin
+   * (/dashboard/login) e il modale su un dispositivo dove l'ultimo accesso è
+   * stato suo. Per tutti gli altri profili un avatar generico; ad accesso
+   * avvenuto decide il ruolo reale.
+   */
+  showAdminPhoto(): boolean {
+    if (this.success()) return this.auth.isAdmin();
+    return !this.embedded || this.lastLoginAdmin;
   }
 
   // ── Modalità (password / codice) ────────────────────────────────────────────
@@ -421,6 +435,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Esito ───────────────────────────────────────────────────────────────────
 
   private onAuthenticated(): void {
+    storeLastLoginAdmin(this.auth.isAdmin());
     this.loading.set(false);
     this.success.set(true);
     this.clearTimer('countdownId');
