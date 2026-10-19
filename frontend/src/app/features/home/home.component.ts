@@ -20,7 +20,8 @@ import { SocialShareComponent } from '../../shared/components/social-share/socia
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
 import { HERO_KPI_TARGETS, kpiCountUpValues, prefersReducedMotion } from './kpi-count-up';
 
-interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
+interface TechItem { name: string; icon: string; isFab?: boolean; }
+interface TechGroup { titleKey: string; icon: string; items: TechItem[]; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
 interface ExpItem { date?: string; dateKey?: string; titleKey: string; roleKey: string; descKey: string; tags: string[]; }
 interface FaqItem { qKey: string; aKey: string; }
@@ -39,7 +40,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   featuredProjects: Project[] = [];
   experiences: Experience[] = [];
   loading = true;
-  barsFilled = false;
 
   private observer: IntersectionObserver | null = null;
   private kpiObserver: IntersectionObserver | null = null;
@@ -55,33 +55,45 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
   readonly frontendTechs: TechItem[] = [
-    { name: 'Angular', icon: 'angular', level: 95, isFab: true },
-    { name: 'JavaScript', icon: 'js', level: 93, isFab: true },
-    { name: 'RxJS', icon: 'arrows-spin', level: 90 },
-    { name: 'SCSS / HTML', icon: 'sass', level: 90, isFab: true },
-    { name: 'React', icon: 'react', level: 75, isFab: true },
-    { name: 'TypeScript', icon: 'code', level: 92 },
+    { name: 'Angular', icon: 'angular', isFab: true },
+    { name: 'JavaScript', icon: 'js', isFab: true },
+    { name: 'RxJS', icon: 'arrows-spin' },
+    { name: 'SCSS / HTML', icon: 'sass', isFab: true },
+    { name: 'React', icon: 'react', isFab: true },
+    { name: 'TypeScript', icon: 'code' },
   ];
 
   readonly dataVizTechs: TechItem[] = [
-    { name: 'Chart.js', icon: 'chart-bar', level: 88 },
-    { name: 'ApexCharts', icon: 'chart-area', level: 85 },
-    { name: 'Cesium.js', icon: 'globe', level: 90 },
-    { name: 'Photo Sphere Viewer', icon: 'vr-cardboard', level: 82 },
+    { name: 'Chart.js', icon: 'chart-bar' },
+    { name: 'ApexCharts', icon: 'chart-area' },
+    { name: 'Cesium.js', icon: 'globe' },
+    { name: 'Photo Sphere Viewer', icon: 'vr-cardboard' },
   ];
 
   readonly backendTechs: TechItem[] = [
-    { name: 'Django / Python', icon: 'python', level: 85, isFab: true },
-    { name: '.NET / C#', icon: 'code', level: 88 },
-    { name: 'NestJS / Node.js', icon: 'node-js', level: 78, isFab: true },
-    { name: 'REST API', icon: 'plug', level: 92 },
+    { name: 'Django / Python', icon: 'python', isFab: true },
+    { name: '.NET / C#', icon: 'code' },
+    { name: 'NestJS / Node.js', icon: 'node-js', isFab: true },
+    { name: 'REST API', icon: 'plug' },
   ];
 
   readonly devopsTechs: TechItem[] = [
-    { name: 'Docker', icon: 'docker', level: 80, isFab: true },
-    { name: 'CI/CD', icon: 'infinity', level: 85 },
-    { name: 'Git', icon: 'git-alt', level: 92, isFab: true },
-    { name: 'Azure', icon: 'cloud', level: 75 },
+    { name: 'Docker', icon: 'docker', isFab: true },
+    { name: 'CI/CD', icon: 'infinity' },
+    { name: 'Git', icon: 'git-alt', isFab: true },
+    { name: 'Azure', icon: 'cloud' },
+  ];
+
+  /**
+   * Competenze raggruppate per area, senza percentuali: un "92%" non misura
+   * niente di verificabile, non è leggibile da uno screen reader e mancava nell'HTML
+   * prerenderizzato (le barre partivano da larghezza 0).
+   */
+  readonly techGroups: TechGroup[] = [
+    { titleKey: 'tech.frontend', icon: 'code', items: this.frontendTechs },
+    { titleKey: 'tech.dataviz', icon: 'chart-line', items: this.dataVizTechs },
+    { titleKey: 'tech.backend', icon: 'server', items: this.backendTechs },
+    { titleKey: 'tech.devops', icon: 'gears', items: this.devopsTechs },
   ];
 
   readonly staticProjects: ProjectItem[] = [
@@ -299,11 +311,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            // Trigger tech bars when tech section becomes visible
-            if ((entry.target as HTMLElement).closest('#tech-stack')) {
-              this.barsFilled = true;
-              this.cdr.markForCheck();
-            }
             this.observer?.unobserve(entry.target);
           }
         });

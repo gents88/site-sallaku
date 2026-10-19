@@ -366,75 +366,49 @@
   i { color: var(--primary-400); font-size: 1.1rem; }
 }
 
-.tech-items { display: flex; flex-direction: column; gap: 18px; }
+.tech-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
 .tech-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--gradient-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
   transition: var(--transition-base);
-  &:hover { transform: translateX(4px); }
+
+  &:hover { border-color: var(--glass-border-hover); transform: translateY(-2px); }
 }
 
 .tech-item-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--gradient-card);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(79, 106, 245, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--accent-400);
   flex-shrink: 0;
 }
 
-.tech-item-info { flex: 1; }
 .tech-name {
-  position: relative;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
-  display: inline-block;
-  margin-bottom: 6px;
 }
 
-.tech-tooltip {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(79, 106, 245, 0.85);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.tech-item:hover .tech-tooltip { opacity: 1; }
-
-.tech-bar {
-  width: 100%;
-  height: 4px;
-  background: rgba(79,106,245,0.1);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.tech-bar-fill {
-  height: 100%;
-  width: 0;
-  background: var(--gradient-primary);
-  border-radius: 2px;
-  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.animated { width: var(--fill); }
+@media (prefers-reduced-motion: reduce) {
+  .tech-item:hover { transform: none; }
 }
 
 /* ══ PROJECTS ══════════════════════════════════════════ */

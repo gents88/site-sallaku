@@ -158,68 +158,19 @@
       <div class="section-line"></div>
     </div>
     <div class="tech-categories">
-      <!-- Frontend Core -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-code"></i> {{ 'tech.frontend' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of frontendTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="'fab fa-' + tech.icon" *ngIf="tech.isFab; else faIcon"></i>
-                <ng-template #faIcon><i [class]="'fas fa-' + tech.icon"></i></ng-template>
-              </div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
+      @for (group of techGroups; track group.titleKey) {
+        <div class="tech-category reveal">
+          <h3 class="tech-category-title"><i [class]="'fas fa-' + group.icon" aria-hidden="true"></i> {{ group.titleKey | translate }}</h3>
+          <ul class="tech-items">
+            @for (tech of group.items; track tech.name) {
+              <li class="tech-item">
+                <span class="tech-item-icon" aria-hidden="true"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></span>
+                <span class="tech-name">{{ tech.name }}</span>
+              </li>
+            }
+          </ul>
         </div>
-      </div>
-      <!-- Data Viz & 3D -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-chart-line"></i> {{ 'tech.dataviz' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of dataVizTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="'fas fa-' + tech.icon"></i></div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      <!-- Backend -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-server"></i> {{ 'tech.backend' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of backendTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      <!-- DevOps & Tools -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-gears"></i> {{ 'tech.devops' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of devopsTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>
