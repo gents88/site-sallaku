@@ -8,6 +8,8 @@ import { SnackbarService } from '../../core/services/snackbar.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { RatingStarsComponent } from '../../shared/components/rating-stars/rating-stars.component';
+import { TestimonialProofComponent } from '../../shared/components/testimonial-proof/testimonial-proof.component';
+import { linkedinProfileValidator, normalizeLinkedinProfileUrl } from '../../shared/utils/linkedin-url';
 import { FocusFirstInvalidDirective } from '../../shared/directives/focus-first-invalid.directive';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
@@ -26,7 +28,7 @@ const DATE_LOCALES: Record<string, string> = {
   selector: 'app-testimonials',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent, FocusFirstInvalidDirective],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent, FocusFirstInvalidDirective, TestimonialProofComponent],
   templateUrl: './testimonials.component.html',
   styleUrls: ['./testimonials.component.scss'],
 })
@@ -39,6 +41,7 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
     role: ['', [Validators.maxLength(150)]],
     companyUrl: ['', [Validators.maxLength(500)]],
     email: ['', [Validators.email, Validators.maxLength(255)]],
+    linkedinUrl: ['', [Validators.maxLength(300), linkedinProfileValidator]],
     rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     content: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(600)]],
     website: [''],
@@ -122,7 +125,12 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
         '@context': 'https://schema.org',
         '@type': 'Review',
         itemReviewed: { '@type': 'Person', '@id': `${SITE_ORIGIN}/#person` },
-        author: { '@type': 'Person', name: t.authorName },
+        author: {
+          '@type': 'Person',
+          name: t.authorName,
+          // Solo con identità verificata dall'admin: il backend non manda l'URL altrimenti.
+          ...(t.verified && t.linkedinUrl ? { sameAs: t.linkedinUrl } : {}),
+        },
         reviewRating: { '@type': 'Rating', ratingValue: t.rating, bestRating: 5 },
         reviewBody: t.content,
       })),
@@ -148,6 +156,7 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
         role: v.role || undefined,
         companyUrl: v.companyUrl || undefined,
         email: v.email || undefined,
+        linkedinUrl: normalizeLinkedinProfileUrl(v.linkedinUrl) ?? undefined,
         rating: v.rating ?? 0,
         content: (v.content ?? '').trim(),
         website: v.website || undefined,
@@ -194,6 +203,7 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
       const count = control.errors['maxlength'].requiredLength;
       return this.translate.instant('testimonials.errors.maxlength', { count });
     }
+    if (control.errors['linkedin']) return this.translate.instant('testimonials.errors.linkedin');
     if (control.errors['email']) return this.translate.instant('testimonials.errors.email');
     if (control.errors['min'] || control.errors['max']) {
       return this.translate.instant('testimonials.errors.rating_required');
