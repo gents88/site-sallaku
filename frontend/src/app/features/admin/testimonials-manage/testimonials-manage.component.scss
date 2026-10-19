@@ -133,6 +133,9 @@
 .badge--pending  { color: #f59e0b; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.35); }
 .badge--approved { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.35); }
 .badge--spam     { color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.35); }
+.badge--verified { color: #059669; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.4); }
+.testimonial-row__linkedin { font-size: 0.78rem; font-weight: 600; text-decoration: none; color: var(--primary-400, #6b8afc); &:hover { text-decoration: underline; } }
+.verify-btn { font-size: 0.78rem; white-space: nowrap; }
 .badge--featured { color: #8b5cf6; background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.35); }
 
 /* .pagination → styles.scss (globale, identico) */

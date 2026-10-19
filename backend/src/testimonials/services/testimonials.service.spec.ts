@@ -134,6 +134,134 @@ describe('TestimonialsService', () => {
     });
   });
 
+  describe('verifica dell\'identità e profilo LinkedIn', () => {
+    const LINKEDIN = 'https://www.linkedin.com/in/mario-rossi';
+    const doc = (extra: Record<string, unknown>) => ({
+      _id: mockId,
+      authorName: 'Mario Rossi',
+      rating: 5,
+      content: 'Ottimo lavoro.',
+      isApproved: true,
+      isSpam: false,
+      toObject() { return { ...this, _id: mockId }; },
+      ...extra,
+    });
+    const findReturning = (docs: unknown[]) => {
+      const chain: any = { sort: jest.fn(), limit: jest.fn(), skip: jest.fn(), exec: jest.fn().mockResolvedValue(docs) };
+      ['sort', 'limit', 'skip'].forEach(k => chain[k].mockReturnValue(chain));
+      mockTestimonialModel.find.mockReturnValue(chain);
+      mockTestimonialModel.countDocuments.mockResolvedValue(docs.length);
+    };
+
+    it('salva il link LinkedIn ma crea sempre la testimonianza NON verificata', async () => {
+      mockTestimonialModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+
+      await service.createTestimonial({ ...dto, linkedinUrl: LINKEDIN }, '127.0.0.1');
+
+      const saved = mockTestimonialModel.mock.calls[0][0];
+      expect(saved.linkedinUrl).toBe(LINKEDIN);
+      expect(saved.verified).toBe(false);
+      expect(saved.verifiedAt).toBeNull();
+    });
+
+    it('un visitatore che manda verified:true nel body non si auto-verifica', async () => {
+      mockTestimonialModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+
+      await service.createTestimonial({ ...dto, linkedinUrl: LINKEDIN, verified: true, verifiedAt: new Date() }, '127.0.0.1');
+
+      const saved = mockTestimonialModel.mock.calls[0][0];
+      expect(saved.verified).toBe(false);
+      expect(saved.verifiedAt).toBeNull();
+    });
+
+    it('la risposta al visitatore che ha appena scritto non contiene il link e non è verificata', async () => {
+      mockTestimonialModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+
+      const result = await service.createTestimonial({ ...dto, linkedinUrl: LINKEDIN }, '127.0.0.1');
+
+      expect(result.verified).toBe(false);
+      expect(result.linkedinUrl).toBeUndefined();
+    });
+
+    it('pubblico: il link LinkedIn esce solo per le testimonianze verificate', async () => {
+      findReturning([
+        doc({ authorName: 'Verificata', verified: true, linkedinUrl: LINKEDIN }),
+        doc({ authorName: 'Non verificata', verified: false, linkedinUrl: 'https://www.linkedin.com/in/altra-persona' }),
+      ]);
+
+      const { data } = await service.getApproved(20, 0);
+
+      const verified = data.find(t => t.authorName === 'Verificata')!;
+      const unverified = data.find(t => t.authorName === 'Non verificata')!;
+      expect(verified.verified).toBe(true);
+      expect(verified.linkedinUrl).toBe(LINKEDIN);
+      expect(unverified.verified).toBe(false);
+      expect(unverified.linkedinUrl).toBeUndefined();
+      expect(JSON.stringify(unverified)).not.toContain('altra-persona');
+    });
+
+    it('le testimonianze vecchie, senza i nuovi campi, risultano non verificate', async () => {
+      findReturning([doc({ authorName: 'Vecchia' })]);
+
+      const { data } = await service.getApproved(20, 0);
+
+      expect(data[0].verified).toBe(false);
+      expect(data[0].linkedinUrl).toBeUndefined();
+    });
+
+    it('verificata ma senza link LinkedIn: mostra il badge, nessun link', async () => {
+      findReturning([doc({ verified: true })]);
+
+      const { data } = await service.getApproved(20, 0);
+
+      expect(data[0].verified).toBe(true);
+      expect(data[0].linkedinUrl).toBeUndefined();
+    });
+
+    it('la risposta pubblica non espone verifiedAt né l\'email', async () => {
+      findReturning([doc({ verified: true, verifiedAt: new Date(), email: 'mario@example.com', linkedinUrl: LINKEDIN })]);
+
+      const { data } = await service.getApproved(20, 0);
+
+      expect(data[0]).not.toHaveProperty('verifiedAt');
+      expect(data[0]).not.toHaveProperty('email');
+      expect(JSON.stringify(data[0])).not.toContain('mario@example.com');
+    });
+
+    describe('setVerified', () => {
+      it('verifica: imposta verified e la data', async () => {
+        mockTestimonialModel.findByIdAndUpdate.mockResolvedValue(doc({ verified: true, verifiedAt: new Date(), linkedinUrl: LINKEDIN }));
+
+        const result = await service.setVerified(mockId.toString(), true);
+
+        const update = mockTestimonialModel.findByIdAndUpdate.mock.calls[0][1];
+        expect(update.verified).toBe(true);
+        expect(update.verifiedAt).toBeInstanceOf(Date);
+        expect(result.verified).toBe(true);
+        expect(result.linkedinUrl).toBe(LINKEDIN);
+      });
+
+      it('toglie la verifica: azzera anche la data', async () => {
+        mockTestimonialModel.findByIdAndUpdate.mockResolvedValue(doc({ verified: false, verifiedAt: null }));
+
+        await service.setVerified(mockId.toString(), false);
+
+        const update = mockTestimonialModel.findByIdAndUpdate.mock.calls[0][1];
+        expect(update.verified).toBe(false);
+        expect(update.verifiedAt).toBeNull();
+      });
+
+      it('NotFoundException se la testimonianza non esiste', async () => {
+        mockTestimonialModel.findByIdAndUpdate.mockResolvedValue(null);
+        await expect(service.setVerified(mockId.toString(), true)).rejects.toThrow(NotFoundException);
+      });
+
+      it('BadRequestException per un id non valido', async () => {
+        await expect(service.setVerified('non-un-id', true)).rejects.toThrow(BadRequestException);
+      });
+    });
+  });
+
   describe('setFeatured', () => {
     it('updates the featured flag', async () => {
       const updated = { _id: mockId, authorName: 'Mario Rossi', featured: true };
