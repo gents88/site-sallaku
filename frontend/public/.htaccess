@@ -108,9 +108,14 @@
     SetEnv no-gzip 1
   </FilesMatch>
 
-  # The hashed-filename cache policy below matches on the real extension, so
-  # repeat it for the pre-compressed twins of those same immutable assets.
-  <FilesMatch "\.(js|mjs|css|json|svg)\.(br|gz)$">
+  # La politica di cache sotto ragiona sul nome reale del file: la ripeto per i
+  # gemelli pre-compressi (.br/.gz). Stesso ordine: prima la regola generica
+  # (file senza hash), poi l'immutable solo per i file con hash di build.
+  <FilesMatch "\.(js|mjs|css|json|svg|webmanifest)\.(br|gz)$">
+    Header set Cache-Control "public, max-age=86400, must-revalidate"
+  </FilesMatch>
+
+  <FilesMatch "^[A-Za-z0-9_.]+-[A-Z0-9]{8}\.(js|mjs|css)\.(br|gz)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
@@ -120,8 +125,27 @@
 </IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|mjs|css|json|svg|png|jpg|jpeg|webp|woff|woff2)$">
+  # Cache "immutable" di un anno SOLO per i file il cui nome contiene l'hash di
+  # build di Angular (main-XXXXXXXX.js, chunk-XXXXXXXX.js, styles-XXXXXXXX.css):
+  # cambiano nome a ogni modifica, quindi non possono restare vecchi.
+  # Tutto il resto ha un nome stabile e può cambiare restando allo stesso URL:
+  # le traduzioni /i18n/*.json, pdf.worker.min.mjs (deve restare della stessa
+  # versione di pdfjs-dist, altrimenti "API version does not match Worker
+  # version" per chi ha il file in cache), ngsw-worker.js, immagini, icone,
+  # manifest. Con immutable un deploy non raggiungeva i visitatori di ritorno
+  # per un anno intero: qui scade in un giorno e poi si rivalida con l'ETag
+  # (304, nessun corpo scaricato di nuovo se non è cambiato).
+  <FilesMatch "\.(js|mjs|css|json|svg|png|jpg|jpeg|webp|avif|woff|woff2|webmanifest)$">
+    Header set Cache-Control "public, max-age=86400, must-revalidate"
+  </FilesMatch>
+
+  <FilesMatch "^[A-Za-z0-9_.]+-[A-Z0-9]{8}\.(js|mjs|css)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Il service worker e il suo manifest di versioni non vanno mai tenuti in cache.
+  <FilesMatch "^(ngsw-worker\.js|ngsw\.json|safety-worker\.js)(\.(br|gz))?$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
 
   <FilesMatch "^(index\.html|index\.csr\.html)$">
