@@ -495,13 +495,16 @@ html[data-os='android'][data-input='touch'] .btn:active {
 /* ── Section Header ────────────────────────────────── */
 .section-header { text-align: center; margin-bottom: 72px; }
 
+/* Etichetta sopra il titolo di sezione. Era monospace e scritta come un tag
+   (`<about>`): ora è un'etichetta normale, maiuscoletta. */
 .section-tag {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
   color: var(--primary-400);
   display: block;
-  margin-bottom: 16px;
-  letter-spacing: 1px;
+  margin-bottom: 12px;
+  letter-spacing: 0.08em;
 }
 
 .section-title {

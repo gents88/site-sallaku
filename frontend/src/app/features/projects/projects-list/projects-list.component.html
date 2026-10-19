@@ -1,11 +1,7 @@
 <section class="section" id="projects">
   <div class="container">
     <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-    <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'projects.tag' | translate }}&gt;</span>
-      <h2 class="section-title">{{ 'projects.title' | translate }}</h2>
-      <div class="section-line"></div>
-    </div>
+    <app-page-header [title]="'projects.title' | translate" [lead]="'projects.subtitle' | translate" />
 
     @if (projects().length) {
       @if (techFilters().length > 1) {

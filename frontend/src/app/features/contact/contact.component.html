@@ -7,13 +7,7 @@
   <div class="contact-hero__glow" aria-hidden="true"></div>
   <div class="container contact-hero__inner">
     <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-    <span class="section-tag animate-fade-up">{{ 'contact.tag' | translate }}</span>
-    <h1 id="contact-title" class="section-title text-gradient animate-fade-up delay-1">
-      {{ 'contact.title' | translate }}
-    </h1>
-    <p class="section-subtitle animate-fade-up delay-2">
-      {{ 'contact.subtitle' | translate }}
-    </p>
+    <app-page-header titleId="contact-title" [title]="'contact.title' | translate" [lead]="'contact.subtitle' | translate" />
 
   </div>
 </section>

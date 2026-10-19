@@ -110,7 +110,11 @@
     "kpi_projects": "Projets réalisés",
     "kpi_companies": "Entreprises enterprise",
     "kpi_latency": "Réduction de latence (typique)",
-    "scroll": "Défiler"
+    "scroll": "Défiler",
+    "lead": "Je conçois et développe des applications Angular rapides, accessibles et prêtes pour la production, pour des équipes enterprise de l’aérospatiale, de la défense, des télécoms et de la banque.",
+    "available": "Disponible pour de nouveaux projets",
+    "cta_projects": "Voir les projets",
+    "cta_contact": "Parlons de votre projet"
   },
   "about": {
     "tag": "about",
@@ -2387,5 +2391,14 @@
     "from": "depuis",
     "dismiss": "Ignorer",
     "none": "Aucun lien cassé enregistré."
+  },
+  "home": {
+    "projects_all": "Tous les projets",
+    "about_more": "Mon parcours",
+    "cta": {
+      "title": "Vous avez un projet en tête ?",
+      "text": "Dites-moi ce dont vous avez besoin : je vous réponds personnellement et nous trouverons ensemble la bonne solution.",
+      "button": "Écrivez-moi"
+    }
   }
 }

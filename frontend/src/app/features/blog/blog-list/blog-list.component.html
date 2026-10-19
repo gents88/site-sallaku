@@ -1,14 +1,11 @@
 <div class="container section blog">
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 
-  <header class="blog-hero">
-    <span class="blog-hero__eyebrow"><mat-icon aria-hidden="true">article</mat-icon> {{ 'blog.eyebrow' | translate }}</span>
-    <h1 class="blog-hero__title">Blog</h1>
-    <p class="blog-hero__lead">{{ 'blog.lead' | translate }}</p>
+  <app-page-header title="Blog" [eyebrow]="'blog.eyebrow' | translate" [lead]="'blog.lead' | translate">
     @if (!loading && posts.length) {
       <p class="blog-hero__stats">{{ 'blog.stats' | translate: { posts: posts.length, topics: allTags.length } }}</p>
     }
-  </header>
+  </app-page-header>
 
   @if (loading) {
     <div class="posts-grid" aria-hidden="true">

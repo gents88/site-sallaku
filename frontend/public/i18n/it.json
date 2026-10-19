@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "Home",
-    "about": "About",
+    "about": "Chi sono",
     "tech": "Tech Stack",
     "projects": "Progetti",
     "services": "Servizi",
@@ -110,7 +110,11 @@
     "kpi_projects": "Progetti completati",
     "kpi_companies": "Aziende enterprise",
     "kpi_latency": "Riduzione latenza (tipica)",
-    "scroll": "Scroll"
+    "scroll": "Scroll",
+    "lead": "Progetto e sviluppo applicazioni Angular veloci, accessibili e pronte per la produzione, per team enterprise di aerospazio, difesa, telecomunicazioni e banking.",
+    "available": "Disponibile per nuovi progetti",
+    "cta_projects": "Guarda i progetti",
+    "cta_contact": "Parliamo del tuo progetto"
   },
   "about": {
     "tag": "about",
@@ -2387,5 +2391,14 @@
     "from": "da",
     "dismiss": "Ignora",
     "none": "Nessun link rotto registrato."
+  },
+  "home": {
+    "projects_all": "Tutti i progetti",
+    "about_more": "Il mio percorso",
+    "cta": {
+      "title": "Hai un progetto in mente?",
+      "text": "Raccontami di cosa hai bisogno: ti rispondo personalmente e troviamo insieme la soluzione giusta.",
+      "button": "Scrivimi"
+    }
   }
 }

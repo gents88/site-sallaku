@@ -2,14 +2,19 @@ import { importProvidersFrom } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ChatbotComponent,
   NOTICE_DISMISSED_KEY,
+  TEASER_AUTO_HIDE_MS,
   TEASER_DELAY_MS,
   TEASER_DISMISSED_KEY,
+  TEASER_IS_MOBILE,
+  TEASER_RETRY_MS,
 } from './chatbot.component';
+import { ConsentService } from '../../core/services/consent.service';
 import { ChatbotService, ChatMessage } from '../../core/services/chatbot.service';
 import { LiveHandoffService } from '../../core/services/live-handoff.service';
 import { LanguageService } from '../../core/services/language.service';
@@ -21,6 +26,9 @@ import { LanguageService } from '../../core/services/language.service';
  */
 describe('ChatbotComponent — pannello rinnovato', () => {
   let mockChatbot: any;
+  /** Scelta sui cookie già fatta (banner chiuso) e layout desktop, salvo diversa indicazione. */
+  let consentDecided: ReturnType<typeof signal<boolean>>;
+  let mobile = false;
 
   function create(open: boolean, messages: ChatMessage[] = []): ComponentFixture<ChatbotComponent> {
     mockChatbot = {
@@ -53,6 +61,8 @@ describe('ChatbotComponent — pannello rinnovato', () => {
           },
         },
         { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: ConsentService, useValue: { hasDecided: consentDecided } },
+        { provide: TEASER_IS_MOBILE, useValue: () => mobile },
       ],
     });
     const fixture = TestBed.createComponent(ChatbotComponent);
@@ -65,6 +75,8 @@ describe('ChatbotComponent — pannello rinnovato', () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
+    consentDecided = signal(true);
+    mobile = false;
     vi.useFakeTimers();
   });
 
@@ -204,8 +216,63 @@ describe('ChatbotComponent — pannello rinnovato', () => {
       expect(el(f).querySelector('.cb-teaser')).not.toBeNull();
     });
 
-    it('compare subito dopo il caricamento, senza far aspettare il visitatore', () => {
-      expect(TEASER_DELAY_MS).toBeLessThanOrEqual(1000);
+    it('non compare appena caricata la pagina: lascia guardare il sito', () => {
+      const f = create(false);
+      vi.advanceTimersByTime(TEASER_DELAY_MS - 1);
+      f.detectChanges();
+      expect(el(f).querySelector('.cb-teaser')).toBeNull();
+      expect(TEASER_DELAY_MS).toBeGreaterThanOrEqual(10_000);
+    });
+
+    it('compare prima del ritardo se il visitatore ha letto metà pagina', () => {
+      const f = create(false);
+      Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, value: 3000 });
+      Object.defineProperty(window, 'innerHeight', { configurable: true, value: 1000 });
+      Object.defineProperty(window, 'scrollY', { configurable: true, value: 1200 });
+      window.dispatchEvent(new Event('scroll'));
+      f.detectChanges();
+
+      expect(el(f).querySelector('.cb-teaser')).not.toBeNull();
+
+      delete (document.documentElement as unknown as Record<string, unknown>)['scrollHeight'];
+      Object.defineProperty(window, 'scrollY', { configurable: true, value: 0 });
+    });
+
+    it('con il banner dei cookie ancora aperto aspetta la scelta', () => {
+      consentDecided.set(false);
+      const f = create(false);
+      vi.advanceTimersByTime(TEASER_DELAY_MS + TEASER_RETRY_MS * 3);
+      f.detectChanges();
+      expect(el(f).querySelector('.cb-teaser')).toBeNull();
+
+      consentDecided.set(true);
+      vi.advanceTimersByTime(TEASER_RETRY_MS);
+      f.detectChanges();
+      expect(el(f).querySelector('.cb-teaser')).not.toBeNull();
+    });
+
+    it('si richiude da solo, il pallino resta e non torna in questa visita', () => {
+      const f = create(false);
+      vi.advanceTimersByTime(TEASER_DELAY_MS);
+      f.detectChanges();
+      expect(el(f).querySelector('.cb-teaser')).not.toBeNull();
+
+      vi.advanceTimersByTime(TEASER_AUTO_HIDE_MS);
+      f.detectChanges();
+
+      expect(el(f).querySelector('.cb-teaser')).toBeNull();
+      expect(el(f).querySelector('.cb-fab__badge')?.textContent?.trim()).toBe('1');
+      expect(sessionStorage.getItem(TEASER_DISMISSED_KEY)).toBe('1');
+    });
+
+    it('su mobile niente fumetto sopra il contenuto: solo il pallino sul pulsante', () => {
+      mobile = true;
+      const f = create(false);
+      vi.advanceTimersByTime(TEASER_DELAY_MS);
+      f.detectChanges();
+
+      expect(el(f).querySelector('.cb-teaser')).toBeNull();
+      expect(el(f).querySelector('.cb-fab__badge')?.textContent?.trim()).toBe('1');
     });
   });
 

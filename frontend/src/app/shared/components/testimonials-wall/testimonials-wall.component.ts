@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -18,6 +18,11 @@ import { RatingStarsComponent } from '../rating-stars/rating-stars.component';
 export class TestimonialsWallComponent implements OnInit {
   @Input() featuredOnly = true;
   @Input() limit = 6;
+  /**
+   * Quante testimonianze sono arrivate (0 anche in caso di errore): chi
+   * contiene il muro può nascondere la propria sezione quando è vuoto.
+   */
+  @Output() loaded = new EventEmitter<number>();
 
   testimonials = signal<Testimonial[]>([]);
 
@@ -26,15 +31,20 @@ export class TestimonialsWallComponent implements OnInit {
   ngOnInit(): void {
     if (this.featuredOnly) {
       this.testimonialsService.getFeatured(this.limit).subscribe({
-        next: (data) => this.testimonials.set(data),
-        error: () => this.testimonials.set([]),
+        next: (data) => this.setTestimonials(data),
+        error: () => this.setTestimonials([]),
       });
     } else {
       this.testimonialsService.list(this.limit, 0).subscribe({
-        next: (res) => this.testimonials.set(res.data),
-        error: () => this.testimonials.set([]),
+        next: (res) => this.setTestimonials(res.data),
+        error: () => this.setTestimonials([]),
       });
     }
+  }
+
+  private setTestimonials(list: Testimonial[]): void {
+    this.testimonials.set(list);
+    this.loaded.emit(list.length);
   }
 
   initials(name: string): string {

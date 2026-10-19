@@ -1,0 +1,145 @@
+<!-- ══ CHI SONO ══════════════════════════════════════ -->
+<section class="section about-top" id="about">
+  <div class="container">
+    <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+    <app-page-header [title]="'about.title' | translate" [lead]="'about.subtitle' | translate" />
+
+    <div class="about-intro glass-card reveal">
+      <figure class="about-photo">
+        <!-- Sorgenti a 440px per gli schermi 2x; width/height con il rapporto
+             reale 800:765 riservano lo spazio prima del caricamento (CLS). -->
+        <picture>
+          <source srcset="assets/profil.avif" type="image/avif" />
+          <source srcset="assets/profil.webp" type="image/webp" />
+          <img src="assets/profil-440.jpg" alt="Gent Sallaku" class="profile-photo" width="440" height="421" decoding="async" />
+        </picture>
+      </figure>
+      <div class="about-body">
+        <p class="profile-heading"><strong>Gent Sallaku</strong> — {{ 'hero.role' | translate }}</p>
+        <small class="about-birth">{{ 'about.birth' | translate }}</small>
+        <p class="about-bio" [innerHTML]="'about.bio1' | translate"></p>
+        <p class="about-bio" [innerHTML]="'about.bio2' | translate"></p>
+        <p class="about-bio" [innerHTML]="'about.bio3' | translate"></p>
+        <p class="about-bio" [innerHTML]="'about.bio4' | translate"></p>
+        <p class="about-bio" [innerHTML]="'about.bio5' | translate"></p>
+        <div class="bio-actions">
+          <a class="btn btn-primary" [routerLink]="'/contact' | langUrl" appTrackClick eventType="cta" label="about_contact_btn">{{ 'nav.contact' | translate }}</a>
+          <a class="btn btn-outline" [routerLink]="'/projects' | langUrl" appTrackClick eventType="cta" label="about_projects_btn">{{ 'nav.projects' | translate }}</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-pillars">
+      @for (pillar of pillars; track pillar.key) {
+        <article class="about-card glass-card reveal">
+          <div class="about-icon-wrapper" aria-hidden="true"><i [class]="'fas fa-' + pillar.icon"></i></div>
+          <h2 class="about-card__title">{{ 'about.' + pillar.key + '.title' | translate }}</h2>
+          <p>{{ 'about.' + pillar.key + '.desc' | translate }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══ TECNOLOGIE ════════════════════════════════════ -->
+<!-- Gruppi di chip invece delle barre in percentuale: "Angular 95%" non
+     diceva niente di concreto a chi legge. -->
+<section class="section section-alt" id="tech-stack">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2 class="section-title">{{ 'tech.title' | translate }}</h2>
+      <p class="section-subtitle">{{ 'tech.subtitle' | translate }}</p>
+    </div>
+    <div class="tech-groups">
+      @for (group of techGroups; track group.titleKey) {
+        <div class="tech-group glass-card reveal">
+          <h3 class="tech-group__title"><i [class]="'fas fa-' + group.icon" aria-hidden="true"></i> {{ group.titleKey | translate }}</h3>
+          <ul class="tech-chips">
+            @for (tech of group.items; track tech.name) {
+              <li class="tech-chip"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon" aria-hidden="true"></i>{{ tech.name }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══ ESPERIENZA ════════════════════════════════════ -->
+<section class="section" id="experience">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2 class="section-title">{{ 'experience.title' | translate }}</h2>
+      <p class="section-subtitle">{{ 'experience.subtitle' | translate }}</p>
+    </div>
+    @if (cmsExperiences().length) {
+      <div class="timeline">
+        @for (exp of cmsExperiences(); track exp._id; let i = $index) {
+          <div class="timeline-item" [attr.data-side]="i % 2 === 0 ? 'right' : 'left'">
+            <div class="timeline-marker"><div class="timeline-dot"></div></div>
+            <div class="timeline-card glass-card">
+              <div class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i>
+                {{ exp.startDate }} – {{ exp.current ? ('exp.current' | translate) : exp.endDate }}
+              </div>
+              <h3 class="timeline-company">{{ exp.company }}</h3>
+              <span class="timeline-role">{{ exp.role }}@if (exp.location) { · {{ exp.location }} }</span>
+              <p class="timeline-desc">{{ exp.description }}</p>
+              <div class="timeline-tags">
+                @for (tag of exp.technologies; track tag) { <span>{{ tag }}</span> }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="timeline">
+        @for (exp of staticExperiences; track exp.titleKey; let i = $index) {
+          <div class="timeline-item reveal" [attr.data-side]="i % 2 === 0 ? 'right' : 'left'">
+            <div class="timeline-marker"><div class="timeline-dot"></div></div>
+            <div class="timeline-card glass-card">
+              <div class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> {{ exp.dateKey ? (exp.dateKey | translate) : exp.date }}</div>
+              <h3 class="timeline-company">{{ exp.titleKey | translate }}</h3>
+              <span class="timeline-role">{{ exp.roleKey | translate }}</span>
+              <p class="timeline-desc">{{ exp.descKey | translate }}</p>
+              <div class="timeline-tags">
+                @for (tag of exp.tags; track tag) { <span>{{ tag }}</span> }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══ SOFT SKILLS ═══════════════════════════════════ -->
+<section class="section section-alt" id="skills">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2 class="section-title">{{ 'skills.title' | translate }}</h2>
+      <p class="section-subtitle">{{ 'skills.subtitle' | translate }}</p>
+    </div>
+    <ul class="skills-list">
+      @for (skill of softSkills; track skill.key) {
+        <li class="skill-item reveal">
+          <span class="skill-item__icon" aria-hidden="true"><i [class]="'fas fa-' + skill.icon"></i></span>
+          <div>
+            <h3 class="skill-item__title">{{ 'skills.' + skill.key | translate }}</h3>
+            <p class="skill-item__desc">{{ 'skills.' + skill.key + '_desc' | translate }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- ══ CTA ═══════════════════════════════════════════ -->
+<section class="section about-cta">
+  <div class="container">
+    <div class="about-cta__card reveal">
+      <h2 class="about-cta__title">{{ 'home.cta.title' | translate }}</h2>
+      <p class="about-cta__text">{{ 'home.cta.text' | translate }}</p>
+      <a class="btn btn-primary" [routerLink]="'/contact' | langUrl" appTrackClick eventType="cta" label="about_cta_contact">{{ 'home.cta.button' | translate }}</a>
+    </div>
+  </div>
+</section>

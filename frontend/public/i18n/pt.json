@@ -110,7 +110,11 @@
     "kpi_projects": "Projetos concluídos",
     "kpi_companies": "Empresas enterprise",
     "kpi_latency": "Redução de latência (típica)",
-    "scroll": "Rolar"
+    "scroll": "Rolar",
+    "lead": "Projeto e desenvolvo aplicações Angular rápidas, acessíveis e prontas para produção, para times enterprise de aeroespacial, defesa, telecomunicações e bancos.",
+    "available": "Disponível para novos projetos",
+    "cta_projects": "Ver projetos",
+    "cta_contact": "Vamos falar do seu projeto"
   },
   "about": {
     "tag": "about",
@@ -2387,5 +2391,14 @@
     "from": "de",
     "dismiss": "Ignorar",
     "none": "Nenhum link quebrado registado."
+  },
+  "home": {
+    "projects_all": "Todos os projetos",
+    "about_more": "Minha trajetória",
+    "cta": {
+      "title": "Tem um projeto em mente?",
+      "text": "Conte do que você precisa: respondo pessoalmente e encontramos juntos a solução certa.",
+      "button": "Fale comigo"
+    }
   }
 }

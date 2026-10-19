@@ -8,6 +8,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   HostListener,
+  InjectionToken,
   PLATFORM_ID,
   inject,
 } from '@angular/core';
@@ -21,6 +22,7 @@ import { ChatbotService, ChatMessage } from '../../core/services/chatbot.service
 import { LanguageService } from '../../core/services/language.service';
 import { LiveHandoffService, LiveHandoffState } from '../../core/services/live-handoff.service';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
+import { ConsentService } from '../../core/services/consent.service';
 import { LiveHandoffPromptComponent } from '../../shared/components/live-handoff-prompt/live-handoff-prompt.component';
 import {
   ExitConfirmStep,
@@ -37,13 +39,28 @@ type PendingExitAction = 'close' | 'clear' | null;
 const TYPING_DEBOUNCE_MS = 1200;
 
 /**
- * Il fumetto "Hai domande su Gent?" accompagna il pulsante a ogni visita: compare
- * subito dopo il caricamento (il breve ritardo serve solo all'animazione d'ingresso)
- * e resta finché il visitatore non apre la chat o lo chiude. Il "chiuso" vale per
- * la visita (sessionStorage): alla visita successiva ricompare.
+ * Il fumetto "Hai domande su Gent?" compare una volta per visita, quando il
+ * visitatore ha avuto il tempo di guardarsi intorno: dopo TEASER_DELAY_MS o
+ * appena ha letto metà pagina (TEASER_SCROLL_RATIO), se prima. Prima compariva
+ * subito e restava aperto: alla prima visita si sommava al tour e al banner dei
+ * cookie, e su mobile copriva il contenuto di ogni schermata.
+ *
+ * - Mai sopra il banner dei cookie: finché non c'è una scelta si riprova.
+ * - Si richiude da solo dopo TEASER_AUTO_HIDE_MS (il pallino "1" resta).
+ * - Su mobile niente fumetto: solo il pallino sul pulsante.
+ * Il "chiuso" vale per la visita (sessionStorage): alla successiva ricompare.
  */
-export const TEASER_DELAY_MS = 800;
+export const TEASER_DELAY_MS = 20_000;
+export const TEASER_SCROLL_RATIO = 0.5;
+export const TEASER_AUTO_HIDE_MS = 12_000;
+export const TEASER_RETRY_MS = 3_000;
 export const TEASER_DISMISSED_KEY = 'gs-chat-teaser-dismissed';
+
+/** Sotto i 900px (tab bar in basso) il fumetto coprirebbe il contenuto. Token DI per i test. */
+export const TEASER_IS_MOBILE = new InjectionToken<() => boolean>('TEASER_IS_MOBILE', {
+  providedIn: 'root',
+  factory: () => () => typeof window !== 'undefined' && !!window.matchMedia?.('(max-width: 900px)').matches,
+});
 export const NOTICE_DISMISSED_KEY = 'gs-chat-notice-dismissed';
 const COPIED_FEEDBACK_MS = 1500;
 
@@ -88,6 +105,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly langService: LanguageService = inject(LanguageService);
   private readonly translate: TranslateService = inject(TranslateService);
+  private readonly consent = inject(ConsentService);
+  private readonly isMobileLayout = inject(TEASER_IS_MOBILE);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   messages: ChatMessage[] = [];
@@ -134,6 +153,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
    */
   inviteUnread = false;
   private teaserTimer: ReturnType<typeof setTimeout> | null = null;
+  private teaserHideTimer: ReturnType<typeof setTimeout> | null = null;
+  private teaserScrollListener: (() => void) | null = null;
 
   /** Messaggio appena copiato: il pulsante mostra "Copiato" per un attimo. */
   copiedMessage: ChatMessage | null = null;
@@ -290,29 +311,66 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
-    if (this.teaserTimer) clearTimeout(this.teaserTimer);
+    this.clearTeaserTimers();
     if (this.copiedTimer) clearTimeout(this.copiedTimer);
   }
 
   // ── Fumetto d'invito ─────────────────────────────────────────────────────
   private scheduleTeaser(): void {
     if (!this.isBrowser || this.readFlag(TEASER_DISMISSED_KEY, 'session')) return;
-    this.teaserTimer = setTimeout(() => {
-      this.teaserTimer = null;
-      // Chi ha già aperto la chat o ha una conversazione non ha bisogno dell'invito.
-      if (this.isOpen || this.chatbot.hasMessages) return;
-      this.teaserVisible = true;
-      this.inviteUnread = true;
-      this.cdr.markForCheck();
-    }, TEASER_DELAY_MS);
+    this.teaserTimer = setTimeout(() => this.showTeaser(), TEASER_DELAY_MS);
+
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const scrollable = doc.scrollHeight - window.innerHeight;
+      if (scrollable > 0 && window.scrollY / scrollable >= TEASER_SCROLL_RATIO) this.showTeaser();
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    this.teaserScrollListener = () => window.removeEventListener('scroll', onScroll);
   }
 
-  /** Chiude il fumetto per il resto della visita. */
-  hideTeaser(): void {
+  private showTeaser(): void {
+    this.stopTeaserTriggers();
+    // Chi ha già aperto la chat o ha una conversazione non ha bisogno dell'invito.
+    if (this.isOpen || this.chatbot.hasMessages || this.readFlag(TEASER_DISMISSED_KEY, 'session')) return;
+    // Banner dei cookie ancora aperto: niente sovrapposizioni, si riprova.
+    if (!this.consent.hasDecided()) {
+      this.teaserTimer = setTimeout(() => this.showTeaser(), TEASER_RETRY_MS);
+      return;
+    }
+    this.inviteUnread = true;
+    if (!this.isMobileLayout()) {
+      this.teaserVisible = true;
+      this.teaserHideTimer = setTimeout(() => {
+        this.teaserHideTimer = null;
+        this.hideTeaser();
+        this.cdr.markForCheck();
+      }, TEASER_AUTO_HIDE_MS);
+    }
+    this.cdr.markForCheck();
+  }
+
+  /** Ferma ritardo e ascolto dello scroll (il fumetto è già partito o non serve più). */
+  private stopTeaserTriggers(): void {
     if (this.teaserTimer) {
       clearTimeout(this.teaserTimer);
       this.teaserTimer = null;
     }
+    this.teaserScrollListener?.();
+    this.teaserScrollListener = null;
+  }
+
+  private clearTeaserTimers(): void {
+    this.stopTeaserTriggers();
+    if (this.teaserHideTimer) {
+      clearTimeout(this.teaserHideTimer);
+      this.teaserHideTimer = null;
+    }
+  }
+
+  /** Chiude il fumetto per il resto della visita. */
+  hideTeaser(): void {
+    this.clearTeaserTimers();
     this.writeFlag(TEASER_DISMISSED_KEY, 'session');
     this.teaserVisible = false;
   }

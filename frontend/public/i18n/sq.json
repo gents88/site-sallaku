@@ -110,7 +110,11 @@
     "kpi_projects": "Projekte të realizuara",
     "kpi_companies": "Kompani enterprise",
     "kpi_latency": "Reduktim vonese (tipik)",
-    "scroll": "Poshtë"
+    "scroll": "Poshtë",
+    "lead": "Projektoj dhe zhvilloj aplikacione Angular të shpejta, të aksesueshme dhe gati për prodhim, për ekipe enterprise në hapësirën ajrore, mbrojtje, telekomunikacion dhe banka.",
+    "available": "I disponueshëm për projekte të reja",
+    "cta_projects": "Shiko projektet",
+    "cta_contact": "Le të flasim për projektin tënd"
   },
   "about": {
     "tag": "about",
@@ -2387,5 +2391,14 @@
     "from": "nga",
     "dismiss": "Injoro",
     "none": "Asnjë lidhje e prishur e regjistruar."
+  },
+  "home": {
+    "projects_all": "Të gjitha projektet",
+    "about_more": "Rrugëtimi im",
+    "cta": {
+      "title": "Ke një projekt në mendje?",
+      "text": "Më trego çfarë të duhet: të përgjigjem personalisht dhe e gjejmë bashkë zgjidhjen e duhur.",
+      "button": "Më shkruaj"
+    }
   }
 }

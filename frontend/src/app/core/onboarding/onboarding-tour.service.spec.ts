@@ -99,9 +99,10 @@ describe('OnboardingTourService', () => {
   });
 
   describe('avvio automatico al primo accesso', () => {
-    it("parte all'atterraggio dopo il ritardo, senza aspettare il banner del consenso", async () => {
+    it("parte nel Lab dopo il ritardo, senza aspettare il banner del consenso", async () => {
       // Primo accesso reale: nessuna scelta sui cookie salvata, banner aperto.
       expect(localStorage.getItem('cookie_consent_v1')).toBeNull();
+      router.url = '/lab';
       const tour = setup();
       tour.scheduleAutoStart();
       await vi.advanceTimersByTimeAsync(1499);
@@ -109,6 +110,42 @@ describe('OnboardingTourService', () => {
       await vi.advanceTimersByTimeAsync(1);
       expect(fake.instance.drive).toHaveBeenCalledOnce();
       expect(tour.active()).toBe(true);
+    });
+
+    it('non parte sulle pagine del portfolio: il tour spiega la sidebar, che lì non c\'è', async () => {
+      router.url = '/homepage';
+      const tour = setup();
+      tour.scheduleAutoStart();
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(fake.instance.drive).not.toHaveBeenCalled();
+      // Non viene segnato come visto: lo vedrà alla prima visita al Lab.
+      expect(localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBeNull();
+
+      // AppComponent lo richiama a ogni navigazione.
+      router.url = '/en/lab/ocr?x=1';
+      tour.scheduleAutoStart();
+      await vi.advanceTimersByTimeAsync(1500);
+      expect(fake.instance.drive).toHaveBeenCalledOnce();
+    });
+
+    it('le chiamate ripetute durante il ritardo non avviano due tour', async () => {
+      router.url = '/lab';
+      const tour = setup();
+      tour.scheduleAutoStart();
+      tour.scheduleAutoStart();
+      await vi.advanceTimersByTimeAsync(1500);
+      tour.scheduleAutoStart();
+      await vi.advanceTimersByTimeAsync(1500);
+      expect(fake.instance.drive).toHaveBeenCalledOnce();
+    });
+
+    it('se si lascia il Lab prima della fine del ritardo non parte', async () => {
+      router.url = '/lab';
+      const tour = setup();
+      tour.scheduleAutoStart();
+      router.url = '/blog';
+      await vi.advanceTimersByTimeAsync(1500);
+      expect(fake.instance.drive).not.toHaveBeenCalled();
     });
 
     it('non parte se il flag hasSeenOnboarding è già presente', async () => {
@@ -131,7 +168,7 @@ describe('OnboardingTourService', () => {
       expect(localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBeNull();
 
       TestBed.resetTestingModule();
-      router.url = '/';
+      router.url = '/lab';
       auth.isLoggedIn.set(true);
       auth.isAdmin.set(true);
       tour = setup();
@@ -150,6 +187,7 @@ describe('OnboardingTourService', () => {
 
     it('non parte da solo e non segna il tour come visto (da desktop lo si vedrà)', async () => {
       mobileViewport();
+      router.url = '/lab';
       const tour = setup();
       tour.scheduleAutoStart();
       await vi.advanceTimersByTimeAsync(5000);

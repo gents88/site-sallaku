@@ -11,6 +11,7 @@ import { LanguageService, withLangPrefix } from '../../../core/services/language
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
 import { LocalDatePipe } from '../../../shared/pipes/local-date.pipe';
@@ -72,7 +73,7 @@ export function coverIcon(tag: string | undefined): string {
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, NewsletterSignupComponent, ViewTransitionNameOnClickDirective, LocalDatePipe],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, FormsModule, MatIconModule, TranslateModule, LangUrlPipe, BreadcrumbComponent, PageHeaderComponent, NewsletterSignupComponent, ViewTransitionNameOnClickDirective, LocalDatePipe],
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

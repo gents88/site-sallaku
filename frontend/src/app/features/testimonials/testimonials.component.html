@@ -3,13 +3,7 @@
   <div class="testimonials-hero__glow" aria-hidden="true"></div>
   <div class="container testimonials-hero__inner">
     <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-    <span class="section-tag animate-fade-up">{{ 'testimonials.tag' | translate }}</span>
-    <h1 id="testimonials-title" class="section-title text-gradient animate-fade-up delay-1">
-      {{ 'testimonials.title' | translate }}
-    </h1>
-    <p class="section-subtitle animate-fade-up delay-2">
-      {{ 'testimonials.subtitle' | translate }}
-    </p>
+    <app-page-header titleId="testimonials-title" [eyebrow]="'testimonials.tag' | translate" [title]="'testimonials.title' | translate" [lead]="'testimonials.subtitle' | translate" />
   </div>
 </section>
 

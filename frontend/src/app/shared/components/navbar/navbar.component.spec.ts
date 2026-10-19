@@ -52,11 +52,39 @@ describe('NavbarComponent', () => {
   });
 
   it('follows the scroll-spy section on HomeComponent routes', async () => {
-    const { navbar } = await setup('/about');
+    const { navbar } = await setup('/services');
     expect(navbar.isHomepage()).toBe(true);
-    navbar.activeSection.set('skills');
-    expect(navbar.isActive(link('/skills'))).toBe(true);
-    expect(navbar.isActive(link('/about'))).toBe(false);
+    navbar.activeSection.set('services');
+    expect(navbar.isActive(link('/services'))).toBe(true);
+    expect(navbar.isActive(link('/projects'))).toBe(false);
+  });
+
+  it('treats /about as a page of its own, not as a homepage section', async () => {
+    const { navbar } = await setup('/en/about');
+    expect(navbar.isHomepage()).toBe(false);
+    expect(navbar.isActive(link('/about'))).toBe(true);
+  });
+
+  it('lights up the parent link on sub-pages (an article → Blog, a tool → Lab)', async () => {
+    let { navbar } = await setup('/blog/rxjs-signals');
+    expect(navbar.isActive(link('/blog'))).toBe(true);
+    TestBed.resetTestingModule();
+    ({ navbar } = await setup('/en/lab/ocr'));
+    expect(navbar.isActive(link('/lab'))).toBe(true);
+    expect(navbar.isActive(link('/blog'))).toBe(false);
+  });
+
+  it('does not light up a link whose route is only a prefix of another word (/lab vs /laboratorio)', async () => {
+    const { navbar } = await setup('/laboratorio');
+    expect(navbar.isActive(link('/lab'))).toBe(false);
+  });
+
+  it('renders Contatti as the CTA and hides Lab from the mobile sheet (the drawer button is there)', async () => {
+    const { navbar } = await setup('/homepage');
+    expect(navbar.ctaLinkId).toBe('contact');
+    expect(link('/contact').id).toBe('contact');
+    expect(navbar.mobileSheetHiddenRoutes.has('/lab')).toBe(true);
+    expect(navbar.mobileSheetHiddenRoutes.has('/about')).toBe(false);
   });
 
   it('shows the Dashboard link only to admins, not to plain logged-in users', async () => {
