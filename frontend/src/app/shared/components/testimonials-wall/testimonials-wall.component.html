@@ -20,6 +20,7 @@
             @if (t.role) {
               <span>{{ t.role }}</span>
             }
+            <app-testimonial-proof [verified]="t.verified" [linkedinUrl]="t.linkedinUrl" [name]="t.authorName" />
           </div>
         </div>
       </article>

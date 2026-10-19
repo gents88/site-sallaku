@@ -66,6 +66,10 @@ export class TestimonialsService {
       rating: dto.rating,
       content: sanitizedContent,
       avatarUrl: dto.avatarUrl || null,
+      linkedinUrl: dto.linkedinUrl || null,
+      // Mai dal form pubblico: solo l'admin può verificare (vedi setVerified).
+      verified: false,
+      verifiedAt: null,
       isSpam: isSpam && score >= 50,
       spamScore: score,
       userIp: userIp || null,
@@ -194,6 +198,18 @@ export class TestimonialsService {
     return this.mapToAdminDto(testimonial);
   }
 
+  /** L'admin conferma (o toglie) la verifica dell'identità dell'autore. */
+  async setVerified(id: string, verified: boolean): Promise<TestimonialAdminItemDto> {
+    this.assertValidId(id);
+    const testimonial = await this.testimonialModel.findByIdAndUpdate(
+      id,
+      { verified, verifiedAt: verified ? new Date() : null, updatedAt: new Date() },
+      { new: true },
+    );
+    if (!testimonial) throw new NotFoundException('Testimonianza non trovata');
+    return this.mapToAdminDto(testimonial);
+  }
+
   async markAsSpam(id: string): Promise<TestimonialAdminItemDto> {
     this.assertValidId(id);
     const testimonial = await this.testimonialModel.findByIdAndUpdate(
@@ -227,6 +243,11 @@ export class TestimonialsService {
   private mapToResponseDto(testimonial: TestimonialDocument): TestimonialResponseDto {
     const dto = plainToInstance(TestimonialResponseDto, testimonial.toObject());
     dto.id = testimonial._id.toString();
+    // Il link LinkedIn lo ha scritto il visitatore: finché l'admin non ha controllato
+    // che sia davvero l'autore, non si pubblica (si potrebbe attribuire una frase a
+    // un'altra persona). Le testimonianze vecchie non hanno il campo: non verificate.
+    dto.verified = testimonial.verified === true;
+    if (!dto.verified || !dto.linkedinUrl) delete dto.linkedinUrl;
     return dto;
   }
 
@@ -244,6 +265,9 @@ export class TestimonialsService {
       isSpam: testimonial.isSpam,
       spamScore: testimonial.spamScore,
       featured: testimonial.featured,
+      linkedinUrl: testimonial.linkedinUrl || undefined,
+      verified: testimonial.verified === true,
+      verifiedAt: testimonial.verifiedAt ?? null,
       userIp: testimonial.userIp,
       createdAt: testimonial.createdAt,
     };

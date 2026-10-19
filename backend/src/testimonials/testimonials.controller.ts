@@ -18,6 +18,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@ne
 import { TestimonialsService } from './services/testimonials.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import { SetFeaturedDto } from './dto/set-featured.dto';
+import { SetVerifiedDto } from './dto/set-verified.dto';
 import { UpdateTestimonialContentDto } from './dto/update-testimonial-content.dto';
 import { TestimonialResponseDto } from './dto/testimonial-response.dto';
 import { TestimonialAdminItemDto } from './dto/testimonial-admin-item.dto';
@@ -157,6 +158,19 @@ export class TestimonialsController {
     @Body() dto: SetFeaturedDto,
   ): Promise<TestimonialAdminItemDto> {
     return this.testimonialsService.setFeatured(id, dto.featured);
+  }
+
+  @Patch(':id/verify')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @UseInterceptors(AuditInterceptor)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Mark a testimonial as verified (identity checked) or remove the mark (admin only)' })
+  async setVerified(
+    @Param('id') id: string,
+    @Body() dto: SetVerifiedDto,
+  ): Promise<TestimonialAdminItemDto> {
+    return this.testimonialsService.setVerified(id, dto.verified);
   }
 
   @Delete(':id')
