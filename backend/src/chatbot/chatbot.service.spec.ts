@@ -174,6 +174,30 @@ describe('ChatbotService', () => {
       expect(result.reply).toContain('assistente AI di questo portfolio');
     });
 
+    it('alla domanda su freelance/disponibilità il fallback non offre servizi né collaborazioni', async () => {
+      mockAiProvider.chatCompletion.mockRejectedValue(new Error('boom'));
+
+      for (const question of ['sei disponibile per un lavoro freelance?', 'do you offer services? can I hire you?']) {
+        const { reply } = await service.sendMessage(question);
+        expect(reply).not.toMatch(/offers? freelance|discuss your project|disponibile per/i);
+      }
+      const { reply } = await service.sendMessage('can I hire you?');
+      expect(reply).toContain('works as an employee');
+    });
+
+    it('il system prompt dichiara che Gent non cerca incarichi e vieta di proporre servizi o collaborazioni', async () => {
+      mockModel.findOne.mockReturnValue({ exec: jest.fn().mockResolvedValue(null) });
+      mockAiProvider.chatCompletion.mockResolvedValue('ok');
+
+      await service.sendMessage('ciao');
+
+      const messages = mockAiProvider.chatCompletion.mock.calls[0][0] as { role: string; content: string }[];
+      const prompt = messages.find((m) => m.role === 'system')!.content;
+      expect(prompt).toContain('currently works as an employee');
+      expect(prompt).toContain('NOT looking for freelance work');
+      expect(prompt).not.toContain('experiences, and services');
+    });
+
     it('ripiega sull inglese quando la lingua del messaggio di fallback non è riconosciuta', async () => {
       mockAiProvider.chatCompletion.mockRejectedValue(new Error('boom'));
 
