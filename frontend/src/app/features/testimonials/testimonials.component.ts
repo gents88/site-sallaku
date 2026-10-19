@@ -10,6 +10,7 @@ import { LanguageService, withLangPrefix } from '../../core/services/language.se
 import { RatingStarsComponent } from '../../shared/components/rating-stars/rating-stars.component';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 const DATE_LOCALES: Record<string, string> = {
   it: 'it-IT',
@@ -25,7 +26,7 @@ const DATE_LOCALES: Record<string, string> = {
   selector: 'app-testimonials',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent, PageHeaderComponent],
   templateUrl: './testimonials.component.html',
   styleUrls: ['./testimonials.component.scss'],
 })

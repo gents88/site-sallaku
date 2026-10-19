@@ -110,7 +110,11 @@
     "kpi_projects": "Projects completed",
     "kpi_companies": "Enterprise companies",
     "kpi_latency": "Latency reduction (typical)",
-    "scroll": "Scroll"
+    "scroll": "Scroll",
+    "lead": "I design and build fast, accessible, production-ready Angular applications for enterprise teams in aerospace, defence, telecoms and banking.",
+    "available": "Available for new projects",
+    "cta_projects": "View projects",
+    "cta_contact": "Let’s talk about your project"
   },
   "about": {
     "tag": "about",
@@ -2387,5 +2391,14 @@
     "from": "from",
     "dismiss": "Dismiss",
     "none": "No broken links recorded."
+  },
+  "home": {
+    "projects_all": "All projects",
+    "about_more": "My journey",
+    "cta": {
+      "title": "Have a project in mind?",
+      "text": "Tell me what you need: I’ll reply personally and we’ll find the right solution together.",
+      "button": "Get in touch"
+    }
   }
 }

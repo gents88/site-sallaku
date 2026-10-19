@@ -64,10 +64,24 @@ describe('NAV_REGISTRY', () => {
     expect(ids).toEqual(expect.arrayContaining(['library', 'my-files']));
   });
 
-  it('exposes the navbar links in their historical order', () => {
+  it('exposes a short navbar: five sections plus Contatti as the last item (the CTA)', () => {
     expect(navbarEntries().map(e => e.route)).toEqual([
-      '/about', '/tech-stack', '/projects', '/services', '/experience', '/skills', '/contact', '/blog', '/testimonials',
+      '/projects', '/services', '/blog', '/lab', '/about', '/contact',
     ]);
+  });
+
+  it('keeps the old home anchors reachable from search, out of the navbar', () => {
+    const searchable = searchableEntries().map(e => e.route);
+    for (const route of ['/tech-stack', '/experience', '/skills', '/testimonials']) {
+      expect(searchable).toContain(route);
+      expect(navbarEntries().map(e => e.route)).not.toContain(route);
+    }
+  });
+
+  it('lists /about in the sitemap now that it is a page of its own', () => {
+    const about = NAV_REGISTRY.find(e => e.id === 'about')!;
+    expect(about.sitemap).toBeDefined();
+    expect(about.homeSection).toBeUndefined();
   });
 
   it('links every parameterless admin page (regression: /dashboard/ai had no link anywhere)', () => {
@@ -99,9 +113,11 @@ describe('NAV_REGISTRY', () => {
     expect(sidebarGroups(true).map(g => g.id)).toEqual(['overview', 'content', 'ai', 'workspace', 'account', 'tools']);
   });
 
-  it('treats only HomeComponent routes as the homepage (not /contact, /projects, /testimonials)', () => {
+  it('treats only HomeComponent routes as the homepage (not /about, /contact, /projects, /testimonials)', () => {
     const home = homepageRoutes();
-    expect([...home].sort()).toEqual(['/', '/about', '/experience', '/homepage', '/services', '/skills', '/tech-stack']);
-    expect(homeSectionIds()).toEqual(expect.arrayContaining(['testimonials', 'contact', 'projects']));
+    expect([...home].sort()).toEqual(['/', '/homepage', '/services']);
+    expect(homeSectionIds()).toEqual(expect.arrayContaining(['testimonials', 'projects', 'services']));
+    expect(homeSectionIds()).not.toContain('contact');
+    expect(homeSectionIds()).not.toContain('about');
   });
 });

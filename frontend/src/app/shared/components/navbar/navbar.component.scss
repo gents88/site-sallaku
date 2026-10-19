@@ -621,3 +621,30 @@
 .tab-item.active .tab-avatar {
   box-shadow: 0 0 0 2px var(--primary-400, #6b8afc);
 }
+
+/* "Contatti" in fondo al menu desktop: pulsante pieno invece di link.
+   Tinta unita --primary-600 e non il gradiente: il bianco sul viola chiaro
+   del gradiente scende sotto 4.5:1. Nello sheet "Altro" su mobile resta una
+   voce come le altre. */
+.nav-link--cta {
+  @media (min-width: 901px) {
+    margin-left: 6px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    color: #fff;
+    font-weight: 600;
+    background: var(--primary-600, #3b4cea);
+    box-shadow: 0 6px 18px rgba(79, 106, 245, 0.28);
+
+    &:hover,
+    &.active {
+      color: #fff;
+      /* niente --primary-700: il tema albanese ridefinisce solo 500/600 */
+      background: var(--primary-600, #3b4cea);
+      filter: brightness(0.92);
+      box-shadow: 0 8px 24px rgba(79, 106, 245, 0.4);
+    }
+
+    &.active::after { display: none; }
+  }
+}

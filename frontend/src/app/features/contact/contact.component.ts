@@ -15,6 +15,7 @@ import { MATERIAL_CSS } from '../../core/utils/vendor-css.generated';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { FeatureFlagsService } from '../../core/services/feature-flags.service';
 
 @Component({
@@ -24,7 +25,7 @@ import { FeatureFlagsService } from '../../core/services/feature-flags.service';
   imports: [
     CommonModule, ReactiveFormsModule, TranslateModule,
     MatIconModule, MatSnackBarModule, TurnstileWidgetComponent,
-    RouterLink, LangUrlPipe, BreadcrumbComponent,
+    RouterLink, LangUrlPipe, BreadcrumbComponent, PageHeaderComponent,
   ],
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],

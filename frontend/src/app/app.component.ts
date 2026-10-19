@@ -1,6 +1,8 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { Router, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, OnInit, signal, PLATFORM_ID, Inject, inject } from '@angular/core';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
@@ -26,6 +28,8 @@ import { LabActivityService } from './core/services/lab-activity.service';
 import { LabNextStepsComponent } from './shared/components/lab-next-steps/lab-next-steps.component';
 import { MaintenanceOverlayComponent } from './shared/components/maintenance-overlay/maintenance-overlay.component';
 import { FeatureFlagsService } from './core/services/feature-flags.service';
+import { DrawerService, isToolAreaPath } from './core/services/drawer.service';
+import { stripLangPrefix } from './core/services/language.service';
 
 import { initGlassSpotlight } from './core/utils/glass-spotlight';
 import { ProfilePhotoComponent } from './shared/components/profile-photo/profile-photo.component';
@@ -450,6 +454,10 @@ export class AppComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  private readonly drawer = inject(DrawerService);
+  private readonly document = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
+
   constructor(
     public authModal: AuthModalService,
     public auth: AuthService,
@@ -469,6 +477,7 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.syncSidebarWithRoute();
     // Activity tracking binds to `window`, which doesn't exist during SSR/prerender.
     if (isPlatformBrowser(this.platformId)) {
       this.inactivity.init();
@@ -494,6 +503,25 @@ export class AppComponent implements OnInit {
       });
       (window as any).__CONSENT_I18N__ = i18nObj;
     } catch (e) { /* ignore */ }
+  }
+
+  /**
+   * Rail della sidebar solo nelle pagine strumenti (/lab, /dashboard). Il
+   * primo valore viene da location.pathname perché qui la navigazione
+   * iniziale non è ancora finita (router.url vale '/'), poi segue il router.
+   * A ogni pagina si riprova anche il tour, che parte da solo solo nel Lab.
+   */
+  private syncSidebarWithRoute(): void {
+    const isBrowser = isPlatformBrowser(this.platformId);
+    const apply = (url: string) =>
+      this.drawer.setRailAllowed(isToolAreaPath(stripLangPrefix(url.split(/[?#]/)[0]).basePath));
+    if (isBrowser) apply(this.document.location.pathname);
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
+      .subscribe(e => {
+        apply(e.urlAfterRedirects);
+        if (isBrowser) this.onboardingTour.scheduleAutoStart();
+      });
   }
 
   closeAccountModal(): void {

@@ -20,21 +20,23 @@ const publicPages: Route[] = [
     path: 'homepage',
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
   },
+  // Chi sono: /tech-stack, /experience e /skills erano ancore della home e
+  // ora aprono la stessa pagina alla sezione corrispondente.
   {
     path: 'about',
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+    loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent),
   },
   {
     path: 'tech-stack',
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+    loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent),
   },
   {
     path: 'experience',
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+    loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent),
   },
   {
     path: 'skills',
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+    loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent),
   },
   {
     path: 'projects',

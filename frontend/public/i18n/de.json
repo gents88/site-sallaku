@@ -110,7 +110,11 @@
     "kpi_projects": "Abgeschlossene Projekte",
     "kpi_companies": "Enterprise-Unternehmen",
     "kpi_latency": "Latenzreduzierung (typisch)",
-    "scroll": "Scrollen"
+    "scroll": "Scrollen",
+    "lead": "Ich entwerfe und entwickle schnelle, barrierearme und produktionsreife Angular-Anwendungen für Enterprise-Teams aus Luft- und Raumfahrt, Verteidigung, Telekommunikation und Banking.",
+    "available": "Verfügbar für neue Projekte",
+    "cta_projects": "Projekte ansehen",
+    "cta_contact": "Sprechen wir über Ihr Projekt"
   },
   "about": {
     "tag": "about",
@@ -2387,5 +2391,14 @@
     "from": "von",
     "dismiss": "Ignorieren",
     "none": "Keine defekten Links erfasst."
+  },
+  "home": {
+    "projects_all": "Alle Projekte",
+    "about_more": "Mein Werdegang",
+    "cta": {
+      "title": "Haben Sie ein Projekt im Kopf?",
+      "text": "Erzählen Sie mir, was Sie brauchen: Ich antworte persönlich, und wir finden gemeinsam die passende Lösung.",
+      "button": "Schreiben Sie mir"
+    }
   }
 }

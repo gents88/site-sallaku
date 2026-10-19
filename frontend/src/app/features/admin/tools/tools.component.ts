@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { sidebarGroups } from '../../../core/navigation/nav-registry';
 import { NavIconComponent, navIconColor } from '../../../shared/components/nav-icon/nav-icon.component';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
@@ -37,18 +38,11 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
   selector: 'app-tools',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent, NavIconComponent, LangUrlPipe],
+  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent, PageHeaderComponent, NavIconComponent, LangUrlPipe],
   template: `
     <div class="page">
       <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
-      <header class="page-header">
-        <div class="header-badge">
-          <span class="badge-dot"></span>
-          {{ 'tools.badge' | translate }}
-        </div>
-        <h1>{{ 'tools.heading' | translate }}</h1>
-        <p>{{ 'tools.subtitle' | translate }}</p>
-      </header>
+      <app-page-header [eyebrow]="'tools.badge' | translate" [title]="'tools.heading' | translate" [lead]="'tools.subtitle' | translate" />
 
       <!-- Trascina un file (o sceglilo): finisce nel workspace e il riquadro qui sotto propone gli strumenti adatti. -->
       <div class="drop-card">
@@ -165,38 +159,6 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
 
     .page { padding: 2rem; max-width: 1100px; margin: 0 auto; }
 
-    /* ─── Header ─── */
-    .page-header {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
-
-    .header-badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 16px; border-radius: 100px;
-      background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.28);
-      font-size: 12px; color: #a78bfa; margin-bottom: 1.25rem; letter-spacing: .03em;
-    }
-    /* #a78bfa su sfondo chiaro era 2.3:1 (axe): tonalità più scura in light. */
-    :host-context([data-theme='light']) .header-badge { color: #6d28d9; }
-    .badge-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #7c3aed; box-shadow: 0 0 6px #7c3aed;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100% { opacity:1; box-shadow:0 0 6px #7c3aed } 50% { opacity:.5; box-shadow:0 0 2px #7c3aed } }
-
-    h1 {
-      font-size: clamp(1.8rem, 4vw, 2.75rem); font-weight: 800;
-      margin: 0 0 .75rem; color: var(--text-primary, #e6edf3);
-      background: linear-gradient(130deg, #e6edf3 30%, #a78bfa 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-
-    .page-header p {
-      font-size: 1.05rem; color: var(--text-secondary, #8b949e);
-      line-height: 1.7; margin: 0;
-    }
 
     /* ─── Workspace banner ─── */
     .workspace-banner {

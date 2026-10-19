@@ -6,6 +6,7 @@ import type { DriveStep, Driver } from 'driver.js';
 import { AnalyticsTrackingService } from '../services/analytics-tracking.service';
 import { AuthService } from '../services/auth.service';
 import { DrawerService } from '../services/drawer.service';
+import { stripLangPrefix } from '../services/language.service';
 import { ONBOARDING_STEPS, OnboardingStepDef } from './onboarding-steps';
 
 /** Flag di primo accesso: presente = tour già visto (completato o saltato). */
@@ -37,15 +38,20 @@ export const TOUR_IS_MOBILE = new InjectionToken<() => boolean>('TOUR_IS_MOBILE'
   factory: () => () => typeof window !== 'undefined' && !!window.matchMedia?.(TOUR_MOBILE_QUERY).matches,
 });
 
-/** Rotte dell'area admin: il tour è pensato per i visitatori del sito pubblico. */
-const ADMIN_ROUTE = /(^|\/)dashboard(\/|$|\?)/;
+/**
+ * Il tour spiega la sidebar del Lab, che esiste solo nelle pagine /lab/*
+ * (DrawerService.railAllowed): parte da solo solo lì. Prima partiva su
+ * qualunque pagina, home compresa, insieme al banner dei cookie e al fumetto
+ * del chatbot. Path senza prefisso lingua.
+ */
+const LAB_ROUTE = /^\/lab(\/|$)/;
 
 /**
  * Tour guidato di primo accesso (spotlight + popover) basato su Driver.js.
  *
- * - Parte da solo una volta per browser, appena si atterra sul sito, anche
- *   con il banner del consenso aperto: il banner resta sotto l'overlay e si
- *   ritrova alla chiusura del tour. Mai nell'area admin né per un admin loggato.
+ * - Parte da solo una volta per browser, la prima volta che si apre una
+ *   pagina del Lab (LAB_ROUTE). AppComponent richiama scheduleAutoStart() a
+ *   ogni navigazione. Mai per un admin loggato.
  * - `start()` lo riavvia a mano (link "Guida" nel footer) ignorando il flag.
  * - Mai su mobile (TOUR_MOBILE_QUERY): il flag non viene scritto, così chi
  *   torna da desktop lo vede.
@@ -69,9 +75,12 @@ export class OnboardingTourService {
   /** True mentre il tour è visibile (o in fase di avvio). */
   readonly active = signal(false);
 
-  /** Da chiamare una volta all'avvio dell'app (AppComponent). */
+  /**
+   * Da chiamare all'avvio e a ogni navigazione (AppComponent): la pagina viene
+   * controllata allo scadere del ritardo, quindi le chiamate in più sono innocue.
+   */
   scheduleAutoStart(): void {
-    if (!this.isBrowser || this.hasSeen()) return;
+    if (!this.isBrowser || this.hasSeen() || this.autoStartTimer || this.active()) return;
     this.autoStartTimer = setTimeout(() => {
       this.autoStartTimer = null;
       if (this.shouldAutoStart()) void this.start();
@@ -202,7 +211,7 @@ export class OnboardingTourService {
     if (this.hasSeen()) return false;
     if (this.isMobileLayout()) return false;
     if (this.auth.isLoggedIn() && this.auth.isAdmin()) return false;
-    return !ADMIN_ROUTE.test(this.router.url);
+    return LAB_ROUTE.test(stripLangPrefix(this.router.url.split(/[?#]/)[0]).basePath);
   }
 
   /**

@@ -12,6 +12,16 @@ export type SidebarMode = 'overlay' | 'rail';
 /** Sotto questa soglia non c'è larghezza per una rail agganciata senza comprimere il contenuto. */
 const RAIL_MIN_WIDTH = 1200;
 
+/**
+ * Pagine dove la sidebar serve davvero: gli strumenti del Lab e la dashboard.
+ * Nel resto del sito (portfolio, blog, contatti) la rail con le 14 icone del
+ * Lab competeva con il contenuto; lì resta solo come drawer da aprire a mano.
+ * `path` senza prefisso lingua, query e fragment.
+ */
+export function isToolAreaPath(path: string): boolean {
+  return /^\/(lab|dashboard)(\/|$)/.test(path);
+}
+
 // Chiave nuova (era 'gs-sidebar-expanded'): da quando la rail si apre al
 // passaggio del mouse, un vecchio "espansa" salvato la terrebbe aperta per
 // sempre. Il pin è una scelta esplicita e riparte da "non agganciata".
@@ -36,7 +46,14 @@ export class DrawerService {
 
   private readonly wideViewport = signal(false);
 
-  readonly mode = computed<SidebarMode>(() => (this.wideViewport() ? 'rail' : 'overlay'));
+  /**
+   * La rail agganciata è ammessa nella pagina corrente (vedi isToolAreaPath).
+   * La imposta AppComponent a ogni navigazione; vero di default così chi usa
+   * il servizio da solo (test, altri host) ha il comportamento di sempre.
+   */
+  readonly railAllowed = signal(true);
+
+  readonly mode = computed<SidebarMode>(() => (this.wideViewport() && this.railAllowed() ? 'rail' : 'overlay'));
 
   /** Aperto/chiuso del drawer off-canvas. Significativo solo in modalità overlay. */
   readonly drawerOpen = signal(false);
@@ -76,6 +93,14 @@ export class DrawerService {
       const state = this.mode() === 'rail' ? (this.railExpanded() ? 'rail-expanded' : 'rail') : 'overlay';
       this.document.documentElement.setAttribute('data-sidebar', state);
     });
+  }
+
+  /** Cambiando pagina: fuori dalle aree strumenti la rail lascia posto al drawer chiuso. */
+  setRailAllowed(allowed: boolean): void {
+    if (allowed === this.railAllowed()) return;
+    this.railAllowed.set(allowed);
+    this.hoverOpen.set(false);
+    this.drawerOpen.set(false);
   }
 
   /** Toggle "universale" usato dai trigger in navbar: apre il drawer o espande la rail. */

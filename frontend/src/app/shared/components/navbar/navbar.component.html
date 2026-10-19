@@ -6,6 +6,9 @@
          (901–1199px) l'hamburger accanto a una navbar orizzontale completa
          legge come residuo mobile e viene ignorato, quindi qui è una pill
          etichettata. Sopra i 1200px sparisce: c'è la rail agganciata. -->
+    <!-- Solo nelle pagine del Lab e della dashboard: nel resto del sito la
+         sidebar non c'è e "AI & Strumenti" è una voce del menu. -->
+    @if (drawer.railAllowed()) {
     <button class="nav-drawer-toggle"
             type="button"
             (click)="toggleDrawerFromNavbar()"
@@ -18,6 +21,7 @@
         <path d="M9 6l6 6-6 6" />
       </svg>
     </button>
+    }
 
     <!-- Logo -->
     <a [routerLink]="'/homepage' | langUrl" class="nav-logo" (click)="closeMenu()">
@@ -34,9 +38,10 @@
          esterno, e il ruolo toglieva alla <ul> la sua semantica di lista. -->
     <ul class="nav-menu" #navMenu [class.open]="mobileMenuOpen()" id="nav-menu" (keydown)="onMenuKeydown($event)">
       @for (link of desktopNavLinks(); track link.id) {
-        <li [class.nav-item-mobile-hide]="bottomTabRoutes.has(link.route)">
+        <li [class.nav-item-mobile-hide]="mobileSheetHiddenRoutes.has(link.route)">
           <a [routerLink]="link.route | langUrl"
              class="nav-link"
+             [class.nav-link--cta]="link.id === ctaLinkId"
              [class.active]="isActive(link)"
              [attr.aria-current]="isActive(link) ? (isHomepage() ? 'location' : 'page') : null"
              (click)="closeMenu()">{{ link.labelKey | translate }}</a>

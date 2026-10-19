@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { RouterLink } from '@angular/router';
 import { catchError, of } from 'rxjs';
 import { ProjectsService } from '../../../core/services/projects.service';
@@ -12,19 +13,12 @@ import { Project } from '../../../core/models/project.model';
 import { hasCaseStudy, localizeProject } from '../../../core/models/localize-content';
 import { LangUrlPipe } from '../../../shared/pipes/lang-url.pipe';
 import { ViewTransitionNameOnClickDirective } from '../../../shared/directives/view-transition-name.directive';
-
-interface ProjectItem {
-  icon: string;
-  tags: string[];
-  titleKey: string;
-  descKey: string;
-  featureKeys: string[];
-}
+import { STATIC_PROJECTS } from '../static-projects';
 
 @Component({
   selector: 'app-projects-list',
   standalone: true,
-  imports: [CommonModule, MatIconModule, TranslateModule, BreadcrumbComponent, RouterLink, LangUrlPipe, ViewTransitionNameOnClickDirective],
+  imports: [CommonModule, MatIconModule, TranslateModule, BreadcrumbComponent, PageHeaderComponent, RouterLink, LangUrlPipe, ViewTransitionNameOnClickDirective],
   templateUrl: './projects-list.component.html',
   styleUrls: ['./projects-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,43 +61,7 @@ export class ProjectsListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedTech.update(current => (current === tech ? null : tech));
   }
 
-  readonly staticProjects: ProjectItem[] = [
-    {
-      icon: 'earth-europe',
-      tags: ['Cesium.js', 'Angular', 'TypeScript'],
-      titleKey: 'projects.geo.title',
-      descKey: 'projects.geo.desc',
-      featureKeys: ['projects.geo.f1', 'projects.geo.f2', 'projects.geo.f3', 'projects.geo.f4'],
-    },
-    {
-      icon: 'vr-cardboard',
-      tags: ['Photo Sphere', 'Angular', 'WebGL'],
-      titleKey: 'projects.vr.title',
-      descKey: 'projects.vr.desc',
-      featureKeys: ['projects.vr.f1', 'projects.vr.f2', 'projects.vr.f3', 'projects.vr.f4'],
-    },
-    {
-      icon: 'chart-pie',
-      tags: ['Looker', 'Angular', 'Chart.js'],
-      titleKey: 'projects.dash.title',
-      descKey: 'projects.dash.desc',
-      featureKeys: ['projects.dash.f1', 'projects.dash.f2', 'projects.dash.f3', 'projects.dash.f4'],
-    },
-    {
-      icon: 'book-open',
-      tags: ['Angular', 'Node.js', 'PostgreSQL'],
-      titleKey: 'projects.lib.title',
-      descKey: 'projects.lib.desc',
-      featureKeys: ['projects.lib.f1', 'projects.lib.f2', 'projects.lib.f3', 'projects.lib.f4'],
-    },
-    {
-      icon: 'shield-halved',
-      tags: ['Angular', '.NET', 'API'],
-      titleKey: 'projects.ins.title',
-      descKey: 'projects.ins.desc',
-      featureKeys: ['projects.ins.f1', 'projects.ins.f2', 'projects.ins.f3', 'projects.ins.f4'],
-    },
-  ];
+  readonly staticProjects = STATIC_PROJECTS;
 
   ngOnInit(): void {
     this.projectsService.getAll().pipe(catchError(() => of([] as Project[]))).subscribe(list => this.apiProjects.set(list));

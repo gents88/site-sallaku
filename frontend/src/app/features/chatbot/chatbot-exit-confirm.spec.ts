@@ -8,6 +8,7 @@ import { ChatbotComponent } from './chatbot.component';
 import { ChatbotService } from '../../core/services/chatbot.service';
 import { LiveHandoffService } from '../../core/services/live-handoff.service';
 import { LanguageService } from '../../core/services/language.service';
+import { ConsentService } from '../../core/services/consent.service';
 
 /**
  * Chiudere il pannello o cancellare la conversazione mentre si sta parlando con Gent
@@ -50,6 +51,8 @@ describe('ChatbotComponent — conferma di chiusura durante una chat live', () =
         { provide: ChatbotService, useValue: mockChatbot },
         { provide: LiveHandoffService, useValue: mockLiveHandoff },
         { provide: LanguageService, useValue: { current: () => 'it' } },
+        // Il fumetto d'invito legge la scelta sui cookie: qui non serve il servizio vero (HTTP).
+        { provide: ConsentService, useValue: { hasDecided: () => true } },
       ],
     });
 

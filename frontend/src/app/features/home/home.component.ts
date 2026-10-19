@@ -1,170 +1,68 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID, effect } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID, effect, signal } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { finalize, forkJoin, catchError } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
-import { AboutService } from '../../core/services/about.service';
-import { ContactService } from '../../core/services/contact.service';
-import { AnalyticsTrackingService } from '../../core/services/analytics-tracking.service';
 import { ProjectsService } from '../../core/services/projects.service';
-import { ExperiencesService } from '../../core/services/experiences.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
-import { SnackbarService } from '../../core/services/snackbar.service';
-import { LanguageService, withLangPrefix } from '../../core/services/language.service';
-import { About } from '../../core/models/about.model';
+import { LanguageService, stripLangPrefix, withLangPrefix } from '../../core/services/language.service';
 import { Project } from '../../core/models/project.model';
-import { Experience } from '../../core/models/experience.model';
-import { hasCaseStudy, localizeExperience, localizeProject } from '../../core/models/localize-content';
-import { of } from 'rxjs';
+import { hasCaseStudy, localizeProject } from '../../core/models/localize-content';
+import { revealOnScroll } from '../../core/utils/reveal-on-scroll';
 import { TrackClickDirective } from '../../shared/directives/track-click.directive';
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
-import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
+import { ProfilePhotoComponent } from '../../shared/components/profile-photo/profile-photo.component';
+import { STATIC_PROJECTS } from '../projects/static-projects';
 
-interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
-interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
-interface ExpItem { date?: string; dateKey?: string; titleKey: string; roleKey: string; descKey: string; tags: string[]; }
 interface FaqItem { qKey: string; aKey: string; }
 interface ServiceItem { key: string; icon: string; colorClass: string; route?: string; }
+
+/** Valori della striscia KPI nell'hero (anni, progetti, aziende, % latenza). */
+export const KPI_TARGETS: readonly number[] = [8, 20, 4, 70];
+
+/** Progetti in home: un'anteprima, l'elenco completo è su /projects. */
+export const HOME_PROJECTS_LIMIT = 3;
+
+/**
+ * Sezioni della home raggiungibili da un path proprio (/services → #services).
+ * Chi sono, tecnologie, esperienza e soft skills hanno ora una pagina loro
+ * (AboutComponent): prima la home le conteneva tutte ed era lunga 26 schermate
+ * su mobile.
+ */
+const SECTION_ROUTES: Record<string, string> = {
+  '/services': 'services',
+};
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent, TestimonialsWallComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, TestimonialsWallComponent, ProfilePhotoComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
-  about: About | null = null;
   featuredProjects: Project[] = [];
-  experiences: Experience[] = [];
-  loading = true;
-  barsFilled = false;
-  contactSent = false;
-  contactSending = false;
-  contactError = false;
-  contactInvalid = false;
-  honeypot = '';
-  contactForm = { name: '', email: '', message: '' };
 
-  private observer: IntersectionObserver | null = null;
+  /** La sezione testimonianze resta nascosta finché il muro non ne carica almeno una. */
+  readonly hasTestimonials = signal(false);
+
+  /**
+   * Partono dai valori reali, non da 0: l'HTML prerenderizzato (Google,
+   * anteprime dei link, chi ha JS lento) mostrava "0+ anni di esperienza".
+   */
+  kpiValues = [...KPI_TARGETS];
+
+  private stopReveal: () => void = () => {};
   private kpiObserver: IntersectionObserver | null = null;
+  private kpiArmed = false;
   private scrollTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly langService = inject(LanguageService);
 
-  kpiValues = [0, 0, 0, 0];
-  private kpiAnimated = false;
-  private readonly kpiTargets = [8, 20, 4, 70];
-
-  /* ── Static data (identical to httpdocs/index.html) ─── */
-  readonly frontendTechs: TechItem[] = [
-    { name: 'Angular', icon: 'angular', level: 95, isFab: true },
-    { name: 'JavaScript', icon: 'js', level: 93, isFab: true },
-    { name: 'RxJS', icon: 'arrows-spin', level: 90 },
-    { name: 'SCSS / HTML', icon: 'sass', level: 90, isFab: true },
-    { name: 'React', icon: 'react', level: 75, isFab: true },
-    { name: 'TypeScript', icon: 'code', level: 92 },
-  ];
-
-  readonly dataVizTechs: TechItem[] = [
-    { name: 'Chart.js', icon: 'chart-bar', level: 88 },
-    { name: 'ApexCharts', icon: 'chart-area', level: 85 },
-    { name: 'Cesium.js', icon: 'globe', level: 90 },
-    { name: 'Photo Sphere Viewer', icon: 'vr-cardboard', level: 82 },
-  ];
-
-  readonly backendTechs: TechItem[] = [
-    { name: 'Django / Python', icon: 'python', level: 85, isFab: true },
-    { name: '.NET / C#', icon: 'code', level: 88 },
-    { name: 'NestJS / Node.js', icon: 'node-js', level: 78, isFab: true },
-    { name: 'REST API', icon: 'plug', level: 92 },
-  ];
-
-  readonly devopsTechs: TechItem[] = [
-    { name: 'Docker', icon: 'docker', level: 80, isFab: true },
-    { name: 'CI/CD', icon: 'infinity', level: 85 },
-    { name: 'Git', icon: 'git-alt', level: 92, isFab: true },
-    { name: 'Azure', icon: 'cloud', level: 75 },
-  ];
-
-  readonly staticProjects: ProjectItem[] = [
-    {
-      icon: 'earth-europe',
-      tags: ['Cesium.js', 'Angular', 'TypeScript'],
-      titleKey: 'projects.geo.title',
-      descKey: 'projects.geo.desc',
-      featureKeys: ['projects.geo.f1', 'projects.geo.f2', 'projects.geo.f3', 'projects.geo.f4'],
-    },
-    {
-      icon: 'vr-cardboard',
-      tags: ['Photo Sphere', 'Angular', 'WebGL'],
-      titleKey: 'projects.vr.title',
-      descKey: 'projects.vr.desc',
-      featureKeys: ['projects.vr.f1', 'projects.vr.f2', 'projects.vr.f3', 'projects.vr.f4'],
-    },
-    {
-      icon: 'chart-pie',
-      tags: ['Looker', 'Angular', 'Chart.js'],
-      titleKey: 'projects.dash.title',
-      descKey: 'projects.dash.desc',
-      featureKeys: ['projects.dash.f1', 'projects.dash.f2', 'projects.dash.f3', 'projects.dash.f4'],
-    },
-    {
-      icon: 'book-open',
-      tags: ['Angular', 'Node.js', 'PostgreSQL'],
-      titleKey: 'projects.lib.title',
-      descKey: 'projects.lib.desc',
-      featureKeys: ['projects.lib.f1', 'projects.lib.f2', 'projects.lib.f3', 'projects.lib.f4'],
-    },
-    {
-      icon: 'shield-halved',
-      tags: ['Angular', '.NET', 'API'],
-      titleKey: 'projects.ins.title',
-      descKey: 'projects.ins.desc',
-      featureKeys: ['projects.ins.f1', 'projects.ins.f2', 'projects.ins.f3', 'projects.ins.f4'],
-    },
-  ];
-
-  readonly staticExperiences: ExpItem[] = [
-    {
-      dateKey: 'exp.current',
-      titleKey: 'exp.1.title',
-      roleKey: 'exp.1.role',
-      descKey: 'exp.1.desc',
-      tags: ['Angular', 'Cesium.js', 'TypeScript', 'RxJS', 'SCSS'],
-    },
-    {
-      dateKey: 'exp.previous',
-      titleKey: 'exp.2.title',
-      roleKey: 'exp.2.role',
-      descKey: 'exp.2.desc',
-      tags: ['Angular', 'Looker SDK', 'Photo Sphere', 'Chart.js', 'REST API'],
-    },
-    {
-      dateKey: 'exp.previous',
-      titleKey: 'exp.3.title',
-      roleKey: 'exp.3.role',
-      descKey: 'exp.3.desc',
-      tags: ['Angular', '.NET Core', 'Azure', 'TypeScript', 'Material'],
-    },
-    {
-      dateKey: 'exp.previous',
-      titleKey: 'exp.4.title',
-      roleKey: 'exp.4.role',
-      descKey: 'exp.4.desc',
-      tags: ['.NET', 'Angular', 'SQL Server', 'C#', 'REST API'],
-    },
-    {
-      date: '2018',
-      titleKey: 'exp.5.title',
-      roleKey: 'exp.5.role',
-      descKey: 'exp.5.desc',
-      tags: ['.NET', 'Angular', 'JavaScript', 'Agile/Scrum', 'Git'],
-    },
-  ];
+  readonly staticProjects = STATIC_PROJECTS.slice(0, HOME_PROJECTS_LIMIT);
 
   readonly services: ServiceItem[] = [
     { key: 'pdf',      icon: 'picture_as_pdf',  colorClass: 'color-red',    route: '/lab' },
@@ -183,47 +81,26 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     { qKey: 'faq.q4', aKey: 'faq.a4' },
   ];
 
-  get displayProjects(): ProjectItem[] {
-    return this.staticProjects;
-  }
-
   /**
-   * Contenuti dal CMS, localizzati. Prima la home li scaricava a ogni visita
-   * ma mostrava sempre quelli statici: ora, se l'admin ne ha inseriti, sono
-   * questi a comparire (con fallback statico finché il DB è vuoto).
+   * Progetti dal CMS, localizzati: se l'admin ne ha messi in evidenza, la home
+   * mostra quelli (con le immagini), altrimenti l'anteprima statica.
    */
   get cmsProjects(): Project[] {
     const lang = this.langService.current();
     return this.featuredProjects.map(p => localizeProject(p, lang));
   }
 
-  get cmsExperiences(): Experience[] {
-    const lang = this.langService.current();
-    return this.experiences.map(e => localizeExperience(e, lang));
-  }
-
   readonly hasCaseStudy = hasCaseStudy;
 
-  get displayExperiences(): ExpItem[] {
-    return this.staticExperiences;
-  }
-
-  private readonly langService = inject(LanguageService);
-
-  /** Self-referencing profile URL for the current language — fed to app-social-share in the about section. */
+  /** URL canonico della home nella lingua corrente. */
   get profileUrl(): string {
     const lang = this.langService.current();
     return lang === 'it' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${withLangPrefix('/homepage', lang)}`;
   }
 
   constructor(
-    private aboutService: AboutService,
-    private contactService: ContactService,
-    private analytics: AnalyticsTrackingService,
     private projectsService: ProjectsService,
-    private experiencesService: ExperiencesService,
     private seo: SeoService,
-    private snackbar: SnackbarService,
     private cdr: ChangeDetectorRef,
     private router: Router,
   ) {
@@ -233,21 +110,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // homepage/about/tech-stack/experience/skills/services all render this
-    // same component (scroll-to-section deep links), so they've always
-    // intentionally collapsed to one canonical rather than 9 separate ones.
-    // For the Italian default that's the bare root ('/', rewritten to
-    // homepage/index.html by .htaccess); other languages have no such
-    // bare-root rewrite, so their canonical points at the actual
-    // prerendered /xx/homepage file — self-referencing correctly instead of
-    // (as before this fix) always pointing back at the Italian root, which
-    // contradicted hreflang's claim that e.g. /en/homepage is a real,
-    // independent language variant.
-    const canonicalUrl = this.profileUrl;
+    // homepage e services renderizzano questo componente (deep link a una
+    // sezione), quindi condividono un solo canonical. Per l'italiano è la
+    // radice ('/', riscritta su homepage/index.html da .htaccess); le altre
+    // lingue non hanno quella riscrittura e puntano al proprio /xx/homepage.
     this.seo.update({
       title: 'Senior Front-End & API Developer',
       description: 'Senior Front-End Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
-      url: canonicalUrl,
+      url: this.profileUrl,
     });
 
     this.seo.injectJsonLd([
@@ -284,90 +154,66 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       },
     ]);
 
-    forkJoin({
-      about: this.aboutService.get().pipe(catchError(() => of(null))),
-      projects: this.projectsService.getAll().pipe(catchError(() => of([]))),
-      experiences: this.experiencesService.getAll().pipe(catchError(() => of([]))),
-    }).subscribe({
-      next: ({ about, projects, experiences }) => {
-        this.about = about;
-        if (projects.length) this.featuredProjects = projects.filter((p: Project) => p.featured).slice(0, 5);
-        if (experiences.length) this.experiences = experiences.slice(0, 5);
-        this.loading = false;
-        this.cdr.markForCheck();
-      },
-      error: () => { this.loading = false; this.cdr.markForCheck(); },
+    this.projectsService.getAll().pipe(catchError(() => of([] as Project[]))).subscribe(projects => {
+      this.featuredProjects = projects.filter(p => p.featured).slice(0, HOME_PROJECTS_LIMIT);
+      this.cdr.markForCheck();
     });
   }
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    // IntersectionObserver for .reveal elements
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            // Trigger tech bars when tech section becomes visible
-            if ((entry.target as HTMLElement).closest('#tech-stack')) {
-              this.barsFilled = true;
-              this.cdr.markForCheck();
-            }
-            this.observer?.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12 },
-    );
+    this.stopReveal = revealOnScroll(document);
+    this.setupKpiCountUp();
 
-    document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
-
-    // Count-up animation for KPI numbers
-    const kpiEl = document.querySelector('.hero-kpis');
-    if (kpiEl) {
-      this.kpiObserver = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && !this.kpiAnimated) {
-            this.kpiAnimated = true;
-            this.animateCountUp();
-            this.kpiObserver?.disconnect();
-          }
-        },
-        { threshold: 0.5 },
-      );
-      this.kpiObserver.observe(kpiEl);
-    }
-
-    // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
-    const urlPath = this.router.url.split('?')[0].replace(/^\//,'');
-    const sectionMap: Record<string, string> = {
-      'about': 'about',
-      'tech-stack': 'tech-stack',
-      'experience': 'experience',
-      'skills': 'skills',
-      'services': 'services',
-    };
-    const sectionId = sectionMap[urlPath];
+    // /services → #services
+    const sectionId = SECTION_ROUTES[stripLangPrefix(this.router.url.split(/[?#]/)[0]).basePath];
     if (sectionId) {
       this.scrollTimer = setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
   }
 
+  /**
+   * Il conteggio da 0 ha senso solo se la striscia non è ancora a schermo:
+   * se lo è già al caricamento (desktop), azzerarla farebbe sparire per un
+   * attimo i numeri appena mostrati. Niente animazione con reduced motion.
+   */
+  private setupKpiCountUp(): void {
+    const kpiEl = document.querySelector('.hero-kpis');
+    if (!kpiEl || typeof IntersectionObserver === 'undefined') return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+
+    this.kpiObserver = new IntersectionObserver(
+      entries => {
+        const entry = entries[entries.length - 1];
+        if (!this.kpiArmed) {
+          this.kpiArmed = true;
+          if (entry.isIntersecting) {
+            this.kpiObserver?.disconnect();
+            return;
+          }
+          this.kpiValues = KPI_TARGETS.map(() => 0);
+          this.cdr.markForCheck();
+          return;
+        }
+        if (entry.intersectionRatio >= 0.5) {
+          this.kpiObserver?.disconnect();
+          this.animateCountUp();
+        }
+      },
+      { threshold: [0, 0.5] },
+    );
+    this.kpiObserver.observe(kpiEl);
+  }
+
   private animateCountUp(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      this.kpiValues = [...this.kpiTargets];
-      return;
-    }
     const duration = 1500;
     const start = performance.now();
     const update = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
+      const progress = Math.min((now - start) / duration, 1);
       const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      this.kpiValues = this.kpiTargets.map(t => Math.floor(t * ease));
+      this.kpiValues = KPI_TARGETS.map(t => Math.floor(t * ease));
       this.cdr.markForCheck();
       if (progress < 1) requestAnimationFrame(update);
     };
@@ -403,64 +249,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.observer?.disconnect();
+    this.stopReveal();
     this.kpiObserver?.disconnect();
     if (this.scrollTimer !== null) {
       clearTimeout(this.scrollTimer);
       this.scrollTimer = null;
     }
   }
-
-  submitContact(): void {
-    if (this.honeypot || this.contactSending) return; // spam trap
-    const { name, email, message } = this.contactForm;
-    const normalizedName = name.trim();
-    const normalizedEmail = email.trim();
-    const normalizedMessage = message.trim();
-    const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
-
-    this.contactSent = false;
-    this.contactError = false;
-    this.contactInvalid = false;
-
-    if (!normalizedName || !hasValidEmail || !normalizedMessage || normalizedMessage.length < 10) {
-      this.contactInvalid = true;
-      this.cdr.markForCheck();
-      return;
-    }
-
-    // Optimistic UX: show immediate feedback and enqueue send; rollback on error
-    this.contactSending = true;
-    this.contactSent = true;
-    this.snackbar.show('Invio in corso — messaggio mostrato come inviato', 'info', 3000);
-
-    this.contactService.send({
-      name: normalizedName,
-      email: normalizedEmail,
-      subject: 'Contatto dal portfolio',
-      message: normalizedMessage,
-    }).pipe(
-      finalize(() => {
-        this.contactSending = false;
-        this.cdr.markForCheck();
-      }),
-    ).subscribe({
-      next: () => {
-        this.contactForm = { name: '', email: '', message: '' };
-        this.contactInvalid = false;
-        this.cdr.markForCheck();
-        this.snackbar.show('Messaggio inviato — grazie!', 'success');
-        this.analytics.trackClick('lead', 'contact_form');
-      },
-      error: () => {
-        // rollback optimistic state
-        this.contactSent = false;
-        this.contactError = true;
-        this.cdr.markForCheck();
-        this.snackbar.show('Invio non riuscito — riprova più tardi', 'error');
-      },
-    });
-  }
-
 }
-

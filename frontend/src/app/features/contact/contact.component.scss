@@ -7,8 +7,7 @@
 /* ── Hero ────────────────────────────────────────── */
 .contact-hero {
   position: relative;
-  padding: 140px 0 80px;
-  text-align: center;
+  padding: 120px 0 40px;
   overflow: hidden;
 
   &::before {
@@ -49,9 +48,6 @@
     }
   }
 
-  .section-title  { font-size: clamp(2.4rem, 5vw, 3.6rem); letter-spacing: -1.5px; }
-  #contact-title.section-title { font-size: clamp(1.4rem, 3vw, 2.1rem); font-size: 33px;}
-  .section-subtitle { max-width: 560px; }
 }
 
 /* ── Body ────────────────────────────────────────── */
@@ -319,7 +315,7 @@ textarea.field-input {
 
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
-  .contact-hero   { padding: 100px 0 60px; }
+  .contact-hero   { padding: 100px 0 32px; }
   .contact-body   { padding-bottom: 70px; }
   .contact-form   { padding: 1.5rem; }
 }

@@ -81,10 +81,14 @@ export class NavbarComponent {
   /** La voce Dashboard solo per gli admin: un utente 'user' veniva rimbalzato al login dall'authGuard. */
   readonly desktopNavLinks = computed(() => (this.isAdminUser() ? [...this.baseNavLinks, DASHBOARD_LINK] : this.baseNavLinks));
 
-  // Sul mobile, Progetti e Servizi hanno una tab dedicata nella bottom bar:
-  // il loro <li> in nav-menu viene nascosto via CSS solo sotto i 900px, così
-  // lo sheet "Altro" non li ripete mentre la nav desktop resta invariata.
-  readonly bottomTabRoutes = new Set(['/projects', '/services']);
+  // Sul mobile, Progetti e Servizi hanno una tab dedicata nella bottom bar e
+  // il Lab ha già il pulsante del drawer in fondo allo sheet: il loro <li> in
+  // nav-menu viene nascosto via CSS solo sotto i 900px, così lo sheet "Altro"
+  // non li ripete mentre la nav desktop resta invariata.
+  readonly mobileSheetHiddenRoutes = new Set(['/projects', '/services', '/lab']);
+
+  /** Voce resa come pulsante in fondo al menu desktop. */
+  readonly ctaLinkId = 'contact';
 
   readonly activeBottomTab = computed(() => bottomTabFor(this.isHomepage(), this.activeSection(), this.currentPath()));
 
@@ -135,9 +139,15 @@ export class NavbarComponent {
     });
   }
 
-  /** Link evidenziato: sulla home segue lo scroll-spy, altrove la rotta corrente. */
+  /**
+   * Link evidenziato: sulla home segue lo scroll-spy, altrove la rotta
+   * corrente o una sua sottopagina (/blog/un-articolo accende Blog,
+   * /lab/ocr accende AI & Strumenti).
+   */
   isActive(link: NavEntry): boolean {
-    return this.isHomepage() ? !!link.homeSection && link.homeSection === this.activeSection() : this.currentPath() === link.route;
+    if (this.isHomepage()) return !!link.homeSection && link.homeSection === this.activeSection();
+    const path = this.currentPath();
+    return path === link.route || path.startsWith(link.route + '/');
   }
 
   openSearch(): void {
