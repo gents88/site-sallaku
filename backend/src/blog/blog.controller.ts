@@ -50,8 +50,9 @@ export class BlogController {
   @ApiQuery({ name: 'tag', required: false })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
-  findPublished(@Query() { tag, page, limit }: BlogPublishedQueryDto) {
-    return this.blogService.findPublished(tag, page ?? 1, limit ?? 10);
+  @ApiQuery({ name: 'lang', required: false, enum: BLOG_LANGUAGES, description: 'Omit title/excerpt of the other languages' })
+  findPublished(@Query() { tag, page, limit, lang }: BlogPublishedQueryDto) {
+    return this.blogService.findPublished(tag, page ?? 1, limit ?? 10, lang);
   }
 
   @Get('posts/:slug')

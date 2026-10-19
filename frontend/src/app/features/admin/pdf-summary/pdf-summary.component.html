@@ -77,7 +77,8 @@
             </button>
           }
         </div>
-        <button class="summarize-btn" [disabled]="loading()" (click)="summarize()">
+        <app-offline-tool-hint />
+        <button class="summarize-btn" [disabled]="loading() || !network.online()" (click)="summarize()">
           @if (loading()) {
             <span class="spinner"></span> {{ 'pdf_summary.btn_analysing' | translate }}
           } @else {
@@ -88,7 +89,8 @@
       }
 
       @if (error()) {
-        <div class="error-box">⚠️ {{ error() }}</div>
+        <div class="error-box" role="alert">⚠️ {{ error() }}</div>
+        <app-request-retry [request]="req" (retry)="summarize()" />
       }
 
       @if (result()) {
@@ -166,7 +168,7 @@
                 💾 {{ 'saved_results.save_cta_short' | translate }}
               }
             </button>
-            <button class="action-btn" (click)="summarize()" [disabled]="loading()">
+            <button class="action-btn" (click)="summarize()" [disabled]="loading() || !network.online()">
               🔄 {{ 'pdf_summary.btn_regenerate' | translate }}
             </button>
             <button class="action-btn danger" (click)="reset()">✕ {{ 'pdf_summary.btn_new_file' | translate }}</button>
