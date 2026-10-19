@@ -256,15 +256,13 @@
     "a1": "Je travaille sur le développement web enterprise, les interfaces Angular, les APIs REST, la visualisation de données et les applications 3D web avec Cesium.js et WebGL.",
     "q2": "Travaillez-vous également sur le backend ?",
     "a2": "Oui, j'ai également de l'expérience avec .NET, Django, Python, NestJS et l'intégration de services API REST et GraphQL.",
-    "q3": "Êtes-vous disponible pour des projets à distance ou hybrides ?",
-    "a3": "Oui, je peux travailler à distance ou en mode hybride selon les besoins du projet.",
     "q4": "Comment puis-je vous contacter ?",
     "a4": "Vous pouvez m'envoyer un email, m'appeler ou me contacter sur LinkedIn en utilisant les coordonnées dans la section contact ci-dessus."
   },
   "contact": {
     "tag": "contact",
     "title": "Contact",
-    "subtitle": "Disponible pour de nouvelles opportunités et collaborations",
+    "subtitle": "Questions, retours ou simplement un bonjour",
     "card": {
       "email": {
         "title": "Email",
@@ -296,7 +294,7 @@
       "email_ph": "jean@exemple.fr",
       "email_err": "Un email valide est requis",
       "subject": "Sujet",
-      "subject_ph": "Demande de projet",
+      "subject_ph": "Objet du message",
       "subject_err": "Le sujet est obligatoire",
       "message": "Message",
       "message_ph": "Bonjour, j'aimerais discuter de…",
@@ -315,7 +313,7 @@
     },
     "info": {
       "title": "Connectons-nous",
-      "desc": "Je suis ouvert aux projets freelance, aux collaborations et aux opportunités à temps plein."
+      "desc": "Écrivez-moi pour toute question sur les projets, le blog ou les outils du site."
     },
     "form_name": "Votre nom",
     "form_email": "Votre email",
@@ -685,11 +683,6 @@
       "title": "Intégration d'API",
       "desc": "Intégrations REST et GraphQL fluides avec NestJS, .NET et des services tiers, sur la base d'une gestion solide des erreurs.",
       "cta": "En savoir plus"
-    },
-    "contact": {
-      "title": "Vous avez un projet en tête ?",
-      "desc": "Je collabore avec des entreprises et des équipes qui veulent construire quelque chose de significatif. Parlons de votre prochain défi.",
-      "btn": "Prendre contact"
     }
   },
   "blog": {
@@ -902,7 +895,7 @@
     "typing": "En train de taper…",
     "placeholder": "Tapez un message…",
     "welcome_title": "Bonjour ! 👋",
-    "welcome_text": "Je suis l'assistant AI sur le portfolio de <strong>Gent Sallaku</strong>. Posez-moi des questions sur ses projets, compétences ou services ! Si vous voulez lui parler en direct, écrivez-moi quelques messages ici : il recevra la demande (il ne sait pas encore qui vous êtes, alors présentez-vous).",
+    "welcome_text": "Je suis l'assistant AI sur le portfolio de <strong>Gent Sallaku</strong>. Posez-moi des questions sur ses projets, compétences ou les outils du site ! Si vous voulez lui parler en direct, écrivez-moi quelques messages ici : il recevra la demande (il ne sait pas encore qui vous êtes, alors présentez-vous).",
     "info_banner": "Gent lit les messages envoyés via le chatbot. Si vous souhaitez une réponse, veuillez utiliser la section 'Envoyer un Email'.",
     "info_cta": "Aller à la section Email →",
     "close": "Fermer le chat",
@@ -950,7 +943,7 @@
     "live_offer_desc": "Chat en direct : il reçoit une notification",
     "input_hint": "Entrée pour envoyer · Maj+Entrée pour aller à la ligne",
     "teaser_title": "Des questions sur Gent ?",
-    "teaser_text": "Demandez : projets, services, disponibilité.",
+    "teaser_text": "Demandez : projets, compétences, outils.",
     "teaser_close": "Fermer l'invitation"
   },
   "live_handoff": {
@@ -2023,8 +2016,6 @@
     "problem": "Le problème",
     "solution": "La solution",
     "results": "Les résultats",
-    "cta_text": "Vous avez un projet similaire ?",
-    "cta_button": "Parlons-en",
     "related_title": "Autres études de cas"
   },
   "translations_editor": {
