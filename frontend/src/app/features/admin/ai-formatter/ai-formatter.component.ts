@@ -26,6 +26,9 @@ import {
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
+import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
+import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -38,7 +41,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
@@ -142,6 +145,7 @@ export class AiFormatterComponent implements OnInit {
   }
 
   /** Richiesta annullabile: annullata anche quando si lascia la pagina. */
+  readonly network = inject(NetworkStatusService);
   readonly req = new TrackedRequest();
   readonly loading = this.req.active;
 
@@ -230,6 +234,7 @@ export class AiFormatterComponent implements OnInit {
   private readFileAsText(file: File): void {
     const ok = ['text/plain', 'text/markdown', 'text/csv'];
     if (!ok.includes(file.type) && !file.name.endsWith('.txt') && !file.name.endsWith('.md')) {
+      this.req.clearFailure();
       this.error.set(this.t.instant('ai_formatter.err_file_type'));
       return;
     }
@@ -237,6 +242,7 @@ export class AiFormatterComponent implements OnInit {
     reader.onload = (e) => {
       this.text.set(e.target?.result as string);
       this.error.set('');
+      this.req.clearFailure();
     };
     reader.readAsText(file);
   }
@@ -256,6 +262,7 @@ export class AiFormatterComponent implements OnInit {
     if (!item || item.kind !== 'text' || !item.text) return;
     this.text.set(item.text);
     this.error.set('');
+    this.req.clearFailure();
   }
 
   dismissWorkspaceBanner(): void {

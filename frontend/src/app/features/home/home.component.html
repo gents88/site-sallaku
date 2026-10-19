@@ -158,68 +158,19 @@
       <div class="section-line"></div>
     </div>
     <div class="tech-categories">
-      <!-- Frontend Core -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-code"></i> {{ 'tech.frontend' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of frontendTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="'fab fa-' + tech.icon" *ngIf="tech.isFab; else faIcon"></i>
-                <ng-template #faIcon><i [class]="'fas fa-' + tech.icon"></i></ng-template>
-              </div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
+      @for (group of techGroups; track group.titleKey) {
+        <div class="tech-category reveal">
+          <h3 class="tech-category-title"><i [class]="'fas fa-' + group.icon" aria-hidden="true"></i> {{ group.titleKey | translate }}</h3>
+          <ul class="tech-items">
+            @for (tech of group.items; track tech.name) {
+              <li class="tech-item">
+                <span class="tech-item-icon" aria-hidden="true"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></span>
+                <span class="tech-name">{{ tech.name }}</span>
+              </li>
+            }
+          </ul>
         </div>
-      </div>
-      <!-- Data Viz & 3D -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-chart-line"></i> {{ 'tech.dataviz' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of dataVizTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="'fas fa-' + tech.icon"></i></div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      <!-- Backend -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-server"></i> {{ 'tech.backend' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of backendTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-      <!-- DevOps & Tools -->
-      <div class="tech-category reveal">
-        <h3 class="tech-category-title"><i class="fas fa-gears"></i> {{ 'tech.devops' | translate }}</h3>
-        <div class="tech-items">
-          @for (tech of devopsTechs; track tech.name) {
-            <div class="tech-item">
-              <div class="tech-item-icon"><i [class]="(tech.isFab ? 'fab' : 'fas') + ' fa-' + tech.icon"></i></div>
-              <div class="tech-item-info">
-                <span class="tech-name">{{ tech.name }}<span class="tech-tooltip">{{ tech.level }}%</span></span>
-                <div class="tech-bar"><div class="tech-bar-fill" [class.animated]="barsFilled" [style.--fill]="tech.level + '%'"></div></div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
+      }
     </div>
   </div>
 </section>
@@ -440,7 +391,7 @@
       <div class="section-line"></div>
     </div>
     <div class="contact-grid">
-      <a href="mailto:gent.sallaku@email.com" class="contact-card reveal glass-card">
+      <a href="mailto:gentsallaku@gmail.com" class="contact-card reveal glass-card">
         <div class="contact-icon"><i class="fas fa-envelope"></i></div>
         <h3>{{ 'contact.card.email.title' | translate }}</h3>
         <p>{{ 'contact.card.email.desc' | translate }}</p>
@@ -471,40 +422,12 @@
         <span class="contact-arrow"><i class="fas fa-arrow-right"></i></span>
       </a>
     </div>
-    <div class="contact-form-wrapper reveal glass-card">
+    <div class="contact-cta reveal glass-card">
       <h3>{{ 'contact.form.title' | translate }}</h3>
-      <form class="contact-form" (ngSubmit)="submitContact()" #contactF="ngForm" novalidate>
-        <input type="text" name="honeypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" [(ngModel)]="honeypot" />
-        <label>
-          <span>{{ 'contact.form.name' | translate }}</span>
-          <input type="text" name="name" required autocomplete="name" [placeholder]="'contact.form.name_placeholder' | translate" [(ngModel)]="contactForm.name" />
-        </label>
-        <label>
-          <span>{{ 'contact.form.email' | translate }}</span>
-          <input type="email" name="email" required autocomplete="email" [placeholder]="'contact.form.email_placeholder' | translate" [(ngModel)]="contactForm.email" />
-        </label>
-        <label>
-          <span>{{ 'contact.form.message' | translate }}</span>
-          <textarea name="message" rows="5" required minlength="10" [placeholder]="'contact.form.message' | translate" [(ngModel)]="contactForm.message"></textarea>
-        </label>
-        <button type="submit" class="btn btn-primary" [disabled]="contactSending">
-          @if (contactSending) {
-            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> {{ 'contact.form.sending' | translate }}
-          } @else {
-            <i class="fas fa-paper-plane" aria-hidden="true"></i> {{ 'contact.form.submit' | translate }}
-          }
-        </button>
-        <p class="form-note">{{ 'contact.form.note' | translate }}</p>
-        @if (contactInvalid) {
-          <p class="form-error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> {{ 'contact.form_invalid' | translate }}</p>
-        }
-        @if (contactSent) {
-          <p class="form-success" role="status"><i class="fas fa-check-circle" aria-hidden="true"></i> {{ 'contact.form_sent' | translate }}</p>
-        }
-        @if (contactError) {
-          <p class="form-error" role="alert"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> {{ 'contact.form_error' | translate }}</p>
-        }
-      </form>
+      <p class="form-note">{{ 'contact.form.note' | translate }}</p>
+      <a class="btn btn-primary" [routerLink]="'/contact' | langUrl" appTrackClick eventType="cta" label="home_contact_form" destination="/contact">
+        <i class="fas fa-paper-plane" aria-hidden="true"></i> {{ 'contact.form.submit' | translate }}
+      </a>
     </div>
   </div>
 

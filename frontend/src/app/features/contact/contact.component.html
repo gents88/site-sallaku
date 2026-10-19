@@ -24,7 +24,7 @@
 
     <!-- Form -->
     <form class="contact-form glass-card reveal"
-          [formGroup]="form" (ngSubmit)="send()" novalidate
+          [formGroup]="form" (ngSubmit)="send()" novalidate appFocusFirstInvalid
           aria-label="Contact form">
 
       @if (!flags.contactFormEnabled()) {
@@ -35,20 +35,22 @@
         <div class="field-group">
           <label class="field-label" for="contact-name">{{ 'contact.form.name' | translate }}</label>
           <input class="field-input" id="contact-name" type="text"
-                 formControlName="name"
+                 formControlName="name" autocomplete="name" [attr.aria-invalid]="form.get('name')?.invalid && form.get('name')?.touched ? 'true' : null"
+                 [attr.aria-describedby]="form.get('name')?.invalid && form.get('name')?.touched ? 'contact-name-err' : null"
                  [placeholder]="'contact.form.name_ph' | translate" />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
-            <span class="field-error">{{ 'contact.form.name_err' | translate }}</span>
+            <span class="field-error" id="contact-name-err" role="alert">{{ 'contact.form.name_err' | translate }}</span>
           }
         </div>
 
         <div class="field-group">
           <label class="field-label" for="contact-email">{{ 'contact.form.email' | translate }}</label>
           <input class="field-input" id="contact-email" type="email"
-                 formControlName="email"
+                 formControlName="email" autocomplete="email" [attr.aria-invalid]="form.get('email')?.invalid && form.get('email')?.touched ? 'true' : null"
+                 [attr.aria-describedby]="form.get('email')?.invalid && form.get('email')?.touched ? 'contact-email-err' : null"
                  [placeholder]="'contact.form.email_ph' | translate" />
           @if (form.get('email')?.invalid && form.get('email')?.touched) {
-            <span class="field-error">{{ 'contact.form.email_err' | translate }}</span>
+            <span class="field-error" id="contact-email-err" role="alert">{{ 'contact.form.email_err' | translate }}</span>
           }
         </div>
       </div>
@@ -56,20 +58,22 @@
       <div class="field-group">
         <label class="field-label" for="contact-subject">{{ 'contact.form.subject' | translate }}</label>
         <input class="field-input" id="contact-subject" type="text"
-               formControlName="subject"
+               formControlName="subject" [attr.aria-invalid]="form.get('subject')?.invalid && form.get('subject')?.touched ? 'true' : null"
+                 [attr.aria-describedby]="form.get('subject')?.invalid && form.get('subject')?.touched ? 'contact-subject-err' : null"
                [placeholder]="'contact.form.subject_ph' | translate" />
         @if (form.get('subject')?.invalid && form.get('subject')?.touched) {
-          <span class="field-error">{{ 'contact.form.subject_err' | translate }}</span>
+          <span class="field-error" id="contact-subject-err" role="alert">{{ 'contact.form.subject_err' | translate }}</span>
         }
       </div>
 
       <div class="field-group">
         <label class="field-label" for="contact-message">{{ 'contact.form.message' | translate }}</label>
         <textarea class="field-input" id="contact-message"
-                  formControlName="message" rows="6"
+                  formControlName="message" [attr.aria-invalid]="form.get('message')?.invalid && form.get('message')?.touched ? 'true' : null"
+                 [attr.aria-describedby]="form.get('message')?.invalid && form.get('message')?.touched ? 'contact-message-err' : null" rows="6"
                   [placeholder]="'contact.form.message_ph' | translate"></textarea>
         @if (form.get('message')?.invalid && form.get('message')?.touched) {
-          <span class="field-error">{{ 'contact.form.message_err' | translate }}</span>
+          <span class="field-error" id="contact-message-err" role="alert">{{ 'contact.form.message_err' | translate }}</span>
         }
       </div>
 
@@ -77,14 +81,16 @@
 
       <div class="field-group field-group--checkbox">
         <label class="field-checkbox">
-          <input type="checkbox" formControlName="privacyAccepted" />
+          <input type="checkbox" formControlName="privacyAccepted" id="contact-privacy"
+                 [attr.aria-invalid]="form.get('privacyAccepted')?.invalid && form.get('privacyAccepted')?.touched ? 'true' : null"
+                 [attr.aria-describedby]="form.get('privacyAccepted')?.invalid && form.get('privacyAccepted')?.touched ? 'contact-privacy-err' : null" />
           <span>
             {{ 'contact.form.privacy_checkbox' | translate }}
             <a [routerLink]="'/privacy-policy' | langUrl" target="_blank" rel="noopener">{{ 'contact.form.privacy_link_text' | translate }}</a>
           </span>
         </label>
         @if (form.get('privacyAccepted')?.invalid && form.get('privacyAccepted')?.touched) {
-          <span class="field-error">{{ 'contact.form.privacy_err' | translate }}</span>
+          <span class="field-error" id="contact-privacy-err" role="alert">{{ 'contact.form.privacy_err' | translate }}</span>
         }
       </div>
 
@@ -100,7 +106,7 @@
         </button>
 
         @if (sent) {
-          <span class="sent-badge">
+          <span class="sent-badge" role="status">
             <mat-icon>check_circle</mat-icon>
             {{ 'contact.form.sent' | translate }}
           </span>
