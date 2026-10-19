@@ -56,7 +56,7 @@ function buildSystemPrompt(
 
   return `You are an AI assistant embedded in Gent Sallaku's developer portfolio website.
 Gent Sallaku is a full-stack developer specialized in Angular, Javascript, NestJS, MongoDB, and modern web technologies.
-He built this portfolio to showcase his projects, experiences, and services.
+He built this portfolio to showcase his projects, experiences, and free tools.
 ${aboutBlock}${projectsBlock}${blogBlock}
 Gent also built a suite of free tools available on this site, under the "🧰 AI & Tools" menu (base path /lab/...). If a visitor asks about tools, document processing, PDFs, or productivity utilities, proactively mention the relevant ones and give their exact path. If the visitor asks specifically how one of these tools works, explain briefly (1-2 short sentences, using the steps below) what they do and don't — don't just repeat the name. Always give this explanation in the visitor's own language (per the language rules below), never only in English, no matter which language they ask in.
 
@@ -82,6 +82,11 @@ Your role:
 
 Keep responses under 150 words unless asked for more detail.
 If you don't know something specific about Gent (not covered above), suggest the visitor contact him at gentsallaku@gmail.com or use the Contact section — but this only applies to questions about Gent himself, not to general questions.
+
+Work availability (important):
+- Gent currently works as an employee. He is NOT looking for freelance work, consulting, quotes or new collaborations through this site.
+- Never offer, promise or advertise his services, availability or rates, and never invite visitors to hire him or to propose collaborations or projects.
+- If a visitor asks whether he is available, for a quote, or to hire him, answer briefly (in the visitor's language) that he is not taking on new engagements at the moment, and that the Contact section is for questions about the site, the projects and the tools.
 
 Contact requests (important):
 - If the visitor asks how to contact Gent, asks for his email, or wants to get in touch with him, reply with this (translated naturally into the visitor's language): he can be reached by writing to gentsallaku@gmail.com, or by using the Contact section of the site, where there's a quick form to send messages directly — the Contact section also has his phone number, which can be used to call him or write to him on WhatsApp.
@@ -132,7 +137,7 @@ const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
   {
     pattern: /service|servizio|freelance|hire|availab/i,
     response:
-      "Gent offers freelance full-stack development services. Visit the **Services** section for details. You can also reach out through the Contact page to discuss your project.",
+      "Gent currently works as an employee and is not taking on freelance work or new engagements through this site. You can explore his **Projects** and the free **AI & Tools**, or use the Contact page for questions.",
   },
   {
     pattern: /about|chi è|chi sei|presentati|introduce/i,
@@ -142,18 +147,18 @@ const FALLBACK_RESPONSES: { pattern: RegExp; response: string }[] = [
 ];
 
 const DEFAULT_FALLBACK =
-  "I'm the AI assistant for this portfolio. I can answer questions about Gent's projects, skills, and services. You're also welcome to use the **Contact** section to get in touch with him directly!";
+  "I'm the AI assistant for this portfolio. I can answer questions about Gent's projects, skills, and the tools on this site. You're also welcome to use the **Contact** section to get in touch with him directly!";
 const DEFAULT_ITALIAN_FALLBACK =
-  'Sono l’assistente AI di questo portfolio. Posso rispondere a domande sui progetti, sulle competenze e sui servizi di Gent. Puoi anche usare la sezione **Contact** per contattarlo direttamente!';
+  'Sono l’assistente AI di questo portfolio. Posso rispondere a domande sui progetti, sulle competenze e sugli strumenti di questo sito. Puoi anche usare la sezione **Contact** per contattarlo direttamente!';
 const DEFAULT_ALBANIAN_FALLBACK =
-  'Jam asistenti AI i këtij portofoli. Mund t’u përgjigjem pyetjeve për projektet, aftësitë dhe shërbimet e Gentit. Mund të përdorësh edhe seksionin **Contact** për ta kontaktuar drejtpërdrejt!';
+  'Jam asistenti AI i këtij portofoli. Mund t’u përgjigjem pyetjeve për projektet, aftësitë dhe mjetet e kësaj faqeje. Mund të përdorësh edhe seksionin **Contact** për ta kontaktuar drejtpërdrejt!';
 const DEFAULT_LOCALIZED_FALLBACKS: Record<string, string> = {
   it: DEFAULT_ITALIAN_FALLBACK,
   sq: DEFAULT_ALBANIAN_FALLBACK,
-  es: 'Soy el asistente de IA de este portfolio. Puedo responder preguntas sobre los proyectos, las habilidades y los servicios de Gent. También puedes usar la sección **Contact** para contactarlo directamente.',
-  pt: 'Sou o assistente de IA deste portfólio. Posso responder a perguntas sobre os projetos, as competências e os serviços do Gent. Também podes usar a secção **Contact** para contactá-lo diretamente.',
-  fr: "Je suis l'assistant IA de ce portfolio. Je peux répondre aux questions sur les projets, les compétences et les services de Gent. Vous pouvez aussi utiliser la section **Contact** pour le contacter directement.",
-  de: 'Ich bin der KI-Assistent dieses Portfolios. Ich kann Fragen zu Gents Projekten, Fähigkeiten und Dienstleistungen beantworten. Du kannst ihn auch direkt über den Bereich **Contact** kontaktieren.',
+  es: 'Soy el asistente de IA de este portfolio. Puedo responder preguntas sobre los proyectos, las habilidades y las herramientas de este sitio. También puedes usar la sección **Contact** para contactarlo directamente.',
+  pt: 'Sou o assistente de IA deste portfólio. Posso responder a perguntas sobre os projetos, as competências e as ferramentas deste site. Também podes usar a secção **Contact** para contactá-lo diretamente.',
+  fr: "Je suis l'assistant IA de ce portfolio. Je peux répondre aux questions sur les projets, les compétences et les outils de ce site. Vous pouvez aussi utiliser la section **Contact** pour le contacter directement.",
+  de: 'Ich bin der KI-Assistent dieses Portfolios. Ich kann Fragen zu Gents Projekten, Fähigkeiten und den Tools dieser Website beantworten. Du kannst ihn auch direkt über den Bereich **Contact** kontaktieren.',
 };
 
 function detectLanguage(message: string): string | undefined {
