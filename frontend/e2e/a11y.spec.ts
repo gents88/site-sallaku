@@ -15,6 +15,16 @@ for (const scheme of ['light', 'dark'] as const) for (const path of PAGES) {
     await page.emulateMedia({ colorScheme: scheme });
     await page.goto(path);
     await page.waitForLoadState('networkidle');
+    // Le entrate .animate-fade-up partono da opacity 0 con ritardi fino a ~1,1 s:
+    // se networkidle arriva prima, axe campiona il colore a opacità parziale e
+    // segnala un falso "color-contrast" (rosso a intermittenza in CI). Si
+    // aspetta la fine delle animazioni finite; quelle infinite (spinner, float)
+    // non finiscono mai e vanno escluse.
+    await page.evaluate(() => Promise.all(
+      document.getAnimations()
+        .filter(a => a.effect?.getComputedTiming().iterations !== Infinity)
+        .map(a => a.finished.catch(() => undefined)),
+    ));
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])

@@ -261,6 +261,24 @@ describe('OnboardingTourService', () => {
       expect(c.progressText).toContain('{{total}}');
     });
 
+    it("toglie gli attributi ARIA di Driver.js dall'elemento fittizio dei passi centrati (div senza ruolo)", async () => {
+      const tour = setup();
+      await tour.start();
+      const dummy = document.createElement('div');
+      dummy.id = 'driver-dummy-element';
+      for (const a of ['aria-haspopup', 'aria-expanded', 'aria-controls']) dummy.setAttribute(a, 'x');
+      document.body.appendChild(dummy);
+
+      // Driver.js chiama l'hook e poi scrive gli attributi, nello stesso ciclo sincrono.
+      fake.state.config!.onHighlightStarted?.(undefined, {}, hookOpts());
+      await Promise.resolve();
+
+      for (const a of ['aria-haspopup', 'aria-expanded', 'aria-controls']) {
+        expect(dummy.hasAttribute(a), a).toBe(false);
+      }
+      dummy.remove();
+    });
+
     it('evidenzia il primo candidato visibile e ricade sul popover centrato se nessuno lo è', async () => {
       mountTargets(`
         <aside id="app-sidebar" class="is-overlay" data-hidden></aside>

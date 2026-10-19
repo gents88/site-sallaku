@@ -5,7 +5,7 @@ import slugify from 'slugify';
 import { Post, PostDocument } from './schemas/post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { BLOG_SLUG_FIELDS, DEFAULT_BLOG_LANGUAGE, TRANSLATED_BLOG_LANGUAGES } from './blog.constants';
+import { BLOG_SLUG_FIELDS, BlogLanguage, DEFAULT_BLOG_LANGUAGE, TRANSLATED_BLOG_LANGUAGES } from './blog.constants';
 import { PostForHealth, PostTranslationHealth, TranslationHealthSummary, summarizeAnalyzed, toPostHealth } from './translation-health';
 
 interface ContentSummary {
@@ -25,6 +25,20 @@ function anySlug(slug: string) {
  * ~5 MB per 50 articoli, e finiva incorporato nell'HTML prerenderizzato di /blog.
  */
 const LIST_EXCLUDED_FIELDS = '-content -content_en -content_sq -content_pt -content_es -content_fr -content_de';
+
+/**
+ * Selezione dei campi per la lista pubblica. Con `lang` si escludono anche titolo
+ * ed estratto delle altre lingue (la pagina ne mostra una sola): ~1,7 KB a post,
+ * ~90 KB su 50 articoli in meno nell'HTML prerenderizzato di /blog. Gli slug di
+ * tutte le lingue restano (pesano poco e servono ai link). Senza `lang` la
+ * risposta è quella di sempre.
+ */
+export function listSelectFor(lang?: BlogLanguage): string {
+  if (!lang) return LIST_EXCLUDED_FIELDS;
+  const otherLanguages = TRANSLATED_BLOG_LANGUAGES.filter(l => l !== lang);
+  const heavy = otherLanguages.flatMap(l => [`-title_${l}`, `-excerpt_${l}`]);
+  return [LIST_EXCLUDED_FIELDS, ...heavy].join(' ');
+}
 
 /** Il controllo traduzioni legge il corpo di ogni post in 7 lingue: si ricalcola al massimo ogni 10 minuti o dopo una modifica. */
 const TRANSLATION_HEALTH_TTL_MS = 10 * 60_000;
@@ -141,7 +155,7 @@ export class BlogService implements OnApplicationBootstrap {
   }
 
   /** Public: published posts only, paginated */
-  async findPublished(tag?: string, page = 1, limit = 10): Promise<{
+  async findPublished(tag?: string, page = 1, limit = 10, lang?: BlogLanguage): Promise<{
     data: PostDocument[];
     total: number;
     page: number;
@@ -158,7 +172,7 @@ export class BlogService implements OnApplicationBootstrap {
         .sort({ publishedAt: -1 })
         .skip(skip)
         .limit(safeLimit)
-        .select(LIST_EXCLUDED_FIELDS)
+        .select(listSelectFor(lang))
         .lean()
         .exec() as unknown as Promise<PostDocument[]>,
       this.postModel.countDocuments(filter).exec(),
