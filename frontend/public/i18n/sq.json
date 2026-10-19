@@ -256,15 +256,13 @@
     "a1": "Merrem me zhvillim web enterprise, ndërfaqe Angular, API REST, vizualizim të dhënash dhe aplikacione 3D web me Cesium.js dhe WebGL.",
     "q2": "A punon edhe me backend?",
     "a2": "Po, kam eksperiencë edhe me .NET, Django, Python, NestJS dhe integrim të shërbimeve API REST dhe GraphQL.",
-    "q3": "Je i disponueshëm për projekte remote ose hibride?",
-    "a3": "Po, mund të punoj remote ose në mënyrë hibride sipas nevojave të projektit.",
     "q4": "Si mund të kontaktoj me ty?",
     "a4": "Mund të më shkruash me email, PEC, të më telefonosh ose të më kontaktosh në LinkedIn duke përdorur kontaktet në seksionin më sipër."
   },
   "contact": {
     "tag": "contact",
     "title": "Kontakt",
-    "subtitle": "Disponibël për mundësi dhe bashkëpunime të reja",
+    "subtitle": "Pyetje, komente ose thjesht një përshëndetje",
     "card": {
       "email": {
         "title": "Email",
@@ -296,7 +294,7 @@
       "email_ph": "shembull@email.com",
       "email_err": "Kërkohet email i vlefshëm",
       "subject": "Temë",
-      "subject_ph": "Kërkesë projekti",
+      "subject_ph": "Subjekti i mesazhit",
       "subject_err": "Tema është e detyrueshme",
       "message": "Mesazh",
       "message_ph": "Përshëndetje, do të doja të diskutoja…",
@@ -315,7 +313,7 @@
     },
     "info": {
       "title": "Le të lidhemi",
-      "desc": "Jam i disponueshëm për projekte freelance, bashkëpunime dhe mundësi me kohë të plotë."
+      "desc": "Më shkruaj për pyetje rreth projekteve, blogut ose mjeteve të faqes."
     },
     "form_name": "Emri juaj",
     "form_email": "Email-i juaj",
@@ -685,11 +683,6 @@
       "title": "Integrim API",
       "desc": "Integrime REST dhe GraphQL me NestJS, .NET dhe shërbime të palëve të treta, me trajtim të shëndoshë të gabimeve.",
       "cta": "Mëso më shumë"
-    },
-    "contact": {
-      "title": "Keni një projekt në mendje?",
-      "desc": "Bashkëpunoj me kompani dhe ekipe që duan të ndërtojnë diçka kuptimplote. Le të flasim për sfidën tuaj tjetër.",
-      "btn": "Na Kontaktoni"
     }
   },
   "blog": {
@@ -902,7 +895,7 @@
     "typing": "Duke shkruar…",
     "placeholder": "Shkruaj një mesazh…",
     "welcome_title": "Përshëndetje! 👋",
-    "welcome_text": "Jam asistenti AI në portfolion e <strong>Gent Sallaku</strong>. Pyetëni për projektet, aftësitë ose shërbimet e tij! Nëse dëshiron të flasësh me të drejtpërdrejt, shkruaji disa mesazhe këtu: atij do t'i vijë kërkesa (nuk e di ende kush je, prandaj prezantohu).",
+    "welcome_text": "Jam asistenti AI në portfolion e <strong>Gent Sallaku</strong>. Pyetëni për projektet, aftësitë ose mjetet e faqes! Nëse dëshiron të flasësh me të drejtpërdrejt, shkruaji disa mesazhe këtu: atij do t'i vijë kërkesa (nuk e di ende kush je, prandaj prezantohu).",
     "info_banner": "Gent i lexon mesazhet e dërguara përmes chatbot-it. Nëse dëshironi një përgjigje, ju lutemi përdorni seksionin 'Dërgo Email'.",
     "info_cta": "Shko te seksioni Email →",
     "close": "Mbyll bisedën",
@@ -950,7 +943,7 @@
     "live_offer_desc": "Chat live: ai merr një njoftim",
     "input_hint": "Enter për të dërguar · Shift+Enter për rresht të ri",
     "teaser_title": "Ke pyetje për Gentin?",
-    "teaser_text": "Pyet lirisht: projekte, shërbime, disponueshmëri.",
+    "teaser_text": "Pyet lirisht: projekte, aftësi, mjete.",
     "teaser_close": "Mbyll ftesën"
   },
   "live_handoff": {
@@ -2023,8 +2016,6 @@
     "problem": "Problemi",
     "solution": "Zgjidhja",
     "results": "Rezultatet",
-    "cta_text": "Ke një projekt të ngjashëm?",
-    "cta_button": "Le të flasim",
     "related_title": "Raste të tjera studimi"
   },
   "translations_editor": {

@@ -256,15 +256,13 @@
     "a1": "I work on enterprise web development, Angular interfaces, REST APIs, data visualization and 3D web applications with Cesium.js and WebGL.",
     "q2": "Do you also work on backend?",
     "a2": "Yes, I also have experience with .NET, Django, Python, NestJS and integration of REST and GraphQL API services.",
-    "q3": "Are you available for remote or hybrid projects?",
-    "a3": "Yes, I can work remotely or in a hybrid setup depending on project needs.",
     "q4": "How can I contact you?",
     "a4": "You can email me, send PEC, call me or reach me on LinkedIn using the contacts in the section above."
   },
   "contact": {
     "tag": "contact",
     "title": "Contact",
-    "subtitle": "Available for new opportunities and collaborations",
+    "subtitle": "Questions, feedback or just a hello",
     "card": {
       "email": {
         "title": "Email",
@@ -296,7 +294,7 @@
       "email_ph": "jane@example.com",
       "email_err": "Valid email is required",
       "subject": "Subject",
-      "subject_ph": "Project inquiry",
+      "subject_ph": "Subject of your message",
       "subject_err": "Subject is required",
       "message": "Message",
       "message_ph": "Hi, I’d like to discuss…",
@@ -315,7 +313,7 @@
     },
     "info": {
       "title": "Let’s connect",
-      "desc": "I’m open to freelance projects, collaborations and full-time opportunities."
+      "desc": "Get in touch with questions about the projects, the blog or the tools on this site."
     },
     "form_name": "Your name",
     "form_email": "Your email",
@@ -685,11 +683,6 @@
       "title": "API Integration",
       "desc": "Seamless REST and GraphQL integrations with NestJS, .NET and third-party services, backed by solid error handling.",
       "cta": "Learn more"
-    },
-    "contact": {
-      "title": "Have a project in mind?",
-      "desc": "I collaborate with companies and teams that want to build something meaningful. Let's talk about your next challenge.",
-      "btn": "Get in Touch"
     }
   },
   "blog": {
@@ -902,7 +895,7 @@
     "typing": "Typing…",
     "placeholder": "Type a message…",
     "welcome_title": "Hi there! 👋",
-    "welcome_text": "I'm the AI assistant on <strong>Gent Sallaku's</strong> portfolio. Ask me anything about his projects, skills, or services! If you'd like to chat with him live, send me a couple of messages here: he'll get the request (he doesn't know who you are yet, so feel free to introduce yourself).",
+    "welcome_text": "I'm the AI assistant on <strong>Gent Sallaku's</strong> portfolio. Ask me anything about his projects, skills, or the tools on this site! If you'd like to chat with him live, send me a couple of messages here: he'll get the request (he doesn't know who you are yet, so feel free to introduce yourself).",
     "info_banner": "Gent reads messages sent through the chatbot. If you would like a response, please use the 'Send Email' section.",
     "info_cta": "Go to the Email section →",
     "close": "Close chat",
@@ -950,7 +943,7 @@
     "live_offer_desc": "Live chat: he gets a notification",
     "input_hint": "Enter to send · Shift+Enter for a new line",
     "teaser_title": "Questions about Gent?",
-    "teaser_text": "Just ask: projects, services, availability.",
+    "teaser_text": "Just ask: projects, skills, tools.",
     "teaser_close": "Close invitation"
   },
   "live_handoff": {
@@ -2023,8 +2016,6 @@
     "problem": "The problem",
     "solution": "The solution",
     "results": "The results",
-    "cta_text": "Have a similar project?",
-    "cta_button": "Let's talk",
     "related_title": "More case studies"
   },
   "translations_editor": {
