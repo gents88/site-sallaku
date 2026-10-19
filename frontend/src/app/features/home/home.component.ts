@@ -1,17 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, AfterViewInit, OnDestroy, inject, PLATFORM_ID, effect } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, forkJoin, catchError } from 'rxjs';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
-import { ContactService } from '../../core/services/contact.service';
-import { AnalyticsTrackingService } from '../../core/services/analytics-tracking.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ExperiencesService } from '../../core/services/experiences.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
-import { SnackbarService } from '../../core/services/snackbar.service';
 import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { About } from '../../core/models/about.model';
 import { Project } from '../../core/models/project.model';
@@ -24,7 +20,8 @@ import { SocialShareComponent } from '../../shared/components/social-share/socia
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
 import { HERO_KPI_TARGETS, kpiCountUpValues, prefersReducedMotion } from './kpi-count-up';
 
-interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
+interface TechItem { name: string; icon: string; isFab?: boolean; }
+interface TechGroup { titleKey: string; icon: string; items: TechItem[]; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
 interface ExpItem { date?: string; dateKey?: string; titleKey: string; roleKey: string; descKey: string; tags: string[]; }
 interface FaqItem { qKey: string; aKey: string; }
@@ -33,7 +30,7 @@ interface ServiceItem { key: string; icon: string; colorClass: string; route?: s
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent, TestimonialsWallComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent, TestimonialsWallComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,19 +40,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   featuredProjects: Project[] = [];
   experiences: Experience[] = [];
   loading = true;
-  barsFilled = false;
-  contactSent = false;
-  contactSending = false;
-  contactError = false;
-  contactInvalid = false;
-  honeypot = '';
-  contactForm = { name: '', email: '', message: '' };
 
   private observer: IntersectionObserver | null = null;
   private kpiObserver: IntersectionObserver | null = null;
   private scrollTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly translate = inject(TranslateService);
 
   // Valori reali fin dal primo render (SSR/prerender, no-JS, reduced motion):
   // il conteggio da zero è solo un effetto aggiunto nel browser.
@@ -66,33 +55,45 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
   readonly frontendTechs: TechItem[] = [
-    { name: 'Angular', icon: 'angular', level: 95, isFab: true },
-    { name: 'JavaScript', icon: 'js', level: 93, isFab: true },
-    { name: 'RxJS', icon: 'arrows-spin', level: 90 },
-    { name: 'SCSS / HTML', icon: 'sass', level: 90, isFab: true },
-    { name: 'React', icon: 'react', level: 75, isFab: true },
-    { name: 'TypeScript', icon: 'code', level: 92 },
+    { name: 'Angular', icon: 'angular', isFab: true },
+    { name: 'JavaScript', icon: 'js', isFab: true },
+    { name: 'RxJS', icon: 'arrows-spin' },
+    { name: 'SCSS / HTML', icon: 'sass', isFab: true },
+    { name: 'React', icon: 'react', isFab: true },
+    { name: 'TypeScript', icon: 'code' },
   ];
 
   readonly dataVizTechs: TechItem[] = [
-    { name: 'Chart.js', icon: 'chart-bar', level: 88 },
-    { name: 'ApexCharts', icon: 'chart-area', level: 85 },
-    { name: 'Cesium.js', icon: 'globe', level: 90 },
-    { name: 'Photo Sphere Viewer', icon: 'vr-cardboard', level: 82 },
+    { name: 'Chart.js', icon: 'chart-bar' },
+    { name: 'ApexCharts', icon: 'chart-area' },
+    { name: 'Cesium.js', icon: 'globe' },
+    { name: 'Photo Sphere Viewer', icon: 'vr-cardboard' },
   ];
 
   readonly backendTechs: TechItem[] = [
-    { name: 'Django / Python', icon: 'python', level: 85, isFab: true },
-    { name: '.NET / C#', icon: 'code', level: 88 },
-    { name: 'NestJS / Node.js', icon: 'node-js', level: 78, isFab: true },
-    { name: 'REST API', icon: 'plug', level: 92 },
+    { name: 'Django / Python', icon: 'python', isFab: true },
+    { name: '.NET / C#', icon: 'code' },
+    { name: 'NestJS / Node.js', icon: 'node-js', isFab: true },
+    { name: 'REST API', icon: 'plug' },
   ];
 
   readonly devopsTechs: TechItem[] = [
-    { name: 'Docker', icon: 'docker', level: 80, isFab: true },
-    { name: 'CI/CD', icon: 'infinity', level: 85 },
-    { name: 'Git', icon: 'git-alt', level: 92, isFab: true },
-    { name: 'Azure', icon: 'cloud', level: 75 },
+    { name: 'Docker', icon: 'docker', isFab: true },
+    { name: 'CI/CD', icon: 'infinity' },
+    { name: 'Git', icon: 'git-alt', isFab: true },
+    { name: 'Azure', icon: 'cloud' },
+  ];
+
+  /**
+   * Competenze raggruppate per area, senza percentuali: un "92%" non misura
+   * niente di verificabile, non è leggibile da uno screen reader e mancava nell'HTML
+   * prerenderizzato (le barre partivano da larghezza 0).
+   */
+  readonly techGroups: TechGroup[] = [
+    { titleKey: 'tech.frontend', icon: 'code', items: this.frontendTechs },
+    { titleKey: 'tech.dataviz', icon: 'chart-line', items: this.dataVizTechs },
+    { titleKey: 'tech.backend', icon: 'server', items: this.backendTechs },
+    { titleKey: 'tech.devops', icon: 'gears', items: this.devopsTechs },
   ];
 
   readonly staticProjects: ProjectItem[] = [
@@ -223,12 +224,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private aboutService: AboutService,
-    private contactService: ContactService,
-    private analytics: AnalyticsTrackingService,
     private projectsService: ProjectsService,
     private experiencesService: ExperiencesService,
     private seo: SeoService,
-    private snackbar: SnackbarService,
     private cdr: ChangeDetectorRef,
     private router: Router,
   ) {
@@ -313,11 +311,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            // Trigger tech bars when tech section becomes visible
-            if ((entry.target as HTMLElement).closest('#tech-stack')) {
-              this.barsFilled = true;
-              this.cdr.markForCheck();
-            }
             this.observer?.unobserve(entry.target);
           }
         });
@@ -431,59 +424,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       clearTimeout(this.scrollTimer);
       this.scrollTimer = null;
     }
-  }
-
-  submitContact(): void {
-    if (this.honeypot || this.contactSending) return; // spam trap
-    const { name, email, message } = this.contactForm;
-    const normalizedName = name.trim();
-    const normalizedEmail = email.trim();
-    const normalizedMessage = message.trim();
-    const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
-
-    this.contactSent = false;
-    this.contactError = false;
-    this.contactInvalid = false;
-
-    if (!normalizedName || !hasValidEmail || !normalizedMessage || normalizedMessage.length < 10) {
-      this.contactInvalid = true;
-      this.cdr.markForCheck();
-      return;
-    }
-
-    // Nessun successo ottimistico: l'esito "inviato" compare solo dopo la
-    // risposta del server. Prima il messaggio verde e la snackbar comparivano
-    // alla pressione del tasto e venivano ritirati solo se la richiesta falliva
-    // (fino a 15 s dopo): chi chiudeva la pagina nel frattempo credeva di aver
-    // scritto, e il messaggio non era mai partito.
-    this.contactSending = true;
-    this.cdr.markForCheck();
-
-    this.contactService.send({
-      name: normalizedName,
-      email: normalizedEmail,
-      subject: 'Contatto dal portfolio',
-      message: normalizedMessage,
-    }).pipe(
-      finalize(() => {
-        this.contactSending = false;
-        this.cdr.markForCheck();
-      }),
-    ).subscribe({
-      next: () => {
-        this.contactForm = { name: '', email: '', message: '' };
-        this.contactInvalid = false;
-        this.contactSent = true;
-        this.cdr.markForCheck();
-        this.snackbar.show(this.translate.instant('contact.form_sent'), 'success');
-        this.analytics.trackClick('lead', 'contact_form');
-      },
-      error: () => {
-        this.contactError = true;
-        this.cdr.markForCheck();
-        this.snackbar.show(this.translate.instant('contact.form_error'), 'error');
-      },
-    });
   }
 
 }

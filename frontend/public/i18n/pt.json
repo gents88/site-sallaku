@@ -2010,6 +2010,7 @@
     "uploading": "A carregar o ficheiro…",
     "processing": "A processar…",
     "cancel": "Cancelar",
+    "retry": "Tentar novamente",
     "cancelled": "Operação cancelada."
   },
   "project_detail": {
@@ -2229,6 +2230,7 @@
     "banner": "Você está offline. Os artigos que já leu continuam disponíveis.",
     "see_articles": "Ver artigos",
     "back_online": "Online novamente",
+    "tool_needs_connection": "Esta ferramenta processa os ficheiros no servidor, por isso precisa de ligação. Tenta novamente quando voltares a estar online.",
     "list_unavailable": "Você está offline: a lista de artigos não está disponível",
     "load_error": "Não foi possível carregar os artigos",
     "recent_title": "Você já leu estes e pode abri-los mesmo sem conexão:",

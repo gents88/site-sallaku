@@ -17,7 +17,9 @@
       <input
         type="email"
         name="email"
+        autocomplete="email"
         required
+        [attr.aria-describedby]="state === 'error' ? 'newsletter-error' : null"
         [(ngModel)]="email"
         [placeholder]="'newsletter.email_placeholder' | translate"
         [attr.aria-label]="'newsletter.email_placeholder' | translate"
@@ -35,7 +37,7 @@
     <app-turnstile-widget (verified)="onTurnstileVerified($event)"></app-turnstile-widget>
 
     @if (state === 'error') {
-      <p class="newsletter-signup__error" role="alert">{{ errorMessage }}</p>
+      <p class="newsletter-signup__error" id="newsletter-error" role="alert">{{ errorMessage }}</p>
     }
   }
 </div>

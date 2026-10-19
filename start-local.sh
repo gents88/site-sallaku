@@ -49,17 +49,48 @@ trap cleanup EXIT INT TERM
 # ─────────────────────────────────────────────────────────────────
 LOCAL_MONGO_URI="mongodb://localhost:27017/portfolio_dev"
 
+# MongoDB nativo: fallback per i Mac dove colima non parte (es. Intel con macOS < 15.5,
+# dove vmType "vz" non funziona e qemu non è installabile con Homebrew). Su macOS 13 il
+# binario più recente utilizzabile è il 7.0.x (la 8.0 richiede macOS 14).
+NATIVE_MONGOD="${NATIVE_MONGOD:-$HOME/.local/mongodb/bin/mongod}"
+NATIVE_MONGO_DIR="$HOME/.local/share/portfolio-mongo"
+
+start_native_mongo() {
+  [[ -x "$NATIVE_MONGOD" ]] || return 1
+  if ! (echo > /dev/tcp/127.0.0.1/27017) 2>/dev/null; then
+    log "Avvio MongoDB nativo ($("$NATIVE_MONGOD" --version | head -1))..."
+    mkdir -p "$NATIVE_MONGO_DIR/db"
+    "$NATIVE_MONGOD" --dbpath "$NATIVE_MONGO_DIR/db" --bind_ip 127.0.0.1 --port 27017 \
+      --logpath "$NATIVE_MONGO_DIR/mongod.log" --fork >/dev/null || return 1
+  fi
+  for _ in $(seq 1 15); do
+    (echo > /dev/tcp/127.0.0.1/27017) 2>/dev/null && return 0
+    sleep 1
+  done
+  return 1
+}
+
+USE_DOCKER=1
 if ! docker info >/dev/null 2>&1; then
-  command -v colima >/dev/null 2>&1 || die "Docker non attivo e colima non installato (brew install colima docker)."
-  log "Avvio colima (Docker)..."
-  colima start
+  if command -v colima >/dev/null 2>&1; then
+    log "Avvio colima (Docker)..."
+    colima start || USE_DOCKER=0
+  else
+    USE_DOCKER=0
+  fi
+  if [[ "$USE_DOCKER" == 0 ]]; then
+    warn "Docker/colima non disponibile: provo con MongoDB nativo."
+    start_native_mongo || die "Né Docker né mongod nativo ($NATIVE_MONGOD) disponibili."
+  fi
 fi
-log "Avvio MongoDB locale..."
-docker compose -f "$ROOT/docker-compose.local.yml" up -d mongo >/dev/null
-for _ in $(seq 1 30); do
-  docker compose -f "$ROOT/docker-compose.local.yml" exec -T mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' >/dev/null 2>&1 && break
-  sleep 2
-done
+if [[ "$USE_DOCKER" == 1 ]]; then
+  log "Avvio MongoDB locale..."
+  docker compose -f "$ROOT/docker-compose.local.yml" up -d mongo >/dev/null
+  for _ in $(seq 1 30); do
+    docker compose -f "$ROOT/docker-compose.local.yml" exec -T mongo mongosh --quiet --eval 'db.adminCommand({ping:1}).ok' >/dev/null 2>&1 && break
+    sleep 2
+  done
+fi
 ok "MongoDB locale attivo su localhost:27017."
 
 if [[ ! -f "$BACKEND/.env" ]]; then

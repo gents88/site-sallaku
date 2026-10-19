@@ -169,11 +169,13 @@
         <div class="error-banner" role="alert">
           <span>⚠️</span> {{ error() }}
         </div>
+        <app-request-retry [request]="req" (retry)="translate()" />
       }
 
+      <app-offline-tool-hint />
       <button
         class="btn-translate"
-        [disabled]="!file() || loading()"
+        [disabled]="!file() || loading() || !network.online()"
         (click)="translate()"
       >
         @if (loading()) {

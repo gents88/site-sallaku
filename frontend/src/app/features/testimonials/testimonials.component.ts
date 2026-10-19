@@ -8,6 +8,7 @@ import { SnackbarService } from '../../core/services/snackbar.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { RatingStarsComponent } from '../../shared/components/rating-stars/rating-stars.component';
+import { FocusFirstInvalidDirective } from '../../shared/directives/focus-first-invalid.directive';
 import { TurnstileWidgetComponent } from '../../shared/components/turnstile-widget/turnstile-widget.component';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb.component';
 
@@ -25,7 +26,7 @@ const DATE_LOCALES: Record<string, string> = {
   selector: 'app-testimonials',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, RatingStarsComponent, TurnstileWidgetComponent, BreadcrumbComponent, FocusFirstInvalidDirective],
   templateUrl: './testimonials.component.html',
   styleUrls: ['./testimonials.component.scss'],
 })

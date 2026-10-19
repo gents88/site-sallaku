@@ -366,75 +366,49 @@
   i { color: var(--primary-400); font-size: 1.1rem; }
 }
 
-.tech-items { display: flex; flex-direction: column; gap: 18px; }
+.tech-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
 .tech-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  padding: 6px 14px 6px 6px;
+  background: var(--gradient-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
   transition: var(--transition-base);
-  &:hover { transform: translateX(4px); }
+
+  &:hover { border-color: var(--glass-border-hover); transform: translateY(-2px); }
 }
 
 .tech-item-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--gradient-card);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(79, 106, 245, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--accent-400);
   flex-shrink: 0;
 }
 
-.tech-item-info { flex: 1; }
 .tech-name {
-  position: relative;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-primary);
-  display: inline-block;
-  margin-bottom: 6px;
 }
 
-.tech-tooltip {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(79, 106, 245, 0.85);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.tech-item:hover .tech-tooltip { opacity: 1; }
-
-.tech-bar {
-  width: 100%;
-  height: 4px;
-  background: rgba(79,106,245,0.1);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.tech-bar-fill {
-  height: 100%;
-  width: 0;
-  background: var(--gradient-primary);
-  border-radius: 2px;
-  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.animated { width: var(--fill); }
+@media (prefers-reduced-motion: reduce) {
+  .tech-item:hover { transform: none; }
 }
 
 /* ══ PROJECTS ══════════════════════════════════════════ */
@@ -809,71 +783,21 @@ details[open] .faq-chevron { transform: rotate(180deg); color: var(--primary-400
 .contact-arrow   { color: var(--primary-400); opacity: 0; transition: var(--transition-base); }
 .contact-card:hover .contact-arrow { opacity: 1; transform: translateX(4px); }
 
-/* Contact form */
-.contact-form-wrapper {
+/* Contact CTA: il form vero vive in /contact (Turnstile, consenso privacy, flag) */
+.contact-cta {
   max-width: 700px;
   margin: 0 auto;
-  padding: 48px;
-
-  h3 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 32px; }
-}
-
-.contact-form {
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
-
-  input, textarea {
-    background: var(--input-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
-    font-family: var(--font-main);
-    font-size: 0.95rem;
-    color: var(--text-primary);
-    transition: var(--transition-base);
-    width: 100%;
-
-    &::placeholder { color: var(--text-muted); }
-    &:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(79,106,245,0.1); }
-  }
-
-  textarea { resize: vertical; min-height: 140px; }
-}
-
-.hp-field { display: none !important; }
-
-.contact-form button[disabled] {
-  opacity: 0.8;
-  cursor: wait;
-}
-
-.form-note { font-size: 0.8rem; color: var(--text-muted); }
-
-.form-success {
-  font-size: 0.9rem;
-  color: #22c55e;
-  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+  text-align: center;
+
+  h3 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
 }
 
-.form-error {
-  font-size: 0.9rem;
-  color: #f87171;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.form-note { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
 
 /* ══ SERVICES SECTION ══════════════════════════════════ */
 .section-subtitle {
