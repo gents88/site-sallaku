@@ -21,6 +21,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
+import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -43,7 +44,7 @@ const MAX_FILE_MB = 50;
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -259,10 +260,12 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     const ext = f.name.split('.').pop()?.toLowerCase();
     const allowed = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
     if (!allowed.includes(f.type) && !['pdf', 'docx', 'txt'].includes(ext ?? '')) {
+      this.req.clearFailure();
       this.error.set(this.t.instant('pdf_translate.err_file_type'));
       return;
     }
     if (f.size > MAX_FILE_MB * 1024 * 1024) {
+      this.req.clearFailure();
       this.error.set(this.t.instant('pdf_translate.err_file_too_large', { max: MAX_FILE_MB, name: f.name }));
       return;
     }

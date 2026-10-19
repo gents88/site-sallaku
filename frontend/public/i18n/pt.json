@@ -2010,6 +2010,7 @@
     "uploading": "A carregar o ficheiro…",
     "processing": "A processar…",
     "cancel": "Cancelar",
+    "retry": "Tentar novamente",
     "cancelled": "Operação cancelada."
   },
   "project_detail": {

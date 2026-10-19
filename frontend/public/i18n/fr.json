@@ -2010,6 +2010,7 @@
     "uploading": "Envoi du fichier…",
     "processing": "Traitement en cours…",
     "cancel": "Annuler",
+    "retry": "Réessayer",
     "cancelled": "Opération annulée."
   },
   "project_detail": {
