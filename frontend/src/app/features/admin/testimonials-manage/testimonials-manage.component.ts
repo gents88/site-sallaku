@@ -12,6 +12,7 @@ import { TestimonialsAdminService } from '../../../core/services/testimonials-ad
 import { AdminTestimonial, TestimonialModerationStatus } from '../../../core/models/testimonial-admin.model';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { RatingStarsComponent } from '../../../shared/components/rating-stars/rating-stars.component';
+import { isSafeLinkedinProfileUrl } from '../../../shared/utils/linkedin-url';
 
 const PAGE_SIZE = 50;
 
@@ -94,6 +95,12 @@ export class TestimonialsManageComponent implements OnInit {
     this.runAction(item, this.testimonialsAdminService.markSpam(item.id), 'testimonials_manage.marked_spam');
   }
 
+  /** Conferma (o toglie) che l'identità dell'autore è stata controllata: abilita badge e link pubblici. */
+  toggleVerified(item: AdminTestimonial): void {
+    const successKey = item.verified ? 'testimonials_manage.verified_off' : 'testimonials_manage.verified_on';
+    this.runAction(item, this.testimonialsAdminService.setVerified(item.id, !item.verified), successKey);
+  }
+
   toggleFeatured(item: AdminTestimonial): void {
     const successKey = item.featured ? 'testimonials_manage.featured_off' : 'testimonials_manage.featured_on';
     this.runAction(item, this.testimonialsAdminService.setFeatured(item.id, !item.featured), successKey);
@@ -130,6 +137,11 @@ export class TestimonialsManageComponent implements OnInit {
   delete(item: AdminTestimonial): void {
     if (!confirm(this.t.instant('testimonials_manage.confirm_delete'))) return;
     this.runAction(item, this.testimonialsAdminService.remove(item.id), 'testimonials_manage.deleted');
+  }
+
+  /** Il link va aperto solo se è davvero un profilo LinkedIn (il valore arriva da un visitatore). */
+  safeLinkedin(item: AdminTestimonial): string | null {
+    return isSafeLinkedinProfileUrl(item.linkedinUrl) ? item.linkedinUrl : null;
   }
 
   initials(name: string): string {

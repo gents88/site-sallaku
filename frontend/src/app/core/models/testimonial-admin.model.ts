@@ -13,6 +13,9 @@ export interface AdminTestimonial {
   isSpam: boolean;
   spamScore: number;
   featured: boolean;
+  linkedinUrl?: string;
+  verified: boolean;
+  verifiedAt?: string | null;
   userIp?: string;
   createdAt: string;
 }
