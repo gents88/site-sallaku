@@ -160,7 +160,13 @@ export class BlogListComponent implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {
     // Re-render when UI language changes (OnPush requires explicit trigger)
-    effect(() => { this.langService.current(); this.cdr.markForCheck(); });
+    effect(() => {
+      const lang = this.langService.current();
+      this.cdr.markForCheck();
+      // La lista porta solo titolo/estratto della lingua richiesta: al cambio
+      // lingua va riscaricata (in cache se già vista), senza rimettere lo scheletro.
+      if (this.requestedLang !== null && lang !== this.requestedLang) this.fetchPosts();
+    });
     // Tornata la connessione, il pannello offline si rimpiazza da solo con la lista.
     effect(() => { if (this.network.online() && this.loadError) this.reload(); });
   }
@@ -201,8 +207,13 @@ export class BlogListComponent implements OnInit {
     this.fetchPosts();
   }
 
+  /** Lingua dell'ultima richiesta partita (null prima del primo caricamento). */
+  private requestedLang: string | null = null;
+
   private fetchPosts(): void {
-    this.blogService.getPublishedAll().pipe(
+    const lang = this.currentLang();
+    this.requestedLang = lang;
+    this.blogService.getPublishedAll(undefined, lang).pipe(
       // No retry() — see blog-detail.component.ts for why: it trades a
       // clean failure for a worse one (page stuck on the loading spinner)
       // once Angular's prerenderer stops waiting on this route.
@@ -210,6 +221,8 @@ export class BlogListComponent implements OnInit {
       finalize(() => { this.loading = false; this.cdr.markForCheck(); }),
     ).subscribe({
       next: posts => {
+        // Risposta superata: nel frattempo l'utente ha cambiato lingua.
+        if (lang !== this.currentLang()) return;
         this.loadError = false;
         this.posts = posts;
         this.allTags = rankTags(posts);
