@@ -489,20 +489,20 @@
         </label>
         <button type="submit" class="btn btn-primary" [disabled]="contactSending">
           @if (contactSending) {
-            <i class="fas fa-spinner fa-spin"></i> {{ 'contact.form.sending' | translate }}
+            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> {{ 'contact.form.sending' | translate }}
           } @else {
-            <i class="fas fa-paper-plane"></i> {{ 'contact.form.submit' | translate }}
+            <i class="fas fa-paper-plane" aria-hidden="true"></i> {{ 'contact.form.submit' | translate }}
           }
         </button>
         <p class="form-note">{{ 'contact.form.note' | translate }}</p>
         @if (contactInvalid) {
-          <p class="form-error"><i class="fas fa-circle-exclamation"></i> {{ 'contact.form_invalid' | translate }}</p>
+          <p class="form-error" role="alert"><i class="fas fa-circle-exclamation" aria-hidden="true"></i> {{ 'contact.form_invalid' | translate }}</p>
         }
         @if (contactSent) {
-          <p class="form-success"><i class="fas fa-check-circle"></i> {{ 'contact.form_sent' | translate }}</p>
+          <p class="form-success" role="status"><i class="fas fa-check-circle" aria-hidden="true"></i> {{ 'contact.form_sent' | translate }}</p>
         }
         @if (contactError) {
-          <p class="form-error"><i class="fas fa-triangle-exclamation"></i> {{ 'contact.form_error' | translate }}</p>
+          <p class="form-error" role="alert"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> {{ 'contact.form_error' | translate }}</p>
         }
       </form>
     </div>
