@@ -1,6 +1,8 @@
-<!-- ── Fumetto d'invito (una volta sola, vedi TEASER_DELAY_MS) ── -->
+<!-- ── Fumetto d'invito (una volta a visita, sparisce da solo: vedi TEASER_VISIBLE_MS) ── -->
 @if (teaserVisible && !isOpen) {
-  <div class="cb-teaser" role="status">
+  <div class="cb-teaser" role="status"
+       (mouseenter)="holdTeaser(true)" (mouseleave)="holdTeaser(false)"
+       (focusin)="holdTeaser(true)" (focusout)="holdTeaser(false)">
     <button type="button" class="cb-teaser__body" (click)="openFromTeaser()">
       <span class="cb-teaser__avatar" aria-hidden="true"><app-profile-photo /></span>
       <span class="cb-teaser__text">
