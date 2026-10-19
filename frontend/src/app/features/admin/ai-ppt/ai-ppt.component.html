@@ -171,10 +171,11 @@
         <app-request-retry [request]="req" (retry)="generate()" />
       }
 
+      <app-offline-tool-hint />
       <button
         class="btn-generate"
         [class.is-loading]="loading()"
-        [disabled]="!topic().trim() || loading()"
+        [disabled]="!topic().trim() || loading() || !network.online()"
         (click)="generate()"
       >
         @if (loading()) {

@@ -18,6 +18,8 @@ import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
+import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
 import {
   AiPptService,
   PptStyle,
@@ -40,7 +42,7 @@ const MAX_CONTEXT_FILE_MB = 20;
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -119,6 +121,7 @@ export class AiPptComponent implements OnInit {
   }
 
   /** Richiesta annullabile con avanzamento dell'upload del file di contesto. */
+  readonly network = inject(NetworkStatusService);
   readonly req             = new TrackedRequest();
   readonly loading         = this.req.active;
 

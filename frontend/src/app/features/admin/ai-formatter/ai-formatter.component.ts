@@ -27,6 +27,8 @@ import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
+import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -39,7 +41,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
@@ -143,6 +145,7 @@ export class AiFormatterComponent implements OnInit {
   }
 
   /** Richiesta annullabile: annullata anche quando si lascia la pagina. */
+  readonly network = inject(NetworkStatusService);
   readonly req = new TrackedRequest();
   readonly loading = this.req.active;
 

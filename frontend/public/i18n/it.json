@@ -2230,6 +2230,7 @@
     "banner": "Sei offline. Gli articoli che hai già letto restano disponibili.",
     "see_articles": "Vedi articoli",
     "back_online": "Di nuovo online",
+    "tool_needs_connection": "Questo strumento elabora i file sul server: serve una connessione. Riprova quando sei di nuovo online.",
     "list_unavailable": "Sei offline: l'elenco degli articoli non è disponibile",
     "load_error": "Non è stato possibile caricare gli articoli",
     "recent_title": "Questi li hai già letti e puoi aprirli anche senza connessione:",
