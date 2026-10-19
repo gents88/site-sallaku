@@ -13,6 +13,8 @@ import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
+import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -41,7 +43,7 @@ const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })
@@ -121,6 +123,7 @@ export class PdfSummaryComponent implements OnInit {
 
   selectedFile   = signal<File | null>(null);
   /** Upload con avanzamento reale + annullamento (anche all'uscita dalla pagina). */
+  readonly network = inject(NetworkStatusService);
   readonly req   = new TrackedRequest();
   readonly loading = this.req.active;
   result         = signal<FileSummaryResult | null>(null);

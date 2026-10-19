@@ -22,6 +22,8 @@ import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
+import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -44,7 +46,7 @@ const MAX_FILE_MB = 50;
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -133,6 +135,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   }
 
   /** Upload con avanzamento reale + annullamento (anche all'uscita dalla pagina). */
+  readonly network = inject(NetworkStatusService);
   readonly req = new TrackedRequest();
   readonly loading = this.req.active;
 
