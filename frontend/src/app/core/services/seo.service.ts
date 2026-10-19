@@ -141,7 +141,10 @@ export class SeoService {
       const el = this.document.createElement('script');
       el.setAttribute('data-json-ld', String(i));
       el.type = 'application/ld+json';
-      el.textContent = JSON.stringify(s);
+      // `<` escaped as \u003c: the JSON stays identical for parsers, but a value
+      // containing "</script>" (testimonial text, post titles) can no longer end
+      // the element early when SSR/prerender serializes it to HTML.
+      el.textContent = JSON.stringify(s).replace(/</g, '\\u003c');
       this.document.head.appendChild(el);
     });
   }

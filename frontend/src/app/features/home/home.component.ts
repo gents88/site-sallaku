@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, forkJoin, catchError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
 import { ContactService } from '../../core/services/contact.service';
 import { AnalyticsTrackingService } from '../../core/services/analytics-tracking.service';
@@ -22,6 +22,7 @@ import { TrackClickDirective } from '../../shared/directives/track-click.directi
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
+import { HERO_KPI_TARGETS, kpiCountUpValues, prefersReducedMotion } from './kpi-count-up';
 
 interface TechItem { name: string; icon: string; level: number; isFab?: boolean; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
@@ -54,10 +55,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private kpiObserver: IntersectionObserver | null = null;
   private scrollTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly translate = inject(TranslateService);
 
-  kpiValues = [0, 0, 0, 0];
+  // Valori reali fin dal primo render (SSR/prerender, no-JS, reduced motion):
+  // il conteggio da zero è solo un effetto aggiunto nel browser.
+  kpiValues: number[] = [...HERO_KPI_TARGETS];
   private kpiAnimated = false;
-  private readonly kpiTargets = [8, 20, 4, 70];
+  private kpiFallbackTimer: ReturnType<typeof setTimeout> | null = null;
+  private kpiFrame: number | null = null;
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
   readonly frontendTechs: TechItem[] = [
@@ -322,9 +327,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
 
-    // Count-up animation for KPI numbers
+    // Count-up animation for KPI numbers (skipped with prefers-reduced-motion:
+    // the final values are already rendered).
     const kpiEl = document.querySelector('.hero-kpis');
-    if (kpiEl) {
+    if (kpiEl && !prefersReducedMotion() && typeof IntersectionObserver !== 'undefined') {
+      this.kpiValues = this.kpiValues.map(() => 0);
+      this.cdr.markForCheck();
       this.kpiObserver = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && !this.kpiAnimated) {
@@ -333,9 +341,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             this.kpiObserver?.disconnect();
           }
         },
-        { threshold: 0.5 },
+        { threshold: 0.25 },
       );
       this.kpiObserver.observe(kpiEl);
+      // Rete di sicurezza: se l'osservatore non scatta mai (hero fuori vista
+      // per un deep link a #tech-stack, elemento nascosto, ...) i contatori
+      // non devono restare a zero.
+      this.kpiFallbackTimer = setTimeout(() => {
+        if (this.kpiAnimated) return;
+        this.kpiAnimated = true;
+        this.kpiObserver?.disconnect();
+        this.kpiValues = [...HERO_KPI_TARGETS];
+        this.cdr.markForCheck();
+      }, 6000);
     }
 
     // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
@@ -358,20 +376,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private animateCountUp(): void {
     if (!isPlatformBrowser(this.platformId)) {
-      this.kpiValues = [...this.kpiTargets];
+      this.kpiValues = [...HERO_KPI_TARGETS];
       return;
+    }
+    if (this.kpiFallbackTimer !== null) {
+      clearTimeout(this.kpiFallbackTimer);
+      this.kpiFallbackTimer = null;
     }
     const duration = 1500;
     const start = performance.now();
     const update = (now: number) => {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      this.kpiValues = this.kpiTargets.map(t => Math.floor(t * ease));
+      const progress = Math.min((now - start) / duration, 1);
+      this.kpiValues = kpiCountUpValues(HERO_KPI_TARGETS, progress);
       this.cdr.markForCheck();
-      if (progress < 1) requestAnimationFrame(update);
+      this.kpiFrame = progress < 1 ? requestAnimationFrame(update) : null;
     };
-    requestAnimationFrame(update);
+    this.kpiFrame = requestAnimationFrame(update);
   }
 
   /**
@@ -405,6 +425,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.observer?.disconnect();
     this.kpiObserver?.disconnect();
+    if (this.kpiFallbackTimer !== null) clearTimeout(this.kpiFallbackTimer);
+    if (this.kpiFrame !== null) cancelAnimationFrame(this.kpiFrame);
     if (this.scrollTimer !== null) {
       clearTimeout(this.scrollTimer);
       this.scrollTimer = null;
@@ -429,10 +451,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    // Optimistic UX: show immediate feedback and enqueue send; rollback on error
+    // Nessun successo ottimistico: l'esito "inviato" compare solo dopo la
+    // risposta del server. Prima il messaggio verde e la snackbar comparivano
+    // alla pressione del tasto e venivano ritirati solo se la richiesta falliva
+    // (fino a 15 s dopo): chi chiudeva la pagina nel frattempo credeva di aver
+    // scritto, e il messaggio non era mai partito.
     this.contactSending = true;
-    this.contactSent = true;
-    this.snackbar.show('Invio in corso — messaggio mostrato come inviato', 'info', 3000);
+    this.cdr.markForCheck();
 
     this.contactService.send({
       name: normalizedName,
@@ -448,16 +473,15 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       next: () => {
         this.contactForm = { name: '', email: '', message: '' };
         this.contactInvalid = false;
+        this.contactSent = true;
         this.cdr.markForCheck();
-        this.snackbar.show('Messaggio inviato — grazie!', 'success');
+        this.snackbar.show(this.translate.instant('contact.form_sent'), 'success');
         this.analytics.trackClick('lead', 'contact_form');
       },
       error: () => {
-        // rollback optimistic state
-        this.contactSent = false;
         this.contactError = true;
         this.cdr.markForCheck();
-        this.snackbar.show('Invio non riuscito — riprova più tardi', 'error');
+        this.snackbar.show(this.translate.instant('contact.form_error'), 'error');
       },
     });
   }
