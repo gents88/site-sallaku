@@ -168,6 +168,7 @@
         <div class="error-banner" role="alert">
           <span>⚠️</span> {{ error() }}
         </div>
+        <app-request-retry [request]="req" (retry)="generate()" />
       }
 
       <button

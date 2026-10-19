@@ -88,7 +88,8 @@
       }
 
       @if (error()) {
-        <div class="error-box">⚠️ {{ error() }}</div>
+        <div class="error-box" role="alert">⚠️ {{ error() }}</div>
+        <app-request-retry [request]="req" (retry)="summarize()" />
       }
 
       @if (result()) {
