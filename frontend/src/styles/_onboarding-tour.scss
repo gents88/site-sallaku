@@ -78,12 +78,14 @@
   }
 
   // "Avanti" / "Concludi": azione primaria.
+  // Sfondo --primary-600: il bianco su --primary-500 (#4f6af5) fa 4,46:1, appena
+  // sotto il 4,5:1 di WCAG AA per il testo normale (axe: color-contrast).
   .driver-popover-next-btn {
-    background: var(--primary-500);
+    background: var(--primary-600);
     color: #fff;
     border: none;
 
-    &:hover { background: var(--primary-600); }
+    &:hover { background: var(--primary-700); }
   }
 
   .driver-popover-prev-btn {

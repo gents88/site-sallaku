@@ -12,6 +12,9 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
+import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
+import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -40,7 +43,7 @@ const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })
@@ -120,6 +123,7 @@ export class PdfSummaryComponent implements OnInit {
 
   selectedFile   = signal<File | null>(null);
   /** Upload con avanzamento reale + annullamento (anche all'uscita dalla pagina). */
+  readonly network = inject(NetworkStatusService);
   readonly req   = new TrackedRequest();
   readonly loading = this.req.active;
   result         = signal<FileSummaryResult | null>(null);
@@ -164,7 +168,7 @@ export class PdfSummaryComponent implements OnInit {
   }
   removeFile(event: MouseEvent): void {
     event.stopPropagation();
-    this.selectedFile.set(null); this.result.set(null); this.error.set(null);
+    this.selectedFile.set(null); this.result.set(null); this.error.set(null); this.req.clearFailure();
   }
 
   useWorkspaceFile(): void {
@@ -285,19 +289,21 @@ export class PdfSummaryComponent implements OnInit {
     this.req.cancel();
   }
 
-  reset(): void { this.selectedFile.set(null); this.result.set(null); this.error.set(null); }
+  reset(): void { this.selectedFile.set(null); this.result.set(null); this.error.set(null); this.req.clearFailure(); }
 
   private setFile(file: File): void {
     const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      this.req.clearFailure();
       this.error.set(this.t.instant('pdf_summary.err_file_type'));
       return;
     }
     if (file.size > MAX_FILE_MB * 1024 * 1024) {
+      this.req.clearFailure();
       this.error.set(this.t.instant('pdf_summary.err_file_too_large', { max: MAX_FILE_MB, name: file.name }));
       return;
     }
-    this.result.set(null); this.error.set(null); this.selectedFile.set(file);
+    this.result.set(null); this.error.set(null); this.req.clearFailure(); this.selectedFile.set(file);
   }
 
   fileIcon(name: string): string {
