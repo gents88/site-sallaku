@@ -149,7 +149,8 @@
         </textarea>
 
         @if (error()) {
-          <div class="error-msg">⚠️ {{ error() }}</div>
+          <div class="error-msg" role="alert">⚠️ {{ error() }}</div>
+          <app-request-retry [request]="req" (retry)="format()" />
         }
 
         <div class="input-actions">

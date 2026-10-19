@@ -17,6 +17,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
+import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
 import {
   AiPptService,
   PptStyle,
@@ -39,7 +40,7 @@ const MAX_CONTEXT_FILE_MB = 20;
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -184,10 +185,12 @@ export class AiPptComponent implements OnInit {
   private setContextFile(f: File): void {
     const ext = f.name.split('.').pop()?.toLowerCase() ?? '';
     if (!['pdf', 'txt', 'docx'].includes(ext)) {
+      this.req.clearFailure();
       this.error.set(this.t.instant('ai_ppt.err_file_type'));
       return;
     }
     if (f.size > MAX_CONTEXT_FILE_MB * 1024 * 1024) {
+      this.req.clearFailure();
       this.error.set(this.t.instant('ai_ppt.err_file_too_large', { max: MAX_CONTEXT_FILE_MB, name: f.name }));
       return;
     }

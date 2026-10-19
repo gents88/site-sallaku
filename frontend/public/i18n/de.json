@@ -2010,6 +2010,7 @@
     "uploading": "Datei wird hochgeladen…",
     "processing": "Wird verarbeitet…",
     "cancel": "Abbrechen",
+    "retry": "Erneut versuchen",
     "cancelled": "Vorgang abgebrochen."
   },
   "project_detail": {
