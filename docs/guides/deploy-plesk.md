@@ -39,12 +39,20 @@ Il nostro account Plesk non è amministratore, e sul server non ci sono né ngin
 |------|------|
 | **Backend** | **push su `develop`**: la CI esegue i test, compila il bundle e lo attiva sul server (job `deploy-backend`) |
 | Backend, a mano dal Mac | `./scripts/release-backend-plesk.sh` (serve colima/Docker acceso: compila in un container Linux) |
-| Frontend | `./scripts/build-frontend-filezilla.sh` + upload FileZilla in `httpdocs/` (come sempre) |
+| **Frontend** | **push su `main`**: la CI esegue unit test, build ed e2e e carica la build in `httpdocs/` con rsync (job `deploy-frontend`) |
+| Frontend, a mano dal Mac | `cd frontend && npm run build:prod && cd .. && ./scripts/release-frontend-plesk.sh` (oppure, come prima, `./scripts/build-frontend-filezilla.sh` + upload FileZilla) |
 | Database | non si rilascia: i dati restano in `~/app/mongo-data` tra un rilascio e l'altro |
 
 Il rilascio carica il bundle, lo estrae in una nuova cartella `releases/`, collega `.env`, sposta `current`,
 riavvia e aspetta `/api/v1/system/health`. **Se il nuovo backend non risponde entro 3 minuti torna da solo
 alla release precedente.** Restano le ultime 5 release.
+
+Il rilascio del frontend carica prima gli asset, poi le pagine e il `.htaccess`, per ultimo `ngsw.json`
+(il service worker). Non cancella i chunk delle build precedenti, così chi ha il sito aperto non trova file
+mancanti; cancella solo le copie `.br`/`.gz` che la build non contiene, perché Apache le servirebbe al
+posto delle pagine nuove. Poi controlla che `/` e `/about` carichino il nuovo `main-*.js` e che
+`/api/v1/system/health` risponda: altrimenti rimette il `.htaccess` precedente e il job fallisce.
+Per tornare a una versione precedente: GitHub Actions → la CI di quel commit su `main` → *Re-run all jobs*.
 
 ### Configurazione della CI (una volta)
 
@@ -56,7 +64,7 @@ Su GitHub, in **Settings → Secrets and variables → Actions**:
 | Secret | `PLESK_KNOWN_HOSTS` | output di `ssh-keyscan -t ed25519 212.227.39.180` |
 | Variable | `PLESK_SSH` | `gentsallaku.it_wdv9je9vcto@212.227.39.180` |
 
-Finché `PLESK_SSH` non è impostata, il job viene saltato senza errori.
+Finché `PLESK_SSH` non è impostata, i job di deploy (backend e frontend) vengono saltati senza errori.
 
 ```bash
 cd ~/projects/site-sallaku
