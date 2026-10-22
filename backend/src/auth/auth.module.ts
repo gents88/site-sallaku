@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
+import { SecurityModule } from '../security/security.module';
 import { AdminBootstrapService } from './admin-bootstrap.service';
 import { OtpService } from './otp.service';
 import { SmsService } from './sms.service';
@@ -16,6 +17,7 @@ import { Otp, OtpSchema } from './schemas/otp.schema';
 @Module({
   imports: [
     UsersModule,
+    SecurityModule,
     MongooseModule.forFeature([{ name: Otp.name, schema: OtpSchema }]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({

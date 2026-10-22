@@ -270,6 +270,39 @@ export interface NotFoundSummary {
   top: NotFoundEntry[];
 }
 
+export type SecurityEventType = 'login_success' | 'login_failed' | 'otp_failed' | 'refresh_reuse' | 'session_revoked';
+
+export interface SecuritySession {
+  userId: string;
+  name: string;
+  contact: string;
+  role: string;
+  device: string;
+  ip: string;
+  startedAt: string;
+  lastSeenAt: string;
+}
+
+export interface SecurityEventView {
+  _id: string;
+  type: SecurityEventType;
+  ip: string;
+  device: string;
+  identifier: string;
+  detail: string;
+  createdAt: string;
+}
+
+export interface SecuritySummary {
+  failedLogins24h: number;
+  otpFailed24h: number;
+  tokenReuse7d: number;
+  activeSessions: number;
+  suspiciousIps: Array<{ ip: string; failures: number }>;
+  sessions: SecuritySession[];
+  events: SecurityEventView[];
+}
+
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -341,6 +374,10 @@ const EMPTY_AI_USAGE: AiUsageOverview = {
   quota: { dailyTokenBudget: 0, maxCallsPerIpPerDay: 0 }, enabled: true,
 };
 
+const EMPTY_SECURITY: SecuritySummary = {
+  failedLogins24h: 0, otpFailed24h: 0, tokenReuse7d: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [],
+};
+
 const EMPTY_SERVER_ERRORS: ServerErrorSummary = { open: 0, today: 0, week: 0, recent: [] };
 
 const EMPTY_LANG_COUNTS = { missing: 0, stale: 0, structure: 0 };
@@ -386,6 +423,7 @@ export interface DashboardOverviewData {
   scheduledPosts: ScheduledPost[];
   leads: LeadStats;
   notFound: NotFoundSummary;
+  security: SecuritySummary;
 }
 
 export type OverviewSection = keyof DashboardOverviewData;
@@ -428,6 +466,7 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   scheduledPosts: [],
   leads: EMPTY_LEADS,
   notFound: { open: 0, top: [] },
+  security: EMPTY_SECURITY,
 };
 
 /**
@@ -531,6 +570,11 @@ export class AdminDashboardService {
   /** Nasconde un 404 dalla lista: torna se i visitatori lo incontrano di nuovo. */
   dismissNotFound(id: string): Observable<{ success: boolean }> {
     return this.http.post<{ success: boolean }>(`${this.api}/analytics/not-found/${id}/dismiss`, {});
+  }
+
+  /** Chiude la sessione di un utente: il suo refresh token smette di funzionare. */
+  revokeSession(userId: string): Observable<void> {
+    return this.http.post<void>(`${this.api}/security/sessions/${userId}/revoke`, {});
   }
 
   /** Segna risolto un gruppo di errori 5xx: torna aperto se si ripete. */

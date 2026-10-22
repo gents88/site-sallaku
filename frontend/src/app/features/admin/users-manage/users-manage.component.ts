@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, HostListener, computed, effect, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { AdminUser, PASSWORD_PATTERN, PHONE_PATTERN, UserRole, UsersAdminService } from '../../../core/services/users-admin.service';
@@ -35,6 +35,7 @@ const EMPTY_FORM: UserForm = { name: '', email: '', phone: '', role: 'user', ema
 export class UsersManageComponent {
   private readonly api = inject(UsersAdminService);
   private readonly auth = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
   private readonly t = inject(TranslateService);
 
   readonly limit = 20;
@@ -68,6 +69,12 @@ export class UsersManageComponent {
   private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
+    // Link dalla palette Ctrl+K: ?q= precompila la ricerca.
+    const q = this.route.snapshot.queryParamMap.get('q')?.trim();
+    if (q) {
+      this.search.set(q);
+      this.query.set(q);
+    }
     effect(() => this.load(this.page(), this.role(), this.query()));
     inject(DestroyRef).onDestroy(() => {
       this.loadSub?.unsubscribe();
