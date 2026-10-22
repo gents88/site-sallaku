@@ -33,6 +33,12 @@ describe('normalizeOverview', () => {
     expect(res.failed.has('systemHealth')).toBe(false);
   });
 
+  it('la sezione security mancante conta come fallita e ha un default vuoto', () => {
+    const res = normalizeOverview({ generatedAt: 'now', errors: [], sections: {} as never });
+    expect(res.failed.has('security')).toBe(true);
+    expect(res.data.security).toEqual(expect.objectContaining({ activeSessions: 0, sessions: [], events: [], suspiciousIps: [] }));
+  });
+
   it('treats an unexpected null in a non-nullable section as failed', () => {
     const res = normalizeOverview({ generatedAt: 'now', errors: [], sections: { topPages: null } as never });
     expect(res.failed.has('topPages')).toBe(true);
@@ -58,5 +64,13 @@ describe('AdminDashboardService.loadOverview', () => {
     const { service, http } = setup();
     service.loadOverview(true).subscribe();
     http.expectOne(`${environment.apiUrl}/stats/overview?fresh=1`).flush({ generatedAt: 'x', sections: {}, errors: [] });
+  });
+
+  it('revokeSession chiude la sessione di un utente con una POST sull’endpoint sicurezza', () => {
+    const { service, http } = setup();
+    service.revokeSession('u2').subscribe();
+    const req = http.expectOne(`${environment.apiUrl}/security/sessions/u2/revoke`);
+    expect(req.request.method).toBe('POST');
+    req.flush(null);
   });
 });
