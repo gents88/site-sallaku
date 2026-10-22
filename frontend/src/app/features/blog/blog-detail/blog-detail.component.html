@@ -24,7 +24,6 @@
       <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
       @if (isPreview) {
         <div class="post-article__toolbar">
-          <a routerLink="/dashboard/blog" class="back-link"><mat-icon>arrow_back</mat-icon> Dashboard</a>
           @if (!post.published) {
             <button type="button" class="btn btn-primary btn-sm" (click)="publish()" [disabled]="publishing">
               <mat-icon>publish</mat-icon> {{ publishing ? 'Pubblicazione…' : 'Publish' }}

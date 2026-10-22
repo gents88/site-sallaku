@@ -43,15 +43,16 @@ docs/                → Documentazione (guide, SEO, checklist, template)
 scripts/             → Build, deploy, sitemap, backup Mongo, ottimizzazione asset
 .github/workflows/   → CI, generazione sitemap, backup MongoDB
 index.html           → Landing page statica legacy (vedi nota sotto)
-server.js            → Express standalone: static host + /api/send-email + /sitemap.xml
 docker-compose*.yml  → Stack locale / uat / plesk
 Dockerfile           → Immagine backend usata da Railway
 railway.json         → Config deploy Railway (builder DOCKERFILE)
 ```
 
-> **Nota su `index.html` + `server.js`**: sono la prima versione del sito (landing statica
-> con i18n via attributi `data-i18n`) più un mailer Express. Non fanno parte della SPA
-> Angular e non sono ciò che serve `gentsallaku.it` oggi. Restano nel repo come fallback.
+> **Nota su `index.html`**: è la prima versione del sito (landing statica con i18n via
+> attributi `data-i18n`). Non fa parte della SPA Angular e non è ciò che serve
+> `gentsallaku.it` oggi. Resta nel repo come fallback. Il vecchio mailer Express
+> (`server.js`) è stato rimosso il 2026-10-22: era inutilizzato e portava dipendenze
+> vulnerabili.
 
 ---
 
