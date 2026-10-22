@@ -4,7 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { createHash } from 'crypto';
-import { AuthService } from './auth.service';
+import { AuthService, MAX_FAILED_LOGINS } from './auth.service';
+import { CacheService } from '../common/services/cache.service';
 import { UsersService } from '../users/users.service';
 import { OtpService } from './otp.service';
 import { SecurityService } from '../security/security.service';
@@ -86,6 +87,21 @@ describe('AuthService', () => {
             touchSession: jest.fn().mockResolvedValue(undefined),
             endSession: jest.fn().mockResolvedValue(undefined),
           },
+        },
+        {
+          // Contatori in memoria con la stessa semantica di CacheService (senza Redis).
+          provide: CacheService,
+          useValue: (() => {
+            const counters = new Map<string, number>();
+            return {
+              getCounter: jest.fn(async (k: string) => counters.get(k) ?? 0),
+              increment: jest.fn(async (k: string, by: number) => {
+                counters.set(k, (counters.get(k) ?? 0) + by);
+                return counters.get(k)!;
+              }),
+              invalidate: jest.fn(async (k: string) => void counters.delete(k)),
+            };
+          })(),
         },
       ],
     }).compile();
@@ -185,6 +201,63 @@ describe('AuthService', () => {
       await expect(
         service.login({ email: user.email, password: rawPassword }),
       ).rejects.toThrow(UnauthorizedException);
+    });
+
+    describe('blocco dopo troppi tentativi', () => {
+      const email = 'victim@example.com';
+
+      async function failTimes(n: number): Promise<void> {
+        usersService.findByEmail.mockResolvedValue(makeUser({ passwordHash: await bcrypt.hash('correct-pass', 4) }) as any);
+        for (let i = 0; i < n; i++) {
+          await expect(service.login({ email, password: 'wrong-pass' })).rejects.toThrow(UnauthorizedException);
+        }
+      }
+
+      it('dopo MAX_FAILED_LOGINS errori risponde 429 e non controlla più la password', async () => {
+        await failTimes(MAX_FAILED_LOGINS);
+        usersService.findByEmail.mockClear();
+
+        const attempt = service.login({ email, password: 'correct-pass' });
+        await expect(attempt).rejects.toMatchObject({ status: 429 });
+        expect(usersService.findByEmail).not.toHaveBeenCalled();
+      });
+
+      it('un tentativo in meno del limite non blocca: la password giusta entra', async () => {
+        await failTimes(MAX_FAILED_LOGINS - 1);
+        usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+
+        await expect(service.login({ email, password: 'correct-pass' })).resolves.toHaveProperty('access_token');
+      });
+
+      it('un login riuscito azzera il contatore', async () => {
+        await failTimes(MAX_FAILED_LOGINS - 1);
+        usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+        await service.login({ email, password: 'correct-pass' });
+
+        await failTimes(MAX_FAILED_LOGINS - 1);
+        await expect(service.login({ email, password: 'correct-pass' })).resolves.toHaveProperty('access_token');
+      });
+
+      it('conta anche le email inesistenti, così il blocco non rivela quali account esistono', async () => {
+        usersService.findByEmail.mockResolvedValue(null);
+        for (let i = 0; i < MAX_FAILED_LOGINS; i++) {
+          await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toThrow(UnauthorizedException);
+        }
+        await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toMatchObject({ status: 429 });
+      });
+
+      it('il blocco vale per email: un altro account non è toccato', async () => {
+        await failTimes(MAX_FAILED_LOGINS);
+        usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+        usersService.findByEmail.mockResolvedValue(makeUser({ passwordHash: await bcrypt.hash('pw', 4) }) as any);
+
+        await expect(service.login({ email: 'other@example.com', password: 'pw' })).resolves.toHaveProperty('access_token');
+      });
+
+      it('maiuscole e spazi nell’email non aggirano il contatore', async () => {
+        await failTimes(MAX_FAILED_LOGINS);
+        await expect(service.login({ email: '  VICTIM@Example.com ', password: 'correct-pass' })).rejects.toMatchObject({ status: 429 });
+      });
     });
   });
 

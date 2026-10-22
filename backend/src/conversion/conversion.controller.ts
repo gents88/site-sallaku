@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
   Res,
   BadRequestException,
@@ -17,9 +18,12 @@ import { memoryStorage } from 'multer';
 
 import { ConversionService } from './conversion.service';
 import { ConvertDto, SUPPORTED_CONVERSIONS } from './dto/convert.dto';
+import { MaxBodySizeGuard } from '../common/guards/max-body-size.guard';
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 const MAX_FILE_COUNT = 20;
+// Tetto sul totale: 20 × 50 MB sarebbero 1 GB in RAM per una richiesta anonima.
+const MAX_REQUEST_BYTES = 100 * 1024 * 1024;
 
 const SAFE_MIME_WHITELIST = [
   'application/pdf',
@@ -63,6 +67,7 @@ export class ConversionController {
       required: ['conversionType', 'inputType'],
     },
   })
+  @UseGuards(MaxBodySizeGuard(MAX_REQUEST_BYTES))
   @UseInterceptors(
     FilesInterceptor('files', MAX_FILE_COUNT, {
       storage: memoryStorage(),

@@ -30,6 +30,14 @@ describe('JwtStrategy', () => {
     expect(result).not.toHaveProperty('passwordHash');
   });
 
+  it('rejects a refresh token presented as an access token, without hitting the database', async () => {
+    await expect(
+      strategy.validate({ sub: 'user-1', email: 'a@b.com', role: 'admin', type: 'refresh' }),
+    ).rejects.toThrow(UnauthorizedException);
+
+    expect(usersService.findById).not.toHaveBeenCalled();
+  });
+
   it('rejects tokens whose subject no longer exists (deleted/revoked user)', async () => {
     usersService.findById.mockResolvedValue(null);
 

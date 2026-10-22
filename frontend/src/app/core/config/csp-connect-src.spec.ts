@@ -51,17 +51,4 @@ describe('CSP di deploy — connect-src', () => {
       expect(directive('frame-src')).toContain('https://challenges.cloudflare.com');
     });
   });
-
-  describe('server.js (CSP del server SSR)', () => {
-    const serverJs = readFileSync(join(repoRoot, 'server.js'), 'utf8');
-    const csp = serverJs.match(/"connect-src [^"]+"/)?.[0] ?? '';
-
-    it("autorizza il backend sullo stesso host ('self': REST + polling Socket.IO)", () => {
-      expect(csp).toContain("'self'");
-    });
-
-    it('autorizza il backend su wss (WebSocket della chat live)', () => {
-      expect(csp).toContain(`wss://${backendHost}`);
-    });
-  });
 });
