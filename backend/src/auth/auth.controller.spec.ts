@@ -18,7 +18,7 @@ describe('AuthController refresh token transport', () => {
   it('classic mode: token from the body, refresh_token returned in JSON', async () => {
     delete process.env.AUTH_REFRESH_COOKIE;
     const out = await controller.refresh({ refreshToken: 'old' }, { headers: {} } as never, res());
-    expect(service.refreshAccessToken).toHaveBeenCalledWith('old');
+    expect(service.refreshAccessToken).toHaveBeenCalledWith('old', expect.objectContaining({ ip: expect.any(String), userAgent: expect.any(String) }));
     expect(out).toHaveProperty('refresh_token', 'new-rt');
   });
 
@@ -32,7 +32,7 @@ describe('AuthController refresh token transport', () => {
     process.env.AUTH_REFRESH_COOKIE = 'true';
     const r = res() as unknown as { cookie: jest.Mock };
     const out = await controller.refresh({}, { headers: { cookie: `${REFRESH_COOKIE}=old` } } as never, r as never);
-    expect(service.refreshAccessToken).toHaveBeenCalledWith('old');
+    expect(service.refreshAccessToken).toHaveBeenCalledWith('old', expect.objectContaining({ ip: expect.any(String), userAgent: expect.any(String) }));
     expect(out).not.toHaveProperty('refresh_token');
     expect(r.cookie).toHaveBeenCalledWith(REFRESH_COOKIE, 'new-rt', expect.anything());
   });
@@ -40,5 +40,19 @@ describe('AuthController refresh token transport', () => {
   it('rejects a refresh with no token at all', async () => {
     process.env.AUTH_REFRESH_COOKIE = 'true';
     await expect(controller.refresh({}, { headers: {} } as never, res())).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('passa IP e user agent della richiesta al servizio, per registro eventi e sessioni', async () => {
+    delete process.env.AUTH_REFRESH_COOKIE;
+    const req = { ip: '203.0.113.7', headers: { 'user-agent': 'Mozilla/5.0 Chrome/120' } } as never;
+    await controller.login({ email: 'a@x.it', password: 'x' } as never, req, res());
+    expect(service.login).toHaveBeenCalledWith({ email: 'a@x.it', password: 'x' }, { ip: '203.0.113.7', userAgent: 'Mozilla/5.0 Chrome/120' });
+  });
+
+  it('lo user agent viene troncato a 200 caratteri', async () => {
+    delete process.env.AUTH_REFRESH_COOKIE;
+    const req = { ip: '203.0.113.7', headers: { 'user-agent': 'x'.repeat(500) } } as never;
+    await controller.login({ email: 'a@x.it', password: 'x' } as never, req, res());
+    expect((service.login.mock.calls[0][1] as { userAgent: string }).userAgent).toHaveLength(200);
   });
 });

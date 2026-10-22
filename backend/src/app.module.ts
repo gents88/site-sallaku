@@ -31,6 +31,8 @@ import { SearchModule } from './search/search.module';
 import { SavedResultsModule } from './saved-results/saved-results.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { ErrorLogModule } from './error-log/error-log.module';
+import { AdminSearchModule } from './admin-search/admin-search.module';
+import { SecurityModule } from './security/security.module';
 import Redis from 'ioredis';
 import { RedisThrottlerStorage } from './common/services/redis-throttler.storage';
 
@@ -106,6 +108,8 @@ import { RedisThrottlerStorage } from './common/services/redis-throttler.storage
     SavedResultsModule,
     NewsletterModule,
     ErrorLogModule,
+    AdminSearchModule,
+    SecurityModule,
   ],
   providers: [
     // Apply ThrottlerGuard globally — all endpoints are rate-limited by default

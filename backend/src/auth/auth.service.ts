@@ -12,9 +12,13 @@ import { OtpService } from './otp.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Types } from 'mongoose';
+import { ClientContext, SecurityService } from '../security/security.service';
 
 const REFRESH_TOKEN_EXPIRY = '7d';
 const BCRYPT_REFRESH_ROUNDS = 10;
+
+/** Per chi chiama senza contesto (script, test): gli eventi si registrano comunque, senza IP. */
+const NO_CONTEXT: ClientContext = { ip: '', userAgent: '' };
 
 /**
  * bcrypt considera solo i primi 72 byte. Un refresh token JWT ne ha ~116 e i
@@ -43,6 +47,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private otpService: OtpService,
+    private security: SecurityService,
   ) {}
 
   /**
@@ -80,18 +85,27 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto, ctx: ClientContext = NO_CONTEXT) {
     const user = await this.usersService.findByEmail(dto.email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) {
+      await this.security.record('login_failed', ctx, { identifier: dto.email, detail: 'account inesistente' });
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     const passwordMatch = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!passwordMatch) throw new UnauthorizedException('Invalid credentials');
+    if (!passwordMatch) {
+      await this.security.record('login_failed', ctx, { userId: user._id.toString(), identifier: dto.email, detail: 'password errata' });
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
     if (!user.emailVerified) {
+      await this.security.record('login_failed', ctx, { userId: user._id.toString(), identifier: dto.email, detail: 'email non verificata' });
       throw new UnauthorizedException('Please verify your email before logging in. Check your inbox for the verification code.');
     }
 
-    return this.issueTokenPair(user);
+    const pair = await this.issueTokenPair(user);
+    await this.signedIn(user._id.toString(), ctx, 'password');
+    return pair;
   }
 
   otpChannels() {
@@ -102,16 +116,27 @@ export class AuthService {
     return this.otpService.requestOtp(phone, email);
   }
 
-  async verifyOtp(phone?: string, email?: string, otp?: string) {
-    const user = await this.otpService.verifyOtp(phone, email, otp);
-    return this.issueTokenPair(user);
+  async verifyOtp(phone?: string, email?: string, otp?: string, ctx: ClientContext = NO_CONTEXT) {
+    let user;
+    try {
+      user = await this.otpService.verifyOtp(phone, email, otp);
+    } catch (err) {
+      // Codice sbagliato, scaduto o troppi tentativi: solo gli Unauthorized sono tentativi falliti.
+      if (err instanceof UnauthorizedException) {
+        await this.security.record('otp_failed', ctx, { identifier: email ?? phone, detail: err.message });
+      }
+      throw err;
+    }
+    const pair = await this.issueTokenPair(user);
+    await this.signedIn(user._id.toString(), ctx, 'otp');
+    return pair;
   }
 
   /**
    * Verify a refresh token and issue a new access token + rotated refresh token.
    * The old refresh token is invalidated on each call (rotation).
    */
-  async refreshAccessToken(refreshToken: string) {
+  async refreshAccessToken(refreshToken: string, ctx: ClientContext = NO_CONTEXT) {
     // Verify JWT structure and signature first
     let payload: { sub: string; email: string; role: string; type?: string };
     try {
@@ -136,19 +161,30 @@ export class AuthService {
     if (!hashMatch) {
       // Potential token reuse — revoke immediately (token rotation security)
       await this.usersService.saveRefreshToken(payload.sub, null);
+      await this.security.endSession(payload.sub);
+      await this.security.record('refresh_reuse', ctx, { userId: payload.sub, identifier: payload.email, detail: 'token già ruotato: sessione chiusa' });
       throw new UnauthorizedException('Refresh token reuse detected. Please log in again.');
     }
 
     // Rotate: issue new pair and revoke old refresh token
-    return this.issueTokenPair(user);
+    const pair = await this.issueTokenPair(user);
+    await this.security.touchSession(payload.sub, ctx);
+    return pair;
   }
 
   /** Revoke the stored refresh token for a user (logout). */
   async logout(userId: string): Promise<void> {
     await this.usersService.saveRefreshToken(userId, null);
+    await this.security.endSession(userId);
   }
 
   // ── Internal helpers ───────────────────────────────────────
+
+  /** Accesso riuscito: lo si registra e la sessione (dispositivo, IP) parte da adesso. */
+  private async signedIn(userId: string, ctx: ClientContext, method: 'password' | 'otp'): Promise<void> {
+    await this.security.record('login_success', ctx, { userId, detail: method === 'otp' ? 'codice OTP' : 'password' });
+    await this.security.startSession(userId, ctx);
+  }
 
   private async issueTokenPair(user: AuthUser) {
     const accessPayload = {
