@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
+import { ADMIN_PASSWORD_MIN } from './password-policy';
 
 @Injectable()
 export class AdminBootstrapService implements OnModuleInit {
@@ -20,6 +21,13 @@ export class AdminBootstrapService implements OnModuleInit {
     if (!email || !password) {
       this.logger.log('ADMIN_EMAIL / ADMIN_PASSWORD not configured, skipping admin bootstrap');
       return;
+    }
+
+    if (password.length < ADMIN_PASSWORD_MIN) {
+      this.logger.warn(
+        `ADMIN_PASSWORD è di ${password.length} caratteri: per un account admin ne servono almeno ${ADMIN_PASSWORD_MIN}. ` +
+          `Cambiala in ~/app/shared/backend.env (viene riapplicata a ogni avvio) e riavvia il backend.`,
+      );
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
