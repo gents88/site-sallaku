@@ -37,6 +37,13 @@ export class MailService {
    * indirizzo email non può fare da mittente. In quei casi il ripiego fallirebbe sempre.
    */
   private readonly smtpFallbackUsable: boolean;
+  /**
+   * MAIL_PREFER_SMTP=true: si invia dalla casella SMTP e Resend resta solo come ripiego. Serve quando
+   * Resend non ha un dominio verificato (consegna solo al titolare dell'account) ma c'è una casella
+   * vera del dominio, per esempio IONOS: così non si fa una chiamata a Resend destinata a fallire a
+   * ogni email. Ha effetto solo se il ripiego SMTP è utilizzabile (vedi smtpFallbackUsable).
+   */
+  private readonly preferSmtp: boolean;
   private hintedUnverifiedSender = false;
   private readonly smtpUser?: string;
 
@@ -58,6 +65,8 @@ export class MailService {
     this.smtpFallbackUsable =
       this.smtpConfigured && /^[^@\s]+@[^@\s]+$/.test(smtpUser ?? '') && smtpHost.toLowerCase() !== 'smtp.resend.com';
 
+    this.preferSmtp = this.smtpFallbackUsable && this.config.get<string>('MAIL_PREFER_SMTP') === 'true';
+
     this.transporter = nodemailer.createTransport({
       host:   smtpHost,
       port:   this.config.get<number>('SMTP_PORT', 587),
@@ -65,7 +74,9 @@ export class MailService {
       auth: { user: smtpUser, pass: smtpPass },
     });
 
-    if (this.resendApiKey) {
+    if (this.preferSmtp) {
+      this.logger.log(`MailService: using SMTP (${smtpHost}) for delivery${this.resendApiKey ? ', Resend as fallback' : ''}.`);
+    } else if (this.resendApiKey) {
       this.logger.log(`MailService: using Resend HTTP API for delivery${this.smtpFallbackUsable ? ' (SMTP as fallback)' : ''}.`);
     } else if (this.smtpConfigured) {
       this.logger.log('MailService: using SMTP for delivery.');
@@ -83,7 +94,7 @@ export class MailService {
   getStatus(): MailServiceStatus {
     return {
       configured: this.isConfigured,
-      provider: this.resendApiKey ? 'resend' : (this.isConfigured ? 'smtp' : 'none'),
+      provider: this.preferSmtp ? 'smtp' : this.resendApiKey ? 'resend' : (this.isConfigured ? 'smtp' : 'none'),
       smtpUser: this.smtpUser ?? null,
     };
   }
@@ -92,6 +103,14 @@ export class MailService {
     if (!this.isConfigured) {
       this.logger.error(`Cannot send email → ${opts.to}. No mail provider configured.`);
       return { success: false, accepted: [], rejected: [opts.to] };
+    }
+
+    if (this.preferSmtp) {
+      // Mittente = la casella SMTP: un provider accetta solo indirizzi che possiede.
+      const result = await this.sendViaSmtp(opts, `"Gent Sallaku" <${this.smtpUser}>`);
+      if (result.success || !this.resendApiKey) return result;
+      this.logger.warn(`SMTP did not deliver → ${opts.to}, retrying via Resend.`);
+      return this.sendViaResend(opts);
     }
 
     if (this.resendApiKey) {
