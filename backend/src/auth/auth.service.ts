@@ -1,6 +1,8 @@
 import {
   Injectable,
   ConflictException,
+  HttpException,
+  HttpStatus,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -13,9 +15,31 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Types } from 'mongoose';
 import { ClientContext, SecurityService } from '../security/security.service';
+import { CacheService } from '../common/services/cache.service';
 
 const REFRESH_TOKEN_EXPIRY = '7d';
 const BCRYPT_REFRESH_ROUNDS = 10;
+
+/**
+ * Blocco temporaneo per account: il throttle per IP (10/min) non ferma chi
+ * prova una password da molti IP. Dopo MAX_FAILED_LOGINS errori nella finestra
+ * l'email viene rifiutata fino alla scadenza, anche con la password giusta.
+ * Il costo è che un attaccante può bloccare un account per LOGIN_LOCK_WINDOW_MS:
+ * accettabile, perché scade da solo e l'accesso via OTP resta disponibile.
+ */
+export const MAX_FAILED_LOGINS = 10;
+export const LOGIN_LOCK_WINDOW_MS = 15 * 60 * 1000;
+
+/**
+ * Hash di una stringa casuale, mai usata da nessuno. Serve a fare lo stesso
+ * lavoro di bcrypt anche quando l'email non esiste, così il tempo di risposta
+ * non rivela quali account sono registrati.
+ */
+const DUMMY_PASSWORD_HASH = '$2b$12$Lni2l4f2dZSqw2LgrLHZFOV7EuV5Ho3Joqcv3KGPx/WbY5kny5eCK';
+
+function loginFailureKey(email: string): string {
+  return `auth:login-fail:${createHash('sha256').update(email.trim().toLowerCase()).digest('hex').slice(0, 24)}`;
+}
 
 /** Per chi chiama senza contesto (script, test): gli eventi si registrano comunque, senza IP. */
 const NO_CONTEXT: ClientContext = { ip: '', userAgent: '' };
@@ -48,6 +72,7 @@ export class AuthService {
     private configService: ConfigService,
     private otpService: OtpService,
     private security: SecurityService,
+    private cache: CacheService,
   ) {}
 
   /**
@@ -86,17 +111,27 @@ export class AuthService {
   }
 
   async login(dto: LoginDto, ctx: ClientContext = NO_CONTEXT) {
+    const failureKey = loginFailureKey(dto.email);
+    if ((await this.cache.getCounter(failureKey)) >= MAX_FAILED_LOGINS) {
+      await this.security.record('login_failed', ctx, { identifier: dto.email, detail: 'account bloccato per troppi tentativi' });
+      throw new HttpException('Too many failed login attempts. Try again later.', HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
+      await bcrypt.compare(dto.password, DUMMY_PASSWORD_HASH);
+      await this.cache.increment(failureKey, 1, LOGIN_LOCK_WINDOW_MS);
       await this.security.record('login_failed', ctx, { identifier: dto.email, detail: 'account inesistente' });
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const passwordMatch = await bcrypt.compare(dto.password, user.passwordHash);
     if (!passwordMatch) {
+      await this.cache.increment(failureKey, 1, LOGIN_LOCK_WINDOW_MS);
       await this.security.record('login_failed', ctx, { userId: user._id.toString(), identifier: dto.email, detail: 'password errata' });
       throw new UnauthorizedException('Invalid credentials');
     }
+    await this.cache.invalidate(failureKey);
 
     if (!user.emailVerified) {
       await this.security.record('login_failed', ctx, { userId: user._id.toString(), identifier: dto.email, detail: 'email non verificata' });

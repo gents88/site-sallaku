@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
   HttpCode,
   HttpStatus,
@@ -14,9 +15,13 @@ import { Throttle } from '@nestjs/throttler';
 import { memoryStorage } from 'multer';
 
 import { OcrService, OcrResult } from './ocr.service';
+import { MaxBodySizeGuard } from '../common/guards/max-body-size.guard';
+import { detectImageKind } from '../common/utils/image-signature';
 
 const MAX_FILE_SIZE = 15 * 1024 * 1024;
 const MAX_FILE_COUNT = 30;
+// Tetto sul totale: 30 × 15 MB sarebbero 450 MB in RAM per una richiesta anonima.
+const MAX_REQUEST_BYTES = 100 * 1024 * 1024;
 
 const IMAGE_MIME_WHITELIST = [
   'image/png',
@@ -38,6 +43,7 @@ export class OcrController {
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({ summary: 'Extract text from one or more images via OCR' })
   @ApiConsumes('multipart/form-data')
+  @UseGuards(MaxBodySizeGuard(MAX_REQUEST_BYTES))
   @UseInterceptors(
     FilesInterceptor('files', MAX_FILE_COUNT, {
       storage: memoryStorage(),
@@ -57,6 +63,12 @@ export class OcrController {
   ): Promise<OcrResult> {
     if (!files || files.length === 0) {
       throw new BadRequestException('No image files uploaded');
+    }
+    // `application/octet-stream` passa il filtro sul mimetype: il contenuto va
+    // verificato, altrimenti qualsiasi file arriva al motore OCR.
+    const invalid = files.find((f) => detectImageKind(f.buffer) === null);
+    if (invalid) {
+      throw new BadRequestException(`File is not a supported image: ${invalid.originalname}`);
     }
     return this.ocr.recognize(files.map((f) => f.buffer), lang || 'eng');
   }

@@ -216,6 +216,19 @@ describe('BlogDetailComponent publish from preview', () => {
     expect(component.post?.viewCount).toBe(42);
   });
 
+  it('mostra il breadcrumb per tornare indietro: Dashboard → elenco articoli → titolo', () => {
+    const { fixture, component } = createPreview(false);
+    expect(component.breadcrumbItems.map(i => i.path)).toEqual(['/dashboard', '/dashboard/blog', undefined]);
+    expect(component.breadcrumbItems[2].label).toBe(component.localizedTitle);
+    const links = Array.from(fixture.nativeElement.querySelectorAll('.breadcrumb a')) as HTMLAnchorElement[];
+    expect(links.map(a => a.getAttribute('href'))).toEqual(['/dashboard', '/dashboard/blog']);
+  });
+
+  it("l'anteprima non ha più il vecchio link «Dashboard» nella barra degli strumenti (c'è il breadcrumb)", () => {
+    const { fixture } = createPreview(false);
+    expect(fixture.nativeElement.querySelector('.post-article__toolbar .back-link')).toBeNull();
+  });
+
   it('computes an estimated reading time of at least one minute', () => {
     const { component } = createPreview(true);
     expect(component.readingMinutes).toBeGreaterThanOrEqual(1);
