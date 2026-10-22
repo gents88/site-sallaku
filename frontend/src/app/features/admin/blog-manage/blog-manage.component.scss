@@ -348,6 +348,18 @@
     h3 { margin: 0 0 0.2rem; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   }
 
+  // Il titolo apre la modifica come il pulsante a matita
+  &__title-link {
+    all: unset;
+    display: block;
+    cursor: pointer;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover { text-decoration: underline; }
+    &:focus-visible { outline: 2px solid var(--primary-400); outline-offset: 2px; border-radius: 2px; }
+  }
+
   &__badges { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
   &__actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
 }
