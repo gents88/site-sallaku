@@ -240,10 +240,19 @@ describe('AuthService', () => {
 
       it('conta anche le email inesistenti, così il blocco non rivela quali account esistono', async () => {
         usersService.findByEmail.mockResolvedValue(null);
-        for (let i = 0; i < MAX_FAILED_LOGINS; i++) {
-          await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toThrow(UnauthorizedException);
+        // Il confronto finto usa un hash a 12 round: 10 giri reali superano il timeout sui runner lenti.
+        // Qui interessa il conteggio, non il costo di bcrypt.
+        const compare = jest.spyOn(bcrypt, 'compare').mockResolvedValue(false as never);
+        try {
+          for (let i = 0; i < MAX_FAILED_LOGINS; i++) {
+            await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toThrow(UnauthorizedException);
+          }
+          // Anche per un'email inesistente si fa il confronto: il tempo di risposta non rivela se l'account esiste.
+          expect(compare).toHaveBeenCalledTimes(MAX_FAILED_LOGINS);
+          await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toMatchObject({ status: 429 });
+        } finally {
+          compare.mockRestore();
         }
-        await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toMatchObject({ status: 429 });
       });
 
       it('il blocco vale per email: un altro account non è toccato', async () => {
