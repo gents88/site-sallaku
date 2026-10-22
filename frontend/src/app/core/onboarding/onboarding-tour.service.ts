@@ -48,7 +48,8 @@ const ADMIN_ROUTE = /(^|\/)dashboard(\/|$|\?)/;
  *   ritrova alla chiusura del tour. Mai nell'area admin né per un admin loggato.
  * - `start()` lo riavvia a mano (link "Guida" nel footer) ignorando il flag.
  * - Mai su mobile (TOUR_MOBILE_QUERY): il flag non viene scritto, così chi
- *   torna da desktop lo vede.
+ *   torna da desktop lo vede. Se il layout diventa mobile a tour aperto, il
+ *   tour si chiude da solo, sempre senza scrivere il flag.
  * - Driver.js è caricato con import() dinamico: chi non vede mai il tour non
  *   ne scarica il codice.
  */
@@ -96,10 +97,30 @@ export class OnboardingTourService {
       ]);
       restoreLayout = restore;
 
+      // Diventata mobile mentre driver.js si caricava (rotazione, DevTools).
+      if (this.isMobileLayout()) {
+        this.active.set(false);
+        restoreLayout();
+        return;
+      }
+
       const steps = ONBOARDING_STEPS.map(def => this.toDriveStep(def));
       const reducedMotion = this.prefersReducedMotion();
       const t = (key: string, params?: Record<string, string>) => this.translate.instant(key, params) as string;
       let completed = false;
+
+      // Partito sopra i 900px e poi sceso sotto (telefono aperto in orizzontale
+      // e ruotato, modalità mobile di DevTools): gli step puntano a elementi
+      // ormai nascosti e l'overlay resta sopra il banner dei cookie, che
+      // sembrava non rispondere ai tap. Il tour si chiude senza segnarlo come
+      // visto, come se non fosse mai partito su mobile.
+      let closedForMobile = false;
+      const view = this.document.defaultView;
+      const onResize = () => {
+        if (!this.instance || !this.isMobileLayout()) return;
+        closedForMobile = true;
+        this.instance.destroy();
+      };
 
       this.instance = driver({
         steps,
@@ -143,12 +164,14 @@ export class OnboardingTourService {
           d.destroy();
         },
         onDestroyed: (_el, _step, { state }) => {
-          // Qualunque uscita (Concludi, Salta, Esc, overlay) conta come "visto":
-          // il tour non deve riproporsi al prossimo caricamento.
-          this.markSeen();
+          view?.removeEventListener('resize', onResize);
           this.instance = null;
           this.active.set(false);
           restoreLayout();
+          if (closedForMobile) return;
+          // Qualunque uscita (Concludi, Salta, Esc, overlay) conta come "visto":
+          // il tour non deve riproporsi al prossimo caricamento.
+          this.markSeen();
           this.analytics.trackClick(
             'onboarding',
             completed ? 'onboarding_completed' : `onboarding_skipped_step_${(state.activeIndex ?? 0) + 1}`,
@@ -157,6 +180,7 @@ export class OnboardingTourService {
       });
 
       this.instance.drive();
+      view?.addEventListener('resize', onResize);
     } catch {
       // Chunk di driver.js non scaricabile (offline, deploy a metà): il tour è
       // un extra, la pagina deve restare usabile. Il flag non viene scritto
