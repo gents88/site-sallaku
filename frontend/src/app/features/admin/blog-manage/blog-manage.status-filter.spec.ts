@@ -56,6 +56,15 @@ describe('BlogManageComponent — filtro per stato', () => {
     expect(navigate).toHaveBeenLastCalledWith([], expect.objectContaining({ queryParams: { status: null } }));
   });
 
+  it("cliccare sul titolo apre l'articolo in modifica, come la matita", async () => {
+    const { c, el } = await setup(null);
+    const open = vi.spyOn(c, 'openEdit').mockImplementation(() => {});
+    const title = el.querySelector<HTMLButtonElement>('.list-item__title-link')!;
+    expect(title.textContent).toContain('Post a');
+    title.click();
+    expect(open).toHaveBeenCalledWith(expect.objectContaining({ _id: 'a' }));
+  });
+
   it('un valore sconosciuto torna a "tutti"', async () => {
     const { c } = await setup('cestino');
     expect(c.statusFilter).toBe('all');
