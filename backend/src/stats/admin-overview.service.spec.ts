@@ -31,13 +31,14 @@ function makeService(overrides: Record<string, Record<string, jest.Mock>> = {}) 
     serverHealth: { snapshot: ok({ warnings: ['backup_stale'] }) },
     blogScheduler: { upcoming: ok([{ _id: 'p9', title: 'Domani', scheduledAt: '2026-10-18T08:00:00Z' }]) },
     notFound: { summary: ok({ open: 3, top: [] }) },
+    security: { summary: ok({ failedLogins24h: 2, activeSessions: 1, sessions: [], events: [] }) },
   };
   for (const [k, v] of Object.entries(overrides)) Object.assign((deps as Record<string, object>)[k], v);
   const d = deps as unknown as Record<string, never>;
   const service = new AdminOverviewService(
     d.users, d.contacts, d.blog, d.projects, d.experiences, d.analytics, d.analyticsExport,
     d.searchConsole, d.audit, d.chatbot, d.consent, d.liveHandoff, d.systemInfo, d.testimonials, d.notes,
-    d.aiUsage, d.aiQuota, d.settings, d.errorLog, d.serverHealth, d.blogScheduler, d.notFound,
+    d.aiUsage, d.aiQuota, d.settings, d.errorLog, d.serverHealth, d.blogScheduler, d.notFound, d.security,
   );
   return { service, deps };
 }
@@ -53,9 +54,10 @@ describe('AdminOverviewService', () => {
     expect(res.sections.core).toEqual(expect.objectContaining({ users: 3, contacts: 10, unreadContacts: 2 }));
     expect(Object.keys(res.sections)).toEqual(expect.arrayContaining([
       'topPosts', 'advanced', 'analyticsStats', 'topPages', 'monthlyHistory', 'toolConversion', 'auditLogs',
-      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors', 'serverHealth', 'translationHealth', 'scheduledPosts', 'leads', 'notFound',
+      'chatbotStats', 'gsc', 'consentStats', 'liveHandoffs', 'systemHealth', 'systemDetails', 'systemOps', 'aiUsage', 'serverErrors', 'serverHealth', 'translationHealth', 'scheduledPosts', 'leads', 'notFound', 'security',
     ]));
     expect(res.sections.notFound).toEqual({ open: 3, top: [] });
+    expect(res.sections.security).toEqual(expect.objectContaining({ failedLogins24h: 2, activeSessions: 1 }));
     expect(res.sections.leads).toEqual(expect.objectContaining({ followUpsDue: 1 }));
     expect(res.sections.scheduledPosts).toEqual([expect.objectContaining({ _id: 'p9' })]);
     expect(res.sections.translationHealth).toEqual(expect.objectContaining({ posts: 4, missing: 1 }));

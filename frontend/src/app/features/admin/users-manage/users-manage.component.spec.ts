@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -120,5 +120,22 @@ describe('UsersManageComponent', () => {
     expect(service.revokeSessions).not.toHaveBeenCalled();
     c.revokeSessions(users[1]);
     expect(service.revokeSessions).toHaveBeenCalledWith('u2');
+  });
+
+  it('?q= (link dalla palette Ctrl+K) precompila e applica la ricerca', () => {
+    const list = vi.fn(() => of({ data: users, total: 2, page: 1, totalPages: 1 }));
+    TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()],
+      providers: [
+        provideRouter([]),
+        { provide: UsersAdminService, useValue: { list } },
+        { provide: AuthService, useValue: { currentUser: signal({ _id: 'me', name: 'Gent', role: 'admin' }) } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap({ q: ' anna@x.it ' }) } } },
+      ],
+    });
+    const fixture = TestBed.createComponent(UsersManageComponent);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.search()).toBe('anna@x.it');
+    expect(list).toHaveBeenCalledWith(expect.objectContaining({ q: 'anna@x.it' }));
   });
 });

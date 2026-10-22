@@ -1,4 +1,4 @@
-export type PaletteSection = 'actions' | 'pages' | 'content';
+export type PaletteSection = 'actions' | 'admin' | 'pages' | 'content';
 
 export interface PaletteItem {
   id: string;
@@ -13,7 +13,9 @@ export interface PaletteItem {
   run?: () => void;
 }
 
-export const SECTION_ORDER: readonly PaletteSection[] = ['actions', 'pages', 'content'];
+// 'admin' (contatti, utenti, bozze, note) subito dopo le azioni: cercando un nome
+// è il risultato che si cerca, prima di pagine e contenuti pubblici.
+export const SECTION_ORDER: readonly PaletteSection[] = ['actions', 'admin', 'pages', 'content'];
 
 /**
  * Filtro locale (azioni + pagine): ogni parola della query deve comparire nel
