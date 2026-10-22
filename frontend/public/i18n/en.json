@@ -976,6 +976,7 @@
     "admin_live": "Live chat active",
     "admin_expired": "This request has expired.",
     "admin_closed": "This session has been closed.",
+    "admin_visitor_typing": "The visitor is typing…",
     "admin_error": "Couldn't connect. Make sure you're logged in as admin.",
     "admin_send_placeholder": "Write as Gent…",
     "admin_history_loading": "Loading conversation…",
@@ -1003,6 +1004,7 @@
     "exit_ask_close_title": "Do you want to close the session with Gent?",
     "exit_ask_close_yes": "Yes, close it",
     "exit_ask_close_no": "No, back to chat",
+    "exit_ask_leave_title": "Do you want to close the chat?",
     "closed_notice": "The conversation with Gent has ended. Feel free to keep chatting with the assistant.",
     "admin_close_chat": "Close chat"
   },

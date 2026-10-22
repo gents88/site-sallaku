@@ -48,4 +48,14 @@ const result = spawnSync(
     '--define', `__BUILD_TIME__='${time}'`],
   { cwd: frontend, stdio: 'inherit', shell: process.platform === 'win32' },
 );
+if (result.status === 0) {
+  // CSP senza 'unsafe-inline' per gli script: gli hash si conoscono solo a build finita (vedi
+  // scripts/csp-hashes.js, che in caso di dubbio lascia il .htaccess com'è).
+  const hashes = spawnSync(
+    process.execPath,
+    [path.join(__dirname, 'csp-hashes.js'), path.join(frontend, 'dist', 'portfolio-frontend', 'browser')],
+    { stdio: 'inherit' },
+  );
+  if (hashes.status !== 0) console.warn('[ng-build] csp-hashes non riuscito: il .htaccess resta com\'è.');
+}
 process.exit(result.status ?? 1);

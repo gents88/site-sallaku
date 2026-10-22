@@ -137,6 +137,128 @@ describe('LiveHandoffService', () => {
     });
   });
 
+  describe('restore (ricaricamento della pagina durante una chat live)', () => {
+    const STATUS_URL = `${environment.apiUrl}/chatbot/s1/live-handoff/status`;
+
+    it('riprende una chat live: stato "live" e socket collegato alla sessione', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'live' });
+
+      expect(service.state).toBe('live');
+      expect(mockIo).toHaveBeenCalled();
+      lastSocket!.trigger('connect');
+      expect(lastSocket!.emitted).toContainEqual({ event: 'join_session', payload: { sessionId: 's1' } });
+    });
+
+    it('riprende una richiesta in attesa di Gent', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'notified' });
+
+      expect(service.state).toBe('request_sent');
+      expect(lastSocket).toBeDefined();
+    });
+
+    it('riprende anche mentre Gent sta entrando', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'agent_joining' });
+
+      expect(service.state).toBe('agent_joining');
+    });
+
+    it.each(['closed', 'expired', 'none'])('con stato "%s" non fa nulla: niente avvisi su una chat vuota né socket', (status) => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status });
+
+      expect(service.state).toBe('idle');
+      expect(lastSocket).toBeUndefined();
+    });
+
+    it('un errore di rete non cambia lo stato', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush('boom', { status: 500, statusText: 'Server Error' });
+
+      expect(service.state).toBe('idle');
+      expect(lastSocket).toBeUndefined();
+    });
+
+    it('senza sessione non fa nessuna richiesta', () => {
+      service.restore('');
+
+      httpMock.expectNone(() => true);
+    });
+
+    it('non sovrascrive una richiesta avviata dall\'utente mentre la risposta era in volo', () => {
+      service.restore('s1');
+      const pending = httpMock.expectOne(STATUS_URL);
+      service.requestHandoff('s1', 'ciao', 'it');
+      httpMock.expectOne(HANDOFF_URL).flush({ status: 'requested', expiresAt: new Date().toISOString() });
+      const socketsBefore = mockIo.mock.calls.length;
+
+      pending.flush({ status: 'live' });
+
+      expect(mockIo.mock.calls.length).toBe(socketsBefore);
+      expect(service.state).toBe('request_sent');
+    });
+
+    it('non richiede nulla se è già collegato', () => {
+      service.requestHandoff('s1', 'ciao', 'it');
+      httpMock.expectOne(HANDOFF_URL).flush({ status: 'requested', expiresAt: new Date().toISOString() });
+
+      service.restore('s1');
+
+      httpMock.expectNone(STATUS_URL);
+    });
+  });
+
+  describe('sendTyping ("sta scrivendo" verso Gent)', () => {
+    function goLive(): void {
+      service.restore('s1');
+      httpMock.expectOne(`${environment.apiUrl}/chatbot/s1/live-handoff/status`).flush({ status: 'live' });
+    }
+    const typingEvents = () => lastSocket!.emitted.filter((e) => e.event === 'visitor_typing');
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-10-22T12:00:00Z'));
+    });
+    afterEach(() => vi.useRealTimers());
+
+    it('a chat live invia visitor_typing con la sessione', () => {
+      goLive();
+
+      service.sendTyping();
+
+      expect(typingEvents()).toEqual([{ event: 'visitor_typing', payload: { sessionId: 's1' } }]);
+    });
+
+    it('al massimo un evento ogni 2,5 secondi', () => {
+      goLive();
+
+      service.sendTyping();
+      service.sendTyping();
+      vi.advanceTimersByTime(2_000);
+      service.sendTyping();
+      expect(typingEvents()).toHaveLength(1);
+
+      vi.advanceTimersByTime(600);
+      service.sendTyping();
+      expect(typingEvents()).toHaveLength(2);
+    });
+
+    it('fuori dallo stato "live" non invia nulla', () => {
+      service.requestHandoff('s1', 'ciao', 'it');
+      flushSuccessfulRequest(httpMock);
+
+      service.sendTyping();
+
+      expect(typingEvents()).toHaveLength(0);
+    });
+
+    it('senza socket non fa nulla e non lancia', () => {
+      expect(() => service.sendTyping()).not.toThrow();
+    });
+  });
+
   describe('requestHandoff', () => {
     it('invia la richiesta POST corretta e passa subito a "request_sent"', () => {
       service.requestHandoff('s1', 'ciao Gent', 'it');
