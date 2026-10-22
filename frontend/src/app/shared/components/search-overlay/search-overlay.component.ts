@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { Subject, catchError, debounceTime, distinctUntilChanged, forkJoin, of, switchMap } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SearchHit, SearchService } from '../../../core/services/search.service';
+import { AdminSearchHit, AdminSearchService } from '../../../core/services/admin-search.service';
 import { LanguageService, SUPPORTED_LANGS, withLangPrefix } from '../../../core/services/language.service';
 import { LanguageSwitchService } from '../../../core/services/language-switch.service';
 import { InstallPromptService } from '../../../core/services/install-prompt.service';
@@ -18,6 +19,13 @@ import { PaletteItem, PaletteSection, filterLocal, mergeSections } from './palet
 const MIN_REMOTE_QUERY = 2;
 const DEBOUNCE_MS = 250;
 const MAX_IDLE_PAGES = 8;
+
+const ADMIN_HIT_ICON: Record<AdminSearchHit['type'], string> = {
+  contact: 'inbox',
+  user: 'users',
+  draft: 'pencil',
+  note: 'chat',
+};
 
 /**
  * Palette unica (Ctrl/Cmd+K, "/" o la lente in navbar): azioni, pagine e
@@ -39,6 +47,7 @@ export class SearchOverlayComponent {
   readonly overlay = inject(SearchOverlayService);
   private readonly router = inject(Router);
   private readonly searchSvc = inject(SearchService);
+  private readonly adminSearch = inject(AdminSearchService);
   private readonly langSvc = inject(LanguageService);
   private readonly translate = inject(TranslateService);
   private readonly analytics = inject(AnalyticsTrackingService);
@@ -50,6 +59,8 @@ export class SearchOverlayComponent {
 
   readonly query = signal('');
   readonly remote = signal<SearchHit[]>([]);
+  /** Contatti, utenti, bozze e note che corrispondono: solo per gli admin. */
+  readonly adminRemote = signal<AdminSearchHit[]>([]);
   readonly loading = signal(false);
   readonly activeIndex = signal(0);
   readonly minRemote = MIN_REMOTE_QUERY;
@@ -132,7 +143,15 @@ export class SearchOverlayComponent {
       detail: hit.excerpt,
       url: hit.url,
     }));
-    return mergeSections(filterLocal([...this.actions(), ...this.languageActions()], q), filterLocal(this.pages(), q), content);
+    const admin: PaletteItem[] = this.adminRemote().map(hit => ({
+      id: hit.id,
+      section: 'admin',
+      icon: ADMIN_HIT_ICON[hit.type],
+      title: hit.title,
+      detail: hit.detail,
+      url: hit.url,
+    }));
+    return mergeSections(filterLocal([...this.actions(), ...this.languageActions()], q), admin, filterLocal(this.pages(), q), content);
   });
 
   readonly activeId = computed(() => {
@@ -150,21 +169,29 @@ export class SearchOverlayComponent {
         switchMap(q => {
           if (q.trim().length < MIN_REMOTE_QUERY) {
             this.loading.set(false);
-            return of<SearchHit[]>([]);
+            return of({ content: [] as SearchHit[], admin: [] as AdminSearchHit[] });
           }
           this.loading.set(true);
-          return this.searchSvc.suggest(q.trim(), this.langSvc.current()).pipe(catchError(() => of<SearchHit[]>([])));
+          // Le due ricerche sono indipendenti: se una fallisce l'altra resta.
+          return forkJoin({
+            content: this.searchSvc.suggest(q.trim(), this.langSvc.current()).pipe(catchError(() => of<SearchHit[]>([]))),
+            admin: this.isAdmin()
+              ? this.adminSearch.search(q.trim()).pipe(catchError(() => of<AdminSearchHit[]>([])))
+              : of<AdminSearchHit[]>([]),
+          });
         }),
       )
-      .subscribe(hits => {
+      .subscribe(({ content, admin }) => {
         this.loading.set(false);
-        this.remote.set(hits.filter(h => h.type !== 'page'));
+        this.remote.set(content.filter(h => h.type !== 'page'));
+        this.adminRemote.set(admin);
       });
 
     effect(() => {
       if (this.overlay.open()) {
         this.query.set('');
         this.remote.set([]);
+        this.adminRemote.set([]);
         this.activeIndex.set(0);
         this.analytics.trackClick('search', 'search_overlay_open');
         queueMicrotask(() => this.inputRef?.nativeElement?.focus());

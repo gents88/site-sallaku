@@ -2,11 +2,12 @@ import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SearchOverlayComponent } from './search-overlay.component';
 import { SearchOverlayService } from '../../../core/services/search-overlay.service';
 import { SearchService } from '../../../core/services/search.service';
+import { AdminSearchHit, AdminSearchService } from '../../../core/services/admin-search.service';
 import { LanguageService } from '../../../core/services/language.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -15,18 +16,25 @@ import { LanguageSwitchService } from '../../../core/services/language-switch.se
 import { InstallPromptService } from '../../../core/services/install-prompt.service';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 
-function setup(opts: { admin?: boolean; lang?: string; canInstall?: boolean } = {}) {
+const ADMIN_HITS: AdminSearchHit[] = [
+  { id: 'contact:c1', type: 'contact', title: 'Mario Rossi', detail: 'Preventivo · mario@x.it', url: '/dashboard/contacts?q=mario%40x.it' },
+  { id: 'draft:p1', type: 'draft', title: 'Bozza SEO', detail: 'IT · bozza', url: '/dashboard/blog?edit=p1' },
+];
+
+function setup(opts: { admin?: boolean; lang?: string; canInstall?: boolean; adminFails?: boolean } = {}) {
   const langSwitch = { switchTo: vi.fn(() => Promise.resolve()) };
   const installPrompt = { canPromptNatively: signal(!!opts.canInstall), install: vi.fn(() => Promise.resolve(true)) };
   const snackbar = { show: vi.fn() };
   const theme = { toggle: vi.fn() };
   const auth = { isLoggedIn: signal(!!opts.admin), isAdmin: signal(!!opts.admin), logout: vi.fn() };
   const search = { suggest: vi.fn(() => of([{ id: 'post:1', type: 'post', title: 'Angular signals', excerpt: 'x', url: '/blog/signals', tags: [], updatedAt: '' }])) };
+  const adminSearch = { search: vi.fn(() => (opts.adminFails ? throwError(() => new Error('500')) : of(ADMIN_HITS))) };
   TestBed.configureTestingModule({
     imports: [TranslateModule.forRoot()],
     providers: [
       provideRouter([]),
       { provide: SearchService, useValue: search },
+      { provide: AdminSearchService, useValue: adminSearch },
       { provide: LanguageService, useValue: { current: signal(opts.lang ?? 'it') } },
       { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
       { provide: AuthService, useValue: auth },
@@ -41,7 +49,7 @@ function setup(opts: { admin?: boolean; lang?: string; canInstall?: boolean } = 
   const overlay = TestBed.inject(SearchOverlayService);
   const router = TestBed.inject(Router);
   const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
-  return { fixture, c: fixture.componentInstance, overlay, theme, search, navigate, langSwitch, installPrompt, snackbar };
+  return { fixture, c: fixture.componentInstance, overlay, theme, search, adminSearch, navigate, langSwitch, installPrompt, snackbar };
 }
 
 const key = (k: string, mods: KeyboardEventInit = {}) => new KeyboardEvent('keydown', { key: k, ...mods });
@@ -94,6 +102,56 @@ describe('SearchOverlayComponent (unified palette)', () => {
     expect(search.suggest).toHaveBeenCalledWith('signals', 'it');
     const content = c.items().filter(i => i.section === 'content');
     expect(content.map(i => i.url)).toEqual(['/blog/signals']);
+  });
+
+  describe('ricerca admin (contatti, utenti, bozze, note)', () => {
+    const type = (c: SearchOverlayComponent, q: string) => {
+      c.onQuery({ target: { value: q } } as unknown as Event);
+      vi.advanceTimersByTime(300);
+    };
+
+    it("per l'admin aggiunge una sezione tra azioni e pagine, che apre la pagina giusta", () => {
+      vi.useFakeTimers();
+      const { c, adminSearch, navigate } = setup({ admin: true });
+      type(c, 'mario');
+      expect(adminSearch.search).toHaveBeenCalledWith('mario');
+      const sections = c.items().map(i => i.section);
+      expect(sections.indexOf('admin')).toBeGreaterThanOrEqual(0);
+      expect(c.items().filter(i => i.section === 'admin').map(i => i.title)).toEqual(['Mario Rossi', 'Bozza SEO']);
+      // l'ordine delle sezioni è fisso: admin prima di pagine e contenuti
+      const order = [...new Set(sections)];
+      expect(order.indexOf('admin')).toBeLessThan(order.indexOf('content'));
+      c.select(c.items().findIndex(i => i.id === 'draft:p1'));
+      expect(navigate).toHaveBeenLastCalledWith('/dashboard/blog?edit=p1');
+    });
+
+    it('un visitatore non chiama mai la ricerca admin', () => {
+      vi.useFakeTimers();
+      const { c, adminSearch, search } = setup();
+      type(c, 'mario');
+      expect(search.suggest).toHaveBeenCalled();
+      expect(adminSearch.search).not.toHaveBeenCalled();
+      expect(c.items().some(i => i.section === 'admin')).toBe(false);
+    });
+
+    it('se la ricerca admin fallisce restano i contenuti pubblici', () => {
+      vi.useFakeTimers();
+      const { c } = setup({ admin: true, adminFails: true });
+      type(c, 'signals');
+      expect(c.items().some(i => i.section === 'admin')).toBe(false);
+      expect(c.items().some(i => i.section === 'content')).toBe(true);
+    });
+
+    it('riaprendo la palette i risultati admin precedenti spariscono', () => {
+      vi.useFakeTimers();
+      const { c, overlay, fixture } = setup({ admin: true });
+      type(c, 'mario');
+      expect(c.adminRemote()).toHaveLength(2);
+      overlay.show();
+      fixture.detectChanges();
+      TestBed.tick();
+      expect(c.adminRemote()).toEqual([]);
+    });
   });
 
   describe('extra actions', () => {

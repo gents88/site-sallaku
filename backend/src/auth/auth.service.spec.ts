@@ -7,6 +7,7 @@ import { createHash } from 'crypto';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { OtpService } from './otp.service';
+import { SecurityService } from '../security/security.service';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -36,6 +37,8 @@ describe('AuthService', () => {
   let usersService: jest.Mocked<UsersService>;
   let jwtService: jest.Mocked<JwtService>;
   let otpService: jest.Mocked<OtpService>;
+  let security: { record: jest.Mock; startSession: jest.Mock; touchSession: jest.Mock; endSession: jest.Mock };
+  const ctx = { ip: '203.0.113.7', userAgent: 'Mozilla/5.0 Chrome/120' };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -75,6 +78,15 @@ describe('AuthService', () => {
             verifyOtp: jest.fn(),
           },
         },
+        {
+          provide: SecurityService,
+          useValue: {
+            record: jest.fn().mockResolvedValue(undefined),
+            startSession: jest.fn().mockResolvedValue(undefined),
+            touchSession: jest.fn().mockResolvedValue(undefined),
+            endSession: jest.fn().mockResolvedValue(undefined),
+          },
+        },
       ],
     }).compile();
 
@@ -82,6 +94,7 @@ describe('AuthService', () => {
     usersService = module.get(UsersService);
     jwtService = module.get(JwtService);
     otpService = module.get(OtpService);
+    security = module.get(SecurityService);
   });
 
   // ── register ────────────────────────────────────────────────────────────────
@@ -172,6 +185,99 @@ describe('AuthService', () => {
       await expect(
         service.login({ email: user.email, password: rawPassword }),
       ).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  // ── registro eventi di sicurezza e sessioni ─────────────────────────────────
+
+  describe('security events', () => {
+    it('login riuscito: registra l’evento e avvia la sessione con IP e dispositivo', async () => {
+      const hash = await bcrypt.hash('MyPassword1!', 10);
+      usersService.findByEmail.mockResolvedValue(makeUser({ passwordHash: hash }) as any);
+      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+
+      await service.login({ email: 'test@example.com', password: 'MyPassword1!' }, ctx);
+
+      expect(security.record).toHaveBeenCalledWith('login_success', ctx, expect.objectContaining({ userId: 'user-id-1' }));
+      expect(security.startSession).toHaveBeenCalledWith('user-id-1', ctx);
+    });
+
+    it('login fallito: email sconosciuta, password errata ed email non verificata sono tutti registrati', async () => {
+      usersService.findByEmail.mockResolvedValueOnce(null);
+      await expect(service.login({ email: 'x@example.com', password: 'p' }, ctx)).rejects.toThrow(UnauthorizedException);
+      expect(security.record).toHaveBeenLastCalledWith('login_failed', ctx, expect.objectContaining({ identifier: 'x@example.com', detail: 'account inesistente' }));
+
+      const hash = await bcrypt.hash('giusta', 10);
+      usersService.findByEmail.mockResolvedValueOnce(makeUser({ passwordHash: hash }) as any);
+      await expect(service.login({ email: 'test@example.com', password: 'sbagliata' }, ctx)).rejects.toThrow(UnauthorizedException);
+      expect(security.record).toHaveBeenLastCalledWith('login_failed', ctx, expect.objectContaining({ userId: 'user-id-1', detail: 'password errata' }));
+
+      usersService.findByEmail.mockResolvedValueOnce(makeUser({ passwordHash: hash, emailVerified: false }) as any);
+      await expect(service.login({ email: 'test@example.com', password: 'giusta' }, ctx)).rejects.toThrow(UnauthorizedException);
+      expect(security.record).toHaveBeenLastCalledWith('login_failed', ctx, expect.objectContaining({ detail: 'email non verificata' }));
+
+      expect(security.startSession).not.toHaveBeenCalled();
+    });
+
+    it('un login fallito non rivela nulla in più al chiamante', async () => {
+      usersService.findByEmail.mockResolvedValue(null);
+      await expect(service.login({ email: 'x@example.com', password: 'p' }, ctx)).rejects.toThrow('Invalid credentials');
+    });
+
+    it('OTP sbagliato: registra otp_failed e rilancia lo stesso errore', async () => {
+      const err = new UnauthorizedException('Invalid OTP code. 4 attempts remaining.');
+      otpService.verifyOtp.mockRejectedValue(err);
+
+      await expect(service.verifyOtp(undefined, 'a@example.com', '000000', ctx)).rejects.toBe(err);
+
+      expect(security.record).toHaveBeenCalledWith('otp_failed', ctx, expect.objectContaining({ identifier: 'a@example.com' }));
+      expect(security.startSession).not.toHaveBeenCalled();
+    });
+
+    it('un errore OTP che non è un rifiuto (es. database giù) non finisce tra i tentativi falliti', async () => {
+      otpService.verifyOtp.mockRejectedValue(new Error('db down'));
+      await expect(service.verifyOtp(undefined, 'a@example.com', '1', ctx)).rejects.toThrow('db down');
+      expect(security.record).not.toHaveBeenCalled();
+    });
+
+    it('OTP corretto: registra l’accesso e avvia la sessione', async () => {
+      otpService.verifyOtp.mockResolvedValue(makeUser() as any);
+      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+
+      await service.verifyOtp(undefined, 'test@example.com', '123456', ctx);
+
+      expect(security.record).toHaveBeenCalledWith('login_success', ctx, expect.objectContaining({ detail: 'codice OTP' }));
+      expect(security.startSession).toHaveBeenCalledWith('user-id-1', ctx);
+    });
+
+    it('riuso di un refresh token: registra l’evento e chiude la sessione', async () => {
+      const user = makeUser({ refreshTokenHash: await bcrypt.hash('un-altro', 10) });
+      jwtService.verify.mockReturnValue({ sub: 'user-id-1', email: user.email, role: user.role, type: 'refresh' } as any);
+      usersService.findByIdWithRefreshToken.mockResolvedValue(user as any);
+      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+
+      await expect(service.refreshAccessToken('riusato', ctx)).rejects.toThrow('reuse detected');
+
+      expect(security.record).toHaveBeenCalledWith('refresh_reuse', ctx, expect.objectContaining({ userId: 'user-id-1' }));
+      expect(security.endSession).toHaveBeenCalledWith('user-id-1');
+    });
+
+    it('rinnovo valido: aggiorna l’ultima attività senza registrare un evento', async () => {
+      const user = makeUser({ refreshTokenHash: await bcrypt.hash(sha256('raw-refresh-token'), 10) });
+      jwtService.verify.mockReturnValue({ sub: 'user-id-1', email: user.email, role: user.role, type: 'refresh' } as any);
+      usersService.findByIdWithRefreshToken.mockResolvedValue(user as any);
+      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+
+      await service.refreshAccessToken('raw-refresh-token', ctx);
+
+      expect(security.touchSession).toHaveBeenCalledWith('user-id-1', ctx);
+      expect(security.record).not.toHaveBeenCalled();
+    });
+
+    it('logout: chiude la sessione', async () => {
+      usersService.saveRefreshToken.mockResolvedValue(undefined as any);
+      await service.logout('user-id-1');
+      expect(security.endSession).toHaveBeenCalledWith('user-id-1');
     });
   });
 
