@@ -61,7 +61,8 @@ jobs:
           ls -l "$ARCHIVE_NAME.archive.gz.age"
 
       - name: Salva come artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+
         with:
           name: ${{ env.ARCHIVE_NAME }}
           path: ${{ env.ARCHIVE_NAME }}.archive.gz.age
