@@ -279,7 +279,7 @@ Vedi `backend/.env.example`, `.env.prod.example`, `.env.uat.example`.
 | Variabile | Descrizione |
 |---|---|
 | `JWT_SECRET` | Secret di firma JWT (stringa lunga e casuale) |
-| `JWT_EXPIRES_IN` | Scadenza access token (impostato a `7d` in tutti gli `.env.example`) |
+| `JWT_EXPIRES_IN` | Scadenza access token (default e valore degli `.env.example`: `30m`; il refresh token dura `7d`) |
 | `ADMIN_EMAIL` · `ADMIN_NAME` · `ADMIN_PASSWORD` | Seed dell'utente admin al primo avvio |
 
 ### Email & SMS
@@ -347,10 +347,10 @@ Documentazione interattiva su `/api/docs` (Swagger).
 ### Backend
 - **Password**: bcrypt (12 round), mai in chiaro.
 - **Validazione input**: `class-validator` su ogni DTO (password forte, email valida, lunghezze massime).
-- **JWT**: access token con scadenza `JWT_EXPIRES_IN` (default e valore configurato: `7d`),
-  refresh token `7d`, secret da env.
-  > Access e refresh hanno la stessa durata: abbassare `JWT_EXPIRES_IN` (es. `15m`) renderebbe
-  > la rotazione dei refresh token effettivamente utile.
+- **JWT**: access token con scadenza `JWT_EXPIRES_IN` (default `30m`), refresh token `7d`, secret da env.
+  > Il frontend rinnova l'access token in automatico (interceptor su 401; `AuthService.getFreshToken()`
+  > per i WebSocket admin). Un refresh token non vale come access token.
+  > Se alzi `JWT_EXPIRES_IN` a ore o giorni, un token rubato resta utilizzabile per tutto quel tempo.
 - **Refresh token**: salvato hashato (bcrypt) sull'utente, rotazione a ogni uso,
   **rilevamento riuso** con revoca immediata della sessione.
 - **OTP**: login/registrazione via email o SMS — scadenza 5 min, max 3 richieste per
