@@ -976,6 +976,7 @@
     "admin_live": "Biseda live është aktive",
     "admin_expired": "Kjo kërkesë ka skaduar.",
     "admin_closed": "Ky sesion është mbyllur.",
+    "admin_visitor_typing": "Vizitori po shkruan…",
     "admin_error": "Lidhja dështoi. Sigurohu që je i kyçur si admin.",
     "admin_send_placeholder": "Shkruaj si Gent…",
     "admin_history_loading": "Duke ngarkuar bisedën…",
@@ -1003,6 +1004,7 @@
     "exit_ask_close_title": "Dëshiron ta mbyllësh bisedën me Gent-in?",
     "exit_ask_close_yes": "Po, mbylle",
     "exit_ask_close_no": "Jo, kthehu te biseda",
+    "exit_ask_leave_title": "Dëshiron ta mbyllësh bisedën?",
     "closed_notice": "Biseda me Gent-in ka përfunduar. Mund të vazhdosh të bisedosh me asistentin.",
     "admin_close_chat": "Mbyll bisedën"
   },

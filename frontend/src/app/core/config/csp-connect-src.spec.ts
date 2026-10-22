@@ -41,6 +41,14 @@ describe('CSP di deploy — connect-src', () => {
       expect(connectSrcOf(csp!)).toContain(`wss://${backendHost}`);
     });
 
+    it('consente gli endpoint di raccolta di GA4 (altrimenti il browser li blocca e si perdono dati)', () => {
+      // Con il consenso, GA4 manda dati a region1.analytics.google.com e stats.g.doubleclick.net oltre a google-analytics.com.
+      const connect = connectSrcOf(csp!);
+      expect(connect).toContain('https://*.google-analytics.com');
+      expect(connect).toContain('https://*.analytics.google.com');
+      expect(connect).toContain('https://stats.g.doubleclick.net');
+    });
+
     it('non punta più al vecchio backend Railway', () => {
       expect(csp).not.toContain('railway.app');
     });
