@@ -65,6 +65,22 @@ describe('LiveHandoffService', () => {
     httpMock.verify();
   });
 
+  /** Simula il ricaricamento della pagina: stessa sessionStorage, servizio nuovo. */
+  function reloadService(): LiveHandoffService {
+    TestBed.resetTestingModule();
+    lastSocket = undefined;
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
+        { provide: SOCKET_IO, useValue: mockIo },
+      ],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+    return TestBed.inject(LiveHandoffService);
+  }
+
   describe('notifyTyping', () => {
     it('non mostra il banner se non c’è ancora stato uno scambio di messaggi', () => {
       service.notifyTyping('s1', false);
@@ -165,12 +181,39 @@ describe('LiveHandoffService', () => {
       expect(service.state).toBe('agent_joining');
     });
 
-    it.each(['closed', 'expired', 'none'])('con stato "%s" non fa nulla: niente avvisi su una chat vuota né socket', (status) => {
+    it.each(['closed', 'expired', 'none'])('con stato "%s" e nessuno scambio non fa nulla: niente avvisi su una chat senza messaggi né socket', (status) => {
       service.restore('s1');
       httpMock.expectOne(STATUS_URL).flush({ status });
 
       expect(service.state).toBe('idle');
       expect(lastSocket).toBeUndefined();
+    });
+
+    it('se Gent ha chiuso la chat dopo uno scambio mostra l\'avviso di chiusura accanto alla cronologia ripresa, senza socket', () => {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      sessionStorage.setItem('live_handoff_messages', JSON.stringify([
+        { role: 'agent', content: 'Ciao, sono Gent', timestamp: '2026-10-22T10:00:00.000Z' },
+      ]));
+      const after = reloadService();
+
+      after.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'closed' });
+
+      expect(after.state).toBe('closed');
+      expect(lastSocket).toBeUndefined();
+    });
+
+    it('una richiesta scaduta, anche con messaggi, non mostra "chiusa": Gent non è mai entrato', () => {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      sessionStorage.setItem('live_handoff_messages', JSON.stringify([
+        { role: 'user', content: 'ciao', timestamp: '2026-10-22T10:00:00.000Z' },
+      ]));
+      const after = reloadService();
+
+      after.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'expired' });
+
+      expect(after.state).toBe('idle');
     });
 
     it('un errore di rete non cambia lo stato', () => {
@@ -256,6 +299,55 @@ describe('LiveHandoffService', () => {
 
     it('senza socket non fa nulla e non lancia', () => {
       expect(() => service.sendTyping()).not.toThrow();
+    });
+  });
+
+  describe('messaggi della chat live dopo un ricaricamento', () => {
+    const lastMessages = (svc: LiveHandoffService) => {
+      let out: unknown[] = [];
+      svc.liveMessages$.subscribe((m) => (out = m)).unsubscribe();
+      return out as Array<{ from: string; text: string; sentAt: Date }>;
+    };
+
+    function goLiveAndChat(): void {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      service.requestHandoff('s1', 'ciao', 'it');
+      flushSuccessfulRequest(httpMock);
+      lastSocket!.trigger('connect');
+      lastSocket!.trigger('chat_message', { from: 'visitor', text: 'ho una domanda', sentAt: '2026-10-22T10:00:00.000Z' });
+      lastSocket!.trigger('chat_message', { from: 'agent', text: 'dimmi pure', sentAt: '2026-10-22T10:00:05.000Z' });
+    }
+
+    it('i messaggi scambiati con Gent tornano dopo il ricaricamento', () => {
+      goLiveAndChat();
+
+      const messages = lastMessages(reloadService());
+
+      expect(messages.map((m) => [m.from, m.text])).toEqual([['visitor', 'ho una domanda'], ['agent', 'dimmi pure']]);
+      expect(messages[1].sentAt).toBeInstanceOf(Date);
+    });
+
+    it('chiudere la chat (reset) cancella anche i messaggi salvati', () => {
+      goLiveAndChat();
+
+      service.reset();
+
+      expect(lastMessages(reloadService())).toEqual([]);
+      expect(sessionStorage.getItem('live_handoff_messages')).toBeNull();
+    });
+
+    it('senza la sessione della chat i messaggi salvati non ricompaiono', () => {
+      goLiveAndChat();
+      sessionStorage.removeItem('chatbot_session_id');
+
+      expect(lastMessages(reloadService())).toEqual([]);
+    });
+
+    it('messaggi salvati corrotti non rompono il servizio', () => {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      sessionStorage.setItem('live_handoff_messages', 'non json');
+
+      expect(lastMessages(reloadService())).toEqual([]);
     });
   });
 
