@@ -286,7 +286,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
-    if (this.isOpen) this.requestClose();
+    // Con il dialog di conferma aperto Esc lo annulla (ci pensa il dialog): qui non deve riaprirlo.
+    if (this.isOpen && this.exitConfirmStep === 'none') this.requestClose();
   }
 
   /** Focus trap manuale sul pannello: Tab/Shift+Tab restano dentro finché è aperto come dialog. */
@@ -512,6 +513,11 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.liveState === 'live') {
       this.pendingExitAction = 'close';
       this.exitConfirmStep = 'ask_resolved';
+    } else if (this.messages.length > 0 || this.liveMessages.length > 0) {
+      // Conversazione in corso con l'assistente: una sola domanda, "Vuoi chiudere la chat?".
+      // A pannello vuoto (solo il benvenuto) non c'è nulla da perdere e chiude subito.
+      this.pendingExitAction = 'close';
+      this.exitConfirmStep = 'ask_leave';
     } else {
       this.chatbot.close();
     }
@@ -536,7 +542,9 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onExitConfirm(): void {
-    this.liveHandoff.closeByVisitor();
+    // La sessione con Gent si chiude solo se si era in una chat live: "ask_leave" è la
+    // semplice chiusura del pannello e non deve toccare lo stato live.
+    if (this.exitConfirmStep !== 'ask_leave') this.liveHandoff.closeByVisitor();
     this.exitConfirmStep = 'none';
     const action = this.pendingExitAction;
     this.pendingExitAction = null;

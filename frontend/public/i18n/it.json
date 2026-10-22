@@ -1004,6 +1004,7 @@
     "exit_ask_close_title": "Vuoi chiudere la sessione con Gent?",
     "exit_ask_close_yes": "Sì, chiudi",
     "exit_ask_close_no": "No, torna alla chat",
+    "exit_ask_leave_title": "Vuoi chiudere la chat?",
     "closed_notice": "La conversazione con Gent è stata chiusa. Puoi continuare a chattare con l'assistente.",
     "admin_close_chat": "Chiudi chat"
   },
