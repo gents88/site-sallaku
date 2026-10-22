@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -36,6 +36,7 @@ export class NotesManageComponent implements OnInit {
   readonly statuses: NoteModerationStatus[] = ['pending', 'approved', 'spam', 'all'];
 
   constructor(
+    private route: ActivatedRoute,
     private notesAdminService: NotesAdminService,
     private snackBar: MatSnackBar,
     private t: TranslateService,
@@ -43,6 +44,9 @@ export class NotesManageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Link dalla palette Ctrl+K: ?status= apre la scheda in cui si trova la nota.
+    const status = this.route.snapshot.queryParamMap.get('status') as NoteModerationStatus | null;
+    if (status && this.statuses.includes(status)) this.status = status;
     this.load();
   }
 

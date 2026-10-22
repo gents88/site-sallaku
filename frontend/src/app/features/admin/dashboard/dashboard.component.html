@@ -211,6 +211,17 @@
         </div>
         <app-not-found-panel [data]="notFound" [failed]="isFailed('notFound')" (changed)="refresh()" />
       </section>
+
+      <section class="analytics-card card">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'security_panel.title' | translate }}</h2>
+            <p class="text-muted">{{ 'security_panel.desc' | translate }}</p>
+          </div>
+          <mat-icon>shield</mat-icon>
+        </div>
+        <app-security-panel [data]="security" [failed]="isFailed('security')" (changed)="refresh()" />
+      </section>
     </div>
 
     <div class="analytics-grid">
