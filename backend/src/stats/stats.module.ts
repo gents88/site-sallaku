@@ -15,12 +15,13 @@ import { SystemModule } from '../system/system.module';
 import { TestimonialsModule } from '../testimonials/testimonials.module';
 import { NotesModule } from '../notes/notes.module';
 import { ErrorLogModule } from '../error-log/error-log.module';
+import { SecurityModule } from '../security/security.module';
 
 @Module({
   imports: [
     UsersModule, ContactModule, BlogModule, AnalyticsModule, ProjectsModule, ExperiencesModule,
     AuditModule, ChatbotModule, ConsentModule, LiveHandoffModule, SystemModule, TestimonialsModule, NotesModule,
-    ErrorLogModule,
+    ErrorLogModule, SecurityModule,
   ],
   controllers: [StatsController],
   providers: [AdminOverviewService],
