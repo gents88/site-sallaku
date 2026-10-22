@@ -1004,6 +1004,7 @@
     "exit_ask_close_title": "Dëshiron ta mbyllësh bisedën me Gent-in?",
     "exit_ask_close_yes": "Po, mbylle",
     "exit_ask_close_no": "Jo, kthehu te biseda",
+    "exit_ask_leave_title": "Dëshiron ta mbyllësh bisedën?",
     "closed_notice": "Biseda me Gent-in ka përfunduar. Mund të vazhdosh të bisedosh me asistentin.",
     "admin_close_chat": "Mbyll bisedën"
   },

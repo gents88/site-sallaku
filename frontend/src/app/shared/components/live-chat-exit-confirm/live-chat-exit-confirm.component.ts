@@ -2,9 +2,11 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 
-export type ExitConfirmStep = 'none' | 'ask_resolved' | 'ask_close';
+export type ExitConfirmStep = 'none' | 'ask_resolved' | 'ask_close' | 'ask_leave';
 
 /**
+ * Fuori da una chat live basta un solo passaggio (`ask_leave`: "Vuoi chiudere la chat?").
+ *
  * Conferma a due passaggi prima di chiudere/cancellare una chat live con Gent: prima
  * chiede se il problema è stato risolto (più umano di un "sei sicuro?" secco), poi
  * conferma esplicitamente la chiusura della sessione. Un "No" in qualunque passaggio
@@ -23,7 +25,7 @@ export class LiveChatExitConfirmComponent implements OnChanges {
 
   /** "Sì" al primo passaggio: problema risolto, si passa alla conferma di chiusura. */
   @Output() advance = new EventEmitter<void>();
-  /** "Sì, chiudi" al secondo passaggio: chiude davvero la sessione. */
+  /** "Sì, chiudi" al secondo passaggio (o all'unico di `ask_leave`): chiude davvero. */
   @Output() confirm = new EventEmitter<void>();
   /** "No" in qualunque passaggio, o click sullo sfondo: annulla, resta in chat. */
   @Output() cancel = new EventEmitter<void>();
