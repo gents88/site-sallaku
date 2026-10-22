@@ -31,8 +31,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Security audit (visibility only — Dependabot opens the fix PRs)
-        run: npm audit --omit=dev --audit-level=high || true
+      # Critiche: bloccano la CI. High: avviso nel riepilogo della run, senza bloccare
+      # (alcune non hanno ancora una correzione upstream); le PR di fix le apre Dependabot.
+      - name: Security audit (critical = blocking)
+        run: npm audit --omit=dev --audit-level=critical
+
+      - name: Security audit (high = warning)
+        run: |
+          if ! npm audit --omit=dev --audit-level=high > audit-high.txt 2>&1; then
+            echo "::warning title=npm audit backend::Vulnerabilità high nelle dipendenze di produzione (vedi il log di questo passo)"
+            cat audit-high.txt
+          fi
 
       - name: Lint
         run: npm run lint || true   # non-blocking until lint baseline is clean
@@ -80,8 +89,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Security audit (visibility only — Dependabot opens the fix PRs)
-        run: npm audit --omit=dev --audit-level=high || true
+      - name: Security audit (critical = blocking)
+        run: npm audit --omit=dev --audit-level=critical
+
+      - name: Security audit (high = warning)
+        run: |
+          if ! npm audit --omit=dev --audit-level=high > audit-high.txt 2>&1; then
+            echo "::warning title=npm audit frontend::Vulnerabilità high nelle dipendenze di produzione (vedi il log di questo passo)"
+            cat audit-high.txt
+          fi
 
       # Non bloccante come nel backend: angular-eslint non è installato, quindi
       # `ng lint` non ha un target e falliva sempre, fermando test e build
