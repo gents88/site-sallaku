@@ -79,6 +79,7 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
   // Limiti per socket sugli eventi anonimi: ogni messaggio è una scrittura su MongoDB più un broadcast.
   private readonly visitorMessages = new SocketRateLimiter(20, 30_000);
   private readonly visitorJoins = new SocketRateLimiter(10, 60_000);
+  private readonly visitorTyping = new SocketRateLimiter(6, 10_000);
 
   afterInit(): void {
     this.eventsSub = this.adminEvents?.events$.subscribe((event) => {
@@ -108,6 +109,7 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
     this.logger.debug(`Client disconnected: ${client.id}`);
     this.visitorMessages.forget(client.id);
     this.visitorJoins.forget(client.id);
+    this.visitorTyping.forget(client.id);
   }
 
   private room(sessionId: string): string {
@@ -150,6 +152,24 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
       text,
       sentAt: message.timestamp,
     });
+  }
+
+  /**
+   * "Il visitatore sta scrivendo": nessuna scrittura su database, solo un inoltro agli altri
+   * membri della stanza. Il mittente deve esserci già entrato (join_session): senza questo
+   * controllo chiunque potrebbe sparare eventi nelle stanze di sessioni altrui.
+   */
+  @SubscribeMessage('visitor_typing')
+  onVisitorTyping(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { sessionId?: unknown },
+  ): void {
+    const sessionId = asSessionId(body?.sessionId);
+    if (!sessionId) return;
+    const room = this.room(sessionId);
+    if (!client.rooms?.has(room)) return;
+    if (!this.visitorTyping.allow(client.id)) return;
+    client.to(room).emit('typing', { sessionId, from: 'visitor' });
   }
 
   @SubscribeMessage('admin_join')

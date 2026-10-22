@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminLiveChatComponent } from './live-chat.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { SOCKET_IO } from '../../../core/services/live-handoff.service';
+import { AdminAttentionService } from '../../../core/services/admin-attention.service';
 import { environment } from '../../../../environments/environment';
 
 type Handler = (payload?: unknown) => void;
@@ -37,10 +38,12 @@ describe('AdminLiveChatComponent — autenticazione del socket', () => {
   let token: string | null;
   let freshToken: ReturnType<typeof vi.fn>;
   let socketFactory: ReturnType<typeof vi.fn>;
+  let notify: ReturnType<typeof vi.fn>;
 
   function create(): ComponentFixture<AdminLiveChatComponent> {
     socket = new FakeSocket();
     freshToken = vi.fn(() => of('token-fresco'));
+    notify = vi.fn();
     socketFactory = vi.fn((_url: string, opts: typeof socketOpts) => {
       socketOpts = opts;
       return socket;
@@ -54,6 +57,7 @@ describe('AdminLiveChatComponent — autenticazione del socket', () => {
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => SID } } } },
         { provide: AuthService, useValue: { getToken: () => token, getFreshToken: freshToken } },
         { provide: SOCKET_IO, useValue: socketFactory },
+        { provide: AdminAttentionService, useValue: { notify } },
       ],
     });
     const fixture = TestBed.createComponent(AdminLiveChatComponent);
@@ -137,5 +141,65 @@ describe('AdminLiveChatComponent — autenticazione del socket', () => {
 
     expect(fixture.componentInstance.status).toBe('error');
     expect(socketFactory).not.toHaveBeenCalled();
+  });
+
+  describe('segnali per l\'admin', () => {
+    afterEach(() => vi.useRealTimers());
+
+    const visitorMsg = { from: 'visitor', text: 'sei lì?', sentAt: new Date().toISOString() };
+    const typingEl = (f: ComponentFixture<AdminLiveChatComponent>) =>
+      (f.nativeElement as HTMLElement).querySelector('.alc-typing') as HTMLElement;
+
+    it('mostra "sta scrivendo" quando il visitatore digita', () => {
+      const fixture = create();
+      expect(typingEl(fixture).textContent?.trim()).toBe('');
+
+      socket.fire('typing', { sessionId: SID, from: 'visitor' });
+      fixture.detectChanges();
+
+      expect(typingEl(fixture).textContent).toContain('live_handoff.admin_visitor_typing');
+    });
+
+    it('lo spegne da solo dopo 4 secondi senza nuovi segnali', () => {
+      vi.useFakeTimers();
+      const fixture = create();
+      socket.fire('typing');
+      vi.advanceTimersByTime(3_900);
+      expect(fixture.componentInstance.visitorTyping).toBe(true);
+
+      vi.advanceTimersByTime(200);
+
+      expect(fixture.componentInstance.visitorTyping).toBe(false);
+    });
+
+    it('un nuovo segnale prolunga l\'indicatore', () => {
+      vi.useFakeTimers();
+      const fixture = create();
+      socket.fire('typing');
+      vi.advanceTimersByTime(3_000);
+      socket.fire('typing');
+      vi.advanceTimersByTime(3_000);
+
+      expect(fixture.componentInstance.visitorTyping).toBe(true);
+    });
+
+    it('quando il messaggio arriva l\'indicatore sparisce e l\'admin viene avvisato', () => {
+      const fixture = create();
+      socket.fire('typing');
+
+      socket.fire('chat_message', visitorMsg);
+
+      expect(fixture.componentInstance.visitorTyping).toBe(false);
+      expect(notify).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.messages).toHaveLength(1);
+    });
+
+    it('i messaggi scritti da Gent non avvisano nessuno', () => {
+      create();
+
+      socket.fire('chat_message', { from: 'agent', text: 'ciao', sentAt: new Date().toISOString() });
+
+      expect(notify).not.toHaveBeenCalled();
+    });
   });
 });

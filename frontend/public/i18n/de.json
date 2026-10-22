@@ -976,6 +976,7 @@
     "admin_live": "Live-Chat aktiv",
     "admin_expired": "Diese Anfrage ist abgelaufen.",
     "admin_closed": "Diese Sitzung wurde beendet.",
+    "admin_visitor_typing": "Der Besucher schreibt …",
     "admin_error": "Verbindung fehlgeschlagen. Stellen Sie sicher, dass Sie als Admin angemeldet sind.",
     "admin_send_placeholder": "Als Gent schreiben…",
     "admin_history_loading": "Unterhaltung wird geladen…",

@@ -51,6 +51,10 @@
       }
     </div>
 
+    <p class="alc-typing" [class.alc-typing--on]="visitorTyping" role="status" aria-live="polite">
+      @if (visitorTyping) { {{ 'live_handoff.admin_visitor_typing' | translate }} }
+    </p>
+
     <form class="alc-input-area" (ngSubmit)="send()">
       <input
         type="text"

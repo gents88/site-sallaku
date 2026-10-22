@@ -30,6 +30,7 @@ export const SOCKET_IO = new InjectionToken<typeof io>('SOCKET_IO', { providedIn
 
 const DISMISS_COOLDOWN_MS = 10 * 60_000;
 const AUTO_MINIMIZE_MS = 8_000;
+const TYPING_THROTTLE_MS = 2_500;
 const DISMISS_KEY_PREFIX = 'live_handoff_dismissed_';
 
 @Injectable({ providedIn: 'root' })
@@ -44,6 +45,7 @@ export class LiveHandoffService {
   private sessionId: string | null = null;
   private minimizeTimer?: ReturnType<typeof setTimeout>;
   private pollTimer?: ReturnType<typeof setInterval>;
+  private lastTypingSentAt = 0;
 
   private readonly _state = new BehaviorSubject<LiveHandoffState>('idle');
   readonly state$: Observable<LiveHandoffState> = this._state.asObservable();
@@ -131,6 +133,18 @@ export class LiveHandoffService {
       },
       error: () => undefined,
     });
+  }
+
+  /**
+   * "Il visitatore sta scrivendo", mostrato a Gent. Solo a chat live e al massimo un evento
+   * ogni 2,5 s: il server scarta comunque oltre 6 eventi in 10 s per socket.
+   */
+  sendTyping(): void {
+    if (!this.socket || !this.sessionId || this.state !== 'live') return;
+    const now = Date.now();
+    if (now - this.lastTypingSentAt < TYPING_THROTTLE_MS) return;
+    this.lastTypingSentAt = now;
+    this.socket.emit('visitor_typing', { sessionId: this.sessionId });
   }
 
   sendLiveMessage(text: string): void {

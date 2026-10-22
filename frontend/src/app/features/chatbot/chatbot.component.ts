@@ -468,6 +468,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.autoResize(event);
     if (this.liveState === 'idle' || this.liveState === 'prompt_shown') {
       this.typing$.next();
+    } else if (this.liveState === 'live') {
+      this.liveHandoff.sendTyping();
     }
   }
 
