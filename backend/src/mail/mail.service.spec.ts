@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from './mail.service';
 
@@ -61,6 +62,68 @@ describe('MailService', () => {
 
     expect(result.success).toBe(false);
     expect(sendMail).not.toHaveBeenCalled();
+  });
+
+  describe('ripiego SMTP non utilizzabile', () => {
+    // Configurazione di produzione: l'SMTP è il relay di Resend, utente "resend".
+    const RESEND_RELAY = { SMTP_HOST: 'smtp.resend.com', SMTP_USER: 'resend', SMTP_PASS: 're_test' };
+
+    it('non ripiega sul relay di Resend: stesso provider, stesse restrizioni', async () => {
+      mockResend(403, { message: 'domain is not verified' });
+      const mail = makeService({ ...RESEND, ...RESEND_RELAY });
+
+      const result = await mail.send(MAIL);
+
+      expect(result.success).toBe(false);
+      expect(sendMail).not.toHaveBeenCalled();
+    });
+
+    it('non ripiega se SMTP_USER non è un indirizzo email: non può fare da mittente', async () => {
+      mockResend(403, { message: 'domain is not verified' });
+      const mail = makeService({ ...RESEND, SMTP_USER: 'apikey', SMTP_PASS: 'secret', SMTP_HOST: 'smtp.sendgrid.net' });
+
+      expect((await mail.send(MAIL)).success).toBe(false);
+      expect(sendMail).not.toHaveBeenCalled();
+    });
+
+    it('con una casella SMTP vera su un altro host il ripiego resta attivo', async () => {
+      mockResend(403, { message: 'domain is not verified' });
+      const mail = makeService({ ...RESEND, SMTP_HOST: 'smtp.gmail.com', SMTP_USER: 'gent@gmail.com', SMTP_PASS: 'app-pass' });
+
+      expect((await mail.send(MAIL)).success).toBe(true);
+      expect(sendMail).toHaveBeenCalledWith(expect.objectContaining({ from: '"Gent Sallaku" <gent@gmail.com>' }));
+    });
+
+    it('spiega cosa fare nel log, una volta sola', async () => {
+      const warn = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+      try {
+        mockResend(403, { message: 'domain is not verified' });
+        const mail = makeService({ ...RESEND, ...RESEND_RELAY });
+
+        await mail.send(MAIL);
+        await mail.send(MAIL);
+        await mail.send(MAIL);
+
+        const hints = warn.mock.calls.filter(([msg]) => String(msg).includes('resend.com/domains'));
+        expect(hints).toHaveLength(1);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it('un messaggio consegnato da Resend non produce alcuna indicazione', async () => {
+      const warn = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+      try {
+        mockResend(200, { id: 'resend-ok' });
+        const mail = makeService({ ...RESEND, ...RESEND_RELAY });
+
+        await mail.send(MAIL);
+
+        expect(warn.mock.calls.filter(([msg]) => String(msg).includes('resend.com/domains'))).toHaveLength(0);
+      } finally {
+        warn.mockRestore();
+      }
+    });
   });
 
   it('considera non configurate le credenziali SMTP d’esempio di .env.example', async () => {
