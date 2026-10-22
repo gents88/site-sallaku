@@ -389,7 +389,16 @@ export class BlogDetailComponent implements OnInit, OnChanges {
         this.post = post;
         afterNextRender(() => this.enhanceContent(), { injector: this.injector });
         this.cdr.markForCheck();
-        if (this.isPreview) return; // no view tracking, canonical tags, or JSON-LD for an unpublished draft
+        if (this.isPreview) {
+          // Anteprima nella stessa scheda: il breadcrumb riporta all'elenco articoli.
+          // Niente view tracking, canonical o JSON-LD per una bozza non pubblicata.
+          this.breadcrumbItems = [
+            { label: this.translate.instant('admin.dashboard'), path: '/dashboard' },
+            { label: this.translate.instant('blog_manage.title'), path: '/dashboard/blog' },
+            { label: this.localizedTitle },
+          ];
+          return;
+        }
         // Fire-and-forget: increment view count without blocking rendering.
         // Browser only — prerendering every post × language used to count
         // ~300 fake views per build (and eat into the backend throttle).

@@ -30,6 +30,7 @@ import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { NavIconComponent, navIconColor } from '../../shared/components/nav-icon/nav-icon.component';
 import { ProfilePhotoComponent } from '../../shared/components/profile-photo/profile-photo.component';
 import { ChatLink, extractChatLinks } from './chat-links';
+import { formatChatMessage } from './format-message';
 
 type PanelView = 'chat' | 'transcript';
 type PendingExitAction = 'close' | 'clear' | null;
@@ -561,10 +562,7 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   formatMessage(content: string): string {
-    return content
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
+    return formatChatMessage(content);
   }
 
   private scrollToBottom(): void {
