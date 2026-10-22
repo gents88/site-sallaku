@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { jwtExpiresAt } from './jwt';
+import { jwtClaims, jwtExpiresAt } from './jwt';
 
 /** JWT di prova: la firma non conta, jwtExpiresAt legge solo il payload. */
 function fakeJwt(payload: unknown): string {
@@ -33,5 +33,19 @@ describe('jwtExpiresAt', () => {
     expect(jwtExpiresAt('abc')).toBeNull();
     expect(jwtExpiresAt('a.%%%.c')).toBeNull();
     expect(jwtExpiresAt('a.bm90LWpzb24.c')).toBeNull();
+  });
+});
+
+describe('jwtClaims', () => {
+  it('restituisce i claim del token, compreso il sid della sessione', () => {
+    expect(jwtClaims(fakeJwt({ sub: 'u1', sid: 'abc123' }))).toEqual({ sub: 'u1', sid: 'abc123' });
+  });
+
+  it('un token malformato o con un payload che non è un oggetto restituisce null', () => {
+    expect(jwtClaims('')).toBeNull();
+    expect(jwtClaims('a.%%%.c')).toBeNull();
+    expect(jwtClaims(fakeJwt([1, 2]))).toBeNull();
+    expect(jwtClaims(fakeJwt('testo'))).toBeNull();
+    expect(jwtClaims(fakeJwt(null))).toBeNull();
   });
 });

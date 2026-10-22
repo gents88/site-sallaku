@@ -5,12 +5,18 @@
  * Restituisce null se il token non è un JWT leggibile o non ha `exp`.
  */
 export function jwtExpiresAt(token: string): number | null {
+  const exp = jwtClaims(token)?.['exp'];
+  return typeof exp === 'number' && Number.isFinite(exp) ? exp * 1000 : null;
+}
+
+/** Contenuto (claim) di un JWT, senza verificarne la firma. null se il token non è leggibile. */
+export function jwtClaims(token: string): Record<string, unknown> | null {
   const payload = token.split('.')[1];
   if (!payload) return null;
   try {
     const base64 = payload.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(payload.length / 4) * 4, '=');
-    const exp = (JSON.parse(atob(base64)) as { exp?: unknown }).exp;
-    return typeof exp === 'number' && Number.isFinite(exp) ? exp * 1000 : null;
+    const claims: unknown = JSON.parse(atob(base64));
+    return claims && typeof claims === 'object' && !Array.isArray(claims) ? (claims as Record<string, unknown>) : null;
   } catch {
     return null;
   }
