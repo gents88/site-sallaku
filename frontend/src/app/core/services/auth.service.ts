@@ -201,10 +201,16 @@ export class AuthService implements OnDestroy {
   /** Ripristino silenzioso all'avvio (modalità cookie): mai redirect, si resta sulla pagina da anonimi. */
   private restoreFromCookie(): void {
     this.restoring.set(true);
-    this.doRefresh(false).subscribe({
-      next: () => this.restoring.set(false),
-      error: () => this.restoring.set(false),
-    });
+    // Fuori dal costruttore: l'authInterceptor fa inject(AuthService), quindi una
+    // richiesta partita da qui dentro dà NG0200 (dipendenza circolare), il refresh
+    // non parte e la sessione viene cancellata. `restoring` resta true da subito
+    // così l'authGuard aspetta.
+    void Promise.resolve().then(() =>
+      this.doRefresh(false).subscribe({
+        next: () => this.restoring.set(false),
+        error: () => this.restoring.set(false),
+      }),
+    );
   }
 
   private parseStoredUser(): User | null {
