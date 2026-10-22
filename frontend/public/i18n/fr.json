@@ -2416,6 +2416,7 @@
     "started": "commencée",
     "last_active": "dernière activité",
     "close_session": "Fermer la session",
+    "this_device": "Cet appareil",
     "close_confirm": "Fermer la session de {{name}} ? Cette personne devra se reconnecter (dans les 15 minutes).",
     "close_error": "Impossible de fermer la session.",
     "ev_login_success": "Connexion",

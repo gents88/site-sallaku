@@ -2416,6 +2416,7 @@
     "started": "gestartet",
     "last_active": "letzte Aktivität",
     "close_session": "Sitzung beenden",
+    "this_device": "Dieses Gerät",
     "close_confirm": "Sitzung von {{name}} beenden? Die Person muss sich erneut anmelden (innerhalb von 15 Minuten).",
     "close_error": "Die Sitzung konnte nicht beendet werden.",
     "ev_login_success": "Anmeldung",

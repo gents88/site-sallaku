@@ -2416,6 +2416,7 @@
     "started": "iniciada",
     "last_active": "última actividad",
     "close_session": "Cerrar sesión",
+    "this_device": "Este dispositivo",
     "close_confirm": "¿Cerrar la sesión de {{name}}? Tendrá que iniciar sesión de nuevo (en 15 minutos).",
     "close_error": "No se pudo cerrar la sesión.",
     "ev_login_success": "Acceso",

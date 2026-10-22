@@ -273,6 +273,8 @@ export interface NotFoundSummary {
 export type SecurityEventType = 'login_success' | 'login_failed' | 'otp_failed' | 'refresh_reuse' | 'session_revoked';
 
 export interface SecuritySession {
+  /** Un dispositivo: lo stesso utente può averne più d'uno. */
+  sessionId: string;
   userId: string;
   name: string;
   contact: string;
@@ -572,9 +574,10 @@ export class AdminDashboardService {
     return this.http.post<{ success: boolean }>(`${this.api}/analytics/not-found/${id}/dismiss`, {});
   }
 
-  /** Chiude la sessione di un utente: il suo refresh token smette di funzionare. */
-  revokeSession(userId: string): Observable<void> {
-    return this.http.post<void>(`${this.api}/security/sessions/${userId}/revoke`, {});
+  /** Chiude la sessione di un dispositivo (con `sessionId`) o di tutti i dispositivi dell'utente (senza). */
+  revokeSession(userId: string, sessionId?: string): Observable<void> {
+    const path = sessionId ? `${userId}/${sessionId}/revoke` : `${userId}/revoke`;
+    return this.http.post<void>(`${this.api}/security/sessions/${path}`, {});
   }
 
   /** Segna risolto un gruppo di errori 5xx: torna aperto se si ripete. */

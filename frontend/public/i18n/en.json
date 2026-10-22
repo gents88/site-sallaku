@@ -2416,6 +2416,7 @@
     "started": "started",
     "last_active": "last activity",
     "close_session": "Close session",
+    "this_device": "This device",
     "close_confirm": "Close {{name}}'s session? They will have to sign in again (within 15 minutes).",
     "close_error": "Could not close the session.",
     "ev_login_success": "Sign-in",

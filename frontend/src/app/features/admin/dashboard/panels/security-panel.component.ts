@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { jwtClaims } from '../../../../core/utils/jwt';
 import { AdminDashboardService, SecurityEventType, SecuritySession, SecuritySummary } from '../admin-dashboard.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -65,14 +66,14 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
       <h3 class="panel-section-title">{{ 'security_panel.sessions' | translate }}</h3>
       @if (data.sessions.length) {
         <ul class="panel-list">
-          @for (s of data.sessions; track s.userId) {
+          @for (s of data.sessions; track s.sessionId) {
             <li>
               <div class="sec-row">
                 <span class="sec-row__main">
                   <span class="panel-ellipsis">
                     <strong>{{ s.name }}</strong>
                     <span class="panel-badge">{{ s.role }}</span>
-                    @if (isSelf(s)) { <span class="panel-badge panel-badge--ok">{{ 'security_panel.you' | translate }}</span> }
+                    @if (isCurrent(s)) { <span class="panel-badge panel-badge--ok">{{ 'security_panel.this_device' | translate }}</span> }
                   </span>
                   <span class="panel-sub panel-ellipsis">{{ s.device }} · <span class="panel-mono">{{ s.ip || '—' }}</span></span>
                   <span class="panel-sub">
@@ -80,7 +81,7 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
                     {{ 'security_panel.last_active' | translate }} {{ s.lastSeenAt | date: 'dd/MM HH:mm' }}
                   </span>
                 </span>
-                @if (!isSelf(s)) {
+                @if (!isCurrent(s)) {
                   <button type="button" class="panel-btn panel-btn--danger" (click)="close(s)" [disabled]="busyId() !== null">
                     {{ 'security_panel.close_session' | translate }}
                   </button>
@@ -136,7 +137,15 @@ export class SecurityPanelComponent {
   readonly busyId = signal<string | null>(null);
   readonly error = signal(false);
 
-  isSelf(session: SecuritySession): boolean {
+  /**
+   * Il dispositivo da cui sto lavorando (stesso sid del mio token): per quello c'è il logout. Le altre
+   * sessioni, anche del mio stesso account, si possono chiudere. Con un token precedente al
+   * multi-dispositivo il sid manca e si ripiega sul vecchio criterio (stesso utente).
+   */
+  isCurrent(session: SecuritySession): boolean {
+    const token = this.auth.getToken();
+    const mySid = token ? jwtClaims(token)?.['sid'] : undefined;
+    if (typeof mySid === 'string') return session.sessionId === mySid;
     return session.userId === this.auth.currentUser()?._id;
   }
 
@@ -147,9 +156,9 @@ export class SecurityPanelComponent {
   close(session: SecuritySession): void {
     const message = this.translate.instant('security_panel.close_confirm', { name: session.name }) as string;
     if (!confirm(message)) return;
-    this.busyId.set(session.userId);
+    this.busyId.set(session.sessionId);
     this.error.set(false);
-    this.api.revokeSession(session.userId).subscribe({
+    this.api.revokeSession(session.userId, session.sessionId).subscribe({
       next: () => {
         this.busyId.set(null);
         this.changed.emit();
