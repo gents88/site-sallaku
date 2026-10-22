@@ -40,6 +40,7 @@ describe('ChatbotComponent — conferma di chiusura durante una chat live', () =
       liveMessages$: new BehaviorSubject([]),
       closeByVisitor: vi.fn(),
       reset: vi.fn(),
+      restore: vi.fn(),
       notifyTyping: vi.fn(),
     };
 
