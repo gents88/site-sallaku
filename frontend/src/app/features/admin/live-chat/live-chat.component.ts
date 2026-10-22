@@ -14,8 +14,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
-import { Socket, io } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import { AuthService } from '../../../core/services/auth.service';
+import { SOCKET_IO } from '../../../core/services/live-handoff.service';
 import { environment } from '../../../../environments/environment';
 
 type LiveChatRole = 'user' | 'assistant' | 'agent';
@@ -43,6 +44,7 @@ export class AdminLiveChatComponent implements OnInit, OnDestroy {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly io = inject(SOCKET_IO);
 
   sessionId = '';
   messages: LiveChatMessage[] = [];
@@ -74,10 +76,8 @@ export class AdminLiveChatComponent implements OnInit, OnDestroy {
 
   /** Solo Gent può chiudere, e lo fa quando vuole: nessuna conferma richiesta. */
   closeChat(): void {
-    const token = this.auth.getToken();
-    if (this.socket && token) {
-      this.socket.emit('admin_close', { sessionId: this.sessionId, token });
-    }
+    // L'autorizzazione è quella dell'handshake: il token per-messaggio scadeva a metà chat.
+    this.socket?.emit('admin_close', { sessionId: this.sessionId });
     this.status = 'closed';
     this.cdr.markForCheck();
   }
@@ -111,13 +111,19 @@ export class AdminLiveChatComponent implements OnInit, OnDestroy {
     // e su alcuni proxy/edge che parlano HTTP/2 (Railway compreso) l'upgrade diretto a
     // WS fallisce con 400 Bad Request. Il default (polling → tentativo di upgrade a WS)
     // funziona sempre almeno via polling, con eventuale upgrade opportunistico.
-    this.socket = io(`${wsOrigin}/live-chat`);
+    // Il token viaggia nell'handshake e viene rinnovato se sta per scadere, anche a ogni
+    // riconnessione (`auth` come funzione): con un token di accesso breve, quello letto
+    // all'apertura della pagina sarebbe scaduto a metà conversazione e ogni messaggio dell'admin
+    // verrebbe scartato dal server senza alcun errore.
+    this.socket = this.io(`${wsOrigin}/live-chat`, {
+      auth: (cb) => this.auth.getFreshToken().subscribe((fresh) => cb({ token: fresh })),
+    });
 
     this.socket.on('connect', () => {
       this.connectErrorCount = 0;
       this.status = 'joining';
       this.cdr.markForCheck();
-      this.socket?.emit('admin_join', { sessionId: this.sessionId, token });
+      this.socket?.emit('admin_join', { sessionId: this.sessionId });
     });
 
     // Se il WS non riesce proprio a connettersi (rete/proxy), non deve restare bloccato
@@ -164,9 +170,8 @@ export class AdminLiveChatComponent implements OnInit, OnDestroy {
 
   send(): void {
     const text = this.inputText.trim();
-    const token = this.auth.getToken();
-    if (!text || !token || this.status !== 'live') return;
-    this.socket?.emit('admin_message', { sessionId: this.sessionId, text, token });
+    if (!text || this.status !== 'live') return;
+    this.socket?.emit('admin_message', { sessionId: this.sessionId, text });
     this.inputText = '';
   }
 

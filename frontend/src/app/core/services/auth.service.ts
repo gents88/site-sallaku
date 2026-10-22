@@ -3,7 +3,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap, catchError, map } from 'rxjs/operators';
-import { Observable, throwError, BehaviorSubject, filter, take } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, filter, take, of } from 'rxjs';
+import { jwtExpiresAt } from '../utils/jwt';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginPayload, OtpChannels, OtpRequestResponse, RegisterPayload, RegisterResponse, User } from '../models/user.model';
 import { LAST_ACTIVITY_KEY } from './inactivity.service';
@@ -168,6 +169,23 @@ export class AuthService implements OnDestroy {
 
   getToken(): string | null {
     return this._token();
+  }
+
+  /**
+   * Token di accesso valido per almeno `minValidityMs`, rinnovandolo se sta per scadere.
+   * Serve a chi non passa dall'interceptor HTTP, come l'handshake dei WebSocket admin: un
+   * token scaduto lì non genera un 401 (e quindi nessun refresh), il socket si collega
+   * semplicemente senza permessi. Con un token di accesso breve succede di continuo.
+   * Se il rinnovo fallisce restituisce null (doRefresh ha già chiuso la sessione).
+   */
+  getFreshToken(minValidityMs = 60_000): Observable<string | null> {
+    const token = this._token();
+    if (!token) return of(null);
+
+    const expiresAt = jwtExpiresAt(token);
+    if (expiresAt === null || expiresAt - Date.now() > minValidityMs) return of(token);
+
+    return this.doRefresh(false).pipe(catchError(() => of(null)));
   }
 
   // L'inattività è gestita da InactivityService (un solo timer, per ruolo, con avviso).
