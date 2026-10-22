@@ -111,6 +111,11 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      # Lo script che calcola gli hash della CSP gira dopo ogni build: se si rompe, il sito
+      # resterebbe con 'unsafe-inline' (fail-safe) senza che nessuno se ne accorga.
+      - name: CSP hashes script tests
+        run: node --test ../scripts/csp-hashes.test.js
+
       # BUILD_COMMIT: se il prebuild rigenera la sitemap il working tree risulta
       # modificato e il commit mostrato nel sito avrebbe il suffisso "+"
       - name: Build (production)
