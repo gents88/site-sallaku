@@ -1,6 +1,5 @@
 import {
   Injectable,
-  ConflictException,
   HttpException,
   HttpStatus,
   UnauthorizedException,
@@ -16,6 +15,9 @@ import { RegisterDto } from './dto/register.dto';
 import { Types } from 'mongoose';
 import { ClientContext, SecurityService } from '../security/security.service';
 import { CacheService } from '../common/services/cache.service';
+
+/** Identica per account nuovo ed esistente: vedi register(). */
+const REGISTER_MESSAGE = 'Account created. Check your email for a verification code.';
 
 const REFRESH_TOKEN_EXPIRY = '7d';
 const BCRYPT_REFRESH_ROUNDS = 10;
@@ -85,7 +87,17 @@ export class AuthService {
    */
   async register(dto: RegisterDto): Promise<{ message: string; email: string }> {
     const exists = await this.usersService.findByEmail(dto.email);
-    if (exists) throw new ConflictException('Email already registered');
+    if (exists) {
+      // Una risposta "email già registrata" permette a chiunque di scoprire chi ha un account
+      // (basta provare indirizzi). Si risponde come per una registrazione nuova e si manda il
+      // codice: se l'indirizzo è del titolare dell'account, col codice entra (accesso via OTP);
+      // se non lo è, riceve solo una email e chi ha richiesto non impara nulla. L'hash serve a
+      // non far trapelare l'esistenza dal tempo di risposta. Gli errori dell'invio (limite di
+      // richieste, provider) restano gli stessi di una registrazione nuova.
+      await bcrypt.hash(dto.password, 12);
+      await this.otpService.requestOtp(undefined, dto.email);
+      return { message: REGISTER_MESSAGE, email: dto.email };
+    }
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
     const user = await this.usersService.create({
@@ -104,10 +116,7 @@ export class AuthService {
       throw err;
     }
 
-    return {
-      message: 'Account created. Check your email for a verification code.',
-      email: dto.email,
-    };
+    return { message: REGISTER_MESSAGE, email: dto.email };
   }
 
   async login(dto: LoginDto, ctx: ClientContext = NO_CONTEXT) {

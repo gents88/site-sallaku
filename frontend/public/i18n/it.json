@@ -976,6 +976,7 @@
     "admin_live": "Chat live attiva",
     "admin_expired": "Questa richiesta è scaduta.",
     "admin_closed": "Questa sessione è stata chiusa.",
+    "admin_visitor_typing": "Il visitatore sta scrivendo…",
     "admin_error": "Impossibile connettersi. Verifica di aver effettuato l'accesso come admin.",
     "admin_send_placeholder": "Scrivi come Gent…",
     "admin_history_loading": "Caricamento conversazione…",
@@ -1003,6 +1004,7 @@
     "exit_ask_close_title": "Vuoi chiudere la sessione con Gent?",
     "exit_ask_close_yes": "Sì, chiudi",
     "exit_ask_close_no": "No, torna alla chat",
+    "exit_ask_leave_title": "Vuoi chiudere la chat?",
     "closed_notice": "La conversazione con Gent è stata chiusa. Puoi continuare a chattare con l'assistente.",
     "admin_close_chat": "Chiudi chat"
   },

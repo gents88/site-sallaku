@@ -210,3 +210,14 @@
   .alc-card { height: calc(100vh - 160px); }
   .alc-msg { max-width: 90%; }
 }
+
+/* Riga riservata all'indicatore "sta scrivendo": altezza fissa, così il log non salta
+   quando compare o sparisce. */
+.alc-typing {
+  min-height: 1.4rem;
+  margin: 0;
+  padding: 2px 16px;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-muted, #94a3b8);
+}

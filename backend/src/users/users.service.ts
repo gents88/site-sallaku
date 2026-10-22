@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { PASSWORD_BCRYPT_ROUNDS } from '../auth/password-policy';
+import { PASSWORD_BCRYPT_ROUNDS, assertPasswordForRole } from '../auth/password-policy';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
@@ -151,6 +151,7 @@ export class UsersService {
 
   /** Creazione da admin: niente OTP di verifica, l'indirizzo lo garantisce l'admin (salvo emailVerified=false). */
   async createByAdmin(dto: { name: string; email: string; phone?: string; role: string; password?: string; emailVerified?: boolean }) {
+    if (dto.password) assertPasswordForRole(dto.role, dto.password);
     await this.assertUnique(dto.email, dto.phone);
     const created = await this.userModel.create({
       name: dto.name.trim(),
@@ -180,6 +181,10 @@ export class UsersService {
 
   /** Nuova password scelta dall'admin; chiude anche tutte le sessioni dell'utente. */
   async setPasswordByAdmin(targetId: string, password: string): Promise<void> {
+    const target = await this.userModel.findById(targetId, { role: 1 }).exec();
+    if (!target) throw new NotFoundException(`User #${targetId} not found`);
+    assertPasswordForRole(target.role, password);
+
     const passwordHash = await bcrypt.hash(password, PASSWORD_BCRYPT_ROUNDS);
     const res = await this.userModel.updateOne({ _id: targetId }, { $set: { passwordHash, refreshTokenHash: null } }).exec();
     if (!res.matchedCount) throw new NotFoundException(`User #${targetId} not found`);

@@ -55,6 +55,64 @@ describe('UsersService — admin CRUD', () => {
     expect(await bcrypt.compare('Another#456', update.$set.passwordHash)).toBe(true);
   });
 
+  describe('password degli admin: almeno 12 caratteri', () => {
+    it('rifiuta di creare un admin con una password corta, senza creare nulla', async () => {
+      const { service, model } = setup();
+
+      await expect(
+        service.createByAdmin({ name: 'A', email: 'a@x.it', role: 'admin', password: 'Short#1234' }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(model.create).not.toHaveBeenCalled();
+    });
+
+    it('accetta un admin con una password di 12 caratteri', async () => {
+      const { service, model } = setup();
+
+      await service.createByAdmin({ name: 'A', email: 'a@x.it', role: 'admin', password: 'Twelve#Chars' });
+
+      expect(model.create).toHaveBeenCalled();
+    });
+
+    it('un utente normale può continuare ad avere 8 caratteri', async () => {
+      const { service, model } = setup();
+
+      await service.createByAdmin({ name: 'U', email: 'u@x.it', role: 'user', password: 'Short#12' });
+
+      expect(model.create).toHaveBeenCalled();
+    });
+
+    it('un admin senza password (accesso via OTP) non è toccato dalla regola', async () => {
+      const { service, model } = setup();
+
+      await service.createByAdmin({ name: 'A', email: 'a@x.it', role: 'admin' });
+
+      expect(model.create).toHaveBeenCalled();
+    });
+
+    it('rifiuta una password corta impostata su un admin esistente e non la salva', async () => {
+      const { service, model } = setup({ target: { _id: 'a1', role: 'admin' } });
+
+      await expect(service.setPasswordByAdmin('a1', 'Short#1234')).rejects.toBeInstanceOf(BadRequestException);
+      expect(model.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('accetta una password lunga su un admin esistente', async () => {
+      const { service, model } = setup({ target: { _id: 'a1', role: 'admin' } });
+
+      await service.setPasswordByAdmin('a1', 'Twelve#Chars');
+
+      expect(model.updateOne).toHaveBeenCalled();
+    });
+
+    it('su un utente normale la password di 8 caratteri resta valida', async () => {
+      const { service, model } = setup();
+
+      await service.setPasswordByAdmin('u1', 'Short#12');
+
+      expect(model.updateOne).toHaveBeenCalled();
+    });
+  });
+
   it('revokes sessions of another user but refuses on yourself', async () => {
     const { service, model } = setup();
     await service.revokeSessions('admin', 'u1');

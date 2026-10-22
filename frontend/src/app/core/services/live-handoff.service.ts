@@ -30,6 +30,7 @@ export const SOCKET_IO = new InjectionToken<typeof io>('SOCKET_IO', { providedIn
 
 const DISMISS_COOLDOWN_MS = 10 * 60_000;
 const AUTO_MINIMIZE_MS = 8_000;
+const TYPING_THROTTLE_MS = 2_500;
 const DISMISS_KEY_PREFIX = 'live_handoff_dismissed_';
 
 @Injectable({ providedIn: 'root' })
@@ -44,6 +45,7 @@ export class LiveHandoffService {
   private sessionId: string | null = null;
   private minimizeTimer?: ReturnType<typeof setTimeout>;
   private pollTimer?: ReturnType<typeof setInterval>;
+  private lastTypingSentAt = 0;
 
   private readonly _state = new BehaviorSubject<LiveHandoffState>('idle');
   readonly state$: Observable<LiveHandoffState> = this._state.asObservable();
@@ -101,6 +103,48 @@ export class LiveHandoffService {
         },
         error: () => this._state.next('idle'),
       });
+  }
+
+  /**
+   * Riprende una chat live interrotta da un ricaricamento della pagina. Dopo il reload il
+   * servizio riparte da `idle` senza socket, ma la richiesta è ancora attiva sul server:
+   * Gent continuerebbe a scrivere e il visitatore non riceverebbe nulla, né i messaggi né
+   * la chiusura. Si riprende solo se la chat è ancora aperta; una già chiusa o scaduta non
+   * va mostrata, perché dopo il reload la cronologia della chat è vuota.
+   */
+  restore(sessionId: string): void {
+    if (!sessionId || this.state !== 'idle' || this.socket) return;
+
+    this.http.get<{ status: string }>(`${this.apiUrl}/${sessionId}/live-handoff/status`).subscribe({
+      next: ({ status }) => {
+        // L'utente può aver avviato una richiesta nuova mentre la risposta era in volo.
+        if (this.state !== 'idle' || this.socket) return;
+
+        const resumed: LiveHandoffState | null =
+          status === 'requested' || status === 'notified' ? 'request_sent'
+          : status === 'agent_joining' ? 'agent_joining'
+          : status === 'live' ? 'live'
+          : null;
+        if (!resumed) return;
+
+        this.sessionId = sessionId;
+        this._state.next(resumed);
+        this.connectSocket(sessionId);
+      },
+      error: () => undefined,
+    });
+  }
+
+  /**
+   * "Il visitatore sta scrivendo", mostrato a Gent. Solo a chat live e al massimo un evento
+   * ogni 2,5 s: il server scarta comunque oltre 6 eventi in 10 s per socket.
+   */
+  sendTyping(): void {
+    if (!this.socket || !this.sessionId || this.state !== 'live') return;
+    const now = Date.now();
+    if (now - this.lastTypingSentAt < TYPING_THROTTLE_MS) return;
+    this.lastTypingSentAt = now;
+    this.socket.emit('visitor_typing', { sessionId: this.sessionId });
   }
 
   sendLiveMessage(text: string): void {

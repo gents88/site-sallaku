@@ -31,6 +31,13 @@ export class MailService {
   private transporter: nodemailer.Transporter;
   private readonly isConfigured: boolean;
   private readonly smtpConfigured: boolean;
+  /**
+   * L'SMTP serve da ripiego solo se è una casella vera: con `smtp.resend.com` (utente "resend")
+   * si passa dallo stesso provider e con le stesse restrizioni, e un utente che non è un
+   * indirizzo email non può fare da mittente. In quei casi il ripiego fallirebbe sempre.
+   */
+  private readonly smtpFallbackUsable: boolean;
+  private hintedUnverifiedSender = false;
   private readonly smtpUser?: string;
 
   /** When set, all emails are sent via Resend HTTP API instead of SMTP */
@@ -47,16 +54,19 @@ export class MailService {
     const hasPlaceholderPass = smtpPass === 'la-tua-app-password-gmail';
     this.smtpConfigured = Boolean(smtpUser && smtpPass && !hasPlaceholderUser && !hasPlaceholderPass);
     this.isConfigured = Boolean(this.resendApiKey) || this.smtpConfigured;
+    const smtpHost = this.config.get<string>('SMTP_HOST', 'smtp.gmail.com');
+    this.smtpFallbackUsable =
+      this.smtpConfigured && /^[^@\s]+@[^@\s]+$/.test(smtpUser ?? '') && smtpHost.toLowerCase() !== 'smtp.resend.com';
 
     this.transporter = nodemailer.createTransport({
-      host:   this.config.get<string>('SMTP_HOST', 'smtp.gmail.com'),
+      host:   smtpHost,
       port:   this.config.get<number>('SMTP_PORT', 587),
       secure: this.config.get<boolean>('SMTP_SECURE', false),
       auth: { user: smtpUser, pass: smtpPass },
     });
 
     if (this.resendApiKey) {
-      this.logger.log(`MailService: using Resend HTTP API for delivery${this.smtpConfigured ? ' (SMTP as fallback)' : ''}.`);
+      this.logger.log(`MailService: using Resend HTTP API for delivery${this.smtpFallbackUsable ? ' (SMTP as fallback)' : ''}.`);
     } else if (this.smtpConfigured) {
       this.logger.log('MailService: using SMTP for delivery.');
     } else {
@@ -86,7 +96,11 @@ export class MailService {
 
     if (this.resendApiKey) {
       const result = await this.sendViaResend(opts);
-      if (result.success || !this.smtpConfigured) return result;
+      if (result.success) return result;
+      if (!this.smtpFallbackUsable) {
+        this.hintUnverifiedSender(opts.to);
+        return result;
+      }
       // Finché il dominio del mittente non è verificato, Resend consegna solo
       // all'indirizzo del titolare dell'account e rifiuta tutti gli altri
       // (es. i codici di accesso dei visitatori): con l'SMTP configurato il
@@ -95,6 +109,21 @@ export class MailService {
       return this.sendViaSmtp(opts, `"Gent Sallaku" <${this.smtpUser}>`);
     }
     return this.sendViaSmtp(opts);
+  }
+
+  /**
+   * Resend rifiuta e non c'è un ripiego utilizzabile: il messaggio non arriverà a nessuno
+   * tranne al titolare dell'account. Succede finché il dominio mittente non è verificato, e
+   * senza questa indicazione il log mostra solo un 403 generico. Una volta sola per avvio.
+   */
+  private hintUnverifiedSender(to: string): void {
+    if (this.hintedUnverifiedSender) return;
+    this.hintedUnverifiedSender = true;
+    this.logger.warn(
+      `Email non consegnata a ${to} e nessun ripiego SMTP utilizzabile. Se l'errore di Resend è 403, il dominio ` +
+        `mittente non è verificato: aggiungilo su https://resend.com/domains, imposta EMAIL_FROM con un indirizzo ` +
+        `di quel dominio, oppure configura SMTP_HOST/SMTP_USER/SMTP_PASS di una casella reale (es. Gmail con password per le app).`,
+    );
   }
 
   // ── Resend HTTP API (bypasses SMTP port blocking on Railway) ──────────────

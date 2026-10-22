@@ -16,9 +16,20 @@ import { LanguageService } from '../../core/services/language.service';
  */
 describe('ChatbotComponent — chiusura della chat live', () => {
   let liveState$: BehaviorSubject<string>;
+  let liveMock: { sendTyping: ReturnType<typeof vi.fn> };
 
   function create(open: boolean): ComponentFixture<ChatbotComponent> {
     liveState$ = new BehaviorSubject<string>('live');
+    liveMock = {
+      state$: liveState$,
+      minimized$: new BehaviorSubject(false),
+      liveMessages$: new BehaviorSubject([]),
+      closeByVisitor: vi.fn(),
+      reset: vi.fn(),
+      restore: vi.fn(),
+      notifyTyping: vi.fn(),
+      sendTyping: vi.fn(),
+    } as unknown as typeof liveMock;
     const mockChatbot = {
       messages$: new BehaviorSubject([]),
       isLoading$: new BehaviorSubject(false),
@@ -37,17 +48,7 @@ describe('ChatbotComponent — chiusura della chat live', () => {
         importProvidersFrom(TranslateModule.forRoot()),
         provideRouter([]),
         { provide: ChatbotService, useValue: mockChatbot },
-        {
-          provide: LiveHandoffService,
-          useValue: {
-            state$: liveState$,
-            minimized$: new BehaviorSubject(false),
-            liveMessages$: new BehaviorSubject([]),
-            closeByVisitor: vi.fn(),
-            reset: vi.fn(),
-            notifyTyping: vi.fn(),
-          },
-        },
+        { provide: LiveHandoffService, useValue: liveMock },
         { provide: LanguageService, useValue: { current: () => 'it' } },
       ],
     });
@@ -119,5 +120,27 @@ describe('ChatbotComponent — chiusura della chat live', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.badgeCount).toBe(0);
+  });
+
+  describe('digitazione del visitatore', () => {
+    const typeInto = (fixture: ComponentFixture<ChatbotComponent>) =>
+      fixture.componentInstance.onInputChange({ target: document.createElement('textarea') } as unknown as Event);
+
+    it('a chat live segnala a Gent che il visitatore sta scrivendo', () => {
+      const fixture = create(true);
+
+      typeInto(fixture);
+
+      expect(liveMock.sendTyping).toHaveBeenCalledTimes(1);
+    });
+
+    it('fuori dalla chat live non segnala nulla', () => {
+      const fixture = create(true);
+      liveState$.next('closed');
+
+      typeInto(fixture);
+
+      expect(liveMock.sendTyping).not.toHaveBeenCalled();
+    });
   });
 });

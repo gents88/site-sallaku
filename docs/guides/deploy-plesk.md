@@ -88,7 +88,7 @@ Lancia sul server `scripts/plesk/setup-server.sh`, che è idempotente. Lo script
 - scarica MongoDB e i database tools;
 - installa pm2 e mongosh in `~/app/tools`;
 - genera le credenziali Mongo e crea gli utenti `root` e `portfolio`;
-- installa il crontab: watchdog ogni minuto e al reboot, backup alle 03:30.
+- installa il crontab: watchdog ogni minuto e al reboot, backup alle 03:30, controllo della memoria ogni 5 minuti.
 
 Rilanciarlo serve ad aggiornare le versioni (in cima allo script).
 
@@ -151,6 +151,8 @@ cat ~/app/logs/watchdog.log        # riavvii fatti dal watchdog
 
 ls -lt ~/app/backend/releases/     # release disponibili
 ~/app/bin/mongo-backup.sh          # backup manuale
+~/app/bin/mongo-verify-backup.sh   # prova il ripristino dell'ultimo dump in un database temporaneo (non tocca portfolio)
+~/app/bin/memory-alert.sh --test   # invia subito l'email di prova dell'avviso memoria (--dry-run: solo a video)
 ~/app/bin/mongo-restore.sh ~/app/backups/<file> portfolio   # ripristino da un backup del server
 
 source ~/app/shared/mongo.env      # shell Mongo

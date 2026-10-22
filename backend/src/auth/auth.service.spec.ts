@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { createHash } from 'crypto';
 import { AuthService, MAX_FAILED_LOGINS } from './auth.service';
@@ -148,14 +148,66 @@ describe('AuthService', () => {
       expect(usersService.deleteById).toHaveBeenCalledWith('user-id-1');
     });
 
-    it('should throw ConflictException if email already registered', async () => {
-      usersService.findByEmail.mockResolvedValue(makeUser() as any);
+    describe('email già registrata (nessuna enumerazione degli account)', () => {
+      const dto = { name: 'X', email: 'test@example.com', password: 'StrongPass123!' };
+      let hash: jest.SpyInstance;
 
-      await expect(
-        service.register({ name: 'X', email: 'test@example.com', password: 'pass' }),
-      ).rejects.toThrow(ConflictException);
-      expect(usersService.create).not.toHaveBeenCalled();
-      expect(otpService.requestOtp).not.toHaveBeenCalled();
+      beforeEach(() => {
+        // Il costo reale di bcrypt (12 round) non serve: conta che venga fatto, come per un account nuovo.
+        hash = jest.spyOn(bcrypt, 'hash').mockResolvedValue('hash' as never);
+        otpService.requestOtp.mockResolvedValue({ message: 'OTP sent' });
+      });
+      afterEach(() => hash.mockRestore());
+
+      it('risponde esattamente come per una registrazione nuova', async () => {
+        usersService.findByEmail.mockResolvedValue(null);
+        usersService.create.mockResolvedValue(makeUser({ emailVerified: false }) as any);
+        const fresh = await service.register(dto);
+
+        usersService.findByEmail.mockResolvedValue(makeUser() as any);
+        const existing = await service.register(dto);
+
+        expect(existing).toEqual(fresh);
+      });
+
+      it('non crea un secondo account e non lo modifica', async () => {
+        usersService.findByEmail.mockResolvedValue(makeUser() as any);
+
+        await service.register(dto);
+
+        expect(usersService.create).not.toHaveBeenCalled();
+        expect(usersService.deleteById).not.toHaveBeenCalled();
+      });
+
+      it('manda comunque il codice: il titolare dell\'indirizzo può entrare, chi ha provato non impara nulla', async () => {
+        usersService.findByEmail.mockResolvedValue(makeUser() as any);
+
+        await service.register(dto);
+
+        expect(otpService.requestOtp).toHaveBeenCalledWith(undefined, 'test@example.com');
+      });
+
+      it('fa lo stesso hash della registrazione nuova, così il tempo di risposta non rivela l\'esistenza', async () => {
+        usersService.findByEmail.mockResolvedValue(makeUser() as any);
+
+        await service.register(dto);
+
+        expect(hash).toHaveBeenCalledWith(dto.password, 12);
+      });
+
+      it('gli errori di invio sono quelli di una registrazione nuova (es. limite di richieste)', async () => {
+        usersService.findByEmail.mockResolvedValue(makeUser() as any);
+        otpService.requestOtp.mockRejectedValue(new BadRequestException('Too many OTP requests.'));
+
+        await expect(service.register(dto)).rejects.toThrow(BadRequestException);
+        expect(usersService.deleteById).not.toHaveBeenCalled();
+      });
+
+      it('non risponde mai 409 "Email already registered"', async () => {
+        usersService.findByEmail.mockResolvedValue(makeUser() as any);
+
+        await expect(service.register(dto)).resolves.toBeDefined();
+      });
     });
   });
 
@@ -240,10 +292,19 @@ describe('AuthService', () => {
 
       it('conta anche le email inesistenti, così il blocco non rivela quali account esistono', async () => {
         usersService.findByEmail.mockResolvedValue(null);
-        for (let i = 0; i < MAX_FAILED_LOGINS; i++) {
-          await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toThrow(UnauthorizedException);
+        // Il confronto finto usa un hash a 12 round: 10 giri reali superano il timeout sui runner lenti.
+        // Qui interessa il conteggio, non il costo di bcrypt.
+        const compare = jest.spyOn(bcrypt, 'compare').mockResolvedValue(false as never);
+        try {
+          for (let i = 0; i < MAX_FAILED_LOGINS; i++) {
+            await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toThrow(UnauthorizedException);
+          }
+          // Anche per un'email inesistente si fa il confronto: il tempo di risposta non rivela se l'account esiste.
+          expect(compare).toHaveBeenCalledTimes(MAX_FAILED_LOGINS);
+          await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toMatchObject({ status: 429 });
+        } finally {
+          compare.mockRestore();
         }
-        await expect(service.login({ email: 'ghost@example.com', password: 'x' })).rejects.toMatchObject({ status: 429 });
       });
 
       it('il blocco vale per email: un altro account non è toccato', async () => {
