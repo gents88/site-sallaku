@@ -103,6 +103,36 @@ export class LiveHandoffService {
       });
   }
 
+  /**
+   * Riprende una chat live interrotta da un ricaricamento della pagina. Dopo il reload il
+   * servizio riparte da `idle` senza socket, ma la richiesta è ancora attiva sul server:
+   * Gent continuerebbe a scrivere e il visitatore non riceverebbe nulla, né i messaggi né
+   * la chiusura. Si riprende solo se la chat è ancora aperta; una già chiusa o scaduta non
+   * va mostrata, perché dopo il reload la cronologia della chat è vuota.
+   */
+  restore(sessionId: string): void {
+    if (!sessionId || this.state !== 'idle' || this.socket) return;
+
+    this.http.get<{ status: string }>(`${this.apiUrl}/${sessionId}/live-handoff/status`).subscribe({
+      next: ({ status }) => {
+        // L'utente può aver avviato una richiesta nuova mentre la risposta era in volo.
+        if (this.state !== 'idle' || this.socket) return;
+
+        const resumed: LiveHandoffState | null =
+          status === 'requested' || status === 'notified' ? 'request_sent'
+          : status === 'agent_joining' ? 'agent_joining'
+          : status === 'live' ? 'live'
+          : null;
+        if (!resumed) return;
+
+        this.sessionId = sessionId;
+        this._state.next(resumed);
+        this.connectSocket(sessionId);
+      },
+      error: () => undefined,
+    });
+  }
+
   sendLiveMessage(text: string): void {
     const trimmed = text.trim();
     if (!trimmed || !this.socket || !this.sessionId || this.state !== 'live') return;

@@ -158,6 +158,10 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.noticeDismissed = this.readFlag(NOTICE_DISMISSED_KEY);
     this.scheduleTeaser();
 
+    // Dopo un ricaricamento la chat live in corso va ripresa, altrimenti Gent scrive nel vuoto.
+    const sessionId = this.chatbot.currentSessionId;
+    if (sessionId && this.flags.liveHandoffEnabled()) this.liveHandoff.restore(sessionId);
+
     this.subs.add(
       this.chatbot.messages$.subscribe((msgs: ChatMessage[]) => {
         const newOnes = msgs.slice(this.lastSeenBotLen);
