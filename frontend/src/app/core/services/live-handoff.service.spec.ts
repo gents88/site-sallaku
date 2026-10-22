@@ -210,6 +210,55 @@ describe('LiveHandoffService', () => {
     });
   });
 
+  describe('sendTyping ("sta scrivendo" verso Gent)', () => {
+    function goLive(): void {
+      service.restore('s1');
+      httpMock.expectOne(`${environment.apiUrl}/chatbot/s1/live-handoff/status`).flush({ status: 'live' });
+    }
+    const typingEvents = () => lastSocket!.emitted.filter((e) => e.event === 'visitor_typing');
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-10-22T12:00:00Z'));
+    });
+    afterEach(() => vi.useRealTimers());
+
+    it('a chat live invia visitor_typing con la sessione', () => {
+      goLive();
+
+      service.sendTyping();
+
+      expect(typingEvents()).toEqual([{ event: 'visitor_typing', payload: { sessionId: 's1' } }]);
+    });
+
+    it('al massimo un evento ogni 2,5 secondi', () => {
+      goLive();
+
+      service.sendTyping();
+      service.sendTyping();
+      vi.advanceTimersByTime(2_000);
+      service.sendTyping();
+      expect(typingEvents()).toHaveLength(1);
+
+      vi.advanceTimersByTime(600);
+      service.sendTyping();
+      expect(typingEvents()).toHaveLength(2);
+    });
+
+    it('fuori dallo stato "live" non invia nulla', () => {
+      service.requestHandoff('s1', 'ciao', 'it');
+      flushSuccessfulRequest(httpMock);
+
+      service.sendTyping();
+
+      expect(typingEvents()).toHaveLength(0);
+    });
+
+    it('senza socket non fa nulla e non lancia', () => {
+      expect(() => service.sendTyping()).not.toThrow();
+    });
+  });
+
   describe('requestHandoff', () => {
     it('invia la richiesta POST corretta e passa subito a "request_sent"', () => {
       service.requestHandoff('s1', 'ciao Gent', 'it');

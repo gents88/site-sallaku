@@ -376,6 +376,58 @@ describe('LiveHandoffGateway', () => {
     });
   });
 
+  describe('visitor_typing', () => {
+    function clientInRoom(sessionId: string) {
+      const toEmit = jest.fn();
+      return {
+        ...mockClient,
+        rooms: new Set([`live-handoff:${sessionId}`]),
+        to: jest.fn().mockReturnValue({ emit: toEmit }),
+        toEmit,
+      };
+    }
+
+    it('inoltra "typing" agli altri membri della stanza, escludendo il mittente', () => {
+      const client = clientInRoom(SID);
+
+      gateway.onVisitorTyping(client, { sessionId: SID });
+
+      expect(client.to).toHaveBeenCalledWith(`live-handoff:${SID}`);
+      expect(client.toEmit).toHaveBeenCalledWith('typing', { sessionId: SID, from: 'visitor' });
+    });
+
+    it('non scrive nulla su database', () => {
+      gateway.onVisitorTyping(clientInRoom(SID), { sessionId: SID });
+
+      expect(mockChatbotService.appendLiveMessage).not.toHaveBeenCalled();
+      expect(mockLiveHandoffService.touchActivity).not.toHaveBeenCalled();
+    });
+
+    it('ignora chi non è entrato nella stanza di quella sessione', () => {
+      const client = clientInRoom('session-altra');
+
+      gateway.onVisitorTyping(client, { sessionId: SID });
+
+      expect(client.to).not.toHaveBeenCalled();
+    });
+
+    it('ignora un sessionId non valido (oggetto con operatori Mongo)', () => {
+      const client = clientInRoom(SID);
+
+      gateway.onVisitorTyping(client, { sessionId: { $ne: null } });
+
+      expect(client.to).not.toHaveBeenCalled();
+    });
+
+    it('limita la frequenza: oltre 6 eventi in 10 s vengono scartati', () => {
+      const client = clientInRoom(SID);
+
+      for (let i = 0; i < 10; i++) gateway.onVisitorTyping(client, { sessionId: SID });
+
+      expect(client.toEmit).toHaveBeenCalledTimes(6);
+    });
+  });
+
   describe('rate limit del visitatore', () => {
     beforeEach(() => {
       mockLiveHandoffService.getStatus.mockResolvedValue({ status: 'live' });

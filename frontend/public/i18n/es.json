@@ -976,6 +976,7 @@
     "admin_live": "Chat en vivo activo",
     "admin_expired": "Esta solicitud ha caducado.",
     "admin_closed": "Esta sesión ha sido cerrada.",
+    "admin_visitor_typing": "El visitante está escribiendo…",
     "admin_error": "No se pudo conectar. Verifica que hayas iniciado sesión como administrador.",
     "admin_send_placeholder": "Escribe como Gent…",
     "admin_history_loading": "Cargando conversación…",
