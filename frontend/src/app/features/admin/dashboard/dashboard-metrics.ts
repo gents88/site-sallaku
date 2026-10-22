@@ -47,6 +47,7 @@ export const SECTION_LABEL_KEYS: Record<OverviewSection, string> = {
   scheduledPosts: 'scheduled_posts.title',
   leads: 'leads.title',
   notFound: 'not_found.title',
+  security: 'security_panel.title',
 };
 
 /** Etichette uniche (le tre sezioni di sistema condividono lo stesso pannello). */

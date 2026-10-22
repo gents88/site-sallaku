@@ -22,6 +22,7 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RequireFeature } from '../common/settings/require-feature.decorator';
+import { clientContext } from '../security/client-context';
 import { applyRefreshCookie, clearRefreshCookie, readRefreshCookie, refreshCookieEnabled } from './refresh-cookie';
 
 @ApiTags('Auth')
@@ -43,8 +44,8 @@ export class AuthController {
   // 10 login attempts per 60 seconds per IP — brute force protection
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Login and receive JWT access + refresh tokens' })
-  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
-    return applyRefreshCookie(res, await this.authService.login(dto));
+  async login(@Body() dto: LoginDto, @Req() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+    return applyRefreshCookie(res, await this.authService.login(dto, clientContext(req)));
   }
 
   @Get('otp/channels')
@@ -66,8 +67,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Verify OTP and receive JWT access + refresh tokens' })
-  async verifyOtp(@Body() dto: VerifyOtpDto, @Res({ passthrough: true }) res: Response) {
-    return applyRefreshCookie(res, await this.authService.verifyOtp(dto.phone, dto.email, dto.otp));
+  async verifyOtp(@Body() dto: VerifyOtpDto, @Req() req: ExpressRequest, @Res({ passthrough: true }) res: Response) {
+    return applyRefreshCookie(res, await this.authService.verifyOtp(dto.phone, dto.email, dto.otp, clientContext(req)));
   }
 
   @Post('refresh')
@@ -78,7 +79,7 @@ export class AuthController {
     // Body (modalità classica) o cookie httpOnly (AUTH_REFRESH_COOKIE=true).
     const token = dto.refreshToken ?? (refreshCookieEnabled() ? readRefreshCookie(req) : undefined);
     if (!token) throw new UnauthorizedException('Missing refresh token');
-    return applyRefreshCookie(res, await this.authService.refreshAccessToken(token));
+    return applyRefreshCookie(res, await this.authService.refreshAccessToken(token, clientContext(req)));
   }
 
   @Post('logout')
