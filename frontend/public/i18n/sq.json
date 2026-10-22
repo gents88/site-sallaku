@@ -2416,6 +2416,7 @@
     "started": "filloi",
     "last_active": "aktiviteti i fundit",
     "close_session": "Mbyll seancën",
+    "this_device": "Kjo pajisje",
     "close_confirm": "Të mbyllet seanca e {{name}}? Do të duhet të hyjë përsëri (brenda 15 minutave).",
     "close_error": "Seanca nuk mund të mbyllet.",
     "ev_login_success": "Hyrje",
