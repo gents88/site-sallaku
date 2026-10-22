@@ -65,6 +65,13 @@ describe('BlogManageComponent — filtro per stato', () => {
     expect(open).toHaveBeenCalledWith(expect.objectContaining({ _id: 'a' }));
   });
 
+  it("il pulsante anteprima apre la pagina nella stessa scheda, non in una nuova", async () => {
+    const { el } = await setup(null);
+    const link = el.querySelector<HTMLAnchorElement>('a[href="/dashboard/blog/preview/a"]');
+    expect(link).not.toBeNull();
+    expect(link!.hasAttribute('target')).toBe(false);
+  });
+
   it('un valore sconosciuto torna a "tutti"', async () => {
     const { c } = await setup('cestino');
     expect(c.statusFilter).toBe('all');
