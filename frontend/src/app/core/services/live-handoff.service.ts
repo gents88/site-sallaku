@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import { AnalyticsTrackingService } from './analytics-tracking.service';
+import { loadChatMessages, saveChatMessages, StoredChatMessage } from '../utils/chat-history-storage';
 
 export type LiveHandoffState =
   | 'idle'
@@ -32,6 +33,27 @@ const DISMISS_COOLDOWN_MS = 10 * 60_000;
 const AUTO_MINIMIZE_MS = 8_000;
 const TYPING_THROTTLE_MS = 2_500;
 const DISMISS_KEY_PREFIX = 'live_handoff_dismissed_';
+const LIVE_MESSAGES_KEY = 'live_handoff_messages';
+/** Stessa chiave di ChatbotService: i messaggi live appartengono alla conversazione di quella sessione. */
+const CHAT_SESSION_KEY = 'chatbot_session_id';
+
+/** Messaggi live ripresi dopo un ricaricamento, solo se la conversazione a cui appartengono esiste ancora. */
+function restoredLiveMessages(): LiveHandoffMessage[] {
+  try {
+    if (typeof sessionStorage === 'undefined' || !sessionStorage.getItem(CHAT_SESSION_KEY)) return [];
+  } catch {
+    return [];
+  }
+  return loadChatMessages(LIVE_MESSAGES_KEY).map((m) => ({
+    from: m.role === 'agent' ? 'agent' : 'visitor',
+    text: m.content,
+    sentAt: m.timestamp,
+  }));
+}
+
+function storableLiveMessages(messages: readonly LiveHandoffMessage[]): StoredChatMessage[] {
+  return messages.map((m) => ({ role: m.from === 'agent' ? 'agent' : 'user', content: m.text, timestamp: m.sentAt }));
+}
 
 @Injectable({ providedIn: 'root' })
 export class LiveHandoffService {
@@ -53,8 +75,13 @@ export class LiveHandoffService {
   private readonly _minimized = new BehaviorSubject<boolean>(false);
   readonly minimized$: Observable<boolean> = this._minimized.asObservable();
 
-  private readonly _liveMessages = new BehaviorSubject<LiveHandoffMessage[]>([]);
+  private readonly _liveMessages = new BehaviorSubject<LiveHandoffMessage[]>(restoredLiveMessages());
   readonly liveMessages$: Observable<LiveHandoffMessage[]> = this._liveMessages.asObservable();
+
+  /** I messaggi della chat live si salvano a ogni cambiamento: dopo un reload la conversazione c'è ancora. */
+  private readonly persistLiveMessages = this._liveMessages.subscribe((messages) =>
+    saveChatMessages(LIVE_MESSAGES_KEY, storableLiveMessages(messages)),
+  );
 
   get state(): LiveHandoffState {
     return this._state.getValue();
@@ -109,8 +136,9 @@ export class LiveHandoffService {
    * Riprende una chat live interrotta da un ricaricamento della pagina. Dopo il reload il
    * servizio riparte da `idle` senza socket, ma la richiesta è ancora attiva sul server:
    * Gent continuerebbe a scrivere e il visitatore non riceverebbe nulla, né i messaggi né
-   * la chiusura. Si riprende solo se la chat è ancora aperta; una già chiusa o scaduta non
-   * va mostrata, perché dopo il reload la cronologia della chat è vuota.
+   * la chiusura. Si riprende se la chat è ancora aperta. Se Gent l'ha chiusa mentre la pagina era
+   * chiusa o ricaricata e c'è stato uno scambio, si mostra l'avviso di chiusura accanto alla
+   * cronologia ripresa; una richiesta scaduta senza scambi non si mostra.
    */
   restore(sessionId: string): void {
     if (!sessionId || this.state !== 'idle' || this.socket) return;
@@ -119,6 +147,11 @@ export class LiveHandoffService {
       next: ({ status }) => {
         // L'utente può aver avviato una richiesta nuova mentre la risposta era in volo.
         if (this.state !== 'idle' || this.socket) return;
+
+        if (status === 'closed' && this._liveMessages.getValue().length > 0) {
+          this._state.next('closed');
+          return;
+        }
 
         const resumed: LiveHandoffState | null =
           status === 'requested' || status === 'notified' ? 'request_sent'
