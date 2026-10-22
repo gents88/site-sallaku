@@ -364,7 +364,7 @@
             <img [src]="post.coverImage" [alt]="post.title" class="list-item__thumb" />
           }
           <div class="list-item__info">
-            <h3>{{ post.title }}</h3>
+            <h3><button type="button" class="list-item__title-link" (click)="openEdit(post)">{{ post.title }}</button></h3>
             @if (post.subtitle) {
               <p class="text-muted">{{ post.subtitle }}</p>
             }
