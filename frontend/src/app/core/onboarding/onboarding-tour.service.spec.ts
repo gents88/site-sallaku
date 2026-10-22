@@ -48,6 +48,8 @@ describe('OnboardingTourService', () => {
   let analytics: { trackClick: ReturnType<typeof vi.fn> };
   /** Layout simulato: false = desktop/tablet. */
   let mobile = false;
+  /** Servizio del test corrente: in afterEach si chiude il suo tour, che altrimenti lascerebbe il listener di resize su window. */
+  let current: OnboardingTourService | null = null;
 
   /** Monta nel DOM gli elementi bersaglio; quelli con data-hidden risultano non visibili. */
   function mountTargets(html: string) {
@@ -65,7 +67,8 @@ describe('OnboardingTourService', () => {
         { provide: TranslateService, useValue: { instant: (key: string, params?: Record<string, string>) => (params ? `${key}:${JSON.stringify(params)}` : key) } },
       ],
     });
-    return TestBed.inject(OnboardingTourService);
+    current = TestBed.inject(OnboardingTourService);
+    return current;
   }
 
   beforeEach(() => {
@@ -91,6 +94,8 @@ describe('OnboardingTourService', () => {
   });
 
   afterEach(() => {
+    current?.stop();
+    current = null;
     vi.useRealTimers();
     vi.restoreAllMocks();
     document.body.innerHTML = '';
@@ -177,6 +182,52 @@ describe('OnboardingTourService', () => {
 
       expect(tour.isMobileLayout()).toBe(false);
       expect(fake.instance.drive).toHaveBeenCalledOnce();
+    });
+
+    it('si chiude se il layout diventa mobile a tour aperto, senza segnarlo come visto', async () => {
+      // Telefono aperto in orizzontale (>900px) e poi ruotato: l'overlay
+      // restava sopra il banner dei cookie e si mangiava i tap.
+      const tour = setup();
+      await tour.start();
+      expect(tour.active()).toBe(true);
+
+      window.dispatchEvent(new Event('resize'));
+      expect(fake.instance.destroy).not.toHaveBeenCalled();
+
+      mobileViewport();
+      window.dispatchEvent(new Event('resize'));
+
+      expect(fake.instance.destroy).toHaveBeenCalledOnce();
+      expect(tour.active()).toBe(false);
+      expect(localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBeNull();
+      expect(analytics.trackClick).not.toHaveBeenCalled();
+    });
+
+    it('dopo la chiusura non ascolta più i resize', async () => {
+      const tour = setup();
+      await tour.start();
+      fake.state.config!.onDestroyed!(undefined, {}, { ...hookOpts(), state: { activeIndex: 0 } });
+      expect(localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBe('true');
+
+      mobileViewport();
+      window.dispatchEvent(new Event('resize'));
+
+      expect(fake.instance.destroy).not.toHaveBeenCalled();
+      expect(tour.active()).toBe(false);
+    });
+
+    it('non parte se il layout diventa mobile mentre Driver.js si carica', async () => {
+      // Il pulsante del chatbot non c'è ancora: start() lo aspetta fino a 4s.
+      document.querySelector('.cb-fab')?.remove();
+      const tour = setup();
+      const starting = tour.start();
+      mobileViewport();
+      await vi.advanceTimersByTimeAsync(4000);
+      await starting;
+
+      expect(fake.instance.drive).not.toHaveBeenCalled();
+      expect(tour.active()).toBe(false);
+      expect(localStorage.getItem(ONBOARDING_STORAGE_KEY)).toBeNull();
     });
   });
 
