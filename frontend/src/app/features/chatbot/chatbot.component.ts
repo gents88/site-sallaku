@@ -201,7 +201,15 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
     this.subs.add(
       this.liveHandoff.state$.subscribe((state: LiveHandoffState) => {
+        const previous = this.liveState;
         this.liveState = state;
+        // Quando Gent chiude (o non risponde) l'avviso compare in fondo alla conversazione:
+        // senza scroll resta sotto il bordo visibile e, a pannello chiuso, non c'è nessun
+        // segnale — i messaggi di Gent invece contano come non letti, la chiusura no.
+        if ((state === 'closed' || state === 'expired') && previous !== state) {
+          this.shouldScroll = true;
+          if (!this.isOpen) this.unreadCount += 1;
+        }
         this.cdr.markForCheck();
       }),
     );
