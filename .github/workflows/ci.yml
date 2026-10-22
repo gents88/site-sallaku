@@ -23,10 +23,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-
         with:
           # Come in produzione (Node 24 su Plesk): il lockfile è di npm 11, che
           # npm 10 (Node 20) considera fuori sync e `npm ci` fallisce.
@@ -85,10 +83,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-
         with:
           node-version: '20'
           cache: 'npm'
@@ -124,7 +120,6 @@ jobs:
       - name: Upload build
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-
         with:
           name: frontend-dist
           path: frontend/dist/portfolio-frontend/browser/
@@ -144,10 +139,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-
         with:
           node-version: '20'
           cache: 'npm'
@@ -167,7 +160,6 @@ jobs:
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-
         with:
           name: playwright-report
           path: frontend/playwright-report/
@@ -188,14 +180,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
-
       - name: Build backend image (cache check)
         uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
-
         with:
           context: ./backend
           file: ./backend/Dockerfile
@@ -224,7 +213,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-
         with:
           fetch-depth: 0
 
@@ -246,7 +234,6 @@ jobs:
       - name: Set up Node.js
         if: steps.changes.outputs.deploy == 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-
         with:
           node-version: '24'
           cache: 'npm'
@@ -291,10 +278,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-
       - name: Download build
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-
         with:
           name: frontend-dist
           path: ${{ runner.temp }}/frontend-dist
