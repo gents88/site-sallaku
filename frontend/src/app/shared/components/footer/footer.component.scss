@@ -95,6 +95,9 @@
     transition: color var(--transition-fast);
 
     &:hover { color: var(--primary-400); }
+
+    // Sul telefono il link è alto 20px: area di tocco di 44px senza cambiare l'aspetto.
+    @media (max-width: 700px) { display: inline-flex; align-items: center; min-height: 44px; }
   }
 }
 
