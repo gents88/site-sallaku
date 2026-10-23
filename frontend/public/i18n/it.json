@@ -977,6 +977,8 @@
     "admin_expired": "Questa richiesta è scaduta.",
     "admin_closed": "Questa sessione è stata chiusa.",
     "admin_visitor_typing": "Il visitatore sta scrivendo…",
+    "admin_role_visitor": "Visitatore",
+    "admin_role_ai": "IA",
     "admin_error": "Impossibile connettersi. Verifica di aver effettuato l'accesso come admin.",
     "admin_send_placeholder": "Scrivi come Gent…",
     "admin_history_loading": "Caricamento conversazione…",

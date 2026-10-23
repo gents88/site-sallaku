@@ -977,6 +977,8 @@
     "admin_expired": "This request has expired.",
     "admin_closed": "This session has been closed.",
     "admin_visitor_typing": "The visitor is typing…",
+    "admin_role_visitor": "Visitor",
+    "admin_role_ai": "AI",
     "admin_error": "Couldn't connect. Make sure you're logged in as admin.",
     "admin_send_placeholder": "Write as Gent…",
     "admin_history_loading": "Loading conversation…",
