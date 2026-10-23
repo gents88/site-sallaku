@@ -977,6 +977,8 @@
     "admin_expired": "Este pedido expirou.",
     "admin_closed": "Esta sessão foi encerrada.",
     "admin_visitor_typing": "O visitante está a escrever…",
+    "admin_role_visitor": "Visitante",
+    "admin_role_ai": "IA",
     "admin_error": "Não foi possível conectar. Verifique se você está autenticado como admin.",
     "admin_send_placeholder": "Escrever como Gent…",
     "admin_history_loading": "Carregando conversa…",

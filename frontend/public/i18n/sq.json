@@ -977,6 +977,8 @@
     "admin_expired": "Kjo kërkesë ka skaduar.",
     "admin_closed": "Ky sesion është mbyllur.",
     "admin_visitor_typing": "Vizitori po shkruan…",
+    "admin_role_visitor": "Vizitori",
+    "admin_role_ai": "IA",
     "admin_error": "Lidhja dështoi. Sigurohu që je i kyçur si admin.",
     "admin_send_placeholder": "Shkruaj si Gent…",
     "admin_history_loading": "Duke ngarkuar bisedën…",
