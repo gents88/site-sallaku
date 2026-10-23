@@ -139,6 +139,23 @@ Dopo 1–2 settimane senza problemi:
 
 ---
 
+## Email ai visitatori (codici OTP, newsletter)
+
+Con `RESEND_API_KEY` ma senza un dominio verificato, Resend consegna **solo al titolare dell'account**: i
+visitatori non ricevono i codici. Il log lo dice una volta per avvio ("dominio mittente non verificato").
+Due strade, da `~/app/shared/backend.env` (poi `pm2 restart backend --update-env`):
+
+1. **Verificare il dominio su Resend**: su resend.com/domains aggiungi `gentsallaku.it` e crea nel DNS di IONOS
+   i record che mostra (una chiave DKIM `resend._domainkey` e, per il sottodominio `send`, un MX e un SPF; non
+   toccano la posta del dominio). Poi `EMAIL_FROM="Gent Sallaku <noreply@gentsallaku.it>"`.
+2. **Una casella del dominio via SMTP** (IONOS, porta 587, raggiungibile dal server):
+   `SMTP_HOST=smtp.ionos.it`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=<casella>@gentsallaku.it`,
+   `SMTP_PASS=<password della casella>` e `MAIL_PREFER_SMTP=true`: si invia dalla casella e Resend resta
+   solo come ripiego. Il mittente è la casella stessa.
+
+Dopo la modifica, `~/app/bin/memory-alert.sh --test` invia comunque un'email di prova usando la chiave Resend;
+per provare l'invio ai visitatori richiedi un codice con un indirizzo che non è il tuo.
+
 ## Comandi utili (sul server: `ssh plesk-gentsallaku`)
 
 ```bash

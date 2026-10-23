@@ -13,6 +13,8 @@
   border-radius: 10px;
 }
 
+@media (max-width: 700px) { .status-tab { min-height: 40px; } }
+
 .status-tab {
   display: inline-flex;
   align-items: center;
@@ -105,8 +107,10 @@
   &__actions {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.15rem;
     flex-shrink: 0;
+    max-width: 100%;
   }
 
   &__edit { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -144,5 +148,6 @@
 
 @media (max-width: 640px) {
   .testimonial-row { flex-direction: column; }
-  .testimonial-row__actions { align-self: flex-end; }
+  /* Con 5+ icone la riga è più larga di un telefono stretto: va a capo e occupa tutta la larghezza. */
+  .testimonial-row__actions { align-self: stretch; justify-content: flex-end; }
 }

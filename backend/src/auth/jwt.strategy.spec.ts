@@ -30,6 +30,22 @@ describe('JwtStrategy', () => {
     expect(result).not.toHaveProperty('passwordHash');
   });
 
+  it('espone il sid della sessione, per il logout del solo dispositivo corrente', async () => {
+    usersService.findById.mockResolvedValue({ _id: 'user-1', email: 'a@b.com', role: 'user', name: 'A' } as any);
+
+    const result = await strategy.validate({ sub: 'user-1', email: 'a@b.com', role: 'user', sid: 'sid-telefono' });
+
+    expect(result).toMatchObject({ sid: 'sid-telefono' });
+  });
+
+  it('un token senza sid (precedente al multi-dispositivo) resta valido, con sid assente', async () => {
+    usersService.findById.mockResolvedValue({ _id: 'user-1', email: 'a@b.com', role: 'user', name: 'A' } as any);
+
+    const result = await strategy.validate({ sub: 'user-1', email: 'a@b.com', role: 'user' });
+
+    expect(result.sid).toBeUndefined();
+  });
+
   it('rejects a refresh token presented as an access token, without hitting the database', async () => {
     await expect(
       strategy.validate({ sub: 'user-1', email: 'a@b.com', role: 'admin', type: 'refresh' }),
