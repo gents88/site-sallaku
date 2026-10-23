@@ -143,6 +143,31 @@ describe('AdminLiveChatComponent — autenticazione del socket', () => {
     expect(socketFactory).not.toHaveBeenCalled();
   });
 
+  describe('etichette dei messaggi', () => {
+    const labels = (f: ComponentFixture<AdminLiveChatComponent>) =>
+      Array.from((f.nativeElement as HTMLElement).querySelectorAll('.alc-msg__label')).map((el) => el.textContent?.trim());
+
+    it('usa le chiavi di traduzione per visitatore e AI, non testo italiano fisso', () => {
+      const fixture = create();
+      const at = new Date();
+      fixture.componentInstance.messages = [
+        { role: 'user', content: 'ciao', timestamp: at },
+        { role: 'assistant', content: 'risposta del bot', timestamp: new Date(at.getTime() + 1) },
+      ];
+      fixture.detectChanges();
+
+      expect(labels(fixture)).toEqual(['live_handoff.admin_role_visitor', 'live_handoff.admin_role_ai']);
+    });
+
+    it('i messaggi di Gent mostrano il suo nome', () => {
+      const fixture = create();
+      socket.fire('chat_message', { from: 'agent', text: 'eccomi', sentAt: new Date().toISOString() });
+      fixture.detectChanges();
+
+      expect(labels(fixture)).toEqual(['Gent']);
+    });
+  });
+
   describe('segnali per l\'admin', () => {
     afterEach(() => vi.useRealTimers());
 

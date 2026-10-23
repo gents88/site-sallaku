@@ -4,13 +4,13 @@ import { REFRESH_COOKIE } from './refresh-cookie';
 
 describe('AuthController refresh token transport', () => {
   const tokens = { access_token: 'acc', refresh_token: 'new-rt', expires_in: 900, user: {} };
-  let service: { refreshAccessToken: jest.Mock; login: jest.Mock };
+  let service: { refreshAccessToken: jest.Mock; login: jest.Mock; logout: jest.Mock };
   let controller: AuthController;
   const res = () => ({ cookie: jest.fn(), clearCookie: jest.fn() }) as never;
   const original = process.env.AUTH_REFRESH_COOKIE;
 
   beforeEach(() => {
-    service = { refreshAccessToken: jest.fn().mockResolvedValue(tokens), login: jest.fn().mockResolvedValue(tokens) };
+    service = { refreshAccessToken: jest.fn().mockResolvedValue(tokens), login: jest.fn().mockResolvedValue(tokens), logout: jest.fn().mockResolvedValue(undefined) };
     controller = new AuthController(service as never);
   });
   afterEach(() => { process.env.AUTH_REFRESH_COOKIE = original; });
@@ -54,5 +54,28 @@ describe('AuthController refresh token transport', () => {
     const req = { ip: '203.0.113.7', headers: { 'user-agent': 'x'.repeat(500) } } as never;
     await controller.login({ email: 'a@x.it', password: 'x' } as never, req, res());
     expect((service.login.mock.calls[0][1] as { userAgent: string }).userAgent).toHaveLength(200);
+  });
+
+  describe('logout: chiude solo il dispositivo che lo chiede', () => {
+    const userId = { toString: () => 'user-1' };
+
+    it('passa al servizio l’utente e il sid della sessione corrente', async () => {
+      delete process.env.AUTH_REFRESH_COOKIE;
+      await controller.logout({ user: { _id: userId, sid: 'sid-telefono' } }, res());
+      expect(service.logout).toHaveBeenCalledWith('user-1', 'sid-telefono');
+    });
+
+    it('con un token precedente al multi-dispositivo il sid manca e il servizio usa il vecchio percorso', async () => {
+      delete process.env.AUTH_REFRESH_COOKIE;
+      await controller.logout({ user: { _id: userId } }, res());
+      expect(service.logout).toHaveBeenCalledWith('user-1', undefined);
+    });
+
+    it('in modalità cookie cancella il cookie di questo browser', async () => {
+      process.env.AUTH_REFRESH_COOKIE = 'true';
+      const response = { cookie: jest.fn(), clearCookie: jest.fn() };
+      await controller.logout({ user: { _id: userId, sid: 's' } }, response as never);
+      expect(response.clearCookie).toHaveBeenCalled();
+    });
   });
 });

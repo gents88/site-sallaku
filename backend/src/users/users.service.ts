@@ -1,14 +1,25 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PASSWORD_BCRYPT_ROUNDS, assertPasswordForRole } from '../auth/password-policy';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
+import { AuthSession, AuthSessionDocument } from '../security/schemas/auth-session.schema';
 import { escapeRegex } from '../common/utils/escape-regex';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    // Opzionale solo per i test che costruiscono il servizio a mano con il solo modello utente.
+    @Optional() @InjectModel(AuthSession.name) private sessionModel?: Model<AuthSessionDocument>,
+  ) {}
+
+  /** Chiude le sessioni di tutti i dispositivi dell'utente (e il vecchio refresh token unico, se c'è ancora). */
+  private async endAllSessions(userId: string): Promise<void> {
+    if (!this.sessionModel || !Types.ObjectId.isValid(userId)) return;
+    await this.sessionModel.deleteMany({ userId: new Types.ObjectId(userId) }).exec();
+  }
 
   async create(data: Partial<User>): Promise<UserDocument> {
     return this.userModel.create(data);
@@ -134,9 +145,10 @@ export class UsersService {
 
     target.role = role;
     // JwtStrategy rilegge il ruolo dal DB a ogni richiesta, quindi vale subito;
-    // si revoca anche il refresh token per chiudere le sessioni aperte.
+    // si chiudono anche le sessioni aperte su tutti i dispositivi.
     target.refreshTokenHash = null;
     await target.save();
+    await this.endAllSessions(targetId);
     return { _id: String(target._id), role: target.role };
   }
 
@@ -147,6 +159,7 @@ export class UsersService {
     if (!target) throw new NotFoundException(`User #${targetId} not found`);
     if (target.role === 'admin') await this.assertNotLastAdmin();
     await this.userModel.deleteOne({ _id: targetId }).exec();
+    await this.endAllSessions(targetId);
   }
 
   /** Creazione da admin: niente OTP di verifica, l'indirizzo lo garantisce l'admin (salvo emailVerified=false). */
@@ -188,6 +201,7 @@ export class UsersService {
     const passwordHash = await bcrypt.hash(password, PASSWORD_BCRYPT_ROUNDS);
     const res = await this.userModel.updateOne({ _id: targetId }, { $set: { passwordHash, refreshTokenHash: null } }).exec();
     if (!res.matchedCount) throw new NotFoundException(`User #${targetId} not found`);
+    await this.endAllSessions(targetId);
   }
 
   /** Disconnette l'utente ovunque: il refresh token non vale più (l'access token scade da solo). */
@@ -195,6 +209,7 @@ export class UsersService {
     if (actorId === targetId) throw new BadRequestException('Use logout to end your own session');
     const res = await this.userModel.updateOne({ _id: targetId }, { $set: { refreshTokenHash: null } }).exec();
     if (!res.matchedCount) throw new NotFoundException(`User #${targetId} not found`);
+    await this.endAllSessions(targetId);
   }
 
   private async assertUnique(email?: string, phone?: string, exceptId?: string): Promise<void> {
