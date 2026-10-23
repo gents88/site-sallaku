@@ -481,7 +481,7 @@ html[data-os='ios'] .glass-card {
     }
   }
 
-  &.btn-sm, &-sm { padding: 8px 18px; font-size: 0.8rem; }
+  &.btn-sm, &-sm { padding: 8px 18px; font-size: 0.8rem; @media (max-width: 700px) { min-height: 40px; } }
 }
 
 /* Touch on iOS/Android: brief press feedback instead of a hover state that
@@ -593,6 +593,8 @@ html[data-os='android'][data-input='touch'] .btn:active {
   font-size: 0.85rem;
   margin-bottom: 0.25rem;
   &:hover { color: var(--color-primary); }
+  /* Sul telefono un link alto 20px è difficile da colpire: area di tocco di 44px senza cambiare l'aspetto. */
+  @media (max-width: 700px) { min-height: 44px; padding-right: 0.75rem; }
 }
 
 /* .list: contenitore verticale della lista elementi in gestione.
