@@ -31,6 +31,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  /* Su telefono stato + pulsante "chiudi" vanno sotto il titolo invece di uscire dallo schermo. */
+  flex-wrap: wrap;
   padding: 16px 20px;
   border-bottom: 1px solid var(--glass-border);
   flex-shrink: 0;
@@ -39,8 +41,10 @@
 .alc-header__right {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
-  flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .alc-close-btn {
@@ -82,12 +86,13 @@
 }
 
 .alc-status {
-  flex-shrink: 0;
   padding: 5px 12px;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  white-space: nowrap;
+  /* Il messaggio d'errore è una frase intera: deve poter andare a capo invece di uscire dallo schermo. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
   background: rgba(148, 163, 184, 0.14);
   color: var(--text-secondary);
 }

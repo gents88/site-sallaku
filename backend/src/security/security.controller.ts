@@ -16,9 +16,20 @@ import { SecuritySessionsService } from './security-sessions.service';
 export class SecurityController {
   constructor(private readonly sessions: SecuritySessionsService) {}
 
+  @Post('sessions/:userId/:sessionId/revoke')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Close one device session of a user (admin; not the session you are using)' })
+  revokeOne(
+    @Req() req: Request & { user: { _id: unknown; sid?: string } },
+    @Param('userId', ParseMongoIdPipe) userId: string,
+    @Param('sessionId') sessionId: string,
+  ) {
+    return this.sessions.revokeOne(String(req.user._id), req.user.sid, userId, sessionId, clientContext(req));
+  }
+
   @Post('sessions/:userId/revoke')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Close a user session: the refresh token stops working (admin; not self)' })
+  @ApiOperation({ summary: 'Close ALL the device sessions of a user: their refresh tokens stop working (admin; not self)' })
   revoke(@Req() req: Request & { user: { _id: unknown } }, @Param('userId', ParseMongoIdPipe) userId: string) {
     return this.sessions.revoke(String(req.user._id), userId, clientContext(req));
   }

@@ -18,7 +18,7 @@ describe('ChatbotComponent — chiusura della chat live', () => {
   let liveState$: BehaviorSubject<string>;
   let liveMock: { sendTyping: ReturnType<typeof vi.fn> };
 
-  function create(open: boolean): ComponentFixture<ChatbotComponent> {
+  function create(open: boolean, restored: Array<{ role: string; content: string; timestamp: Date }> = []): ComponentFixture<ChatbotComponent> {
     liveState$ = new BehaviorSubject<string>('live');
     liveMock = {
       state$: liveState$,
@@ -31,7 +31,7 @@ describe('ChatbotComponent — chiusura della chat live', () => {
       sendTyping: vi.fn(),
     } as unknown as typeof liveMock;
     const mockChatbot = {
-      messages$: new BehaviorSubject([]),
+      messages$: new BehaviorSubject(restored),
       isLoading$: new BehaviorSubject(false),
       isOpen$: new BehaviorSubject(open),
       suggestions$: new BehaviorSubject([]),
@@ -141,6 +141,37 @@ describe('ChatbotComponent — chiusura della chat live', () => {
       typeInto(fixture);
 
       expect(liveMock.sendTyping).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('cronologia ripresa dopo un ricaricamento', () => {
+    const history = [
+      { role: 'user', content: 'ciao', timestamp: new Date('2026-10-22T10:00:00Z') },
+      { role: 'assistant', content: 'Ciao! Come posso aiutarti?', timestamp: new Date('2026-10-22T10:00:02Z') },
+    ];
+
+    it('i messaggi ripresi non accendono il pallino dei non letti a pannello chiuso', () => {
+      const fixture = create(false, history);
+
+      expect(fixture.componentInstance.badgeCount).toBe(0);
+    });
+
+    it('un messaggio nuovo dell\'assistente dopo il ricaricamento, a pannello chiuso, conta come non letto', () => {
+      const fixture = create(false, history);
+      const subject = (fixture.componentInstance as unknown as { chatbot: { messages$: BehaviorSubject<unknown[]> } }).chatbot.messages$;
+
+      subject.next([...history, { role: 'assistant', content: 'Un\'altra cosa…', timestamp: new Date() }]);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.badgeCount).toBe(1);
+    });
+
+    it('la cronologia ripresa si vede nella finestra, non il benvenuto', () => {
+      const fixture = create(true, history);
+
+      const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+      expect(text).toContain('Ciao! Come posso aiutarti?');
+      expect((fixture.nativeElement as HTMLElement).querySelector('.cb-welcome')).toBeNull();
     });
   });
 });

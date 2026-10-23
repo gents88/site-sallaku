@@ -109,6 +109,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   unreadCount = 0;
   private lastSeenBotLen = 0;
   private lastSeenLiveLen = 0;
+  private botHistorySynced = false;
+  private liveHistorySynced = false;
 
   /** Vero quando lo scroll dei messaggi è vicino al fondo — governa l'auto-scroll vs il pulsante "nuovi messaggi". */
   isNearBottom = true;
@@ -164,6 +166,12 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     this.subs.add(
       this.chatbot.messages$.subscribe((msgs: ChatMessage[]) => {
+        // Il primo valore è la cronologia ripresa dopo un ricaricamento: non sono messaggi nuovi,
+        // altrimenti il pallino dei non letti comparirebbe a ogni caricamento di pagina.
+        if (!this.botHistorySynced) {
+          this.botHistorySynced = true;
+          this.lastSeenBotLen = msgs.length;
+        }
         const newOnes = msgs.slice(this.lastSeenBotLen);
         this.lastSeenBotLen = msgs.length;
         if (!this.isOpen) {
@@ -225,6 +233,10 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
     this.subs.add(
       this.liveHandoff.liveMessages$.subscribe((msgs) => {
+        if (!this.liveHistorySynced) {
+          this.liveHistorySynced = true;
+          this.lastSeenLiveLen = msgs.length;
+        }
         const newOnes = msgs.slice(this.lastSeenLiveLen);
         this.lastSeenLiveLen = msgs.length;
         if (!this.isOpen) {

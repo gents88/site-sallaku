@@ -11,8 +11,11 @@ function setup(opts: { exists?: boolean; target?: Record<string, unknown> | null
     findById: jest.fn(() => ({ exec: async () => target })),
     updateOne: jest.fn(() => ({ exec: async () => ({ matchedCount: opts.matched ?? 1 }) })),
   };
-  return { service: new UsersService(model as never), model, target };
+  const sessions = { deleteMany: jest.fn(() => ({ exec: async () => ({}) })) };
+  return { service: new UsersService(model as never, sessions as never), model, target, sessions };
 }
+
+const OID = '507f1f77bcf86cd799439011';
 
 describe('UsersService — admin CRUD', () => {
   it('creates a verified user with a bcrypt-hashed password and never returns the hash', async () => {
@@ -110,6 +113,27 @@ describe('UsersService — admin CRUD', () => {
       await service.setPasswordByAdmin('u1', 'Short#12');
 
       expect(model.updateOne).toHaveBeenCalled();
+    });
+  });
+
+  describe('chiusura delle sessioni su tutti i dispositivi', () => {
+    it('una nuova password impostata dall’admin disconnette l’utente ovunque', async () => {
+      const { service, sessions } = setup();
+      await service.setPasswordByAdmin(OID, 'Another#456');
+      expect(String((sessions.deleteMany.mock.calls as any)[0][0].userId)).toBe(OID);
+    });
+
+    it('la revoca dell’admin chiude tutte le sessioni dell’utente', async () => {
+      const { service, sessions } = setup();
+      await service.revokeSessions('admin', OID);
+      expect(String((sessions.deleteMany.mock.calls as any)[0][0].userId)).toBe(OID);
+    });
+
+    it('una revoca su un utente inesistente o su sé stessi non cancella nulla', async () => {
+      const { service, sessions } = setup({ matched: 0 });
+      await expect(service.revokeSessions('admin', OID)).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.revokeSessions(OID, OID)).rejects.toBeInstanceOf(BadRequestException);
+      expect(sessions.deleteMany).not.toHaveBeenCalled();
     });
   });
 

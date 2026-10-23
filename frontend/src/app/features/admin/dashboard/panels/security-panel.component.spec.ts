@@ -7,6 +7,12 @@ import { SecurityPanelComponent } from './security-panel.component';
 import { AdminDashboardService, SecuritySummary } from '../admin-dashboard.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
+/** Access token di prova con il sid della sessione corrente (la firma non conta: il pannello legge solo i claim). */
+const tokenWithSid = (sid: string) => {
+  const b64 = (o: unknown) => btoa(JSON.stringify(o)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+  return `${b64({ alg: 'HS256' })}.${b64({ sub: 'me', sid })}.firma`;
+};
+
 const DATA: SecuritySummary = {
   failedLogins24h: 7,
   otpFailed24h: 2,
@@ -14,8 +20,8 @@ const DATA: SecuritySummary = {
   activeSessions: 2,
   suspiciousIps: [{ ip: '198.51.100.9', failures: 6 }],
   sessions: [
-    { userId: 'me', name: 'Gent', contact: 'g@x.it', role: 'admin', device: 'Chrome su macOS', ip: '203.0.113.7', startedAt: '2026-10-22T08:00:00Z', lastSeenAt: '2026-10-22T11:00:00Z' },
-    { userId: 'u2', name: 'Anna', contact: 'a@x.it', role: 'user', device: 'Safari su iOS', ip: '203.0.113.8', startedAt: '2026-10-22T09:00:00Z', lastSeenAt: '2026-10-22T10:00:00Z' },
+    { sessionId: 'sid-pc', userId: 'me', name: 'Gent', contact: 'g@x.it', role: 'admin', device: 'Chrome su macOS', ip: '203.0.113.7', startedAt: '2026-10-22T08:00:00Z', lastSeenAt: '2026-10-22T11:00:00Z' },
+    { sessionId: 'sid-anna', userId: 'u2', name: 'Anna', contact: 'a@x.it', role: 'user', device: 'Safari su iOS', ip: '203.0.113.8', startedAt: '2026-10-22T09:00:00Z', lastSeenAt: '2026-10-22T10:00:00Z' },
   ],
   events: [
     { _id: 'e1', type: 'login_failed', ip: '198.51.100.9', device: 'curl', identifier: 'admin@x.it', detail: 'password errata', createdAt: '2026-10-22T10:30:00Z' },
@@ -26,12 +32,12 @@ const DATA: SecuritySummary = {
 describe('SecurityPanelComponent', () => {
   afterEach(() => vi.restoreAllMocks());
 
-  function setup(data: SecuritySummary = DATA, revoke = vi.fn(() => of(undefined))) {
+  function setup(data: SecuritySummary = DATA, revoke = vi.fn(() => of(undefined)), token: string | null = tokenWithSid('sid-pc')) {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()],
       providers: [
         { provide: AdminDashboardService, useValue: { revokeSession: revoke } },
-        { provide: AuthService, useValue: { currentUser: signal({ _id: 'me', name: 'Gent', role: 'admin' }) } },
+        { provide: AuthService, useValue: { currentUser: signal({ _id: 'me', name: 'Gent', role: 'admin' }), getToken: () => token } },
       ],
     });
     const fixture = TestBed.createComponent(SecurityPanelComponent);
@@ -62,10 +68,53 @@ describe('SecurityPanelComponent', () => {
     expect(el.querySelector('.panel-kpi--bad')).not.toBeNull();
   });
 
-  it('la propria sessione è marcata "Tu" e non ha il pulsante di chiusura', () => {
+  it('il dispositivo da cui sto lavorando è marcato "Questo dispositivo" e non ha il pulsante di chiusura', () => {
     const { el, closeButtons } = setup();
-    expect(el.textContent).toContain('security_panel.you');
+    expect(el.textContent).toContain('security_panel.this_device');
     expect(closeButtons()).toHaveLength(1);
+  });
+
+  describe('più dispositivi dello stesso account', () => {
+    const TWO_DEVICES: SecuritySummary = {
+      ...DATA,
+      activeSessions: 3,
+      sessions: [
+        { sessionId: 'sid-pc', userId: 'me', name: 'Gent', contact: 'g@x.it', role: 'admin', device: 'Chrome su macOS', ip: '203.0.113.7', startedAt: '2026-10-22T08:00:00Z', lastSeenAt: '2026-10-22T11:00:00Z' },
+        { sessionId: 'sid-tel', userId: 'me', name: 'Gent', contact: 'g@x.it', role: 'admin', device: 'Safari su iOS', ip: '203.0.113.9', startedAt: '2026-10-22T09:00:00Z', lastSeenAt: '2026-10-22T10:30:00Z' },
+        DATA.sessions[1],
+      ],
+    };
+
+    it('mostra una riga per dispositivo, anche per lo stesso utente', () => {
+      const { el } = setup(TWO_DEVICES);
+      expect(el.querySelectorAll('.panel-list li .sec-row').length).toBeGreaterThanOrEqual(3);
+      expect(el.textContent).toContain('Chrome su macOS');
+      expect(el.textContent).toContain('Safari su iOS');
+    });
+
+    it('solo il dispositivo corrente è marcato; l\'altro dello stesso account si può chiudere', () => {
+      const { el, closeButtons } = setup(TWO_DEVICES);
+      expect(el.textContent?.match(/security_panel\.this_device/g)).toHaveLength(1);
+      expect(closeButtons()).toHaveLength(2); // telefono (mio) + Anna
+    });
+
+    it('chiudere il telefono revoca solo quel dispositivo, indicando utente e sessione', () => {
+      vi.spyOn(window, 'confirm').mockReturnValue(true);
+      const { revoke, closeButtons } = setup(TWO_DEVICES);
+      closeButtons()[0].click();
+      expect(revoke).toHaveBeenCalledWith('me', 'sid-tel');
+    });
+
+    it('cambiando il token corrente cambia il dispositivo marcato', () => {
+      const { closeButtons } = setup(TWO_DEVICES, vi.fn(() => of(undefined)), tokenWithSid('sid-tel'));
+      // ora il corrente è il telefono: si può chiudere il PC e Anna
+      expect(closeButtons()).toHaveLength(2);
+    });
+
+    it('con un token precedente al multi-dispositivo (nessun sid) ripiega sul vecchio criterio: stesso utente = io', () => {
+      const { closeButtons } = setup(TWO_DEVICES, vi.fn(() => of(undefined)), 'abc.def.ghi');
+      expect(closeButtons()).toHaveLength(1); // solo Anna
+    });
   });
 
   it('chiudere la sessione chiede conferma e poi fa ricaricare la dashboard', () => {
@@ -75,7 +124,7 @@ describe('SecurityPanelComponent', () => {
     expect(revoke).not.toHaveBeenCalled();
     closeButtons()[0].click();
     expect(confirmSpy).toHaveBeenCalledTimes(2);
-    expect(revoke).toHaveBeenCalledWith('u2');
+    expect(revoke).toHaveBeenCalledWith('u2', 'sid-anna');
     expect(changed).toHaveBeenCalledTimes(1);
   });
 

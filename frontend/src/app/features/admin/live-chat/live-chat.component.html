@@ -41,9 +41,9 @@
       @for (msg of messages; track msg.timestamp) {
         <div class="alc-msg" [class.alc-msg--visitor]="msg.role === 'user'" [class.alc-msg--agent]="msg.role === 'agent'" [class.alc-msg--bot]="msg.role === 'assistant'">
           <span class="alc-msg__label">
-            @if (msg.role === 'user') { Visitatore }
+            @if (msg.role === 'user') { {{ 'live_handoff.admin_role_visitor' | translate }} }
             @else if (msg.role === 'agent') { Gent }
-            @else { AI }
+            @else { {{ 'live_handoff.admin_role_ai' | translate }} }
           </span>
           <p class="alc-msg__content">{{ msg.content }}</p>
           <span class="alc-msg__time">{{ msg.timestamp | date:'HH:mm' }}</span>

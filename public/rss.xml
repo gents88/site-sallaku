@@ -6,7 +6,36 @@
   <atom:link href="https://gentsallaku.it/rss.xml" rel="self" type="application/rss+xml" />
   <description>Articoli su sviluppo front-end, Angular, TypeScript e data visualization.</description>
   <language>it-it</language>
-  <lastBuildDate>Thu, 22 Oct 2026 19:34:19 GMT</lastBuildDate>
+  <lastBuildDate>Fri, 23 Oct 2026 02:56:56 GMT</lastBuildDate>
+  <item>
+    <title>Live coding nei colloqui: perché sono contrario</title>
+    <link>https://gentsallaku.it/blog/live-coding-nei-colloqui-perche-sono-contrario</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/live-coding-nei-colloqui-perche-sono-contrario</guid>
+    <pubDate>Thu, 22 Oct 2026 20:58:39 GMT</pubDate>
+    <description>Il live coding nei colloqui misura come si regge lo stress di essere osservati, non come si lavora. Perché sono contrario, cosa dice uno studio sul tema, cosa concedo a chi lo difende e cinque alternative che verificano le stesse competenze senza distorcerle.</description>
+      <category>Colloqui</category>
+      <category>Carriera</category>
+      <category>Live Coding</category>
+      <category>Recruiting</category>
+      <category>Opinione</category>
+      <category>AI</category>
+      <category>Code Review</category>
+  </item>
+  <item>
+    <title>Dal chatbot a una persona vera: come funziona il passaggio alla chat live</title>
+    <link>https://gentsallaku.it/blog/dal-chatbot-a-una-persona-vera-chat-live</link>
+    <guid isPermaLink="true">https://gentsallaku.it/blog/dal-chatbot-a-una-persona-vera-chat-live</guid>
+    <pubDate>Thu, 22 Oct 2026 20:41:02 GMT</pubDate>
+    <description>Come funziona il passaggio dal chatbot del sito a una chat dal vivo con me: il banner che compare mentre scrivi, la richiesta via REST con limiti, l&apos;email di avviso, la conversazione via Socket.IO e i tre bug che in locale non si vedevano.</description>
+      <category>Case Study</category>
+      <category>WebSocket</category>
+      <category>Socket.IO</category>
+      <category>NestJS</category>
+      <category>Angular</category>
+      <category>Chatbot</category>
+      <category>Architettura</category>
+      <category>Real-time</category>
+  </item>
   <item>
     <title>Da RxJS a Signals: guida pratica alla migrazione dello stato in Angular</title>
     <link>https://gentsallaku.it/blog/da-rxjs-a-signals-guida-pratica-migrazione-stato-angular</link>
@@ -777,7 +806,7 @@
     <title>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi</title>
     <link>https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</link>
     <guid isPermaLink="true">https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</guid>
-    <pubDate>Thu, 22 Oct 2026 19:34:19 GMT</pubDate>
+    <pubDate>Fri, 23 Oct 2026 02:56:56 GMT</pubDate>
     <description>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi Introduzione Nel cuore della Zadrima, tra Lezhë e Shkodër, si trova Blinisht, un territorio dalla…</description>
   </item>
 </channel>
