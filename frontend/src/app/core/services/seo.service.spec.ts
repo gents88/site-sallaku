@@ -84,6 +84,19 @@ describe('SeoService', () => {
     expect(ogLocale?.getAttribute('content')).toBe('sq_AL');
   });
 
+  describe('trackPageViews', () => {
+    afterEach(() => document.getElementById('ga-script')?.remove());
+
+    it('non scarica la libreria gtag: ci pensa ConsentService dopo il consenso', () => {
+      const seo = configure();
+
+      seo.trackPageViews();
+
+      expect(document.getElementById('ga-script')).toBeNull();
+      expect(document.querySelector('script[src*="googletagmanager.com/gtag/js"]')).toBeNull();
+    });
+  });
+
   describe('injectJsonLd', () => {
     afterEach(() => document.querySelectorAll('script[data-json-ld]').forEach(el => el.remove()));
 
