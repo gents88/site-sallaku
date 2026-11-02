@@ -1,5 +1,4 @@
 import { ErrorHandler, Injectable, Injector } from '@angular/core';
-import * as Sentry from '@sentry/angular';
 import { SnackbarService } from '../services/snackbar.service';
 import { environment } from '../../../environments/environment';
 
@@ -92,10 +91,17 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   private reportToLoggingService(info: ErrorInfo): void {
     // No-op when sentryDsn is unset (Sentry.init() was never called in main.ts).
+    // Import dinamico: l'SDK non entra nel bundle iniziale (vedi main.ts).
     if (environment.sentryDsn) {
-      Sentry.captureException(new Error(info.message), {
-        contexts: { error: { message: info.message, stack: info.stack, context: info.context } },
-      });
+      import('@sentry/angular')
+        .then((Sentry) =>
+          Sentry.captureException(new Error(info.message), {
+            contexts: { error: { message: info.message, stack: info.stack, context: info.context } },
+          }),
+        )
+        .catch(() => {
+          // SDK non scaricabile (offline): l'utente ha già visto il messaggio.
+        });
     }
 
     // Opzionale: invia a backend logging endpoint
