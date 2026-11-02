@@ -16,6 +16,7 @@ import { GlobalErrorHandler } from './core/error-handling/global-error.handler';
 import { SelectivePreloadStrategy } from './core/strategies/selective-preload.strategy';
 import { environment } from '../environments/environment';
 import { resolveInitialLanguage } from './core/services/language.service';
+import { TRANSLATE_LOADER_OPTIONS } from './core/i18n/translate-loader-options';
 
 const initialLanguage = resolveInitialLanguage();
 
@@ -61,7 +62,7 @@ export const appConfig: ApplicationConfig = {
     provideTranslateService({
       lang: initialLanguage,
       fallbackLang: 'it',
-      loader: provideTranslateHttpLoader({ prefix: '/i18n/', suffix: '.json', enforceLoading: true }),
+      loader: provideTranslateHttpLoader(TRANSLATE_LOADER_OPTIONS),
     }),
   ],
 };
