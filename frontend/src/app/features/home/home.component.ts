@@ -19,7 +19,7 @@ import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
 import { HERO_KPI_TARGETS, kpiCountUpValues, prefersReducedMotion } from './kpi-count-up';
-import { jumpToSection } from './jump-to-section';
+import { consumePreScroll, jumpToSection, sectionForUrl } from './jump-to-section';
 
 interface TechItem { name: string; icon: string; isFab?: boolean; }
 interface TechGroup { titleKey: string; icon: string; items: TechItem[]; }
@@ -352,17 +352,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       this.kpiObserver.observe(kpiEl);
     }
 
-    // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
-    const urlPath = this.router.url.split('?')[0].replace(/^\//,'');
-    const sectionMap: Record<string, string> = {
-      'about': 'about',
-      'tech-stack': 'tech-stack',
-      'experience': 'experience',
-      'skills': 'skills',
-      'services': 'services',
-    };
-    const sectionId = sectionMap[urlPath];
-    if (sectionId) {
+    // /about → #about, /tech-stack → #tech-stack ecc., anche con il prefisso lingua
+    // (prima /en/about restava sull'hero). Al caricamento diretto la pagina è già
+    // stata posizionata dallo script inline di index.html, prima del primo paint.
+    const sectionId = sectionForUrl(this.router.url);
+    if (sectionId && !consumePreScroll(document, sectionId)) {
       this.scrollTimer = setTimeout(() => jumpToSection(document, sectionId), 100);
     }
   }
