@@ -642,19 +642,9 @@ html[data-os='android'][data-input='touch'] .btn:active {
   &:nth-child(4) { transition-delay: 0.3s; }
 }
 
-.animate-fade-up {
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.delay-1 { animation-delay: 0.15s; }
-.delay-2 { animation-delay: 0.3s; }
-.delay-3 { animation-delay: 0.45s; }
-.delay-4 { animation-delay: 0.6s; }
-.delay-5 { animation-delay: 0.75s; }
-
-@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+/* Niente ingresso in dissolvenza per gli hero (ex .animate-fade-up): partivano
+   da opacity 0, e Chrome non conta come LCP un elemento invisibile. L'LCP
+   slittava così alla fine dell'animazione (e, su /about, a dopo l'hydration). */
 
 /* ── Form helpers ─────────────────────────────────── */
 .form-field { margin-bottom: 1.25rem; }
