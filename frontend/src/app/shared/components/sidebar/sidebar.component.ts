@@ -118,6 +118,20 @@ interface SwipeState {
 }
 
 /** Su quali bordi c'è altro da scorrere (1px di tolleranza per gli arrotondamenti subpixel). */
+/**
+ * Esegue `fn` subito dopo il paint del prossimo frame: il layout è già
+ * calcolato, quindi leggerlo non forza un reflow. Appena dopo il render di
+ * Angular, invece, durante l'hydration il layout di tutta la pagina è ancora da
+ * fare e una lettura lo calcola in anticipo per poi rifarlo (~200 ms misurati).
+ */
+export function afterPaint(
+  fn: () => void,
+  raf: (cb: () => void) => void = cb => requestAnimationFrame(() => cb()),
+  later: (cb: () => void) => void = cb => setTimeout(cb),
+): void {
+  raf(() => later(fn));
+}
+
 export function scrollEdgesOf(scrollTop: number, scrollHeight: number, clientHeight: number): ScrollEdges {
   return { top: scrollTop > 1, bottom: scrollTop + clientHeight < scrollHeight - 1 };
 }
@@ -209,14 +223,14 @@ export class SidebarComponent {
       .pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed())
       .subscribe(() => {
         this.hideHint();
-        this.afterRender(() => this.revealActive());
+        this.afterPaint(() => this.revealActive());
       });
 
     // Le voci cambiano col ruolo (login/logout admin): bordi e voce attiva vanno
     // ricalcolati sul nuovo elenco. Al primo giro copre anche il caricamento.
     effect(() => {
       this.navGroups();
-      untracked(() => this.afterRender(() => this.revealActive()));
+      untracked(() => this.afterPaint(() => this.revealActive()));
     });
 
     // Un trascinamento che finisce sopra una voce non è un tap: il click che
@@ -302,6 +316,11 @@ export class SidebarComponent {
   /** Dopo il prossimo render: routerLinkActive e le nuove voci devono essere già nel DOM. */
   private afterRender(fn: () => void): void {
     afterNextRender(fn, { injector: this.injector });
+  }
+
+  /** Dopo il render e poi dopo il paint: per le letture di layout non urgenti (voce attiva, bordi sfumati). */
+  private afterPaint(fn: () => void): void {
+    this.afterRender(() => afterPaint(fn));
   }
 
   toggleRail(): void {

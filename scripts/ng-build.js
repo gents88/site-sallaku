@@ -48,4 +48,11 @@ const result = spawnSync(
     '--define', `__BUILD_TIME__='${time}'`],
   { cwd: frontend, stdio: 'inherit', shell: process.platform === 'win32' },
 );
+if (result.status === 0) {
+  // Angular mette al massimo 10 modulepreload: senza gli altri il core e il router partivano
+  // solo dopo main.js (vedi scripts/modulepreload-all.js). Se fallisce la build resta valida.
+  const browserDir = path.join(frontend, 'dist', 'portfolio-frontend', 'browser');
+  const preloads = spawnSync(process.execPath, [path.join(__dirname, 'modulepreload-all.js'), browserDir], { stdio: 'inherit' });
+  if (preloads.status !== 0) console.warn('[ng-build] modulepreload-all non riuscito: restano i preload di Angular.');
+}
 process.exit(result.status ?? 1);
