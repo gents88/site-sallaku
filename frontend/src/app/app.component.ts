@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
+import { ApplicationRef, ChangeDetectionStrategy, Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -28,6 +28,7 @@ import { MaintenanceOverlayComponent } from './shared/components/maintenance-ove
 import { FeatureFlagsService } from './core/services/feature-flags.service';
 
 import { initGlassSpotlight } from './core/utils/glass-spotlight';
+import { documentLoaded, endBootPhaseWhenReady } from './core/utils/boot-phase';
 import { ProfilePhotoComponent } from './shared/components/profile-photo/profile-photo.component';
 @Component({
   selector: 'app-root',
@@ -465,6 +466,7 @@ export class AppComponent implements OnInit {
     private router: Router,
     private translate: TranslateService,
     public featureFlags: FeatureFlagsService,
+    private appRef: ApplicationRef,
     @Inject(PLATFORM_ID) private platformId: object,
   ) {}
 
@@ -479,6 +481,9 @@ export class AppComponent implements OnInit {
       this.adminNotifications.init();
       this.onboardingTour.scheduleAutoStart();
       initGlassSpotlight(document);
+      // Transizioni CSS spente da index.html fino a fine avvio: app stabile
+      // (hydration e prima navigazione concluse) e pagina caricata.
+      void endBootPhaseWhenReady(document, [this.appRef.whenStable(), documentLoaded(document)]);
     }
     this.seoService.trackPageViews();
     this.analyticsTracking.init();
