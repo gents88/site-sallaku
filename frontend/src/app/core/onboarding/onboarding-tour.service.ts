@@ -1,5 +1,5 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { Injectable, InjectionToken, PLATFORM_ID, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, InjectionToken, PLATFORM_ID, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import type { DriveStep, Driver } from 'driver.js';
@@ -11,8 +11,15 @@ import { ONBOARDING_STEPS, OnboardingStepDef } from './onboarding-steps';
 /** Flag di primo accesso: presente = tour già visto (completato o saltato). */
 export const ONBOARDING_STORAGE_KEY = 'hasSeenOnboarding';
 
-/** Attesa dopo l'atterraggio, per non partire sopra una pagina ancora in assestamento. */
+/** Attesa dopo la prima interazione, per non partire sopra una pagina ancora in assestamento. */
 const AUTO_START_DELAY_MS = 1500;
+/**
+ * Il tour automatico parte solo dopo il primo di questi eventi, non al semplice
+ * caricamento: altrimenti scattava anche per chi non c'è davanti allo schermo
+ * (Lighthouse e i crawler sono sempre "primi accessi"), scaricando driver.js e
+ * agganciando la rail, che sposta tutto il contenuto in orizzontale.
+ */
+const ENGAGEMENT_EVENTS = ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'] as const;
 /** Il chatbot è in `@defer (on idle)`: al primo accesso il suo pulsante può non esserci ancora. */
 const CHATBOT_WAIT_MS = 4000;
 /** Durata della transizione di larghezza della rail (sidebar.component.scss). */
@@ -57,6 +64,7 @@ const ADMIN_ROUTE = /(^|\/)dashboard(\/|$|\?)/;
 export class OnboardingTourService {
   private readonly document = inject(DOCUMENT);
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly auth = inject(AuthService);
@@ -73,10 +81,15 @@ export class OnboardingTourService {
   /** Da chiamare una volta all'avvio dell'app (AppComponent). */
   scheduleAutoStart(): void {
     if (!this.isBrowser || this.hasSeen()) return;
-    this.autoStartTimer = setTimeout(() => {
-      this.autoStartTimer = null;
-      if (this.shouldAutoStart()) void this.start();
-    }, AUTO_START_DELAY_MS);
+    const arm = () => {
+      ENGAGEMENT_EVENTS.forEach(type => window.removeEventListener(type, arm, true));
+      this.autoStartTimer = setTimeout(() => {
+        this.autoStartTimer = null;
+        if (this.shouldAutoStart()) void this.start();
+      }, AUTO_START_DELAY_MS);
+    };
+    ENGAGEMENT_EVENTS.forEach(type => window.addEventListener(type, arm, { capture: true, passive: true }));
+    this.destroyRef.onDestroy(() => ENGAGEMENT_EVENTS.forEach(type => window.removeEventListener(type, arm, true)));
   }
 
   /** Avvia (o riavvia) il tour. Ritorna quando il primo step è a schermo. */
