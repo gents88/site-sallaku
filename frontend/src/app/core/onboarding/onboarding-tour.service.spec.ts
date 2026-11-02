@@ -98,12 +98,26 @@ describe('OnboardingTourService', () => {
     TestBed.resetTestingModule();
   });
 
+  /** Primo segno che c'è una persona davanti allo schermo (mouse, tastiera, tocco, rotella). */
+  const interact = () => window.dispatchEvent(new Event('pointermove'));
+
   describe('avvio automatico al primo accesso', () => {
-    it("parte all'atterraggio dopo il ritardo, senza aspettare il banner del consenso", async () => {
+    it("non parte al solo caricamento: senza interazioni (Lighthouse, crawler) non scatta mai", async () => {
+      const tour = setup();
+      tour.scheduleAutoStart();
+      await vi.advanceTimersByTimeAsync(10000);
+      expect(fake.instance.drive).not.toHaveBeenCalled();
+      expect(tour.active()).toBe(false);
+    });
+
+    it("parte dopo la prima interazione e il ritardo, senza aspettare il banner del consenso", async () => {
       // Primo accesso reale: nessuna scelta sui cookie salvata, banner aperto.
       expect(localStorage.getItem('cookie_consent_v1')).toBeNull();
       const tour = setup();
       tour.scheduleAutoStart();
+      await vi.advanceTimersByTimeAsync(3000);
+      expect(fake.instance.drive).not.toHaveBeenCalled();
+      interact();
       await vi.advanceTimersByTimeAsync(1499);
       expect(fake.instance.drive).not.toHaveBeenCalled();
       await vi.advanceTimersByTimeAsync(1);
@@ -116,6 +130,7 @@ describe('OnboardingTourService', () => {
       const tour = setup();
       tour.scheduleAutoStart();
       TestBed.tick();
+      interact();
       await vi.advanceTimersByTimeAsync(5000);
       expect(fake.instance.drive).not.toHaveBeenCalled();
     });
@@ -125,6 +140,7 @@ describe('OnboardingTourService', () => {
       let tour = setup();
       tour.scheduleAutoStart();
       TestBed.tick();
+      interact();
       await vi.advanceTimersByTimeAsync(5000);
       expect(fake.instance.drive).not.toHaveBeenCalled();
       // Non viene segnato come visto: un visitatore che poi va sul sito pubblico lo vedrà.
@@ -137,6 +153,7 @@ describe('OnboardingTourService', () => {
       tour = setup();
       tour.scheduleAutoStart();
       TestBed.tick();
+      interact();
       await vi.advanceTimersByTimeAsync(5000);
       expect(fake.instance.drive).not.toHaveBeenCalled();
     });
@@ -152,6 +169,7 @@ describe('OnboardingTourService', () => {
       mobileViewport();
       const tour = setup();
       tour.scheduleAutoStart();
+      interact();
       await vi.advanceTimersByTimeAsync(5000);
 
       expect(fake.instance.drive).not.toHaveBeenCalled();

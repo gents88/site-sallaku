@@ -51,7 +51,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   // il conteggio da zero è solo un effetto aggiunto nel browser.
   kpiValues: number[] = [...HERO_KPI_TARGETS];
   private kpiAnimated = false;
-  private kpiFallbackTimer: ReturnType<typeof setTimeout> | null = null;
   private kpiFrame: number | null = null;
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
@@ -320,15 +319,29 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
 
-    // Count-up animation for KPI numbers (skipped with prefers-reduced-motion:
-    // the final values are already rendered).
+    // Conteggio dei KPI: i valori dell'HTML prerenderizzato restano finché
+    // l'osservatore non ha detto dove si trova l'hero. Se è già in vista non si
+    // anima nulla: azzerarli e ricontarli era un cambiamento visibile (e 1,5 s
+    // di change detection a ogni frame) proprio durante il caricamento. Se è
+    // fuori vista si azzerano senza che si veda e contano quando ci entra.
+    // Con prefers-reduced-motion restano sempre i valori finali.
     const kpiEl = document.querySelector('.hero-kpis');
     if (kpiEl && !prefersReducedMotion() && typeof IntersectionObserver !== 'undefined') {
-      this.kpiValues = this.kpiValues.map(() => 0);
-      this.cdr.markForCheck();
+      let firstCheck = true;
       this.kpiObserver = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && !this.kpiAnimated) {
+          const visible = entries[0].isIntersecting;
+          if (firstCheck) {
+            firstCheck = false;
+            if (visible) {
+              this.kpiObserver?.disconnect();
+            } else {
+              this.kpiValues = this.kpiValues.map(() => 0);
+              this.cdr.markForCheck();
+            }
+            return;
+          }
+          if (visible && !this.kpiAnimated) {
             this.kpiAnimated = true;
             this.animateCountUp();
             this.kpiObserver?.disconnect();
@@ -337,16 +350,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         { threshold: 0.25 },
       );
       this.kpiObserver.observe(kpiEl);
-      // Rete di sicurezza: se l'osservatore non scatta mai (hero fuori vista
-      // per un deep link a #tech-stack, elemento nascosto, ...) i contatori
-      // non devono restare a zero.
-      this.kpiFallbackTimer = setTimeout(() => {
-        if (this.kpiAnimated) return;
-        this.kpiAnimated = true;
-        this.kpiObserver?.disconnect();
-        this.kpiValues = [...HERO_KPI_TARGETS];
-        this.cdr.markForCheck();
-      }, 6000);
     }
 
     // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
@@ -368,10 +371,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) {
       this.kpiValues = [...HERO_KPI_TARGETS];
       return;
-    }
-    if (this.kpiFallbackTimer !== null) {
-      clearTimeout(this.kpiFallbackTimer);
-      this.kpiFallbackTimer = null;
     }
     const duration = 1500;
     const start = performance.now();
@@ -415,7 +414,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.observer?.disconnect();
     this.kpiObserver?.disconnect();
-    if (this.kpiFallbackTimer !== null) clearTimeout(this.kpiFallbackTimer);
     if (this.kpiFrame !== null) cancelAnimationFrame(this.kpiFrame);
     if (this.scrollTimer !== null) {
       clearTimeout(this.scrollTimer);
