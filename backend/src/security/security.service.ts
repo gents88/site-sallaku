@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { SecurityEvent, SecurityEventDocument, SecurityEventType } from './schemas/security-event.schema';
+import { SECURITY_EVENT_TTL_DAYS, SecurityEvent, SecurityEventDocument, SecurityEventType } from './schemas/security-event.schema';
 import { AuthSession, AuthSessionDocument, MAX_RETIRED_HASHES, MAX_SESSIONS_PER_USER, SESSION_TTL_DAYS } from './schemas/auth-session.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { describeDevice, maskIdentifier } from './device';
@@ -44,8 +44,8 @@ export interface SecurityEventView {
 export interface SecuritySummary {
   failedLogins24h: number;
   otpFailed24h: number;
-  /** Rifiuti per riuso di un refresh token già ruotato: indizio di un token rubato. */
-  tokenReuse7d: number;
+  /** Rifiuti per riuso di un refresh token già ruotato: indizio di un token rubato. Copre l'intera cronologia (SECURITY_EVENT_TTL_DAYS). */
+  tokenReuse: number;
   activeSessions: number;
   /** IP con almeno 5 tentativi falliti nelle ultime 24 ore. */
   suspiciousIps: Array<{ ip: string; failures: number }>;
@@ -104,6 +104,27 @@ export class SecurityService implements OnModuleInit {
       await this.sessions.syncIndexes();
     } catch (err) {
       this.logger.warn(`Indici di auth_sessions non allineati: ${(err as Error).message}`);
+    }
+    await this.alignEventsTtl();
+  }
+
+  /**
+   * Porta l'indice TTL di security_events alla retention attuale. Mongoose non modifica un indice che
+   * esiste già con opzioni diverse, quindi chi aveva il vecchio valore resterebbe con quello: serve collMod.
+   */
+  private async alignEventsTtl(): Promise<void> {
+    try {
+      const wanted = SECURITY_EVENT_TTL_DAYS * 24 * 60 * 60;
+      const indexes = await this.events.collection.indexes();
+      const ttl = indexes.find(i => i.expireAfterSeconds !== undefined && Object.keys(i.key).join() === 'createdAt');
+      if (!ttl || ttl.expireAfterSeconds === wanted) return;
+      await this.events.db.db!.command({
+        collMod: this.events.collection.collectionName,
+        index: { name: ttl.name, expireAfterSeconds: wanted },
+      });
+      this.logger.log(`Retention di security_events portata a ${SECURITY_EVENT_TTL_DAYS} giorni (era ${Math.round(ttl.expireAfterSeconds! / 86400)}).`);
+    } catch (err) {
+      this.logger.warn(`Retention di security_events non allineata: ${(err as Error).message}`);
     }
   }
 
@@ -196,13 +217,13 @@ export class SecurityService implements OnModuleInit {
 
   async summary(now: Date = new Date()): Promise<SecuritySummary> {
     const since24h = new Date(now.getTime() - DAY_MS);
-    const since7d = new Date(now.getTime() - 7 * DAY_MS);
+    const sinceRetention = new Date(now.getTime() - SECURITY_EVENT_TTL_DAYS * DAY_MS);
     const sessionSince = new Date(now.getTime() - SESSION_TTL_DAYS * DAY_MS);
 
-    const [failedLogins24h, otpFailed24h, tokenReuse7d, ipRows, recent, sessions] = await Promise.all([
+    const [failedLogins24h, otpFailed24h, tokenReuse, ipRows, recent, sessions] = await Promise.all([
       this.events.countDocuments({ type: 'login_failed', createdAt: { $gte: since24h } }).exec(),
       this.events.countDocuments({ type: 'otp_failed', createdAt: { $gte: since24h } }).exec(),
-      this.events.countDocuments({ type: 'refresh_reuse', createdAt: { $gte: since7d } }).exec(),
+      this.events.countDocuments({ type: 'refresh_reuse', createdAt: { $gte: sinceRetention } }).exec(),
       this.events
         .aggregate<{ _id: string; failures: number }>([
           { $match: { type: { $in: ['login_failed', 'otp_failed'] }, createdAt: { $gte: since24h }, ip: { $ne: '' } } },
@@ -219,7 +240,7 @@ export class SecurityService implements OnModuleInit {
     return {
       failedLogins24h,
       otpFailed24h,
-      tokenReuse7d,
+      tokenReuse,
       activeSessions: sessions.length,
       suspiciousIps: ipRows.map(r => ({ ip: r._id, failures: r.failures })),
       sessions,
