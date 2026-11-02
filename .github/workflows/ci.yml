@@ -116,6 +116,10 @@ jobs:
       - name: CSP hashes script tests
         run: node --test ../scripts/csp-hashes.test.js
 
+      # Anche i modulepreload completi vengono aggiunti dopo ogni build (scripts/modulepreload-all.js).
+      - name: Modulepreload script tests
+        run: node --test ../scripts/modulepreload-all.test.js
+
       # BUILD_COMMIT: se il prebuild rigenera la sitemap il working tree risulta
       # modificato e il commit mostrato nel sito avrebbe il suffisso "+"
       - name: Build (production)

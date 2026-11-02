@@ -49,11 +49,17 @@ const result = spawnSync(
   { cwd: frontend, stdio: 'inherit', shell: process.platform === 'win32' },
 );
 if (result.status === 0) {
+  const browserDir = path.join(frontend, 'dist', 'portfolio-frontend', 'browser');
+  // Angular mette al massimo 10 modulepreload: senza gli altri il core e il router partivano
+  // solo dopo main.js (vedi scripts/modulepreload-all.js). Se fallisce la build resta valida.
+  const preloads = spawnSync(process.execPath, [path.join(__dirname, 'modulepreload-all.js'), browserDir], { stdio: 'inherit' });
+  if (preloads.status !== 0) console.warn('[ng-build] modulepreload-all non riuscito: restano i preload di Angular.');
+
   // CSP senza 'unsafe-inline' per gli script: gli hash si conoscono solo a build finita (vedi
   // scripts/csp-hashes.js, che in caso di dubbio lascia il .htaccess com'è).
   const hashes = spawnSync(
     process.execPath,
-    [path.join(__dirname, 'csp-hashes.js'), path.join(frontend, 'dist', 'portfolio-frontend', 'browser')],
+    [path.join(__dirname, 'csp-hashes.js'), browserDir],
     { stdio: 'inherit' },
   );
   if (hashes.status !== 0) console.warn('[ng-build] csp-hashes non riuscito: il .htaccess resta com\'è.');
