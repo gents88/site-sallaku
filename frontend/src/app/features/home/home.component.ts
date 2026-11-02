@@ -19,6 +19,7 @@ import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
 import { HERO_KPI_TARGETS, kpiCountUpValues, prefersReducedMotion } from './kpi-count-up';
+import { jumpToSection } from './jump-to-section';
 
 interface TechItem { name: string; icon: string; isFab?: boolean; }
 interface TechGroup { titleKey: string; icon: string; items: TechItem[]; }
@@ -359,10 +360,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     const sectionId = sectionMap[urlPath];
     if (sectionId) {
-      this.scrollTimer = setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      this.scrollTimer = setTimeout(() => jumpToSection(document, sectionId), 100);
     }
   }
 
