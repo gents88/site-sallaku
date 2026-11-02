@@ -298,7 +298,7 @@ export interface SecurityEventView {
 export interface SecuritySummary {
   failedLogins24h: number;
   otpFailed24h: number;
-  tokenReuse7d: number;
+  tokenReuse: number;
   activeSessions: number;
   suspiciousIps: Array<{ ip: string; failures: number }>;
   sessions: SecuritySession[];
@@ -377,7 +377,7 @@ const EMPTY_AI_USAGE: AiUsageOverview = {
 };
 
 const EMPTY_SECURITY: SecuritySummary = {
-  failedLogins24h: 0, otpFailed24h: 0, tokenReuse7d: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [],
+  failedLogins24h: 0, otpFailed24h: 0, tokenReuse: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [],
 };
 
 const EMPTY_SERVER_ERRORS: ServerErrorSummary = { open: 0, today: 0, week: 0, recent: [] };
