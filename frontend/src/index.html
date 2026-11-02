@@ -191,5 +191,28 @@
   </head>
   <body class="mat-typography">
     <app-root></app-root>
+    <!-- /about, /tech-stack, /experience, /skills e /services sono la home
+         prerenderizzata portata a una sezione. Lo si fa qui, appena il parser ci
+         arriva: di solito prima del primo paint, comunque secondi prima dell'avvio
+         di Angular. Saltandoci dopo l'avvio si vedeva l'hero per ~3 s e poi cambiava
+         tutta la schermata (Speed Index, layout forzato, ridisegno a pagina già
+         visibile). Durante l'hydration il router non riporta lo scroll in cima.
+         I .reveal già in vista diventano visibili subito, altrimenti la sezione
+         resterebbe vuota fino all'avvio. Lingue e sezioni: allineate a
+         jump-to-section.ts da jump-to-section.spec.ts. -->
+    <script>
+      (function () {
+        var m = /^\/(?:(?:en|sq|es|pt|fr|de)\/)?(about|tech-stack|experience|skills|services)\/?$/.exec(location.pathname);
+        var section = m && document.getElementById(m[1]);
+        if (!section) return;
+        section.scrollIntoView({ behavior: 'instant', block: 'start' });
+        var inView = [].filter.call(document.querySelectorAll('.reveal'), function (el) {
+          var r = el.getBoundingClientRect();
+          return r.top < innerHeight && r.bottom > 0;
+        });
+        inView.forEach(function (el) { el.classList.add('visible'); });
+        document.documentElement.setAttribute('data-pre-scrolled', m[1]);
+      })();
+    </script>
   </body>
 </html>
