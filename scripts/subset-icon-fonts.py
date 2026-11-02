@@ -24,8 +24,12 @@ differently:
     and disable layout closure so the other ~2,150 ligatures are dropped
     while the ones we keep still work — leaving templates untouched.
 
-Originals are preserved next to the subsets as `<name>.full.woff2` so this is
-reversible; the subset keeps the original filename so no CSS has to change.
+The Font Awesome stylesheet gets the same treatment: all.min.css is rewritten
+down to the `.fa-<name>:before` rules in use (102KB -> a few KB), since the
+rule for an icon whose glyph is gone is dead weight on the critical path.
+
+Originals are preserved in tools/icon-fonts-original/ so this is reversible;
+the subset keeps the original filename so no reference has to change.
 
 Usage (fontTools is a build-time-only dependency, deliberately not in
 package.json — icon sets change rarely, and the subset output is committed):
@@ -127,7 +131,9 @@ def data_icon_names() -> set[str]:
 
 def fa_class_to_codepoint() -> dict[str, int]:
     """Parse `.fa-x:before,.fa-y:before{content:"\\f09b"}` rules from all.min.css."""
-    css = FA_CSS.read_text(encoding="utf-8")
+    # From the pristine copy: all.min.css itself is rewritten down to the icons
+    # in use, so after a first run it no longer knows the others.
+    css = backup(FA_CSS, "fontawesome-all.min.css").read_text(encoding="utf-8")
     mapping = {}
     for selectors, code in re.findall(
         r'((?:\.fa-[a-z0-9-]+:before,?)+)\{content:"\\([0-9a-fA-F]+)"\}', css
@@ -156,15 +162,74 @@ def material_name_to_glyph(font: TTFont) -> dict[str, str]:
     return mapping
 
 
-def backup(path: Path) -> None:
+def backup(path: Path, name: str | None = None) -> Path:
     """Keep a pristine copy so re-running against an already-subset font is
     recoverable. Deliberately outside frontend/public — Angular copies that
     directory wholesale, and the originals would ride along into every
     deploy as 428KB of files nothing ever requests."""
     ORIGINALS.mkdir(parents=True, exist_ok=True)
-    full = ORIGINALS / path.name
+    full = ORIGINALS / (name or path.name)
     if not full.exists():
         shutil.copy2(path, full)
+    return full
+
+
+# Font Awesome 6 ships @font-face blocks for the v5 and v4 compatibility
+# families too. Nothing here uses them (every icon is `fas`/`fab`/`far`, which
+# resolve to the "Font Awesome 6" families), and the .ttf/v4 files they point
+# at are not even shipped.
+FA_FONT_FAMILIES_KEPT = ('"Font Awesome 6 Free"', '"Font Awesome 6 Brands"')
+
+
+def subset_fa_css(classes: set[str]) -> None:
+    """Rewrite all.min.css keeping only the `.fa-<name>:before` rules in use.
+
+    The fonts were already subset to ~36 glyphs, but the stylesheet still
+    carried the ~2,000 icon rules (86KB of the 102KB), all of which map to
+    glyphs that no longer exist. Everything that is not a per-icon rule —
+    the base classes, sizing/animation utilities, the @font-face for the
+    shipped woff2 files — is kept untouched, so a class the templates use
+    for styling (`fa-fw`, `fa-spin`, ...) keeps working.
+    """
+    source = backup(FA_CSS, "fontawesome-all.min.css")
+    css = source.read_text(encoding="utf-8")
+    before = len(css.encode())
+
+    icon_rule = re.compile(r'((?:\.fa-[a-z0-9-]+:before,?)+)\{content:"(\\[0-9a-fA-F]+)"\}')
+
+    def keep_used(match: re.Match) -> str:
+        used = [
+            c for c in re.findall(r"\.(fa-[a-z0-9-]+):before", match.group(1))
+            if c in classes
+        ]
+        if not used:
+            return ""
+        selectors = ",".join(f".{c}:before" for c in used)
+        return f'{selectors}{{content:"{match.group(2)}"}}'
+
+    css = icon_rule.sub(keep_used, css)
+
+    def keep_font_face(match: re.Match) -> str:
+        block = match.group(0)
+        family = re.search(r"font-family:(\"[^\"]+\")", block)
+        if not family or family.group(1) not in FA_FONT_FAMILIES_KEPT:
+            return ""
+        # The .ttf fallbacks are not shipped; woff2 is supported everywhere.
+        return re.sub(r',url\([^)]*\.ttf\)\s*format\("truetype"\)', "", block)
+
+    css = re.sub(r"@font-face\{.*?\}", keep_font_face, css)
+
+    # The dropped families must not be referenced by any remaining rule.
+    for stale in ('"FontAwesome"', '"Font Awesome 5'):
+        if stale in css:
+            sys.exit(f"all.min.css: una regola usa ancora {stale}, subset interrotto")
+
+    FA_CSS.write_text(css, encoding="utf-8")
+    after = len(css.encode())
+    print(
+        f"  {FA_CSS.name:<28} {before:>7} -> {after:>6} byte "
+        f"({100 * (after - before) / before:+.1f}%)"
+    )
 
 
 def run_subset(src: Path, args: list[str]) -> None:
@@ -243,6 +308,9 @@ def main() -> None:
     for face in FA_FACES:
         if face.exists():
             run_subset(face, [f"--unicodes={unicodes}"])
+
+    # Same set of classes as the fonts, so CSS and glyphs always agree.
+    subset_fa_css({c for c in classes if c in table})
 
 
 if __name__ == "__main__":

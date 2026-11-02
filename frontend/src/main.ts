@@ -1,17 +1,22 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import * as Sentry from '@sentry/angular';
 import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 import { BUILD_INFO } from './app/core/utils/build-info';
 import { environment } from './environments/environment';
 
 // No-op when sentryDsn is unset (default in dev/until a Sentry project exists).
+// Caricato con import() dinamico: con il DSN vuoto l'SDK non viene scaricato da
+// nessuno, invece di stare nel bundle iniziale di ogni pagina per non fare nulla.
+// Contropartita (solo col DSN impostato): gli errori lanciati prima che il chunk
+// arrivi non vengono catturati da Sentry; restano gestiti da GlobalErrorHandler.
 if (environment.sentryDsn) {
-  Sentry.init({
-    dsn: environment.sentryDsn,
-    environment: environment.production ? 'production' : 'development',
-    tracesSampleRate: 0.1,
-  });
+  import('@sentry/angular').then((Sentry) =>
+    Sentry.init({
+      dsn: environment.sentryDsn,
+      environment: environment.production ? 'production' : 'development',
+      tracesSampleRate: 0.1,
+    }),
+  ).catch((err) => console.warn('[Sentry] SDK non caricato', err));
 }
 // Prism used to be imported here purely to publish `Prism` as a global before
 // any lazy chunk evaluated (its plugin IIFEs read it as a free variable). That
