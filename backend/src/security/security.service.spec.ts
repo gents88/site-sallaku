@@ -17,13 +17,15 @@ function query(rows: unknown) {
   return q;
 }
 
-async function setup(opts: { events?: any; sessions?: any; session?: any; indexes?: any[]; users?: any; counts?: number[]; ips?: any[] } = {}) {
+async function setup(opts: { events?: any; sessions?: any; session?: any; indexes?: any[]; eventIndexes?: any[]; users?: any; counts?: number[]; ips?: any[] } = {}) {
   const counts = [...(opts.counts ?? [0, 0, 0])];
   const events = {
     create: jest.fn().mockResolvedValue({}),
     countDocuments: jest.fn(() => ({ exec: jest.fn().mockResolvedValue(counts.shift() ?? 0) })),
     aggregate: jest.fn(() => ({ exec: jest.fn().mockResolvedValue(opts.ips ?? []) })),
     find: jest.fn(() => query(opts.events ?? [])),
+    collection: { indexes: jest.fn().mockResolvedValue(opts.eventIndexes ?? []), collectionName: 'security_events' },
+    db: { db: { command: jest.fn().mockResolvedValue({ ok: 1 }) } },
   };
   const sessions = {
     create: jest.fn().mockResolvedValue({}),
@@ -186,9 +188,38 @@ describe('SecurityService.onModuleInit (migrazione dell’indice)', () => {
     expect(sessions.syncIndexes).toHaveBeenCalled();
   });
 
+  it('porta l’indice TTL degli eventi a 3 giorni se era rimasto al vecchio valore', async () => {
+    const { service, events } = await setup({
+      eventIndexes: [{ name: '_id_', key: { _id: 1 } }, { name: 'createdAt_1', key: { createdAt: 1 }, expireAfterSeconds: 90 * 86400 }],
+    });
+    await service.onModuleInit();
+    expect(events.db.db.command).toHaveBeenCalledWith({
+      collMod: 'security_events',
+      index: { name: 'createdAt_1', expireAfterSeconds: 3 * 86400 },
+    });
+  });
+
+  it('non tocca l’indice TTL degli eventi se è già a 3 giorni, né l’indice createdAt senza TTL', async () => {
+    const { service, events } = await setup({
+      eventIndexes: [
+        { name: 'createdAt_-1', key: { createdAt: -1 } },
+        { name: 'type_1_createdAt_-1', key: { type: 1, createdAt: -1 } },
+        { name: 'createdAt_1', key: { createdAt: 1 }, expireAfterSeconds: 3 * 86400 },
+      ],
+    });
+    await service.onModuleInit();
+    expect(events.db.db.command).not.toHaveBeenCalled();
+  });
+
   it('un errore sugli indici non impedisce l’avvio', async () => {
     const { service, sessions } = await setup();
     sessions.collection.indexes.mockRejectedValue(new Error('non autorizzato'));
+    await expect(service.onModuleInit()).resolves.toBeUndefined();
+  });
+
+  it('un errore nell’allineamento del TTL degli eventi non impedisce l’avvio', async () => {
+    const { service, events } = await setup({ eventIndexes: [{ name: 'createdAt_1', key: { createdAt: 1 }, expireAfterSeconds: 90 * 86400 }] });
+    events.db.db.command.mockRejectedValue(new Error('non autorizzato'));
     await expect(service.onModuleInit()).resolves.toBeUndefined();
   });
 });
@@ -202,7 +233,7 @@ describe('SecurityService.summary', () => {
       ips: [{ _id: '198.51.100.9', failures: 6 }],
     });
     const s = await service.summary(now);
-    expect([s.failedLogins24h, s.otpFailed24h, s.tokenReuse7d]).toEqual([7, 3, 1]);
+    expect([s.failedLogins24h, s.otpFailed24h, s.tokenReuse]).toEqual([7, 3, 1]);
     expect(s.suspiciousIps).toEqual([{ ip: '198.51.100.9', failures: 6 }]);
     // la soglia degli IP sospetti è nella pipeline, non filtrata a mano dopo
     const pipeline = (events.aggregate.mock.calls as any)[0][0];

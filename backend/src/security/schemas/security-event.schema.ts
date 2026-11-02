@@ -12,8 +12,12 @@ export const SECURITY_EVENT_TYPES = [
 ] as const;
 export type SecurityEventType = (typeof SECURITY_EVENT_TYPES)[number];
 
-/** Retention degli eventi: abbastanza per vedere un attacco lento, non per tenere dati personali all'infinito. */
-export const SECURITY_EVENT_TTL_DAYS = 90;
+/**
+ * Retention degli eventi: la cronologia si cancella da sola dopo questi giorni (indice TTL, rolling:
+ * ogni evento sparisce 3 giorni dopo essere stato registrato). Tiene pochi dati personali (IP, user agent).
+ * Un indice TTL esistente non cambia da solo: lo allinea SecurityService.onModuleInit con collMod.
+ */
+export const SECURITY_EVENT_TTL_DAYS = 3;
 
 @Schema({ collection: 'security_events', timestamps: { createdAt: true, updatedAt: false } })
 export class SecurityEvent {
