@@ -41,12 +41,17 @@ const time = `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.mi
 
 console.log(`[ng-build] rilascio ${commit} · ${time}`);
 
+// Il server di produzione parla solo HTTP/1.1 (6 connessioni per origine): con la suddivisione
+// predefinita di esbuild il bootstrap aspetta ~40 chunk da 3-5 KB, uno ogni giro di rete. Il
+// chunk optimizer di Angular (rollup) li accorpa; NG_BUILD_OPTIMIZE_CHUNKS=0 lo disattiva.
+const env = { ...process.env, NG_BUILD_OPTIMIZE_CHUNKS: process.env.NG_BUILD_OPTIMIZE_CHUNKS ?? '1' };
+
 const result = spawnSync(
   'npx',
   ['ng', 'build', ...process.argv.slice(2),
     '--define', `__BUILD_COMMIT__='${commit}'`,
     '--define', `__BUILD_TIME__='${time}'`],
-  { cwd: frontend, stdio: 'inherit', shell: process.platform === 'win32' },
+  { cwd: frontend, stdio: 'inherit', shell: process.platform === 'win32', env },
 );
 if (result.status === 0) {
   const browserDir = path.join(frontend, 'dist', 'portfolio-frontend', 'browser');
