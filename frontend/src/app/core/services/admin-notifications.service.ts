@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, InjectionToken, PLATFORM_ID, computed, effect, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
-import { io, ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
+import type { ManagerOptions, Socket, SocketOptions } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 
@@ -24,10 +24,14 @@ export interface NotificationSummary {
   followUpsDue?: number;
 }
 
-/** Iniettabile per i test: in produzione è `io()` di socket.io-client. */
-export const ADMIN_SOCKET_FACTORY = new InjectionToken<(url: string, opts: Partial<ManagerOptions & SocketOptions>) => Socket>(
+/**
+ * Iniettabile per i test: in produzione è `io()` di socket.io-client, caricato solo
+ * quando serve (admin loggato). Importato in modo statico finiva nel bundle iniziale
+ * di ogni visitatore, perché questo servizio lo iniettano AppComponent e la sidebar.
+ */
+export const ADMIN_SOCKET_FACTORY = new InjectionToken<(url: string, opts: Partial<ManagerOptions & SocketOptions>) => Promise<Socket>>(
   'ADMIN_SOCKET_FACTORY',
-  { providedIn: 'root', factory: () => (url, opts) => io(url, opts) },
+  { providedIn: 'root', factory: () => (url, opts) => import('socket.io-client').then(({ io }) => io(url, opts)) },
 );
 
 const EMPTY: NotificationSummary = { contactsUnread: 0, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 };
@@ -61,6 +65,10 @@ export class AdminNotificationsService {
 
   private readonly wsOrigin = environment.apiUrl.replace(/\/api\/v\d+\/?$/, '');
   private socket: Socket | null = null;
+  /** Connessione richiesta e socket.io ancora in caricamento: niente secondo tentativo. */
+  private connecting = false;
+  /** Cambia a ogni start/stop: un socket che arriva dopo un logout va chiuso, non agganciato. */
+  private attempt = 0;
 
   constructor() {
     effect(() => {
@@ -91,22 +99,39 @@ export class AdminNotificationsService {
 
   private start(): void {
     this.refresh();
-    if (this.socket) return;
+    if (this.socket || this.connecting) return;
+    this.connecting = true;
+    const attempt = ++this.attempt;
     // `auth` come funzione: socket.io la rivaluta a ogni connessione e riconnessione. Con un
     // oggetto fisso, dopo la scadenza del token di accesso il socket si ricollegherebbe con
     // quello vecchio, senza permessi admin, e le notifiche sparirebbero fino al ricaricamento.
-    this.socket = this.socketFactory(`${this.wsOrigin}/live-chat`, {
+    this.socketFactory(`${this.wsOrigin}/live-chat`, {
       auth: (cb) => this.auth.getFreshToken().subscribe((token) => cb({ token })),
-    });
-    this.socket.on('connect', () => this.connected.set(true));
-    this.socket.on('disconnect', () => this.connected.set(false));
-    this.socket.on('admin_notification', (event: AdminNotification) => {
-      this.recent.update(list => [event, ...list].slice(0, MAX_RECENT));
-      this.refresh();
-    });
+    }).then(
+      (socket) => {
+        if (attempt !== this.attempt) {
+          socket.disconnect();
+          return;
+        }
+        this.connecting = false;
+        this.socket = socket;
+        socket.on('connect', () => this.connected.set(true));
+        socket.on('disconnect', () => this.connected.set(false));
+        socket.on('admin_notification', (event: AdminNotification) => {
+          this.recent.update(list => [event, ...list].slice(0, MAX_RECENT));
+          this.refresh();
+        });
+      },
+      () => {
+        // socket.io non caricato (rete, deploy nel frattempo): il campanello resta sui contatori.
+        if (attempt === this.attempt) this.connecting = false;
+      },
+    );
   }
 
   private stop(): void {
+    this.attempt++;
+    this.connecting = false;
     this.socket?.disconnect();
     this.socket = null;
     this.connected.set(false);
