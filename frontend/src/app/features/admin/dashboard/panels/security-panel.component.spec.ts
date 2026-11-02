@@ -16,7 +16,7 @@ const tokenWithSid = (sid: string) => {
 const DATA: SecuritySummary = {
   failedLogins24h: 7,
   otpFailed24h: 2,
-  tokenReuse7d: 1,
+  tokenReuse: 1,
   activeSessions: 2,
   suspiciousIps: [{ ip: '198.51.100.9', failures: 6 }],
   sessions: [
@@ -60,6 +60,48 @@ describe('SecurityPanelComponent', () => {
     expect(text).toContain('203.0.113.8');
     expect(text).toContain('security_panel.ev_login_failed');
     expect(text).toContain('admin@x.it');
+  });
+
+  describe('accordion', () => {
+    const panels = (el: HTMLElement) => Array.from(el.querySelectorAll('mat-expansion-panel'));
+
+    it('raggruppa sessioni ed eventi in due pannelli, con il conteggio nell’intestazione', () => {
+      const { el } = setup();
+      const [sessions, events] = panels(el);
+      expect(panels(el)).toHaveLength(2);
+      expect(sessions.querySelector('mat-expansion-panel-header')?.textContent).toContain('security_panel.sessions');
+      expect(sessions.querySelector('mat-expansion-panel-header .panel-badge')?.textContent?.trim()).toBe('2');
+      expect(events.querySelector('mat-expansion-panel-header')?.textContent).toContain('security_panel.events');
+      expect(events.querySelector('mat-expansion-panel-header .panel-badge')?.textContent?.trim()).toBe('2');
+    });
+
+    it('le sessioni (azionabili) partono aperte, gli eventi (lista lunga) chiusi', () => {
+      const { el } = setup();
+      const [sessions, events] = panels(el);
+      expect(sessions.classList).toContain('mat-expanded');
+      expect(events.classList).not.toContain('mat-expanded');
+    });
+
+    it('senza sessioni anche il pannello delle sessioni parte chiuso', () => {
+      const { el } = setup({ ...DATA, sessions: [], activeSessions: 0 });
+      expect(panels(el)[0].classList).not.toContain('mat-expanded');
+    });
+
+    it('cliccando l’intestazione il pannello degli eventi si apre e si richiude', () => {
+      const { fixture, el } = setup();
+      const header = panels(el)[1].querySelector('mat-expansion-panel-header') as HTMLElement;
+      header.click();
+      fixture.detectChanges();
+      expect(panels(el)[1].classList).toContain('mat-expanded');
+      header.click();
+      fixture.detectChanges();
+      expect(panels(el)[1].classList).not.toContain('mat-expanded');
+    });
+
+    it('nel pannello degli eventi avvisa che la cronologia si cancella da sola dopo 3 giorni', () => {
+      const { el } = setup();
+      expect(panels(el)[1].textContent).toContain('security_panel.events_retention');
+    });
   });
 
   it('il riuso di un token è evidenziato come grave', () => {
@@ -138,7 +180,7 @@ describe('SecurityPanelComponent', () => {
   });
 
   it('senza dati dice che non c’è nulla, senza IP sospetti non mostra la riga', () => {
-    const { el } = setup({ failedLogins24h: 0, otpFailed24h: 0, tokenReuse7d: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [] });
+    const { el } = setup({ failedLogins24h: 0, otpFailed24h: 0, tokenReuse: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [] });
     expect(el.textContent).toContain('security_panel.no_sessions');
     expect(el.textContent).toContain('security_panel.no_events');
     expect(el.querySelector('.sec-ips')).toBeNull();
