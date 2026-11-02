@@ -4,7 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
-import { TRANSLATE_LOADER_OPTIONS } from './app.config';
+import { TRANSLATE_LOADER_OPTIONS } from './core/i18n/translate-loader-options';
 
 describe('loader delle traduzioni', () => {
   function loadItalian(): string {

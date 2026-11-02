@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { ThemeService, type LanguageAccent } from './theme.service';
+import { translationUrl } from '../i18n/translate-loader-options';
 
 export type Lang = 'it' | 'en' | 'sq' | 'es' | 'pt' | 'fr' | 'de';
 
@@ -96,7 +97,7 @@ export class LanguageService {
     this.translate.addLangs(ALL_LANGS);
     if (isPlatformBrowser(this.platformId)) {
       this.doc.documentElement.lang = this._current();
-      this.detectLanguageFromIP();
+      this.detectLanguageFromIP(true);
     }
     this.applyLanguageAccent(this._current());
   }
@@ -106,12 +107,49 @@ export class LanguageService {
    * free IP-geolocation API and set the appropriate default language.
    * Albania / Kosovo → sq | Italy → it | everything else → en
    */
-  private detectLanguageFromIP(): void {
+  private detectLanguageFromIP(deferUntilIdle = false): void {
     if (typeof localStorage === 'undefined') return;
     // Respect an explicit user choice stored from a previous visit
     if (localStorage.getItem(STORAGE_KEY)) return;
     // Respect an explicit /en/, /es/... URL — never override deliberate navigation
     if (this.urlLangExplicit) return;
+
+    if (deferUntilIdle) {
+      this.whenIdleAfterLoad(() => this.lookUpCountryLanguage());
+    } else {
+      this.lookUpCountryLanguage();
+    }
+  }
+
+  /**
+   * All'avvio la ricerca per IP non deve competere con il caricamento: apre una
+   * connessione verso un servizio esterno (DNS + TLS) mentre il browser sta
+   * ancora scaricando ed eseguendo il JavaScript dell'app. Parte quindi a
+   * `load` completato e a browser libero. Safari non ha requestIdleCallback:
+   * lì basta un breve timeout. Il ripristino manuale dell'utente (resetToAuto)
+   * non passa di qui e resta immediato.
+   */
+  private whenIdleAfterLoad(task: () => void): void {
+    const win = this.doc.defaultView;
+    if (!win) return;
+    const schedule = () => {
+      if (typeof win.requestIdleCallback === 'function') {
+        win.requestIdleCallback(() => task(), { timeout: 3000 });
+      } else {
+        setTimeout(task, 1000);
+      }
+    };
+    if (this.doc.readyState === 'complete') {
+      schedule();
+    } else {
+      win.addEventListener('load', schedule, { once: true });
+    }
+  }
+
+  private lookUpCountryLanguage(): void {
+    // Rivalutate qui perché nel frattempo l'utente può aver scelto una lingua
+    // o essere arrivato su un URL con prefisso.
+    if (localStorage.getItem(STORAGE_KEY) || this.urlLangExplicit) return;
 
     fetch('https://ipwho.is/?fields=country_code', { signal: AbortSignal.timeout(4000) })
       .then(r => r.json())
@@ -216,6 +254,7 @@ export class LanguageService {
     // static HTML shipped for /de/, /pt/... URLs declares the right
     // language instead of inheriting index.html's default lang="it".
     this.doc.documentElement.lang = lang;
+    if (!isPlatformBrowser(this.platformId)) this.preloadTranslations(lang);
     if (isPlatformBrowser(this.platformId)) {
       if (explicit) {
         // Whatever prefixed URL the visitor is actually on (whether they
@@ -235,6 +274,28 @@ export class LanguageService {
         error: () => { subscriber.next(lang); subscriber.complete(); }, // never block navigation on a translation load failure
       });
     });
+  }
+
+  /**
+   * Solo nell'HTML prerenderizzato: dice al browser di scaricare il file delle
+   * traduzioni mentre legge ancora la pagina. Senza, la richiesta parte solo
+   * quando l'app ha finito il bootstrap e la route ha risolto la lingua
+   * (sulla trace mobile: a ~2 s, e it.json arrivava a ~4,5 s), e fino ad
+   * allora i testi tradotti (banner cookie compreso) non vengono ridisegnati,
+   * quindi l'LCP slittava al loro arrivo. L'URL è lo stesso del loader, così la
+   * richiesta dell'app riusa quella già in corso invece di farne una seconda.
+   */
+  private preloadTranslations(lang: Lang): void {
+    const head = this.doc.head;
+    if (!head) return;
+    const href = translationUrl(lang);
+    if (head.querySelector(`link[rel="preload"][href="${href}"]`)) return;
+    const link = this.doc.createElement('link');
+    link.setAttribute('rel', 'preload');
+    link.setAttribute('as', 'fetch');
+    link.setAttribute('crossorigin', 'anonymous');
+    link.setAttribute('href', href);
+    head.appendChild(link);
   }
 
   /**

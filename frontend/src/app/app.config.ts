@@ -16,20 +16,7 @@ import { GlobalErrorHandler } from './core/error-handling/global-error.handler';
 import { SelectivePreloadStrategy } from './core/strategies/selective-preload.strategy';
 import { environment } from '../environments/environment';
 import { resolveInitialLanguage } from './core/services/language.service';
-import { BUILD_INFO } from './core/utils/build-info';
-
-/**
- * Versione nell'URL invece di enforceLoading: quello aggiungeva
- * ?enforceLoading=<Date.now()>, un URL nuovo a ogni visita, quindi i 122 KB
- * (36 KB gzip) di it.json non venivano mai serviti dalla cache del browser
- * nonostante Cache-Control: max-age=86400. Col commit nell'URL la cache vale
- * dentro una release e un nuovo deploy cambia URL, quindi nessuna traduzione
- * vecchia.
- */
-export const TRANSLATE_LOADER_OPTIONS = {
-  prefix: '/i18n/',
-  suffix: `.json?v=${encodeURIComponent(BUILD_INFO.commit)}`,
-};
+import { TRANSLATE_LOADER_OPTIONS } from './core/i18n/translate-loader-options';
 
 const initialLanguage = resolveInitialLanguage();
 
