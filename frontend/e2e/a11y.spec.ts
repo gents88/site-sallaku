@@ -45,6 +45,10 @@ for (const scheme of ['light', 'dark'] as const) for (const path of PAGES) {
 
 test('palette Ctrl+K: apertura, navigazione da tastiera, chiusura con Esc', async ({ page }) => {
   await page.goto('/');
+  // Angular parte dopo `load` (la navigazione iniziale è bloccante finché le
+  // traduzioni non sono caricate) e solo allora registra il listener
+  // window:keydown: un Ctrl+K premuto prima andrebbe perso, senza replay.
+  await page.waitForLoadState('networkidle');
   await page.keyboard.press('Control+k');
   const input = page.getByRole('combobox');
   await expect(input).toBeFocused();
