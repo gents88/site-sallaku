@@ -93,8 +93,12 @@
       @font-face { font-family: 'Inter'; font-style: normal; font-weight: 300 900; font-display: swap; src: url(/assets/fonts/inter/inter-latin-ext.woff2) format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
       @font-face { font-family: 'Inter'; font-style: normal; font-weight: 300 900; font-display: swap; src: url(/assets/fonts/inter/inter-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
     </style>
-    <link rel="preload" as="style" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" /></noscript>
+    <!-- I fogli dei font sono bloccanti, come styles.css (inlineCritical: false in
+         angular.json). Caricati in modo asincrono arrivavano dopo il primo paint e
+         ognuno ricalcolava stile e layout dell'intera pagina, a pagina già visibile:
+         misurato con Lighthouse (2026-11-02), il TBT scendeva di circa un terzo
+         rendendoli bloccanti, al costo di un FCP poco più tardo. -->
+    <link rel="stylesheet" href="/assets/fonts/jetbrains-mono/jetbrains-mono.css" />
     <!-- Material Icons and Font Awesome are self-hosted from /assets/fonts
          instead of Google Fonts / jsdelivr. Three independent bugs traced
          back to those being third-party CDNs: (1) font-display:optional's
@@ -110,10 +114,8 @@
          to hide, so the font arrives fast enough that the invisible-text
          window is negligible, without `optional`'s risk of a permanent miss
          or `block`'s multi-second invisible-text stall. -->
-    <link rel="preload" as="style" href="/assets/fonts/material-icons/material-icons.css" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="/assets/fonts/material-icons/material-icons.css" /></noscript>
-    <link rel="preload" as="style" href="/assets/fonts/fontawesome/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css" /></noscript>
+    <link rel="stylesheet" href="/assets/fonts/material-icons/material-icons.css" />
+    <link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css" />
     <!-- Google Analytics 4 (loaded conditionally by SeoService when ID is set) -->
     <script>
       window.dataLayer = window.dataLayer || [];
