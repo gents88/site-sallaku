@@ -21,7 +21,11 @@ permissions: {}
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # Con il server giù ogni controllo esaurisce i tentativi: il caso peggiore
+    # (3 controlli x 3 tentativi) deve restare ben sotto questo limite. Se lo
+    # sfora, GitHub marca il run "cancelled" invece di "failure" e NON manda
+    # l'email: è già successo il 2026-10-30, col server irraggiungibile.
+    timeout-minutes: 10
     steps:
       - name: Sito, backend, database e certificato
         run: |
@@ -30,11 +34,11 @@ jobs:
           # url, testo atteso nella risposta, descrizione
           check() {
             for attempt in 1 2 3; do
-              if curl -fsS --max-time 20 "$1" 2>/dev/null | grep -q -- "$2"; then
+              if curl -fsS --connect-timeout 10 --max-time 15 "$1" 2>/dev/null | grep -q -- "$2"; then
                 echo "OK   $3"
                 return 0
               fi
-              sleep 20
+              [ "$attempt" -lt 3 ] && sleep 10
             done
             echo "::error::KO $3 ($1)"
             fail=1
@@ -45,7 +49,12 @@ jobs:
           check 'https://gentsallaku.it/api/v1/blog/posts?limit=1'  '"total":'   'database (MongoDB)'
 
           # Certificato Let's Encrypt: Plesk lo rinnova da solo, qui si verifica che lo faccia
-          end=$(echo | openssl s_client -servername gentsallaku.it -connect gentsallaku.it:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          end=$(echo | timeout 20 openssl s_client -servername gentsallaku.it -connect gentsallaku.it:443 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+          if [ -z "$end" ]; then
+            echo "::error::Certificato HTTPS non leggibile (porta 443 non raggiungibile?)"
+            fail=1
+            exit $fail
+          fi
           days=$(( ($(date -d "$end" +%s) - $(date +%s)) / 86400 ))
           if [ "$days" -lt 14 ]; then
             echo "::error::Il certificato HTTPS scade tra $days giorni ($end)"
