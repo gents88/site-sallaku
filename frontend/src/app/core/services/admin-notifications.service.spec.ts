@@ -18,12 +18,15 @@ function fakeSocket() {
   };
 }
 
-function setup(admin: boolean) {
+/** Esaurisce le promise in sospeso (la factory carica socket.io in modo asincrono). */
+const flush = () => new Promise<void>(resolve => setTimeout(resolve));
+
+async function setup(admin: boolean, load?: Promise<ReturnType<typeof fakeSocket>>) {
   document.title = 'Dashboard';
   const loggedIn = signal(admin);
   const isAdmin = signal(admin);
   const socket = fakeSocket();
-  const factory = vi.fn(() => socket);
+  const factory = vi.fn(() => load ?? Promise.resolve(socket));
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(), provideHttpClientTesting(), provideRouter([]),
@@ -35,20 +38,21 @@ function setup(admin: boolean) {
   const http = TestBed.inject(HttpTestingController);
   service.init();
   TestBed.tick();
+  await flush();
   return { service, http, socket, factory, loggedIn };
 }
 
 const summaryUrl = `${environment.apiUrl}/stats/notifications`;
 
 describe('AdminNotificationsService', () => {
-  it('does nothing for non-admins', () => {
-    const { factory, http } = setup(false);
+  it('does nothing for non-admins', async () => {
+    const { factory, http } = await setup(false);
     expect(factory).not.toHaveBeenCalled();
     http.expectNone(summaryUrl);
   });
 
-  it('loads the counters and connects with the token at handshake for admins', () => {
-    const { service, factory, http } = setup(true);
+  it('loads the counters and connects with the token at handshake for admins', async () => {
+    const { service, factory, http } = await setup(true);
     http.expectOne(summaryUrl).flush({ contactsUnread: 2, testimonialsPending: 1, notesPending: 0, liveHandoffsWaiting: 1 });
     expect(factory).toHaveBeenCalledWith(expect.stringMatching(/\/live-chat$/), { auth: expect.any(Function) });
     // L'handshake riceve il token al momento della connessione, non uno fissato all'apertura.
@@ -61,8 +65,8 @@ describe('AdminNotificationsService', () => {
     expect(document.title).toBe('(4) Dashboard');
   });
 
-  it('records a live event and refreshes the counters', () => {
-    const { service, socket, http } = setup(true);
+  it('records a live event and refreshes the counters', async () => {
+    const { service, socket, http } = await setup(true);
     http.expectOne(summaryUrl).flush({ contactsUnread: 0, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 });
     socket.fire('admin_notification', { type: 'live_handoff', at: '2026-10-04T10:00:00Z', title: 'Ciao' });
     expect(service.recent()[0].type).toBe('live_handoff');
@@ -70,13 +74,35 @@ describe('AdminNotificationsService', () => {
     expect(service.total()).toBe(1);
   });
 
-  it('disconnects and clears everything on logout', () => {
-    const { service, socket, http, loggedIn } = setup(true);
+  it('disconnects and clears everything on logout', async () => {
+    const { service, socket, http, loggedIn } = await setup(true);
     http.expectOne(summaryUrl).flush({ contactsUnread: 3, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 });
     loggedIn.set(false);
     TestBed.tick();
     expect(socket.disconnect).toHaveBeenCalled();
     expect(service.total()).toBe(0);
     expect(document.title).toBe('Dashboard');
+  });
+
+  it('closes a socket that finishes loading after the logout, without listening to it', async () => {
+    let resolve!: (s: ReturnType<typeof fakeSocket>) => void;
+    const late = fakeSocket();
+    const { service, http, loggedIn } = await setup(true, new Promise(r => { resolve = r; }));
+    http.expectOne(summaryUrl).flush({ contactsUnread: 1, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 });
+    loggedIn.set(false);
+    TestBed.tick();
+    resolve(late);
+    await flush();
+    expect(late.disconnect).toHaveBeenCalled();
+    expect(late.on).not.toHaveBeenCalled();
+    expect(service.connected()).toBe(false);
+  });
+
+  it('does not open a second connection while socket.io is still loading', async () => {
+    const { factory, http, service } = await setup(true, new Promise(() => { /* mai pronto */ }));
+    http.expectOne(summaryUrl).flush({ contactsUnread: 0, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 });
+    (service as unknown as { start(): void }).start();
+    http.expectOne(summaryUrl).flush({ contactsUnread: 0, testimonialsPending: 0, notesPending: 0, liveHandoffsWaiting: 0 });
+    expect(factory).toHaveBeenCalledTimes(1);
   });
 });
