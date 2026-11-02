@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, finalize } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { loadChatMessages, saveChatMessages } from '../utils/chat-history-storage';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'agent';
@@ -24,12 +25,26 @@ interface TranscriptResponse {
 }
 
 const SESSION_STORAGE_KEY = 'chatbot_session_id';
+const MESSAGES_STORAGE_KEY = 'chatbot_messages';
+
+/**
+ * Cronologia ripresa dopo un ricaricamento. Solo se c'è ancora l'identificativo di sessione: senza,
+ * i messaggi salvati appartengono a una conversazione già cancellata e non vanno mostrati.
+ */
+function restoredMessages(): ChatMessage[] {
+  try {
+    if (typeof sessionStorage === 'undefined' || !sessionStorage.getItem(SESSION_STORAGE_KEY)) return [];
+  } catch {
+    return [];
+  }
+  return loadChatMessages(MESSAGES_STORAGE_KEY);
+}
 
 @Injectable({ providedIn: 'root' })
 export class ChatbotService {
   private readonly apiUrl = `${environment.apiUrl}/chatbot`;
 
-  private readonly _messages = new BehaviorSubject<ChatMessage[]>([]);
+  private readonly _messages = new BehaviorSubject<ChatMessage[]>(restoredMessages());
   private readonly _isLoading = new BehaviorSubject<boolean>(false);
   private readonly _isOpen = new BehaviorSubject<boolean>(false);
   private readonly _suggestions = new BehaviorSubject<string[]>([]);
@@ -41,7 +56,11 @@ export class ChatbotService {
 
   private sessionId: string | null = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_STORAGE_KEY) : null;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {
+    // Ogni cambiamento della conversazione si salva (e una conversazione vuota cancella la chiave):
+    // dopo un ricaricamento della pagina la chat riparte da dove era.
+    this._messages.subscribe((messages) => saveChatMessages(MESSAGES_STORAGE_KEY, messages));
+  }
 
   get isOpen(): boolean {
     return this._isOpen.getValue();

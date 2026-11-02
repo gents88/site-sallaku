@@ -4,7 +4,7 @@
     class="lec-dialog"
     role="alertdialog"
     aria-modal="true"
-    [attr.aria-label]="(step === 'ask_close' ? 'live_handoff.exit_ask_close_title' : 'live_handoff.exit_ask_resolved_title') | translate"
+    [attr.aria-label]="(step === 'ask_close' ? 'live_handoff.exit_ask_close_title' : step === 'ask_leave' ? 'live_handoff.exit_ask_leave_title' : 'live_handoff.exit_ask_resolved_title') | translate"
     (keydown.tab)="onDialogTabKey($event)"
   >
     @if (step === 'ask_resolved') {
@@ -15,6 +15,16 @@
         </button>
         <button class="lec-btn lec-btn--primary" (click)="advance.emit()">
           {{ 'live_handoff.exit_ask_resolved_yes' | translate }}
+        </button>
+      </div>
+    } @else if (step === 'ask_leave') {
+      <p class="lec-title">{{ 'live_handoff.exit_ask_leave_title' | translate }}</p>
+      <div class="lec-actions">
+        <button #secondaryBtn class="lec-btn lec-btn--secondary" (click)="cancel.emit()">
+          {{ 'live_handoff.exit_ask_resolved_no' | translate }}
+        </button>
+        <button class="lec-btn lec-btn--danger" (click)="confirm.emit()">
+          {{ 'live_handoff.exit_ask_close_yes' | translate }}
         </button>
       </div>
     } @else if (step === 'ask_close') {

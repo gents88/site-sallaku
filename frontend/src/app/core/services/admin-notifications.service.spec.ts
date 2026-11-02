@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { describe, expect, it, vi } from 'vitest';
 import { ADMIN_SOCKET_FACTORY, AdminNotificationsService } from './admin-notifications.service';
 import { AuthService } from './auth.service';
@@ -26,7 +27,7 @@ function setup(admin: boolean) {
   TestBed.configureTestingModule({
     providers: [
       provideHttpClient(), provideHttpClientTesting(), provideRouter([]),
-      { provide: AuthService, useValue: { isLoggedIn: loggedIn, isAdmin, getToken: () => 'jwt' } },
+      { provide: AuthService, useValue: { isLoggedIn: loggedIn, isAdmin, getToken: () => 'jwt', getFreshToken: () => of('jwt') } },
       { provide: ADMIN_SOCKET_FACTORY, useValue: factory },
     ],
   });
@@ -49,7 +50,12 @@ describe('AdminNotificationsService', () => {
   it('loads the counters and connects with the token at handshake for admins', () => {
     const { service, factory, http } = setup(true);
     http.expectOne(summaryUrl).flush({ contactsUnread: 2, testimonialsPending: 1, notesPending: 0, liveHandoffsWaiting: 1 });
-    expect(factory).toHaveBeenCalledWith(expect.stringMatching(/\/live-chat$/), { auth: { token: 'jwt' } });
+    expect(factory).toHaveBeenCalledWith(expect.stringMatching(/\/live-chat$/), { auth: expect.any(Function) });
+    // L'handshake riceve il token al momento della connessione, non uno fissato all'apertura.
+    const opts = (factory.mock.calls[0] as unknown as [string, { auth: (cb: (d: object) => void) => void }])[1];
+    const cb = vi.fn();
+    opts.auth(cb);
+    expect(cb).toHaveBeenCalledWith({ token: 'jwt' });
     expect(service.total()).toBe(4);
     TestBed.tick();
     expect(document.title).toBe('(4) Dashboard');

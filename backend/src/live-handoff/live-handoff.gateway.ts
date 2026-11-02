@@ -17,6 +17,8 @@ import { isProductionEnv } from '../common/utils/runtime-env';
 import { Subscription } from 'rxjs';
 import { UsersService } from '../users/users.service';
 import { AdminEventsService } from '../common/services/admin-events.service';
+import { SocketRateLimiter } from './socket-rate-limit';
+import { asSessionId } from './session-id';
 
 /** Stanza dei socket admin autenticati all'handshake: riceve gli eventi del campanello. */
 export const ADMINS_ROOM = 'admins';
@@ -74,6 +76,11 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
 
   private eventsSub: Subscription | null = null;
 
+  // Limiti per socket sugli eventi anonimi: ogni messaggio è una scrittura su MongoDB più un broadcast.
+  private readonly visitorMessages = new SocketRateLimiter(20, 30_000);
+  private readonly visitorJoins = new SocketRateLimiter(10, 60_000);
+  private readonly visitorTyping = new SocketRateLimiter(6, 10_000);
+
   afterInit(): void {
     this.eventsSub = this.adminEvents?.events$.subscribe((event) => {
       this.server?.to(ADMINS_ROOM).emit('admin_notification', event);
@@ -100,6 +107,9 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
 
   handleDisconnect(client: Socket): void {
     this.logger.debug(`Client disconnected: ${client.id}`);
+    this.visitorMessages.forget(client.id);
+    this.visitorJoins.forget(client.id);
+    this.visitorTyping.forget(client.id);
   }
 
   private room(sessionId: string): string {
@@ -109,47 +119,74 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
   @SubscribeMessage('join_session')
   async onJoinSession(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { sessionId?: string },
+    @MessageBody() body: { sessionId?: unknown },
   ): Promise<void> {
-    if (!body?.sessionId) return;
-    await client.join(this.room(body.sessionId));
+    const sessionId = asSessionId(body?.sessionId);
+    if (!sessionId) return;
+    if (!this.visitorJoins.allow(client.id)) return;
+    await client.join(this.room(sessionId));
   }
 
   @SubscribeMessage('visitor_message')
   async onVisitorMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { sessionId?: string; text?: string },
+    @MessageBody() body: { sessionId?: unknown; text?: unknown },
   ): Promise<void> {
-    const text = body?.text?.trim().slice(0, 1000);
-    if (!body?.sessionId || !text) return;
+    const sessionId = asSessionId(body?.sessionId);
+    const text = typeof body?.text === 'string' ? body.text.trim().slice(0, 1000) : '';
+    if (!sessionId || !text) return;
 
-    const status = await this.liveHandoffService.getStatus(body.sessionId);
+    if (!this.visitorMessages.allow(client.id)) {
+      client.emit('error', { message: 'Stai scrivendo troppo in fretta: attendi qualche secondo.' });
+      return;
+    }
+
+    const status = await this.liveHandoffService.getStatus(sessionId);
     if (!CHATTABLE_STATUSES.includes(status.status)) return;
 
-    const message = await this.chatbotService.appendLiveMessage(body.sessionId, 'user', text);
-    await this.liveHandoffService.touchActivity(body.sessionId);
-    this.server.to(this.room(body.sessionId)).emit('chat_message', {
-      sessionId: body.sessionId,
+    const message = await this.chatbotService.appendLiveMessage(sessionId, 'user', text);
+    await this.liveHandoffService.touchActivity(sessionId);
+    this.server.to(this.room(sessionId)).emit('chat_message', {
+      sessionId,
       from: 'visitor',
       text,
       sentAt: message.timestamp,
     });
   }
 
+  /**
+   * "Il visitatore sta scrivendo": nessuna scrittura su database, solo un inoltro agli altri
+   * membri della stanza. Il mittente deve esserci già entrato (join_session): senza questo
+   * controllo chiunque potrebbe sparare eventi nelle stanze di sessioni altrui.
+   */
+  @SubscribeMessage('visitor_typing')
+  onVisitorTyping(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { sessionId?: unknown },
+  ): void {
+    const sessionId = asSessionId(body?.sessionId);
+    if (!sessionId) return;
+    const room = this.room(sessionId);
+    if (!client.rooms?.has(room)) return;
+    if (!this.visitorTyping.allow(client.id)) return;
+    client.to(room).emit('typing', { sessionId, from: 'visitor' });
+  }
+
   @SubscribeMessage('admin_join')
   async onAdminJoin(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { sessionId?: string; token?: string },
+    @MessageBody() body: { sessionId?: unknown; token?: string },
   ): Promise<void> {
     const authorized = await this.isAdmin(client, body?.token);
-    if (!authorized || !body?.sessionId) {
+    const sessionId = asSessionId(body?.sessionId);
+    if (!authorized || !sessionId) {
       client.emit('error', { message: 'Non autorizzato' });
       return;
     }
 
     let status;
     try {
-      status = await this.liveHandoffService.markAgentJoining(body.sessionId);
+      status = await this.liveHandoffService.markAgentJoining(sessionId);
     } catch (err) {
       client.emit('error', {
         message: err instanceof Error ? err.message : 'Impossibile entrare in questa chat.',
@@ -169,13 +206,14 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
   @SubscribeMessage('admin_message')
   async onAdminMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { sessionId?: string; text?: string; token?: string },
+    @MessageBody() body: { sessionId?: unknown; text?: unknown; token?: string },
   ): Promise<void> {
     const authorized = await this.isAdmin(client, body?.token);
-    const text = body?.text?.trim().slice(0, 2000);
-    if (!authorized || !body?.sessionId || !text) return;
+    const sessionId = asSessionId(body?.sessionId);
+    const text = typeof body?.text === 'string' ? body.text.trim().slice(0, 2000) : '';
+    if (!authorized || !sessionId || !text) return;
 
-    const status = await this.liveHandoffService.getStatus(body.sessionId);
+    const status = await this.liveHandoffService.getStatus(sessionId);
     if (!CHATTABLE_STATUSES.includes(status.status)) {
       // Meglio dirlo che sparire: un messaggio scartato in silenzio si manifesta come
       // "ho risposto ma il visitatore non riceve nulla", senza alcun indizio.
@@ -183,10 +221,10 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
       return;
     }
 
-    const message = await this.chatbotService.appendLiveMessage(body.sessionId, 'agent', text);
-    await this.liveHandoffService.touchActivity(body.sessionId);
-    this.server.to(this.room(body.sessionId)).emit('chat_message', {
-      sessionId: body.sessionId,
+    const message = await this.chatbotService.appendLiveMessage(sessionId, 'agent', text);
+    await this.liveHandoffService.touchActivity(sessionId);
+    this.server.to(this.room(sessionId)).emit('chat_message', {
+      sessionId,
       from: 'agent',
       text,
       sentAt: message.timestamp,
@@ -196,11 +234,12 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
   @SubscribeMessage('admin_close')
   async onAdminClose(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { sessionId?: string; token?: string },
+    @MessageBody() body: { sessionId?: unknown; token?: string },
   ): Promise<void> {
     const authorized = await this.isAdmin(client, body?.token);
-    if (!authorized || !body?.sessionId) return;
-    await this.liveHandoffService.closeSession(body.sessionId);
+    const sessionId = asSessionId(body?.sessionId);
+    if (!authorized || !sessionId) return;
+    await this.liveHandoffService.closeSession(sessionId);
   }
 
   /**
@@ -211,10 +250,11 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
   @SubscribeMessage('visitor_close')
   async onVisitorClose(
     @ConnectedSocket() client: Socket,
-    @MessageBody() body: { sessionId?: string },
+    @MessageBody() body: { sessionId?: unknown },
   ): Promise<void> {
-    if (!body?.sessionId) return;
-    await this.liveHandoffService.closeSession(body.sessionId);
+    const sessionId = asSessionId(body?.sessionId);
+    if (!sessionId) return;
+    await this.liveHandoffService.closeSession(sessionId);
   }
 
   /** Socket già autenticato all'handshake, oppure token per-messaggio (client precedenti). */
@@ -232,7 +272,9 @@ export class LiveHandoffGateway implements OnGatewayInit, OnGatewayConnection, O
   private async isAdminToken(token: string): Promise<boolean> {
     let sub: string | undefined;
     try {
-      sub = (this.jwtService.verify(token) as { sub?: string })?.sub;
+      const payload = this.jwtService.verify(token) as { sub?: string; type?: string };
+      if (payload?.type === 'refresh') return false; // un refresh token non è un token di accesso
+      sub = payload?.sub;
     } catch {
       return false;
     }

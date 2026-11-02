@@ -19,8 +19,11 @@ function makeService(opts: { target?: Record<string, unknown> | null; adminCount
     findById: jest.fn(() => ({ exec: () => Promise.resolve(target) })),
     deleteOne: jest.fn(() => ({ exec: () => Promise.resolve({}) })),
   };
-  return { service: new UsersService(model as never), model, target };
+  const sessions = { deleteMany: jest.fn(() => ({ exec: () => Promise.resolve({}) })) };
+  return { service: new UsersService(model as never, sessions as never), model, target, sessions };
 }
+
+const OID = '507f1f77bcf86cd799439011';
 
 describe('UsersService (admin management)', () => {
   it('lists users with only safe fields and an escaped, case-insensitive search', async () => {
@@ -50,6 +53,31 @@ describe('UsersService (admin management)', () => {
     const { service, target } = makeService({ adminCount: 2 });
     await expect(service.updateRole('me', 't1', 'user')).resolves.toEqual({ _id: 't1', role: 'user' });
     expect(target).toMatchObject({ role: 'user', refreshTokenHash: null });
+  });
+
+  it('cambiare il ruolo chiude le sessioni di tutti i dispositivi dell’utente', async () => {
+    const { service, sessions } = makeService({ target: { _id: OID, role: 'admin', refreshTokenHash: 'h', save: jest.fn() }, adminCount: 2 });
+    await service.updateRole('me', OID, 'user');
+    expect(sessions.deleteMany).toHaveBeenCalledTimes(1);
+    expect(String((sessions.deleteMany.mock.calls as any)[0][0].userId)).toBe(OID);
+  });
+
+  it('un ruolo rifiutato (ultimo admin) non chiude nessuna sessione', async () => {
+    const { service, sessions } = makeService({ target: { _id: OID, role: 'admin', save: jest.fn() }, adminCount: 1 });
+    await expect(service.updateRole('me', OID, 'user')).rejects.toBeInstanceOf(BadRequestException);
+    expect(sessions.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('eliminare l’utente chiude anche le sue sessioni', async () => {
+    const { service, sessions } = makeService({ target: { _id: OID, role: 'user' } });
+    await service.removeByAdmin('me', OID);
+    expect(String((sessions.deleteMany.mock.calls as any)[0][0].userId)).toBe(OID);
+  });
+
+  it('con un id non valido non prova nemmeno a cancellare sessioni', async () => {
+    const { service, sessions } = makeService({ target: { _id: 'u2', role: 'user' } });
+    await service.removeByAdmin('me', 'u2');
+    expect(sessions.deleteMany).not.toHaveBeenCalled();
   });
 
   it('404s on an unknown user', async () => {

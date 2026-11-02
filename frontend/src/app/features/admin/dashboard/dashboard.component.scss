@@ -200,13 +200,17 @@
 
 .analytics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* min(): sotto i ~330px di schermo una traccia da 280px più il padding uscirebbe dal bordo. */
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 1.25rem;
   margin-bottom: 2.5rem;
 }
 
 .analytics-card {
   padding: 1.35rem;
+  /* Elemento di una griglia con tracce 1fr: senza questo il minimo automatico è la larghezza del
+     contenuto (un titolo senza a capo di 660px) e la card sborda dallo schermo. */
+  min-width: 0;
 }
 
 .analytics-card__header {
@@ -377,6 +381,7 @@
 
 .top-posts-list__item {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
@@ -396,6 +401,7 @@
   text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+  max-width: 100%;
 
   &:hover { text-decoration: underline; }
 }
@@ -880,11 +886,11 @@
 
 
 .adv-top-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
 }
 
 .adv-bottom-grid {
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   margin-top: -0.25rem;
 }
 
@@ -965,6 +971,11 @@
   gap: 0.6rem;
   font-size: 0.82rem;
   padding: 0.15rem 0;
+
+  > * { min-width: 0; overflow-wrap: anywhere; }
+
+  /* Le quattro colonne fisse (350px + spazi) non entrano in una card da telefono: la prima si restringe. */
+  @media (max-width: 480px) { grid-template-columns: minmax(0, 1fr) 64px 48px 52px; gap: 0.4rem; }
 }
 
 .tool-conv-row--head {

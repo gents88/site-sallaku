@@ -30,6 +30,7 @@ import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { NavIconComponent, navIconColor } from '../../shared/components/nav-icon/nav-icon.component';
 import { ProfilePhotoComponent } from '../../shared/components/profile-photo/profile-photo.component';
 import { ChatLink, extractChatLinks } from './chat-links';
+import { formatChatMessage } from './format-message';
 
 type PanelView = 'chat' | 'transcript';
 type PendingExitAction = 'close' | 'clear' | null;
@@ -108,6 +109,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   unreadCount = 0;
   private lastSeenBotLen = 0;
   private lastSeenLiveLen = 0;
+  private botHistorySynced = false;
+  private liveHistorySynced = false;
 
   /** Vero quando lo scroll dei messaggi è vicino al fondo — governa l'auto-scroll vs il pulsante "nuovi messaggi". */
   isNearBottom = true;
@@ -157,8 +160,18 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.noticeDismissed = this.readFlag(NOTICE_DISMISSED_KEY);
     this.scheduleTeaser();
 
+    // Dopo un ricaricamento la chat live in corso va ripresa, altrimenti Gent scrive nel vuoto.
+    const sessionId = this.chatbot.currentSessionId;
+    if (sessionId && this.flags.liveHandoffEnabled()) this.liveHandoff.restore(sessionId);
+
     this.subs.add(
       this.chatbot.messages$.subscribe((msgs: ChatMessage[]) => {
+        // Il primo valore è la cronologia ripresa dopo un ricaricamento: non sono messaggi nuovi,
+        // altrimenti il pallino dei non letti comparirebbe a ogni caricamento di pagina.
+        if (!this.botHistorySynced) {
+          this.botHistorySynced = true;
+          this.lastSeenBotLen = msgs.length;
+        }
         const newOnes = msgs.slice(this.lastSeenBotLen);
         this.lastSeenBotLen = msgs.length;
         if (!this.isOpen) {
@@ -200,7 +213,15 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
     this.subs.add(
       this.liveHandoff.state$.subscribe((state: LiveHandoffState) => {
+        const previous = this.liveState;
         this.liveState = state;
+        // Quando Gent chiude (o non risponde) l'avviso compare in fondo alla conversazione:
+        // senza scroll resta sotto il bordo visibile e, a pannello chiuso, non c'è nessun
+        // segnale — i messaggi di Gent invece contano come non letti, la chiusura no.
+        if ((state === 'closed' || state === 'expired') && previous !== state) {
+          this.shouldScroll = true;
+          if (!this.isOpen) this.unreadCount += 1;
+        }
         this.cdr.markForCheck();
       }),
     );
@@ -212,6 +233,10 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
     this.subs.add(
       this.liveHandoff.liveMessages$.subscribe((msgs) => {
+        if (!this.liveHistorySynced) {
+          this.liveHistorySynced = true;
+          this.lastSeenLiveLen = msgs.length;
+        }
         const newOnes = msgs.slice(this.lastSeenLiveLen);
         this.lastSeenLiveLen = msgs.length;
         if (!this.isOpen) {
@@ -273,7 +298,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
-    if (this.isOpen) this.requestClose();
+    // Con il dialog di conferma aperto Esc lo annulla (ci pensa il dialog): qui non deve riaprirlo.
+    if (this.isOpen && this.exitConfirmStep === 'none') this.requestClose();
   }
 
   /** Focus trap manuale sul pannello: Tab/Shift+Tab restano dentro finché è aperto come dialog. */
@@ -455,6 +481,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.autoResize(event);
     if (this.liveState === 'idle' || this.liveState === 'prompt_shown') {
       this.typing$.next();
+    } else if (this.liveState === 'live') {
+      this.liveHandoff.sendTyping();
     }
   }
 
@@ -497,6 +525,11 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.liveState === 'live') {
       this.pendingExitAction = 'close';
       this.exitConfirmStep = 'ask_resolved';
+    } else if (this.messages.length > 0 || this.liveMessages.length > 0) {
+      // Conversazione in corso con l'assistente: una sola domanda, "Vuoi chiudere la chat?".
+      // A pannello vuoto (solo il benvenuto) non c'è nulla da perdere e chiude subito.
+      this.pendingExitAction = 'close';
+      this.exitConfirmStep = 'ask_leave';
     } else {
       this.chatbot.close();
     }
@@ -521,7 +554,9 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onExitConfirm(): void {
-    this.liveHandoff.closeByVisitor();
+    // La sessione con Gent si chiude solo se si era in una chat live: "ask_leave" è la
+    // semplice chiusura del pannello e non deve toccare lo stato live.
+    if (this.exitConfirmStep !== 'ask_leave') this.liveHandoff.closeByVisitor();
     this.exitConfirmStep = 'none';
     const action = this.pendingExitAction;
     this.pendingExitAction = null;
@@ -561,10 +596,7 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   formatMessage(content: string): string {
-    return content
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br>');
+    return formatChatMessage(content);
   }
 
   private scrollToBottom(): void {

@@ -40,6 +40,7 @@ describe('ChatbotComponent — conferma di chiusura durante una chat live', () =
       liveMessages$: new BehaviorSubject([]),
       closeByVisitor: vi.fn(),
       reset: vi.fn(),
+      restore: vi.fn(),
       notifyTyping: vi.fn(),
     };
 
@@ -106,6 +107,93 @@ describe('ChatbotComponent — conferma di chiusura durante una chat live', () =
       component.requestClose();
 
       expect(mockChatbot.close).not.toHaveBeenCalled();
+      expect(component.exitConfirmStep).toBe('ask_resolved');
+    });
+  });
+
+  describe('chiusura con una conversazione in corso (fuori dalla chat live)', () => {
+    const conversation = [
+      { role: 'user', content: 'ciao', timestamp: new Date() },
+      { role: 'assistant', content: 'Ciao! Come posso aiutarti?', timestamp: new Date() },
+    ];
+    beforeEach(() => {
+      (mockChatbot.messages$ as BehaviorSubject<unknown[]>).next(conversation);
+      setLiveState('idle');
+    });
+
+    it('la X chiede "Vuoi chiudere la chat?" invece di chiudere subito', () => {
+      component.requestClose();
+
+      expect(mockChatbot.close).not.toHaveBeenCalled();
+      expect(component.exitConfirmStep).toBe('ask_leave');
+    });
+
+    it('anche il pulsante tondo a pannello aperto passa dalla conferma', () => {
+      component.onFabClick();
+
+      expect(mockChatbot.close).not.toHaveBeenCalled();
+      expect(component.exitConfirmStep).toBe('ask_leave');
+    });
+
+    it('rispondere "Sì, chiudi" chiude il pannello senza toccare la chat live', () => {
+      component.requestClose();
+
+      component.onExitConfirm();
+
+      expect(mockChatbot.close).toHaveBeenCalledTimes(1);
+      expect(mockLiveHandoff.closeByVisitor).not.toHaveBeenCalled();
+      expect(component.exitConfirmStep).toBe('none');
+    });
+
+    it('rispondere "No, continua" lascia il pannello aperto e la conversazione com\'è', () => {
+      component.requestClose();
+
+      component.onExitCancel();
+
+      expect(mockChatbot.close).not.toHaveBeenCalled();
+      expect(mockChatbot.clearSession).not.toHaveBeenCalled();
+      expect(component.exitConfirmStep).toBe('none');
+    });
+
+    it('Esc con il dialog già aperto non lo riapre né chiude il pannello', () => {
+      component.requestClose();
+
+      component.onEscape();
+
+      expect(component.exitConfirmStep).toBe('ask_leave');
+      expect(mockChatbot.close).not.toHaveBeenCalled();
+    });
+
+    it('Esc a dialog chiuso chiede la conferma', () => {
+      component.onEscape();
+
+      expect(component.exitConfirmStep).toBe('ask_leave');
+      expect(mockChatbot.close).not.toHaveBeenCalled();
+    });
+
+    it('dopo "No" una nuova richiesta di chiusura chiede di nuovo', () => {
+      component.requestClose();
+      component.onExitCancel();
+
+      component.requestClose();
+
+      expect(component.exitConfirmStep).toBe('ask_leave');
+    });
+
+    it('a pannello vuoto (solo il benvenuto) chiude subito: non c\'è nulla da perdere', () => {
+      (mockChatbot.messages$ as BehaviorSubject<unknown[]>).next([]);
+
+      component.requestClose();
+
+      expect(mockChatbot.close).toHaveBeenCalled();
+      expect(component.exitConfirmStep).toBe('none');
+    });
+
+    it('durante una chat live resta il dialog a due passaggi, non quello semplice', () => {
+      setLiveState('live');
+
+      component.requestClose();
+
       expect(component.exitConfirmStep).toBe('ask_resolved');
     });
   });

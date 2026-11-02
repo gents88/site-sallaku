@@ -118,6 +118,8 @@ pm2 describe pm2-logrotate &>/dev/null && pm2 uninstall pm2-logrotate >/dev/null
   echo "@reboot ${APP}/bin/watchdog.sh >> ${APP}/logs/watchdog.log 2>&1"
   echo "* * * * * ${APP}/bin/watchdog.sh >> ${APP}/logs/watchdog.log 2>&1"
   echo "30 3 * * * ${APP}/bin/mongo-backup.sh >> ${APP}/logs/mongo-backup.log 2>&1"
+  # RAM ~1,8 GB e niente swap: email se la memoria disponibile resta bassa (vedi memory-alert.sh)
+  echo "*/5 * * * * ${APP}/bin/memory-alert.sh >> ${APP}/logs/memory-alert.log 2>&1"
 } | crontab -
 
 echo ""

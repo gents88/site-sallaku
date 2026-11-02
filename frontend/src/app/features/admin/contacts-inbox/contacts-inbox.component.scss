@@ -8,14 +8,16 @@
 }
 .ci-filter {
   display: inline-flex; border: 1px solid var(--border-color); border-radius: 999px; overflow: hidden;
-  button { border: none; background: transparent; color: var(--text-secondary); padding: .45rem .9rem; cursor: pointer; font-size: .85rem; }
+  button { border: none; background: transparent; color: var(--text-secondary); padding: .45rem .9rem; min-height: 40px; cursor: pointer; font-size: .85rem; }
   button.active { background: rgba(79, 106, 245, .15); color: var(--text-primary); }
   button:focus-visible { outline: 2px solid var(--primary-500, #4f6af5); outline-offset: -2px; }
 }
 .ci-danger { color: var(--color-danger, #ef4444) !important; border-color: rgba(239, 68, 68, .4) !important; }
 .ci-feedback { font-size: .88rem; color: var(--text-secondary); margin: 0 0 .75rem; }
 
-.ci-layout { display: grid; grid-template-columns: 1fr; gap: 1rem; align-items: start; }
+.ci-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
+/* Senza min-width:0 la lista (anteprime su una riga sola) fissava la larghezza della colonna a ~2000px e le righe venivano tagliate. */
+.ci-list, .ci-detail { min-width: 0; }
 @media (min-width: 1000px) { .ci-layout.has-detail { grid-template-columns: minmax(320px, 2fr) 3fr; } }
 
 .ci-list { padding: .5rem; }
@@ -40,7 +42,7 @@
 }
 .ci-item__top { display: flex; justify-content: space-between; gap: .5rem; font-size: .9rem; time { color: var(--text-secondary); font-size: .78rem; white-space: nowrap; } }
 .ci-item__subject { font-size: .88rem; color: var(--text-secondary); display: flex; align-items: center; gap: .4rem; }
-.ci-item__preview { font-size: .8rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ci-item__preview { min-width: 0; max-width: 100%; font-size: .8rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ci-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary-500, #4f6af5); flex-shrink: 0; }
 .ci-pager { display: flex; justify-content: center; align-items: center; gap: 1rem; padding: .75rem; }
 

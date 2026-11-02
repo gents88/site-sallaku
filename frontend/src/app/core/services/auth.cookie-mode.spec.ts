@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { Router, UrlTree, provideRouter } from '@angular/router';
 import { firstValueFrom, isObservable, of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { AuthService } from './auth.service';
 import { authGuard } from '../guards/auth.guard';
+import { authInterceptor } from '../interceptors/auth.interceptor';
 import { environment } from '../../../environments/environment';
 
 const user = { _id: 'u1', name: 'Gent', email: 'g@x.it', role: 'admin' as const };
@@ -37,10 +38,11 @@ describe('AuthService — httpOnly refresh cookie mode', () => {
     expect(JSON.parse(localStorage.getItem('portfolio_user')!).name).toBe('Gent');
   });
 
-  it('restores the session from the cookie on load, sending no token in the body', () => {
+  it('restores the session from the cookie on load, sending no token in the body', async () => {
     localStorage.setItem('portfolio_user', JSON.stringify(user));
     const { auth, http } = setup();
     expect(auth.restoring()).toBe(true);
+    await Promise.resolve();
     const req = http.expectOne(`${environment.apiUrl}/auth/refresh`);
     expect(req.request.body).toEqual({});
     expect(req.request.withCredentials).toBe(true);
@@ -49,10 +51,11 @@ describe('AuthService — httpOnly refresh cookie mode', () => {
     expect(auth.restoring()).toBe(false);
   });
 
-  it('a failed restore drops the session quietly, without redirecting', () => {
+  it('a failed restore drops the session quietly, without redirecting', async () => {
     localStorage.setItem('portfolio_user', JSON.stringify(user));
     const { auth, http } = setup();
     const navigate = TestBed.inject(Router).navigateByUrl;
+    await Promise.resolve();
     http.expectOne(`${environment.apiUrl}/auth/refresh`).flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(auth.isLoggedIn()).toBe(false);
     expect(auth.restoring()).toBe(false);
@@ -65,10 +68,30 @@ describe('AuthService — httpOnly refresh cookie mode', () => {
     const { http } = setup();
     const result = TestBed.runInInjectionContext(() => authGuard(null as never, null as never));
     expect(isObservable(result)).toBe(true);
+    await Promise.resolve();
     http.expectOne(`${environment.apiUrl}/auth/refresh`).flush({ access_token: 'acc', user });
     TestBed.tick();
     const decided = await firstValueFrom(isObservable(result) ? result : of(result));
     expect(decided instanceof UrlTree).toBe(false);
     expect(decided).toBe(true);
+  });
+
+  // Regressione: l'authInterceptor fa inject(AuthService); se la richiesta di
+  // ripristino parte dentro il costruttore dello stesso servizio, Angular lancia
+  // NG0200 (dipendenza circolare), il refresh non parte e la sessione viene
+  // cancellata — ogni scheda nuova (anteprima articolo, ricarica) finiva al login.
+  it('restores the session through the real interceptor chain without a circular dependency', async () => {
+    localStorage.setItem('portfolio_user', JSON.stringify(user));
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting(), provideRouter([])],
+    });
+    const auth = TestBed.inject(AuthService);
+    const http = TestBed.inject(HttpTestingController);
+    expect(auth.restoring()).toBe(true);
+    await Promise.resolve();
+    http.expectOne(`${environment.apiUrl}/auth/refresh`).flush({ access_token: 'acc', user });
+    expect(auth.isLoggedIn()).toBe(true);
+    expect(auth.restoring()).toBe(false);
+    expect(localStorage.getItem('portfolio_user')).not.toBeNull();
   });
 });

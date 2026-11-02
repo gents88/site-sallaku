@@ -273,6 +273,11 @@ export interface NotFoundSummary {
 export type SecurityEventType = 'login_success' | 'login_failed' | 'otp_failed' | 'refresh_reuse' | 'session_revoked';
 
 export interface SecuritySession {
+<<<<<<< HEAD
+=======
+  /** Un dispositivo: lo stesso utente può averne più d'uno. */
+  sessionId: string;
+>>>>>>> develop
   userId: string;
   name: string;
   contact: string;
@@ -296,7 +301,11 @@ export interface SecurityEventView {
 export interface SecuritySummary {
   failedLogins24h: number;
   otpFailed24h: number;
+<<<<<<< HEAD
   tokenReuse7d: number;
+=======
+  tokenReuse: number;
+>>>>>>> develop
   activeSessions: number;
   suspiciousIps: Array<{ ip: string; failures: number }>;
   sessions: SecuritySession[];
@@ -375,7 +384,11 @@ const EMPTY_AI_USAGE: AiUsageOverview = {
 };
 
 const EMPTY_SECURITY: SecuritySummary = {
+<<<<<<< HEAD
   failedLogins24h: 0, otpFailed24h: 0, tokenReuse7d: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [],
+=======
+  failedLogins24h: 0, otpFailed24h: 0, tokenReuse: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [],
+>>>>>>> develop
 };
 
 const EMPTY_SERVER_ERRORS: ServerErrorSummary = { open: 0, today: 0, week: 0, recent: [] };
@@ -572,9 +585,16 @@ export class AdminDashboardService {
     return this.http.post<{ success: boolean }>(`${this.api}/analytics/not-found/${id}/dismiss`, {});
   }
 
+<<<<<<< HEAD
   /** Chiude la sessione di un utente: il suo refresh token smette di funzionare. */
   revokeSession(userId: string): Observable<void> {
     return this.http.post<void>(`${this.api}/security/sessions/${userId}/revoke`, {});
+=======
+  /** Chiude la sessione di un dispositivo (con `sessionId`) o di tutti i dispositivi dell'utente (senza). */
+  revokeSession(userId: string, sessionId?: string): Observable<void> {
+    const path = sessionId ? `${userId}/${sessionId}/revoke` : `${userId}/revoke`;
+    return this.http.post<void>(`${this.api}/security/sessions/${path}`, {});
+>>>>>>> develop
   }
 
   /** Segna risolto un gruppo di errori 5xx: torna aperto se si ripete. */

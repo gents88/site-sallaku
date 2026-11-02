@@ -88,7 +88,7 @@ Lancia sul server `scripts/plesk/setup-server.sh`, che è idempotente. Lo script
 - scarica MongoDB e i database tools;
 - installa pm2 e mongosh in `~/app/tools`;
 - genera le credenziali Mongo e crea gli utenti `root` e `portfolio`;
-- installa il crontab: watchdog ogni minuto e al reboot, backup alle 03:30.
+- installa il crontab: watchdog ogni minuto e al reboot, backup alle 03:30, controllo della memoria ogni 5 minuti.
 
 Rilanciarlo serve ad aggiornare le versioni (in cima allo script).
 
@@ -139,6 +139,23 @@ Dopo 1–2 settimane senza problemi:
 
 ---
 
+## Email ai visitatori (codici OTP, newsletter)
+
+Con `RESEND_API_KEY` ma senza un dominio verificato, Resend consegna **solo al titolare dell'account**: i
+visitatori non ricevono i codici. Il log lo dice una volta per avvio ("dominio mittente non verificato").
+Due strade, da `~/app/shared/backend.env` (poi `pm2 restart backend --update-env`):
+
+1. **Verificare il dominio su Resend**: su resend.com/domains aggiungi `gentsallaku.it` e crea nel DNS di IONOS
+   i record che mostra (una chiave DKIM `resend._domainkey` e, per il sottodominio `send`, un MX e un SPF; non
+   toccano la posta del dominio). Poi `EMAIL_FROM="Gent Sallaku <noreply@gentsallaku.it>"`.
+2. **Una casella del dominio via SMTP** (IONOS, porta 587, raggiungibile dal server):
+   `SMTP_HOST=smtp.ionos.it`, `SMTP_PORT=587`, `SMTP_SECURE=false`, `SMTP_USER=<casella>@gentsallaku.it`,
+   `SMTP_PASS=<password della casella>` e `MAIL_PREFER_SMTP=true`: si invia dalla casella e Resend resta
+   solo come ripiego. Il mittente è la casella stessa.
+
+Dopo la modifica, `~/app/bin/memory-alert.sh --test` invia comunque un'email di prova usando la chiave Resend;
+per provare l'invio ai visitatori richiedi un codice con un indirizzo che non è il tuo.
+
 ## Comandi utili (sul server: `ssh plesk-gentsallaku`)
 
 ```bash
@@ -151,6 +168,8 @@ cat ~/app/logs/watchdog.log        # riavvii fatti dal watchdog
 
 ls -lt ~/app/backend/releases/     # release disponibili
 ~/app/bin/mongo-backup.sh          # backup manuale
+~/app/bin/mongo-verify-backup.sh   # prova il ripristino dell'ultimo dump in un database temporaneo (non tocca portfolio)
+~/app/bin/memory-alert.sh --test   # invia subito l'email di prova dell'avviso memoria (--dry-run: solo a video)
 ~/app/bin/mongo-restore.sh ~/app/backups/<file> portfolio   # ripristino da un backup del server
 
 source ~/app/shared/mongo.env      # shell Mongo

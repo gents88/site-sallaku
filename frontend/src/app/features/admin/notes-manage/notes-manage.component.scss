@@ -13,6 +13,8 @@
   border-radius: 10px;
 }
 
+@media (max-width: 700px) { .status-tab { min-height: 40px; } }
+
 .status-tab {
   display: inline-flex;
   align-items: center;

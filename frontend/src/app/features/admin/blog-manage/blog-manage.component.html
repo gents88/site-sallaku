@@ -364,7 +364,7 @@
             <img [src]="post.coverImage" [alt]="post.title" class="list-item__thumb" />
           }
           <div class="list-item__info">
-            <h3>{{ post.title }}</h3>
+            <h3><button type="button" class="list-item__title-link" (click)="openEdit(post)">{{ post.title }}</button></h3>
             @if (post.subtitle) {
               <p class="text-muted">{{ post.subtitle }}</p>
             }
@@ -387,7 +387,7 @@
             </div>
           </div>
           <div class="list-item__actions">
-            <a mat-icon-button [routerLink]="['/dashboard/blog/preview', post._id]" target="_blank" [matTooltip]="'blog_manage.action_preview' | translate"><mat-icon>visibility</mat-icon></a>
+            <a mat-icon-button [routerLink]="['/dashboard/blog/preview', post._id]" [matTooltip]="'blog_manage.action_preview' | translate"><mat-icon>visibility</mat-icon></a>
             @if (post.published) {
               <button mat-icon-button (click)="unpublish(post)" [matTooltip]="'blog_manage.action_unpublish' | translate"><mat-icon>unpublished</mat-icon></button>
             }

@@ -976,6 +976,9 @@
     "admin_live": "Biseda live është aktive",
     "admin_expired": "Kjo kërkesë ka skaduar.",
     "admin_closed": "Ky sesion është mbyllur.",
+    "admin_visitor_typing": "Vizitori po shkruan…",
+    "admin_role_visitor": "Vizitori",
+    "admin_role_ai": "IA",
     "admin_error": "Lidhja dështoi. Sigurohu që je i kyçur si admin.",
     "admin_send_placeholder": "Shkruaj si Gent…",
     "admin_history_loading": "Duke ngarkuar bisedën…",
@@ -1003,6 +1006,7 @@
     "exit_ask_close_title": "Dëshiron ta mbyllësh bisedën me Gent-in?",
     "exit_ask_close_yes": "Po, mbylle",
     "exit_ask_close_no": "Jo, kthehu te biseda",
+    "exit_ask_leave_title": "Dëshiron ta mbyllësh bisedën?",
     "closed_notice": "Biseda me Gent-in ka përfunduar. Mund të vazhdosh të bisedosh me asistentin.",
     "admin_close_chat": "Mbyll bisedën"
   },
@@ -2401,7 +2405,11 @@
     "desc": "Hyrje të dështuara, ripërdorim tokenësh dhe kush është i lidhur tani",
     "failed_logins": "Hyrje të dështuara (24 orë)",
     "otp_failed": "Kode OTP të gabuara (24 orë)",
+<<<<<<< HEAD
     "token_reuse": "Tokenë të ripërdorur (7 ditë)",
+=======
+    "token_reuse": "Tokenë të ripërdorur (3 ditë)",
+>>>>>>> develop
     "active_sessions": "Seanca aktive",
     "suspicious_ips": "IP të dyshimta",
     "suspicious_hint": "5 ose më shumë tentativa të dështuara në 24 orët e fundit",
@@ -2410,10 +2418,18 @@
     "events": "Ngjarjet e fundit",
     "no_sessions": "Asnjë seancë aktive.",
     "no_events": "Asnjë ngjarje e regjistruar.",
+<<<<<<< HEAD
+=======
+    "events_retention": "Historiku fshihet automatikisht pas {{days}} ditësh.",
+>>>>>>> develop
     "you": "Ti",
     "started": "filloi",
     "last_active": "aktiviteti i fundit",
     "close_session": "Mbyll seancën",
+<<<<<<< HEAD
+=======
+    "this_device": "Kjo pajisje",
+>>>>>>> develop
     "close_confirm": "Të mbyllet seanca e {{name}}? Do të duhet të hyjë përsëri (brenda 15 minutave).",
     "close_error": "Seanca nuk mund të mbyllet.",
     "ev_login_success": "Hyrje",

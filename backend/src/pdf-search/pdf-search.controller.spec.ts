@@ -99,6 +99,22 @@ describe('PdfSearchController', () => {
       expect(results[0].pdfUrl).toBe('https://api.gentsallaku.it/api/v1/pdf-search/gutenberg/42');
     });
 
+    it('in produzione ignora l\'header Host del client e usa l\'origine configurata', async () => {
+      const previous = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      try {
+        config.get.mockReturnValue('https://gentsallaku.it/api/v1');
+        service.search.mockResolvedValue([makeResult({ source: 'gutenberg', pdfUrl: '/api/v1/pdf-search/gutenberg/42' })]);
+        const forged = { protocol: 'https', get: () => 'evil.example' } as unknown as Request;
+
+        const { results } = await controller.search('piccolo principe', forged);
+
+        expect(results[0].pdfUrl).toBe('https://gentsallaku.it/api/v1/pdf-search/gutenberg/42');
+      } finally {
+        process.env.NODE_ENV = previous;
+      }
+    });
+
     it('leaves an already-absolute pdfUrl (Internet Archive) untouched', async () => {
       service.search.mockResolvedValue([makeResult({ pdfUrl: 'https://archive.org/download/x/x.pdf' })]);
 

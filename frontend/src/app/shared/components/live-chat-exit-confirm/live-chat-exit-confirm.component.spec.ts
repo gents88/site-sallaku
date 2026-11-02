@@ -41,6 +41,57 @@ describe('LiveChatExitConfirmComponent', () => {
     expect((fixture.nativeElement as HTMLElement).querySelector('.lec-btn--danger')).toBeTruthy();
   });
 
+  describe('chiusura semplice (ask_leave, fuori dalla chat live)', () => {
+    function open() {
+      const fixture = create();
+      fixture.componentInstance.step = 'ask_leave';
+      fixture.detectChanges();
+      return fixture;
+    }
+
+    it('chiede "Vuoi chiudere la chat?" con due soli pulsanti', () => {
+      const el: HTMLElement = open().nativeElement;
+
+      expect(el.querySelector('.lec-title')?.textContent).toContain('live_handoff.exit_ask_leave_title');
+      expect(el.querySelectorAll('.lec-btn')).toHaveLength(2);
+      expect(el.querySelector('.lec-btn--danger')).toBeTruthy();
+    });
+
+    it('"Sì, chiudi" emette confirm direttamente, senza passaggio intermedio', () => {
+      const fixture = open();
+      let confirmed = 0;
+      let advanced = 0;
+      fixture.componentInstance.confirm.subscribe(() => confirmed++);
+      fixture.componentInstance.advance.subscribe(() => advanced++);
+
+      (fixture.nativeElement.querySelector('.lec-btn--danger') as HTMLButtonElement).click();
+
+      expect(confirmed).toBe(1);
+      expect(advanced).toBe(0);
+    });
+
+    it('"No, continua" emette cancel', () => {
+      const fixture = open();
+      let cancelled = 0;
+      fixture.componentInstance.cancel.subscribe(() => cancelled++);
+
+      (fixture.nativeElement.querySelector('.lec-btn--secondary') as HTMLButtonElement).click();
+
+      expect(cancelled).toBe(1);
+    });
+
+    it('Esc annulla e il dialog ha il nome accessibile giusto', () => {
+      const fixture = open();
+      let cancelled = 0;
+      fixture.componentInstance.cancel.subscribe(() => cancelled++);
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+      expect(cancelled).toBe(1);
+      expect(fixture.nativeElement.querySelector('.lec-dialog')?.getAttribute('aria-label')).toBe('live_handoff.exit_ask_leave_title');
+    });
+  });
+
   it('"Sì" al primo passaggio emette advance, non confirm — non chiude ancora nulla', () => {
     const fixture = create();
     fixture.componentInstance.step = 'ask_resolved';

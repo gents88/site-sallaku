@@ -92,8 +92,12 @@ export class AdminNotificationsService {
   private start(): void {
     this.refresh();
     if (this.socket) return;
-    const token = this.auth.getToken();
-    this.socket = this.socketFactory(`${this.wsOrigin}/live-chat`, { auth: { token } });
+    // `auth` come funzione: socket.io la rivaluta a ogni connessione e riconnessione. Con un
+    // oggetto fisso, dopo la scadenza del token di accesso il socket si ricollegherebbe con
+    // quello vecchio, senza permessi admin, e le notifiche sparirebbero fino al ricaricamento.
+    this.socket = this.socketFactory(`${this.wsOrigin}/live-chat`, {
+      auth: (cb) => this.auth.getFreshToken().subscribe((token) => cb({ token })),
+    });
     this.socket.on('connect', () => this.connected.set(true));
     this.socket.on('disconnect', () => this.connected.set(false));
     this.socket.on('admin_notification', (event: AdminNotification) => {

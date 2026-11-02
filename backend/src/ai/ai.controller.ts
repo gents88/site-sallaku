@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   Req,
+  UseGuards,
   UseInterceptors,
   UploadedFile,
   HttpCode,
@@ -19,6 +20,10 @@ import { AiQuotaService } from '../common/services/ai-quota.service';
 import { AskDocumentDto } from './dto/ask-document.dto';
 import { clientIp } from '../common/utils/request-ip.util';
 import { RequireFeature } from '../common/settings/require-feature.decorator';
+import { MaxBodySizeGuard } from '../common/guards/max-body-size.guard';
+
+// Un solo file + pochi campi di testo: il tetto è il file più un margine per il multipart.
+const MULTIPART_OVERHEAD = 1024 * 1024;
 
 const ALLOWED_MIMES = new Set([
   'application/pdf',
@@ -57,6 +62,7 @@ export class AiController {
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @ApiOperation({ summary: 'Summarise a PDF, DOCX, or TXT file using AI' })
   @ApiConsumes('multipart/form-data')
+  @UseGuards(MaxBodySizeGuard(20 * 1024 * 1024 + MULTIPART_OVERHEAD))
   @UseInterceptors(upload(20))
   async summarizeFile(
     @Req() req: Request,
@@ -103,6 +109,7 @@ export class AiController {
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiOperation({ summary: 'Generate a presentation from a topic using AI' })
   @ApiConsumes('multipart/form-data')
+  @UseGuards(MaxBodySizeGuard(20 * 1024 * 1024 + MULTIPART_OVERHEAD))
   @UseInterceptors(upload(20))
   async generatePpt(
     @Req() req: Request,
@@ -128,6 +135,7 @@ export class AiController {
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @ApiOperation({ summary: 'Translate a PDF/DOCX/TXT document to another language' })
   @ApiConsumes('multipart/form-data')
+  @UseGuards(MaxBodySizeGuard(50 * 1024 * 1024 + MULTIPART_OVERHEAD))
   @UseInterceptors(upload(50))
   async translatePdf(
     @Req() req: Request,

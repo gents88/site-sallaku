@@ -50,6 +50,7 @@ describe('ChatbotComponent — pannello rinnovato', () => {
             liveMessages$: new BehaviorSubject([]),
             closeByVisitor: vi.fn(),
             reset: vi.fn(),
+            restore: vi.fn(),
             notifyTyping: vi.fn(),
           },
         },

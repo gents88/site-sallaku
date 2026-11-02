@@ -21,7 +21,7 @@ services:
     image: mongo:8.0   # come produzione (Plesk) e i dump di Railway
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongo_data_local:/data/db
     healthcheck:
@@ -37,7 +37,7 @@ services:
     image: mongo-express:1.0
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_BASICAUTH_USERNAME: admin
@@ -53,7 +53,7 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - redis_data_local:/data
@@ -78,7 +78,7 @@ services:
       MONGODB_URI: mongodb://mongo:27017/portfolio_dev
       REDIS_URL: redis://redis:6379
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     depends_on:
       mongo:
         condition: service_healthy

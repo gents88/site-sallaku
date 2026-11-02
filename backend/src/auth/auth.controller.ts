@@ -90,7 +90,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Invalidate the current session refresh token' })
   logout(@Request() req: any, @Res({ passthrough: true }) res: Response) {
     if (refreshCookieEnabled()) clearRefreshCookie(res);
-    return this.authService.logout(req.user._id.toString());
+    return this.authService.logout(req.user._id.toString(), req.user.sid);
   }
 
   @Get('me')
