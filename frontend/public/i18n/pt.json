@@ -976,6 +976,9 @@
     "admin_live": "Chat ao vivo ativo",
     "admin_expired": "Este pedido expirou.",
     "admin_closed": "Esta sessão foi encerrada.",
+    "admin_visitor_typing": "O visitante está a escrever…",
+    "admin_role_visitor": "Visitante",
+    "admin_role_ai": "IA",
     "admin_error": "Não foi possível conectar. Verifique se você está autenticado como admin.",
     "admin_send_placeholder": "Escrever como Gent…",
     "admin_history_loading": "Carregando conversa…",
@@ -1003,6 +1006,7 @@
     "exit_ask_close_title": "Queres encerrar a sessão com o Gent?",
     "exit_ask_close_yes": "Sim, encerrar",
     "exit_ask_close_no": "Não, voltar ao chat",
+    "exit_ask_leave_title": "Queres fechar o chat?",
     "closed_notice": "A conversa com o Gent foi encerrada. Podes continuar a conversar com o assistente.",
     "admin_close_chat": "Encerrar chat"
   },
@@ -2401,7 +2405,11 @@
     "desc": "Acessos falhados, reutilização de tokens e quem está ligado agora",
     "failed_logins": "Acessos falhados (24 h)",
     "otp_failed": "Códigos OTP errados (24 h)",
+<<<<<<< HEAD
     "token_reuse": "Tokens reutilizados (7 d)",
+=======
+    "token_reuse": "Tokens reutilizados (3 d)",
+>>>>>>> develop
     "active_sessions": "Sessões ativas",
     "suspicious_ips": "IPs suspeitos",
     "suspicious_hint": "5 ou mais tentativas falhadas nas últimas 24 horas",
@@ -2410,10 +2418,18 @@
     "events": "Últimos eventos",
     "no_sessions": "Nenhuma sessão ativa.",
     "no_events": "Nenhum evento registado.",
+<<<<<<< HEAD
+=======
+    "events_retention": "O histórico é apagado automaticamente após {{days}} dias.",
+>>>>>>> develop
     "you": "Você",
     "started": "iniciada",
     "last_active": "última atividade",
     "close_session": "Encerrar sessão",
+<<<<<<< HEAD
+=======
+    "this_device": "Este dispositivo",
+>>>>>>> develop
     "close_confirm": "Encerrar a sessão de {{name}}? Terá de iniciar sessão novamente (em 15 minutos).",
     "close_error": "Não foi possível encerrar a sessão.",
     "ev_login_success": "Acesso",

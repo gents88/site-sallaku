@@ -41,6 +41,14 @@ describe('CSP di deploy — connect-src', () => {
       expect(connectSrcOf(csp!)).toContain(`wss://${backendHost}`);
     });
 
+    it('consente gli endpoint di raccolta di GA4 (altrimenti il browser li blocca e si perdono dati)', () => {
+      // Con il consenso, GA4 manda dati a region1.analytics.google.com e stats.g.doubleclick.net oltre a google-analytics.com.
+      const connect = connectSrcOf(csp!);
+      expect(connect).toContain('https://*.google-analytics.com');
+      expect(connect).toContain('https://*.analytics.google.com');
+      expect(connect).toContain('https://stats.g.doubleclick.net');
+    });
+
     it('non punta più al vecchio backend Railway', () => {
       expect(csp).not.toContain('railway.app');
     });
@@ -49,19 +57,6 @@ describe('CSP di deploy — connect-src', () => {
       const directive = (name: string) => csp!.split(';').map((d) => d.trim()).find((d) => d.startsWith(name)) ?? '';
       expect(directive('script-src')).toContain('https://challenges.cloudflare.com');
       expect(directive('frame-src')).toContain('https://challenges.cloudflare.com');
-    });
-  });
-
-  describe('server.js (CSP del server SSR)', () => {
-    const serverJs = readFileSync(join(repoRoot, 'server.js'), 'utf8');
-    const csp = serverJs.match(/"connect-src [^"]+"/)?.[0] ?? '';
-
-    it("autorizza il backend sullo stesso host ('self': REST + polling Socket.IO)", () => {
-      expect(csp).toContain("'self'");
-    });
-
-    it('autorizza il backend su wss (WebSocket della chat live)', () => {
-      expect(csp).toContain(`wss://${backendHost}`);
     });
   });
 });

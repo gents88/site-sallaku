@@ -11,8 +11,11 @@ function setup(opts: { exists?: boolean; target?: Record<string, unknown> | null
     findById: jest.fn(() => ({ exec: async () => target })),
     updateOne: jest.fn(() => ({ exec: async () => ({ matchedCount: opts.matched ?? 1 }) })),
   };
-  return { service: new UsersService(model as never), model, target };
+  const sessions = { deleteMany: jest.fn(() => ({ exec: async () => ({}) })) };
+  return { service: new UsersService(model as never, sessions as never), model, target, sessions };
 }
+
+const OID = '507f1f77bcf86cd799439011';
 
 describe('UsersService — admin CRUD', () => {
   it('creates a verified user with a bcrypt-hashed password and never returns the hash', async () => {
@@ -53,6 +56,85 @@ describe('UsersService — admin CRUD', () => {
     const [, update] = model.updateOne.mock.calls[0] as unknown as [unknown, { $set: { passwordHash: string; refreshTokenHash: null } }];
     expect(update.$set.refreshTokenHash).toBeNull();
     expect(await bcrypt.compare('Another#456', update.$set.passwordHash)).toBe(true);
+  });
+
+  describe('password degli admin: almeno 12 caratteri', () => {
+    it('rifiuta di creare un admin con una password corta, senza creare nulla', async () => {
+      const { service, model } = setup();
+
+      await expect(
+        service.createByAdmin({ name: 'A', email: 'a@x.it', role: 'admin', password: 'Short#1234' }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(model.create).not.toHaveBeenCalled();
+    });
+
+    it('accetta un admin con una password di 12 caratteri', async () => {
+      const { service, model } = setup();
+
+      await service.createByAdmin({ name: 'A', email: 'a@x.it', role: 'admin', password: 'Twelve#Chars' });
+
+      expect(model.create).toHaveBeenCalled();
+    });
+
+    it('un utente normale può continuare ad avere 8 caratteri', async () => {
+      const { service, model } = setup();
+
+      await service.createByAdmin({ name: 'U', email: 'u@x.it', role: 'user', password: 'Short#12' });
+
+      expect(model.create).toHaveBeenCalled();
+    });
+
+    it('un admin senza password (accesso via OTP) non è toccato dalla regola', async () => {
+      const { service, model } = setup();
+
+      await service.createByAdmin({ name: 'A', email: 'a@x.it', role: 'admin' });
+
+      expect(model.create).toHaveBeenCalled();
+    });
+
+    it('rifiuta una password corta impostata su un admin esistente e non la salva', async () => {
+      const { service, model } = setup({ target: { _id: 'a1', role: 'admin' } });
+
+      await expect(service.setPasswordByAdmin('a1', 'Short#1234')).rejects.toBeInstanceOf(BadRequestException);
+      expect(model.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('accetta una password lunga su un admin esistente', async () => {
+      const { service, model } = setup({ target: { _id: 'a1', role: 'admin' } });
+
+      await service.setPasswordByAdmin('a1', 'Twelve#Chars');
+
+      expect(model.updateOne).toHaveBeenCalled();
+    });
+
+    it('su un utente normale la password di 8 caratteri resta valida', async () => {
+      const { service, model } = setup();
+
+      await service.setPasswordByAdmin('u1', 'Short#12');
+
+      expect(model.updateOne).toHaveBeenCalled();
+    });
+  });
+
+  describe('chiusura delle sessioni su tutti i dispositivi', () => {
+    it('una nuova password impostata dall’admin disconnette l’utente ovunque', async () => {
+      const { service, sessions } = setup();
+      await service.setPasswordByAdmin(OID, 'Another#456');
+      expect(String((sessions.deleteMany.mock.calls as any)[0][0].userId)).toBe(OID);
+    });
+
+    it('la revoca dell’admin chiude tutte le sessioni dell’utente', async () => {
+      const { service, sessions } = setup();
+      await service.revokeSessions('admin', OID);
+      expect(String((sessions.deleteMany.mock.calls as any)[0][0].userId)).toBe(OID);
+    });
+
+    it('una revoca su un utente inesistente o su sé stessi non cancella nulla', async () => {
+      const { service, sessions } = setup({ matched: 0 });
+      await expect(service.revokeSessions('admin', OID)).rejects.toBeInstanceOf(NotFoundException);
+      await expect(service.revokeSessions(OID, OID)).rejects.toBeInstanceOf(BadRequestException);
+      expect(sessions.deleteMany).not.toHaveBeenCalled();
+    });
   });
 
   it('revokes sessions of another user but refuses on yourself', async () => {

@@ -976,6 +976,9 @@
     "admin_live": "Chat en direct actif",
     "admin_expired": "Cette demande a expiré.",
     "admin_closed": "Cette session a été fermée.",
+    "admin_visitor_typing": "Le visiteur est en train d'écrire…",
+    "admin_role_visitor": "Visiteur",
+    "admin_role_ai": "IA",
     "admin_error": "Connexion impossible. Vérifiez que vous êtes connecté en tant qu'administrateur.",
     "admin_send_placeholder": "Écrire en tant que Gent…",
     "admin_history_loading": "Chargement de la conversation…",
@@ -1003,6 +1006,7 @@
     "exit_ask_close_title": "Voulez-vous fermer la session avec Gent ?",
     "exit_ask_close_yes": "Oui, fermer",
     "exit_ask_close_no": "Non, retour au chat",
+    "exit_ask_leave_title": "Voulez-vous fermer le chat ?",
     "closed_notice": "La conversation avec Gent est terminée. Vous pouvez continuer à discuter avec l'assistant.",
     "admin_close_chat": "Fermer le chat"
   },
@@ -2401,7 +2405,11 @@
     "desc": "Connexions échouées, réutilisation de jetons et qui est connecté en ce moment",
     "failed_logins": "Connexions échouées (24 h)",
     "otp_failed": "Codes OTP erronés (24 h)",
+<<<<<<< HEAD
     "token_reuse": "Jetons réutilisés (7 j)",
+=======
+    "token_reuse": "Jetons réutilisés (3 j)",
+>>>>>>> develop
     "active_sessions": "Sessions actives",
     "suspicious_ips": "IP suspectes",
     "suspicious_hint": "5 tentatives échouées ou plus au cours des dernières 24 heures",
@@ -2410,10 +2418,18 @@
     "events": "Derniers événements",
     "no_sessions": "Aucune session active.",
     "no_events": "Aucun événement enregistré.",
+<<<<<<< HEAD
+=======
+    "events_retention": "L'historique est supprimé automatiquement après {{days}} jours.",
+>>>>>>> develop
     "you": "Vous",
     "started": "commencée",
     "last_active": "dernière activité",
     "close_session": "Fermer la session",
+<<<<<<< HEAD
+=======
+    "this_device": "Cet appareil",
+>>>>>>> develop
     "close_confirm": "Fermer la session de {{name}} ? Cette personne devra se reconnecter (dans les 15 minutes).",
     "close_error": "Impossible de fermer la session.",
     "ev_login_success": "Connexion",

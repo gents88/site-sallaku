@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { SecurityEvent, SecurityEventDocument, SecurityEventType } from './schemas/security-event.schema';
 import { AuthSession, AuthSessionDocument, SESSION_TTL_DAYS } from './schemas/auth-session.schema';
+=======
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { SECURITY_EVENT_TTL_DAYS, SecurityEvent, SecurityEventDocument, SecurityEventType } from './schemas/security-event.schema';
+import { AuthSession, AuthSessionDocument, MAX_RETIRED_HASHES, MAX_SESSIONS_PER_USER, SESSION_TTL_DAYS } from './schemas/auth-session.schema';
+>>>>>>> develop
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { describeDevice, maskIdentifier } from './device';
 
@@ -19,6 +27,11 @@ export interface SecurityEventExtra {
 }
 
 export interface SecuritySessionView {
+<<<<<<< HEAD
+=======
+  /** Identificativo della sessione (un dispositivo): lo stesso utente può averne più d'una. */
+  sessionId: string;
+>>>>>>> develop
   userId: string;
   name: string;
   contact: string;
@@ -42,8 +55,13 @@ export interface SecurityEventView {
 export interface SecuritySummary {
   failedLogins24h: number;
   otpFailed24h: number;
+<<<<<<< HEAD
   /** Rifiuti per riuso di un refresh token già ruotato: indizio di un token rubato. */
   tokenReuse7d: number;
+=======
+  /** Rifiuti per riuso di un refresh token già ruotato: indizio di un token rubato. Copre l'intera cronologia (SECURITY_EVENT_TTL_DAYS). */
+  tokenReuse: number;
+>>>>>>> develop
   activeSessions: number;
   /** IP con almeno 5 tentativi falliti nelle ultime 24 ore. */
   suspiciousIps: Array<{ ip: string; failures: number }>;
@@ -59,7 +77,11 @@ const WRITE_WINDOW_MS = 10_000;
 const WRITE_WINDOW_MAX = 60;
 
 @Injectable()
+<<<<<<< HEAD
 export class SecurityService {
+=======
+export class SecurityService implements OnModuleInit {
+>>>>>>> develop
   private readonly logger = new Logger(SecurityService.name);
   private windowStart = 0;
   private windowCount = 0;
@@ -87,6 +109,7 @@ export class SecurityService {
     }
   }
 
+<<<<<<< HEAD
   /** Nuovo accesso: la sessione parte da adesso (sostituisce quella precedente). */
   async startSession(userId: string, ctx: ClientContext): Promise<void> {
     const now = new Date();
@@ -103,11 +126,109 @@ export class SecurityService {
     if (!Types.ObjectId.isValid(userId)) return;
     try {
       await this.sessions.deleteOne({ userId: new Types.ObjectId(userId) }).exec();
+=======
+  /**
+   * Un tempo l'indice su userId era univoco (una sola sessione per utente). Va tolto per consentire
+   * più dispositivi: Mongoose non elimina da solo un indice esistente quando cambiano le opzioni.
+   */
+  async onModuleInit(): Promise<void> {
+    try {
+      const indexes = await this.sessions.collection.indexes();
+      const legacy = indexes.find(i => i.name === 'userId_1' && i.unique);
+      if (legacy) {
+        await this.sessions.collection.dropIndex('userId_1');
+        this.logger.log('Indice univoco auth_sessions.userId rimosso: ora un utente può avere più sessioni.');
+      }
+      await this.sessions.syncIndexes();
+    } catch (err) {
+      this.logger.warn(`Indici di auth_sessions non allineati: ${(err as Error).message}`);
+    }
+    await this.alignEventsTtl();
+  }
+
+  /**
+   * Porta l'indice TTL di security_events alla retention attuale. Mongoose non modifica un indice che
+   * esiste già con opzioni diverse, quindi chi aveva il vecchio valore resterebbe con quello: serve collMod.
+   */
+  private async alignEventsTtl(): Promise<void> {
+    try {
+      const wanted = SECURITY_EVENT_TTL_DAYS * 24 * 60 * 60;
+      const indexes = await this.events.collection.indexes();
+      const ttl = indexes.find(i => i.expireAfterSeconds !== undefined && Object.keys(i.key).join() === 'createdAt');
+      if (!ttl || ttl.expireAfterSeconds === wanted) return;
+      await this.events.db.db!.command({
+        collMod: this.events.collection.collectionName,
+        index: { name: ttl.name, expireAfterSeconds: wanted },
+      });
+      this.logger.log(`Retention di security_events portata a ${SECURITY_EVENT_TTL_DAYS} giorni (era ${Math.round(ttl.expireAfterSeconds! / 86400)}).`);
+    } catch (err) {
+      this.logger.warn(`Retention di security_events non allineata: ${(err as Error).message}`);
+    }
+  }
+
+  // ── Sessioni (un dispositivo = una sessione) ────────────────────────────────
+  // A differenza di record(), qui la sicurezza dipende dall'esito: un errore si propaga e il login
+  // fallisce, invece di emettere un token il cui hash non è stato salvato.
+
+  /** Nuovo accesso su un dispositivo: aggiunge una sessione senza toccare le altre. */
+  async createSession(userId: string, sid: string, refreshTokenHash: string, ctx: ClientContext): Promise<void> {
+    const now = new Date();
+    await this.sessions.create({
+      userId: new Types.ObjectId(userId),
+      sid,
+      refreshTokenHash,
+      startedAt: now,
+      lastSeenAt: now,
+      ip: ctx.ip,
+      userAgent: ctx.userAgent.slice(0, 200),
+    });
+    await this.pruneSessions(userId);
+  }
+
+  /** La sessione con gli hash dei refresh token (corrente e precedente), o null se non esiste più. */
+  async findRefreshSession(
+    userId: string,
+    sid: string,
+  ): Promise<{ refreshTokenHash?: string; retiredRefreshHashes?: Array<{ hash: string; retiredAt: Date }> } | null> {
+    if (!Types.ObjectId.isValid(userId)) return null;
+    return this.sessions
+      .findOne({ userId: new Types.ObjectId(userId), sid })
+      .select('+refreshTokenHash +retiredRefreshHashes')
+      .lean()
+      .exec();
+  }
+
+  /**
+   * Rinnovo del refresh token. Confronta e scambia in un solo passo: se nel frattempo un'altra
+   * richiesta ha già ruotato la sessione, non sovrascrive e restituisce false.
+   */
+  async rotateSession(userId: string, sid: string, expectedHash: string, newHash: string, ctx: ClientContext): Promise<boolean> {
+    const now = new Date();
+    const res = await this.sessions
+      .updateOne(
+        { userId: new Types.ObjectId(userId), sid, refreshTokenHash: expectedHash },
+        {
+          $set: { refreshTokenHash: newHash, lastSeenAt: now, ip: ctx.ip, userAgent: ctx.userAgent.slice(0, 200) },
+          // Il token sostituito resta valido per la tolleranza, anche se nel frattempo ruotano altri.
+          $push: { retiredRefreshHashes: { $each: [{ hash: expectedHash, retiredAt: now }], $slice: -MAX_RETIRED_HASHES } },
+        },
+      )
+      .exec();
+    return res.matchedCount > 0;
+  }
+
+  /** Chiude la sessione di un solo dispositivo (logout, riuso del token). */
+  async endSession(userId: string, sid: string): Promise<void> {
+    if (!Types.ObjectId.isValid(userId)) return;
+    try {
+      await this.sessions.deleteOne({ userId: new Types.ObjectId(userId), sid }).exec();
+>>>>>>> develop
     } catch (err) {
       this.logger.warn(`Session not closed for ${userId}: ${(err as Error).message}`);
     }
   }
 
+<<<<<<< HEAD
   async summary(now: Date = new Date()): Promise<SecuritySummary> {
     const since24h = new Date(now.getTime() - DAY_MS);
     const since7d = new Date(now.getTime() - 7 * DAY_MS);
@@ -117,6 +238,43 @@ export class SecurityService {
       this.events.countDocuments({ type: 'login_failed', createdAt: { $gte: since24h } }).exec(),
       this.events.countDocuments({ type: 'otp_failed', createdAt: { $gte: since24h } }).exec(),
       this.events.countDocuments({ type: 'refresh_reuse', createdAt: { $gte: since7d } }).exec(),
+=======
+  /** Chiude tutte le sessioni dell'utente (revoca dell'admin, cambio password o ruolo). */
+  async endAllSessions(userId: string): Promise<void> {
+    if (!Types.ObjectId.isValid(userId)) return;
+    try {
+      await this.sessions.deleteMany({ userId: new Types.ObjectId(userId) }).exec();
+    } catch (err) {
+      this.logger.warn(`Sessions not closed for ${userId}: ${(err as Error).message}`);
+    }
+  }
+
+  /** Oltre MAX_SESSIONS_PER_USER dispositivi si chiude il meno recente: la collezione non cresce senza limite. */
+  private async pruneSessions(userId: string): Promise<void> {
+    try {
+      const stale = await this.sessions
+        .find({ userId: new Types.ObjectId(userId) })
+        .sort({ lastSeenAt: -1 })
+        .skip(MAX_SESSIONS_PER_USER)
+        .select('_id')
+        .lean()
+        .exec();
+      if (stale.length) await this.sessions.deleteMany({ _id: { $in: stale.map(s => s._id) } }).exec();
+    } catch (err) {
+      this.logger.warn(`Sessions not pruned for ${userId}: ${(err as Error).message}`);
+    }
+  }
+
+  async summary(now: Date = new Date()): Promise<SecuritySummary> {
+    const since24h = new Date(now.getTime() - DAY_MS);
+    const sinceRetention = new Date(now.getTime() - SECURITY_EVENT_TTL_DAYS * DAY_MS);
+    const sessionSince = new Date(now.getTime() - SESSION_TTL_DAYS * DAY_MS);
+
+    const [failedLogins24h, otpFailed24h, tokenReuse, ipRows, recent, sessions] = await Promise.all([
+      this.events.countDocuments({ type: 'login_failed', createdAt: { $gte: since24h } }).exec(),
+      this.events.countDocuments({ type: 'otp_failed', createdAt: { $gte: since24h } }).exec(),
+      this.events.countDocuments({ type: 'refresh_reuse', createdAt: { $gte: sinceRetention } }).exec(),
+>>>>>>> develop
       this.events
         .aggregate<{ _id: string; failures: number }>([
           { $match: { type: { $in: ['login_failed', 'otp_failed'] }, createdAt: { $gte: since24h }, ip: { $ne: '' } } },
@@ -133,7 +291,11 @@ export class SecurityService {
     return {
       failedLogins24h,
       otpFailed24h,
+<<<<<<< HEAD
       tokenReuse7d,
+=======
+      tokenReuse,
+>>>>>>> develop
       activeSessions: sessions.length,
       suspiciousIps: ipRows.map(r => ({ ip: r._id, failures: r.failures })),
       sessions,
@@ -150,6 +312,7 @@ export class SecurityService {
   }
 
   /**
+<<<<<<< HEAD
    * Sessioni davvero valide: documento recente E refresh token ancora presente
    * sull'utente (una revoca da /users/:id/revoke-sessions o un logout lo azzera
    * senza passare da qui, e la sessione sparisce comunque dall'elenco).
@@ -159,6 +322,21 @@ export class SecurityService {
     if (!docs.length) return [];
     const owners = await this.users
       .find({ _id: { $in: docs.map(d => d.userId) }, refreshTokenHash: { $ne: null } })
+=======
+   * Sessioni attive: documenti recenti con un `sid`. Una revoca o un logout cancellano il documento,
+   * quindi l'elenco è sempre quello delle sessioni davvero valide. Le sessioni create prima del
+   * multi-dispositivo (senza sid) non si mostrano: passano al nuovo schema al primo rinnovo.
+   */
+  private async activeSessions(since: Date): Promise<SecuritySessionView[]> {
+    const docs = await this.sessions
+      .find({ lastSeenAt: { $gte: since }, sid: { $type: 'string' } })
+      .sort({ lastSeenAt: -1 })
+      .lean()
+      .exec();
+    if (!docs.length) return [];
+    const owners = await this.users
+      .find({ _id: { $in: docs.map(d => d.userId) } })
+>>>>>>> develop
       .select('name email phone role')
       .lean()
       .exec();
@@ -167,6 +345,10 @@ export class SecurityService {
       const user = byId.get(String(d.userId));
       if (!user) return [];
       return [{
+<<<<<<< HEAD
+=======
+        sessionId: String(d.sid),
+>>>>>>> develop
         userId: String(d.userId),
         name: user.name,
         contact: user.email ?? user.phone ?? '',
@@ -179,6 +361,7 @@ export class SecurityService {
     });
   }
 
+<<<<<<< HEAD
   private async upsertSession(
     userId: string,
     ctx: ClientContext,
@@ -199,6 +382,8 @@ export class SecurityService {
     }
   }
 
+=======
+>>>>>>> develop
   private allowWrite(now = Date.now()): boolean {
     if (now - this.windowStart > WRITE_WINDOW_MS) {
       this.windowStart = now;

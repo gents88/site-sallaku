@@ -976,6 +976,9 @@
     "admin_live": "Live-Chat aktiv",
     "admin_expired": "Diese Anfrage ist abgelaufen.",
     "admin_closed": "Diese Sitzung wurde beendet.",
+    "admin_visitor_typing": "Der Besucher schreibt …",
+    "admin_role_visitor": "Besucher",
+    "admin_role_ai": "KI",
     "admin_error": "Verbindung fehlgeschlagen. Stellen Sie sicher, dass Sie als Admin angemeldet sind.",
     "admin_send_placeholder": "Als Gent schreiben…",
     "admin_history_loading": "Unterhaltung wird geladen…",
@@ -1003,6 +1006,7 @@
     "exit_ask_close_title": "Möchten Sie die Sitzung mit Gent beenden?",
     "exit_ask_close_yes": "Ja, beenden",
     "exit_ask_close_no": "Nein, zurück zum Chat",
+    "exit_ask_leave_title": "Möchten Sie den Chat schließen?",
     "closed_notice": "Das Gespräch mit Gent ist beendet. Sie können gerne mit dem Assistenten weiterchatten.",
     "admin_close_chat": "Chat schließen"
   },
@@ -2401,7 +2405,11 @@
     "desc": "Fehlgeschlagene Anmeldungen, Token-Wiederverwendung und wer gerade verbunden ist",
     "failed_logins": "Fehlgeschlagene Anmeldungen (24 Std.)",
     "otp_failed": "Falsche OTP-Codes (24 Std.)",
+<<<<<<< HEAD
     "token_reuse": "Wiederverwendete Tokens (7 T.)",
+=======
+    "token_reuse": "Wiederverwendete Tokens (3 T.)",
+>>>>>>> develop
     "active_sessions": "Aktive Sitzungen",
     "suspicious_ips": "Verdächtige IPs",
     "suspicious_hint": "5 oder mehr fehlgeschlagene Versuche in den letzten 24 Stunden",
@@ -2410,10 +2418,18 @@
     "events": "Letzte Ereignisse",
     "no_sessions": "Keine aktiven Sitzungen.",
     "no_events": "Keine Ereignisse erfasst.",
+<<<<<<< HEAD
+=======
+    "events_retention": "Der Verlauf wird nach {{days}} Tagen automatisch gelöscht.",
+>>>>>>> develop
     "you": "Du",
     "started": "gestartet",
     "last_active": "letzte Aktivität",
     "close_session": "Sitzung beenden",
+<<<<<<< HEAD
+=======
+    "this_device": "Dieses Gerät",
+>>>>>>> develop
     "close_confirm": "Sitzung von {{name}} beenden? Die Person muss sich erneut anmelden (innerhalb von 15 Minuten).",
     "close_error": "Die Sitzung konnte nicht beendet werden.",
     "ev_login_success": "Anmeldung",

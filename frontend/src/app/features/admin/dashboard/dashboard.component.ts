@@ -156,7 +156,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   scheduledPosts: ScheduledPost[] = [];
   leads!: LeadStats;
   notFound: NotFoundSummary = { open: 0, top: [] };
+<<<<<<< HEAD
   security: SecuritySummary = { failedLogins24h: 0, otpFailed24h: 0, tokenReuse7d: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [] };
+=======
+  security: SecuritySummary = { failedLogins24h: 0, otpFailed24h: 0, tokenReuse: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [] };
+>>>>>>> develop
   totalContacts = 0;
 
   // Google Search Console

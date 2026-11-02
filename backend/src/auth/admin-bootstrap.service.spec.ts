@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { AdminBootstrapService } from './admin-bootstrap.service';
@@ -54,5 +55,39 @@ describe('AdminBootstrapService', () => {
     await service.onModuleInit();
 
     expect(usersService.upsertAdmin.mock.calls[0][0].name).toBe('Gent Sallaku');
+  });
+
+  describe('lunghezza di ADMIN_PASSWORD', () => {
+    let warn: jest.SpyInstance;
+    let hash: jest.SpyInstance;
+
+    beforeEach(() => {
+      warn = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+      hash = jest.spyOn(bcrypt, 'hash').mockResolvedValue('hash' as never);
+    });
+    afterEach(() => {
+      warn.mockRestore();
+      hash.mockRestore();
+    });
+
+    it('avvisa nel log se è sotto i 12 caratteri, senza bloccare l\'avvio né stampare la password', async () => {
+      const service = makeService({ ADMIN_EMAIL: 'admin@example.com', ADMIN_PASSWORD: 'corta-9ch' });
+
+      await service.onModuleInit();
+
+      expect(warn).toHaveBeenCalledTimes(1);
+      const message = String(warn.mock.calls[0][0]);
+      expect(message).toContain('9 caratteri');
+      expect(message).not.toContain('corta-9ch');
+      expect(usersService.upsertAdmin).toHaveBeenCalledTimes(1);
+    });
+
+    it('non avvisa se è lunga almeno 12 caratteri', async () => {
+      const service = makeService({ ADMIN_EMAIL: 'admin@example.com', ADMIN_PASSWORD: 'dodici-chars' });
+
+      await service.onModuleInit();
+
+      expect(warn).not.toHaveBeenCalled();
+    });
   });
 });

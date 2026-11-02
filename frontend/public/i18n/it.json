@@ -976,6 +976,9 @@
     "admin_live": "Chat live attiva",
     "admin_expired": "Questa richiesta è scaduta.",
     "admin_closed": "Questa sessione è stata chiusa.",
+    "admin_visitor_typing": "Il visitatore sta scrivendo…",
+    "admin_role_visitor": "Visitatore",
+    "admin_role_ai": "IA",
     "admin_error": "Impossibile connettersi. Verifica di aver effettuato l'accesso come admin.",
     "admin_send_placeholder": "Scrivi come Gent…",
     "admin_history_loading": "Caricamento conversazione…",
@@ -1003,6 +1006,7 @@
     "exit_ask_close_title": "Vuoi chiudere la sessione con Gent?",
     "exit_ask_close_yes": "Sì, chiudi",
     "exit_ask_close_no": "No, torna alla chat",
+    "exit_ask_leave_title": "Vuoi chiudere la chat?",
     "closed_notice": "La conversazione con Gent è stata chiusa. Puoi continuare a chattare con l'assistente.",
     "admin_close_chat": "Chiudi chat"
   },
@@ -2401,7 +2405,11 @@
     "desc": "Accessi falliti, riuso dei token e chi è connesso adesso",
     "failed_logins": "Accessi falliti (24 h)",
     "otp_failed": "Codici OTP errati (24 h)",
+<<<<<<< HEAD
     "token_reuse": "Token riusati (7 gg)",
+=======
+    "token_reuse": "Token riusati (3 gg)",
+>>>>>>> develop
     "active_sessions": "Sessioni attive",
     "suspicious_ips": "IP sospetti",
     "suspicious_hint": "5 o più tentativi falliti nelle ultime 24 ore",
@@ -2410,10 +2418,18 @@
     "events": "Ultimi eventi",
     "no_sessions": "Nessuna sessione attiva.",
     "no_events": "Nessun evento registrato.",
+<<<<<<< HEAD
+=======
+    "events_retention": "La cronologia si cancella da sola dopo {{days}} giorni.",
+>>>>>>> develop
     "you": "Tu",
     "started": "iniziata",
     "last_active": "ultima attività",
     "close_session": "Chiudi sessione",
+<<<<<<< HEAD
+=======
+    "this_device": "Questo dispositivo",
+>>>>>>> develop
     "close_confirm": "Chiudere la sessione di {{name}}? Dovrà accedere di nuovo (entro 15 minuti).",
     "close_error": "Impossibile chiudere la sessione.",
     "ev_login_success": "Accesso",
