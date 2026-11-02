@@ -5,6 +5,15 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TRANSLATE_LOADER_OPTIONS } from './core/i18n/translate-loader-options';
+import { withEnabledBlockingInitialNavigation } from '@angular/router';
+import { routerFeatures } from './app.config';
+
+describe('router', () => {
+  it('blocca il bootstrap sulla prima navigazione: la cornice si idrata con le traduzioni della pagina già caricate', () => {
+    const blocking = withEnabledBlockingInitialNavigation().ɵkind;
+    expect(routerFeatures.map(feature => feature.ɵkind)).toContain(blocking);
+  });
+});
 
 describe('loader delle traduzioni', () => {
   function loadItalian(): string {
