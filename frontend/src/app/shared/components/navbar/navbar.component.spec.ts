@@ -68,6 +68,28 @@ describe('NavbarComponent', () => {
     expect(navbar.desktopNavLinks().some(l => l.route === '/dashboard')).toBe(false);
   });
 
+  it('calcola scrolled e avanzamento dalle altezze in cache, senza rileggere scrollHeight a ogni frame', async () => {
+    const { navbar } = await setup('/contact');
+    const internals = navbar as unknown as { docScrollHeight: number; docClientHeight: number; onScrollFrame(): void };
+    const original = Object.getOwnPropertyDescriptor(window, 'scrollY');
+    Object.defineProperty(window, 'scrollY', { value: 500, configurable: true });
+    const heightRead = vi.fn(() => 0);
+    Object.defineProperty(document.documentElement, 'scrollHeight', { get: heightRead, configurable: true });
+    try {
+      internals.docScrollHeight = 2000;
+      internals.docClientHeight = 1000;
+
+      internals.onScrollFrame();
+
+      expect(navbar.scrolled()).toBe(true);
+      expect(navbar.scrollProgress()).toBe(50);
+      expect(heightRead).not.toHaveBeenCalled();
+    } finally {
+      delete (document.documentElement as unknown as Record<string, unknown>)['scrollHeight'];
+      if (original) Object.defineProperty(window, 'scrollY', original);
+    }
+  });
+
   it('toggles the mobile menu and the html.menu-open class', async () => {
     const { navbar } = await setup('/homepage');
     navbar.toggleMenu();

@@ -97,12 +97,32 @@ export class NavbarComponent {
 
   private readonly spy = new SectionScrollSpy(id => this.activeSection.set(id));
   private scrollFrame = 0;
+  /**
+   * Altezze del documento lette dal ResizeObserver (dopo il layout, quindi
+   * senza forzarlo) invece che da scrollHeight/clientHeight a ogni frame di
+   * scroll: su una pagina lunga ogni lettura con layout sporco costava un
+   * reflow completo, in particolare durante lo scroll automatico iniziale.
+   */
+  private docScrollHeight = 0;
+  private docClientHeight = 0;
+  private docResizeObserver: ResizeObserver | null = null;
 
   constructor() {
     if (!this.isBrowser) return;
 
     afterNextRender(() => {
-      this.onScrollFrame();
+      // Prima misura e ogni cambio di altezza della pagina (contenuto che
+      // arriva, resize): il callback gira dopo il layout, leggere qui è gratis.
+      if (typeof ResizeObserver !== 'undefined') {
+        this.docResizeObserver = new ResizeObserver(() => {
+          this.measureDocument();
+          this.onScrollFrame();
+        });
+        this.docResizeObserver.observe(document.documentElement);
+      } else {
+        this.measureDocument();
+        this.onScrollFrame();
+      }
 
       // passive + un solo calcolo per frame: lo scroll non blocca più il thread.
       fromEvent(window, 'scroll', { passive: true })
@@ -131,6 +151,7 @@ export class NavbarComponent {
 
     this.destroyRef.onDestroy(() => {
       this.spy.detach();
+      this.docResizeObserver?.disconnect();
       if (this.scrollFrame) cancelAnimationFrame(this.scrollFrame);
     });
   }
@@ -207,10 +228,15 @@ export class NavbarComponent {
     if (event.key === 'Escape' && this.mobileMenuOpen()) this.closeMenu(true);
   }
 
-  private onScrollFrame(): void {
+  private measureDocument(): void {
     const doc = document.documentElement;
-    const scrollTop = window.scrollY || doc.scrollTop;
-    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    this.docScrollHeight = doc.scrollHeight;
+    this.docClientHeight = doc.clientHeight;
+  }
+
+  private onScrollFrame(): void {
+    const scrollTop = window.scrollY;
+    const scrollHeight = this.docScrollHeight - this.docClientHeight;
     this.scrolled.set(scrollTop > 50);
     this.scrollProgress.set(scrollHeight > 0 ? Math.round((scrollTop / scrollHeight) * 100) : 0);
     if (this.isHomepage()) this.spy.checkBottom();
