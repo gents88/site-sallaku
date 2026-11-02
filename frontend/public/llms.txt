@@ -1,0 +1,33 @@
+# Gent Sallaku
+
+> Portfolio di Gent Sallaku, Senior Front-End & API Developer: Angular, TypeScript, NestJS, data visualization 3D e architetture enterprise. Il sito contiene anche il Lab, una raccolta di strumenti gratuiti per lavorare con i PDF (ricerca, riassunto, traduzione, conversione, OCR) e un blog tecnico. Contenuti in italiano, con traduzioni in altre lingue sotto il prefisso /en, /es, /fr, /pt, /sq.
+
+## Sito
+
+- [Home](https://gentsallaku.it/): presentazione, competenze, esperienze e servizi
+- [Progetti](https://gentsallaku.it/projects): progetti realizzati, con stack e dettagli
+- [Contatti](https://gentsallaku.it/contact): form di contatto
+- [Testimonianze](https://gentsallaku.it/testimonials): feedback di clienti e colleghi
+
+## Blog
+
+- [Blog](https://gentsallaku.it/blog): articoli tecnici su sviluppo front-end, Angular e architetture web
+- [Feed RSS](https://gentsallaku.it/rss.xml): elenco aggiornato degli articoli
+
+## Lab: strumenti PDF e AI
+
+- [Lab](https://gentsallaku.it/lab): indice degli strumenti
+- [Ricerca PDF](https://gentsallaku.it/lab/pdf-search): ricerca di libri e articoli scientifici in PDF da fonti aperte
+- [Riassunto PDF](https://gentsallaku.it/lab/pdf-summary): riassunto di un PDF con l'IA
+- [Traduzione PDF](https://gentsallaku.it/lab/pdf-translate): traduzione di un PDF
+- [Conversione](https://gentsallaku.it/lab/convert): conversione tra formati di documento
+- [OCR](https://gentsallaku.it/lab/ocr): estrazione del testo da immagini e PDF scansionati
+
+## Note legali
+
+- [Privacy policy](https://gentsallaku.it/privacy-policy)
+- [Cookie policy](https://gentsallaku.it/cookie-policy)
+
+## Optional
+
+- [Sitemap](https://gentsallaku.it/sitemap.xml): elenco completo delle pagine pubbliche
