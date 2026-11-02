@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="it" data-theme="dark">
+<html lang="it" data-theme="dark" class="is-booting">
   <head>
     <meta charset="utf-8" />
     <title>Gent Sallaku | Senior Front-End &amp; API Developer</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Niente transizioni CSS finché la pagina non è pronta. Molte regole usano
+         `transition: var(--transition-base)`, cioè `transition: all`: ogni stile che
+         cambia dopo il primo paint (styles.css asincrono, tema chiaro assente dal
+         CSS critico, attributi impostati al bootstrap, stato di navbar e sidebar)
+         diventava un'animazione, ~300 al caricamento, ricalcolate a ogni frame sul
+         main thread. AppComponent toglie la classe dopo l'avvio (core/utils/boot-phase.ts). -->
+    <style>
+      html.is-booting, html.is-booting *, html.is-booting *::before, html.is-booting *::after { transition: none !important; }
+    </style>
     <!-- Stato iniziale della sidebar prima del primo paint. DrawerService scrive
          lo stesso attributo dopo il bootstrap: senza questo, su desktop il
          contenuto partirebbe a piena larghezza e slitterebbe di 76px appena
