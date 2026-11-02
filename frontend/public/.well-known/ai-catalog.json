@@ -1,0 +1,9 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Gent Sallaku",
+    "identifier": "gentsallaku.it",
+    "documentationUrl": "https://gentsallaku.it/llms.txt"
+  },
+  "entries": []
+}
