@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Router, Routes, provideRouter } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { describe, expect, it, vi } from 'vitest';
-import { REVEAL_MARGIN_PX, SidebarComponent, revealScrollTop, scrollEdgesOf } from './sidebar.component';
+import { REVEAL_MARGIN_PX, SidebarComponent, afterPaint, revealScrollTop, scrollEdgesOf } from './sidebar.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { DrawerService } from '../../../core/services/drawer.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
@@ -147,6 +147,23 @@ describe('scrollEdgesOf', () => {
   });
 });
 
+describe('afterPaint', () => {
+  it('esegue la funzione solo dopo il frame e poi in un task successivo, non subito', () => {
+    const frames: (() => void)[] = [];
+    const tasks: (() => void)[] = [];
+    const fn = vi.fn();
+
+    afterPaint(fn, cb => frames.push(cb), cb => tasks.push(cb));
+    expect(fn).not.toHaveBeenCalled();
+
+    frames.splice(0).forEach(cb => cb());
+    expect(fn).not.toHaveBeenCalled();
+
+    tasks.splice(0).forEach(cb => cb());
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('SidebarComponent: lista che scorre', () => {
   /** jsdom non fa layout: altezze, posizioni e scrollTop vanno simulati. */
   function fakeLayout(el: HTMLElement) {
@@ -189,6 +206,8 @@ describe('SidebarComponent: lista che scorre', () => {
     await TestBed.inject(Router).navigateByUrl('/lab/scanner');
     await fixture.whenStable();
     TestBed.inject(ApplicationRef).tick();
+    // La lettura del layout aspetta il paint del frame successivo (vedi afterPaint).
+    await new Promise<void>(resolve => afterPaint(resolve));
 
     expect(link(el, '/lab/scanner').classList).toContain('active');
     // Posizione nel contenuto = indice × 40; deve finire dentro i 200px visibili col margine.
