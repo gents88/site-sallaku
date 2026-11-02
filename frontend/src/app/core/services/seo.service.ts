@@ -65,13 +65,17 @@ export class SeoService {
     @Inject(PLATFORM_ID) private platformId: object,
   ) {}
 
-  /** Call once in AppComponent — loads GA script and fires page_view on each navigation */
+  /**
+   * Call once in AppComponent — fires a GA page_view on each navigation.
+   *
+   * Non carica la libreria gtag: lo fa ConsentService, solo dopo il consenso
+   * (vedi il commento in index.html). Caricarla qui a ogni visita costava
+   * ~190KB e ~700ms di main thread a chi non aveva accettato nulla. I
+   * `gtag('config')` accodati nel dataLayer ripartono in ordine all'arrivo
+   * della libreria.
+   */
   trackPageViews(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-
-    if (environment.googleAnalyticsId) {
-      this.loadGtag(environment.googleAnalyticsId);
-    }
 
     this.trackCurrentPageView();
 
@@ -265,16 +269,6 @@ export class SeoService {
       el.setAttribute('content', LOCALE_MAP[lang]);
       this.document.head.appendChild(el);
     });
-  }
-
-  private loadGtag(id: string): void {
-    if (this.document.getElementById('ga-script')) return;
-    const script = this.document.createElement('script');
-    script.id = 'ga-script';
-    script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
-    this.document.head.appendChild(script);
-    (window as any)['gtag']('config', id);
   }
 
   /**
