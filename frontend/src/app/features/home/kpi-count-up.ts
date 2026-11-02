@@ -4,8 +4,9 @@
  * I valori finali sono anche il valore INIZIALE del template: la pagina
  * prerenderizzata (e chi ha JavaScript disattivato o un crawler che non
  * esegue l'animazione) deve mostrare i numeri reali, non "0+ / 0+ / 0 / 0%".
- * L'animazione di conteggio parte da zero solo nel browser, e solo se
- * l'utente non ha chiesto di ridurre il movimento.
+ * L'animazione di conteggio parte da zero solo nel browser, solo se l'hero
+ * era fuori vista al caricamento e ci entra dopo (vedi HomeComponent), e solo
+ * se l'utente non ha chiesto di ridurre il movimento.
  */
 export const HERO_KPI_TARGETS: readonly number[] = [8, 20, 4, 70];
 

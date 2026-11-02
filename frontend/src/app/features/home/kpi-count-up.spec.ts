@@ -95,25 +95,39 @@ describe('HomeComponent — contatori KPI dell\'hero', () => {
     expect(kpiTexts(fixture.nativeElement)).toEqual(['8+', '20+', '4', '70%']);
   });
 
-  it('senza reduced-motion conta da zero quando l\'hero entra in vista e termina sui valori finali', () => {
+  it('hero già in vista al caricamento: restano i valori dell\'HTML, niente azzeramento né conteggio', () => {
     stubMatchMedia(false);
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
     const fixture = TestBed.createComponent(HomeComponent);
     fixture.detectChanges();
+    expect(fixture.componentInstance.kpiValues).toEqual([...HERO_KPI_TARGETS]);
+
+    // L'ultimo osservatore creato è quello dei KPI: primo controllo, hero in vista.
+    ioCallbacks[ioCallbacks.length - 1]([{ isIntersecting: true }]);
+    vi.advanceTimersByTime(100);
+    expect(fixture.componentInstance.kpiValues).toEqual([...HERO_KPI_TARGETS]);
+  });
+
+  it('hero fuori vista al caricamento: si azzera senza che si veda e conta quando entra in vista', () => {
+    stubMatchMedia(false);
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    const fixture = TestBed.createComponent(HomeComponent);
+    fixture.detectChanges();
+    const notifyKpi = ioCallbacks[ioCallbacks.length - 1];
+
+    notifyKpi([{ isIntersecting: false }]);
     expect(fixture.componentInstance.kpiValues).toEqual([0, 0, 0, 0]);
 
-    // L'ultimo osservatore creato è quello dei KPI.
-    ioCallbacks[ioCallbacks.length - 1]([{ isIntersecting: true }]);
+    notifyKpi([{ isIntersecting: true }]);
     vi.advanceTimersByTime(2000);
     expect(fixture.componentInstance.kpiValues).toEqual([...HERO_KPI_TARGETS]);
   });
 
-  it('se l\'osservatore non scatta mai, dopo il timeout di sicurezza i contatori non restano a zero', () => {
+  it('se l\'osservatore non scatta mai, i contatori restano sui valori finali', () => {
     stubMatchMedia(false);
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
     const fixture = TestBed.createComponent(HomeComponent);
     fixture.detectChanges();
-    expect(fixture.componentInstance.kpiValues).toEqual([0, 0, 0, 0]);
     vi.advanceTimersByTime(6100);
     expect(fixture.componentInstance.kpiValues).toEqual([...HERO_KPI_TARGETS]);
   });
