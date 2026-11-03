@@ -1,10 +1,11 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, Optional } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException, Optional } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PASSWORD_BCRYPT_ROUNDS, assertPasswordForRole } from '../auth/password-policy';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { AuthSession, AuthSessionDocument } from '../security/schemas/auth-session.schema';
+import { SavedResult, SavedResultDocument } from '../saved-results/schemas/saved-result.schema';
 import { escapeRegex } from '../common/utils/escape-regex';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     // Opzionale solo per i test che costruiscono il servizio a mano con il solo modello utente.
     @Optional() @InjectModel(AuthSession.name) private sessionModel?: Model<AuthSessionDocument>,
+    @Optional() @InjectModel(SavedResult.name) private savedResultModel?: Model<SavedResultDocument>,
   ) {}
 
   /** Chiude le sessioni di tutti i dispositivi dell'utente (e il vecchio refresh token unico, se c'è ancora). */
@@ -160,6 +162,30 @@ export class UsersService {
     if (target.role === 'admin') await this.assertNotLastAdmin();
     await this.userModel.deleteOne({ _id: targetId }).exec();
     await this.endAllSessions(targetId);
+  }
+
+  /** Se l'account ha una password: decide se la cancellazione dell'account la chiede. */
+  async hasPassword(userId: string): Promise<boolean> {
+    const user = await this.userModel.findById(userId).select('+passwordHash').lean().exec();
+    return !!user?.passwordHash;
+  }
+
+  /**
+   * Cancellazione chiesta dall'utente stesso (GDPR art. 17): l'account, i file
+   * salvati in "I miei file" e le sessioni di tutti i dispositivi. Se l'account
+   * ha una password va ridigitata, così non basta una sessione rimasta aperta.
+   * L'admin non passa di qui: si gestisce da /dashboard/users.
+   */
+  async deleteOwnAccount(userId: string, password?: string): Promise<void> {
+    const user = await this.userModel.findById(userId).select('+passwordHash').exec();
+    if (!user) throw new NotFoundException('Account not found');
+    if (user.role === 'admin') throw new ForbiddenException('Admin accounts cannot be deleted from here');
+    if (user.passwordHash && !(password && (await bcrypt.compare(password, user.passwordHash)))) {
+      throw new BadRequestException('Incorrect password');
+    }
+    await this.savedResultModel?.deleteMany({ userId: new Types.ObjectId(userId) }).exec();
+    await this.userModel.deleteOne({ _id: userId }).exec();
+    await this.endAllSessions(userId);
   }
 
   /** Creazione da admin: niente OTP di verifica, l'indirizzo lo garantisce l'admin (salvo emailVerified=false). */

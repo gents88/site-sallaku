@@ -24,6 +24,33 @@ describe('SeoService', () => {
       .forEach(el => el.remove());
   });
 
+  describe('noindex', () => {
+    const robots = () => document.querySelector('meta[name="robots"]');
+    afterEach(() => robots()?.remove());
+
+    it('update({ noindex: true }) aggiunge robots noindex, follow', () => {
+      const seo = configure();
+      seo.update({ title: 'Pagina non trovata', noindex: true });
+      expect(robots()?.getAttribute('content')).toBe('noindex, follow');
+    });
+
+    it('la pagina successiva senza noindex toglie il tag (navigazione lato client)', () => {
+      const seo = configure();
+      seo.update({ title: '404', noindex: true });
+      seo.update({ title: 'Blog' });
+      expect(robots()).toBeNull();
+    });
+
+    it('setNoIndex funziona anche dopo update(), quando lo si sa solo a dati arrivati', () => {
+      const seo = configure();
+      seo.update({ title: 'Testimonianze' });
+      seo.setNoIndex(true);
+      expect(robots()?.getAttribute('content')).toBe('noindex, follow');
+      seo.setNoIndex(false);
+      expect(robots()).toBeNull();
+    });
+  });
+
   it('defaults og:locale to it_IT on the unprefixed (Italian) route', () => {
     const seo = configure();
     routerStub.url = '/blog';

@@ -45,6 +45,8 @@ interface SeoData {
    * and the language switcher. Omitted → same basePath in every language.
    */
   alternatePaths?: Record<Lang, string>;
+  /** Pagina da non indicizzare (404, pagine ancora vuote): <meta name="robots" content="noindex, follow">. */
+  noindex?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -101,6 +103,7 @@ export class SeoService {
     // Basic
     this.title.setTitle(pageTitle);
     this.meta.updateTag({ name: 'description', content: description });
+    this.setNoIndex(!!data.noindex);
 
     // Canonical link tag
     this.updateCanonical(canonicalUrl);
@@ -129,6 +132,20 @@ export class SeoService {
     this.meta.updateTag({ name: 'twitter:description', content: description });
     this.meta.updateTag({ name: 'twitter:image',       content: image });
     this.meta.updateTag({ name: 'twitter:creator',     content: '@gentsallaku' });
+  }
+
+  /**
+   * <meta name="robots" content="noindex, follow"> per le pagine che non devono
+   * finire nei risultati di ricerca (404, testimonianze ancora vuote). Senza il
+   * tag vale il default (index), per questo update() lo toglie su ogni altra
+   * pagina. Usabile anche dopo update(), quando lo si sa solo a dati arrivati.
+   */
+  setNoIndex(noindex: boolean): void {
+    if (noindex) {
+      this.meta.updateTag({ name: 'robots', content: 'noindex, follow' });
+    } else {
+      this.meta.removeTag('name="robots"');
+    }
   }
 
   /**

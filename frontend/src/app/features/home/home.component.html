@@ -16,28 +16,6 @@
     <p class="hero-description">
       {{ 'hero.description' | translate }}
     </p>
-    <div class="hero-kpis">
-      <div class="kpi">
-        <div class="kpi-icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></div>
-        <div class="kpi-number">{{ kpiValues[0] }}<span class="kpi-plus">+</span></div>
-        <div class="kpi-label">{{ 'hero.kpi_years' | translate }}</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-icon"><i class="fas fa-folder-open" aria-hidden="true"></i></div>
-        <div class="kpi-number">{{ kpiValues[1] }}<span class="kpi-plus">+</span></div>
-        <div class="kpi-label">{{ 'hero.kpi_projects' | translate }}</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-icon"><i class="fas fa-building" aria-hidden="true"></i></div>
-        <div class="kpi-number">{{ kpiValues[2] }}</div>
-        <div class="kpi-label">{{ 'hero.kpi_companies' | translate }}</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-icon"><i class="fas fa-bolt" aria-hidden="true"></i></div>
-        <div class="kpi-number">{{ kpiValues[3] }}<span class="kpi-plus">%</span></div>
-        <div class="kpi-label">{{ 'hero.kpi_latency' | translate }}</div>
-      </div>
-    </div>
   </div>
   <div class="hero-scroll-indicator">
     <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
@@ -75,9 +53,6 @@
           <div class="profile-heading">
             <strong>Gent Sallaku</strong> — {{ 'hero.role' | translate }}
           </div>
-          <small class="about-birth">
-            {{ 'about.birth' | translate }}
-          </small>
         </div>
         <p class="about-bio" [innerHTML]="'about.bio1' | translate"></p>
         <p class="about-bio" [innerHTML]="'about.bio2' | translate"></p>
@@ -230,11 +205,14 @@
 </section>
 
 <!-- ══ TESTIMONIALS ════════════════════════════════════ -->
+<!-- Solo se c'è almeno una testimonianza pubblicata: vuota era una sezione bianca. -->
+@if (hasTestimonials()) {
 <section class="section" id="testimonials">
   <div class="container">
     <app-testimonials-wall [featuredOnly]="true" [limit]="6" />
   </div>
 </section>
+}
 
 <!-- ══ SERVICES ════════════════════════════════════════ -->
 <section class="section section-alt" id="services">

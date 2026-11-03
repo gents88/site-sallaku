@@ -106,10 +106,6 @@
     "tagline2": "Aplicaciones Web",
     "tagline3": "UI/UX & Data Visualization 3D Web",
     "description": "Diseño y desarrollo aplicaciones e interfaces escalables con Angular, JavaScript y las principales bibliotecas frontend. Optimizo el rendimiento reduciendo la latencia y mejorando la capacidad de respuesta del sistema. Ofrezco soluciones fiables y estables listas para entornos enterprise de misión crítica. Trabajo como Angular Developer y TypeScript Developer para equipos enterprise.",
-    "kpi_years": "Años de experiencia",
-    "kpi_projects": "Proyectos completados",
-    "kpi_companies": "Empresas enterprise",
-    "kpi_latency": "Reducción de latencia (típica)",
     "scroll": "Desplazar"
   },
   "about": {
@@ -121,7 +117,6 @@
     "bio3": "Una parte importante de mi crecimiento está ligada a mi familia y a mis orígenes en Blinisht. Los años pasados allí, junto con mi experiencia con los Embajadores de la Paz (2000-2012), me enseñaron el valor del diálogo, la colaboración y la sensibilidad hacia las diferencias.",
     "bio4": "Creo que el verdadero valor de un profesional reside en la unión de competencia técnica y sensibilidad humana. Este enfoque guía cada proyecto que asumo, afrontando problemas con responsabilidad, visión y espíritu constructivo.",
     "bio5": "Hoy llevo conmigo todo lo que he aprendido: las raíces de mi tierra, los valores de la familia, las experiencias que me han formado y la continua curiosidad por la tecnología. De esta unión de competencia y sensibilidad nacen las soluciones más eficaces y duraderas.",
-    "birth": "Nacido en Blinisht-Lezhe (Albania) el 25/04/1988",
     "vision": {
       "title": "Visión End-to-End",
       "desc": "Un enfoque arquitectónico completo, desde la planificación del sistema de diseño hasta la entrega en producción. Amplia experiencia traduciendo requisitos de negocio complejos en interfaces intuitivas."
@@ -362,7 +357,8 @@
     "manage_cookies": "Gestionar consentimiento de cookies",
     "legal": "Legal",
     "navigation": "Navegación del pie de página",
-    "guide": "Guía"
+    "guide": "Guía",
+    "terms_link": "Términos de uso"
   },
   "auth": {
     "login_title": "Acceder al Dashboard",
@@ -448,7 +444,8 @@
     "err_otp_wrong": "Código incorrecto. Intentos restantes: {{count}}.",
     "err_otp_locked": "Demasiados intentos fallidos. Solicita un código nuevo.",
     "err_server": "El servidor no responde. Inténtalo de nuevo en breve.",
-    "registration_closed": "Los registros están cerrados temporalmente."
+    "registration_closed": "Los registros están cerrados temporalmente.",
+    "register_terms": "Al crear una cuenta aceptas los"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2427,5 +2424,56 @@
     "ev_otp_failed": "Código OTP erróneo",
     "ev_refresh_reuse": "Token reutilizado",
     "ev_session_revoked": "Sesión cerrada"
+  },
+  "terms": {
+    "title": "Términos de uso",
+    "meta_description": "Condiciones de uso de gentsallaku.it: blog, herramientas del Lab, cuentas y contenidos enviados.",
+    "updated_date": "03/11/2026",
+    "intro": "Estos términos regulan el uso de gentsallaku.it: el blog, las herramientas gratuitas del Lab y la cuenta opcional. Al usar el sitio los aceptas; si no estás de acuerdo, te pedimos que no lo uses. El tratamiento de los datos personales se rige por la Política de Privacidad.",
+    "see_privacy": "Ir a la Política de Privacidad →",
+    "s1_title": "Quién gestiona el sitio",
+    "s1_body": "gentsallaku.it es el sitio personal de Gent Sallaku, persona física, a quien puedes escribir a gentsallaku@gmail.com. El blog y las herramientas del Lab son gratuitos.",
+    "s2_title": "El Lab y sus límites",
+    "s2_body": "Las herramientas del Lab (búsqueda, resumen, traducción y conversión de PDF, OCR, generación de diapositivas y otras) se ofrecen gratis, tal como están, sin garantía de funcionamiento continuo. Para que sigan siendo gratuitas y abiertas a todos se aplican límites de uso (por ejemplo, un número máximo de solicitudes al día) que pueden cambiar sin previo aviso. Cualquier herramienta puede suspenderse o modificarse en cualquier momento.",
+    "s3_title": "Uso permitido",
+    "s3_body": "Puedes usar el sitio con fines personales, de estudio o de trabajo. No está permitido: subir archivos o textos ilícitos, que vulneren derechos de terceros o que contengan malware; usar el sitio para enviar spam; eludir los límites de uso o las protecciones contra abusos; consultar las herramientas de forma automática y masiva; intentar acceder a áreas o datos que no son tuyos. En caso de abuso podemos bloquear el acceso a las herramientas o a la cuenta.",
+    "s4_title": "Archivos y textos que subes",
+    "s4_body": "Los archivos y textos que subes siguen siendo tuyos. Sube solo material que tengas derecho a usar y evita datos sensibles o datos personales de otras personas. Los contenidos se procesan solo para producir el resultado solicitado, en nuestros servidores y, en las herramientas basadas en inteligencia artificial, a través de los proveedores externos indicados en la Política de Privacidad. No se conservan después del procesamiento, salvo que elijas guardar el resultado en «Mis archivos».",
+    "s5_title": "Resultados generados por inteligencia artificial",
+    "s5_body": "Los resúmenes, traducciones, textos reformateados, diapositivas y respuestas del chatbot se generan automáticamente y pueden contener errores, omisiones o imprecisiones. Revísalos antes de usarlos, sobre todo para decisiones importantes: no sustituyen el consejo de un profesional (por ejemplo, legal, médico o fiscal).",
+    "s6_title": "Búsqueda de PDF y contenidos de terceros",
+    "s6_body": "La búsqueda de PDF muestra libros y artículos de archivos abiertos externos (como Internet Archive, Project Gutenberg, arXiv y PubMed Central). Estos contenidos pertenecen a sus autores y editores y siguen sujetos a sus licencias: comprueba que tu uso esté permitido. No controlamos ni garantizamos el contenido de los sitios externos a los que enlaza el sitio.",
+    "s7_title": "Cuenta",
+    "s7_body": "La cuenta es opcional y sirve para guardar resultados en «Mis archivos». Proporciona datos correctos y guarda bien tu contraseña: eres responsable de lo que se haga con tu cuenta. Puedes eliminarla en cualquier momento desde la página «Mis archivos»; junto con la cuenta se eliminan todos los archivos guardados. Podemos suspender o cerrar una cuenta que se use incumpliendo estos términos.",
+    "s8_title": "Contenidos que envías al sitio",
+    "s8_body": "Las notas a los artículos, los testimonios y los mensajes enviados por el formulario de contacto o el chat son responsabilidad tuya. Las notas y los testimonios se publican solo después de una revisión y pueden corregirse en la forma o retirarse en cualquier momento. Al enviarlos aceptas que se muestren en el sitio con el nombre que indicaste.",
+    "s9_title": "Propiedad de los contenidos del sitio",
+    "s9_body": "Los artículos, textos e imágenes del sitio pertenecen a Gent Sallaku, salvo que se indique lo contrario. Puedes citar fragmentos breves indicando la fuente con un enlace a la página original; para cualquier otro uso, pide permiso antes.",
+    "s10_title": "Responsabilidad",
+    "s10_body": "El sitio y las herramientas se ofrecen gratis y sin garantías. En la medida en que lo permita la ley, no respondemos de los daños derivados del uso del sitio, de la imposibilidad de usarlo o de los resultados generados, salvo en caso de dolo o culpa grave y sin perjuicio de los derechos que la ley reconoce a los consumidores. Guarda siempre una copia de tus archivos: el sitio no es un servicio de almacenamiento.",
+    "s11_title": "Cambios y ley aplicable",
+    "s11_body": "Estos términos pueden actualizarse; la fecha del último cambio figura al principio de la página y los cambios rigen desde su publicación. Se aplica la ley italiana, sin perjuicio de las protecciones irrenunciables que prevea la ley del país donde resides si eres consumidor.",
+    "s12_title": "Contacto",
+    "s12_body": "Si tienes preguntas sobre estos términos, escribe a gentsallaku@gmail.com."
+  },
+  "page_not_found": {
+    "title": "Página no encontrada",
+    "text": "La dirección que has abierto no existe o se ha movido.",
+    "home": "Volver al inicio",
+    "blog": "Ir al blog",
+    "lab": "Abrir el Lab"
+  },
+  "account": {
+    "section_title": "Tu cuenta",
+    "signed_in_as": "Sesión iniciada como {{who}}",
+    "delete_button": "Eliminar cuenta",
+    "confirm_title": "¿Eliminar tu cuenta definitivamente?",
+    "confirm_body": "Se eliminarán tu cuenta y todos los archivos guardados en esta página. No se puede deshacer.",
+    "password_label": "Contraseña",
+    "password_hint": "Por seguridad, introduce la contraseña de tu cuenta.",
+    "confirm_button": "Eliminar definitivamente",
+    "wrong_password": "Contraseña incorrecta.",
+    "error": "No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde.",
+    "done": "Cuenta eliminada."
   }
 }

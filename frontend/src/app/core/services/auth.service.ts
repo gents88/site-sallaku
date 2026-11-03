@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap, catchError, map } from 'rxjs/operators';
 import { Observable, throwError, BehaviorSubject, filter, take, of } from 'rxjs';
@@ -8,6 +8,7 @@ import { jwtExpiresAt } from '../utils/jwt';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginPayload, OtpChannels, OtpRequestResponse, RegisterPayload, RegisterResponse, User } from '../models/user.model';
 import { LAST_ACTIVITY_KEY } from './inactivity.service';
+import { SKIP_ERROR_TOAST } from '../interceptors/error.interceptor';
 
 const TOKEN_KEY = 'portfolio_token';
 const REFRESH_TOKEN_KEY = 'portfolio_refresh_token';
@@ -165,6 +166,28 @@ export class AuthService implements OnDestroy {
     } else if (this.router.url.startsWith('/dashboard')) {
       void this.router.navigateByUrl('/dashboard/login', { replaceUrl: true });
     }
+  }
+
+  /** Se l'account collegato ha una password: in quel caso la cancellazione la chiede. */
+  accountHasPassword(): Observable<boolean> {
+    return this.http
+      .get<{ hasPassword?: boolean }>(`${this.apiUrl}/me`, this.httpOpts)
+      .pipe(map(me => !!me.hasPassword));
+  }
+
+  /**
+   * Cancella l'account collegato e i suoi file salvati (DELETE /auth/me). Solo a
+   * cancellazione riuscita chiude la sessione locale; con la password sbagliata
+   * la sessione resta e l'errore lo mostra chi chiama (niente toast generico).
+   */
+  deleteAccount(password?: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.apiUrl}/me`, {
+        ...this.httpOpts,
+        body: password ? { password } : {},
+        context: new HttpContext().set(SKIP_ERROR_TOAST, true),
+      })
+      .pipe(tap(() => this.clearSession()));
   }
 
   getToken(): string | null {
