@@ -27,8 +27,8 @@ html[data-os='ios'] {
   --transition-slow: 0.45s cubic-bezier(0.36, 0.66, 0.04, 1);
 
   /* SF Pro isn't distributable, but the system stack resolves to it on Apple devices */
-  --font-main: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  --font-main: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+  --font-sans: -apple-system, 'Inter', 'Segoe UI', sans-serif;
 }
 
 /* Buttons: iOS rounded-rect controls */
