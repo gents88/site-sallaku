@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { AuthService } from './auth.service';
+import { SKIP_ERROR_TOAST } from '../interceptors/error.interceptor';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, User } from '../models/user.model';
 
@@ -98,6 +99,50 @@ describe('AuthService', () => {
     const req = httpMock.expectOne(`${apiUrl}/otp/request`);
     expect(req.request.body).toEqual({ phone: '+15551234567' });
     req.flush({ message: 'sent' });
+  });
+
+  describe('cancellazione dell\'account', () => {
+    function loggedIn(): void {
+      service.login({ email: 'test@example.com', password: 'pw' }).subscribe();
+      httpMock.expectOne(`${apiUrl}/login`).flush(authResponse);
+    }
+
+    it('manda DELETE /auth/me con la password e chiude la sessione locale', async () => {
+      loggedIn();
+      const done = firstValueFrom(service.deleteAccount('Segreta123!'));
+      const req = httpMock.expectOne(`${apiUrl}/me`);
+      expect(req.request.method).toBe('DELETE');
+      expect(req.request.body).toEqual({ password: 'Segreta123!' });
+      expect(req.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+      req.flush(null, { status: 204, statusText: 'No Content' });
+      await done;
+
+      expect(service.isLoggedIn()).toBe(false);
+      expect(localStorage.getItem('portfolio_user')).toBeNull();
+    });
+
+    it('con la password sbagliata la sessione resta', async () => {
+      loggedIn();
+      const done = firstValueFrom(service.deleteAccount('sbagliata'));
+      httpMock.expectOne(`${apiUrl}/me`).flush({ message: 'Incorrect password' }, { status: 400, statusText: 'Bad Request' });
+
+      await expect(done).rejects.toMatchObject({ status: 400 });
+      expect(service.isLoggedIn()).toBe(true);
+    });
+
+    it('account senza password (solo OTP): corpo vuoto', () => {
+      loggedIn();
+      service.deleteAccount().subscribe();
+      const req = httpMock.expectOne(`${apiUrl}/me`);
+      expect(req.request.body).toEqual({});
+      req.flush(null, { status: 204, statusText: 'No Content' });
+    });
+
+    it('accountHasPassword legge hasPassword da GET /auth/me', async () => {
+      const result = firstValueFrom(service.accountHasPassword());
+      httpMock.expectOne(`${apiUrl}/me`).flush({ _id: 'u1', role: 'user', hasPassword: true });
+      expect(await result).toBe(true);
+    });
   });
 
   it('clears the session and redirects to login on logout from within /dashboard', () => {

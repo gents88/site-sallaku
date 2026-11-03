@@ -106,10 +106,6 @@
     "tagline2": "Aplikacione Web",
     "tagline3": "UI/UX & Vizualizim 3D Web",
     "description": "Projektoj dhe zhvilloj aplikacione dhe ndërfaqe të shkallëzueshme me Angular, JavaScript dhe bibliotekat kryesore frontend. Unë optimizoj performancën duke ulur vonesën dhe përmirësuar reagimin e sistemeve. Siguroj zgjidhje të besueshme, të qëndrueshme dhe të gatshme për mjedise enterprise me kërkesa kritike ndaj misionit. Punoj si Angular Developer dhe TypeScript Developer për ekipe enterprise.",
-    "kpi_years": "Vite eksperiencë",
-    "kpi_projects": "Projekte të realizuara",
-    "kpi_companies": "Kompani enterprise",
-    "kpi_latency": "Reduktim vonese (tipik)",
     "scroll": "Poshtë"
   },
   "about": {
@@ -121,7 +117,6 @@
     "bio3": "Një pjesë e rëndësishme e rritjes sime lidhet me familjen time dhe origjinën time në Blinisht. Vitet e kaluara atje, bashkë me përvojën time me Ambasadorët e Paqes (2000-2012), më mësuan vlerën e dialogut, bashkëpunimit dhe ndjeshjen ndaj dallimeve.",
     "bio4": "Besoj se vlera e vërtetë e një profesionisti qëndron në bashkimin e kompetencës teknike dhe ndjeshmërisë njerëzore. Kjo qasje udhëhiq çdo projekt që ndërmarr, duke u përballur me problemet me përgjegjësi, vizion dhe shpirt konstruktiv.",
     "bio5": "Sot mbart me vete gjithçka që kam mësuar: rrënjët e tokës sime, vlerat e familjes time, përvojat që më kanë formuar dhe kërkueshmërinë e vazhdueshme ndaj teknologjisë. Nga ky bashkim i kompetencës dhe ndjeshmërisë lindin zgjidhjet më efektive dhe më të qëndrueshme.",
-    "birth": "Lindur në Blinisht-Lezhe (Shqipëri) më 25/04/1988",
     "vision": {
       "title": "Vizion End-to-End",
       "desc": "Qasje e plotë arkitekturore, nga projektimi i design system deri në delivery në prodhim. Eksperiencë solide në kthimin e kërkesave komplekse të biznesit në ndërfaqe intuitive."
@@ -362,7 +357,8 @@
     "manage_cookies": "Menaxho pëlqimin e cookies",
     "legal": "Ligjore",
     "navigation": "Navigimi i footer-it",
-    "guide": "Udhëzuesi"
+    "guide": "Udhëzuesi",
+    "terms_link": "Kushtet e përdorimit"
   },
   "auth": {
     "login_title": "Hyrje në Dashboard",
@@ -448,7 +444,8 @@
     "err_otp_wrong": "Kod i gabuar. Përpjekje të mbetura: {{count}}.",
     "err_otp_locked": "Shumë përpjekje të gabuara. Kërko një kod të ri.",
     "err_server": "Serveri nuk përgjigjet. Provo përsëri pas pak.",
-    "registration_closed": "Regjistrimet janë përkohësisht të mbyllura."
+    "registration_closed": "Regjistrimet janë përkohësisht të mbyllura.",
+    "register_terms": "Duke krijuar një llogari, pranoni"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2427,5 +2424,56 @@
     "ev_otp_failed": "Kod OTP i gabuar",
     "ev_refresh_reuse": "Token i ripërdorur",
     "ev_session_revoked": "Seancë e mbyllur"
+  },
+  "terms": {
+    "title": "Kushtet e përdorimit",
+    "meta_description": "Kushtet për përdorimin e gentsallaku.it: blogu, mjetet e Lab-it, llogaritë dhe përmbajtjet e dërguara.",
+    "updated_date": "03/11/2026",
+    "intro": "Këto kushte rregullojnë përdorimin e gentsallaku.it: blogun, mjetet falas të Lab-it dhe llogarinë opsionale. Duke përdorur faqen, ju i pranoni ato; nëse nuk jeni dakord, ju lutemi mos e përdorni. Për përpunimin e të dhënave personale vlen Politika e Privatësisë.",
+    "see_privacy": "Shko te Politika e Privatësisë →",
+    "s1_title": "Kush e menaxhon faqen",
+    "s1_body": "gentsallaku.it është faqja personale e Gent Sallakut, person fizik, që mund ta kontaktoni në gentsallaku@gmail.com. Blogu dhe mjetet e Lab-it janë falas.",
+    "s2_title": "Lab-i dhe kufijtë e tij",
+    "s2_body": "Mjetet e Lab-it (kërkimi, përmbledhja, përkthimi dhe konvertimi i PDF-ve, OCR, krijimi i sllajdeve dhe të tjera) ofrohen falas, ashtu siç janë, pa garanci se do të funksionojnë pa ndërprerje. Që të mbeten falas dhe të hapura për të gjithë, zbatohen kufij përdorimi (për shembull një numër maksimal kërkesash në ditë), të cilët mund të ndryshojnë pa njoftim paraprak. Çdo mjet mund të pezullohet ose të ndryshohet në çdo kohë.",
+    "s3_title": "Përdorimi i lejuar",
+    "s3_body": "Mund ta përdorni faqen për qëllime personale, studimi ose pune. Nuk lejohet: të ngarkoni skedarë ose tekste të paligjshme, që shkelin të drejtat e të tjerëve ose që përmbajnë malware; të përdorni faqen për të dërguar spam; të anashkaloni kufijtë e përdorimit ose mbrojtjet kundër abuzimit; t'i përdorni mjetet në mënyrë të automatizuar dhe masive; të përpiqeni të hyni në zona ose të dhëna që nuk janë tuajat. Në rast abuzimi mund ta bllokojmë aksesin te mjetet ose te llogaria.",
+    "s4_title": "Skedarët dhe tekstet që ngarkoni",
+    "s4_body": "Skedarët dhe tekstet që ngarkoni mbeten tuajat. Ngarkoni vetëm materiale që keni të drejtë t'i përdorni dhe shmangni të dhëna të ndjeshme ose të dhëna personale të personave të tjerë. Përmbajtjet përpunohen vetëm për të prodhuar rezultatin e kërkuar, në serverët tanë dhe, për mjetet e bazuara në inteligjencën artificiale, nëpërmjet ofruesve të jashtëm të treguar në Politikën e Privatësisë. Ato nuk ruhen pas përpunimit, përveç rastit kur zgjidhni ta ruani rezultatin te «Skedarët e mi».",
+    "s5_title": "Rezultatet e krijuara nga inteligjenca artificiale",
+    "s5_body": "Përmbledhjet, përkthimet, tekstet e riformatuara, sllajdet dhe përgjigjet e chatbot-it krijohen automatikisht dhe mund të përmbajnë gabime, mangësi ose pasaktësi. Kontrollojini para se t'i përdorni, sidomos për vendime të rëndësishme: ato nuk zëvendësojnë mendimin e një profesionisti (për shembull ligjor, mjekësor ose fiskal).",
+    "s6_title": "Kërkimi i PDF-ve dhe përmbajtjet e palëve të treta",
+    "s6_body": "Kërkimi i PDF-ve shfaq libra dhe artikuj nga arkiva të hapura të jashtme (si Internet Archive, Project Gutenberg, arXiv dhe PubMed Central). Këto përmbajtje u përkasin autorëve dhe botuesve të tyre dhe mbeten subjekt i licencave të tyre: verifikoni që përdorimi juaj të jetë i lejuar. Ne nuk kontrollojmë dhe nuk garantojmë përmbajtjen e faqeve të jashtme te të cilat çon faqja.",
+    "s7_title": "Llogaria",
+    "s7_body": "Llogaria është opsionale dhe shërben për të ruajtur rezultatet te «Skedarët e mi». Jepni të dhëna të sakta dhe ruajeni fjalëkalimin me kujdes: jeni përgjegjës për atë që bëhet me llogarinë tuaj. Mund ta fshini në çdo kohë nga faqja «Skedarët e mi»; bashkë me llogarinë fshihen të gjithë skedarët e ruajtur. Mund ta pezullojmë ose ta mbyllim një llogari që përdoret në kundërshtim me këto kushte.",
+    "s8_title": "Përmbajtjet që i dërgoni faqes",
+    "s8_body": "Shënimet te artikujt, dëshmitë dhe mesazhet e dërguara nëpërmjet formularit të kontaktit ose chat-it janë përgjegjësi juaja. Shënimet dhe dëshmitë publikohen vetëm pas një kontrolli dhe mund të përshtaten në formë ose të hiqen në çdo kohë. Duke i dërguar, pranoni që ato të shfaqen në faqe me emrin që keni dhënë.",
+    "s9_title": "Pronësia e përmbajtjeve të faqes",
+    "s9_body": "Artikujt, tekstet dhe imazhet e faqes i përkasin Gent Sallakut, përveç rasteve kur tregohet ndryshe. Mund të citoni pjesë të shkurtra duke treguar burimin me një lidhje te faqja origjinale; për çdo përdorim tjetër, kërkoni më parë leje.",
+    "s10_title": "Përgjegjësia",
+    "s10_body": "Faqja dhe mjetet ofrohen falas dhe pa garanci. Në masën e lejuar nga ligji, nuk mbajmë përgjegjësi për dëme që rrjedhin nga përdorimi i faqes, nga pamundësia për ta përdorur ose nga rezultatet e krijuara, përveç rasteve të dashjes ose pakujdesisë së rëndë dhe pa cenuar të drejtat që ligji u njeh konsumatorëve. Ruani gjithmonë një kopje të skedarëve tuaj: faqja nuk është shërbim ruajtjeje.",
+    "s11_title": "Ndryshimet dhe ligji i zbatueshëm",
+    "s11_body": "Këto kushte mund të përditësohen; data e ndryshimit të fundit tregohet në krye të faqes dhe ndryshimet vlejnë nga publikimi. Zbatohet ligji italian, pa cenuar mbrojtjet e detyrueshme të ligjit të vendit ku banoni, nëse jeni konsumator.",
+    "s12_title": "Kontakti",
+    "s12_body": "Për pyetje rreth këtyre kushteve, shkruani në gentsallaku@gmail.com."
+  },
+  "page_not_found": {
+    "title": "Faqja nuk u gjet",
+    "text": "Adresa që hape nuk ekziston ose është zhvendosur.",
+    "home": "Kthehu te kryefaqja",
+    "blog": "Shko te blogu",
+    "lab": "Hap Lab-in"
+  },
+  "account": {
+    "section_title": "Llogaria jote",
+    "signed_in_as": "Je identifikuar si {{who}}",
+    "delete_button": "Fshi llogarinë",
+    "confirm_title": "Ta fshish përgjithmonë llogarinë?",
+    "confirm_body": "Do të fshihen llogaria jote dhe të gjithë skedarët e ruajtur në këtë faqe. Ky veprim nuk mund të kthehet mbrapsht.",
+    "password_label": "Fjalëkalimi",
+    "password_hint": "Për siguri, shkruaj fjalëkalimin e llogarisë.",
+    "confirm_button": "Fshi përgjithmonë",
+    "wrong_password": "Fjalëkalim i pasaktë.",
+    "error": "Llogaria nuk u fshi dot. Provo përsëri më vonë.",
+    "done": "Llogaria u fshi."
   }
 }

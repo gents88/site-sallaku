@@ -1,13 +1,12 @@
 # Gent Sallaku
 
-> Portfolio di Gent Sallaku, Senior Front-End & API Developer: Angular, TypeScript, NestJS, data visualization 3D e architetture enterprise. Il sito contiene anche il Lab, una raccolta di strumenti gratuiti per lavorare con i PDF (ricerca, riassunto, traduzione, conversione, OCR) e un blog tecnico. Contenuti in italiano, con traduzioni in altre lingue sotto il prefisso /en, /es, /fr, /pt, /sq.
+> Portfolio di Gent Sallaku, Senior Front-End & API Developer: Angular, TypeScript, NestJS, data visualization 3D e architetture enterprise. Il sito contiene anche il Lab, una raccolta di strumenti gratuiti per lavorare con i PDF (ricerca, riassunto, traduzione, conversione, OCR) e un blog tecnico. Contenuti in italiano, con traduzioni in altre lingue sotto il prefisso /en, /es, /fr, /pt, /de, /sq.
 
 ## Sito
 
 - [Home](https://gentsallaku.it/): presentazione, competenze, esperienze e servizi
 - [Progetti](https://gentsallaku.it/projects): progetti realizzati, con stack e dettagli
 - [Contatti](https://gentsallaku.it/contact): form di contatto
-- [Testimonianze](https://gentsallaku.it/testimonials): feedback di clienti e colleghi
 
 ## Blog
 
@@ -27,6 +26,7 @@
 
 - [Privacy policy](https://gentsallaku.it/privacy-policy)
 - [Cookie policy](https://gentsallaku.it/cookie-policy)
+- [Termini d'uso](https://gentsallaku.it/terms): condizioni d'uso del sito, del Lab e dell'account
 
 ## Optional
 

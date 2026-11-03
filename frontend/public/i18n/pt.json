@@ -106,10 +106,6 @@
     "tagline2": "Aplicações Web",
     "tagline3": "UI/UX & Data Visualization 3D Web",
     "description": "Projeto e desenvolvo aplicações e interfaces escaláveis com Angular, JavaScript e as principais bibliotecas frontend. Otimizo a performance reduzindo a latência e melhorando a capacidade de resposta dos sistemas. Entrego soluções confiáveis e estáveis prontas para ambientes enterprise de missão crítica. Atuo como Angular Developer e TypeScript Developer para equipes enterprise.",
-    "kpi_years": "Anos de experiência",
-    "kpi_projects": "Projetos concluídos",
-    "kpi_companies": "Empresas enterprise",
-    "kpi_latency": "Redução de latência (típica)",
     "scroll": "Rolar"
   },
   "about": {
@@ -121,7 +117,6 @@
     "bio3": "Uma parte importante do meu crescimento está ligada à minha família e às minhas origens em Blinisht. Os anos passados lá, junto com minha experiência com os Embaixadores da Paz (2000-2012), me ensinaram o valor do diálogo, colaboração e sensibilidade às diferenças.",
     "bio4": "Acredito que o verdadeiro valor de um profissional reside na união de competência técnica e sensibilidade humana. Esta abordagem orienta cada projeto que realizo, enfrentando problemas com responsabilidade, visão e espírito construtivo.",
     "bio5": "Hoje carrego comigo tudo que aprendi: as raízes de minha terra, os valores da família, as experiências que me formaram e a contínua curiosidade pela tecnologia. Desta união de competência e sensibilidade nascem as soluções mais eficazes e duradouras.",
-    "birth": "Nascido em Blinisht-Lezhe (Albânia) em 25/04/1988",
     "vision": {
       "title": "Visão End-to-End",
       "desc": "Uma abordagem arquitetural completa, desde o planejamento do design system até a entrega em produção. Sólida experiência em traduzir requisitos de negócio complexos em interfaces intuitivas."
@@ -362,7 +357,8 @@
     "manage_cookies": "Gerir consentimento de cookies",
     "legal": "Legal",
     "navigation": "Navegação do rodapé",
-    "guide": "Guia"
+    "guide": "Guia",
+    "terms_link": "Termos de utilização"
   },
   "auth": {
     "login_title": "Entrar no Dashboard",
@@ -448,7 +444,8 @@
     "err_otp_wrong": "Código incorreto. Tentativas restantes: {{count}}.",
     "err_otp_locked": "Muitas tentativas incorretas. Solicite um novo código.",
     "err_server": "O servidor não está respondendo. Tente novamente em instantes.",
-    "registration_closed": "Os registos estão temporariamente fechados."
+    "registration_closed": "Os registos estão temporariamente fechados.",
+    "register_terms": "Ao criar uma conta, aceita os"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2427,5 +2424,56 @@
     "ev_otp_failed": "Código OTP errado",
     "ev_refresh_reuse": "Token reutilizado",
     "ev_session_revoked": "Sessão encerrada"
+  },
+  "terms": {
+    "title": "Termos de utilização",
+    "meta_description": "Condições de utilização de gentsallaku.it: blog, ferramentas do Lab, contas e conteúdos enviados.",
+    "updated_date": "03/11/2026",
+    "intro": "Estes termos regulam a utilização de gentsallaku.it: o blog, as ferramentas gratuitas do Lab e a conta opcional. Ao utilizar o site, aceita-os; se não concordar, pedimos que não o utilize. O tratamento de dados pessoais rege-se pela Política de Privacidade.",
+    "see_privacy": "Ver a Política de Privacidade →",
+    "s1_title": "Quem gere o site",
+    "s1_body": "gentsallaku.it é o site pessoal de Gent Sallaku, pessoa singular, contactável através de gentsallaku@gmail.com. O blog e as ferramentas do Lab são gratuitos.",
+    "s2_title": "O Lab e os seus limites",
+    "s2_body": "As ferramentas do Lab (pesquisa, resumo, tradução e conversão de PDF, OCR, criação de diapositivos e outras) são oferecidas gratuitamente, tal como estão, sem garantia de funcionamento contínuo. Para se manterem gratuitas e abertas a todos, aplicam-se limites de utilização (por exemplo, um número máximo de pedidos por dia) que podem mudar sem aviso prévio. Qualquer ferramenta pode ser suspensa ou alterada a qualquer momento.",
+    "s3_title": "Utilização permitida",
+    "s3_body": "Pode utilizar o site para fins pessoais, de estudo ou profissionais. Não é permitido: carregar ficheiros ou textos ilícitos, que violem direitos de terceiros ou que contenham malware; utilizar o site para enviar spam; contornar os limites de utilização ou as proteções contra abusos; consultar as ferramentas de forma automática e massiva; tentar aceder a áreas ou dados que não lhe pertencem. Em caso de abuso, podemos bloquear o acesso às ferramentas ou à conta.",
+    "s4_title": "Ficheiros e textos que carrega",
+    "s4_body": "Os ficheiros e textos que carrega continuam a ser seus. Carregue apenas material que tenha o direito de utilizar e evite dados sensíveis ou dados pessoais de outras pessoas. Os conteúdos são tratados apenas para produzir o resultado pedido, nos nossos servidores e, nas ferramentas baseadas em inteligência artificial, através dos fornecedores externos indicados na Política de Privacidade. Não são conservados após o tratamento, a menos que opte por guardar o resultado em «Os meus ficheiros».",
+    "s5_title": "Resultados gerados por inteligência artificial",
+    "s5_body": "Resumos, traduções, textos reformatados, diapositivos e respostas do chatbot são gerados automaticamente e podem conter erros, omissões ou imprecisões. Verifique-os antes de os utilizar, sobretudo em decisões importantes: não substituem o parecer de um profissional (por exemplo, jurídico, médico ou fiscal).",
+    "s6_title": "Pesquisa de PDF e conteúdos de terceiros",
+    "s6_body": "A pesquisa de PDF mostra livros e artigos de arquivos abertos externos (como Internet Archive, Project Gutenberg, arXiv e PubMed Central). Estes conteúdos pertencem aos respetivos autores e editores e continuam sujeitos às suas licenças: confirme que a sua utilização é permitida. Não controlamos nem garantimos o conteúdo dos sites externos para os quais o site remete.",
+    "s7_title": "Conta",
+    "s7_body": "A conta é opcional e serve para guardar resultados em «Os meus ficheiros». Forneça dados corretos e guarde a sua palavra-passe em segurança: é responsável pelo que for feito com a sua conta. Pode eliminá-la a qualquer momento na página «Os meus ficheiros»; juntamente com a conta são eliminados todos os ficheiros guardados. Podemos suspender ou encerrar uma conta utilizada em violação destes termos.",
+    "s8_title": "Conteúdos que envia para o site",
+    "s8_body": "As notas aos artigos, os depoimentos e as mensagens enviadas pelo formulário de contacto ou pelo chat são da sua responsabilidade. As notas e os depoimentos só são publicados após revisão e podem ser ajustados na forma ou removidos a qualquer momento. Ao enviá-los, aceita que sejam mostrados no site com o nome que indicou.",
+    "s9_title": "Propriedade dos conteúdos do site",
+    "s9_body": "Os artigos, textos e imagens do site pertencem a Gent Sallaku, salvo indicação em contrário. Pode citar excertos breves indicando a fonte com uma ligação para a página original; para qualquer outra utilização, peça autorização primeiro.",
+    "s10_title": "Responsabilidade",
+    "s10_body": "O site e as ferramentas são oferecidos gratuitamente e sem garantias. Na medida permitida por lei, não respondemos por danos resultantes da utilização do site, da impossibilidade de o utilizar ou dos resultados gerados, salvo em caso de dolo ou culpa grave e sem prejuízo dos direitos que a lei reconhece aos consumidores. Guarde sempre uma cópia dos seus ficheiros: o site não é um serviço de armazenamento.",
+    "s11_title": "Alterações e lei aplicável",
+    "s11_body": "Estes termos podem ser atualizados; a data da última alteração é indicada no topo da página e as alterações aplicam-se a partir da publicação. Aplica-se a lei italiana, sem prejuízo das proteções imperativas previstas na lei do país onde reside, se for consumidor.",
+    "s12_title": "Contacto",
+    "s12_body": "Para questões sobre estes termos, escreva para gentsallaku@gmail.com."
+  },
+  "page_not_found": {
+    "title": "Página não encontrada",
+    "text": "O endereço que abriste não existe ou foi movido.",
+    "home": "Voltar ao início",
+    "blog": "Ir para o blog",
+    "lab": "Abrir o Lab"
+  },
+  "account": {
+    "section_title": "A tua conta",
+    "signed_in_as": "Sessão iniciada como {{who}}",
+    "delete_button": "Eliminar conta",
+    "confirm_title": "Eliminar a tua conta definitivamente?",
+    "confirm_body": "A tua conta e todos os ficheiros guardados nesta página serão eliminados. Esta ação não pode ser anulada.",
+    "password_label": "Palavra-passe",
+    "password_hint": "Por segurança, introduz a palavra-passe da tua conta.",
+    "confirm_button": "Eliminar definitivamente",
+    "wrong_password": "Palavra-passe incorreta.",
+    "error": "Não foi possível eliminar a conta. Tenta novamente mais tarde.",
+    "done": "Conta eliminada."
   }
 }
