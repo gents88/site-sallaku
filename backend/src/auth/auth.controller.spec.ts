@@ -78,4 +78,33 @@ describe('AuthController refresh token transport', () => {
       expect(response.clearCookie).toHaveBeenCalled();
     });
   });
+
+  describe('DELETE /auth/me: l’utente cancella il proprio account', () => {
+    const userId = { toString: () => 'user-1' };
+
+    beforeEach(() => {
+      (service as unknown as { deleteAccount: jest.Mock }).deleteAccount = jest.fn().mockResolvedValue(undefined);
+    });
+
+    it('passa al servizio l’utente collegato e la password digitata', async () => {
+      delete process.env.AUTH_REFRESH_COOKIE;
+      await controller.deleteMe({ user: { _id: userId } }, { password: 'Segreta123!' }, res());
+      expect((service as unknown as { deleteAccount: jest.Mock }).deleteAccount).toHaveBeenCalledWith('user-1', 'Segreta123!');
+    });
+
+    it('in modalità cookie cancella anche il cookie di sessione', async () => {
+      process.env.AUTH_REFRESH_COOKIE = 'true';
+      const response = { cookie: jest.fn(), clearCookie: jest.fn() };
+      await controller.deleteMe({ user: { _id: userId } }, {}, response as never);
+      expect(response.clearCookie).toHaveBeenCalled();
+    });
+
+    it('se il servizio rifiuta (password sbagliata) il cookie resta', async () => {
+      process.env.AUTH_REFRESH_COOKIE = 'true';
+      (service as unknown as { deleteAccount: jest.Mock }).deleteAccount.mockRejectedValue(new Error('Incorrect password'));
+      const response = { cookie: jest.fn(), clearCookie: jest.fn() };
+      await expect(controller.deleteMe({ user: { _id: userId } }, { password: 'x' }, response as never)).rejects.toThrow();
+      expect(response.clearCookie).not.toHaveBeenCalled();
+    });
+  });
 });

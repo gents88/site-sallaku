@@ -38,6 +38,7 @@
       <nav class="footer-legal" [attr.aria-label]="'footer.legal' | translate">
         <a [routerLink]="'/privacy-policy' | langUrl">{{ 'footer.privacy_link' | translate }}</a>
         <a [routerLink]="'/cookie-policy' | langUrl">{{ 'footer.cookie_link' | translate }}</a>
+        <a [routerLink]="'/terms' | langUrl">{{ 'footer.terms_link' | translate }}</a>
         <button type="button" class="footer-legal__cookie-btn" (click)="manageCookies()">
           {{ 'footer.manage_cookies' | translate }}
         </button>

@@ -488,7 +488,12 @@ export class BlogDetailComponent implements OnInit, OnChanges {
       error: (err: { status?: number }) => {
         this.notFound = true;
         // Uno slug che il backend non conosce è un link rotto da sistemare (lista 404 della dashboard).
-        if (err?.status === 404 && !this.isPreview) this.notFoundReporter.report(this.location.path(), 'blog');
+        // Apache risponde 200 (l'articolo potrebbe essere nuovo e non ancora prerenderizzato):
+        // il noindex evita che Google indicizzi la pagina vuota (soft 404).
+        if (err?.status === 404 && !this.isPreview) {
+          this.notFoundReporter.report(this.location.path(), 'blog');
+          this.seo.setNoIndex(true);
+        }
         this.cdr.markForCheck();
       },
     });

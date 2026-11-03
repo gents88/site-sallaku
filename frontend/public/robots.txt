@@ -16,17 +16,20 @@ Disallow: /stats/
 Disallow: /system/
 Disallow: /cron/
 
-# Block AI training crawlers
+# Block AI *training* crawlers only. Agents that open a page because a user
+# asked (ChatGPT-User, Claude-User, Perplexity-User) and AI search crawlers
+# (OAI-SearchBot, Claude-SearchBot, PerplexityBot) follow the "*" group above:
+# blocking them hid the site from AI answers, against llms.txt (2026-11-03).
 User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
 Disallow: /
 
 User-agent: CCBot
 Disallow: /
 
 User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
 Disallow: /
 
 User-agent: Google-Extended

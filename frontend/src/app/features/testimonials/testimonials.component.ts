@@ -97,6 +97,9 @@ export class TestimonialsComponent implements OnInit, AfterViewInit {
         this.testimonials.set(res.data);
         this.loading.set(false);
         this.injectStructuredData(res.data);
+        // Senza testimonianze la pagina ha solo il modulo: resta raggiungibile
+        // per chi riceve il link, ma non va nei risultati di ricerca.
+        this.seo.setNoIndex((res.total ?? res.data.length) === 0);
       },
       error: () => {
         this.loading.set(false);

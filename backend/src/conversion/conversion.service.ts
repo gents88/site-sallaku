@@ -4,7 +4,7 @@ import {
   Logger,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
-import * as JSZip from 'jszip';
+import type * as JSZipModule from 'jszip';
 
 import { ConversionType } from './dto/convert.dto';
 import { PdfConverter } from './converters/pdf.converter';
@@ -295,6 +295,10 @@ export class ConversionService {
 
   private async pdfToImages(buf: Buffer): Promise<ConversionResult> {
     const pages = await this.pdf.toPageBuffers(buf);
+    // jszip (~9 MB di RAM) serve solo qui: caricato al primo uso, non all'avvio.
+    // require e non import(): jszip è `export =` senza .default, e il tipo di import() non è costruibile.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const JSZip: typeof JSZipModule = require('jszip');
     const zip = new JSZip();
     pages.forEach((page, i) => { zip.file(`page_${String(i + 1).padStart(3, '0')}.pdf`, page); });
     const zipBuf = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
