@@ -18,6 +18,7 @@
     "test:cov": "jest --coverage"
   },
   "dependencies": {
+    "@googleapis/searchconsole": "^11.0.1",
     "@nestjs/common": "^11.1.28",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.1.28",
@@ -38,7 +39,6 @@
     "docx": "^9.7.1",
     "exceljs": "^4.4.0",
     "geoip-lite": "^2.0.1",
-    "googleapis": "^171.4.0",
     "handlebars": "^4.7.9",
     "helmet": "^7.1.0",
     "html-to-docx": "^1.8.0",

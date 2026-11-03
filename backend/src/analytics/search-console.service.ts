@@ -1,7 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { google } from 'googleapis';
 import { CacheService } from '../common/services/cache.service';
+
+/**
+ * Solo il client di Search Console, caricato alla prima richiesta: il pacchetto
+ * `googleapis` completo (tutte le API Google) costava ~110 MB di RAM al backend
+ * fin dall'avvio, su un server da 1,8 GB senza swap, per una card della dashboard
+ * admin. Questo pesa ~20 MB e solo se GSC è configurato e qualcuno lo consulta.
+ */
+const loadSearchConsole = () => import('@googleapis/searchconsole');
 
 interface GscQuery {
   query: string;
@@ -60,13 +67,14 @@ export class SearchConsoleService {
     siteUrl: string,
   ): Promise<SearchConsoleSummary> {
     try {
-      const auth = new google.auth.JWT({
+      const { auth, searchconsole } = await loadSearchConsole();
+      const jwt = new auth.JWT({
         email: clientEmail,
         key: privateKey.replace(/\\n/g, '\n'),
         scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
       });
 
-      const sc = google.searchconsole({ version: 'v1', auth });
+      const sc = searchconsole({ version: 'v1', auth: jwt });
 
       const endDate   = new Date();
       const startDate = new Date();

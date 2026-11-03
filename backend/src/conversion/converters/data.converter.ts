@@ -1,7 +1,13 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
-import * as mammoth from 'mammoth';
-import { PDFDocument, PageSizes, rgb, StandardFonts } from 'pdf-lib';
-import * as ExcelJS from 'exceljs';
+import type { PDFDocument, RGB } from 'pdf-lib';
+import type * as ExcelJS from 'exceljs';
+
+// Caricate alla prima conversione, non all'avvio del backend: misurate ~27 MB
+// (exceljs), ~15 MB (mammoth) e ~15 MB (pdf-lib) di RAM su un server da 1,8 GB
+// senza swap, per strumenti usati di rado. Dopo il primo uso restano in memoria.
+const loadMammoth = () => import('mammoth');
+const loadPdfLib = () => import('pdf-lib');
+const loadExcelJS = () => import('exceljs');
 
 const MAX_DOC_BYTES = 30 * 1024 * 1024;
 
@@ -11,6 +17,7 @@ export class DataConverter {
 
   async docxToHtml(buffer: Buffer): Promise<string> {
     this.validateSize(buffer);
+    const mammoth = await loadMammoth();
     const result = await mammoth.convertToHtml({ buffer });
     if (result.messages.length) {
       this.logger.warn('Mammoth warnings: ' + result.messages.map((m) => m.message).join('; '));
@@ -36,6 +43,7 @@ ${result.value}
 
   async docxToText(buffer: Buffer): Promise<string> {
     this.validateSize(buffer);
+    const mammoth = await loadMammoth();
     const result = await mammoth.extractRawText({ buffer });
     return result.value;
   }
@@ -66,10 +74,11 @@ ${result.value}
   }
 
   async textToPdf(text: string): Promise<Buffer> {
+    const { PDFDocument, PageSizes, StandardFonts, rgb } = await loadPdfLib();
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const [width, height] = PageSizes.A4;
-    this.drawWrappedText(pdfDoc, font, text, { width, height });
+    this.drawWrappedText(pdfDoc, font, text, { width, height, color: rgb(0, 0, 0) });
     return Buffer.from(await pdfDoc.save());
   }
 
@@ -83,6 +92,7 @@ ${result.value}
    * piuttosto che rimpicciolire il carattere all'infinito.
    */
   async pagedTextToPdf(pages: { text: string; width?: number; height?: number }[]): Promise<Buffer> {
+    const { PDFDocument, PageSizes, StandardFonts, rgb } = await loadPdfLib();
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const [defaultWidth, defaultHeight] = PageSizes.A4;
@@ -90,6 +100,7 @@ ${result.value}
       this.drawWrappedText(pdfDoc, font, p.text, {
         width: this.clampPageDim(p.width) ?? defaultWidth,
         height: this.clampPageDim(p.height) ?? defaultHeight,
+        color: rgb(0, 0, 0),
       });
     }
     return Buffer.from(await pdfDoc.save());
@@ -106,7 +117,7 @@ ${result.value}
     pdfDoc: PDFDocument,
     font: Awaited<ReturnType<PDFDocument['embedFont']>>,
     text: string,
-    { width, height, fontSize = 11, margin = 50 }: { width: number; height: number; fontSize?: number; margin?: number },
+    { width, height, color, fontSize = 11, margin = 50 }: { width: number; height: number; color: RGB; fontSize?: number; margin?: number },
   ): void {
     const lineHeight = fontSize + 5;
     const maxWidth = width - margin * 2;
@@ -126,7 +137,7 @@ ${result.value}
             page = pdfDoc.addPage([width, height]);
             y = height - margin;
           }
-          page.drawText(line, { x: margin, y, size: fontSize, font, color: rgb(0, 0, 0) });
+          page.drawText(line, { x: margin, y, size: fontSize, font, color });
           y -= lineHeight;
           line = word;
         } else {
@@ -139,7 +150,7 @@ ${result.value}
           page = pdfDoc.addPage([width, height]);
           y = height - margin;
         }
-        page.drawText(line, { x: margin, y, size: fontSize, font, color: rgb(0, 0, 0) });
+        page.drawText(line, { x: margin, y, size: fontSize, font, color });
         y -= lineHeight;
       }
 
@@ -148,6 +159,7 @@ ${result.value}
   }
 
   async jsonToPdf(jsonData: unknown): Promise<Buffer> {
+    const { PDFDocument, PageSizes, StandardFonts, rgb } = await loadPdfLib();
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Courier);
     const boldFont = await pdfDoc.embedFont(StandardFonts.CourierBold);
@@ -218,7 +230,8 @@ ${result.value}
   async csvToExcel(buffer: Buffer): Promise<Buffer> {
     this.validateSize(buffer);
     const rows = this.parseCsv(buffer);
-    const wb = new ExcelJS.Workbook();
+    const { Workbook } = await loadExcelJS();
+    const wb = new Workbook();
     const ws = wb.addWorksheet('Sheet1');
     ws.addRows(rows);
     const out = await wb.xlsx.writeBuffer();
@@ -266,7 +279,8 @@ ${result.value}
   }
 
   private async loadWorkbook(buffer: Buffer): Promise<ExcelJS.Workbook> {
-    const wb = new ExcelJS.Workbook();
+    const { Workbook } = await loadExcelJS();
+    const wb = new Workbook();
     await wb.xlsx.load(buffer as unknown as ExcelJS.Buffer);
     return wb;
   }
@@ -415,6 +429,7 @@ ${result.value}
   }
 
   private async tableToPdf(title: string, rows: string[][]): Promise<Buffer> {
+    const { PDFDocument, PageSizes, StandardFonts, rgb } = await loadPdfLib();
     const pdfDoc = await PDFDocument.create();
     const font     = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
