@@ -10,14 +10,16 @@ import { DrawerService } from '../../../core/services/drawer.service';
 import { SearchOverlayService } from '../../../core/services/search-overlay.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { LanguageService } from '../../../core/services/language.service';
+import { TestimonialsService } from '../../../core/services/testimonials.service';
 import { navbarEntries } from '../../../core/navigation/nav-registry';
 
 @Component({ template: '' })
 class BlankComponent {}
 
-async function setup(url: string, opts: { loggedIn?: boolean; admin?: boolean } = {}) {
+async function setup(url: string, opts: { loggedIn?: boolean; admin?: boolean; testimonials?: boolean } = {}) {
   const loggedIn = signal(!!opts.loggedIn);
   const admin = signal(!!opts.admin);
+  const hasTestimonials = signal(opts.testimonials ?? true);
   TestBed.configureTestingModule({
     imports: [TranslateModule.forRoot()],
     providers: [
@@ -28,11 +30,12 @@ async function setup(url: string, opts: { loggedIn?: boolean; admin?: boolean } 
       { provide: SearchOverlayService, useValue: { show: vi.fn() } },
       { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
       { provide: LanguageService, useValue: { current: () => 'it' } },
+      { provide: TestimonialsService, useValue: { hasPublic: () => hasTestimonials } },
     ],
   });
   await TestBed.inject(Router).navigateByUrl(url);
   const navbar = TestBed.runInInjectionContext(() => new NavbarComponent());
-  return { navbar, loggedIn, admin };
+  return { navbar, loggedIn, admin, hasTestimonials };
 }
 
 const link = (route: string) => navbarEntries().find(e => e.route === route)!;
@@ -66,6 +69,14 @@ describe('NavbarComponent', () => {
     expect(navbar.desktopNavLinks().some(l => l.route === '/dashboard')).toBe(true);
     loggedIn.set(false);
     expect(navbar.desktopNavLinks().some(l => l.route === '/dashboard')).toBe(false);
+  });
+
+  it('nasconde Testimonianze finché non c\'è nessuna testimonianza pubblicata', async () => {
+    const { navbar, hasTestimonials } = await setup('/homepage', { testimonials: false });
+    expect(navbar.desktopNavLinks().some(l => l.route === '/testimonials')).toBe(false);
+    expect(navbar.desktopNavLinks().some(l => l.route === '/blog')).toBe(true);
+    hasTestimonials.set(true);
+    expect(navbar.desktopNavLinks().some(l => l.route === '/testimonials')).toBe(true);
   });
 
   it('calcola scrolled e avanzamento dalle altezze in cache, senza rileggere scrollHeight a ogni frame', async () => {

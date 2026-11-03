@@ -152,12 +152,35 @@ async function fetchProjectRoutes() {
   }
 }
 
+/**
+ * Se c'è almeno una testimonianza pubblicata. Finché sono zero /testimonials
+ * resta fuori dalla sitemap (il frontend la marca anche noindex): una pagina
+ * vuota non va proposta ai motori di ricerca. API giù → fuori, come se vuota.
+ */
+async function fetchHasTestimonials() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/testimonials?limit=1&skip=0`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    return (json.total ?? (json.data || []).length) > 0;
+  } catch (err) {
+    console.warn('Could not fetch testimonials for sitemap — leaving /testimonials out:', err.message);
+    return false;
+  }
+}
+
+/** Toglie le pagine che oggi sarebbero vuote (per ora solo /testimonials). */
+function withoutEmptyPages(entries, { hasTestimonials }) {
+  return hasTestimonials ? entries : entries.filter((e) => e.loc !== '/testimonials');
+}
+
 async function main() {
   const blogRoutes = await fetchBlogRoutes();
   const projectRoutes = await fetchProjectRoutes();
+  const pages = withoutEmptyPages(routes, { hasTestimonials: await fetchHasTestimonials() });
   const xml = buildXml([
-    ...routes,
-    ...withLangVariants(routes),
+    ...pages,
+    ...withLangVariants(pages),
     ...projectRoutes,
     ...withLangVariants(projectRoutes),
     ...blogRoutes.map(({ langLocs, ...entry }) => entry),
@@ -192,4 +215,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { staticRoutes, buildXml, withLangVariants };
+module.exports = { staticRoutes, buildXml, withLangVariants, withoutEmptyPages };
