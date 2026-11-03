@@ -44,6 +44,31 @@
   RewriteRule ^dashboard/tools/?$ /lab [R=301,L]
   RewriteRule ^dashboard/(pdf-summary|ai-formatter|pdf-translate|ai-ppt|convert|pdf-editor|viewer|editor|ocr|scanner)(/.*)?$ /lab/$1$2 [R=301,L]
 
+  # Articoli accorpati il 2026-11 (contenuti sovrapposti): ogni URL, in tutte le
+  # lingue, porta all'articolo che ne ha assorbito il contenuto. Prima delle regole
+  # sui file prerenderizzati, così vincono anche se la vecchia cartella è ancora sul server.
+  RewriteRule ^blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici/?$ /blog/25-domande-colloquio-frontend-angular-developer-junior-lead [R=301,L]
+  RewriteRule ^en/blog/front-end-developer-job-interview-questions-answers-and-practical-tips/?$ /en/blog/25-frontend-angular-developer-interview-questions-from-junior-to-lead-with-answers [R=301,L]
+  RewriteRule ^sq/blog/intervista-pune-per-front-end-developer-pyetje-pergjigje-dhe-keshilla-praktike/?$ /sq/blog/25-pyetje-intervistash-per-frontend-angular-developer-nga-junior-te-lead-me-pergjigje [R=301,L]
+  RewriteRule ^pt/blog/entrevista-de-emprego-para-front-end-developer-perguntas-respostas-e-dicas-praticas/?$ /pt/blog/25-perguntas-de-entrevista-para-frontend-angular-developer-de-junior-a-lead-com-respostas [R=301,L]
+  RewriteRule ^es/blog/entrevista-de-trabajo-para-front-end-developer-preguntas-respuestas-y-consejos-practicos/?$ /es/blog/25-preguntas-de-entrevista-para-frontend-angular-developer-de-junior-a-lead-con-respuestas [R=301,L]
+  RewriteRule ^fr/blog/entretien-dembauche-pour-front-end-developer-questions-reponses-et-conseils-pratiques/?$ /fr/blog/25-questions-dentretien-pour-frontend-angular-developer-de-junior-a-lead-avec-reponses [R=301,L]
+  RewriteRule ^de/blog/vorstellungsgesprach-als-front-end-developer-fragen-antworten-und-praktische-tipps/?$ /de/blog/25-vorstellungsgesprach-fragen-fur-frontend-angular-developer-von-junior-bis-lead-mit-antworten [R=301,L]
+  RewriteRule ^blog/best-practice-sicurezza-performance-web-combinate/?$ /blog/cookie-cache-websocket [R=301,L]
+  RewriteRule ^en/blog/combined-best-practices-for-modern-web-apps-security-caching-and-websocket/?$ /en/blog/cookies-cache-and-websockets-a-practical-guide-for-developers [R=301,L]
+  RewriteRule ^sq/blog/praktikat-me-te-mira-te-kombinuara-per-aplikacionet-moderne-te-uebit-siguria-cache-dhe-websockets/?$ /sq/blog/cookies-cache-dhe-websockets-nje-udhezues-praktik-per-zhvilluesit [R=301,L]
+  RewriteRule ^pt/blog/boas-praticas-combinadas-para-apps-web-modernas-seguranca-cache-e-websocket/?$ /pt/blog/cookies-cache-e-websockets-um-guia-pratico-para-desenvolvedores [R=301,L]
+  RewriteRule ^es/blog/buenas-practicas-combinadas-para-apps-web-modernas-seguridad-cache-y-websocket/?$ /es/blog/cookies-cache-y-websockets-una-guia-practica-para-desarrolladores [R=301,L]
+  RewriteRule ^fr/blog/bonnes-pratiques-combinees-pour-applications-web-modernes-securite-cache-et-websocket/?$ /fr/blog/cookies-cache-et-websockets-un-guide-pratique-pour-les-developpeurs [R=301,L]
+  RewriteRule ^de/blog/kombinierte-best-practices-fur-moderne-web-apps-sicherheit-caching-und-websocket/?$ /de/blog/cookies-cache-und-websockets-ein-praktischer-leitfaden-fur-entwickler [R=301,L]
+  RewriteRule ^blog/case-study-crisi-indicizzazione-seo-angular-produzione/?$ /blog/perche-il-blog-non-viene-indicizzato-da-google [R=301,L]
+  RewriteRule ^en/blog/how-i-diagnosed-and-fixed-an-seo-indexing-crisis-in-production-a-case-study/?$ /en/blog/why-my-angular-blog-isnt-indexed-by-google-and-how-i-fixed-it [R=301,L]
+  RewriteRule ^sq/blog/si-e-diagnostikova-dhe-e-zgjidha-nje-krize-indeksimi-seo-ne-prodhim-rast-studimi/?$ /sq/blog/pse-blogu-im-angular-nuk-eshte-i-indeksuar-nga-google-dhe-si-e-rregullova [R=301,L]
+  RewriteRule ^pt/blog/como-diagnostiquei-e-resolvi-uma-crise-de-indexacao-seo-em-producao-estudo-de-caso/?$ /pt/blog/por-que-meu-blog-angular-nao-e-indexado-pelo-google-e-como-corrigi-isso [R=301,L]
+  RewriteRule ^es/blog/como-diagnostique-y-resolvi-una-crisis-de-indexacion-seo-en-produccion-caso-practico/?$ /es/blog/por-que-google-no-indexa-mi-blog-de-angular-y-como-lo-solucione [R=301,L]
+  RewriteRule ^fr/blog/comment-jai-diagnostique-et-resolu-une-crise-dindexation-seo-en-production-etude-de-cas/?$ /fr/blog/pourquoi-mon-blog-angulaire-nest-pas-indexe-par-google-et-comment-je-lai-corrige [R=301,L]
+  RewriteRule ^de/blog/wie-ich-eine-seo-indexierungskrise-in-produktion-diagnostiziert-und-gelost-habe-eine-fallstudie/?$ /de/blog/warum-mein-angular-blog-nicht-von-google-indiziert-wird-und-wie-ich-das-problem-behoben-habe [R=301,L]
+
   # Serve the build-time prerendered homepage for the exact root request,
   # keeping the URL as / (canonical) instead of redirecting to /homepage.
   RewriteRule ^$ homepage/index.html [L]
