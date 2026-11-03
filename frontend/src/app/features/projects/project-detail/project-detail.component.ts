@@ -98,7 +98,10 @@ export class ProjectDetailComponent {
     this.projects.getBySlug(slug).pipe(
       catchError((err: { status?: number }) => {
         this.state.set(err?.status === 404 ? 'not-found' : 'error');
-        if (err?.status === 404) this.notFoundReporter.report(withLangPrefix(`/projects/${slug}`, this.langService.current()), 'project');
+        if (err?.status === 404) {
+          this.notFoundReporter.report(withLangPrefix(`/projects/${slug}`, this.langService.current()), 'project');
+          this.seo.setNoIndex(true); // soft 404: Apache risponde 200 anche per uno slug inesistente
+        }
         return of(null);
       }),
     ).subscribe(project => {

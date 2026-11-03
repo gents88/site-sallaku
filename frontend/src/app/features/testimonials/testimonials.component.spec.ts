@@ -80,6 +80,18 @@ describe('TestimonialsComponent — verifica e LinkedIn', () => {
     return { fixture, el: fixture.nativeElement as HTMLElement, jsonLd };
   }
 
+  it('senza testimonianze la pagina è noindex; con almeno una no', () => {
+    const noIndex = vi.spyOn(TestBed.inject(SeoService), 'setNoIndex');
+    const fixture = TestBed.createComponent(TestimonialsComponent);
+    fixture.detectChanges();
+    http.expectOne(r => r.url.includes('/testimonials')).flush({ data: [], total: 0 });
+    expect(noIndex).toHaveBeenLastCalledWith(true);
+
+    noIndex.mockClear();
+    renderWithList();
+    expect(noIndex).toHaveBeenLastCalledWith(false);
+  });
+
   it('solo la testimonianza verificata mostra badge e link LinkedIn', () => {
     const { el } = renderWithList();
     const cards = Array.from(el.querySelectorAll('.testimonial-card'));

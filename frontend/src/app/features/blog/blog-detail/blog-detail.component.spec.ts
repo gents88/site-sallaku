@@ -3,7 +3,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { BlogDetailComponent, activeHeadingIndex, postShareImageUrl, readingProgressOf } from './blog-detail.component';
 import { BlogService } from '../../../core/services/blog.service';
@@ -30,11 +30,11 @@ const published = [
 describe('BlogDetailComponent view tracking', () => {
   // Ogni create('browser') registra il post nella cronologia di lettura (localStorage condiviso fra spec).
   afterEach(() => localStorage.clear());
-  function create(platform: 'browser' | 'server', urlSlug = 'blinisht') {
-    const location = { replaceState: vi.fn() };
-    const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) };
+  function create(platform: 'browser' | 'server', urlSlug = 'blinisht', getStatus?: number) {
+    const location = { replaceState: vi.fn(), path: vi.fn(() => `/sq/blog/${urlSlug}`) };
+    const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})), setNoIndex: vi.fn() };
     const blogService = {
-      getBySlug: vi.fn(() => of(post)),
+      getBySlug: vi.fn(() => (getStatus ? throwError(() => ({ status: getStatus })) : of(post))),
       trackView: vi.fn(() => of(undefined)),
       getPublishedAll: vi.fn(() => of(published)),
     };
@@ -56,6 +56,18 @@ describe('BlogDetailComponent view tracking', () => {
     component.ngOnInit();
     return { component, fixture, blogService, location, seo };
   }
+
+  it('articolo inesistente: stato non trovato e noindex (Apache risponde 200, sarebbe un soft 404)', () => {
+    const { component, seo } = create('browser', 'non-esiste', 404);
+    expect(component.notFound).toBe(true);
+    expect(seo.setNoIndex).toHaveBeenCalledWith(true);
+  });
+
+  it('errore di rete o del server: nessun noindex (l\'articolo può esistere)', () => {
+    const { component, seo } = create('browser', 'blinisht', 500);
+    expect(component.notFound).toBe(true);
+    expect(seo.setNoIndex).not.toHaveBeenCalled();
+  });
 
   it('counts a view in the browser', () => {
     const { component, blogService } = create('browser');

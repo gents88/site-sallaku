@@ -59,4 +59,50 @@
       }
     </ul>
   }
+
+  @if (auth.isLoggedIn() && !auth.isAdmin()) {
+    <section class="account-box" aria-labelledby="account-box-title">
+      <h2 id="account-box-title">{{ 'account.section_title' | translate }}</h2>
+      @if (accountLabel()) {
+        <p class="account-who">{{ 'account.signed_in_as' | translate: { who: accountLabel() } }}</p>
+      }
+      @if (!confirmingDelete()) {
+        <button type="button" class="btn-danger-outline" (click)="startDelete()">{{ 'account.delete_button' | translate }}</button>
+      } @else {
+        <div class="delete-confirm" role="group" aria-labelledby="delete-confirm-title" aria-describedby="delete-confirm-body">
+          <h3 id="delete-confirm-title">{{ 'account.confirm_title' | translate }}</h3>
+          <p id="delete-confirm-body">{{ 'account.confirm_body' | translate }}</p>
+          @if (needsPassword()) {
+            <label class="delete-label" for="delete-password">{{ 'account.password_label' | translate }}</label>
+            <input
+              id="delete-password"
+              class="delete-input"
+              type="password"
+              autocomplete="current-password"
+              aria-describedby="delete-password-hint"
+              [value]="deletePassword()"
+              (input)="deletePassword.set($any($event.target).value)"
+            />
+            <small id="delete-password-hint" class="delete-hint">{{ 'account.password_hint' | translate }}</small>
+          }
+          @if (deleteError()) {
+            <p class="delete-error" role="alert">{{ deleteError() | translate }}</p>
+          }
+          <div class="delete-actions">
+            <button
+              type="button"
+              class="btn-danger"
+              [disabled]="deleting() || (needsPassword() && !deletePassword())"
+              (click)="confirmDelete()"
+            >
+              {{ 'account.confirm_button' | translate }}
+            </button>
+            <button type="button" class="btn-ghost" [disabled]="deleting()" (click)="cancelDelete()">
+              {{ 'common.cancel' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  }
 </div>

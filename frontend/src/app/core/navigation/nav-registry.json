@@ -11,6 +11,7 @@
   { "id": "testimonials", "route": "/testimonials", "labelKey": "nav.testimonials", "group": "site", "access": "public", "icon": "star", "navbar": true, "search": true, "prerender": true, "homeSection": "testimonials", "ownPage": true, "sitemap": { "changefreq": "weekly", "priority": "0.85" } },
   { "id": "privacy-policy", "route": "/privacy-policy", "labelKey": "footer.privacy_link", "group": "legal", "access": "public", "icon": "shield", "prerender": true, "sitemap": { "changefreq": "yearly", "priority": "0.3" } },
   { "id": "cookie-policy", "route": "/cookie-policy", "labelKey": "footer.cookie_link", "group": "legal", "access": "public", "icon": "shield", "prerender": true, "sitemap": { "changefreq": "yearly", "priority": "0.3" } },
+  { "id": "terms", "route": "/terms", "labelKey": "footer.terms_link", "group": "legal", "access": "public", "icon": "shield", "prerender": true, "sitemap": { "changefreq": "yearly", "priority": "0.3" } },
   { "id": "lab", "route": "/lab", "labelKey": "nav.ai_tools", "group": "lab", "access": "public", "icon": "flask", "search": true, "prerender": true, "sitemap": { "changefreq": "monthly", "priority": "0.9" } },
 
   { "id": "dashboard", "route": "/dashboard", "labelKey": "sidebar.items.dashboard", "group": "overview", "access": "admin", "icon": "dashboard", "sidebar": true },

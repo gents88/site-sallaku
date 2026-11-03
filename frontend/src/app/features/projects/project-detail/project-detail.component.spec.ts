@@ -19,7 +19,7 @@ const project = {
 } as Project;
 
 async function setup(getBySlug: ProjectsService['getBySlug'], lang: 'it' | 'en' = 'it', all: Project[] = []) {
-  const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) };
+  const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})), setNoIndex: vi.fn() };
   const notFound = { report: vi.fn() };
   TestBed.configureTestingModule({
     imports: [TranslateModule.forRoot()],
@@ -57,16 +57,19 @@ describe('ProjectDetailComponent', () => {
   });
 
   it('shows a not-found state on 404', async () => {
-    const { el, notFound } = await setup(() => throwError(() => ({ status: 404 })), 'en');
+    const { el, notFound, seo } = await setup(() => throwError(() => ({ status: 404 })), 'en');
     expect(el.textContent).toContain('project_detail.not_found');
     // Lo slug inesistente finisce nella lista 404 della dashboard, con il prefisso lingua.
     expect(notFound.report).toHaveBeenCalledWith('/en/projects/cms', 'project');
+    // Apache risponde 200: senza noindex Google la indicizzerebbe (soft 404).
+    expect(seo.setNoIndex).toHaveBeenCalledWith(true);
   });
 
   it('shows a retryable error on other failures', async () => {
-    const { el, notFound } = await setup(() => throwError(() => ({ status: 500 })));
+    const { el, notFound, seo } = await setup(() => throwError(() => ({ status: 500 })));
     expect(el.querySelector('[role="alert"]')?.textContent).toContain('project_detail.load_error');
     expect(notFound.report).not.toHaveBeenCalled();
+    expect(seo.setNoIndex).not.toHaveBeenCalled();
   });
 
   describe('related case studies', () => {

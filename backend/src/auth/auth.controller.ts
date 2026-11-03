@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Get,
+  Delete,
   UseGuards,
   Request,
   Req,
@@ -20,6 +21,7 @@ import { RegisterDto } from './dto/register.dto';
 import { RequestOtpDto } from './dto/request-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { DeleteAccountDto } from './dto/delete-account.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RequireFeature } from '../common/settings/require-feature.decorator';
 import { clientContext } from '../security/client-context';
@@ -100,7 +102,17 @@ export class AuthController {
   @ApiOperation({ summary: 'Get current authenticated user' })
   getMe(@Request() req: any) {
     // Return only non-sensitive fields — never return passwordHash or refreshTokenHash
-    const { _id, name, email, role } = req.user;
-    return { _id, name, email, role };
+    return this.authService.me(req.user);
+  }
+
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @ApiOperation({ summary: 'Delete the current account and its saved files (not for admins)' })
+  async deleteMe(@Request() req: any, @Body() dto: DeleteAccountDto, @Res({ passthrough: true }) res: Response) {
+    await this.authService.deleteAccount(req.user._id.toString(), dto.password);
+    if (refreshCookieEnabled()) clearRefreshCookie(res);
   }
 }
