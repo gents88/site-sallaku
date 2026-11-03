@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiQuotaService } from './ai-quota.service';
 import { AiTokenSource } from './ai-usage.service';
@@ -38,24 +38,43 @@ export class AiProviderService {
     const apiKey = this.config.get<string>('GROQ_API_KEY');
     if (!apiKey) throw new Error('GROQ_API_KEY is not configured');
 
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: opts.model,
-        messages,
-        max_tokens: opts.maxTokens,
-        temperature: opts.temperature ?? 0.7,
-      }),
-      signal: AbortSignal.timeout(opts.timeoutMs),
+    const body = JSON.stringify({
+      model: opts.model,
+      messages,
+      max_tokens: opts.maxTokens,
+      temperature: opts.temperature ?? 0.7,
     });
 
-    if (!res.ok) {
+    let res: Response;
+    for (let attempt = 0; ; attempt++) {
+      res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body,
+        signal: AbortSignal.timeout(opts.timeoutMs),
+      });
+      if (res.ok) break;
+
       const text = await res.text();
+      const transient = res.status === 429 || res.status >= 500;
+      const waitMs = transient ? retryDelayMs(res, attempt) : null;
+      if (waitMs !== null && attempt < MAX_RETRIES) {
+        this.logger.warn(`Groq ${res.status}, nuovo tentativo tra ${waitMs} ms (${attempt + 1}/${MAX_RETRIES})`);
+        await this.wait(waitMs);
+        continue;
+      }
       this.logger.error(`Groq ${res.status}: ${text}`);
+      // Un limite di Groq è temporaneo e non è un guasto nostro: al client arriva
+      // 429/503 (il frontend mostra "riprova") invece di un 500 generico.
+      if (res.status === 429) {
+        throw new HttpException('Il servizio di IA è momentaneamente sovraccarico: riprova tra qualche minuto.', HttpStatus.TOO_MANY_REQUESTS);
+      }
+      if (res.status >= 500) {
+        throw new HttpException('Il servizio di IA non è disponibile in questo momento: riprova più tardi.', HttpStatus.SERVICE_UNAVAILABLE);
+      }
       throw new Error(`Groq API error ${res.status}`);
     }
 
@@ -76,4 +95,23 @@ export class AiProviderService {
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
   }
+
+  /** Separato per poterlo sostituire nei test. */
+  protected wait(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+}
+
+const MAX_RETRIES = 2;
+/** Oltre questa attesa (es. limite giornaliero di token) non conviene tenere ferma la richiesta. */
+const MAX_WAIT_MS = 20_000;
+
+/**
+ * Quanto aspettare prima di riprovare: Retry-After di Groq se c'è, altrimenti
+ * 2 s, 4 s… null se Groq chiede di aspettare più di MAX_WAIT_MS.
+ */
+export function retryDelayMs(res: Response, attempt: number): number | null {
+  const header = Number(res.headers?.get?.('retry-after'));
+  const ms = Number.isFinite(header) && header > 0 ? Math.ceil(header * 1000) : 2000 * 2 ** attempt;
+  return ms <= MAX_WAIT_MS ? ms : null;
 }
