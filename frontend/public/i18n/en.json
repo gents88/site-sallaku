@@ -106,10 +106,6 @@
     "tagline2": "Web Applications",
     "tagline3": "UI/UX & Data Visualization 3D Web",
     "description": "I design and develop scalable applications and interfaces with Angular, JavaScript and leading frontend libraries. I optimize performance to reduce latency and improve system responsiveness. I deliver reliable, stable solutions ready for enterprise mission-critical environments. I work as an Angular Developer and TypeScript Developer for enterprise teams.",
-    "kpi_years": "Years experience",
-    "kpi_projects": "Projects completed",
-    "kpi_companies": "Enterprise companies",
-    "kpi_latency": "Latency reduction (typical)",
     "scroll": "Scroll"
   },
   "about": {
@@ -121,7 +117,6 @@
     "bio3": "An important part of my growth is connected to my family and my roots in Blinisht. The years spent there, along with my experience with the Ambassadors of Peace (2000-2012), taught me the value of dialogue, collaboration and sensitivity to differences.",
     "bio4": "I believe that the true value of a professional lies in the union of technical expertise and human sensitivity. This approach guides every project I undertake, tackling problems with responsibility, vision and a constructive spirit.",
     "bio5": "Today I carry with me everything I have learned: the roots of my homeland, family values, the experiences that shaped me and a constant curiosity about technology. From this union of expertise and sensitivity are born the most effective and lasting solutions.",
-    "birth": "Born in Blinisht-Lezhe (Albania) on 25/04/1988",
     "vision": {
       "title": "End-to-End Vision",
       "desc": "A complete architectural approach, from design system planning to production delivery. Solid experience translating complex business requirements into intuitive interfaces."
@@ -362,7 +357,8 @@
     "manage_cookies": "Manage cookie consent",
     "legal": "Legal",
     "navigation": "Footer navigation",
-    "guide": "Guide"
+    "guide": "Guide",
+    "terms_link": "Terms of use"
   },
   "auth": {
     "login_title": "Sign In to Dashboard",
@@ -448,7 +444,8 @@
     "err_otp_wrong": "Wrong code. Attempts left: {{count}}.",
     "err_otp_locked": "Too many wrong attempts. Request a new code.",
     "err_server": "The server is not responding. Try again shortly.",
-    "registration_closed": "Registration is temporarily closed."
+    "registration_closed": "Registration is temporarily closed.",
+    "register_terms": "By creating an account you accept the"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2427,5 +2424,56 @@
     "ev_otp_failed": "Wrong OTP code",
     "ev_refresh_reuse": "Token reused",
     "ev_session_revoked": "Session closed"
+  },
+  "terms": {
+    "title": "Terms of Use",
+    "meta_description": "Terms for using gentsallaku.it: the blog, the Lab tools, accounts and the content you submit.",
+    "updated_date": "03/11/2026",
+    "intro": "These terms govern your use of gentsallaku.it: the blog, the free Lab tools and the optional account. By using the site you accept them; if you do not agree, please do not use it. The Privacy Policy applies to the processing of personal data.",
+    "see_privacy": "Go to the Privacy Policy →",
+    "s1_title": "Who runs the site",
+    "s1_body": "gentsallaku.it is the personal website of Gent Sallaku, a private individual, who can be reached at gentsallaku@gmail.com. The blog and the Lab tools are free of charge.",
+    "s2_title": "The Lab and its limits",
+    "s2_body": "The Lab tools (PDF search, summary, translation and conversion, OCR, slide generation and others) are provided free of charge, as they are, with no guarantee that they will always work. To keep them free and open to everyone, usage limits apply (for example a maximum number of requests per day) and may change without notice. Any tool may be suspended or changed at any time.",
+    "s3_title": "Acceptable use",
+    "s3_body": "You may use the site for personal, study or work purposes. You may not: upload unlawful files or text, material that infringes the rights of others or that contains malware; use the site to send spam; get around usage limits or anti-abuse protections; query the tools automatically and in bulk; try to access areas or data that are not yours. In case of abuse we may block access to the tools or to the account.",
+    "s4_title": "Files and text you upload",
+    "s4_body": "The files and text you upload remain yours. Only upload material you have the right to use, and avoid sensitive data or personal data about other people. Content is processed only to produce the result you asked for, on our servers and, for AI-based tools, through the external providers listed in the Privacy Policy. It is not kept after processing unless you choose to save the result in “My files”.",
+    "s5_title": "AI-generated results",
+    "s5_body": "Summaries, translations, reformatted text, slides and chatbot answers are generated automatically and may contain errors, omissions or inaccuracies. Check them before using them, especially for important decisions: they are no substitute for professional advice (for example legal, medical or tax advice).",
+    "s6_title": "PDF search and third-party content",
+    "s6_body": "The PDF search shows books and papers from external open archives (such as Internet Archive, Project Gutenberg, arXiv and PubMed Central). This content belongs to its authors and publishers and remains subject to their licences: make sure your use is permitted. We do not control or guarantee the content of external sites the site links to.",
+    "s7_title": "Account",
+    "s7_body": "The account is optional and is used to save results in “My files”. Provide accurate information and keep your password safe: you are responsible for what is done with your account. You can delete it at any time from the “My files” page; all saved files are deleted together with the account. We may suspend or close an account used in breach of these terms.",
+    "s8_title": "Content you submit",
+    "s8_body": "Notes on articles, testimonials, and messages sent through the contact form or the chat are your responsibility. Notes and testimonials are published only after review and may be edited for form or removed at any time. By submitting them you agree that they may be shown on the site under the name you provided.",
+    "s9_title": "Ownership of the site content",
+    "s9_body": "Articles, text and images on the site belong to Gent Sallaku unless stated otherwise. You may quote short excerpts as long as you credit the source with a link to the original page; for any other use, ask for permission first.",
+    "s10_title": "Liability",
+    "s10_body": "The site and the tools are provided free of charge and without warranties. To the extent permitted by law, we are not liable for damage arising from the use of the site, from being unable to use it, or from the results it generates, except in cases of wilful misconduct or gross negligence and without prejudice to the rights the law grants consumers. Always keep a copy of your files: the site is not a storage service.",
+    "s11_title": "Changes and governing law",
+    "s11_body": "These terms may be updated; the date of the latest change is shown at the top of the page, and changes apply from publication. Italian law applies, without prejudice to the mandatory protections of the law of the country where you live if you are a consumer.",
+    "s12_title": "Contact",
+    "s12_body": "For questions about these terms, write to gentsallaku@gmail.com."
+  },
+  "page_not_found": {
+    "title": "Page not found",
+    "text": "The address you opened does not exist or has been moved.",
+    "home": "Back to the home page",
+    "blog": "Go to the blog",
+    "lab": "Open the Lab"
+  },
+  "account": {
+    "section_title": "Your account",
+    "signed_in_as": "Signed in as {{who}}",
+    "delete_button": "Delete account",
+    "confirm_title": "Delete your account permanently?",
+    "confirm_body": "Your account and all the files saved on this page will be deleted. This cannot be undone.",
+    "password_label": "Password",
+    "password_hint": "For security, enter your account password.",
+    "confirm_button": "Delete permanently",
+    "wrong_password": "Incorrect password.",
+    "error": "The account could not be deleted. Please try again later.",
+    "done": "Account deleted."
   }
 }

@@ -106,10 +106,6 @@
     "tagline2": "Webanwendungen",
     "tagline3": "UI/UX & Data Visualization 3D Web",
     "description": "Ich entwerfe und entwickle skalierbare Anwendungen und Oberflächen mit Angular, JavaScript und führenden Frontend-Bibliotheken. Ich optimiere die Performance durch Reduzierung der Latenz und Verbesserung der Systemreaktionsfähigkeit. Ich liefere zuverlässige und stabile Lösungen, die für unternehmenskritische Umgebungen bereit sind. Ich arbeite als Angular Developer und TypeScript Developer für Enterprise-Teams.",
-    "kpi_years": "Jahre Erfahrung",
-    "kpi_projects": "Abgeschlossene Projekte",
-    "kpi_companies": "Enterprise-Unternehmen",
-    "kpi_latency": "Latenzreduzierung (typisch)",
     "scroll": "Scrollen"
   },
   "about": {
@@ -121,7 +117,6 @@
     "bio3": "Ein wichtiger Teil meiner Entwicklung ist mit meiner Familie und meinen Wurzeln in Blinisht verbunden. Die dort verbrachten Jahre, zusammen mit meiner Erfahrung bei den Botschaftern des Friedens (2000-2012), lehrten mich den Wert von Dialog, Zusammenarbeit und Sensibilität für Unterschiede.",
     "bio4": "Ich glaube, dass der wahre Wert eines Fachmanns in der Verbindung von technischer Kompetenz und menschlicher Sensibilität liegt. Dieser Ansatz lenkt jedes Projekt, das ich verfolge, um Probleme mit Verantwortung, Vision und konstruktivem Geist anzugehen.",
     "bio5": "Heute trage ich alles in mir, was ich gelernt habe: die Wurzeln meiner Heimat, die Werte meiner Familie, die Erfahrungen, die mich geprägt haben, und die ständige Neugier auf Technologie. Aus dieser Verbindung von Kompetenz und Sensibilität entstehen die wirksamsten und nachhaltigsten Lösungen.",
-    "birth": "Geboren in Blinisht-Lezhe (Albanien) am 25.04.1988",
     "vision": {
       "title": "End-to-End-Vision",
       "desc": "Ein vollständiger architektonischer Ansatz, von der Planung des Design-Systems bis zur Auslieferung in die Produktion. Fundierte Erfahrung bei der Übersetzung komplexer Geschäftsanforderungen in intuitive Oberflächen."
@@ -362,7 +357,8 @@
     "manage_cookies": "Cookie-Einwilligung verwalten",
     "legal": "Rechtliches",
     "navigation": "Footer-Navigation",
-    "guide": "Anleitung"
+    "guide": "Anleitung",
+    "terms_link": "Nutzungsbedingungen"
   },
   "auth": {
     "login_title": "Beim Dashboard anmelden",
@@ -448,7 +444,8 @@
     "err_otp_wrong": "Falscher Code. Verbleibende Versuche: {{count}}.",
     "err_otp_locked": "Zu viele Fehlversuche. Fordere einen neuen Code an.",
     "err_server": "Der Server antwortet nicht. Versuche es gleich noch einmal.",
-    "registration_closed": "Registrierungen sind vorübergehend geschlossen."
+    "registration_closed": "Registrierungen sind vorübergehend geschlossen.",
+    "register_terms": "Mit der Erstellung eines Kontos akzeptieren Sie die"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -2427,5 +2424,56 @@
     "ev_otp_failed": "Falscher OTP-Code",
     "ev_refresh_reuse": "Token wiederverwendet",
     "ev_session_revoked": "Sitzung beendet"
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "meta_description": "Bedingungen für die Nutzung von gentsallaku.it: Blog, Lab-Tools, Konten und eingesendete Inhalte.",
+    "updated_date": "03/11/2026",
+    "intro": "Diese Bedingungen regeln die Nutzung von gentsallaku.it: den Blog, die kostenlosen Tools im Lab und das freiwillige Konto. Mit der Nutzung der Website akzeptieren Sie sie; wenn Sie nicht einverstanden sind, nutzen Sie die Website bitte nicht. Für die Verarbeitung personenbezogener Daten gilt die Datenschutzerklärung.",
+    "see_privacy": "Zur Datenschutzerklärung →",
+    "s1_title": "Wer die Website betreibt",
+    "s1_body": "gentsallaku.it ist die persönliche Website von Gent Sallaku, einer Privatperson, erreichbar unter gentsallaku@gmail.com. Der Blog und die Lab-Tools sind kostenlos.",
+    "s2_title": "Das Lab und seine Grenzen",
+    "s2_body": "Die Tools im Lab (Suche, Zusammenfassung, Übersetzung und Konvertierung von PDFs, OCR, Erstellung von Folien und weitere) werden kostenlos und so, wie sie sind, bereitgestellt, ohne Gewähr, dass sie jederzeit funktionieren. Damit sie kostenlos und für alle offen bleiben, gelten Nutzungslimits (zum Beispiel eine Höchstzahl von Anfragen pro Tag), die sich ohne Vorankündigung ändern können. Jedes Tool kann jederzeit ausgesetzt oder geändert werden.",
+    "s3_title": "Erlaubte Nutzung",
+    "s3_body": "Sie dürfen die Website für private, schulische oder berufliche Zwecke nutzen. Nicht erlaubt ist: rechtswidrige Dateien oder Texte hochzuladen, Material, das Rechte Dritter verletzt oder Schadsoftware enthält; die Website zum Versand von Spam zu nutzen; Nutzungslimits oder Schutzmaßnahmen gegen Missbrauch zu umgehen; die Tools automatisiert und massenhaft abzufragen; zu versuchen, auf fremde Bereiche oder Daten zuzugreifen. Bei Missbrauch können wir den Zugang zu den Tools oder zum Konto sperren.",
+    "s4_title": "Dateien und Texte, die Sie hochladen",
+    "s4_body": "Die Dateien und Texte, die Sie hochladen, bleiben Ihre. Laden Sie nur Material hoch, das Sie verwenden dürfen, und vermeiden Sie sensible Daten oder personenbezogene Daten anderer Personen. Die Inhalte werden nur verarbeitet, um das gewünschte Ergebnis zu erzeugen: auf unseren Servern und, bei KI-gestützten Tools, über die in der Datenschutzerklärung genannten externen Anbieter. Nach der Verarbeitung werden sie nicht aufbewahrt, es sei denn, Sie speichern das Ergebnis unter „Meine Dateien“.",
+    "s5_title": "Von KI erzeugte Ergebnisse",
+    "s5_body": "Zusammenfassungen, Übersetzungen, umformatierte Texte, Folien und Antworten des Chatbots werden automatisch erzeugt und können Fehler, Auslassungen oder Ungenauigkeiten enthalten. Prüfen Sie sie vor der Verwendung, besonders bei wichtigen Entscheidungen: Sie ersetzen keine fachliche Beratung (zum Beispiel rechtlicher, medizinischer oder steuerlicher Art).",
+    "s6_title": "PDF-Suche und Inhalte Dritter",
+    "s6_body": "Die PDF-Suche zeigt Bücher und Artikel aus externen offenen Archiven (wie Internet Archive, Project Gutenberg, arXiv und PubMed Central). Diese Inhalte gehören ihren Autorinnen, Autoren und Verlagen und unterliegen deren Lizenzen: Prüfen Sie, ob Ihre Nutzung erlaubt ist. Für Inhalte externer Websites, auf die verlinkt wird, übernehmen wir weder Kontrolle noch Gewähr.",
+    "s7_title": "Konto",
+    "s7_body": "Das Konto ist freiwillig und dient dazu, Ergebnisse unter „Meine Dateien“ zu speichern. Machen Sie korrekte Angaben und bewahren Sie Ihr Passwort sicher auf: Sie sind für das verantwortlich, was mit Ihrem Konto geschieht. Sie können es jederzeit auf der Seite „Meine Dateien“ löschen; zusammen mit dem Konto werden alle gespeicherten Dateien gelöscht. Wir können ein Konto sperren oder schließen, das unter Verstoß gegen diese Bedingungen genutzt wird.",
+    "s8_title": "Inhalte, die Sie einsenden",
+    "s8_body": "Für Notizen zu Artikeln, Referenzen sowie Nachrichten über das Kontaktformular oder den Chat sind Sie selbst verantwortlich. Notizen und Referenzen werden erst nach einer Prüfung veröffentlicht und können jederzeit sprachlich angepasst oder entfernt werden. Mit dem Einsenden erklären Sie sich damit einverstanden, dass sie unter dem angegebenen Namen auf der Website erscheinen.",
+    "s9_title": "Rechte an den Inhalten der Website",
+    "s9_body": "Artikel, Texte und Bilder der Website gehören Gent Sallaku, sofern nicht anders angegeben. Kurze Auszüge dürfen Sie mit Quellenangabe und Link auf die Originalseite zitieren; für jede andere Nutzung fragen Sie bitte vorher um Erlaubnis.",
+    "s10_title": "Haftung",
+    "s10_body": "Die Website und die Tools werden kostenlos und ohne Gewährleistung bereitgestellt. Soweit gesetzlich zulässig, haften wir nicht für Schäden aus der Nutzung der Website, aus ihrer Nichtnutzbarkeit oder aus den erzeugten Ergebnissen; ausgenommen sind Vorsatz und grobe Fahrlässigkeit, und die gesetzlichen Rechte von Verbraucherinnen und Verbrauchern bleiben unberührt. Bewahren Sie immer eine Kopie Ihrer Dateien auf: Die Website ist kein Speicherdienst.",
+    "s11_title": "Änderungen und anwendbares Recht",
+    "s11_body": "Diese Bedingungen können aktualisiert werden; das Datum der letzten Änderung steht oben auf der Seite, und Änderungen gelten ab ihrer Veröffentlichung. Es gilt italienisches Recht, unbeschadet der zwingenden Schutzvorschriften des Landes, in dem Sie als Verbraucherin oder Verbraucher wohnen.",
+    "s12_title": "Kontakt",
+    "s12_body": "Bei Fragen zu diesen Bedingungen schreiben Sie an gentsallaku@gmail.com."
+  },
+  "page_not_found": {
+    "title": "Seite nicht gefunden",
+    "text": "Die aufgerufene Adresse existiert nicht oder wurde verschoben.",
+    "home": "Zur Startseite",
+    "blog": "Zum Blog",
+    "lab": "Lab öffnen"
+  },
+  "account": {
+    "section_title": "Dein Konto",
+    "signed_in_as": "Angemeldet als {{who}}",
+    "delete_button": "Konto löschen",
+    "confirm_title": "Konto endgültig löschen?",
+    "confirm_body": "Dein Konto und alle auf dieser Seite gespeicherten Dateien werden gelöscht. Das lässt sich nicht rückgängig machen.",
+    "password_label": "Passwort",
+    "password_hint": "Gib zur Sicherheit das Passwort deines Kontos ein.",
+    "confirm_button": "Endgültig löschen",
+    "wrong_password": "Falsches Passwort.",
+    "error": "Das Konto konnte nicht gelöscht werden. Bitte versuche es später erneut.",
+    "done": "Konto gelöscht."
   }
 }

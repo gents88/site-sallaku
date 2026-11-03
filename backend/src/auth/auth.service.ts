@@ -241,6 +241,17 @@ export class AuthService {
     }
   }
 
+  /** Dati dell'utente collegato per GET /auth/me (mai hash o token). */
+  async me(user: { _id: unknown; name: string; email?: string; role: string }) {
+    const { _id, name, email, role } = user;
+    return { _id, name, email, role, hasPassword: await this.usersService.hasPassword(String(_id)) };
+  }
+
+  /** L'utente cancella il proprio account (vedi UsersService.deleteOwnAccount). */
+  async deleteAccount(userId: string, password?: string): Promise<void> {
+    await this.usersService.deleteOwnAccount(userId, password);
+  }
+
   // ── Internal helpers ───────────────────────────────────────
 
   /** Accesso riuscito: lo si registra nel registro degli eventi di sicurezza. */
