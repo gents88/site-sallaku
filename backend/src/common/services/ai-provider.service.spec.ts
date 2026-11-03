@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiProviderService } from './ai-provider.service';
 import { AiQuotaService } from './ai-quota.service';
@@ -76,18 +77,64 @@ describe('AiProviderService', () => {
     expect(aiQuota.recordTokens).toHaveBeenCalledWith(0, 'tools');
   });
 
-  it('non registra token e propaga l’errore quando Groq risponde con un errore HTTP', async () => {
-    fetchMock.mockResolvedValue(groqResponse('', 0, 0, false, 500));
+  describe('errori di Groq', () => {
+    const opts = { model: 'openai/gpt-oss-120b', maxTokens: 100, timeoutMs: 5000 };
+    const call = () => service.chatCompletion([{ role: 'user', content: 'hey' }], opts);
+    const withRetryAfter = (status: number, seconds: string) =>
+      ({ ...groqResponse('', 0, 0, false, status), headers: new Headers({ 'retry-after': seconds }) }) as Response;
+    let wait: jest.SpyInstance;
 
-    await expect(
-      service.chatCompletion([{ role: 'user', content: 'hey' }], {
-        model: 'openai/gpt-oss-120b',
-        maxTokens: 100,
-        timeoutMs: 5000,
-      }),
-    ).rejects.toThrow('Groq API error 500');
+    beforeEach(() => {
+      // niente attese reali nei test
+      wait = jest.spyOn(service as unknown as { wait: (ms: number) => Promise<void> }, 'wait').mockResolvedValue(undefined);
+    });
 
-    expect(aiQuota.recordTokens).not.toHaveBeenCalled();
+    it('su 429 riprova rispettando Retry-After e, se poi va, restituisce la risposta', async () => {
+      fetchMock
+        .mockResolvedValueOnce(withRetryAfter(429, '3'))
+        .mockResolvedValueOnce(groqResponse('Ciao!', 10, 5));
+
+      await expect(call()).resolves.toBe('Ciao!');
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(wait).toHaveBeenCalledWith(3000);
+    });
+
+    it('se il 429 persiste risponde 429 al client (non 500) e non registra token', async () => {
+      fetchMock.mockResolvedValue(groqResponse('', 0, 0, false, 429));
+
+      const err = await call().catch((e) => e);
+      expect(err).toBeInstanceOf(HttpException);
+      expect(err.getStatus()).toBe(429);
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(wait.mock.calls.map((c) => c[0])).toEqual([2000, 4000]);
+      expect(aiQuota.recordTokens).not.toHaveBeenCalled();
+    });
+
+    it('non aspetta se Groq chiede più di 20 secondi (es. limite giornaliero)', async () => {
+      fetchMock.mockResolvedValue(withRetryAfter(429, '600'));
+
+      const err = await call().catch((e) => e);
+      expect(err.getStatus()).toBe(429);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(wait).not.toHaveBeenCalled();
+    });
+
+    it('un 5xx persistente diventa 503', async () => {
+      fetchMock.mockResolvedValue(groqResponse('', 0, 0, false, 500));
+
+      const err = await call().catch((e) => e);
+      expect(err.getStatus()).toBe(503);
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+      expect(aiQuota.recordTokens).not.toHaveBeenCalled();
+    });
+
+    it('un errore di richiesta (400) non si ritenta', async () => {
+      fetchMock.mockResolvedValue(groqResponse('', 0, 0, false, 400));
+
+      await expect(call()).rejects.toThrow('Groq API error 400');
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(wait).not.toHaveBeenCalled();
+    });
   });
 
   it('lancia se GROQ_API_KEY non è configurata', async () => {
