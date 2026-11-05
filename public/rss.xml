@@ -6,7 +6,7 @@
   <atom:link href="https://gentsallaku.it/rss.xml" rel="self" type="application/rss+xml" />
   <description>Articoli su sviluppo front-end, Angular, TypeScript e data visualization.</description>
   <language>it-it</language>
-  <lastBuildDate>Tue, 03 Nov 2026 21:36:01 GMT</lastBuildDate>
+  <lastBuildDate>Thu, 05 Nov 2026 10:29:35 GMT</lastBuildDate>
   <item>
     <title>Live coding nei colloqui: perché sono contrario</title>
     <link>https://gentsallaku.it/blog/live-coding-nei-colloqui-perche-sono-contrario</link>
@@ -227,13 +227,6 @@
       <category>Guida</category>
   </item>
   <item>
-    <title>Colloquio di Lavoro per Front End Developer: Domande, Risposte e Consigli Pratici</title>
-    <link>https://gentsallaku.it/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</link>
-    <guid isPermaLink="true">https://gentsallaku.it/blog/colloquio-di-lavoro-per-front-end-developer-domande-risposte-e-consigli-pratici</guid>
-    <pubDate>Fri, 02 Oct 2026 20:57:56 GMT</pubDate>
-    <description>Il ruolo di Front End Developer è tra i più ricercati nel mercato del lavoro IT. Le aziende cercano professionisti in grado di sviluppare interfacce moderne, responsive e intuitive utilizzando…</description>
-  </item>
-  <item>
     <title>Collegare più strumenti PDF senza scaricare e ricaricare ogni volta</title>
     <link>https://gentsallaku.it/blog/collegare-strumenti-pdf-senza-scaricare-e-ricaricare</link>
     <guid isPermaLink="true">https://gentsallaku.it/blog/collegare-strumenti-pdf-senza-scaricare-e-ricaricare</guid>
@@ -379,26 +372,16 @@
     <link>https://gentsallaku.it/blog/perche-il-blog-non-viene-indicizzato-da-google</link>
     <guid isPermaLink="true">https://gentsallaku.it/blog/perche-il-blog-non-viene-indicizzato-da-google</guid>
     <pubDate>Mon, 17 Aug 2026 07:08:59 GMT</pubDate>
-    <description>Diagnosi passo-passo di un blog Angular non indicizzato da Google: prerendering SSR mancante, redirect 301 di Apache, sitemap statica e contenuto duplicato, con checklist pratica e tempistiche realistiche.</description>
+    <description>Perché gli articoli del mio blog Angular non comparivano su Google: prerendering che saltava il blog, redirect 301 di Apache, sitemap statica, hreflang falsi, un database di produzione chiamato «test» e contenuto duplicato. Con checklist e tempi realistici.</description>
       <category>SEO</category>
       <category>Angular</category>
       <category>Google Search Console</category>
       <category>SSR</category>
       <category>Sitemap</category>
       <category>Indicizzazione</category>
-  </item>
-  <item>
-    <title>Come ho diagnosticato e risolto una crisi di indicizzazione SEO in produzione: Case Study</title>
-    <link>https://gentsallaku.it/blog/case-study-crisi-indicizzazione-seo-angular-produzione</link>
-    <guid isPermaLink="true">https://gentsallaku.it/blog/case-study-crisi-indicizzazione-seo-angular-produzione</guid>
-    <pubDate>Sat, 15 Aug 2026 20:44:54 GMT</pubDate>
-    <description>Zero pagine indicizzate su Google nonostante mesi online. Questo case study racconta, con numeri e codice reali, come ho diagnosticato una catena di problemi concatenati su un portfolio Angular + NestJS in produzione: un database che si chiamava letteralmente &quot;test&quot;</description>
+      <category>Hreflang</category>
       <category>Case Study</category>
-      <category>SEO</category>
-      <category>Angular</category>
       <category>NestJS</category>
-      <category>Debugging</category>
-      <category>Produzione</category>
       <category>MongoDB</category>
   </item>
   <item>
@@ -543,24 +526,11 @@
       <category>Testing</category>
   </item>
   <item>
-    <title>Best Practice combinate per applicazioni Web moderne: Sicurezza, cache e Websocket</title>
-    <link>https://gentsallaku.it/blog/best-practice-sicurezza-performance-web-combinate</link>
-    <guid isPermaLink="true">https://gentsallaku.it/blog/best-practice-sicurezza-performance-web-combinate</guid>
-    <pubDate>Fri, 07 Aug 2026 21:38:39 GMT</pubDate>
-    <description>Le singole best practice di sicurezza e performance web sono ampiamente documentate, ma raramente vengono spiegate insieme come un sistema coerente. Questa guida pratica copre dieci pratiche che, applicate insieme, riducono davvero la superficie di attacco senza sacrificare le performance: HTTPS/WSS obbligatorio con TLS 1.2/1.3 e HSTS, cookie di sessione con HttpOnly/Secure/SameSite, l&apos;eliminazione del JWT da localStorage a favore di HttpOnly cookie e refresh token, fingerprinting degli asset statici con cache immutable, header no-store per le risposte con dati personali, uso corretto di s-maxage per separare TTL di CDN e browser, token refresh con revoca reale anche per le connessioni WebSocket, rate limiting e size limit sui canali real-time, monitoring con Prometheus/Grafana ed ELK, e test di privacy e accessibilità. Include oltre otto snippet di codice pronti all&apos;uso (Nginx, Express, NestJS, WebSocket), una checklist operativa a priorità, un piano 30/60/90 giorni con KPI misurabili, FAQ ed errori comuni da evitare per team che vogliono una base di sicurezza e performance coerente.</description>
-      <category>Sicurezza</category>
-      <category>WebSocket</category>
-      <category>Cache</category>
-      <category>Performance</category>
-      <category>Nginx</category>
-      <category>NestJS</category>
-  </item>
-  <item>
-    <title>Cookie, cache e Websocket: Guida pratica per sviluppatori</title>
+    <title>Cookie, cache e WebSocket: guida pratica a sicurezza e performance</title>
     <link>https://gentsallaku.it/blog/cookie-cache-websocket</link>
     <guid isPermaLink="true">https://gentsallaku.it/blog/cookie-cache-websocket</guid>
     <pubDate>Fri, 07 Aug 2026 21:37:12 GMT</pubDate>
-    <description>Guida pratica per sviluppatori su cookie sicuri (HttpOnly, Secure, SameSite), cache HTTP (Cache-Control, ETag, CDN) e WebSocket scalabili (Redis pub/sub, pattern snapshot+delta). Con esempi Express/Nginx, sicurezza, performance, testing e un piano operativo 30/60/90 giorni.</description>
+    <description>Sicurezza e performance di cookie, cache e WebSocket: HTTPS/WSS e HSTS, cookie HttpOnly e niente JWT in localStorage, Cache-Control, ETag e CDN, revoca delle sessioni, rate limiting e Redis pub/sub, con esempi Express, NestJS e Nginx.</description>
       <category>Cookie</category>
       <category>Cache</category>
       <category>WebSocket</category>
@@ -568,6 +538,8 @@
       <category>Performance</category>
       <category>Sviluppo Web</category>
       <category>DevOps</category>
+      <category>Nginx</category>
+      <category>NestJS</category>
   </item>
   <item>
     <title>UI/UX per applicazioni Angular: Progettare interfacce usabili, accessibili e performanti</title>
@@ -806,7 +778,7 @@
     <title>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi</title>
     <link>https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</link>
     <guid isPermaLink="true">https://gentsallaku.it/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi</guid>
-    <pubDate>Tue, 03 Nov 2026 21:36:01 GMT</pubDate>
+    <pubDate>Thu, 05 Nov 2026 10:29:35 GMT</pubDate>
     <description>Blinisht: storia, memoria e identità di un antico territorio della Zadrima, dall&apos;antichità a oggi Introduzione Nel cuore della Zadrima, tra Lezhë e Shkodër, si trova Blinisht, un territorio dalla…</description>
   </item>
 </channel>
