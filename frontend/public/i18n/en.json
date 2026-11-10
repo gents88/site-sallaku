@@ -2475,5 +2475,16 @@
     "wrong_password": "Incorrect password.",
     "error": "The account could not be deleted. Please try again later.",
     "done": "Account deleted."
+  },
+  "ai_quota": {
+    "remaining": "AI requests left today: {{remaining}} of {{limit}}",
+    "remaining_one": "You have 1 AI request left today (of {{limit}})",
+    "exhausted": "You've used all of today's AI requests. They renew at {{time}}.",
+    "unavailable": "The AI service has reached its daily limit. Please try again tomorrow."
+  },
+  "sample": {
+    "try": "Try with a sample file",
+    "loading": "Loading the sample…",
+    "error": "Couldn't load the sample file. Please try again."
   }
 }
