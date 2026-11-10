@@ -145,6 +145,7 @@
           <p class="drop-title">{{ 'pdf_translate.drop_title' | translate }} <span class="drop-link">{{ 'pdf_translate.drop_browse' | translate }}</span></p>
           <p class="drop-hint">{{ 'pdf_translate.drop_hint' | translate }}</p>
         </div>
+        <app-sample-file-button (picked)="onFilesDropped($event)" />
       } @else {
         <div class="file-preview">
           <div class="file-preview-icon">{{ fileInfo()!.ext }}</div>
@@ -172,6 +173,7 @@
         <app-request-retry [request]="req" (retry)="translate()" />
       }
 
+      <app-ai-quota />
       <app-offline-tool-hint />
       <button
         class="btn-translate"

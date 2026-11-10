@@ -1,5 +1,7 @@
 import {
   Controller,
+  Get,
+  Header,
   Post,
   Body,
   Req,
@@ -55,6 +57,16 @@ export class AiController {
     private readonly aiService: AiService,
     private readonly aiQuota: AiQuotaService,
   ) {}
+
+  // ── GET /ai/quota ────────────────────────────────────────────────────
+  // Sola lettura: non consuma quota. no-store perché cambia a ogni richiesta AI.
+  @Get('quota')
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Remaining daily AI requests for the caller (does not consume quota)' })
+  quota(@Req() req: Request) {
+    return this.aiQuota.status(clientIp(req));
+  }
 
   // ── POST /ai/summarize-file ──────────────────────────────────────────
   @Post('summarize-file')
