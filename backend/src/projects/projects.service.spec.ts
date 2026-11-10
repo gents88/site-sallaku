@@ -18,6 +18,7 @@ describe('ProjectsService', () => {
       findByIdAndUpdate: jest.fn(),
       findByIdAndDelete: jest.fn(),
       findOne: jest.fn(),
+      exists: jest.fn(),
       bulkWrite: jest.fn().mockResolvedValue({}),
     };
     mockCache = {
@@ -46,6 +47,19 @@ describe('ProjectsService', () => {
     it('throws NotFoundException for an unknown slug', async () => {
       mockProjectModel.findOne.mockReturnValue({ lean: () => ({ exec: () => Promise.resolve(null) }) });
       await expect(service.findBySlug('nope')).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('existsBySlug', () => {
+    it('è true se il progetto esiste', async () => {
+      mockProjectModel.exists.mockResolvedValue({ _id: 'p1' });
+      await expect(service.existsBySlug('cms')).resolves.toBe(true);
+      expect(mockProjectModel.exists).toHaveBeenCalledWith({ slug: 'cms' });
+    });
+
+    it('è false per uno slug sconosciuto', async () => {
+      mockProjectModel.exists.mockResolvedValue(null);
+      await expect(service.existsBySlug('nope')).resolves.toBe(false);
     });
   });
 
