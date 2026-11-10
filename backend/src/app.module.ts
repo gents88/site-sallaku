@@ -10,6 +10,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { ExperiencesModule } from './experiences/experiences.module';
 import { AboutModule } from './about/about.module';
 import { BlogModule } from './blog/blog.module';
+import { SeoModule } from './seo/seo.module';
 import { ContactModule } from './contact/contact.module';
 import { MailModule } from './mail/mail.module';
 import { StatsModule } from './stats/stats.module';
@@ -88,6 +89,7 @@ import { RedisThrottlerStorage } from './common/services/redis-throttler.storage
     ExperiencesModule,
     AboutModule,
     BlogModule,
+    SeoModule,
     ContactModule,
     AnalyticsModule,
     MailModule,
