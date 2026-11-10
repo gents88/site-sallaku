@@ -2486,5 +2486,24 @@
     "try": "Prueba con un archivo de ejemplo",
     "loading": "Cargando el ejemplo…",
     "error": "No se pudo cargar el archivo de ejemplo. Inténtalo de nuevo."
+  },
+  "ask_doc": {
+    "title": "Pregunta a este documento",
+    "intro": "Haz una pregunta: busco los pasajes relevantes y respondo citando las páginas.",
+    "reading": "Leyendo el documento…",
+    "no_text": "Este PDF no tiene texto seleccionable (¿es un escaneo?). Prueba primero con el OCR.",
+    "read_error": "No he podido leer el documento.",
+    "placeholder": "Haz una pregunta…",
+    "send": "Enviar",
+    "sources": "Fuentes:",
+    "privacy": "El archivo se queda en tu navegador. Al servidor solo llegan los pocos pasajes relevantes para la pregunta.",
+    "no_context": "No he encontrado nada relevante en el documento.",
+    "error": "No se pudo obtener la respuesta. Inténtalo de nuevo."
+  },
+  "open_file": {
+    "receiving": "Recibiendo el archivo…",
+    "none_title": "No se ha recibido ningún archivo",
+    "none_hint": "Para abrir un archivo en el Lab, compártelo desde otra app con «Compartir con…» o elige «Abrir con» en el archivo tras instalar el sitio como app. También puedes arrastrarlo directamente al Lab.",
+    "go_lab": "Ir al Lab"
   }
 }

@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription, finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
+import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 import { ReadingHistoryService } from '../../../core/services/reading-history.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { Lang, LanguageService, NON_DEFAULT_LANGS, withLangPrefix } from '../../../core/services/language.service';
@@ -78,7 +80,7 @@ export function activeHeadingIndex(tops: number[], readingLine: number, atBottom
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective, LocalDatePipe],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective, LocalDatePipe, NewsletterSignupComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -108,6 +110,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   private readonly snackBar = inject(MatSnackBar);
   private readonly notFoundReporter = inject(NotFoundReporterService);
   private readonly readingHistory = inject(ReadingHistoryService);
+  readonly flags = inject(FeatureFlagsService);
   publishing = false;
   readonly currentLang = this.langService.current;
 

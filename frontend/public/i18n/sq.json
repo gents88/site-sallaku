@@ -2486,5 +2486,24 @@
     "try": "Provo me një skedar shembull",
     "loading": "Po ngarkohet shembulli…",
     "error": "Skedari shembull nuk u ngarkua. Provo përsëri."
+  },
+  "ask_doc": {
+    "title": "Pyet këtë dokument",
+    "intro": "Bëj një pyetje: kërkoj pjesët përkatëse dhe përgjigjem duke cituar faqet.",
+    "reading": "Po lexohet dokumenti…",
+    "no_text": "Ky PDF nuk ka tekst të përzgjedhshëm (a është skanim?). Provo fillimisht OCR-në.",
+    "read_error": "Nuk arrita ta lexoj dokumentin.",
+    "placeholder": "Bëj një pyetje…",
+    "send": "Dërgo",
+    "sources": "Burimet:",
+    "privacy": "Skedari mbetet në shfletuesin tënd. Te serveri arrijnë vetëm pjesët e pakta që lidhen me pyetjen.",
+    "no_context": "Nuk gjeta asgjë përkatëse në dokument.",
+    "error": "Përgjigjja dështoi. Provo përsëri."
+  },
+  "open_file": {
+    "receiving": "Po merret skedari…",
+    "none_title": "Nuk u mor asnjë skedar",
+    "none_hint": "Për të hapur një skedar në Lab, ndaje nga një aplikacion tjetër me «Ndaj me…» ose zgjidh «Hap me» te skedari pasi ta kesh instaluar faqen si aplikacion. Mund ta tërheqësh edhe drejtpërdrejt në Lab.",
+    "go_lab": "Shko te Lab"
   }
 }

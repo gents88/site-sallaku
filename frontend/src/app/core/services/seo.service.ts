@@ -239,7 +239,11 @@ export class SeoService {
     // Runs on both server (prerender) and browser: the prerendered HTML is
     // what crawlers actually receive, so hreflang must be present there too,
     // not just injected client-side after bootstrap.
-    const { basePath } = stripLangPrefix(path);
+    const stripped = stripLangPrefix(path).basePath;
+    // La home di ogni lingua è /, /en, /de…: il canonical è quello (home.component),
+    // quindi l'hreflang deve puntare lì e non a /xx/homepage, altrimenti non si
+    // "ritorna" col canonical e Google lo scarta.
+    const basePath = stripped === '/homepage' ? '/' : stripped;
     const allLangs: Lang[] = ['it', ...NON_DEFAULT_LANGS];
 
     const validHreflangs = new Set(['x-default', ...allLangs]);

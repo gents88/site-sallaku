@@ -95,5 +95,60 @@
         }
       ]
     }
+  ],
+  "share_target": {
+    "action": "/lab/open-file",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "file",
+          "accept": [
+            "application/pdf",
+            "text/plain",
+            "text/html",
+            "image/png",
+            "image/jpeg",
+            "image/webp",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".pdf",
+            ".txt",
+            ".docx",
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp"
+          ]
+        }
+      ]
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/lab/open-file",
+      "accept": {
+        "application/pdf": [
+          ".pdf"
+        ],
+        "text/plain": [
+          ".txt"
+        ],
+        "image/png": [
+          ".png"
+        ],
+        "image/jpeg": [
+          ".jpg",
+          ".jpeg"
+        ],
+        "image/webp": [
+          ".webp"
+        ],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+          ".docx"
+        ]
+      },
+      "launch_type": "single-client"
+    }
   ]
 }
