@@ -13,6 +13,8 @@ export interface AiChatOptions {
   maxTokens: number;
   temperature?: number;
   timeoutMs: number;
+  /** Tentativi in più dopo un 429/5xx (default 2). Chi fa molte chiamate in fila ne vuole di più. */
+  maxRetries?: number;
   /** Per la dashboard: token degli strumenti /ai/* o del chatbot. Default 'tools'. */
   source?: AiTokenSource;
 }
@@ -45,6 +47,7 @@ export class AiProviderService {
       temperature: opts.temperature ?? 0.7,
     });
 
+    const maxRetries = opts.maxRetries ?? MAX_RETRIES;
     let res: Response;
     for (let attempt = 0; ; attempt++) {
       res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -61,8 +64,8 @@ export class AiProviderService {
       const text = await res.text();
       const transient = res.status === 429 || res.status >= 500;
       const waitMs = transient ? retryDelayMs(res, attempt) : null;
-      if (waitMs !== null && attempt < MAX_RETRIES) {
-        this.logger.warn(`Groq ${res.status}, nuovo tentativo tra ${waitMs} ms (${attempt + 1}/${MAX_RETRIES})`);
+      if (waitMs !== null && attempt < maxRetries) {
+        this.logger.warn(`Groq ${res.status}, nuovo tentativo tra ${waitMs} ms (${attempt + 1}/${maxRetries})`);
         await this.wait(waitMs);
         continue;
       }
