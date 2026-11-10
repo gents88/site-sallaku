@@ -2486,5 +2486,24 @@
     "try": "Mit einer Beispieldatei ausprobieren",
     "loading": "Beispiel wird geladen…",
     "error": "Die Beispieldatei konnte nicht geladen werden. Versuche es erneut."
+  },
+  "ask_doc": {
+    "title": "Dieses Dokument befragen",
+    "intro": "Stelle eine Frage: Ich suche die passenden Stellen und antworte mit Seitenangaben.",
+    "reading": "Dokument wird gelesen…",
+    "no_text": "Dieses PDF enthält keinen markierbaren Text (ist es ein Scan?). Versuche es zuerst mit OCR.",
+    "read_error": "Das Dokument konnte nicht gelesen werden.",
+    "placeholder": "Stelle eine Frage…",
+    "send": "Senden",
+    "sources": "Quellen:",
+    "privacy": "Die Datei bleibt in deinem Browser. Zum Server gelangen nur die wenigen Stellen, die zur Frage passen.",
+    "no_context": "Im Dokument habe ich nichts Passendes gefunden.",
+    "error": "Die Antwort ist fehlgeschlagen. Versuche es erneut."
+  },
+  "open_file": {
+    "receiving": "Datei wird empfangen…",
+    "none_title": "Keine Datei empfangen",
+    "none_hint": "Um eine Datei im Lab zu öffnen, teile sie aus einer anderen App über „Teilen mit…“ oder wähle „Öffnen mit“ für die Datei, nachdem du die Seite als App installiert hast. Du kannst sie auch direkt ins Lab ziehen.",
+    "go_lab": "Zum Lab"
   }
 }

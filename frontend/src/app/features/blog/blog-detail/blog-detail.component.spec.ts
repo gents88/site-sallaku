@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
+import { Component, importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
 import { of, throwError } from 'rxjs';
@@ -12,6 +12,8 @@ import { LanguageService } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
 import { ReadingHistoryService } from '../../../core/services/reading-history.service';
 import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
+import { provideFeatureFlagsStub } from '../../../core/services/feature-flags.testing';
+import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 
 const post = {
   _id: '1', slug: 'blinisht', slug_sq: 'blinishti', title: 'Blinisht', title_sq: 'Blinishti', excerpt: '', tags: [],
@@ -48,6 +50,7 @@ describe('BlogDetailComponent view tracking', () => {
         { provide: Location, useValue: location },
         { provide: LanguageService, useValue: { current: () => 'sq' } },
         { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub(),
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -192,6 +195,7 @@ describe('BlogDetailComponent publish from preview', () => {
         { provide: SeoService, useValue: { update: vi.fn() } },
         { provide: LanguageService, useValue: { current: () => 'it' } },
         { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub(),
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -265,6 +269,7 @@ describe('BlogDetailComponent table of contents', () => {
         { provide: SeoService, useValue: { update: vi.fn() } },
         { provide: LanguageService, useValue: { current: () => lang } },
         { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub(),
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -415,5 +420,49 @@ describe('postShareImageUrl', () => {
     const a = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-05T00:00:00Z' }, 'it', api);
     const b = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-06T00:00:00Z' }, 'it', api);
     expect(a).not.toBe(b);
+  });
+});
+
+@Component({ selector: 'app-newsletter-signup', standalone: true, template: '<div class="stub-newsletter"></div>' })
+class StubNewsletterSignup {}
+
+describe('BlogDetailComponent newsletter a fine articolo', () => {
+  const published = { ...post, published: true, content: '<p>testo</p>' } as unknown as Post;
+
+  function createPublic(newsletterSignupEnabled: boolean) {
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        provideRouter([]),
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: BlogService, useValue: { getBySlug: vi.fn(() => of(published)), trackView: vi.fn(() => of(undefined)), getPublishedAll: vi.fn(() => of([])) } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})), setNoIndex: vi.fn() } },
+        { provide: Location, useValue: { replaceState: vi.fn(), path: vi.fn(() => '/blog/blinisht') } },
+        { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub({ newsletterSignupEnabled }),
+      ],
+    });
+    TestBed.overrideComponent(BlogDetailComponent, {
+      remove: { imports: [NewsletterSignupComponent] },
+      add: { imports: [StubNewsletterSignup] },
+    });
+    const fixture = TestBed.createComponent(BlogDetailComponent);
+    fixture.componentInstance.slug = 'blinisht';
+    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  afterEach(() => localStorage.clear());
+
+  it('articolo pubblico con iscrizione attiva: il modulo compare dopo la condivisione', () => {
+    const el = createPublic(true);
+    expect(el.querySelector('.post-newsletter app-newsletter-signup')).not.toBeNull();
+  });
+
+  it('con il flag newsletter spento non compare', () => {
+    const el = createPublic(false);
+    expect(el.querySelector('app-newsletter-signup')).toBeNull();
   });
 });
