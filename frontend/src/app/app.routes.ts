@@ -141,6 +141,10 @@ const publicPages: Route[] = [
     loadComponent: () => import('./features/admin/library/library.component').then(m => m.LibraryComponent),
   },
   {
+    path: 'lab/open-file',
+    loadComponent: () => import('./features/admin/open-file/open-file.component').then(m => m.OpenFileComponent),
+  },
+  {
     path: 'lab/i-miei-file',
     loadComponent: () => import('./features/admin/my-saved-results/my-saved-results.component').then(m => m.MySavedResultsComponent),
   },

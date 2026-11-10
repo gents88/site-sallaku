@@ -2486,5 +2486,24 @@
     "try": "Try with a sample file",
     "loading": "Loading the sample…",
     "error": "Couldn't load the sample file. Please try again."
+  },
+  "ask_doc": {
+    "title": "Ask this document",
+    "intro": "Ask a question: I look up the relevant passages and answer citing the pages.",
+    "reading": "Reading the document…",
+    "no_text": "This PDF has no selectable text (is it a scan?). Try OCR first.",
+    "read_error": "I couldn't read the document.",
+    "placeholder": "Ask a question…",
+    "send": "Send",
+    "sources": "Sources:",
+    "privacy": "The file stays in your browser. Only the few passages relevant to the question reach the server.",
+    "no_context": "I found nothing relevant in the document.",
+    "error": "The answer failed. Please try again."
+  },
+  "open_file": {
+    "receiving": "Receiving the file…",
+    "none_title": "No file received",
+    "none_hint": "To open a file in the Lab, share it from another app using “Share with…”, or choose “Open with” on the file after installing the site as an app. You can also drag it straight into the Lab.",
+    "go_lab": "Go to the Lab"
   }
 }

@@ -14,13 +14,11 @@ const NON_DEFAULT_LANGS = ['en', 'sq', 'es', 'pt', 'fr', 'de'];
 
 // Language-prefixed path for a default-language `loc`, matching
 // app.routes.server.ts's `:lang/<page>` prerender routes and
-// LanguageService.withLangPrefix(). '/' is special-cased to 'homepage'
-// (the root '/' is a `redirectTo` route, never itself prerendered — see
-// app.routes.server.ts's STATIC_PUBLIC_PAGES comment); every other route's
-// page slug is just its loc without the leading slash.
+// LanguageService.withLangPrefix(). La home è '/en', '/de'… (come il canonical
+// e l'hreflang della home, serviti da <lang>/homepage/index.html tramite
+// rewrite in .htaccess), non '/en/homepage'; ogni altra rotta è `/<lang>/<pagina>`.
 function langLoc(loc, lang) {
-  const page = loc === '/' ? 'homepage' : loc.replace(/^\//, '');
-  return `/${lang}/${page}`;
+  return loc === '/' ? `/${lang}` : `/${lang}/${loc.replace(/^\//, '')}`;
 }
 
 // Pagine statiche dal registro unico della navigazione (stesso file letto da
