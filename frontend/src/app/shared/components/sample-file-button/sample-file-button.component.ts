@@ -59,8 +59,9 @@ export class SampleFileButtonComponent {
     try {
       const res = await fetch(sample.url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const blob = await res.blob();
-      this.picked.emit(toFileList(new File([blob], sample.name, { type: sample.type })));
+      // arrayBuffer e non blob(): vedi takeSharedFiles (Blob di Response e File non sempre compatibili).
+      const bytes = await res.arrayBuffer();
+      this.picked.emit(toFileList(new File([bytes], sample.name, { type: sample.type })));
     } catch {
       this.snackbar.show(this.translate.instant('sample.error') as string, 'error');
     } finally {
