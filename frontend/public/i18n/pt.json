@@ -2486,5 +2486,24 @@
     "try": "Experimenta com um ficheiro de exemplo",
     "loading": "A carregar o exemplo…",
     "error": "Não foi possível carregar o ficheiro de exemplo. Tenta novamente."
+  },
+  "ask_doc": {
+    "title": "Pergunta a este documento",
+    "intro": "Faz uma pergunta: procuro as passagens relevantes e respondo citando as páginas.",
+    "reading": "A ler o documento…",
+    "no_text": "Este PDF não tem texto selecionável (é uma digitalização?). Experimenta primeiro o OCR.",
+    "read_error": "Não consegui ler o documento.",
+    "placeholder": "Faz uma pergunta…",
+    "send": "Enviar",
+    "sources": "Fontes:",
+    "privacy": "O ficheiro fica no teu navegador. Ao servidor chegam apenas as poucas passagens relevantes para a pergunta.",
+    "no_context": "Não encontrei nada relevante no documento.",
+    "error": "A resposta falhou. Tenta novamente."
+  },
+  "open_file": {
+    "receiving": "A receber o ficheiro…",
+    "none_title": "Nenhum ficheiro recebido",
+    "none_hint": "Para abrir um ficheiro no Lab, partilha-o a partir de outra app com «Partilhar com…» ou escolhe «Abrir com» no ficheiro depois de instalares o site como app. Também o podes arrastar diretamente para o Lab.",
+    "go_lab": "Ir para o Lab"
   }
 }

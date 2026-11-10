@@ -167,6 +167,21 @@ describe('BlogService', () => {
     });
   });
 
+  describe('existsPublished', () => {
+    it('cerca lo slug in italiano e in ogni traduzione, solo tra i pubblicati', async () => {
+      modelMock.exists.mockResolvedValue({ _id: 'x' });
+
+      await expect(service.existsPublished('test-post')).resolves.toBe(true);
+      expect(modelMock.exists).toHaveBeenCalledWith({ ...anySlugFilter('test-post'), published: true });
+    });
+
+    it('è false per uno slug sconosciuto', async () => {
+      modelMock.exists.mockResolvedValue(null);
+
+      await expect(service.existsPublished('slug-falso')).resolves.toBe(false);
+    });
+  });
+
   // ── create ──────────────────────────────────────────────────────────────────
 
   describe('create', () => {

@@ -65,7 +65,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, ...routerFeatures),
     provideHttpClient(withInterceptors([serverApiBaseInterceptor, prerenderBlogCacheInterceptor, authInterceptor, cacheInterceptor, aiQuotaInterceptor, errorInterceptor]), withFetch()),
     provideAnimationsAsync(),
-    provideServiceWorker('ngsw-worker.js', {
+    provideServiceWorker('sw-custom.js', {
       enabled: environment.production,
       registrationStrategy: 'registerWhenStable:30000',
     }),
