@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { AiService } from './ai.service';
@@ -418,6 +419,65 @@ describe('AiService.translatePdf', () => {
     const result = await service.translatePdf(fakeFile(), 'english', false);
 
     expect(result.wordCount).toBe(original.trim().split(/\s+/).filter(Boolean).length);
+  });
+
+  describe('limite di Groq (429) a metà documento', () => {
+    const rateLimited = () => new HttpException('sovraccarico', HttpStatus.TOO_MANY_REQUESTS);
+
+    it('restituisce i blocchi già tradotti con truncated=true invece di perdere tutto', async () => {
+      mockExtract({ text: paragraphsOfChars(25000), pageCount: 10 });
+      aiProvider.chatCompletion
+        .mockResolvedValueOnce('primo blocco')
+        .mockRejectedValue(rateLimited());
+
+      const result = await service.translatePdf(fakeFile(), 'english', false);
+
+      expect(result.truncated).toBe(true);
+      expect(result.translatedText).toBe('primo blocco');
+    });
+
+    it('se fallisce già al primo blocco rilancia il 429 al client', async () => {
+      mockExtract({ text: paragraphsOfChars(25000), pageCount: 10 });
+      aiProvider.chatCompletion.mockRejectedValue(rateLimited());
+
+      await expect(service.translatePdf(fakeFile(), 'english', false)).rejects.toBeInstanceOf(HttpException);
+    });
+
+    it('alla traduzione chiede più retry del default', async () => {
+      mockExtract({ text: 'Breve.', pageCount: 1 });
+      aiProvider.chatCompletion.mockResolvedValue('Short.');
+
+      await service.translatePdf(fakeFile(), 'english', false);
+
+      expect(aiProvider.chatCompletion.mock.calls[0][1].maxRetries).toBeGreaterThan(2);
+    });
+
+    it('in High Fidelity un 429 non ripiega sullo Standard (rifarebbe le stesse chiamate)', async () => {
+      const file = await pdfFileWithPages([
+        { width: 300, height: 300, text: 'Pagina uno originale, con abbastanza testo da superare la soglia di rilevamento.' },
+        { width: 300, height: 300, text: 'Pagina due originale, anch essa con abbastanza testo da avere un text layer vero.' },
+      ]);
+      aiProvider.chatCompletion.mockRejectedValue(rateLimited());
+
+      await expect(service.translatePdf(file, 'english', true)).rejects.toBeInstanceOf(HttpException);
+      expect(aiProvider.chatCompletion).toHaveBeenCalledTimes(1);
+    });
+
+    it('in High Fidelity, se il limite arriva alla seconda pagina, il PDF ha solo la prima e truncated=true', async () => {
+      const file = await pdfFileWithPages([
+        { width: 300, height: 300, text: 'Pagina uno originale, con abbastanza testo da superare la soglia di rilevamento.' },
+        { width: 300, height: 300, text: 'Pagina due originale, anch essa con abbastanza testo da avere un text layer vero.' },
+      ]);
+      aiProvider.chatCompletion.mockResolvedValueOnce('pagina uno tradotta').mockRejectedValue(rateLimited());
+
+      const result = await service.translatePdf(file, 'english', true);
+
+      expect(result.layoutPreserved).toBe(true);
+      expect(result.truncated).toBe(true);
+      expect(result.blocksTranslated).toBe(1);
+      const rebuilt = await PDFDocument.load(Buffer.from(result.pdfBase64 as string, 'base64'));
+      expect(rebuilt.getPageCount()).toBe(1);
+    });
   });
 
   describe('modalità High Fidelity (pagina per pagina)', () => {
