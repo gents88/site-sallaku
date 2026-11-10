@@ -27,6 +27,11 @@ export class ProjectsService {
     );
   }
 
+  /** True se esiste un progetto con questo slug (serve al server per rispondere 404 vero). */
+  async existsBySlug(slug: string): Promise<boolean> {
+    return !!(await this.projectModel.exists({ slug }));
+  }
+
   /** Pagina pubblica /projects/:slug. */
   async findBySlug(slug: string): Promise<unknown> {
     const project = await this.projectModel.findOne({ slug }).lean().exec();
