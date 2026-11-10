@@ -43,6 +43,7 @@
               <strong>{{ 'viewer.drop_prompt' | translate }}</strong>
               <small>PDF</small>
             </div>
+            <app-sample-file-button (picked)="onFilesDropped($event)" />
           }
           @if (msg()) {
             <p class="msg">{{ msg() }}</p>
