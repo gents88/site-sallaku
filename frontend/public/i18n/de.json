@@ -2475,5 +2475,16 @@
     "wrong_password": "Falsches Passwort.",
     "error": "Das Konto konnte nicht gelöscht werden. Bitte versuche es später erneut.",
     "done": "Konto gelöscht."
+  },
+  "ai_quota": {
+    "remaining": "Verbleibende KI-Anfragen heute: {{remaining}} von {{limit}}",
+    "remaining_one": "Dir bleibt heute 1 KI-Anfrage (von {{limit}})",
+    "exhausted": "Du hast alle KI-Anfragen für heute verbraucht. Sie werden um {{time}} erneuert.",
+    "unavailable": "Der KI-Dienst hat sein Tageslimit erreicht. Versuche es morgen erneut."
+  },
+  "sample": {
+    "try": "Mit einer Beispieldatei ausprobieren",
+    "loading": "Beispiel wird geladen…",
+    "error": "Die Beispieldatei konnte nicht geladen werden. Versuche es erneut."
   }
 }

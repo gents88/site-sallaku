@@ -12,6 +12,7 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { LibraryService, LibraryAnnotation, LibraryDoc } from '../../../core/services/library.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
+import { SampleFileButtonComponent } from '../../../shared/components/sample-file-button/sample-file-button.component';
 import {
   toNormRect, quoteFromRect, annotationsToMarkdown, HIGHLIGHT_COLORS, NormRect,
 } from './viewer-annotations';
@@ -24,7 +25,7 @@ const MAX_THUMBS = 200;
   selector: 'app-viewer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule, BreadcrumbComponent],
+  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule, BreadcrumbComponent, SampleFileButtonComponent],
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],
 })

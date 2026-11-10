@@ -8,6 +8,7 @@ import { LanguageService, withLangPrefix } from '../../../core/services/language
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { SampleFileButtonComponent } from '../../../shared/components/sample-file-button/sample-file-button.component';
 
 interface SourcePdf {
   bytes: Uint8Array; // per pdf-lib (export)
@@ -26,7 +27,7 @@ interface PageEntry {
   selector: 'app-pdf-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent],
+  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent, SampleFileButtonComponent],
   templateUrl: './pdf-editor.component.html',
   styleUrls: ['./pdf-editor.component.scss'],
 })
