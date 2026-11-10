@@ -71,6 +71,8 @@
 
       @if (!selectedFile()) {
         <app-sample-file-button (picked)="onFilesDropped($event)" />
+      } @else {
+        <app-ask-document [file]="selectedFile()" />
       }
 
       @if (selectedFile()) {
