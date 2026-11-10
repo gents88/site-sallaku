@@ -151,6 +151,26 @@ describe('SeoService', () => {
     });
   });
 
+  describe('home page', () => {
+    const href = (lang: string) =>
+      document.querySelector(`link[rel="alternate"][hreflang="${lang}"]`)?.getAttribute('href');
+
+    // La home di ogni lingua è /, /en, /de… (canonical della home): l'hreflang
+    // deve puntare agli stessi URL, non a /xx/homepage, altrimenti non si
+    // "ritorna" col canonical e Google lo scarta.
+    it.each(['/', '/homepage', '/en', '/en/homepage', '/de/homepage'])('hreflang di %s punta alle home /, /en, /de…', url => {
+      const seo = configure();
+      routerStub.url = url;
+
+      seo.update({ title: 'Home' });
+
+      expect(href('it')).toBe('https://gentsallaku.it/');
+      expect(href('x-default')).toBe('https://gentsallaku.it/');
+      expect(href('en')).toBe('https://gentsallaku.it/en');
+      expect(href('de')).toBe('https://gentsallaku.it/de');
+    });
+  });
+
   describe('translated paths (blog slugs)', () => {
     const alternatePaths = {
       it: '/blog/blinisht-storia', en: '/blog/blinisht-history', sq: '/blog/blinishti-historia',

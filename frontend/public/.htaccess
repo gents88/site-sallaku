@@ -89,10 +89,18 @@
   # SSR/prerendering is active, specifically so hosts don't serve this empty
   # shell in place of a real prerendered page at /.
   # Solo per le rotte dell'app che davvero non hanno una pagina prerenderizzata
-  # (con o senza prefisso lingua): area admin e login, ricerca, I miei file,
-  # link della newsletter, e articoli/progetti pubblicati dopo l'ultimo build.
-  # Per questi ultimi solo il frontend sa se lo slug esiste: se no, noindex.
-  RewriteRule ^(?:(?:en|sq|es|pt|fr|de)/)?(?:dashboard|search|newsletter|blog|projects|lab/i-miei-file)(?:/.*)?$ index.csr.html [L]
+  # (con o senza prefisso lingua): area admin e login, ricerca, I miei file e
+  # link della newsletter. Non ci sono slug da verificare, quindi 200 con la shell.
+  RewriteRule ^(?:(?:en|sq|es|pt|fr|de)/)?(?:dashboard|search|newsletter|lab/i-miei-file|lab/open-file)(?:/.*)?$ index.csr.html [L]
+
+  # /blog/<slug> e /projects/<slug> senza pagina prerenderizzata: o l'articolo/
+  # progetto è stato pubblicato dopo l'ultimo build, o lo slug è sbagliato (link
+  # rotti, vecchi URL). Solo il database lo sa, quindi chiediamo al backend, che
+  # risponde con la stessa shell ma con 200 se esiste e 404 se no (altrimenti
+  # Google vede 200 su pagine vuote: "soft 404"). Il backend legge la shell da
+  # httpdocs/index.csr.html (FRONTEND_SHELL_PATH). Lo slug è limitato ai
+  # caratteri che gli slug reali contengono; ogni altra forma cade nel 404 sotto.
+  RewriteRule ^(?:(?:en|sq|es|pt|fr|de)/)?(blog|projects)/([A-Za-z0-9._~-]+)/?$ http://127.0.0.1:3000/api/v1/seo/shell/$1/$2 [P,L]
 
   # /en, /de/ ...: home prerenderizzata della lingua (come / con homepage/).
   RewriteRule ^(en|sq|es|pt|fr|de)/?$ $1/homepage/index.html [L]
@@ -183,7 +191,7 @@ ErrorDocument 404 /index.csr.html
   </FilesMatch>
 
   # Il service worker e il suo manifest di versioni non vanno mai tenuti in cache.
-  <FilesMatch "^(ngsw-worker\.js|ngsw\.json|safety-worker\.js)(\.(br|gz))?$">
+  <FilesMatch "^(ngsw-worker\.js|sw-custom\.js|ngsw\.json|safety-worker\.js)(\.(br|gz))?$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
 

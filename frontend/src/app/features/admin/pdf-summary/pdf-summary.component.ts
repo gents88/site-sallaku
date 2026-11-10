@@ -22,6 +22,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { AskDocumentComponent } from '../../../shared/components/ask-document/ask-document.component';
 
 interface FileSummaryResult {
   title: string;
@@ -45,7 +46,7 @@ const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent, SampleFileButtonComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent, SampleFileButtonComponent, AskDocumentComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })

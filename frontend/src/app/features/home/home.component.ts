@@ -216,7 +216,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Self-referencing profile URL for the current language — fed to app-social-share in the about section. */
   get profileUrl(): string {
     const lang = this.langService.current();
-    return lang === 'it' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${withLangPrefix('/homepage', lang)}`;
+    return `${SITE_ORIGIN}${withLangPrefix('/', lang)}`;
   }
 
   constructor(
@@ -236,13 +236,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // homepage/about/tech-stack/experience/skills/services all render this
     // same component (scroll-to-section deep links), so they've always
     // intentionally collapsed to one canonical rather than 9 separate ones.
-    // For the Italian default that's the bare root ('/', rewritten to
-    // homepage/index.html by .htaccess); other languages have no such
-    // bare-root rewrite, so their canonical points at the actual
-    // prerendered /xx/homepage file — self-referencing correctly instead of
-    // (as before this fix) always pointing back at the Italian root, which
-    // contradicted hreflang's claim that e.g. /en/homepage is a real,
-    // independent language variant.
+    // The canonical is the language root ('/', '/en', '/de'…), which .htaccess
+    // serves from <lang>/homepage/index.html. /xx/homepage stays reachable as
+    // a duplicate that canonicalizes here, and hreflang (SeoService) points at
+    // the same roots so canonical and alternates agree.
     const canonicalUrl = this.profileUrl;
     this.seo.update({
       title: 'Senior Front-End & API Developer',

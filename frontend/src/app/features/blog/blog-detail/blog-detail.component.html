@@ -108,6 +108,13 @@
       @if (!isPreview) {
         <app-social-share [url]="pageUrl" [title]="localizedTitle" [image]="shareImage" [description]="localizedMetaDescription" />
 
+        <!-- Qui il lettore ha appena finito l'articolo: è il momento in cui l'iscrizione ha più senso. -->
+        @if (flags.newsletterSignupEnabled()) {
+          <div class="post-newsletter">
+            <app-newsletter-signup></app-newsletter-signup>
+          </div>
+        }
+
         @if (related.length) {
           <section class="related" aria-labelledby="related-title">
             <header class="related__header">
