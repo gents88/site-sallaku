@@ -119,6 +119,12 @@ describe('AiProviderService', () => {
       expect(wait).not.toHaveBeenCalled();
     });
 
+    it('con maxRetries più alto ritenta più volte prima di arrendersi', async () => {
+      fetchMock.mockResolvedValue(withRetryAfter(429, '1'));
+      await expect(service.chatCompletion([{ role: 'user', content: 'hey' }], { ...opts, maxRetries: 5 })).rejects.toBeInstanceOf(HttpException);
+      expect(fetchMock).toHaveBeenCalledTimes(6);
+    });
+
     it('un 5xx persistente diventa 503', async () => {
       fetchMock.mockResolvedValue(groqResponse('', 0, 0, false, 500));
 
