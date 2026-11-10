@@ -2475,5 +2475,16 @@
     "wrong_password": "Fjalëkalim i pasaktë.",
     "error": "Llogaria nuk u fshi dot. Provo përsëri më vonë.",
     "done": "Llogaria u fshi."
+  },
+  "ai_quota": {
+    "remaining": "Kërkesat e IA që të kanë mbetur sot: {{remaining}} nga {{limit}}",
+    "remaining_one": "Të ka mbetur 1 kërkesë IA sot (nga {{limit}})",
+    "exhausted": "I ke përdorur të gjitha kërkesat e IA për sot. Rinovohen në orën {{time}}.",
+    "unavailable": "Shërbimi i IA ka arritur kufirin ditor. Provo përsëri nesër."
+  },
+  "sample": {
+    "try": "Provo me një skedar shembull",
+    "loading": "Po ngarkohet shembulli…",
+    "error": "Skedari shembull nuk u ngarkua. Provo përsëri."
   }
 }

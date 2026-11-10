@@ -2475,5 +2475,16 @@
     "wrong_password": "Password non corretta.",
     "error": "Non è stato possibile eliminare l'account. Riprova più tardi.",
     "done": "Account eliminato."
+  },
+  "ai_quota": {
+    "remaining": "Richieste AI rimaste oggi: {{remaining}} su {{limit}}",
+    "remaining_one": "Ti resta 1 richiesta AI oggi (su {{limit}})",
+    "exhausted": "Hai usato tutte le richieste AI di oggi. Si rinnovano alle {{time}}.",
+    "unavailable": "Il servizio AI ha raggiunto il limite giornaliero. Riprova domani."
+  },
+  "sample": {
+    "try": "Prova con un file di esempio",
+    "loading": "Carico l'esempio…",
+    "error": "Impossibile caricare il file di esempio. Riprova."
   }
 }

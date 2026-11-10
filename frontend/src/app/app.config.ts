@@ -10,6 +10,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { cacheInterceptor } from './core/interceptors/cache.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { aiQuotaInterceptor } from './core/interceptors/ai-quota.interceptor';
 import { prerenderBlogCacheInterceptor } from './core/interceptors/prerender-blog-cache.interceptor';
 import { serverApiBaseInterceptor } from './core/interceptors/server-api-base.interceptor';
 import { GlobalErrorHandler } from './core/error-handling/global-error.handler';
@@ -62,7 +63,7 @@ export const appConfig: ApplicationConfig = {
 
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideRouter(routes, ...routerFeatures),
-    provideHttpClient(withInterceptors([serverApiBaseInterceptor, prerenderBlogCacheInterceptor, authInterceptor, cacheInterceptor, errorInterceptor]), withFetch()),
+    provideHttpClient(withInterceptors([serverApiBaseInterceptor, prerenderBlogCacheInterceptor, authInterceptor, cacheInterceptor, aiQuotaInterceptor, errorInterceptor]), withFetch()),
     provideAnimationsAsync(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: environment.production,

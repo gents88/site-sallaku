@@ -2475,5 +2475,16 @@
     "wrong_password": "Contraseña incorrecta.",
     "error": "No se pudo eliminar la cuenta. Inténtalo de nuevo más tarde.",
     "done": "Cuenta eliminada."
+  },
+  "ai_quota": {
+    "remaining": "Solicitudes de IA restantes hoy: {{remaining}} de {{limit}}",
+    "remaining_one": "Te queda 1 solicitud de IA hoy (de {{limit}})",
+    "exhausted": "Has usado todas las solicitudes de IA de hoy. Se renuevan a las {{time}}.",
+    "unavailable": "El servicio de IA ha alcanzado su límite diario. Inténtalo de nuevo mañana."
+  },
+  "sample": {
+    "try": "Prueba con un archivo de ejemplo",
+    "loading": "Cargando el ejemplo…",
+    "error": "No se pudo cargar el archivo de ejemplo. Inténtalo de nuevo."
   }
 }

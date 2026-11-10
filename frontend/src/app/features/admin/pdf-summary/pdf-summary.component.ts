@@ -14,6 +14,8 @@ import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
 import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { AiQuotaComponent } from '../../../shared/components/ai-quota/ai-quota.component';
+import { SampleFileButtonComponent } from '../../../shared/components/sample-file-button/sample-file-button.component';
 import { NetworkStatusService } from '../../../core/services/network-status.service';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -43,7 +45,7 @@ const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent, SampleFileButtonComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })
