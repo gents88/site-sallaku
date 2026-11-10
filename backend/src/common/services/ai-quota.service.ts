@@ -14,6 +14,16 @@ export interface AiQuotaConfig {
   maxCallsPerIpPerDay: number;
 }
 
+export interface AiQuotaStatus {
+  limit: number;
+  used: number;
+  remaining: number;
+  /** ISO UTC: inizio del prossimo giorno, quando i contatori ripartono. */
+  resetsAt: string;
+  /** Budget globale di token esaurito: nessuna richiesta AI passa fino a domani. */
+  unavailable: boolean;
+}
+
 /**
  * Daily spend guard for AI-backed endpoints (/ai/*, chatbot). These accept
  * anonymous requests, so @Throttle's per-minute limit alone doesn't stop
@@ -78,6 +88,30 @@ export class AiQuotaService {
     }
 
     void this.usage?.recordCall(endpoint);
+  }
+
+  /**
+   * Quanto resta a questo IP oggi, senza consumare nulla (a differenza di
+   * assertWithinBudget non incrementa il contatore): serve al frontend per
+   * mostrare "ti restano N richieste" invece di far scoprire il tetto con un 429.
+   * `unavailable` = budget globale di token esaurito (kill switch attivo).
+   */
+  async status(ip: string): Promise<AiQuotaStatus> {
+    const { dailyTokenBudget, maxCallsPerIpPerDay } = this.getConfig();
+    const used = await this.cache.getCounter(`ai-quota:calls:${this.hashIp(ip)}:${this.today()}`);
+    const tokensToday = Math.max(
+      await this.cache.getCounter(`ai-quota:tokens:${this.today()}`),
+      (await this.usage?.tokensToday()) ?? 0,
+    );
+    const now = new Date();
+    const resetsAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1)).toISOString();
+    return {
+      limit: maxCallsPerIpPerDay,
+      used: Math.min(used, maxCallsPerIpPerDay),
+      remaining: Math.max(maxCallsPerIpPerDay - used, 0),
+      resetsAt,
+      unavailable: tokensToday >= dailyTokenBudget,
+    };
   }
 
   /** Called after an AI provider call completes, with the prompt+completion tokens it actually used. */

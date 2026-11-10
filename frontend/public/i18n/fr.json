@@ -2475,5 +2475,16 @@
     "wrong_password": "Mot de passe incorrect.",
     "error": "Impossible de supprimer le compte. Réessaie plus tard.",
     "done": "Compte supprimé."
+  },
+  "ai_quota": {
+    "remaining": "Requêtes IA restantes aujourd'hui : {{remaining}} sur {{limit}}",
+    "remaining_one": "Il vous reste 1 requête IA aujourd'hui (sur {{limit}})",
+    "exhausted": "Vous avez utilisé toutes les requêtes IA d'aujourd'hui. Elles se renouvellent à {{time}}.",
+    "unavailable": "Le service IA a atteint sa limite quotidienne. Réessayez demain."
+  },
+  "sample": {
+    "try": "Essayer avec un fichier d'exemple",
+    "loading": "Chargement de l'exemple…",
+    "error": "Impossible de charger le fichier d'exemple. Réessayez."
   }
 }

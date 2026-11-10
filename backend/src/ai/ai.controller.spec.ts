@@ -18,7 +18,7 @@ describe('AiController — quota giornaliera AI', () => {
   let aiService: jest.Mocked<
     Pick<AiService, 'summarizeFile' | 'askDocument' | 'formatText' | 'generatePpt' | 'translatePdf'>
   >;
-  let aiQuota: jest.Mocked<Pick<AiQuotaService, 'assertWithinBudget'>>;
+  let aiQuota: jest.Mocked<Pick<AiQuotaService, 'assertWithinBudget' | 'status'>>;
 
   const pdfFile = { originalname: 'x.pdf', mimetype: 'application/pdf', size: 100, buffer: Buffer.from('x') } as Express.Multer.File;
 
@@ -30,7 +30,7 @@ describe('AiController — quota giornaliera AI', () => {
       generatePpt: jest.fn().mockResolvedValue(Buffer.from('ppt')),
       translatePdf: jest.fn().mockResolvedValue(Buffer.from('pdf')),
     };
-    aiQuota = { assertWithinBudget: jest.fn().mockResolvedValue(undefined) };
+    aiQuota = { assertWithinBudget: jest.fn().mockResolvedValue(undefined), status: jest.fn() };
     controller = new AiController(aiService as unknown as AiService, aiQuota as unknown as AiQuotaService);
   });
 
@@ -95,5 +95,15 @@ describe('AiController — quota giornaliera AI', () => {
     );
 
     expect(aiQuota.assertWithinBudget).toHaveBeenCalledWith('203.0.113.99', 'summarize-file');
+  });
+
+  it('quota: legge lo stato con l’IP del chiamante senza consumare il budget', async () => {
+    const status = { limit: 30, used: 4, remaining: 26, resetsAt: '2026-11-11T00:00:00.000Z', unavailable: false };
+    aiQuota.status.mockResolvedValue(status);
+
+    await expect(controller.quota(fakeRequest({ ip: '198.51.100.9' }))).resolves.toEqual(status);
+
+    expect(aiQuota.status).toHaveBeenCalledWith('198.51.100.9');
+    expect(aiQuota.assertWithinBudget).not.toHaveBeenCalled();
   });
 });

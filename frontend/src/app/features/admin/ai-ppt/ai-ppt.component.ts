@@ -19,6 +19,7 @@ import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
 import { RequestRetryComponent } from '../../../shared/components/request-retry/request-retry.component';
 import { OfflineToolHintComponent } from '../../../shared/components/offline-tool-hint/offline-tool-hint.component';
+import { AiQuotaComponent } from '../../../shared/components/ai-quota/ai-quota.component';
 import { NetworkStatusService } from '../../../core/services/network-status.service';
 import {
   AiPptService,
@@ -42,7 +43,7 @@ const MAX_CONTEXT_FILE_MB = 20;
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })

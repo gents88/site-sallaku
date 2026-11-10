@@ -145,4 +145,52 @@ describe('AiQuotaService', () => {
       expect(service.hashIp('8.8.8.8')).not.toContain('8.8.8.8');
     });
   });
+
+  describe('status', () => {
+    const callsKey = (ip: string) => `ai-quota:calls:${service.hashIp(ip)}:${new Date().toISOString().slice(0, 10)}`;
+
+    it('riporta le richieste rimaste senza incrementare nessun contatore', async () => {
+      cache.getCounter.mockImplementation(async (key: string) => (key === callsKey('1.2.3.4') ? 4 : 0));
+
+      const status = await service.status('1.2.3.4');
+
+      expect(status).toMatchObject({ limit: 30, used: 4, remaining: 26, unavailable: false });
+      expect(cache.increment).not.toHaveBeenCalled();
+    });
+
+    it('non va mai sotto zero quando un IP ha superato il tetto (le richieste rifiutate contano)', async () => {
+      cache.getCounter.mockImplementation(async (key: string) => (key === callsKey('1.2.3.4') ? 45 : 0));
+
+      expect(await service.status('1.2.3.4')).toMatchObject({ used: 30, remaining: 0 });
+    });
+
+    it('segnala unavailable quando il budget globale di token è esaurito', async () => {
+      cache.getCounter.mockImplementation(async (key: string) => (key.startsWith('ai-quota:tokens:') ? 300_000 : 0));
+
+      expect((await service.status('1.2.3.4')).unavailable).toBe(true);
+    });
+
+    it('dopo un riavvio (cache vuota) il budget esaurito resta visibile grazie al DB', async () => {
+      const usage = { tokensToday: jest.fn().mockResolvedValue(300_000) };
+      const withUsage = new AiQuotaService(cache as unknown as CacheService, config as unknown as ConfigService, usage as unknown as AiUsageService);
+
+      expect((await withUsage.status('1.2.3.4')).unavailable).toBe(true);
+    });
+
+    it('resetsAt è la prossima mezzanotte UTC', async () => {
+      const { resetsAt } = await service.status('1.2.3.4');
+      const reset = new Date(resetsAt);
+
+      expect(reset.getUTCHours()).toBe(0);
+      expect(reset.getTime()).toBeGreaterThan(Date.now());
+      expect(reset.getTime() - Date.now()).toBeLessThanOrEqual(24 * 60 * 60 * 1000);
+    });
+
+    it('IP diversi leggono contatori diversi', async () => {
+      await service.status('1.1.1.1');
+      await service.status('2.2.2.2');
+      const keys = cache.getCounter.mock.calls.map(([k]) => k).filter((k) => k.startsWith('ai-quota:calls:'));
+      expect(new Set(keys).size).toBe(2);
+    });
+  });
 });

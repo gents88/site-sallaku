@@ -2475,5 +2475,16 @@
     "wrong_password": "Palavra-passe incorreta.",
     "error": "Não foi possível eliminar a conta. Tenta novamente mais tarde.",
     "done": "Conta eliminada."
+  },
+  "ai_quota": {
+    "remaining": "Pedidos de IA restantes hoje: {{remaining}} de {{limit}}",
+    "remaining_one": "Resta-te 1 pedido de IA hoje (de {{limit}})",
+    "exhausted": "Usaste todos os pedidos de IA de hoje. São renovados às {{time}}.",
+    "unavailable": "O serviço de IA atingiu o limite diário. Tenta novamente amanhã."
+  },
+  "sample": {
+    "try": "Experimenta com um ficheiro de exemplo",
+    "loading": "A carregar o exemplo…",
+    "error": "Não foi possível carregar o ficheiro de exemplo. Tenta novamente."
   }
 }
