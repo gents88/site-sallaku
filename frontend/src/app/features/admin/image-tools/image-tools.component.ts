@@ -89,6 +89,8 @@ export class ImageToolsComponent implements OnInit, OnDestroy {
     // non deve toccare nulla, chi cerca "ridimensiona immagine" trova già un lato lungo ragionevole.
     switch (this.page.intent) {
       case 'heic-to-jpg': this.format.set('jpeg'); this.maxSide.set(null); this.quality.set(0.92); break;
+      case 'webp-to-jpg': this.format.set('jpeg'); this.maxSide.set(null); this.quality.set(0.92); break;
+      case 'jpg-to-webp': this.format.set('webp'); this.maxSide.set(null); this.quality.set(0.85); break;
       case 'resize-image': this.maxSide.set(1280); break;
       case 'compress-image': this.maxSide.set(2048); this.quality.set(0.7); break;
     }

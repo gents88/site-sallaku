@@ -3361,6 +3361,318 @@
           "a": "Yes, both open the camera and offer to join the network."
         }
       ]
+    },
+    "pdf_to_jpg": {
+      "about": "This page converts PDF files to JPG. Each PDF page becomes a separate image, handy to share a page in a chat or to use it in a presentation. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the PDF file into the upload area.",
+        "Check that the output format is JPG.",
+        "Convert and download the JPG file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert PDF to JPG?",
+          "a": "Add the PDF file here, start the conversion and download the JPG file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "excel_to_pdf": {
+      "about": "This page converts Excel files to PDF. A spreadsheet becomes a PDF that looks the same on every device, ready to send or print. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the Excel file into the upload area.",
+        "Check that the output format is PDF.",
+        "Convert and download the PDF file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert Excel to PDF?",
+          "a": "Add the Excel file here, start the conversion and download the PDF file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "png_to_jpg": {
+      "about": "This page converts PNG files to JPG. JPG files are much lighter than PNG, which helps for email and web pages. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the PNG file into the upload area.",
+        "Check that the output format is JPG.",
+        "Convert and download the JPG file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert PNG to JPG?",
+          "a": "Add the PNG file here, start the conversion and download the JPG file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "webp_to_png": {
+      "about": "This page converts WebP files to PNG. PNG is accepted by almost every program, while WebP is still refused by some. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the WebP file into the upload area.",
+        "Check that the output format is PNG.",
+        "Convert and download the PNG file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert WebP to PNG?",
+          "a": "Add the WebP file here, start the conversion and download the PNG file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "jpg_to_png": {
+      "about": "This page converts JPG files to PNG. PNG keeps sharp edges and supports transparency, useful for logos and screenshots. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the JPG file into the upload area.",
+        "Check that the output format is PNG.",
+        "Convert and download the PNG file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert JPG to PNG?",
+          "a": "Add the JPG file here, start the conversion and download the PNG file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "html_to_pdf": {
+      "about": "This page converts HTML files to PDF. A web page or HTML file becomes a PDF you can archive, share or print. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the HTML file into the upload area.",
+        "Check that the output format is PDF.",
+        "Convert and download the PDF file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert HTML to PDF?",
+          "a": "Add the HTML file here, start the conversion and download the PDF file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "pdf_to_txt": {
+      "about": "This page converts PDF files to TXT. You get the plain text of the PDF, useful to copy, search or reuse its content. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the PDF file into the upload area.",
+        "Check that the output format is TXT.",
+        "Convert and download the TXT file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert PDF to TXT?",
+          "a": "Add the PDF file here, start the conversion and download the TXT file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "txt_to_pdf": {
+      "about": "This page converts TXT files to PDF. A plain text file becomes a PDF ready to share or print. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Choose or drag the TXT file into the upload area.",
+        "Check that the output format is PDF.",
+        "Convert and download the PDF file."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to perform the requested conversion.",
+      "limits": "The file can weigh up to 50 MB. Very complex files may need small touch-ups after conversion.",
+      "faq": [
+        {
+          "q": "How do I convert TXT to PDF?",
+          "a": "Add the TXT file here, start the conversion and download the PDF file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Is my file stored?",
+          "a": "The file is processed only to perform the conversion and is not kept for other purposes."
+        }
+      ]
+    },
+    "webp_to_jpg": {
+      "about": "This page converts WebP files to JPG. JPG opens everywhere, while WebP images downloaded from the web are refused by many programs. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Drag your WebP files into the upload area, or click to choose them.",
+        "Check that the output format is JPG and pick the quality.",
+        "Convert and download each file, or all of them as a ZIP."
+      ],
+      "privacy": "Files are processed entirely in your browser: they are not uploaded to any server.",
+      "limits": "Very large images or many files at once can slow down a phone, because your device does the work.",
+      "faq": [
+        {
+          "q": "How do I convert WebP to JPG?",
+          "a": "Add the WebP file here, start the conversion and download the JPG file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Are my files uploaded?",
+          "a": "No. The conversion happens in your browser, so the files never leave your device."
+        }
+      ]
+    },
+    "jpg_to_webp": {
+      "about": "This page converts JPG files to WebP. WebP files are lighter than JPG at the same quality, which makes web pages load faster. Choose the file, start the conversion and download the result.",
+      "steps": [
+        "Drag your JPG files into the upload area, or click to choose them.",
+        "Check that the output format is WebP and pick the quality.",
+        "Convert and download each file, or all of them as a ZIP."
+      ],
+      "privacy": "Files are processed entirely in your browser: they are not uploaded to any server.",
+      "limits": "Very large images or many files at once can slow down a phone, because your device does the work.",
+      "faq": [
+        {
+          "q": "How do I convert JPG to WebP?",
+          "a": "Add the JPG file here, start the conversion and download the WebP file."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration."
+        },
+        {
+          "q": "Are my files uploaded?",
+          "a": "No. The conversion happens in your browser, so the files never leave your device."
+        }
+      ]
+    },
+    "whatsapp_qr_code": {
+      "about": "A WhatsApp QR code opens a chat with your number, with a pre-filled message if you want. It is handy on shop windows, menus, business cards and flyers. Enter the number with the country code and download the code in PNG or SVG.",
+      "steps": [
+        "Enter your number with the country code and, if you like, a pre-filled message.",
+        "Adjust colours and size.",
+        "Scan the code with your phone to test it, then download or print it."
+      ],
+      "privacy": "The code is generated in your browser and what you type is never sent anywhere.",
+      "limits": "Always test the code with your phone before printing it.",
+      "faq": [
+        {
+          "q": "How do I create a WhatsApp QR code?",
+          "a": "Enter your number with the country code here, add an optional message and download the code."
+        },
+        {
+          "q": "Can I pre-fill the message?",
+          "a": "Yes: whoever scans the code finds your text ready to send."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and without registration. The code is generated in your browser."
+        }
+      ]
+    },
+    "vcard_qr_code": {
+      "about": "A contact QR code holds your name, phone, email, company and website in the vCard format. Printed on a business card or email signature, it lets people save you without typing. Download it in PNG or SVG.",
+      "steps": [
+        "Fill in name, phone, email, company and website.",
+        "Adjust colours and size.",
+        "Scan the code with your phone to check it, then download or print it."
+      ],
+      "privacy": "The code is generated in your browser and what you type is never sent anywhere.",
+      "limits": "Always test the code with your phone before printing it.",
+      "faq": [
+        {
+          "q": "How do I make a QR code for my business card?",
+          "a": "Enter your contact details here and download the code in SVG for print."
+        },
+        {
+          "q": "What is a vCard?",
+          "a": "A standard format for contact details that every phone understands."
+        },
+        {
+          "q": "Are my details sent anywhere?",
+          "a": "No. The code is generated in your browser."
+        }
+      ]
+    },
+    "edit_pdf": {
+      "about": "This editor works on the pages of a PDF: drag them to reorder, rotate or delete the ones you do not need, add pages from other PDFs and export a new file. Nothing is uploaded, so you can use it on confidential documents.",
+      "steps": [
+        "Open the PDF or drag it into the upload area.",
+        "Reorder, rotate or delete pages, or add more files.",
+        "Export the PDF and download it."
+      ],
+      "privacy": "The PDF is processed entirely in your browser: it is not uploaded to any server.",
+      "limits": "Very large or password-protected PDFs may not open or may slow down the browser. Download the result before closing the tab.",
+      "faq": [
+        {
+          "q": "How do I edit a PDF for free?",
+          "a": "Open it here, change the pages you need and download the new PDF: no sign-up."
+        },
+        {
+          "q": "Is my PDF uploaded?",
+          "a": "No. The work is done in your browser."
+        },
+        {
+          "q": "Can I change the text inside the pages?",
+          "a": "This editor works on whole pages. For text, add notes or fill fields with the sign and fill tool."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3457,6 +3769,97 @@
       "seo_description": "Create a Wi-Fi QR code for free: enter the network name and password, download PNG or SVG and let guests connect with one scan. Runs in your browser.",
       "h1": "Wi-Fi QR code generator",
       "lead": "Let guests join your Wi-Fi by scanning a code: enter network name and password, then download or print it. Nothing is sent anywhere."
+    },
+    "pdf_to_jpg": {
+      "label": "PDF to JPG",
+      "seo_title": "PDF to JPG Converter Free — Convert Online",
+      "seo_description": "Convert PDF to JPG online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert PDF to JPG",
+      "lead": "Drop your PDF file here, convert it to JPG and download the result in a few seconds. Free, no sign-up."
+    },
+    "excel_to_pdf": {
+      "label": "Excel to PDF",
+      "seo_title": "Excel to PDF Converter Free — Convert Online",
+      "seo_description": "Convert Excel to PDF online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert Excel to PDF",
+      "lead": "Drop your Excel file here, convert it to PDF and download the result in a few seconds. Free, no sign-up."
+    },
+    "png_to_jpg": {
+      "label": "PNG to JPG",
+      "seo_title": "PNG to JPG Converter Free — Convert Online",
+      "seo_description": "Convert PNG to JPG online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert PNG to JPG",
+      "lead": "Drop your PNG file here, convert it to JPG and download the result in a few seconds. Free, no sign-up."
+    },
+    "webp_to_png": {
+      "label": "WebP to PNG",
+      "seo_title": "WebP to PNG Converter Free — Convert Online",
+      "seo_description": "Convert WebP to PNG online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert WebP to PNG",
+      "lead": "Drop your WebP file here, convert it to PNG and download the result in a few seconds. Free, no sign-up."
+    },
+    "jpg_to_png": {
+      "label": "JPG to PNG",
+      "seo_title": "JPG to PNG Converter Free — Convert Online",
+      "seo_description": "Convert JPG to PNG online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert JPG to PNG",
+      "lead": "Drop your JPG file here, convert it to PNG and download the result in a few seconds. Free, no sign-up."
+    },
+    "html_to_pdf": {
+      "label": "HTML to PDF",
+      "seo_title": "HTML to PDF Converter Free — Convert Online",
+      "seo_description": "Convert HTML to PDF online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert HTML to PDF",
+      "lead": "Drop your HTML file here, convert it to PDF and download the result in a few seconds. Free, no sign-up."
+    },
+    "pdf_to_txt": {
+      "label": "PDF to TXT",
+      "seo_title": "PDF to TXT Converter Free — Convert Online",
+      "seo_description": "Convert PDF to TXT online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert PDF to TXT",
+      "lead": "Drop your PDF file here, convert it to TXT and download the result in a few seconds. Free, no sign-up."
+    },
+    "txt_to_pdf": {
+      "label": "TXT to PDF",
+      "seo_title": "TXT to PDF Converter Free — Convert Online",
+      "seo_description": "Convert TXT to PDF online for free. Choose the file, convert and download the result: no software to install and no sign-up.",
+      "h1": "Convert TXT to PDF",
+      "lead": "Drop your TXT file here, convert it to PDF and download the result in a few seconds. Free, no sign-up."
+    },
+    "webp_to_jpg": {
+      "label": "WebP to JPG",
+      "seo_title": "WebP to JPG Converter Free — Convert Online",
+      "seo_description": "Convert WebP to JPG online for free, right in your browser: nothing is uploaded, no sign-up, batch conversion and ZIP download.",
+      "h1": "Convert WebP to JPG",
+      "lead": "Drop your WebP files, convert them to JPG and download them one by one or as a ZIP. Everything stays in your browser."
+    },
+    "jpg_to_webp": {
+      "label": "JPG to WebP",
+      "seo_title": "JPG to WebP Converter Free — Convert Online",
+      "seo_description": "Convert JPG to WebP online for free, right in your browser: nothing is uploaded, no sign-up, batch conversion and ZIP download.",
+      "h1": "Convert JPG to WebP",
+      "lead": "Drop your JPG files, convert them to WebP and download them one by one or as a ZIP. Everything stays in your browser."
+    },
+    "whatsapp_qr_code": {
+      "label": "WhatsApp QR code",
+      "seo_title": "WhatsApp QR Code Generator Free — Link to Chat with You",
+      "seo_description": "Create a WhatsApp QR code for free: enter your number and an optional message, download PNG or SVG. Customers scan it and start a chat. Runs in your browser.",
+      "h1": "WhatsApp QR code generator",
+      "lead": "Let customers start a WhatsApp chat with you by scanning a code. Enter your number and an optional message, then download or print it."
+    },
+    "vcard_qr_code": {
+      "label": "Contact QR code",
+      "seo_title": "vCard QR Code Generator Free — Business Card QR Code",
+      "seo_description": "Create a contact QR code for free: name, phone, email, company and website in a vCard. Download PNG or SVG for business cards. Runs in your browser.",
+      "h1": "Contact (vCard) QR code generator",
+      "lead": "Put your contact details in a QR code: whoever scans it can save you in their address book in one tap. Free, nothing is uploaded."
+    },
+    "edit_pdf": {
+      "label": "Edit PDF",
+      "seo_title": "Edit PDF Online Free — Reorder, Delete and Rotate Pages, No Upload",
+      "seo_description": "Edit a PDF online for free: reorder, delete, rotate and merge pages, then download. It runs in your browser, so your file is never uploaded.",
+      "h1": "Edit a PDF",
+      "lead": "Open a PDF, reorder, rotate or delete its pages, merge other files and download the result. Everything happens in your browser."
     }
   },
   "sign_pdf": {
