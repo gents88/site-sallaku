@@ -2505,5 +2505,40 @@
     "none_title": "Keine Datei empfangen",
     "none_hint": "Um eine Datei im Lab zu öffnen, teile sie aus einer anderen App über „Teilen mit…“ oder wähle „Öffnen mit“ für die Datei, nachdem du die Seite als App installiert hast. Du kannst sie auch direkt ins Lab ziehen.",
     "go_lab": "Zum Lab"
+  },
+  "page_meta": {
+    "home_title": "Senior Front-End- & API-Entwickler",
+    "home_description": "Senior Front-End-Entwickler mit Schwerpunkt auf Angular, TypeScript, 3D-Datenvisualisierung und Enterprise-Architekturen.",
+    "blog_title": "Blog — Angular, TypeScript und Webentwicklung",
+    "blog_description": "Artikel, Tutorials und Einblicke zu Angular, TypeScript, NestJS, Web-Performance, 3D-Visualisierungen und moderner Webentwicklung."
+  },
+  "acquisition": {
+    "title": "Herkunft der Besucher",
+    "desc": "Woher Besucher kommen und auf welcher Seite sie einsteigen",
+    "period": "Zeitraum",
+    "last_days": "Letzte {{days}} Tage",
+    "total_entries": "Zugriffe",
+    "referrers": "Verweisende Websites",
+    "no_referrers": "Keine externen Websites in diesem Zeitraum: Zugriffe sind direkt oder ohne Referrer.",
+    "entry_pages": "Einstiegsseiten",
+    "page": "Seite",
+    "from": "Von",
+    "entries": "Zugriffe",
+    "recent_visits": "Letzte Besuche",
+    "when": "Wann",
+    "landing": "Einstiegsseite",
+    "where": "Ort",
+    "device": "Gerät",
+    "pages": "Seiten",
+    "duration": "Dauer",
+    "loading": "Wird geladen…",
+    "gsc_top_pages": "Seiten mit den meisten Klicks von Google",
+    "source_search": "Suche",
+    "source_social": "Social",
+    "source_referral": "Andere Websites",
+    "source_direct": "Direkt",
+    "source_campaign": "Kampagne",
+    "source_internal": "Intern",
+    "source_other": "Sonstige"
   }
 }

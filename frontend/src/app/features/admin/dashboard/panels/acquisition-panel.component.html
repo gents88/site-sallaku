@@ -1,0 +1,110 @@
+<div class="acq__periods" role="group" [attr.aria-label]="'acquisition.period' | translate">
+  @for (d of periods; track d) {
+    <button type="button" class="panel-btn acq__period" [attr.aria-pressed]="days() === d" (click)="setDays(d)">
+      {{ 'acquisition.last_days' | translate: { days: d } }}
+    </button>
+  }
+</div>
+
+@if (failed()) {
+  <p class="panel-error" role="alert">{{ 'admin.overview_partial_error' | translate }}</p>
+} @else if (report(); as r) {
+  <div class="panel-kpis">
+    <div class="panel-kpi panel-kpi--ok">
+      <strong>{{ r.totalEntries | number }}</strong>
+      <span>{{ 'acquisition.total_entries' | translate }}</span>
+    </div>
+    @for (s of r.sources; track s.label) {
+      <div class="panel-kpi">
+        <strong>{{ s.count | number }}</strong>
+        <span>{{ sourceKey(s.label) | translate }}</span>
+      </div>
+    }
+  </div>
+
+  <div class="acq__grid">
+    <div>
+      <h3 class="acq__subtitle">{{ 'acquisition.referrers' | translate }}</h3>
+      @for (ref of r.referrers; track ref.label) {
+        <div class="acq__bar-row">
+          <span class="acq__bar-label" [title]="ref.label">{{ ref.label }}</span>
+          <div class="acq__bar-track"><div class="acq__bar-fill" [style.width.%]="barWidth(ref.count, r.referrers)"></div></div>
+          <span class="acq__num">{{ ref.count | number }}</span>
+        </div>
+      } @empty {
+        <p class="acq__muted">{{ 'acquisition.no_referrers' | translate }}</p>
+      }
+    </div>
+
+    <div>
+      <h3 class="acq__subtitle">{{ 'acquisition.entry_pages' | translate }}</h3>
+      <div class="acq__table-wrap">
+        <table class="acq__table">
+          <thead>
+            <tr>
+              <th>{{ 'acquisition.page' | translate }}</th>
+              <th>{{ 'acquisition.from' | translate }}</th>
+              <th class="acq__num">{{ 'acquisition.entries' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of r.entryPages; track p.path) {
+              <tr>
+                <td class="acq__path">{{ p.path }}</td>
+                <td>
+                  <span class="acq__chips">
+                    @for (s of sortedSources(p.sources); track s.source) {
+                      <span class="acq__chip">{{ sourceKey(s.source) | translate }} {{ s.count }}</span>
+                    }
+                  </span>
+                </td>
+                <td class="acq__num">{{ p.entries | number }}</td>
+              </tr>
+            } @empty {
+              <tr><td colspan="3" class="acq__muted">{{ 'admin.no_chart_data' | translate }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="acq__subtitle">{{ 'acquisition.recent_visits' | translate }}</h3>
+  <div class="acq__table-wrap">
+    <table class="acq__table">
+      <thead>
+        <tr>
+          <th>{{ 'acquisition.when' | translate }}</th>
+          <th>{{ 'acquisition.from' | translate }}</th>
+          <th>{{ 'acquisition.landing' | translate }}</th>
+          <th>{{ 'acquisition.where' | translate }}</th>
+          <th>{{ 'acquisition.device' | translate }}</th>
+          <th class="acq__num">{{ 'acquisition.pages' | translate }}</th>
+          <th class="acq__num">{{ 'acquisition.duration' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (v of r.recentVisits; track $index) {
+          <tr>
+            <td class="acq__nowrap">{{ v.at | date: 'dd/MM HH:mm' }}</td>
+            <td>
+              {{ sourceKey(v.trafficSource) | translate }}
+              @if (v.referrerHost || v.utmSource) {
+                <span class="acq__muted"> · {{ v.utmSource || v.referrerHost }}</span>
+              }
+            </td>
+            <td class="acq__path">{{ v.entryPath }}</td>
+            <td>{{ v.city ? v.city + ', ' : '' }}{{ v.country || '—' }}</td>
+            <td>{{ v.deviceType || '—' }}</td>
+            <td class="acq__num">{{ v.pages }}</td>
+            <td class="acq__num">{{ formatDuration(v.durationSec) }}</td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7" class="acq__muted">{{ 'admin.no_chart_data' | translate }}</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <p class="acq__muted">{{ 'acquisition.loading' | translate }}</p>
+}

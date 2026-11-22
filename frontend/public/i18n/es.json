@@ -2505,5 +2505,40 @@
     "none_title": "No se ha recibido ningún archivo",
     "none_hint": "Para abrir un archivo en el Lab, compártelo desde otra app con «Compartir con…» o elige «Abrir con» en el archivo tras instalar el sitio como app. También puedes arrastrarlo directamente al Lab.",
     "go_lab": "Ir al Lab"
+  },
+  "page_meta": {
+    "home_title": "Desarrollador Senior Front-End y API",
+    "home_description": "Desarrollador Senior Front-End especializado en Angular, TypeScript, visualización de datos 3D y arquitecturas empresariales.",
+    "blog_title": "Blog — Angular, TypeScript y desarrollo web",
+    "blog_description": "Artículos, tutoriales y análisis sobre Angular, TypeScript, NestJS, rendimiento web, visualizaciones 3D y desarrollo moderno."
+  },
+  "acquisition": {
+    "title": "Procedencia de los visitantes",
+    "desc": "De dónde llegan y en qué página entran al sitio",
+    "period": "Periodo",
+    "last_days": "Últimos {{days}} días",
+    "total_entries": "Llegadas",
+    "referrers": "Sitios de procedencia",
+    "no_referrers": "Ningún sitio externo en este periodo: las llegadas son directas o sin referrer.",
+    "entry_pages": "Páginas de entrada",
+    "page": "Página",
+    "from": "Desde",
+    "entries": "Llegadas",
+    "recent_visits": "Visitas recientes",
+    "when": "Cuándo",
+    "landing": "Página de entrada",
+    "where": "Ubicación",
+    "device": "Dispositivo",
+    "pages": "Páginas",
+    "duration": "Duración",
+    "loading": "Cargando…",
+    "gsc_top_pages": "Páginas con más clics desde Google",
+    "source_search": "Búsqueda",
+    "source_social": "Social",
+    "source_referral": "Otros sitios",
+    "source_direct": "Directo",
+    "source_campaign": "Campaña",
+    "source_internal": "Interno",
+    "source_other": "Otro"
   }
 }

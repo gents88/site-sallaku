@@ -13,7 +13,13 @@ import {
   DailyEngagementReport,
   PageEngagement,
   ToolConversionRow,
+  AcquisitionReport,
+  EntryPageRow,
+  RecentVisit,
 } from '../analytics.types';
+
+/** Domini del sito stesso: come referrer non sono una provenienza esterna. */
+const OWN_HOSTS = ['gentsallaku.it', 'www.gentsallaku.it', 'localhost'];
 
 /**
  * Read/aggregation side of the former monolithic AnalyticsService. Tracking
@@ -251,6 +257,109 @@ export class AnalyticsQueryService {
       .sort((a, b) => b.uniqueVisitors - a.uniqueVisitors);
   }
 
+  /**
+   * Da dove arrivano i visitatori e su quale pagina entrano, negli ultimi `days`
+   * giorni: sorgenti, siti di provenienza (per host), pagine d'ingresso divise per
+   * sorgente e le ultime visite. Conta solo gli arrivi (navigationType 'entry'):
+   * la navigazione interna non dice nulla sulla provenienza.
+   */
+  async getAcquisition(days = 30): Promise<AcquisitionReport> {
+    return this.cache.getOrSet(`analytics:acquisition:${days}`, async () => {
+      const start = new Date(Date.now() - days * 86_400_000);
+      const entryMatch = { createdAt: { $gte: start }, navigationType: { $ne: 'internal' } };
+      const normalizedPath = { $arrayElemAt: [{ $split: ['$path', '?'] }, 0] };
+
+      const [totalEntries, sources, referrerRows, entryRows, recent] = await Promise.all([
+        this.pageViewModel.countDocuments(entryMatch).exec(),
+        this.aggregateByField('trafficSource', 8, entryMatch),
+        this.pageViewModel
+          .aggregate<{ _id: string; count: number }>([
+            { $match: { ...entryMatch, referrer: { $nin: ['', null] } } },
+            { $group: { _id: '$referrer', count: { $sum: 1 } } },
+          ])
+          .exec(),
+        this.pageViewModel
+          .aggregate<{ _id: string; entries: number; sources: Array<{ k: string; v: number }> }>([
+            { $match: entryMatch },
+            { $group: { _id: { path: normalizedPath, source: '$trafficSource' }, count: { $sum: 1 } } },
+            {
+              $group: {
+                _id: '$_id.path',
+                entries: { $sum: '$count' },
+                sources: { $push: { k: { $ifNull: ['$_id.source', 'direct'] }, v: '$count' } },
+              },
+            },
+            { $sort: { entries: -1 } },
+            { $limit: 20 },
+          ])
+          .exec(),
+        this.pageViewModel
+          .find(entryMatch)
+          .sort({ createdAt: -1 })
+          .limit(40)
+          .select('createdAt trafficSource referrer utmSource path country city deviceType sessionId durationMs')
+          .lean<Array<PageView & { createdAt: Date }>>()
+          .exec(),
+      ]);
+
+      // Pagine viste e tempo totale per le sessioni delle ultime visite (una sola query).
+      const sessionIds = [...new Set(recent.map(v => v.sessionId).filter(Boolean))];
+      const sessionRows = sessionIds.length
+        ? await this.pageViewModel
+            .aggregate<{ _id: string; pages: number; durationMs: number }>([
+              { $match: { sessionId: { $in: sessionIds } } },
+              { $group: { _id: '$sessionId', pages: { $sum: 1 }, durationMs: { $sum: '$durationMs' } } },
+            ])
+            .exec()
+        : [];
+      const bySession = new Map(sessionRows.map(r => [r._id, r]));
+
+      const entryPages: EntryPageRow[] = entryRows.map(r => ({
+        path: r._id || '/',
+        entries: r.entries,
+        sources: Object.fromEntries(r.sources.map(x => [x.k, x.v])),
+      }));
+
+      const recentVisits: RecentVisit[] = recent.map(v => {
+        const session = v.sessionId ? bySession.get(v.sessionId) : undefined;
+        const durationMs = session ? session.durationMs : v.durationMs;
+        return {
+          at: new Date(v.createdAt).toISOString(),
+          trafficSource: v.trafficSource || 'direct',
+          referrerHost: this.referrerHost(v.referrer),
+          utmSource: v.utmSource || '',
+          entryPath: (v.path || '/').split('?')[0],
+          country: v.country || '',
+          city: v.city || '',
+          deviceType: v.deviceType || '',
+          pages: session ? session.pages : 1,
+          durationSec: durationMs > 0 ? Math.round(durationMs / 1000) : null,
+        };
+      });
+
+      return {
+        days,
+        totalEntries,
+        sources,
+        referrers: this.mergeReferrersByHost(referrerRows, 15),
+        entryPages,
+        recentVisits,
+      };
+    });
+  }
+
+  /** Host esterno di un referrer ('' se vuoto o se è il sito stesso). */
+  private referrerHost(referrer: string | undefined): string {
+    if (!referrer) return '';
+    let host = referrer;
+    try {
+      host = new URL(referrer).hostname.replace(/^www\./, '');
+    } catch {
+      /* referrer non URL: lo lascio così com'è */
+    }
+    return OWN_HOSTS.includes(host) ? '' : host;
+  }
+
   /** Per-page views, unique visitors, repeat-visit ratio and average dwell time since `start`. */
   private async aggregatePageEngagement(start: Date, limit: number): Promise<PageEngagement[]> {
     const rows = await this.pageViewModel
@@ -303,7 +412,6 @@ export class AnalyticsQueryService {
 
   /** Collapses raw referrer URLs into external hostnames, dropping our own domains. */
   private mergeReferrersByHost(rows: Array<{ _id: string; count: number }>, limit: number): BreakdownItem[] {
-    const ownHosts = ['gentsallaku.it', 'www.gentsallaku.it', 'localhost'];
     const byHost = new Map<string, number>();
 
     for (const row of rows) {
@@ -313,7 +421,7 @@ export class AnalyticsQueryService {
       } catch {
         /* keep raw value for non-URL referrers */
       }
-      if (ownHosts.includes(host)) continue;
+      if (OWN_HOSTS.includes(host)) continue;
       byHost.set(host, (byHost.get(host) ?? 0) + row.count);
     }
 

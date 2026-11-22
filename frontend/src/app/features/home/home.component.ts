@@ -3,7 +3,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { finalize, forkJoin, catchError } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ExperiencesService } from '../../core/services/experiences.service';
@@ -212,6 +212,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private readonly langService = inject(LanguageService);
+  private readonly translate = inject(TranslateService);
 
   /** Self-referencing profile URL for the current language — fed to app-social-share in the about section. */
   get profileUrl(): string {
@@ -242,8 +243,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // the same roots so canonical and alternates agree.
     const canonicalUrl = this.profileUrl;
     this.seo.update({
-      title: 'Senior Front-End & API Developer',
-      description: 'Senior Front-End Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
+      // Tradotti per lingua: prima /en, /de, … avevano tutti lo stesso title
+      // (inglese) e la stessa description (italiana) — duplicati per Google.
+      title: this.translate.instant('page_meta.home_title'),
+      description: this.translate.instant('page_meta.home_description'),
       url: canonicalUrl,
     });
 

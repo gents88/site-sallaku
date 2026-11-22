@@ -1,0 +1,116 @@
+// Pannello "Provenienza dei visitatori". Gli stili comuni (panel-btn, panel-kpi,
+// panel-error) arrivano da panel-shared.scss.
+
+.acq {
+  &__periods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  &__period[aria-pressed='true'] {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__subtitle {
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  &__bar-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 2fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+  }
+
+  &__bar-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__bar-track {
+    height: 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-text-muted) 18%, transparent);
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-primary);
+  }
+
+  &__table-wrap {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+
+    th,
+    td {
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--color-text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+
+  &__path {
+    font-family: monospace;
+    word-break: break-all;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  &__chip {
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+
+  &__muted {
+    color: var(--color-text-muted);
+  }
+
+  // Le celle numeriche vincono sull'allineamento a sinistra della tabella.
+  &__table &__num,
+  &__num {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &__nowrap {
+    white-space: nowrap;
+  }
+}

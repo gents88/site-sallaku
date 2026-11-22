@@ -47,6 +47,7 @@ import { ScheduledPostsPanelComponent } from './panels/scheduled-posts-panel.com
 import { LeadsPanelComponent } from './panels/leads-panel.component';
 import { NotFoundPanelComponent } from './panels/not-found-panel.component';
 import { SecurityPanelComponent } from './panels/security-panel.component';
+import { AcquisitionPanelComponent } from './panels/acquisition-panel.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -75,7 +76,7 @@ interface ChartBar {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent, TranslationHealthPanelComponent, ScheduledPostsPanelComponent, LeadsPanelComponent, NotFoundPanelComponent, SecurityPanelComponent],
+  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent, TranslationHealthPanelComponent, ScheduledPostsPanelComponent, LeadsPanelComponent, NotFoundPanelComponent, SecurityPanelComponent, AcquisitionPanelComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -161,7 +162,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // Google Search Console
   gscSummary: SearchConsoleSummary = {
-    configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
+    configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [], topPages: [],
   };
 
   // Chat session viewer
@@ -402,6 +403,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   trendBarWidth(views: number): number {
     return Math.max((views / this.maxTrendViews) * 100, views > 0 ? 4 : 0);
+  }
+
+  get gscMaxPageClicks(): number {
+    return Math.max(...(this.gscSummary.topPages ?? []).map(p => p.clicks), 1);
+  }
+
+  /** URL completo di Search Console → solo il percorso, più leggibile nella barra. */
+  gscPagePath(url: string): string {
+    try {
+      const u = new URL(url);
+      return decodeURIComponent(u.pathname) || '/';
+    } catch {
+      return url;
+    }
   }
 
   get gscMaxClicks(): number {

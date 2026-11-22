@@ -181,4 +181,53 @@ describe('AnalyticsQueryService', () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe('getAcquisition', () => {
+    it('raggruppa provenienze, pagine d\'ingresso e ultime visite degli arrivi dall\'esterno', async () => {
+      mockPageViewModel.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(5) });
+      mockPageViewModel.aggregate.mockImplementation((pipeline: any[]) => {
+        const json = JSON.stringify(pipeline);
+        let rows: unknown[] = [];
+        if (json.includes('"$trafficSource"') && !json.includes('"path"')) {
+          rows = [{ _id: 'search', count: 3 }, { _id: 'direct', count: 2 }];
+        } else if (json.includes('"_id":"$referrer"')) {
+          rows = [
+            { _id: 'https://www.google.com/', count: 2 },
+            { _id: 'https://google.com/search', count: 1 },
+            { _id: 'https://gentsallaku.it/blog', count: 4 },
+          ];
+        } else if (json.includes('"entries"')) {
+          rows = [{ _id: '/en/blog/rxjs', entries: 3, sources: [{ k: 'search', v: 2 }, { k: 'direct', v: 1 }] }];
+        } else if (json.includes('"$sessionId"')) {
+          rows = [{ _id: 's1', pages: 4, durationMs: 95_000 }];
+        }
+        return { exec: jest.fn().mockResolvedValue(rows) };
+      });
+      const recent = [
+        { createdAt: new Date('2026-11-22T10:00:00Z'), trafficSource: 'search', referrer: 'https://www.google.com/',
+          utmSource: '', path: '/en/blog/rxjs?utm=x', country: 'IT', city: 'Milano', deviceType: 'Mobile', sessionId: 's1', durationMs: 30_000 },
+        { createdAt: new Date('2026-11-22T09:00:00Z'), trafficSource: 'direct', referrer: '',
+          utmSource: '', path: '/', country: 'AL', city: '', deviceType: 'Desktop', sessionId: '', durationMs: 0 },
+      ];
+      const chain: any = { sort: jest.fn(() => chain), limit: jest.fn(() => chain), select: jest.fn(() => chain), lean: jest.fn(() => chain), exec: jest.fn().mockResolvedValue(recent) };
+      mockPageViewModel.find = jest.fn(() => chain);
+
+      const report = await service.getAcquisition(7);
+
+      // Solo arrivi: la navigazione interna non è una provenienza.
+      expect(mockPageViewModel.countDocuments.mock.calls[0][0].navigationType).toEqual({ $ne: 'internal' });
+      expect(report.days).toBe(7);
+      expect(report.totalEntries).toBe(5);
+      expect(report.sources).toEqual([{ label: 'search', count: 3 }, { label: 'direct', count: 2 }]);
+      // google.com con e senza www finisce in una riga; il sito stesso viene scartato.
+      expect(report.referrers).toEqual([{ label: 'google.com', count: 3 }]);
+      expect(report.entryPages).toEqual([{ path: '/en/blog/rxjs', entries: 3, sources: { search: 2, direct: 1 } }]);
+      expect(report.recentVisits).toEqual([
+        { at: '2026-11-22T10:00:00.000Z', trafficSource: 'search', referrerHost: 'google.com', utmSource: '',
+          entryPath: '/en/blog/rxjs', country: 'IT', city: 'Milano', deviceType: 'Mobile', pages: 4, durationSec: 95 },
+        { at: '2026-11-22T09:00:00.000Z', trafficSource: 'direct', referrerHost: '', utmSource: '',
+          entryPath: '/', country: 'AL', city: '', deviceType: 'Desktop', pages: 1, durationSec: null },
+      ]);
+    });
+  });
 });
