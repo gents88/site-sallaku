@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { promises as fs } from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 /**
@@ -18,9 +19,12 @@ export class PageShellService {
   private cached: { mtimeMs: number; html: string } | null = null;
 
   constructor(config: ConfigService) {
-    // Sul server il backend gira in ~/app e il frontend sta in ~/httpdocs.
+    // Sul server il frontend sta in ~/httpdocs. Il backend gira da
+    // ~/app/backend/current (pm2, ecosystem.config.js): un percorso relativo alla
+    // cwd puntava a ~/app/backend/httpdocs, inesistente, e ogni /blog/<slug> non
+    // prerenderizzato rispondeva 503.
     this.shellPath =
-      config.get<string>('FRONTEND_SHELL_PATH') || path.resolve(process.cwd(), '../httpdocs/index.csr.html');
+      config.get<string>('FRONTEND_SHELL_PATH') || path.join(os.homedir(), 'httpdocs', 'index.csr.html');
   }
 
   /** La shell, o null se il file non è leggibile (es. ambiente senza frontend). */
