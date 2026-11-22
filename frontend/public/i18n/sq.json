@@ -1672,7 +1672,10 @@
     "delete": "Fshi",
     "persistence_hint": "Ndryshimet nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë.",
     "seo_title": "Editor PDF Falas — Bashko, Ndaj, Rrotullo dhe Shto Watermark",
-    "seo_description": "Bashko PDF, ndaj dhe nxirr faqe, rrotullo apo fshi faqe dhe shto watermark — gjithçka në shfletues, skedarët nuk largohen kurrë nga pajisja jote."
+    "seo_description": "Bashko PDF, ndaj dhe nxirr faqe, rrotullo apo fshi faqe dhe shto watermark — gjithçka në shfletues, skedarët nuk largohen kurrë nga pajisja jote.",
+    "undo": "Zhbëj",
+    "duplicate": "Dyfisho faqen",
+    "undone": "Ndryshimi u zhbë"
   },
   "viewer": {
     "title": "Shikues PDF",

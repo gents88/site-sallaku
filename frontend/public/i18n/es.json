@@ -1672,7 +1672,10 @@
     "delete": "Eliminar",
     "persistence_hint": "Los cambios no se guardan: se pierden al recargar o cerrar esta pestaña.",
     "seo_title": "Editor de PDF Gratuito — Une, Divide, Rota y Añade Marca de Agua",
-    "seo_description": "Une PDF, divide y extrae páginas, rota o elimina páginas y añade marcas de agua — todo en el navegador, los archivos nunca salen de tu dispositivo."
+    "seo_description": "Une PDF, divide y extrae páginas, rota o elimina páginas y añade marcas de agua — todo en el navegador, los archivos nunca salen de tu dispositivo.",
+    "undo": "Deshacer",
+    "duplicate": "Duplicar página",
+    "undone": "Cambio deshecho"
   },
   "viewer": {
     "title": "Visor de PDF",

@@ -1672,7 +1672,10 @@
     "delete": "Elimina",
     "persistence_hint": "Le modifiche non vengono salvate: si perdono ricaricando o chiudendo questa scheda.",
     "seo_title": "Editor PDF Gratuito — Unisci, Dividi, Ruota e Aggiungi Filigrana",
-    "seo_description": "Unisci PDF, dividi ed estrai pagine, ruota o elimina pagine e aggiungi filigrane — interamente nel browser, i file non lasciano mai il tuo dispositivo."
+    "seo_description": "Unisci PDF, dividi ed estrai pagine, ruota o elimina pagine e aggiungi filigrane — interamente nel browser, i file non lasciano mai il tuo dispositivo.",
+    "undo": "Annulla",
+    "duplicate": "Duplica pagina",
+    "undone": "Modifica annullata"
   },
   "viewer": {
     "title": "Visualizzatore PDF",
