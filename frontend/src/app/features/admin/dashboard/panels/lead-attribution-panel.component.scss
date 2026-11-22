@@ -1,0 +1,94 @@
+// Pannello "Da dove arrivano i contatti". Gli stili comuni (panel-kpi,
+// panel-error) arrivano da panel-shared.scss.
+
+.lead-attr {
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__subtitle {
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    &--spaced {
+      margin-top: 1rem;
+    }
+  }
+
+  &__hint {
+    margin: -0.3rem 0 0.6rem;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+
+  &__bar-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 2fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+  }
+
+  &__bar-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__bar-track {
+    height: 8px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-text-muted) 18%, transparent);
+    overflow: hidden;
+  }
+
+  &__bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-success);
+  }
+
+  &__table-wrap {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+
+    th,
+    td {
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--color-text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+
+  &__path {
+    font-family: monospace;
+    word-break: break-all;
+  }
+
+  &__muted {
+    color: var(--color-text-muted);
+  }
+
+  &__table &__num,
+  &__num {
+    text-align: right;
+    white-space: nowrap;
+  }
+}

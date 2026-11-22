@@ -164,6 +164,18 @@ export class AdminOverviewService {
     return { ...summary, quota: this.aiQuota.getConfig(), enabled };
   }
 
+  /**
+   * Solo alcune sezioni (aggiornamento frequente della dashboard: chat live,
+   * errori, contatori). Niente cache: sono le sezioni leggere, e uno snapshot
+   * parziale non deve sostituire quello completo in cache. Le chiavi
+   * sconosciute vengono ignorate.
+   */
+  async getSections(keys: string[]): Promise<AdminOverviewResponse> {
+    const loaders = this.loaders();
+    const known = [...new Set(keys)].filter((k) => k in loaders);
+    return this.run(Object.fromEntries(known.map((k) => [k, loaders[k]])));
+  }
+
   async getOverview(fresh = false, now = Date.now()): Promise<AdminOverviewResponse> {
     if (!fresh && this.cached && now - this.cached.at < OVERVIEW_TTL_MS) return this.cached.value;
     // Richieste concorrenti (più schede allo scadere del TTL) condividono un solo calcolo.
@@ -181,8 +193,12 @@ export class AdminOverviewService {
     return this.inFlight;
   }
 
-  private async build(): Promise<AdminOverviewResponse> {
-    const loaders: Record<string, Loader> = {
+  private build(): Promise<AdminOverviewResponse> {
+    return this.run(this.loaders());
+  }
+
+  private loaders(): Record<string, Loader> {
+    return {
       core: () => this.coreStats(),
       projectsCount: async () => (await this.projects.findAll()).length,
       experiencesCount: async () => (await this.experiences.findAll()).length,
@@ -209,7 +225,9 @@ export class AdminOverviewService {
       notFound: () => this.notFound.summary(10),
       security: () => this.security.summary(),
     };
+  }
 
+  private async run(loaders: Record<string, Loader>): Promise<AdminOverviewResponse> {
     const keys = Object.keys(loaders);
     const settled = await Promise.allSettled(keys.map((k) => Promise.resolve().then(loaders[k])));
 

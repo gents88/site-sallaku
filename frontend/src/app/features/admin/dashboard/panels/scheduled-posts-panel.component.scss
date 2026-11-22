@@ -1,0 +1,5 @@
+// Stili del pannello scheduled posts panel. I comuni (panel-kpi, panel-btn, panel-error…)
+// arrivano da panel-shared.scss.
+
+a.sp-title { color: inherit; font-weight: 600; text-decoration: none; }
+a.sp-title:hover { text-decoration: underline; }

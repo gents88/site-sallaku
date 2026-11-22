@@ -1,0 +1,54 @@
+@if (failed) {
+  <p class="panel-error" role="alert">{{ 'admin.overview_partial_error' | translate }}</p>
+} @else {
+  <div class="panel-kpis">
+    <div class="panel-kpi" [class.panel-kpi--bad]="data.open > 0" [class.panel-kpi--ok]="data.open === 0">
+      <strong>{{ data.open | number }}</strong>
+      <span>{{ 'server_errors.open' | translate }}</span>
+    </div>
+    <div class="panel-kpi" [class.panel-kpi--warn]="data.today > 0">
+      <strong>{{ data.today | number }}</strong>
+      <span>{{ 'server_errors.today' | translate }}</span>
+    </div>
+    <div class="panel-kpi">
+      <strong>{{ data.week | number }}</strong>
+      <span>{{ 'server_errors.week' | translate }}</span>
+    </div>
+  </div>
+
+  @if (data.recent.length) {
+    <ul class="panel-list">
+      @for (e of data.recent; track e._id) {
+        <li class="err-row">
+          <div class="err-row__head">
+            <span class="panel-badge panel-badge--bad">{{ e.status }}</span>
+            <span class="err-row__route panel-mono panel-ellipsis" [title]="e.path">{{ e.method }} {{ e.route }}</span>
+            <strong [title]="'server_errors.total' | translate">×{{ e.count | number }}</strong>
+          </div>
+          <span class="err-row__msg">{{ e.name }}: {{ e.message || '—' }}</span>
+          <span class="panel-sub">{{ 'server_errors.last_seen' | translate }} {{ e.lastSeenAt | date: 'dd/MM HH:mm' }} · {{ 'server_errors.today_count' | translate: { n: e.today } }}</span>
+          @if (expanded() === e._id && e.stack) {
+            <pre class="err-stack">{{ e.stack }}</pre>
+          }
+          <div class="err-row__actions">
+            @if (e.stack) {
+              <button type="button" class="panel-btn" (click)="toggle(e._id)" [attr.aria-expanded]="expanded() === e._id">
+                {{ (expanded() === e._id ? 'server_errors.hide_stack' : 'server_errors.show_stack') | translate }}
+              </button>
+            }
+            <button type="button" class="panel-btn" (click)="resolve(e._id)" [disabled]="busy()">{{ 'server_errors.resolve' | translate }}</button>
+          </div>
+        </li>
+      }
+    </ul>
+    <div class="panel-actions">
+      <button type="button" class="panel-btn panel-btn--danger" (click)="resolveAll()" [disabled]="busy()">{{ 'server_errors.resolve_all' | translate }}</button>
+    </div>
+  } @else {
+    <p class="panel-empty">{{ 'server_errors.none' | translate }}</p>
+  }
+
+  @if (error()) {
+    <p class="panel-error" role="alert">{{ 'feature_flags.save_error' | translate }}</p>
+  }
+}

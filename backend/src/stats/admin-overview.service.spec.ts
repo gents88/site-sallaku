@@ -117,6 +117,18 @@ describe('AdminOverviewService', () => {
     expect(failing).toHaveBeenCalledTimes(2);
   });
 
+  it('getSections calcola solo le sezioni chieste, ignora quelle sconosciute e non tocca la cache', async () => {
+    const { service, deps } = makeService();
+    const res = await service.getSections(['liveHandoffs', 'serverErrors', 'nonEsiste', 'liveHandoffs']);
+
+    expect(Object.keys(res.sections).sort()).toEqual(['liveHandoffs', 'serverErrors']);
+    expect(res.errors).toEqual([]);
+    expect((deps.analytics as Record<string, jest.Mock>).getAdvancedAnalytics).not.toHaveBeenCalled();
+    // Lo snapshot completo successivo si calcola davvero (la parziale non è finita in cache).
+    const full = await service.getOverview();
+    expect(full.sections.advanced).toEqual({});
+  });
+
   it('counts what is waiting for the admin bell', async () => {
     const { service, deps } = makeService({
       liveHandoff: { listActive: jest.fn().mockResolvedValue([{ status: 'requested' }, { status: 'live' }, { status: 'notified' }]) },

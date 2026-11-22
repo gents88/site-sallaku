@@ -1,10 +1,4 @@
-<div class="acq__periods" role="group" [attr.aria-label]="'acquisition.period' | translate">
-  @for (d of periods; track d) {
-    <button type="button" class="panel-btn acq__period" [attr.aria-pressed]="days() === d" (click)="setDays(d)">
-      {{ 'acquisition.last_days' | translate: { days: d } }}
-    </button>
-  }
-</div>
+<app-period-picker [days]="days()" (daysChange)="setDays($event)" />
 
 @if (failed()) {
   <p class="panel-error" role="alert">{{ 'admin.overview_partial_error' | translate }}</p>
@@ -13,6 +7,7 @@
     <div class="panel-kpi panel-kpi--ok">
       <strong>{{ r.totalEntries | number }}</strong>
       <span>{{ 'acquisition.total_entries' | translate }}</span>
+      <app-period-delta [current]="r.totalEntries" [previous]="r.previousTotalEntries" [days]="r.days" />
     </div>
     @for (s of r.sources; track s.label) {
       <div class="panel-kpi">

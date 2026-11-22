@@ -1,0 +1,7 @@
+<div class="periods" role="group" [attr.aria-label]="'acquisition.period' | translate">
+  @for (d of periods; track d) {
+    <button type="button" class="periods__btn" [attr.aria-pressed]="days() === d" (click)="select(d)">
+      {{ 'acquisition.last_days' | translate: { days: d } }}
+    </button>
+  }
+</div>

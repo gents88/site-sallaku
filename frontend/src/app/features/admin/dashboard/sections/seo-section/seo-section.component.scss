@@ -1,0 +1,23 @@
+@use '../../dashboard-shared';
+
+:host {
+  display: block;
+}
+
+.seo__kpis {
+  margin-bottom: 1.25rem;
+}
+
+.seo__subtitle {
+  margin: 1.25rem 0 0.6rem;
+  font-size: 0.85rem;
+}
+
+.seo__detail {
+  font-size: 0.75rem;
+}
+
+.h-bar-label--mono {
+  font-family: monospace;
+  font-size: 0.8rem;
+}
