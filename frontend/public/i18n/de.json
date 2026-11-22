@@ -70,7 +70,8 @@
       "users": "Benutzer",
       "ai_assistant": "KI-Assistent",
       "live_chat": "Live-Chat",
-      "sign_pdf": "PDF signieren"
+      "sign_pdf": "PDF signieren",
+      "compress_pdf": "PDF komprimieren"
     }
   },
   "lang": {
@@ -1532,7 +1533,9 @@
     "seo_title": "Kostenlose PDF- und KI-Werkzeuge Online",
     "seo_description": "Kostenlose PDF- und KI-Werkzeuge online: OCR, Konverter, Editor, Viewer, Scanner, Übersetzer, Zusammenfassung und Präsentationsgenerator.",
     "sign_pdf_title": "PDF signieren",
-    "sign_pdf_desc": "PDF mit gezeichneter, getippter oder hochgeladener Unterschrift signieren und Text, Datum und Häkchen hinzufügen."
+    "sign_pdf_desc": "PDF mit gezeichneter, getippter oder hochgeladener Unterschrift signieren und Text, Datum und Häkchen hinzufügen.",
+    "compress_pdf_title": "PDF komprimieren",
+    "compress_pdf_desc": "PDF verkleinern, um es per E-Mail zu senden oder hochzuladen — mit drei Kompressionsstufen."
   },
   "about_manage": {
     "title": "About-Bereich",
@@ -3113,6 +3116,35 @@
           "a": "Ja: Unterschrift auswählen und „Auf allen Seiten“ wählen."
         }
       ]
+    },
+    "compress_pdf": {
+      "about": "Der Online-PDF-Kompressor verkleinert ein PDF, damit Sie es per E-Mail senden oder in ein Formular mit Größenlimit hochladen können. Sie wählen, ob die Seiten mit geringerer Auflösung neu gezeichnet werden — deutlich kleiner, ideal für Scans — oder nur die Dateistruktur geordnet wird, sodass der Text markierbar bleibt. Sie sehen die Größe vorher und nachher, und die Datei wird in Ihrem Browser verarbeitet.",
+      "steps": [
+        "PDF öffnen: in das Feld ziehen oder vom Gerät auswählen.",
+        "Wählen, wie komprimiert wird: „Kleinere Datei“ (Seiten als Bilder) oder „Text beibehalten“.",
+        "Bei Seiten als Bilder die Stufe einstellen: Leicht, Mittel oder Stark.",
+        "„PDF komprimieren“ drücken, Größe vorher und nachher prüfen und herunterladen."
+      ],
+      "privacy": "Das PDF wird vollständig in Ihrem Browser verarbeitet und nie hochgeladen. Nach dem Schließen der Seite bleibt nichts zurück.",
+      "limits": "„Kleinere Datei“ macht jede Seite zu einem Bild, der Text lässt sich dann nicht mehr markieren oder durchsuchen — nutzen Sie „Text beibehalten“, wenn Sie das brauchen, bei geringerer Ersparnis. PDFs mit mehr als 400 Seiten oder Passwortschutz werden nicht unterstützt. Ist das Ergebnis nicht spürbar kleiner, sagt Ihnen das Werkzeug das und Sie können das Original behalten.",
+      "faq": [
+        {
+          "q": "Wie viel kleiner wird mein PDF?",
+          "a": "Das hängt vom Inhalt ab. Scans und Fotos schrumpfen oft um 70–90 %; Textdokumente sparen wenig, außer Sie akzeptieren, die Seiten in Bilder umzuwandeln."
+        },
+        {
+          "q": "Wird meine Datei irgendwohin hochgeladen?",
+          "a": "Nein. Das PDF wird in Ihrem Browser komprimiert und verlässt Ihr Gerät nie."
+        },
+        {
+          "q": "Warum kann ich den Text nach dem Komprimieren nicht mehr markieren?",
+          "a": "Im Modus „Kleinere Datei“ wird jede Seite als Bild neu gezeichnet. Wählen Sie „Text beibehalten“, um ihn zu erhalten."
+        },
+        {
+          "q": "Ist es kostenlos?",
+          "a": "Ja, kostenlos und ohne Registrierung."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3234,5 +3266,51 @@
     "err_image": "Das Bild konnte nicht gelesen werden. Versuchen Sie ein anderes.",
     "err_no_fields": "Fügen Sie zuerst eine Unterschrift, einen Text oder ein Datum hinzu.",
     "err_export": "Das PDF konnte nicht erstellt werden. Versuchen Sie es erneut."
+  },
+  "compress_pdf": {
+    "title": "PDF komprimieren",
+    "subtitle": "Verkleinern Sie ein PDF, damit es in eine E-Mail oder ein Formular passt — im Browser, ohne die Datei irgendwohin zu senden.",
+    "seo_title": "PDF Online Komprimieren Kostenlos — PDF verkleinern",
+    "seo_description": "PDF kostenlos online komprimieren: Stufe wählen, Ersparnis sehen und herunterladen. Alles läuft im Browser — die Datei wird nie hochgeladen.",
+    "drop_prompt": "PDF hierher ziehen oder klicken zum Auswählen",
+    "drop_hint": "Bis zu 400 Seiten — Scans, Formulare, Berichte",
+    "privacy_note": "Die Datei bleibt auf Ihrem Gerät: Sie wird auf keinen Server hochgeladen.",
+    "workspace_banner_title": "Im Workspace wartet eine Datei",
+    "workspace_banner_use": "Verwenden",
+    "workspace_banner_dismiss": "Ignorieren",
+    "file_info": "{{pages}} Seiten · {{size}}",
+    "close_file": "Datei schließen",
+    "mode_label": "Wie komprimieren",
+    "mode_images_title": "Kleinere Datei (Seiten als Bilder)",
+    "mode_images_desc": "Zeichnet jede Seite mit geringerer Auflösung neu. Deutlich kleiner, ideal für Scans und Fotos.",
+    "mode_text_title": "Text beibehalten",
+    "mode_text_desc": "Ordnet nur die Dateistruktur neu. Der Text bleibt markier- und durchsuchbar, die Ersparnis ist aber meist gering.",
+    "level_label": "Kompressionsstufe",
+    "level_light": "Leicht",
+    "level_light_desc": "Etwa {{dpi}} dpi — noch gut zum Drucken",
+    "level_medium": "Mittel",
+    "level_medium_desc": "Etwa {{dpi}} dpi — gut für Bildschirm und E-Mail",
+    "level_strong": "Stark",
+    "level_strong_desc": "Etwa {{dpi}} dpi — am kleinsten, nur für den Bildschirm",
+    "text_warning": "Das sieht nach einem Textdokument aus. Bei „Seiten als Bilder“ lässt sich der Text nicht mehr markieren oder durchsuchen. Wählen Sie „Text beibehalten“, wenn Sie das brauchen.",
+    "images_note": "Die Seiten werden zu Bildern: Der Text lässt sich nicht mehr markieren oder durchsuchen. Die Seitengrößen bleiben gleich.",
+    "btn_compress": "PDF komprimieren",
+    "progress": "Seite {{done}} von {{total}}",
+    "cancel": "Abbrechen",
+    "cancelled": "Komprimierung abgebrochen.",
+    "result_saved": "Fertig: {{percent}} % kleiner",
+    "no_gain": "Dieses PDF ließ sich nicht spürbar verkleinern",
+    "no_gain_hint": "Es ist vermutlich schon optimiert. Versuchen Sie „Kleinere Datei“ mit der Stufe Stark oder behalten Sie das Original.",
+    "before": "Vorher",
+    "after": "Nachher",
+    "btn_download": "Komprimiertes PDF herunterladen",
+    "btn_download_anyway": "Trotzdem herunterladen",
+    "workspace_send": "An Workspace senden",
+    "workspace_sent": "Gesendet",
+    "images_after_note": "In dieser Version sind die Seiten Bilder, der Text ist also nicht mehr markierbar.",
+    "err_not_pdf": "Bitte wählen Sie eine PDF-Datei.",
+    "err_open": "Dieses PDF konnte nicht geöffnet werden. Es ist möglicherweise beschädigt oder passwortgeschützt.",
+    "err_compress": "Das PDF konnte nicht komprimiert werden. Versuchen Sie eine andere Stufe oder eine kleinere Datei.",
+    "err_too_many_pages": "Dieses PDF hat zu viele Seiten für den Browser (Limit 400)."
   }
 }
