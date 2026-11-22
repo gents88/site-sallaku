@@ -69,7 +69,8 @@
       "contacts": "Contatti",
       "users": "Utenti",
       "ai_assistant": "Assistente AI",
-      "live_chat": "Chat live"
+      "live_chat": "Chat live",
+      "sign_pdf": "Firma PDF"
     }
   },
   "lang": {
@@ -1529,7 +1530,9 @@
     "my_files_title": "I miei file",
     "my_files_desc": "Ritrova i risultati che hai salvato dai tool AI",
     "seo_title": "Strumenti PDF e AI Gratuiti Online",
-    "seo_description": "Strumenti PDF e AI gratuiti online: OCR, convertitore, editor, visualizzatore, scanner, traduttore, riassunto e generatore di presentazioni."
+    "seo_description": "Strumenti PDF e AI gratuiti online: OCR, convertitore, editor, visualizzatore, scanner, traduttore, riassunto e generatore di presentazioni.",
+    "sign_pdf_title": "Firma PDF",
+    "sign_pdf_desc": "Firma un PDF con una firma disegnata, scritta o caricata e aggiungi testo, data e spunte."
   },
   "about_manage": {
     "title": "Sezione About",
@@ -3077,6 +3080,39 @@
           "a": "Italiano, inglese, spagnolo, francese, tedesco, portoghese e albanese."
         }
       ]
+    },
+    "sign_pdf": {
+      "about": "Lo strumento per firmare PDF online permette di firmare un contratto o un modulo senza stamparlo. Disegna la firma con il dito o con il mouse, scrivi il tuo nome in stile calligrafico oppure carica la foto della tua firma, poi posizionala su qualsiasi pagina insieme a testo, data e spunte. Il PDF firmato viene creato nel tuo browser.",
+      "steps": [
+        "Apri il PDF: trascinalo nel riquadro o sceglilo dal dispositivo.",
+        "Scegli uno strumento — Firma, Testo, Data, spunta o croce — e l’elemento compare sulla pagina.",
+        "Trascinalo dove serve; usa la maniglia per ridimensionarlo e i pulsanti per duplicarlo, ripeterlo su tutte le pagine o eliminarlo.",
+        "Premi “Scarica il PDF firmato”."
+      ],
+      "privacy": "Il PDF e la tua firma vengono elaborati interamente nel browser e non vengono mai caricati. Se spunti “Ricorda su questo dispositivo”, la firma resta solo nella memoria locale di questo browser e puoi rimuoverla quando vuoi.",
+      "limits": "Aggiunge una firma elettronica semplice — l’immagine della tua firma — e non produce una firma qualificata o digitale con certificazione legale. I PDF protetti da password non si possono aprire. Le modifiche si perdono se chiudi la scheda prima di scaricare.",
+      "faq": [
+        {
+          "q": "È gratuito?",
+          "a": "Sì, completamente gratuito e senza registrazione."
+        },
+        {
+          "q": "Il mio documento viene caricato da qualche parte?",
+          "a": "No. Il PDF e la firma vengono elaborati nel tuo browser e non lasciano mai il tuo dispositivo."
+        },
+        {
+          "q": "La firma ha valore legale?",
+          "a": "È una firma elettronica semplice, accettata per molti documenti di uso quotidiano, ma non è una firma qualificata o digitale. Per i documenti che la richiedono serve un servizio certificato."
+        },
+        {
+          "q": "Posso firmare dal telefono?",
+          "a": "Sì. Puoi disegnare la firma con il dito, poi trascinarla e ridimensionarla sulla pagina."
+        },
+        {
+          "q": "Posso mettere la firma su ogni pagina?",
+          "a": "Sì: seleziona la firma e scegli “Su tutte le pagine”."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3132,5 +3168,71 @@
       "h1": "Da immagine a testo",
       "lead": "Trasforma una foto, uno screenshot o una pagina scansionata in testo che puoi copiare e modificare: carica l'immagine e scegli la lingua."
     }
+  },
+  "sign_pdf": {
+    "title": "Firma PDF",
+    "subtitle": "Firma un PDF, aggiungi testo, data e spunte — direttamente nel browser, senza caricare il file.",
+    "seo_title": "Firma PDF Online Gratis — Aggiungi Firma, Testo e Data",
+    "seo_description": "Firma un PDF online gratis: disegna, scrivi o carica la tua firma, aggiungi testo, data e spunte e scarica. Tutto avviene nel tuo browser: il file non viene mai caricato.",
+    "drop_prompt": "Trascina qui un PDF o clicca per sceglierlo",
+    "drop_hint": "Contratti, moduli, dichiarazioni — qualsiasi PDF",
+    "privacy_note": "Il file resta sul tuo dispositivo: non viene caricato su nessun server.",
+    "workspace_banner_title": "C’è un file nel Workspace",
+    "workspace_banner_use": "Usalo",
+    "workspace_banner_dismiss": "Ignora",
+    "tools_label": "Strumenti",
+    "tool_signature": "Firma",
+    "tool_text": "Testo",
+    "tool_date": "Data",
+    "tool_check": "Spunta",
+    "tool_cross": "Croce",
+    "ink_label": "Colore dell’inchiostro",
+    "ink_black": "Inchiostro nero",
+    "ink_blue": "Inchiostro blu",
+    "change_signature": "Cambia firma",
+    "forget_signature": "Dimentica la firma salvata",
+    "undo": "Annulla",
+    "close_file": "Chiudi file",
+    "selected_label": "Elemento selezionato",
+    "field_text_label": "Testo dell’elemento selezionato",
+    "field_smaller": "Più piccolo",
+    "field_bigger": "Più grande",
+    "field_duplicate": "Duplica",
+    "field_all_pages": "Su tutte le pagine",
+    "field_delete": "Elimina",
+    "hint_place": "Scegli uno strumento qui sopra: l’elemento compare sulla pagina, poi trascinalo dove serve.",
+    "hint_drag": "Trascina gli elementi per spostarli. Toccane uno per ridimensionarlo o modificarne il testo.",
+    "page_prev": "Pagina precedente",
+    "page_next": "Pagina successiva",
+    "page_label": "Pagina",
+    "items_here": "{{count}} elementi in questa pagina",
+    "btn_download": "Scarica il PDF firmato",
+    "downloading": "Preparazione…",
+    "success": "Fatto: il PDF firmato è stato scaricato.",
+    "disclaimer": "Aggiunge una firma elettronica semplice (l’immagine della tua firma). Non è una firma qualificata o digitale con certificazione legale.",
+    "workspace_send": "Invia a Workspace",
+    "workspace_sent": "Inviato",
+    "pad_title": "Crea la tua firma",
+    "pad_tab_draw": "Disegna",
+    "pad_tab_type": "Scrivi",
+    "pad_tab_upload": "Immagine",
+    "pad_draw_hint": "Firma nel riquadro con il dito o con il mouse",
+    "pad_type_placeholder": "Scrivi il tuo nome",
+    "pad_type_sample": "Il tuo nome",
+    "pad_upload_pick": "Scegli una foto della tua firma",
+    "pad_upload_hint": "Firma su un foglio bianco e scatta una foto nitida",
+    "pad_remove_bg": "Rimuovi lo sfondo bianco",
+    "pad_clear": "Cancella",
+    "pad_remember": "Ricorda su questo dispositivo",
+    "pad_remember_hint": "Salvata solo in questo browser, non viene inviata da nessuna parte",
+    "pad_cancel": "Annulla",
+    "pad_use": "Usa la firma",
+    "text_default": "Testo",
+    "err_not_pdf": "Scegli un file PDF.",
+    "err_open": "Impossibile aprire questo PDF. Potrebbe essere danneggiato o protetto da password.",
+    "err_render": "Non è stato possibile mostrare la pagina. Riprova.",
+    "err_image": "Non è stato possibile leggere l’immagine. Provane un’altra.",
+    "err_no_fields": "Aggiungi prima una firma, un testo o una data.",
+    "err_export": "Non è stato possibile creare il PDF. Riprova."
   }
 }

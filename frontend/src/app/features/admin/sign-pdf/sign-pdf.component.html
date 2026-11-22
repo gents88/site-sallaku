@@ -1,0 +1,221 @@
+<div class="cp-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+  <header class="cp-header">
+    <h1 class="cp-title">✍️ {{ 'sign_pdf.title' | translate }}</h1>
+    <p class="cp-subtitle">{{ 'sign_pdf.subtitle' | translate }}</p>
+  </header>
+
+  @if (workspaceItem()) {
+    <div class="workspace-banner">
+      <span class="workspace-banner-icon">🔗</span>
+      <div class="workspace-banner-text">
+        <strong>{{ 'sign_pdf.workspace_banner_title' | translate }}</strong>
+        <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+      </div>
+      <div class="workspace-banner-actions">
+        <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">{{ 'sign_pdf.workspace_banner_use' | translate }}</button>
+        <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">{{ 'sign_pdf.workspace_banner_dismiss' | translate }}</button>
+      </div>
+    </div>
+  }
+
+  @if (numPages() === 0) {
+    <!-- ── Apertura ─────────────────────────────── -->
+    <div class="cp-panel">
+      <div class="dz" appFileDropzone #dz="fileDropzone" (click)="pick.click()" (filesDropped)="onFilesDropped($event)" [class.dz--drag]="dz.isDragging">
+        <input #pick type="file" hidden accept=".pdf,application/pdf" (change)="select($event)">
+        <span class="dz-icon">📂</span>
+        <strong>{{ 'sign_pdf.drop_prompt' | translate }}</strong>
+        <small>{{ 'sign_pdf.drop_hint' | translate }}</small>
+      </div>
+      <app-sample-file-button (picked)="onFilesDropped($event)" />
+      @if (loading()) {
+        <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill"></div></div></div>
+      }
+      @if (msg()) {
+        <p class="msg" [class.msg--ok]="msgOk()" role="alert">{{ msg() }}</p>
+      }
+      <p class="privacy-note">🔒 {{ 'sign_pdf.privacy_note' | translate }}</p>
+    </div>
+  } @else {
+    <!-- ── Strumenti ────────────────────────────── -->
+    <section class="cp-panel tools-panel" aria-label="{{ 'sign_pdf.tools_label' | translate }}">
+      <div class="tool-row">
+        <button type="button" class="tool tool--primary" (click)="addSignature()">
+          <span aria-hidden="true">✍️</span> {{ 'sign_pdf.tool_signature' | translate }}
+        </button>
+        <button type="button" class="tool" (click)="addText('text')"><span aria-hidden="true">Aa</span> {{ 'sign_pdf.tool_text' | translate }}</button>
+        <button type="button" class="tool" (click)="addText('date')"><span aria-hidden="true">📅</span> {{ 'sign_pdf.tool_date' | translate }}</button>
+        <button type="button" class="tool tool--icon" (click)="addMark('check')" [attr.aria-label]="'sign_pdf.tool_check' | translate" [attr.title]="'sign_pdf.tool_check' | translate">✓</button>
+        <button type="button" class="tool tool--icon" (click)="addMark('cross')" [attr.aria-label]="'sign_pdf.tool_cross' | translate" [attr.title]="'sign_pdf.tool_cross' | translate">✗</button>
+      </div>
+      <div class="tool-row tool-row--meta">
+        <span class="ink" role="group" [attr.aria-label]="'sign_pdf.ink_label' | translate">
+          <button type="button" class="ink-dot" [style.background]="inkBlack" [class.ink-dot--on]="ink() === inkBlack" (click)="setInk(inkBlack)" [attr.aria-label]="'sign_pdf.ink_black' | translate"></button>
+          <button type="button" class="ink-dot" [style.background]="inkBlue" [class.ink-dot--on]="ink() === inkBlue" (click)="setInk(inkBlue)" [attr.aria-label]="'sign_pdf.ink_blue' | translate"></button>
+        </span>
+        @if (savedSignature()) {
+          <button type="button" class="link-btn" (click)="openPad()">{{ 'sign_pdf.change_signature' | translate }}</button>
+        }
+        <button type="button" class="link-btn" [disabled]="!canUndo()" (click)="undo()">↩ {{ 'sign_pdf.undo' | translate }}</button>
+        <button type="button" class="link-btn" (click)="closeFile()">✕ {{ 'sign_pdf.close_file' | translate }}</button>
+      </div>
+
+      @if (selected(); as sel) {
+        <div class="sel-bar" role="toolbar" [attr.aria-label]="'sign_pdf.selected_label' | translate">
+          @if (selectedIsText()) {
+            <input class="sel-text" type="text" [value]="sel.text ?? ''" (input)="onTextInput($any($event.target).value)" [attr.aria-label]="'sign_pdf.field_text_label' | translate" maxlength="200">
+          }
+          <button type="button" class="sel-btn" (click)="resizeSelected(1 / 1.15)" [attr.aria-label]="'sign_pdf.field_smaller' | translate" [attr.title]="'sign_pdf.field_smaller' | translate">−</button>
+          <button type="button" class="sel-btn" (click)="resizeSelected(1.15)" [attr.aria-label]="'sign_pdf.field_bigger' | translate" [attr.title]="'sign_pdf.field_bigger' | translate">+</button>
+          <button type="button" class="sel-btn" (click)="duplicateSelected()" [attr.aria-label]="'sign_pdf.field_duplicate' | translate" [attr.title]="'sign_pdf.field_duplicate' | translate">⧉</button>
+          @if (numPages() > 1) {
+            <button type="button" class="sel-btn sel-btn--wide" (click)="applyToAllPages()">{{ 'sign_pdf.field_all_pages' | translate }}</button>
+          }
+          <button type="button" class="sel-btn sel-btn--danger" (click)="removeSelected()" [attr.aria-label]="'sign_pdf.field_delete' | translate" [attr.title]="'sign_pdf.field_delete' | translate">🗑</button>
+        </div>
+      } @else {
+        <p class="hint-line">{{ (fields().length ? 'sign_pdf.hint_drag' : 'sign_pdf.hint_place') | translate }}</p>
+      }
+    </section>
+
+    <!-- ── Pagina ───────────────────────────────── -->
+    <section class="cp-panel stage-panel">
+      <div class="page-nav">
+        <button type="button" class="nav-btn" (click)="goTo(pageNum() - 1)" [disabled]="pageNum() <= 1" [attr.aria-label]="'sign_pdf.page_prev' | translate">‹</button>
+        <span class="page-jump">
+          <input type="number" min="1" [max]="numPages()" [value]="pageNum()" (change)="goTo($any($event.target).value)" [attr.aria-label]="'sign_pdf.page_label' | translate">
+          / {{ numPages() }}
+        </span>
+        <button type="button" class="nav-btn" (click)="goTo(pageNum() + 1)" [disabled]="pageNum() >= numPages()" [attr.aria-label]="'sign_pdf.page_next' | translate">›</button>
+        <span class="page-count">{{ 'sign_pdf.items_here' | translate: { count: pageFields().length } }}</span>
+      </div>
+
+      <div #stage class="stage" [style.aspect-ratio]="'1 / ' + aspect()" (pointerdown)="onStagePointerDown($event)">
+        @if (pageUrl(); as src) {
+          <img class="stage-img" [src]="src" [alt]="('sign_pdf.page_label' | translate) + ' ' + pageNum()" draggable="false">
+        }
+        @if (rendering()) { <span class="spinner stage-spinner" aria-hidden="true"></span> }
+        @for (f of pageFields(); track f.id) {
+          <div class="field"
+               [class.field--selected]="f.id === selectedId()"
+               [class.field--text]="f.fs !== undefined"
+               [style.left.%]="f.x * 100" [style.top.%]="f.y * 100"
+               [style.width.%]="f.fs === undefined ? f.w * 100 : null"
+               [style.height.%]="f.fs === undefined ? f.h * 100 : null"
+               tabindex="0" role="button"
+               [attr.aria-label]="('sign_pdf.tool_' + (f.kind === 'date' ? 'date' : f.kind)) | translate"
+               [attr.aria-pressed]="f.id === selectedId()"
+               (pointerdown)="onFieldPointerDown($event, f, 'move')"
+               (pointermove)="onFieldPointerMove($event)"
+               (pointerup)="onFieldPointerUp($event)"
+               (pointercancel)="onFieldPointerUp($event)"
+               (keydown)="onFieldKeydown($event, f)">
+            @if (f.image) {
+              <img [src]="f.image" alt="" draggable="false">
+            } @else {
+              <span class="field-text" [style.fontSize.px]="fieldFontPx(f)" [style.color]="f.color">{{ f.text }}</span>
+            }
+            @if (f.id === selectedId()) {
+              <span class="handle" aria-hidden="true"
+                    (pointerdown)="onFieldPointerDown($event, f, 'resize')"
+                    (pointermove)="onFieldPointerMove($event)"
+                    (pointerup)="onFieldPointerUp($event)"
+                    (pointercancel)="onFieldPointerUp($event)"></span>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ── Esporta ──────────────────────────────── -->
+    <section class="cp-panel export-panel">
+      <div class="export-row">
+        <button type="button" class="btn-download" [disabled]="exporting() || fields().length === 0" (click)="download()">
+          @if (exporting()) { <span class="spinner" aria-hidden="true"></span> }
+          📥 {{ (exporting() ? 'sign_pdf.downloading' : 'sign_pdf.btn_download') | translate }}
+        </button>
+        @if (exportReady()) {
+          <button type="button" class="workspace-btn primary" (click)="sendToWorkspace()">
+            {{ justSent() ? ('sign_pdf.workspace_sent' | translate) : ('🔗 ' + ('sign_pdf.workspace_send' | translate)) }}
+          </button>
+        }
+      </div>
+      @if (msg()) {
+        <p class="msg" [class.msg--ok]="msgOk()" role="status">{{ msg() }}</p>
+      }
+      <p class="privacy-note">🔒 {{ 'sign_pdf.privacy_note' | translate }}</p>
+      <p class="disclaimer">{{ 'sign_pdf.disclaimer' | translate }}</p>
+    </section>
+  }
+</div>
+
+@if (padOpen()) {
+  <div class="pad-backdrop" (click)="closePad()">
+    <div class="pad" role="dialog" aria-modal="true" [attr.aria-label]="'sign_pdf.pad_title' | translate" (click)="$event.stopPropagation()">
+      <div class="pad-head">
+        <h2>{{ 'sign_pdf.pad_title' | translate }}</h2>
+        <button type="button" class="pad-x" (click)="closePad()" [attr.aria-label]="'sign_pdf.pad_cancel' | translate">✕</button>
+      </div>
+
+      <div class="pad-tabs" role="tablist">
+        <button type="button" role="tab" [attr.aria-selected]="padTab() === 'draw'" class="pad-tab" [class.pad-tab--on]="padTab() === 'draw'" (click)="setPadTab('draw')">✍️ {{ 'sign_pdf.pad_tab_draw' | translate }}</button>
+        <button type="button" role="tab" [attr.aria-selected]="padTab() === 'type'" class="pad-tab" [class.pad-tab--on]="padTab() === 'type'" (click)="setPadTab('type')">Aa {{ 'sign_pdf.pad_tab_type' | translate }}</button>
+        <button type="button" role="tab" [attr.aria-selected]="padTab() === 'upload'" class="pad-tab" [class.pad-tab--on]="padTab() === 'upload'" (click)="setPadTab('upload')">🖼️ {{ 'sign_pdf.pad_tab_upload' | translate }}</button>
+      </div>
+
+      <div class="pad-body">
+        @switch (padTab()) {
+          @case ('draw') {
+            <canvas #padCanvas class="pad-canvas" [attr.aria-label]="'sign_pdf.pad_draw_hint' | translate"
+                    (pointerdown)="onPadDown($event)" (pointermove)="onPadMove($event)" (pointerup)="onPadUp()" (pointercancel)="onPadUp()" (pointerleave)="onPadUp()"></canvas>
+            <p class="pad-hint">{{ 'sign_pdf.pad_draw_hint' | translate }}</p>
+          }
+          @case ('type') {
+            <input class="pad-input" type="text" [value]="typedName()" (input)="onTypedName($any($event.target).value)" [placeholder]="'sign_pdf.pad_type_placeholder' | translate" [attr.aria-label]="'sign_pdf.pad_type_placeholder' | translate" maxlength="60">
+            <div class="pad-fonts">
+              @for (font of signatureFonts; track $index) {
+                <button type="button" class="pad-font" [class.pad-font--on]="typedFont() === $index" [style.font]="font" [style.color]="ink()" (click)="setTypedFont($index)">
+                  {{ typedName() || ('sign_pdf.pad_type_sample' | translate) }}
+                </button>
+              }
+            </div>
+          }
+          @default {
+            <label class="pad-upload">
+              <input type="file" accept="image/*" hidden (change)="onSignatureFile($event)">
+              <span>📤 {{ 'sign_pdf.pad_upload_pick' | translate }}</span>
+              <small>{{ 'sign_pdf.pad_upload_hint' | translate }}</small>
+            </label>
+            @if (uploadImage(); as img) {
+              <div class="pad-preview"><img [src]="img" alt=""></div>
+              <label class="pad-check"><input type="checkbox" [checked]="removeBg()" (change)="setRemoveBg($any($event.target).checked)"> {{ 'sign_pdf.pad_remove_bg' | translate }}</label>
+            }
+          }
+        }
+      </div>
+
+      <div class="pad-foot">
+        <span class="ink" role="group" [attr.aria-label]="'sign_pdf.ink_label' | translate">
+          <button type="button" class="ink-dot" [style.background]="inkBlack" [class.ink-dot--on]="ink() === inkBlack" (click)="setInk(inkBlack)" [attr.aria-label]="'sign_pdf.ink_black' | translate"></button>
+          <button type="button" class="ink-dot" [style.background]="inkBlue" [class.ink-dot--on]="ink() === inkBlue" (click)="setInk(inkBlue)" [attr.aria-label]="'sign_pdf.ink_blue' | translate"></button>
+        </span>
+        @if (padTab() === 'draw') {
+          <button type="button" class="link-btn" (click)="clearPad()" [disabled]="!padHasInk()">{{ 'sign_pdf.pad_clear' | translate }}</button>
+        }
+        @if (savedSignature()) {
+          <button type="button" class="link-btn" (click)="forgetSignature()">{{ 'sign_pdf.forget_signature' | translate }}</button>
+        }
+        <label class="pad-check pad-check--remember" [attr.title]="'sign_pdf.pad_remember_hint' | translate">
+          <input type="checkbox" [checked]="remember()" (change)="remember.set($any($event.target).checked)"> {{ 'sign_pdf.pad_remember' | translate }}
+        </label>
+      </div>
+      <div class="pad-actions">
+        <button type="button" class="btn-ghost" (click)="closePad()">{{ 'sign_pdf.pad_cancel' | translate }}</button>
+        <button type="button" class="btn-main" [disabled]="!canUsePad()" (click)="confirmPad()">{{ 'sign_pdf.pad_use' | translate }}</button>
+      </div>
+    </div>
+  </div>
+}
+
+<app-lab-tool-info [tool]="page.id" />
