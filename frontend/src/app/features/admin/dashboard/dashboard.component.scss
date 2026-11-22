@@ -1084,3 +1084,43 @@
 :host ::ng-deep .dash-panel .mat-expansion-panel-body {
   padding: 0.25rem 1rem 1.25rem;
 }
+
+
+// ── Indice delle sezioni su schermi stretti ────────────────────────
+// Le etichette in riga si scorrevano di lato (e dietro la barra restava un rettangolo scuro): sotto i 1100px
+// diventa un menu "Vai a…" a larghezza piena, con i due pulsanti Espandi/Comprimi accanto, senza scroll.
+.dash-nav__select { display: none; }
+
+@media (max-width: 1100px) {
+  .dash-nav {
+    position: static;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    overflow: visible;
+    padding: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  .dash-nav__link:not(.dash-nav__link--action),
+  .dash-nav__spacer { display: none; }
+
+  .dash-nav__select {
+    display: block;
+    flex: 1 1 100%;
+    min-height: 46px;
+    padding: 0 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-surface, transparent);
+    color: var(--color-text);
+    font: inherit;
+    font-weight: 600;
+  }
+
+  .dash-nav__link--action {
+    flex: 1 1 calc(50% - 0.25rem);
+    justify-content: center;
+    min-height: 40px;
+  }
+}

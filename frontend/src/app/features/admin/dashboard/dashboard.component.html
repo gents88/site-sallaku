@@ -64,6 +64,13 @@
       @for (item of navItems; track item.id) {
         <button type="button" class="dash-nav__link" (click)="scrollTo(item.id)">{{ item.labelKey | translate }}</button>
       }
+      <!-- Sotto i ~1100px le dieci etichette non stanno in una riga e si scorrevano di lato: al loro posto un menu. -->
+      <select class="dash-nav__select" [attr.aria-label]="'dash_v2.jump_to' | translate" (change)="jumpTo($event)">
+        <option value="" selected>{{ 'dash_v2.jump_to' | translate }}</option>
+        @for (item of navItems; track item.id) {
+          <option [value]="item.id">{{ item.labelKey | translate }}</option>
+        }
+      </select>
       <span class="dash-nav__spacer"></span>
       <button type="button" class="dash-nav__link dash-nav__link--action" (click)="expandAll()">
         <mat-icon aria-hidden="true">unfold_more</mat-icon>{{ 'dashboard_ux.expand_all' | translate }}
