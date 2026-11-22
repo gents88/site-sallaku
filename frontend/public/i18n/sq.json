@@ -2505,5 +2505,40 @@
     "none_title": "Nuk u mor asnjë skedar",
     "none_hint": "Për të hapur një skedar në Lab, ndaje nga një aplikacion tjetër me «Ndaj me…» ose zgjidh «Hap me» te skedari pasi ta kesh instaluar faqen si aplikacion. Mund ta tërheqësh edhe drejtpërdrejt në Lab.",
     "go_lab": "Shko te Lab"
+  },
+  "page_meta": {
+    "home_title": "Zhvillues Senior Front-End & API",
+    "home_description": "Zhvillues Senior Front-End i specializuar në Angular, TypeScript, vizualizim 3D të të dhënave dhe arkitektura enterprise.",
+    "blog_title": "Blog — Angular, TypeScript dhe zhvillim web",
+    "blog_description": "Artikuj, udhëzues dhe analiza për Angular, TypeScript, NestJS, performancën web, vizualizimet 3D dhe zhvillimin modern."
+  },
+  "acquisition": {
+    "title": "Prejardhja e vizitorëve",
+    "desc": "Nga vijnë dhe në cilën faqe hyjnë në sit",
+    "period": "Periudha",
+    "last_days": "{{days}} ditët e fundit",
+    "total_entries": "Mbërritje",
+    "referrers": "Sitet e prejardhjes",
+    "no_referrers": "Asnjë sit i jashtëm në këtë periudhë: mbërritjet janë direkte ose pa referrer.",
+    "entry_pages": "Faqet e hyrjes",
+    "page": "Faqja",
+    "from": "Nga",
+    "entries": "Mbërritje",
+    "recent_visits": "Vizitat e fundit",
+    "when": "Kur",
+    "landing": "Faqja e hyrjes",
+    "where": "Vendndodhja",
+    "device": "Pajisja",
+    "pages": "Faqe",
+    "duration": "Kohëzgjatja",
+    "loading": "Duke u ngarkuar…",
+    "gsc_top_pages": "Faqet me më shumë klikime nga Google",
+    "source_search": "Kërkim",
+    "source_social": "Social",
+    "source_referral": "Sajte të tjera",
+    "source_direct": "Direkt",
+    "source_campaign": "Fushatë",
+    "source_internal": "E brendshme",
+    "source_other": "Tjetër"
   }
 }

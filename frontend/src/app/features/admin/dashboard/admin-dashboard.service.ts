@@ -116,6 +116,47 @@ export interface SearchConsoleSummary {
   avgCtr: number;
   avgPosition: number;
   topQueries: GscQuery[];
+  /** Pagine del sito che ricevono clic da Google (URL completo). */
+  topPages?: GscPage[];
+}
+
+export interface GscPage {
+  page: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+// ── Provenienza dei visitatori (GET /analytics/acquisition?days=N) ─────────────
+
+export interface AcquisitionEntryPage {
+  path: string;
+  entries: number;
+  /** Arrivi per sorgente: { search: 12, social: 3, … } */
+  sources: Record<string, number>;
+}
+
+export interface AcquisitionVisit {
+  at: string;
+  trafficSource: string;
+  referrerHost: string;
+  utmSource: string;
+  entryPath: string;
+  country: string;
+  city: string;
+  deviceType: string;
+  pages: number;
+  durationSec: number | null;
+}
+
+export interface AcquisitionReport {
+  days: number;
+  totalEntries: number;
+  sources: { label: string; count: number }[];
+  referrers: { label: string; count: number }[];
+  entryPages: AcquisitionEntryPage[];
+  recentVisits: AcquisitionVisit[];
 }
 
 export interface ChatbotStats {
@@ -393,7 +434,7 @@ const EMPTY_LEADS: LeadStats = {
 };
 
 const EMPTY_GSC: SearchConsoleSummary = {
-  configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [],
+  configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [], topPages: [],
 };
 
 // ── Overview (GET /stats/overview) ─────────────────────────────────────────────
@@ -587,6 +628,10 @@ export class AdminDashboardService {
 
   resolveAllServerErrors(): Observable<{ resolved: number }> {
     return this.http.post<{ resolved: number }>(`${this.api}/system/errors/resolve-all`, {});
+  }
+
+  getAcquisition(days = 30): Observable<AcquisitionReport> {
+    return this.http.get<AcquisitionReport>(`${this.api}/analytics/acquisition?days=${days}`);
   }
 
   getToolConversion(days = 30): Observable<ToolConversionRow[]> {

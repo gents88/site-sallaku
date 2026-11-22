@@ -18,6 +18,15 @@ interface GscQuery {
   position: number;
 }
 
+/** Pagina del sito che riceve clic da Google (dimensione `page`). */
+interface GscPage {
+  page: string;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
 export interface SearchConsoleSummary {
   configured: boolean;
   clicks: number;
@@ -25,6 +34,7 @@ export interface SearchConsoleSummary {
   avgCtr: number;
   avgPosition: number;
   topQueries: GscQuery[];
+  topPages: GscPage[];
 }
 
 const EMPTY_SUMMARY: SearchConsoleSummary = {
@@ -34,6 +44,7 @@ const EMPTY_SUMMARY: SearchConsoleSummary = {
   avgCtr: 0,
   avgPosition: 0,
   topQueries: [],
+  topPages: [],
 };
 
 @Injectable()
@@ -80,39 +91,36 @@ export class SearchConsoleService {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 28);
 
-      const res = await sc.searchanalytics.query({
-        siteUrl,
-        requestBody: {
-          startDate: startDate.toISOString().slice(0, 10),
-          endDate:   endDate.toISOString().slice(0, 10),
-          dimensions: ['query'],
-          rowLimit: 10,
-          type: 'web',
-        },
+      const range = {
+        startDate: startDate.toISOString().slice(0, 10),
+        endDate:   endDate.toISOString().slice(0, 10),
+        type: 'web',
+      };
+      // Totali da una richiesta senza dimensioni: sommare le prime 10 query
+      // sottostimava clic e impressioni (tutte le altre ricerche restavano fuori).
+      const [totalsRes, queriesRes, pagesRes] = await Promise.all([
+        sc.searchanalytics.query({ siteUrl, requestBody: { ...range } }),
+        sc.searchanalytics.query({ siteUrl, requestBody: { ...range, dimensions: ['query'], rowLimit: 10 } }),
+        sc.searchanalytics.query({ siteUrl, requestBody: { ...range, dimensions: ['page'], rowLimit: 10 } }),
+      ]);
+
+      const totals = (totalsRes.data.rows ?? [])[0] ?? {};
+      const round = (r: { clicks?: number | null; impressions?: number | null; ctr?: number | null; position?: number | null }) => ({
+        clicks:      r.clicks       ?? 0,
+        impressions: r.impressions  ?? 0,
+        ctr:         Math.round((r.ctr      ?? 0) * 10_000) / 100, // es. 3.45 (%)
+        position:    Math.round((r.position ?? 0) * 10)     / 10,  // es. 8.3
       });
-
-      const rows = res.data.rows ?? [];
-
-      const totalClicks      = rows.reduce((s, r) => s + (r.clicks       ?? 0), 0);
-      const totalImpressions = rows.reduce((s, r) => s + (r.impressions  ?? 0), 0);
-      const rawAvgPos        = rows.length
-        ? rows.reduce((s, r) => s + (r.position ?? 0), 0) / rows.length
-        : 0;
-      const rawAvgCtr = totalImpressions ? totalClicks / totalImpressions : 0;
+      const total = round(totals);
 
       return {
         configured:  true,
-        clicks:      totalClicks,
-        impressions: totalImpressions,
-        avgCtr:      Math.round(rawAvgCtr * 10_000) / 100, // es. 3.45
-        avgPosition: Math.round(rawAvgPos * 10)     / 10,  // es. 8.3
-        topQueries:  rows.map(r => ({
-          query:       (r.keys ?? [])[0] ?? '',
-          clicks:      r.clicks       ?? 0,
-          impressions: r.impressions  ?? 0,
-          ctr:         Math.round((r.ctr      ?? 0) * 10_000) / 100,
-          position:    Math.round((r.position ?? 0) * 10)     / 10,
-        })),
+        clicks:      total.clicks,
+        impressions: total.impressions,
+        avgCtr:      total.ctr,
+        avgPosition: total.position,
+        topQueries:  (queriesRes.data.rows ?? []).map(r => ({ query: (r.keys ?? [])[0] ?? '', ...round(r) })),
+        topPages:    (pagesRes.data.rows ?? []).map(r => ({ page: (r.keys ?? [])[0] ?? '', ...round(r) })),
       };
     } catch (err) {
       this.logger.warn(`Search Console API error: ${(err as Error).message}`);

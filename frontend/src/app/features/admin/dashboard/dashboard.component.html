@@ -718,6 +718,20 @@
       </section>
     </div>
 
+    <!-- ── Provenienza: da dove arrivano i visitatori e su quale pagina entrano ── -->
+    <div class="analytics-grid adv-bottom-grid">
+      <section class="analytics-card card" style="grid-column: 1 / -1;">
+        <div class="analytics-card__header">
+          <div>
+            <h2>{{ 'acquisition.title' | translate }}</h2>
+            <p class="text-muted">{{ 'acquisition.desc' | translate }}</p>
+          </div>
+          <mat-icon>public</mat-icon>
+        </div>
+        <app-acquisition-panel />
+      </section>
+    </div>
+
     <!-- ── Tool → Lead: quanti utilizzatori di ogni tool /lab diventano un contatto o una chat live ── -->
     <div class="analytics-grid adv-bottom-grid">
       <section class="analytics-card card" style="grid-column: 1 / -1;">
@@ -800,6 +814,26 @@
             </div>
           } @else {
             <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
+          }
+          @if (gscSummary.topPages?.length) {
+            <h3 class="gsc-subtitle">{{ 'acquisition.gsc_top_pages' | translate }}</h3>
+            <div class="h-bars">
+              @for (p of gscSummary.topPages; track p.page; let i = $index) {
+                <div class="h-bar-row">
+                  <span class="h-bar-label text-muted" style="font-family:monospace;font-size:0.8rem;" [title]="p.page">{{ gscPagePath(p.page) }}</span>
+                  <div class="h-bar-track">
+                    <div
+                      class="h-bar-fill"
+                      [style.width.%]="gscMaxPageClicks > 0 ? (p.clicks / gscMaxPageClicks * 100) : 0"
+                      [style.background]="countryColors[i % countryColors.length]">
+                    </div>
+                  </div>
+                  <span class="h-bar-count">
+                    {{ p.clicks }}&nbsp;<span class="text-muted" style="font-size:0.75rem">click · {{ p.impressions }} impr. · pos {{ p.position }}</span>
+                  </span>
+                </div>
+              }
+            </div>
           }
         </section>
       </div>
