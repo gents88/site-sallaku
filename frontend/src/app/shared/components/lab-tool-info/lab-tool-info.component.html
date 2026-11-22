@@ -1,0 +1,56 @@
+@if (hasContent()) {
+  <section class="lab-info container" [attr.aria-label]="'lab_info.section_label' | translate">
+    @if (about(); as text) {
+      <h2 class="lab-info__title">{{ 'lab_info.about_title' | translate }}</h2>
+      <p class="lab-info__text">{{ text }}</p>
+    }
+
+    @if (steps().length) {
+      <h2 class="lab-info__title">{{ 'lab_info.how_title' | translate }}</h2>
+      <ol class="lab-info__steps">
+        @for (step of steps(); track $index) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    }
+
+    @if (privacy(); as text) {
+      <h2 class="lab-info__title">{{ 'lab_info.privacy_title' | translate }}</h2>
+      <p class="lab-info__text">{{ text }}</p>
+    }
+
+    @if (limits(); as text) {
+      <h2 class="lab-info__title">{{ 'lab_info.limits_title' | translate }}</h2>
+      <p class="lab-info__text">{{ text }}</p>
+    }
+
+    @if (faqs().length) {
+      <h2 class="lab-info__title">{{ 'lab_info.faq_title' | translate }}</h2>
+      <div class="lab-info__faq">
+        @for (item of faqs(); track $index) {
+          <h3 class="lab-info__question">{{ item.q }}</h3>
+          <p class="lab-info__text">{{ item.a }}</p>
+        }
+      </div>
+    }
+
+    @if (relatedArticles().length) {
+      <h2 class="lab-info__title">{{ 'lab_info.related_articles' | translate }}</h2>
+      <ul class="lab-info__links">
+        @for (article of relatedArticles(); track article.path) {
+          <li><a [routerLink]="article.path | langUrl">{{ article.title }}</a></li>
+        }
+      </ul>
+    }
+
+    @if (relatedTools().length) {
+      <h2 class="lab-info__title">{{ 'lab_info.related_tools' | translate }}</h2>
+      <ul class="lab-info__links lab-info__links--tools">
+        @for (entry of relatedTools(); track entry.id) {
+          <li><a [routerLink]="entry.route | langUrl">{{ entry.labelKey | translate }}</a></li>
+        }
+        <li><a [routerLink]="'/lab' | langUrl">{{ 'lab_info.all_tools' | translate }}</a></li>
+      </ul>
+    }
+  </section>
+}

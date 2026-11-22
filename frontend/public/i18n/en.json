@@ -1072,7 +1072,7 @@
     "remove_context_file": "Remove file",
     "prev_slide": "Previous slide",
     "next_slide": "Next slide",
-    "seo_title": "AI Slides Generator — Create Presentations with AI",
+    "seo_title": "AI Presentation Generator",
     "seo_description": "Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online."
   },
   "ai_formatter": {
@@ -1128,7 +1128,7 @@
     "textarea_placeholder": "Paste your unformatted text here...\n\n✦ Meeting notes, raw content, AI output, emails...\n✦ Or click 'Use Sample' to see a demo",
     "copied": "Copied",
     "copy": "Copy",
-    "seo_title": "AI Text Formatter — Convert Notes to Polished Documents",
+    "seo_title": "AI Text Formatter",
     "seo_description": "Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter."
   },
   "pdf_summary": {
@@ -1163,7 +1163,7 @@
     "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
     "err_generic": "An error occurred while analyzing the file.",
     "remove_file": "Remove file",
-    "seo_title": "AI PDF Summarizer — Extract Key Points from Any Document",
+    "seo_title": "AI PDF Summarizer: Key Points in Seconds",
     "seo_description": "Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online."
   },
   "workspace": {
@@ -1259,7 +1259,7 @@
     "err_generic": "Translation failed. Please try again.",
     "upload_aria": "Upload a PDF file",
     "remove_file": "Remove file",
-    "seo_title": "AI PDF Translator — Translate PDF, Pages Preserved",
+    "seo_title": "AI PDF Translator: Keeps Your Pages",
     "seo_description": "Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation. Free online PDF translator — no signup needed."
   },
   "pdf_search": {
@@ -1328,7 +1328,7 @@
     "err_library_save": "Saving to Library failed. Please try again.",
     "preview_prev_page": "Previous page",
     "preview_next_page": "Next page",
-    "seo_title": "Public Domain PDF Search Engine — Copyright-Free Books",
+    "seo_title": "Free PDF Book Search: Public Domain",
     "seo_description": "Search and download public domain books, scientific papers and open-access articles with no copyright issues. Search Internet Archive, Project Gutenberg, arXiv and PubMed Central with a preview before downloading."
   },
   "convert": {
@@ -1440,7 +1440,7 @@
     "workspace_send": "Send to Workspace",
     "workspace_sent": "Sent ✓",
     "blog_link": "Guide: how to convert PDF to Word without losing formatting",
-    "seo_title": "Free File Converter — PDF, Word, Excel, Images & More",
+    "seo_title": "Online File Converter: PDF, Word and More",
     "seo_description": "Convert between PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG and more — {{count}} conversion types, free, in your browser. No signup needed."
   },
   "ocr": {
@@ -1481,12 +1481,12 @@
     "sent": "Sent ✓",
     "save_library": "Save to library",
     "saved_library": "Saved to library",
-    "seo_title": "Free Online OCR — Extract Text from Images & Scanned PDFs",
+    "seo_title": "Free Online OCR: Text from Images and PDFs",
     "seo_description": "Extract text from photos, scanned documents and PDFs in 7 languages. Free online OCR, no signup required."
   },
   "tools": {
     "badge": "AI & PDF Tools",
-    "heading": "Your Productivity Suite",
+    "heading": "Free PDF and AI tools",
     "subtitle": "AI-powered document tools and PDF utilities — all in one place.",
     "section_ai": "AI Tools",
     "section_tools": "PDF Tools",
@@ -1516,7 +1516,7 @@
     "library_desc": "Keep PDFs in your browser, search their contents, annotate them and ask your documents questions.",
     "my_files_title": "My files",
     "my_files_desc": "Find the results you have saved from the AI tools",
-    "seo_title": "Free AI PDF Tools & Document Utilities",
+    "seo_title": "Free PDF and AI Tools Online",
     "seo_description": "Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools. No signup required."
   },
   "about_manage": {
@@ -1628,7 +1628,7 @@
     "workspace_send": "Send to Workspace",
     "workspace_sent": "Sent ✓",
     "err_file_too_large": "File too large (max {{max}}MB): {{name}}",
-    "seo_title": "Free Online Document Editor — Export to PDF & DOCX",
+    "seo_title": "Online Document Editor: Export PDF and DOCX",
     "seo_description": "Write and format documents in your browser, import Word files and export to PDF, DOCX or HTML. Free, no signup."
   },
   "pdf_editor": {
@@ -1663,7 +1663,7 @@
     "move_right": "Move right",
     "delete": "Delete",
     "persistence_hint": "Changes are not saved: they are lost if you reload or close this tab.",
-    "seo_title": "Free PDF Editor — Merge, Split, Rotate & Watermark",
+    "seo_title": "Free PDF Editor: Merge, Split, Rotate",
     "seo_description": "Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device."
   },
   "viewer": {
@@ -1699,7 +1699,7 @@
     "zoom_in": "Zoom in",
     "prev_match": "Previous match",
     "next_match": "Next match",
-    "seo_title": "Free PDF Viewer Online — Zoom, Search & Thumbnails",
+    "seo_title": "Free Online PDF Viewer",
     "seo_description": "View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload."
   },
   "scanner": {
@@ -1753,7 +1753,7 @@
     "page_alt": "page {{n}}",
     "err_camera_unsupported": "Camera unavailable in this browser or insecure connection (HTTPS required). You can still upload an image.",
     "persistence_hint": "Captured pages are not saved: they are lost if you reload or close this tab.",
-    "seo_title": "Free Document Scanner — Camera to PDF Online",
+    "seo_title": "Online Document Scanner: Photo to PDF",
     "seo_description": "Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup."
   },
   "library": {
@@ -2593,5 +2593,306 @@
     "acquisition_section": "Acquisition and contacts",
     "expand_all": "Expand all",
     "collapse_all": "Collapse all"
+  },
+  "lab_info": {
+    "section_label": "About this tool",
+    "about_title": "What it is for",
+    "how_title": "How to use it",
+    "privacy_title": "Your files and privacy",
+    "limits_title": "Limits to know about",
+    "faq_title": "Frequently asked questions",
+    "related_articles": "Further reading",
+    "related_tools": "More tools",
+    "all_tools": "All tools",
+    "ocr": {
+      "about": "This OCR (optical character recognition) tool turns photos, images and scanned PDFs into text you can select, copy and edit. Use it to recover the text from a photographed receipt, a book page, a scanned document or a screenshot, without retyping it by hand.",
+      "steps": [
+        "Drag your images or PDF into the upload area, or click it to choose them.",
+        "Select the language of the text: recognition is far more accurate when the language is right.",
+        "Start the recognition: for each page you see the extracted text and, when confidence is low, a warning.",
+        "Copy the text, send it to another Lab tool or save it to your Library."
+      ],
+      "privacy": "Images are sent to our server only for recognition and are processed in memory, without being stored as an archive. You do not need to create an account.",
+      "limits": "You can upload up to 30 files or pages at a time; each image can be up to 15 MB and the first 20 pages of each PDF are read. The available languages are Italian, English, Spanish, French, German, Portuguese and Albanian. Quality depends on the photo: crooked, blurry or dim text reduces accuracy.",
+      "faq": [
+        {
+          "q": "Does OCR also work on PDFs?",
+          "a": "Yes. If the PDF is a scan, meaning its pages are images, the tool reads them and extracts the text. If the PDF already contains selectable text you usually do not need OCR."
+        },
+        {
+          "q": "Which languages does it recognise?",
+          "a": "Italian, English, Spanish, French, German, Portuguese and Albanian. Choose the language before starting: with the right one the result is much more accurate."
+        },
+        {
+          "q": "Why does the extracted text contain mistakes?",
+          "a": "OCR makes errors when the image is blurry, tilted, low in contrast or uses unusual characters. Try taking the photo again with more light, keeping the sheet straight, and check you picked the correct language."
+        },
+        {
+          "q": "Do I need to sign up or pay?",
+          "a": "No, the tool is free and needs no account. There is only a limit on requests over a short period, to prevent abuse: if you hit it, wait a moment and try again."
+        }
+      ]
+    },
+    "scanner": {
+      "about": "The scanner turns the camera of your phone or computer into a document scanner: you shoot the pages, crop them, apply a filter to improve legibility and combine them into a single PDF to download. It is handy when you have no scanner at hand and need a contract, a receipt or a form as a PDF.",
+      "steps": [
+        "Start the camera and frame the page, or upload an image you already have.",
+        "Drag on the image to crop the edges of the sheet and remove the background.",
+        "Repeat for each page; if a page came out badly you can delete it.",
+        "Export the PDF and download it; if you need the text, use OCR as well."
+      ],
+      "privacy": "Shooting, cropping and filters happen in your browser: images do not leave your device until you choose otherwise. Only if you use OCR or export the PDF are the pages sent to our server, for the time needed to process them.",
+      "limits": "PNG, JPG and WEBP images are accepted, up to 20 MB each and up to 20 pages per document. Captured pages are not saved: if you reload or close the tab you lose them, so download the PDF before leaving. The camera needs a secure connection (HTTPS) and your permission.",
+      "faq": [
+        {
+          "q": "Does it work from a phone?",
+          "a": "Yes, it is designed for smartphones too: the browser asks your permission to use the camera. If it is not available you can upload photos you have already taken."
+        },
+        {
+          "q": "Can I put several pages in one PDF?",
+          "a": "Yes, up to 20 pages: each captured page is added to the document, which you export as a single PDF at the end."
+        },
+        {
+          "q": "How do I get text I can copy?",
+          "a": "Use the scanner's OCR function, or send the pages to the Lab's OCR tool: it recognises the text and makes it selectable and copyable."
+        },
+        {
+          "q": "Are my photos stored?",
+          "a": "No: captured pages stay in your browser and disappear if you reload the page. They reach the server only if you choose OCR or PDF export."
+        }
+      ]
+    },
+    "pdf_editor": {
+      "about": "The online PDF editor lets you merge several PDFs into one, split a document, rotate or delete single pages, change the page order and add a text watermark. Everything happens in your browser: it is the most convenient way to fix a PDF without installing software and without sending the file to an outside service.",
+      "steps": [
+        "Drag one or more PDFs into the upload area: if you pick more than one they are placed in sequence.",
+        "In the page preview, drag to reorder pages, rotate crooked ones or delete the ones you do not need.",
+        "If needed, type a watermark text, or enter a page range to split the document.",
+        "Export the PDF and download it."
+      ],
+      "privacy": "Files are processed entirely in your browser: they are not uploaded to any server. You can therefore work on contracts, ID documents or invoices without sharing them with third parties.",
+      "limits": "Changes are not saved: if you reload or close the tab you lose them, so download the result before leaving. A password-protected or very large PDF may not open or may slow down the browser, because your device does the work. The watermark is text only.",
+      "faq": [
+        {
+          "q": "How do I merge two PDFs?",
+          "a": "Upload both files together: they appear in sequence and you can reorder the pages by dragging them. Then export the result as a single PDF."
+        },
+        {
+          "q": "Are my PDFs uploaded online?",
+          "a": "No. Processing happens in the browser, so the files stay on your device."
+        },
+        {
+          "q": "Can I extract only some pages?",
+          "a": "Yes: delete the pages you do not need, or use the page range to split the document, then export."
+        },
+        {
+          "q": "Can I edit the text inside a PDF?",
+          "a": "No, this tool works on pages (merge, split, rotate, delete, watermark), not on the content. To edit the text you can convert the PDF to Word with the file converter."
+        }
+      ]
+    },
+    "viewer": {
+      "about": "The online PDF viewer opens a document in your browser with zoom, text search, page thumbnails and a highlighter. Use it to read and consult a PDF without installing a program and without uploading it anywhere, even from a phone.",
+      "steps": [
+        "Drag the PDF into the upload area or choose the file from your device.",
+        "Move between pages with the thumbnails and use zoom to enlarge or reduce.",
+        "Search for a word: the tool highlights the matches in the text.",
+        "Turn on the highlighter and drag over the text to mark important passages."
+      ],
+      "privacy": "The document is read entirely in your browser and is never uploaded: you can safely consult confidential files too.",
+      "limits": "Search only works if the PDF contains selectable text. If it is a scan, meaning the pages are images, the tool warns you: in that case extract the text first with the OCR tool. Very large files may take longer on older devices.",
+      "faq": [
+        {
+          "q": "Why does search find nothing in my PDF?",
+          "a": "The PDF is probably a scan: its pages are images and contain no searchable text. Send the file to the OCR tool to extract the text, then search."
+        },
+        {
+          "q": "Is the file uploaded to a server?",
+          "a": "No. The PDF is opened and read by your browser, so it stays on your device."
+        },
+        {
+          "q": "Can I highlight and annotate the text?",
+          "a": "Yes: turn on the highlighter and drag over the text to mark it."
+        },
+        {
+          "q": "Does it work on a smartphone?",
+          "a": "Yes, the viewer adapts to a phone screen; with very large documents opening can be slower."
+        }
+      ]
+    },
+    "editor": {
+      "about": "The online document editor lets you write and format text right in your browser and export it as PDF, DOCX (Word) or HTML. It is useful when you need to prepare a letter, meeting minutes or a report quickly without opening Word, or when you need to turn text into a format that is easy to share.",
+      "steps": [
+        "Write or paste your text and format it with the toolbar: headings, lists, bold and italic.",
+        "If you already have a document you can import it and keep working on it.",
+        "Choose the export format: PDF, DOCX or HTML.",
+        "Download the resulting file."
+      ],
+      "privacy": "While you write, the text stays in your browser. When you export to PDF or DOCX the content is sent to our server only to generate the file.",
+      "limits": "Imported documents can be up to 50 MB. Exporting needs an active connection. Export the document before closing the tab so you do not lose your work.",
+      "faq": [
+        {
+          "q": "Which formats can I export to?",
+          "a": "PDF, DOCX (compatible with Word) and HTML."
+        },
+        {
+          "q": "Can I start from a document I already have?",
+          "a": "Yes, you can import a document, up to 50 MB, and keep editing it in the editor."
+        },
+        {
+          "q": "Do I need to install anything or create an account?",
+          "a": "No: it works in the browser, even on a phone, and needs no account."
+        },
+        {
+          "q": "Is my text sent to a server?",
+          "a": "Only when you export to PDF or DOCX: at that moment the server needs the content to create the file."
+        }
+      ]
+    },
+    "convert": {
+      "about": "The online file converter turns documents and images from one format into another: between PDF, Word (DOCX), text, HTML and Markdown, but also images to WebP for the web and CSV or JSON to PDF reports, plus merging several PDFs into one. Pick the conversion you need, upload the file and download the result.",
+      "steps": [
+        "Search or pick the conversion you need from the list, for example PDF → DOCX.",
+        "Drag the file into the upload area or choose it from your device.",
+        "Start the conversion and wait a few seconds.",
+        "When it finishes, the download starts automatically."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. Files are used only to run the conversion you requested.",
+      "limits": "Each file can be up to 50 MB; for conversions that combine several files, such as merging PDFs, you can select up to 20. A PDF with very complex tables or layouts may lose some formatting when converted to Word. A scanned PDF does not become editable text: use OCR first.",
+      "faq": [
+        {
+          "q": "How do I convert a PDF to Word without losing formatting?",
+          "a": "Choose the PDF → DOCX conversion. PDFs with selectable text usually keep headings, paragraphs and lists; very elaborate layouts may need small touch-ups after conversion. The article linked below has the full guide."
+        },
+        {
+          "q": "Can I convert several files at once?",
+          "a": "For conversions that combine files, such as merging PDFs, you can upload up to 20 at a time."
+        },
+        {
+          "q": "Does a scanned PDF become editable?",
+          "a": "Not directly: a scan is made of images. Extract the text first with the OCR tool, then work on the resulting text."
+        },
+        {
+          "q": "What is the maximum file size?",
+          "a": "Up to 50 MB per file. If your file is larger, try shrinking or splitting it before converting."
+        }
+      ]
+    },
+    "pdf_summary": {
+      "about": "The AI PDF summarizer reads a document and produces a summary with the key points in a few seconds. It helps you get your bearings in a long report, a contract, a research paper or lecture notes before deciding whether to read the whole thing.",
+      "steps": [
+        "Upload a PDF, a Word document (.docx or .doc), a text file or an HTML page.",
+        "Start the analysis and wait a few seconds.",
+        "Read the summary and key points: you can copy it or send it to another Lab tool."
+      ],
+      "privacy": "The content of the document is sent to an artificial intelligence service to generate the summary. Do not upload documents you do not want to share with an outside service, such as ones containing personal or confidential data.",
+      "limits": "Files up to 20 MB are accepted. If the document is very long only the first part is processed and the tool tells you so. An automatic summary can omit details or contain inaccuracies: for important decisions check the original text. A scanned PDF must go through OCR first. To keep costs under control there is a daily usage limit.",
+      "faq": [
+        {
+          "q": "Which files can I summarize?",
+          "a": "PDF, Word (.docx and .doc), text files and HTML, up to 20 MB."
+        },
+        {
+          "q": "Is the summary reliable?",
+          "a": "It is a good starting point for understanding what a document is about, but an AI can make mistakes or leave out details. Always check the important parts against the original document."
+        },
+        {
+          "q": "Does it work with scanned PDFs?",
+          "a": "Only if they contain text. If the pages are images, extract the text with the OCR tool and then summarize it."
+        },
+        {
+          "q": "Can I summarize a very long document?",
+          "a": "The first part is read and the tool warns you that the rest is not included. For very long texts it is best to split the document into parts."
+        }
+      ]
+    },
+    "pdf_translate": {
+      "about": "The AI PDF translator translates a document into another language while trying to keep the same number of pages and the same dimensions as the original, page by page. It is meant for contracts, manuals, reports and lecture notes that you need to read or share in another language without rebuilding the document by hand.",
+      "steps": [
+        "Upload a PDF, a Word file (DOCX) or a text file.",
+        "Choose the target language and the mode: “high fidelity” keeps the number and size of pages, “standard” is faster and gives clean text.",
+        "Start the translation: the tool translates block by block and rebuilds the document.",
+        "Download the translated file or send it to another Lab tool."
+      ],
+      "privacy": "The content of the document is sent to an artificial intelligence service to be translated. Avoid uploading confidential documents or ones with personal data that you do not want to share with an outside service.",
+      "limits": "The limit is 50 MB per file. The layout is rebuilt with the same pages and dimensions, but the original fonts and images are not reproduced. If the PDF is made of images the tool detects it and uses OCR, with results that depend on scan quality. For very long documents only the first part may be translated, and the tool tells you so.",
+      "faq": [
+        {
+          "q": "Does the translated PDF keep the formatting?",
+          "a": "It keeps the number and size of pages and tries to fit the text into the available space, but it does not reproduce the original fonts and images. For a final check, compare it with the original."
+        },
+        {
+          "q": "Which languages can I translate into?",
+          "a": "English, Italian, Albanian, Spanish, German, French and more."
+        },
+        {
+          "q": "Does it work with scanned PDFs?",
+          "a": "Yes: if the PDF is made of images, the tool recognises it and runs OCR first. Quality depends on how sharp the scan is."
+        },
+        {
+          "q": "Is the translation as accurate as a human translator's?",
+          "a": "No: it is machine translation, great for understanding and working, but for contracts or legal texts review by a professional is still recommended."
+        }
+      ]
+    },
+    "ai_ppt": {
+      "about": "The AI presentation generator builds the structure of a presentation from a topic: slide titles, bullet points, speaker notes and a logical thread to follow. It helps you get past the blank page and have a draft to refine within seconds.",
+      "steps": [
+        "Write the topic of the presentation in one sentence.",
+        "Choose the style (business, education, minimal, modern or pitch deck) and the number of slides: 5, 10, 15 or 20.",
+        "If you like, upload a PDF, a DOCX or a TXT as starting material: the AI uses it as context.",
+        "Generate the presentation, read it and download it."
+      ],
+      "privacy": "The topic and any context document are sent to an artificial intelligence service to generate the slides. Do not enter confidential data that you do not want to share.",
+      "limits": "The context document can be up to 20 MB (PDF, DOCX or TXT). The result is a draft: titles, points and notes need checking, adapting and enriching with your own images and data. If the content of some slides is too long it may be shortened: in that case shorten the topic and generate again.",
+      "faq": [
+        {
+          "q": "How many slides can I generate?",
+          "a": "5, 10, 15 or 20, depending on how in-depth the presentation should be."
+        },
+        {
+          "q": "Can I start from my own document?",
+          "a": "Yes: upload a PDF, a DOCX or a TXT and the AI uses it as context to build the slides."
+        },
+        {
+          "q": "Are the generated slides ready to present?",
+          "a": "They are a good draft with structure, bullet points and speaker notes, but you should review them and add images, charts and specific data before presenting."
+        },
+        {
+          "q": "Which styles are available?",
+          "a": "Business, Education, Minimal, Modern and Pitch Deck for startups."
+        }
+      ]
+    },
+    "ai_formatter": {
+      "about": "The AI text formatter turns rough notes, meeting minutes or AI-generated text into a tidy document with headings, lists and paragraphs. Use it when you already have the content but do not want to spend time laying it out.",
+      "steps": [
+        "Paste the text into the box or drag in a .txt or .md file.",
+        "Start formatting: the AI recognises headings, bullet points and paragraphs.",
+        "Switch between the formatted preview and the raw Markdown output.",
+        "Copy the result or send it to the editor to export it as PDF or DOCX."
+      ],
+      "privacy": "The text is sent to an artificial intelligence service to be formatted. Do not paste confidential information that you do not want to share with an outside service. If you reload the page, your draft is restored in the browser.",
+      "limits": "At least 10 characters of text are required and .txt and .md files are supported. If the text is very long only the first part is formatted and the tool tells you so. The AI tries to preserve the content, but you should reread the result before using it.",
+      "faq": [
+        {
+          "q": "What kinds of documents can I create?",
+          "a": "Proposals, reports, meeting minutes, CVs and articles: the tool adapts the style to the type of text."
+        },
+        {
+          "q": "What format do I get the result in?",
+          "a": "As a formatted preview or as Markdown, which you can copy and paste wherever you like."
+        },
+        {
+          "q": "Can I use text written by another AI?",
+          "a": "Yes, it is also meant for tidying text generated by other AI tools, which often arrives without a clear structure."
+        },
+        {
+          "q": "How do I get a PDF or a Word file?",
+          "a": "Send the formatted text to the Lab's document editor, which exports it to PDF, DOCX or HTML."
+        }
+      ]
+    },
+    "try_tool": "Try the free tool now"
   }
 }

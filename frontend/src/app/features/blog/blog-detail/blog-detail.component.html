@@ -105,6 +105,19 @@
         </div>
       }
 
+      @if (!isPreview && labTools.length) {
+        <aside class="post-lab-cta" [attr.aria-label]="'lab_info.try_tool' | translate">
+          <p class="post-lab-cta__title">{{ 'lab_info.try_tool' | translate }}</p>
+          <div class="post-lab-cta__links">
+            @for (tool of labTools; track tool.id) {
+              <a class="btn btn-primary" [routerLink]="tool.route | langUrl" appTrackClick eventType="blog" [label]="'blog_to_' + tool.id">
+                {{ tool.labelKey | translate }} →
+              </a>
+            }
+          </div>
+        </aside>
+      }
+
       @if (!isPreview) {
         <app-social-share [url]="pageUrl" [title]="localizedTitle" [image]="shareImage" [description]="localizedMetaDescription" />
 

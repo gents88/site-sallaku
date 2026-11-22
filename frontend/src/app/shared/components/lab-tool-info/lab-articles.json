@@ -1,0 +1,422 @@
+{
+  "case-study-laboratorio-strumenti-pdf-e-ia": {
+    "it": {
+      "slug": "case-study-laboratorio-strumenti-pdf-e-ia",
+      "title": "Come ho costruito un laboratorio di 13 strumenti PDF e IA che lavorano insieme"
+    },
+    "en": {
+      "slug": "case-study-lab-of-pdf-and-ai-tools",
+      "title": "How I built a lab of 13 PDF and AI tools that work together"
+    },
+    "sq": {
+      "slug": "rast-studimi-laboratori-i-mjeteve-pdf-dhe-ia",
+      "title": "Si ndërtova një laborator me 13 mjete PDF dhe IA që punojnë së bashku"
+    },
+    "es": {
+      "slug": "caso-de-estudio-laboratorio-de-herramientas-pdf-e-ia",
+      "title": "Cómo construí un laboratorio de 13 herramientas PDF e IA que trabajan juntas"
+    },
+    "pt": {
+      "slug": "caso-de-estudo-laboratorio-de-ferramentas-pdf-e-ia",
+      "title": "Como construí um laboratório de 13 ferramentas PDF e IA que trabalham em conjunto"
+    },
+    "fr": {
+      "slug": "etude-de-cas-laboratoire-d-outils-pdf-et-ia",
+      "title": "Comment j'ai construit un laboratoire de 13 outils PDF et IA qui fonctionnent ensemble"
+    },
+    "de": {
+      "slug": "fallstudie-labor-aus-pdf-und-ki-werkzeugen",
+      "title": "Wie ich ein Labor aus 13 PDF- und KI-Werkzeugen gebaut habe, die zusammenarbeiten"
+    }
+  },
+  "pdf-accessibili-cosa-serve-davvero": {
+    "it": {
+      "slug": "pdf-accessibili-cosa-serve-davvero",
+      "title": "PDF accessibili: cosa serve davvero (quello che ho imparato costruendo un OCR)"
+    },
+    "en": {
+      "slug": "accessible-pdfs-what-you-really-need",
+      "title": "Accessible PDFs: what you really need (what I learned building an OCR tool)"
+    },
+    "sq": {
+      "slug": "pdf-te-aksesueshem-cfare-duhet-vertet",
+      "title": "PDF të aksesueshëm: çfarë duhet vërtet (çfarë mësova duke ndërtuar një OCR)"
+    },
+    "es": {
+      "slug": "pdf-accesibles-que-hace-falta-de-verdad",
+      "title": "PDF accesibles: qué hace falta de verdad (lo que aprendí construyendo un OCR)"
+    },
+    "pt": {
+      "slug": "pdf-acessiveis-o-que-e-mesmo-preciso",
+      "title": "PDF acessíveis: o que é mesmo preciso (o que aprendi a construir um OCR)"
+    },
+    "fr": {
+      "slug": "pdf-accessibles-ce-qu-il-faut-vraiment",
+      "title": "PDF accessibles : ce qu'il faut vraiment (ce que j'ai appris en construisant un OCR)"
+    },
+    "de": {
+      "slug": "barrierefreie-pdfs-was-wirklich-notig-ist",
+      "title": "Barrierefreie PDFs: Was wirklich nötig ist (was ich beim Bau eines OCR-Tools gelernt habe)"
+    }
+  },
+  "collegare-strumenti-pdf-senza-scaricare-e-ricaricare": {
+    "it": {
+      "slug": "collegare-strumenti-pdf-senza-scaricare-e-ricaricare",
+      "title": "Collegare più strumenti PDF senza scaricare e ricaricare ogni volta"
+    },
+    "en": {
+      "slug": "chaining-pdf-tools-together-without-downloading-and-re-uploading",
+      "title": "Chaining PDF tools together without downloading and re-uploading"
+    },
+    "sq": {
+      "slug": "lidhja-e-disa-mjeteve-pdf-pa-shkarkuar-dhe-ringarkuar-cdo-here",
+      "title": "Lidhja e disa mjeteve PDF pa shkarkuar dhe ringarkuar çdo herë"
+    },
+    "es": {
+      "slug": "encadenar-varias-herramientas-pdf-sin-descargar-y-volver-a-subir",
+      "title": "Encadenar varias herramientas PDF sin descargar y volver a subir"
+    },
+    "pt": {
+      "slug": "ligar-varias-ferramentas-pdf-sem-descarregar-e-voltar-a-carregar",
+      "title": "Ligar várias ferramentas PDF sem descarregar e voltar a carregar"
+    },
+    "fr": {
+      "slug": "enchainer-plusieurs-outils-pdf-sans-telecharger-et-recharger-a-chaque-fois",
+      "title": "Enchaîner plusieurs outils PDF sans télécharger et recharger à chaque fois"
+    },
+    "de": {
+      "slug": "mehrere-pdf-werkzeuge-verketten-ohne-standiges-herunter-und-hochladen",
+      "title": "Mehrere PDF-Werkzeuge verketten — ohne ständiges Herunter- und Hochladen"
+    }
+  },
+  "creare-presentazione-con-ai-quante-slide-e-quale-stile": {
+    "it": {
+      "slug": "creare-presentazione-con-ai-quante-slide-e-quale-stile",
+      "title": "Creare una presentazione con l'AI: quante slide servono e quale stile scegliere"
+    },
+    "en": {
+      "slug": "creating-a-presentation-with-ai-how-many-slides-and-which-style",
+      "title": "Creating a presentation with AI: how many slides and which style"
+    },
+    "sq": {
+      "slug": "krijimi-i-nje-prezantimi-me-ia-sa-diapozitive-duhen-dhe-cilin-stil-te-zgjedhesh",
+      "title": "Krijimi i një prezantimi me IA: sa diapozitivë duhen dhe cilin stil të zgjedhësh"
+    },
+    "es": {
+      "slug": "crear-una-presentacion-con-ia-cuantas-diapositivas-y-que-estilo-elegir",
+      "title": "Crear una presentación con IA: cuántas diapositivas y qué estilo elegir"
+    },
+    "pt": {
+      "slug": "criar-uma-apresentacao-com-ia-quantos-diapositivos-e-que-estilo-escolher",
+      "title": "Criar uma apresentação com IA: quantos diapositivos e que estilo escolher"
+    },
+    "fr": {
+      "slug": "creer-une-presentation-avec-lia-combien-de-diapositives-et-quel-style",
+      "title": "Créer une présentation avec l'IA : combien de diapositives et quel style"
+    },
+    "de": {
+      "slug": "eine-prasentation-mit-ki-erstellen-wie-viele-folien-und-welcher-stil",
+      "title": "Eine Präsentation mit KI erstellen: wie viele Folien und welcher Stil"
+    }
+  },
+  "scrivere-ed-esportare-documenti-pdf-docx-html-senza-word": {
+    "it": {
+      "slug": "scrivere-ed-esportare-documenti-pdf-docx-html-senza-word",
+      "title": "Scrivere un documento ed esportarlo in PDF, DOCX o HTML senza Word"
+    },
+    "en": {
+      "slug": "write-a-document-and-export-it-to-pdf-docx-or-html-without-word",
+      "title": "Write a document and export it to PDF, DOCX or HTML without Word"
+    },
+    "sq": {
+      "slug": "shkruaj-nje-dokument-dhe-eksporto-ne-pdf-docx-ose-html-pa-word",
+      "title": "Shkruaj një dokument dhe eksporto në PDF, DOCX ose HTML pa Word"
+    },
+    "es": {
+      "slug": "escribir-un-documento-y-exportarlo-a-pdf-docx-o-html-sin-word",
+      "title": "Escribir un documento y exportarlo a PDF, DOCX o HTML sin Word"
+    },
+    "pt": {
+      "slug": "escrever-um-documento-e-exporta-lo-em-pdf-docx-ou-html-sem-word",
+      "title": "Escrever um documento e exportá-lo em PDF, DOCX ou HTML sem Word"
+    },
+    "fr": {
+      "slug": "rediger-un-document-et-lexporter-en-pdf-docx-ou-html-sans-word",
+      "title": "Rédiger un document et l'exporter en PDF, DOCX ou HTML sans Word"
+    },
+    "de": {
+      "slug": "ein-dokument-schreiben-und-als-pdf-docx-oder-html-exportieren-ohne-word",
+      "title": "Ein Dokument schreiben und als PDF, DOCX oder HTML exportieren — ohne Word"
+    }
+  },
+  "perche-la-ricerca-nel-pdf-non-trova-niente": {
+    "it": {
+      "slug": "perche-la-ricerca-nel-pdf-non-trova-niente",
+      "title": "Perché la ricerca dentro un PDF non trova niente (e cosa serve davvero in un viewer)"
+    },
+    "en": {
+      "slug": "why-searching-inside-a-pdf-finds-nothing-and-what-a-viewer-really-needs",
+      "title": "Why searching inside a PDF finds nothing (and what a viewer really needs)"
+    },
+    "sq": {
+      "slug": "pse-kerkimi-brenda-nje-pdf-je-nuk-gjen-asgje-dhe-cfare-duhet-vertet-te-nje-shikues",
+      "title": "Pse kërkimi brenda një PDF-je nuk gjen asgjë (dhe çfarë duhet vërtet te një shikues)"
+    },
+    "es": {
+      "slug": "por-que-la-busqueda-dentro-de-un-pdf-no-encuentra-nada-y-que-hace-falta-en-un-visor",
+      "title": "Por qué la búsqueda dentro de un PDF no encuentra nada (y qué hace falta en un visor)"
+    },
+    "pt": {
+      "slug": "porque-a-procura-dentro-de-um-pdf-nao-encontra-nada-e-o-que-e-mesmo-preciso-num-visualizador",
+      "title": "Porque a procura dentro de um PDF não encontra nada (e o que é mesmo preciso num visualizador)"
+    },
+    "fr": {
+      "slug": "pourquoi-la-recherche-dans-un-pdf-ne-trouve-rien-et-ce-quil-faut-vraiment-dans-une-visionneuse",
+      "title": "Pourquoi la recherche dans un PDF ne trouve rien (et ce qu'il faut vraiment dans une visionneuse)"
+    },
+    "de": {
+      "slug": "warum-die-suche-in-einem-pdf-nichts-findet-und-was-ein-viewer-wirklich-braucht",
+      "title": "Warum die Suche in einem PDF nichts findet (und was ein Viewer wirklich braucht)"
+    }
+  },
+  "unire-dividere-ruotare-pdf-senza-caricarli-online": {
+    "it": {
+      "slug": "unire-dividere-ruotare-pdf-senza-caricarli-online",
+      "title": "Unire, dividere e ruotare PDF senza caricarli su nessun server"
+    },
+    "en": {
+      "slug": "merge-split-and-rotate-pdfs-without-uploading-them-to-any-server",
+      "title": "Merge, split and rotate PDFs without uploading them to any server"
+    },
+    "sq": {
+      "slug": "bashko-ndaj-dhe-rrotullo-pdf-pa-i-ngarkuar-ne-asnje-server",
+      "title": "Bashko, ndaj dhe rrotullo PDF pa i ngarkuar në asnjë server"
+    },
+    "es": {
+      "slug": "unir-dividir-y-rotar-pdf-sin-subirlos-a-ningun-servidor",
+      "title": "Unir, dividir y rotar PDF sin subirlos a ningún servidor"
+    },
+    "pt": {
+      "slug": "juntar-dividir-e-rodar-pdf-sem-os-carregar-em-nenhum-servidor",
+      "title": "Juntar, dividir e rodar PDF sem os carregar em nenhum servidor"
+    },
+    "fr": {
+      "slug": "fusionner-diviser-et-pivoter-des-pdf-sans-les-envoyer-sur-un-serveur",
+      "title": "Fusionner, diviser et pivoter des PDF sans les envoyer sur un serveur"
+    },
+    "de": {
+      "slug": "pdfs-zusammenfuhren-teilen-und-drehen-ohne-upload-auf-einen-server",
+      "title": "PDFs zusammenführen, teilen und drehen — ohne Upload auf einen Server"
+    }
+  },
+  "scansionare-documenti-con-il-telefono-senza-scanner": {
+    "it": {
+      "slug": "scansionare-documenti-con-il-telefono-senza-scanner",
+      "title": "Come scansionare un documento con il telefono (senza avere uno scanner)"
+    },
+    "en": {
+      "slug": "how-to-scan-a-document-with-your-phone-without-owning-a-scanner",
+      "title": "How to scan a document with your phone (without owning a scanner)"
+    },
+    "sq": {
+      "slug": "si-te-skanosh-nje-dokument-me-telefon-pa-pasur-skaner",
+      "title": "Si të skanosh një dokument me telefon (pa pasur skaner)"
+    },
+    "es": {
+      "slug": "como-escanear-un-documento-con-el-movil-sin-tener-escaner",
+      "title": "Cómo escanear un documento con el móvil (sin tener escáner)"
+    },
+    "pt": {
+      "slug": "como-digitalizar-um-documento-com-o-telemovel-sem-ter-scanner",
+      "title": "Como digitalizar um documento com o telemóvel (sem ter scanner)"
+    },
+    "fr": {
+      "slug": "comment-numeriser-un-document-avec-son-telephone-sans-scanner",
+      "title": "Comment numériser un document avec son téléphone (sans scanner)"
+    },
+    "de": {
+      "slug": "ein-dokument-mit-dem-handy-scannen-ganz-ohne-scanner",
+      "title": "Ein Dokument mit dem Handy scannen (ganz ohne Scanner)"
+    }
+  },
+  "ocr-online-estrarre-testo-da-scansioni-e-foto": {
+    "it": {
+      "slug": "ocr-online-estrarre-testo-da-scansioni-e-foto",
+      "title": "OCR: come estrarre testo da scansioni e foto (e perché a volte sbaglia)"
+    },
+    "en": {
+      "slug": "ocr-how-to-extract-text-from-scans-and-photos-and-why-it-sometimes-fails",
+      "title": "OCR: how to extract text from scans and photos (and why it sometimes fails)"
+    },
+    "sq": {
+      "slug": "ocr-si-te-nxjerresh-tekst-nga-skanimet-dhe-fotot-dhe-pse-ndonjehere-gabon",
+      "title": "OCR: si të nxjerrësh tekst nga skanimet dhe fotot (dhe pse ndonjëherë gabon)"
+    },
+    "es": {
+      "slug": "ocr-como-extraer-texto-de-escaneos-y-fotos-y-por-que-a-veces-falla",
+      "title": "OCR: cómo extraer texto de escaneos y fotos (y por qué a veces falla)"
+    },
+    "pt": {
+      "slug": "ocr-como-extrair-texto-de-digitalizacoes-e-fotos-e-porque-as-vezes-falha",
+      "title": "OCR: como extrair texto de digitalizações e fotos (e porque às vezes falha)"
+    },
+    "fr": {
+      "slug": "ocr-extraire-du-texte-de-numerisations-et-de-photos-et-pourquoi-ca-echoue-parfois",
+      "title": "OCR : extraire du texte de numérisations et de photos (et pourquoi ça échoue parfois)"
+    },
+    "de": {
+      "slug": "ocr-text-aus-scans-und-fotos-extrahieren-und-warum-es-manchmal-misslingt",
+      "title": "OCR: Text aus Scans und Fotos extrahieren (und warum es manchmal misslingt)"
+    }
+  },
+  "riassumere-pdf-con-ai-guida-pratica": {
+    "it": {
+      "slug": "riassumere-pdf-con-ai-guida-pratica",
+      "title": "Come riassumere un PDF con l'AI (e quando non fidarsi del risultato)"
+    },
+    "en": {
+      "slug": "how-to-summarise-a-pdf-with-ai-and-when-not-to-trust-the-result",
+      "title": "How to summarise a PDF with AI (and when not to trust the result)"
+    },
+    "sq": {
+      "slug": "si-te-permbledhesh-nje-pdf-me-ia-dhe-kur-te-mos-i-besosh-rezultatit",
+      "title": "Si të përmbledhësh një PDF me IA (dhe kur të mos i besosh rezultatit)"
+    },
+    "es": {
+      "slug": "como-resumir-un-pdf-con-ia-y-cuando-no-fiarse-del-resultado",
+      "title": "Cómo resumir un PDF con IA (y cuándo no fiarse del resultado)"
+    },
+    "pt": {
+      "slug": "como-resumir-um-pdf-com-ia-e-quando-nao-confiar-no-resultado",
+      "title": "Como resumir um PDF com IA (e quando não confiar no resultado)"
+    },
+    "fr": {
+      "slug": "comment-resumer-un-pdf-avec-lia-et-quand-ne-pas-se-fier-au-resultat",
+      "title": "Comment résumer un PDF avec l'IA (et quand ne pas se fier au résultat)"
+    },
+    "de": {
+      "slug": "ein-pdf-mit-ki-zusammenfassen-und-wann-man-dem-ergebnis-nicht-trauen-sollte",
+      "title": "Ein PDF mit KI zusammenfassen (und wann man dem Ergebnis nicht trauen sollte)"
+    }
+  },
+  "come-trovare-scaricare-libri-pdf-gratis-legali": {
+    "it": {
+      "slug": "come-trovare-scaricare-libri-pdf-gratis-legali",
+      "title": "Come trovare e scaricare libri PDF gratis e legali"
+    },
+    "en": {
+      "slug": "how-to-find-and-download-free-legal-pdf-books",
+      "title": "How to find and download free, legal PDF books"
+    },
+    "sq": {
+      "slug": "si-te-gjesh-dhe-te-shkarkosh-libra-pdf-falas-dhe-ligjerisht",
+      "title": "Si të gjesh dhe të shkarkosh libra PDF falas dhe ligjërisht"
+    },
+    "es": {
+      "slug": "como-encontrar-y-descargar-libros-pdf-gratis-y-legales",
+      "title": "Cómo encontrar y descargar libros PDF gratis y legales"
+    },
+    "pt": {
+      "slug": "como-encontrar-e-descarregar-livros-pdf-gratis-e-legais",
+      "title": "Como encontrar e descarregar livros PDF grátis e legais"
+    },
+    "fr": {
+      "slug": "comment-trouver-et-telecharger-des-livres-pdf-gratuits-et-legaux",
+      "title": "Comment trouver et télécharger des livres PDF gratuits et légaux"
+    },
+    "de": {
+      "slug": "kostenlose-legale-pdf-bucher-finden-und-herunterladen",
+      "title": "Kostenlose, legale PDF-Bücher finden und herunterladen"
+    }
+  },
+  "come-convertire-pdf-in-word-senza-perdere-formattazione": {
+    "it": {
+      "slug": "come-convertire-pdf-in-word-senza-perdere-formattazione",
+      "title": "Come convertire PDF in Word senza perdere la formattazione: Guida 2026"
+    },
+    "en": {
+      "slug": "how-to-convert-pdf-to-word-without-losing-formatting-2026-guide",
+      "title": "How to convert PDF to Word without losing formatting: 2026 Guide"
+    },
+    "sq": {
+      "slug": "si-te-konvertohet-pdf-ne-word-pa-humbur-formatimin-udhezues-2026",
+      "title": "Si të konvertohet PDF në Word pa humbur formatimin: Udhëzues 2026"
+    },
+    "es": {
+      "slug": "como-convertir-pdf-a-word-sin-perder-formato-guia-2026",
+      "title": "Cómo convertir PDF a Word sin perder formato: Guía 2026"
+    },
+    "pt": {
+      "slug": "como-converter-pdf-em-word-sem-perder-a-formatacao-guia-2026",
+      "title": "Como converter PDF em Word sem perder a formatação: Guia 2026"
+    },
+    "fr": {
+      "slug": "comment-convertir-un-pdf-en-word-sans-perdre-le-formatage-guide-2026",
+      "title": "Comment convertir un PDF en Word sans perdre le formatage : Guide 2026"
+    },
+    "de": {
+      "slug": "so-konvertieren-sie-pdf-in-word-ohne-die-formatierung-zu-verlieren-leitfaden-2026",
+      "title": "So konvertieren sie PDF in Word, ohne die formatierung zu verlieren: Leitfaden 2026"
+    }
+  },
+  "pdf-ai-translation-guide-2026": {
+    "it": {
+      "slug": "pdf-ai-translation-guide-2026",
+      "title": "Traduzione PDF AI: Approcci moderni e migliori pratiche"
+    },
+    "en": {
+      "slug": "ai-pdf-translation-modern-approaches-and-best-practices",
+      "title": "AI PDF translation: Modern approaches and Best practices"
+    },
+    "sq": {
+      "slug": "perkthimi-i-ai-pdf-qasjet-moderne-dhe-praktikat-me-te-mira",
+      "title": "Përkthimi i AI PDF: Qasjet moderne dhe praktikat më të mira"
+    },
+    "es": {
+      "slug": "traduccion-de-pdf-con-ia-enfoques-modernos-y-mejores-practicas",
+      "title": "Traducción de PDF con ia: Enfoques modernos y mejores prácticas"
+    },
+    "pt": {
+      "slug": "traducao-ai-pdf-abordagens-modernas-e-praticas-recomendadas",
+      "title": "Tradução AI PDF: Abordagens modernas e práticas recomendadas"
+    },
+    "fr": {
+      "slug": "traduction-ai-pdf-approches-modernes-et-meilleures-pratiques",
+      "title": "Traduction AI PDF : Approches modernes et meilleures pratiques"
+    },
+    "de": {
+      "slug": "ai-pdf-ubersetzung-moderne-ansatze-und-best-practices",
+      "title": "AI PDF-übersetzung: Moderne ansätze und Best practices"
+    }
+  },
+  "intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere": {
+    "it": {
+      "slug": "intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere",
+      "title": "Intelligenza artificiale: Uso quotidiano, casi reali e limiti da conoscere"
+    },
+    "en": {
+      "slug": "artificial-intelligence-everyday-use-real-world-cases-and-key-limitations",
+      "title": "Artificial intelligence: Everyday use, real-world cases and key limitations"
+    },
+    "sq": {
+      "slug": "inteligjenca-artificiale-perdorimi-i-perditshem-raste-reale-dhe-kufizimet",
+      "title": "Inteligjenca artificiale: Përdorimi i përditshëm, raste reale dhe kufizimet"
+    },
+    "es": {
+      "slug": "inteligencia-artificial-uso-diario-casos-reales-y-limites-a-tener-en-cuenta",
+      "title": "Inteligencia artificial: Uso diario, casos reales y límites a tener en cuenta"
+    },
+    "pt": {
+      "slug": "inteligencia-artificial-uso-diario-casos-reais-e-limites-a-ter-em-conta",
+      "title": "Inteligência artificial: Uso diário, casos reais e limites a ter em conta"
+    },
+    "fr": {
+      "slug": "intelligence-artificielle-usage-quotidien-cas-reels-et-limites-a-connaitre",
+      "title": "Intelligence artificielle : Usage quotidien, cas réels et limites à connaître"
+    },
+    "de": {
+      "slug": "kunstliche-intelligenz-taglicher-einsatz-reale-falle-und-grenzen-die-es-zu-beachten-gilt",
+      "title": "Künstliche intelligenz: Täglicher einsatz, reale fälle und grenzen, die es zu beachten gilt"
+    }
+  }
+}

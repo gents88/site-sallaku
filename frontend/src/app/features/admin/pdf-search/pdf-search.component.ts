@@ -14,6 +14,7 @@ import { AnalyticsTrackingService } from '../../../core/services/analytics-track
 import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service';
 import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
 import { LibraryService } from '../../../core/services/library.service';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
 
 const MOBILE_QUERY = '(max-width: 640px)';
 const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
@@ -52,7 +53,7 @@ function normalizeTitle(title: string): string {
   selector: 'app-pdf-search',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, BreadcrumbComponent],
+  imports: [LabToolInfoComponent, CommonModule, FormsModule, TranslateModule, BreadcrumbComponent],
   templateUrl: './pdf-search.component.html',
   styleUrls: ['./pdf-search.component.scss'],
 })

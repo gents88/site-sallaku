@@ -35,6 +35,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 type ViewMode = 'formatted' | 'raw';
 
@@ -42,7 +44,7 @@ type ViewMode = 'formatted' | 'raw';
   selector: 'app-ai-formatter',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent],
+  imports: [LabToolInfoComponent, CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent],
   templateUrl: './ai-formatter.component.html',
   styleUrls: ['./ai-formatter.component.scss'],
 })
@@ -52,6 +54,7 @@ export class AiFormatterComponent implements OnInit {
   private readonly sanitizer     = inject(DomSanitizer);
   private readonly service       = inject(AiFormatterService);
   private readonly seo           = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService   = inject(LanguageService);
   private readonly platformId    = inject(PLATFORM_ID);
   private readonly workspace     = inject(WorkspaceService);
@@ -111,27 +114,7 @@ export class AiFormatterComponent implements OnInit {
         featureList: ['Instant formatting', 'Smart structure detection', '6 document types', 'Markdown output', 'Live preview'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What types of documents can it format?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Business proposals, reports, meeting notes, résumés, articles, and general text — six document types with context-aware styling.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'How does it detect structure in raw text?',
-            acceptedAnswer: { '@type': 'Answer', text: 'The AI automatically detects headings, bullet points and paragraphs from unformatted, raw text.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I see the raw Markdown output?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, toggle instantly between a polished formatted view and raw Markdown output.' },
-          },
-        ],
-      },
+      ...this.labInfo.faqSchemas('ai-formatter'),
       this.seo.breadcrumb([
         { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
         { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },

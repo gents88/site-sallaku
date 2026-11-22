@@ -12,6 +12,8 @@ import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 type ExportFormat = 'pdf' | 'docx' | 'html';
 
@@ -62,13 +64,14 @@ const TOOLBAR: ToolBtn[][] = [
   selector: 'app-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, BreadcrumbComponent],
+  imports: [LabToolInfoComponent, TranslateModule, BreadcrumbComponent],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
 })
 export class EditorComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
@@ -131,6 +134,7 @@ export class EditorComponent implements OnInit, OnDestroy {
       featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
     },
+    ...this.labInfo.faqSchemas('editor'),
     this.seo.breadcrumb([
       { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
       { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
