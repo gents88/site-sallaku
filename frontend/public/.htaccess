@@ -98,6 +98,13 @@ ErrorDocument 404 /index.csr.html
   <If "%{THE_REQUEST} =~ m#^[A-Z]+ /(?:(?:en|sq|es|pt|fr|de)/)?(?:search|newsletter|dashboard|lab/i-miei-file|lab/open-file)(?:[/?\s])#">
     Header always set X-Robots-Tag "noindex, follow"
   </If>
+  # Le API sono aperte ai crawler in robots.txt (servono a Googlebot per
+  # renderizzare le pagine), ma il JSON non deve finire nell'indice. Vale solo
+  # per richieste a /api/...: /blog/<slug> passa dal backend (seo/shell) ma la
+  # sua THE_REQUEST resta /blog/..., quindi resta indicizzabile.
+  <If "%{THE_REQUEST} =~ m#^[A-Z]+ /api/#">
+    Header always set X-Robots-Tag "noindex"
+  </If>
 </IfModule>
 
 # Brotli first: when the client advertises `br`, Apache prefers this filter
