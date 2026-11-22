@@ -1337,7 +1337,11 @@
     "link_copied": "Link copied",
     "preview_goto_page": "Go to page",
     "zoom_out": "Zoom out",
-    "zoom_in": "Zoom in"
+    "zoom_in": "Zoom in",
+    "preview_failed": "We couldn't load this PDF. It may be too large, the source may not be responding, or the file may be unreadable. Try again, or use “Download PDF” to open it from the source.",
+    "preview_blank": "This page appears to be blank. It may be a genuinely blank page of the document (cover, back of a leaf): try › to move forward. If every page stays blank, download the PDF or open it from the source.",
+    "preview_page_error": "We couldn't display this page. Try again, or download the PDF to read it.",
+    "preview_retry": "Try again"
   },
   "convert": {
     "title": "Converter",

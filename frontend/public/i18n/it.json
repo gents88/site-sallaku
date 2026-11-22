@@ -1337,7 +1337,11 @@
     "link_copied": "Link copiato",
     "preview_goto_page": "Vai alla pagina",
     "zoom_out": "Riduci zoom",
-    "zoom_in": "Aumenta zoom"
+    "zoom_in": "Aumenta zoom",
+    "preview_failed": "Non siamo riusciti a caricare questo PDF. Può essere troppo grande, la fonte può non rispondere o il file può non essere leggibile. Riprova, oppure usa «Scarica PDF» per aprirlo dalla fonte.",
+    "preview_blank": "Questa pagina risulta vuota. Può essere una pagina bianca del documento (copertina, retro): prova con › per andare avanti. Se restano tutte bianche, scarica il PDF o aprilo dalla fonte.",
+    "preview_page_error": "Non siamo riusciti a mostrare questa pagina. Riprova, oppure scarica il PDF per leggerla.",
+    "preview_retry": "Riprova"
   },
   "convert": {
     "title": "Convertitore",

@@ -67,8 +67,9 @@ export class PdfjsService {
    *
    * Con `retryIfBlank`, un risultato interamente bianco viene rifatto a metà
    * risoluzione: è il sintomo tipico di un canvas troppo grande per il dispositivo.
+   * `onBlank` viene chiamata se il risultato finale è comunque tutto bianco.
    */
-  async renderPageToBlob(page: PdfPage, scale = 2, opts: { maxPixels?: number; retryIfBlank?: boolean } = {}): Promise<Blob> {
+  async renderPageToBlob(page: PdfPage, scale = 2, opts: { maxPixels?: number; retryIfBlank?: boolean; onBlank?: () => void } = {}): Promise<Blob> {
     const base = page.getViewport({ scale: 1 });
     let effective = scale;
     if (opts.maxPixels) {
@@ -80,6 +81,9 @@ export class PdfjsService {
     if (opts.retryIfBlank && this.isBlank(canvas) && effective > 0.5) {
       canvas = await this.renderToCanvas(page, effective / 2);
     }
+    // Ancora bianca dopo il tentativo: o la pagina è davvero vuota o il dispositivo non regge il canvas.
+    // Chi chiama lo spiega all'utente invece di mostrare un foglio bianco senza dire nulla.
+    if (opts.onBlank && this.isBlank(canvas)) opts.onBlank();
     return new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas.toBlob failed'))), 'image/png');
     });

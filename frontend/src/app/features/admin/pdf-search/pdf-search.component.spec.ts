@@ -502,5 +502,51 @@ describe('PdfSearchComponent', () => {
       swipe(100, 100, 200, 300); // prevalentemente verticale
       expect(component.canvasPageNum()).toBe(2);
     });
+
+    describe('pagina bianca o non disegnabile', () => {
+      type Internals = { pdfDoc: unknown; previewToken: number };
+      function viewer(getPage: () => Promise<unknown>) {
+        configure();
+        vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:pagina');
+        const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+        (component as unknown as Internals).pdfDoc = { numPages: 3, getPage: vi.fn(getPage) };
+        component.canvasNumPages.set(3);
+        return component;
+      }
+      const page = () => Promise.resolve({ cleanup: vi.fn() });
+
+      it('segnala all\'utente una pagina interamente bianca', async () => {
+        const component = viewer(page);
+        pdfjsMock.renderPageToBlob.mockImplementation((_p: unknown, _s: number, opts: { onBlank?: () => void }) => {
+          opts.onBlank?.();
+          return Promise.resolve(new Blob());
+        });
+        component.goToCanvasPage(2);
+        await vi.waitFor(() => expect(component.canvasPageUrl()).toBe('blob:pagina'));
+        expect(component.canvasPageBlank()).toBe(true);
+        expect(component.canvasPageError()).toBe(false);
+      });
+
+      it('una pagina con contenuto non mostra l\'avviso', async () => {
+        const component = viewer(page);
+        pdfjsMock.renderPageToBlob.mockResolvedValue(new Blob());
+        component.goToCanvasPage(2);
+        await vi.waitFor(() => expect(component.canvasPageUrl()).toBe('blob:pagina'));
+        expect(component.canvasPageBlank()).toBe(false);
+      });
+
+      it('se la pagina non si disegna lo segnala e "Riprova" ci riprova', async () => {
+        let fail = true;
+        const component = viewer(() => (fail ? Promise.reject(new Error('render')) : page()));
+        pdfjsMock.renderPageToBlob.mockResolvedValue(new Blob());
+        component.goToCanvasPage(2);
+        await vi.waitFor(() => expect(component.canvasPageError()).toBe(true));
+
+        fail = false;
+        component.retryCanvasPage();
+        await vi.waitFor(() => expect(component.canvasPageUrl()).toBe('blob:pagina'));
+        expect(component.canvasPageError()).toBe(false);
+      });
+    });
   });
 });
