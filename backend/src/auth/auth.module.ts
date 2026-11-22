@@ -24,10 +24,10 @@ import { Otp, OtpSchema } from './schemas/otp.schema';
       imports: [ConfigModule],
       useFactory: (cfg: ConfigService) => ({
         secret: cfg.get<string>('JWT_SECRET'),
-        // Default matches what every .env.*.example documents and what's
-        // actually set in production — only used if JWT_EXPIRES_IN is
-        // missing entirely (e.g. a fresh local setup before copying .env.example).
-        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES_IN', '7d') as StringValue },
+        // Access token breve: il frontend lo rinnova da solo col refresh token (interceptor su
+        // 401, AuthService.getFreshToken per i WebSocket). Default uguale a quello degli
+        // .env.*.example, usato solo se JWT_EXPIRES_IN manca del tutto.
+        signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES_IN', '30m') as StringValue },
       }),
       inject: [ConfigService],
     }),

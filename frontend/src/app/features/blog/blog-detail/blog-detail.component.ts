@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription, finalize, timeout } from 'rxjs';
 import { BlogService } from '../../../core/services/blog.service';
+import { FeatureFlagsService } from '../../../core/services/feature-flags.service';
+import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 import { ReadingHistoryService } from '../../../core/services/reading-history.service';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { Lang, LanguageService, NON_DEFAULT_LANGS, withLangPrefix } from '../../../core/services/language.service';
@@ -78,7 +80,7 @@ export function activeHeadingIndex(tops: number[], readingLine: number, atBottom
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective, LocalDatePipe],
+  imports: [CommonModule, NgOptimizedImage, RouterLink, MatIconModule, TranslateModule, LoadingSpinnerComponent, TrackClickDirective, AdUnitComponent, LangUrlPipe, SocialShareComponent, ArticleNotesComponent, BreadcrumbComponent, ViewTransitionNameDirective, ViewTransitionNameOnClickDirective, LocalDatePipe, NewsletterSignupComponent],
   templateUrl: './blog-detail.component.html',
   styleUrls: ['./blog-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -108,6 +110,7 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   private readonly snackBar = inject(MatSnackBar);
   private readonly notFoundReporter = inject(NotFoundReporterService);
   private readonly readingHistory = inject(ReadingHistoryService);
+  readonly flags = inject(FeatureFlagsService);
   publishing = false;
   readonly currentLang = this.langService.current;
 
@@ -389,7 +392,16 @@ export class BlogDetailComponent implements OnInit, OnChanges {
         this.post = post;
         afterNextRender(() => this.enhanceContent(), { injector: this.injector });
         this.cdr.markForCheck();
-        if (this.isPreview) return; // no view tracking, canonical tags, or JSON-LD for an unpublished draft
+        if (this.isPreview) {
+          // Anteprima nella stessa scheda: il breadcrumb riporta all'elenco articoli.
+          // Niente view tracking, canonical o JSON-LD per una bozza non pubblicata.
+          this.breadcrumbItems = [
+            { label: this.translate.instant('admin.dashboard'), path: '/dashboard' },
+            { label: this.translate.instant('blog_manage.title'), path: '/dashboard/blog' },
+            { label: this.localizedTitle },
+          ];
+          return;
+        }
         // Fire-and-forget: increment view count without blocking rendering.
         // Browser only — prerendering every post × language used to count
         // ~300 fake views per build (and eat into the backend throttle).
@@ -479,7 +491,12 @@ export class BlogDetailComponent implements OnInit, OnChanges {
       error: (err: { status?: number }) => {
         this.notFound = true;
         // Uno slug che il backend non conosce è un link rotto da sistemare (lista 404 della dashboard).
-        if (err?.status === 404 && !this.isPreview) this.notFoundReporter.report(this.location.path(), 'blog');
+        // Apache risponde 200 (l'articolo potrebbe essere nuovo e non ancora prerenderizzato):
+        // il noindex evita che Google indicizzi la pagina vuota (soft 404).
+        if (err?.status === 404 && !this.isPreview) {
+          this.notFoundReporter.report(this.location.path(), 'blog');
+          this.seo.setNoIndex(true);
+        }
         this.cdr.markForCheck();
       },
     });

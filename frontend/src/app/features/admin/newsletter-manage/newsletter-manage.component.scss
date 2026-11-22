@@ -7,6 +7,9 @@
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
+
+  /* A 320px il pulsante veniva compresso e il testo tagliato. */
+  .btn { flex-shrink: 0; white-space: nowrap; }
 }
 
 .newsletter-counts {
@@ -31,6 +34,8 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 10px;
 }
+
+@media (max-width: 700px) { .status-tab { min-height: 40px; } }
 
 .status-tab {
   display: inline-flex;

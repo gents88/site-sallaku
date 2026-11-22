@@ -5,6 +5,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { PdfSearchService } from './pdf-search.service';
 import { GutenbergProvider } from './providers/gutenberg.provider';
+import { isProductionEnv } from '../common/utils/runtime-env';
 
 // Hosts the /proxy endpoint will fetch on the client's behalf — an allow-list,
 // not a generic proxy, to keep this from becoming an SSRF vector.
@@ -86,10 +87,13 @@ export class PdfSearchController {
     if (query.length > 200) throw new BadRequestException('q must be at most 200 characters');
     const results = await this.pdfSearchService.search(query);
 
-    // Providers that serve their own PDF (Gutenberg) return a relative pdfUrl —
-    // resolve it against whatever host this request actually came in on, so it
-    // works unchanged across dev/uat/prod without a hardcoded base URL.
-    const base = `${req.protocol}://${req.get('host')}`;
+    // Providers that serve their own PDF (Gutenberg) return a relative pdfUrl.
+    // In sviluppo si risolve contro l'host della richiesta; in produzione
+    // l'header Host lo sceglie il client (un Host falso farebbe puntare i link
+    // della risposta a un altro dominio), quindi si usa l'origine configurata.
+    const base = isProductionEnv()
+      ? new URL(this.config.get<string>('PUBLIC_API_URL', 'https://gentsallaku.it/api/v1')).origin
+      : `${req.protocol}://${req.get('host')}`;
     const resolved = results.map((r) => (r.pdfUrl.startsWith('/') ? { ...r, pdfUrl: `${base}${r.pdfUrl}` } : r));
 
     return { results: resolved };

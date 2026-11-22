@@ -65,6 +65,22 @@ describe('LiveHandoffService', () => {
     httpMock.verify();
   });
 
+  /** Simula il ricaricamento della pagina: stessa sessionStorage, servizio nuovo. */
+  function reloadService(): LiveHandoffService {
+    TestBed.resetTestingModule();
+    lastSocket = undefined;
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: AnalyticsTrackingService, useValue: { trackClick: vi.fn() } },
+        { provide: SOCKET_IO, useValue: mockIo },
+      ],
+    });
+    httpMock = TestBed.inject(HttpTestingController);
+    return TestBed.inject(LiveHandoffService);
+  }
+
   describe('notifyTyping', () => {
     it('non mostra il banner se non c’è ancora stato uno scambio di messaggi', () => {
       service.notifyTyping('s1', false);
@@ -134,6 +150,204 @@ describe('LiveHandoffService', () => {
       // Il cooldown deve comunque essere stato registrato.
       service.notifyTyping('s1', true);
       expect(service.state).toBe('idle');
+    });
+  });
+
+  describe('restore (ricaricamento della pagina durante una chat live)', () => {
+    const STATUS_URL = `${environment.apiUrl}/chatbot/s1/live-handoff/status`;
+
+    it('riprende una chat live: stato "live" e socket collegato alla sessione', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'live' });
+
+      expect(service.state).toBe('live');
+      expect(mockIo).toHaveBeenCalled();
+      lastSocket!.trigger('connect');
+      expect(lastSocket!.emitted).toContainEqual({ event: 'join_session', payload: { sessionId: 's1' } });
+    });
+
+    it('riprende una richiesta in attesa di Gent', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'notified' });
+
+      expect(service.state).toBe('request_sent');
+      expect(lastSocket).toBeDefined();
+    });
+
+    it('riprende anche mentre Gent sta entrando', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'agent_joining' });
+
+      expect(service.state).toBe('agent_joining');
+    });
+
+    it.each(['closed', 'expired', 'none'])('con stato "%s" e nessuno scambio non fa nulla: niente avvisi su una chat senza messaggi né socket', (status) => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status });
+
+      expect(service.state).toBe('idle');
+      expect(lastSocket).toBeUndefined();
+    });
+
+    it('se Gent ha chiuso la chat dopo uno scambio mostra l\'avviso di chiusura accanto alla cronologia ripresa, senza socket', () => {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      sessionStorage.setItem('live_handoff_messages', JSON.stringify([
+        { role: 'agent', content: 'Ciao, sono Gent', timestamp: '2026-10-22T10:00:00.000Z' },
+      ]));
+      const after = reloadService();
+
+      after.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'closed' });
+
+      expect(after.state).toBe('closed');
+      expect(lastSocket).toBeUndefined();
+    });
+
+    it('una richiesta scaduta, anche con messaggi, non mostra "chiusa": Gent non è mai entrato', () => {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      sessionStorage.setItem('live_handoff_messages', JSON.stringify([
+        { role: 'user', content: 'ciao', timestamp: '2026-10-22T10:00:00.000Z' },
+      ]));
+      const after = reloadService();
+
+      after.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush({ status: 'expired' });
+
+      expect(after.state).toBe('idle');
+    });
+
+    it('un errore di rete non cambia lo stato', () => {
+      service.restore('s1');
+      httpMock.expectOne(STATUS_URL).flush('boom', { status: 500, statusText: 'Server Error' });
+
+      expect(service.state).toBe('idle');
+      expect(lastSocket).toBeUndefined();
+    });
+
+    it('senza sessione non fa nessuna richiesta', () => {
+      service.restore('');
+
+      httpMock.expectNone(() => true);
+    });
+
+    it('non sovrascrive una richiesta avviata dall\'utente mentre la risposta era in volo', () => {
+      service.restore('s1');
+      const pending = httpMock.expectOne(STATUS_URL);
+      service.requestHandoff('s1', 'ciao', 'it');
+      httpMock.expectOne(HANDOFF_URL).flush({ status: 'requested', expiresAt: new Date().toISOString() });
+      const socketsBefore = mockIo.mock.calls.length;
+
+      pending.flush({ status: 'live' });
+
+      expect(mockIo.mock.calls.length).toBe(socketsBefore);
+      expect(service.state).toBe('request_sent');
+    });
+
+    it('non richiede nulla se è già collegato', () => {
+      service.requestHandoff('s1', 'ciao', 'it');
+      httpMock.expectOne(HANDOFF_URL).flush({ status: 'requested', expiresAt: new Date().toISOString() });
+
+      service.restore('s1');
+
+      httpMock.expectNone(STATUS_URL);
+    });
+  });
+
+  describe('sendTyping ("sta scrivendo" verso Gent)', () => {
+    function goLive(): void {
+      service.restore('s1');
+      httpMock.expectOne(`${environment.apiUrl}/chatbot/s1/live-handoff/status`).flush({ status: 'live' });
+    }
+    const typingEvents = () => lastSocket!.emitted.filter((e) => e.event === 'visitor_typing');
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-10-22T12:00:00Z'));
+    });
+    afterEach(() => vi.useRealTimers());
+
+    it('a chat live invia visitor_typing con la sessione', () => {
+      goLive();
+
+      service.sendTyping();
+
+      expect(typingEvents()).toEqual([{ event: 'visitor_typing', payload: { sessionId: 's1' } }]);
+    });
+
+    it('al massimo un evento ogni 2,5 secondi', () => {
+      goLive();
+
+      service.sendTyping();
+      service.sendTyping();
+      vi.advanceTimersByTime(2_000);
+      service.sendTyping();
+      expect(typingEvents()).toHaveLength(1);
+
+      vi.advanceTimersByTime(600);
+      service.sendTyping();
+      expect(typingEvents()).toHaveLength(2);
+    });
+
+    it('fuori dallo stato "live" non invia nulla', () => {
+      service.requestHandoff('s1', 'ciao', 'it');
+      flushSuccessfulRequest(httpMock);
+
+      service.sendTyping();
+
+      expect(typingEvents()).toHaveLength(0);
+    });
+
+    it('senza socket non fa nulla e non lancia', () => {
+      expect(() => service.sendTyping()).not.toThrow();
+    });
+  });
+
+  describe('messaggi della chat live dopo un ricaricamento', () => {
+    const lastMessages = (svc: LiveHandoffService) => {
+      let out: unknown[] = [];
+      svc.liveMessages$.subscribe((m) => (out = m)).unsubscribe();
+      return out as Array<{ from: string; text: string; sentAt: Date }>;
+    };
+
+    function goLiveAndChat(): void {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      service.requestHandoff('s1', 'ciao', 'it');
+      flushSuccessfulRequest(httpMock);
+      lastSocket!.trigger('connect');
+      lastSocket!.trigger('chat_message', { from: 'visitor', text: 'ho una domanda', sentAt: '2026-10-22T10:00:00.000Z' });
+      lastSocket!.trigger('chat_message', { from: 'agent', text: 'dimmi pure', sentAt: '2026-10-22T10:00:05.000Z' });
+    }
+
+    it('i messaggi scambiati con Gent tornano dopo il ricaricamento', () => {
+      goLiveAndChat();
+
+      const messages = lastMessages(reloadService());
+
+      expect(messages.map((m) => [m.from, m.text])).toEqual([['visitor', 'ho una domanda'], ['agent', 'dimmi pure']]);
+      expect(messages[1].sentAt).toBeInstanceOf(Date);
+    });
+
+    it('chiudere la chat (reset) cancella anche i messaggi salvati', () => {
+      goLiveAndChat();
+
+      service.reset();
+
+      expect(lastMessages(reloadService())).toEqual([]);
+      expect(sessionStorage.getItem('live_handoff_messages')).toBeNull();
+    });
+
+    it('senza la sessione della chat i messaggi salvati non ricompaiono', () => {
+      goLiveAndChat();
+      sessionStorage.removeItem('chatbot_session_id');
+
+      expect(lastMessages(reloadService())).toEqual([]);
+    });
+
+    it('messaggi salvati corrotti non rompono il servizio', () => {
+      sessionStorage.setItem('chatbot_session_id', 's1');
+      sessionStorage.setItem('live_handoff_messages', 'non json');
+
+      expect(lastMessages(reloadService())).toEqual([]);
     });
   });
 

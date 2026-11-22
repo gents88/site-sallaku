@@ -1,12 +1,14 @@
 import { Injectable, signal, computed, OnDestroy, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap, catchError, map } from 'rxjs/operators';
-import { Observable, throwError, BehaviorSubject, filter, take } from 'rxjs';
+import { Observable, throwError, BehaviorSubject, filter, take, of } from 'rxjs';
+import { jwtExpiresAt } from '../utils/jwt';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginPayload, OtpChannels, OtpRequestResponse, RegisterPayload, RegisterResponse, User } from '../models/user.model';
 import { LAST_ACTIVITY_KEY } from './inactivity.service';
+import { SKIP_ERROR_TOAST } from '../interceptors/error.interceptor';
 
 const TOKEN_KEY = 'portfolio_token';
 const REFRESH_TOKEN_KEY = 'portfolio_refresh_token';
@@ -166,8 +168,47 @@ export class AuthService implements OnDestroy {
     }
   }
 
+  /** Se l'account collegato ha una password: in quel caso la cancellazione la chiede. */
+  accountHasPassword(): Observable<boolean> {
+    return this.http
+      .get<{ hasPassword?: boolean }>(`${this.apiUrl}/me`, this.httpOpts)
+      .pipe(map(me => !!me.hasPassword));
+  }
+
+  /**
+   * Cancella l'account collegato e i suoi file salvati (DELETE /auth/me). Solo a
+   * cancellazione riuscita chiude la sessione locale; con la password sbagliata
+   * la sessione resta e l'errore lo mostra chi chiama (niente toast generico).
+   */
+  deleteAccount(password?: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.apiUrl}/me`, {
+        ...this.httpOpts,
+        body: password ? { password } : {},
+        context: new HttpContext().set(SKIP_ERROR_TOAST, true),
+      })
+      .pipe(tap(() => this.clearSession()));
+  }
+
   getToken(): string | null {
     return this._token();
+  }
+
+  /**
+   * Token di accesso valido per almeno `minValidityMs`, rinnovandolo se sta per scadere.
+   * Serve a chi non passa dall'interceptor HTTP, come l'handshake dei WebSocket admin: un
+   * token scaduto lì non genera un 401 (e quindi nessun refresh), il socket si collega
+   * semplicemente senza permessi. Con un token di accesso breve succede di continuo.
+   * Se il rinnovo fallisce restituisce null (doRefresh ha già chiuso la sessione).
+   */
+  getFreshToken(minValidityMs = 60_000): Observable<string | null> {
+    const token = this._token();
+    if (!token) return of(null);
+
+    const expiresAt = jwtExpiresAt(token);
+    if (expiresAt === null || expiresAt - Date.now() > minValidityMs) return of(token);
+
+    return this.doRefresh(false).pipe(catchError(() => of(null)));
   }
 
   // L'inattività è gestita da InactivityService (un solo timer, per ruolo, con avviso).
@@ -201,10 +242,16 @@ export class AuthService implements OnDestroy {
   /** Ripristino silenzioso all'avvio (modalità cookie): mai redirect, si resta sulla pagina da anonimi. */
   private restoreFromCookie(): void {
     this.restoring.set(true);
-    this.doRefresh(false).subscribe({
-      next: () => this.restoring.set(false),
-      error: () => this.restoring.set(false),
-    });
+    // Fuori dal costruttore: l'authInterceptor fa inject(AuthService), quindi una
+    // richiesta partita da qui dentro dà NG0200 (dipendenza circolare), il refresh
+    // non parte e la sessione viene cancellata. `restoring` resta true da subito
+    // così l'authGuard aspetta.
+    void Promise.resolve().then(() =>
+      this.doRefresh(false).subscribe({
+        next: () => this.restoring.set(false),
+        error: () => this.restoring.set(false),
+      }),
+    );
   }
 
   private parseStoredUser(): User | null {

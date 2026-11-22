@@ -31,6 +31,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  /* Su telefono stato + pulsante "chiudi" vanno sotto il titolo invece di uscire dallo schermo. */
+  flex-wrap: wrap;
   padding: 16px 20px;
   border-bottom: 1px solid var(--glass-border);
   flex-shrink: 0;
@@ -39,8 +41,10 @@
 .alc-header__right {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
-  flex-shrink: 0;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .alc-close-btn {
@@ -82,12 +86,13 @@
 }
 
 .alc-status {
-  flex-shrink: 0;
   padding: 5px 12px;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  white-space: nowrap;
+  /* Il messaggio d'errore è una frase intera: deve poter andare a capo invece di uscire dallo schermo. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
   background: rgba(148, 163, 184, 0.14);
   color: var(--text-secondary);
 }
@@ -209,4 +214,15 @@
 @media (max-width: 640px) {
   .alc-card { height: calc(100vh - 160px); }
   .alc-msg { max-width: 90%; }
+}
+
+/* Riga riservata all'indicatore "sta scrivendo": altezza fissa, così il log non salta
+   quando compare o sparisce. */
+.alc-typing {
+  min-height: 1.4rem;
+  margin: 0;
+  padding: 2px 16px;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-muted, #94a3b8);
 }

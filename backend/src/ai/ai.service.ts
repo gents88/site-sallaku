@@ -1,4 +1,4 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { AiProviderService } from '../common/services/ai-provider.service';
@@ -77,11 +77,12 @@ export class AiService {
 
   // ── GROQ API (provider attivo) ──────────────────────────────────────────
 
-  private async callGroq(messages: GroqMessage[], maxTokens = 2048): Promise<string> {
+  private async callGroq(messages: GroqMessage[], maxTokens = 2048, maxRetries?: number): Promise<string> {
     return this.aiProvider.chatCompletion(messages, {
       model: this.model,
       maxTokens,
       timeoutMs: 60_000,
+      maxRetries,
     });
   }
 
@@ -501,7 +502,40 @@ Respond ONLY with valid JSON, no markdown.`,
 Preserve paragraph structure and formatting markers. Return ONLY the translated text.`,
       },
       { role: 'user', content: `Translate to ${targetLanguage}:\n\n${chunk}` },
-    ], 3000);
+    // Un documento lungo fa molte chiamate di fila e sfiora il limite di token
+    // al minuto di Groq: qui conviene aspettare più a lungo prima di arrendersi.
+    ], 3000, AiService.TRANSLATE_MAX_RETRIES);
+  }
+
+  private static readonly TRANSLATE_MAX_RETRIES = 6;
+
+  /**
+   * Traduce i blocchi in sequenza. Se Groq esaurisce il limite (429/503) dopo
+   * che almeno un blocco è già stato tradotto, restituisce quelli completati
+   * con `interrupted: true` invece di buttare tutto il lavoro fatto; se fallisce
+   * già al primo blocco rilancia l'errore, perché non c'è niente da salvare.
+   */
+  private async translateInOrder(
+    chunks: string[],
+    targetLanguage: string,
+  ): Promise<{ parts: string[]; interrupted: boolean }> {
+    const parts: string[] = [];
+    for (const chunk of chunks) {
+      if (!chunk.trim()) {
+        parts.push('');
+        continue;
+      }
+      try {
+        parts.push((await this.translateChunk(chunk, targetLanguage)).trim());
+      } catch (err) {
+        if (err instanceof HttpException && parts.some(Boolean)) {
+          this.logger.warn(`Traduzione interrotta al blocco ${parts.length + 1}/${chunks.length}: ${err.message}`);
+          return { parts, interrupted: true };
+        }
+        throw err;
+      }
+    }
+    return { parts, interrupted: false };
   }
 
   /**
@@ -565,21 +599,23 @@ Preserve paragraph structure and formatting markers. Return ONLY the translated 
       const truncated = sourcePages.length > this.MAX_CHUNKS;
       const pagesToTranslate = sourcePages.slice(0, this.MAX_CHUNKS);
 
-      const translatedPages: { text: string; width?: number; height?: number }[] = [];
-      for (const p of pagesToTranslate) {
-        const source = p.text.trim();
-        const translated = source ? (await this.translateChunk(source, targetLanguage)).trim() : '';
-        translatedPages.push({ text: translated, ...dimsByPage.get(p.num) });
-      }
+      const { parts, interrupted } = await this.translateInOrder(
+        pagesToTranslate.map((p) => p.text.trim()),
+        targetLanguage,
+      );
+      const translatedPages = parts.map((text, i) => ({ text, ...dimsByPage.get(pagesToTranslate[i].num) }));
 
       const buffer = await this.dataConverter.pagedTextToPdf(translatedPages);
       return {
         pdfBase64: buffer.toString('base64'),
         translatedText: translatedPages.map((p) => p.text).filter(Boolean).join('\n\n'),
-        pageCount: pagesToTranslate.length,
-        truncated,
+        pageCount: translatedPages.length,
+        truncated: truncated || interrupted,
       };
     } catch (err) {
+      // Un limite di Groq non si aggira col fallback Standard (rifarebbe le
+      // stesse chiamate sullo stesso limite): lo si lascia arrivare al client.
+      if (err instanceof HttpException) throw err;
       this.logger.warn(`High Fidelity layout skipped, falling back to Standard: ${(err as Error).message}`);
       return null;
     } finally {
@@ -622,13 +658,9 @@ Preserve paragraph structure and formatting markers. Return ONLY the translated 
     } else {
       const allChunks = chunkText(originalText, AiService.TRANSLATE_CHUNK_CHARS);
       const chunks = allChunks.slice(0, this.MAX_CHUNKS);
-      truncated = allChunks.length > this.MAX_CHUNKS;
-
-      const translatedParts: string[] = [];
-      for (const chunk of chunks) {
-        translatedParts.push((await this.translateChunk(chunk, targetLanguage)).trim());
-      }
-      translatedText = translatedParts.join('\n\n');
+      const { parts, interrupted } = await this.translateInOrder(chunks, targetLanguage);
+      truncated = allChunks.length > this.MAX_CHUNKS || interrupted;
+      translatedText = parts.filter(Boolean).join('\n\n');
       pdfBase64 = await this.tryBuildTranslatedPdf(translatedText);
       blocksTranslated = (originalText.match(/\n\n/g) || []).length + 1;
     }

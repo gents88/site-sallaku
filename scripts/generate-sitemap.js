@@ -14,13 +14,11 @@ const NON_DEFAULT_LANGS = ['en', 'sq', 'es', 'pt', 'fr', 'de'];
 
 // Language-prefixed path for a default-language `loc`, matching
 // app.routes.server.ts's `:lang/<page>` prerender routes and
-// LanguageService.withLangPrefix(). '/' is special-cased to 'homepage'
-// (the root '/' is a `redirectTo` route, never itself prerendered — see
-// app.routes.server.ts's STATIC_PUBLIC_PAGES comment); every other route's
-// page slug is just its loc without the leading slash.
+// LanguageService.withLangPrefix(). La home è '/en', '/de'… (come il canonical
+// e l'hreflang della home, serviti da <lang>/homepage/index.html tramite
+// rewrite in .htaccess), non '/en/homepage'; ogni altra rotta è `/<lang>/<pagina>`.
 function langLoc(loc, lang) {
-  const page = loc === '/' ? 'homepage' : loc.replace(/^\//, '');
-  return `/${lang}/${page}`;
+  return loc === '/' ? `/${lang}` : `/${lang}/${loc.replace(/^\//, '')}`;
 }
 
 // Pagine statiche dal registro unico della navigazione (stesso file letto da
@@ -152,12 +150,35 @@ async function fetchProjectRoutes() {
   }
 }
 
+/**
+ * Se c'è almeno una testimonianza pubblicata. Finché sono zero /testimonials
+ * resta fuori dalla sitemap (il frontend la marca anche noindex): una pagina
+ * vuota non va proposta ai motori di ricerca. API giù → fuori, come se vuota.
+ */
+async function fetchHasTestimonials() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/testimonials?limit=1&skip=0`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    return (json.total ?? (json.data || []).length) > 0;
+  } catch (err) {
+    console.warn('Could not fetch testimonials for sitemap — leaving /testimonials out:', err.message);
+    return false;
+  }
+}
+
+/** Toglie le pagine che oggi sarebbero vuote (per ora solo /testimonials). */
+function withoutEmptyPages(entries, { hasTestimonials }) {
+  return hasTestimonials ? entries : entries.filter((e) => e.loc !== '/testimonials');
+}
+
 async function main() {
   const blogRoutes = await fetchBlogRoutes();
   const projectRoutes = await fetchProjectRoutes();
+  const pages = withoutEmptyPages(routes, { hasTestimonials: await fetchHasTestimonials() });
   const xml = buildXml([
-    ...routes,
-    ...withLangVariants(routes),
+    ...pages,
+    ...withLangVariants(pages),
     ...projectRoutes,
     ...withLangVariants(projectRoutes),
     ...blogRoutes.map(({ langLocs, ...entry }) => entry),
@@ -192,4 +213,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { staticRoutes, buildXml, withLangVariants };
+module.exports = { staticRoutes, buildXml, withLangVariants, withoutEmptyPages };

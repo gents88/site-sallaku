@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { AuthService } from './auth.service';
+import { SKIP_ERROR_TOAST } from '../interceptors/error.interceptor';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, User } from '../models/user.model';
 
@@ -100,6 +101,50 @@ describe('AuthService', () => {
     req.flush({ message: 'sent' });
   });
 
+  describe('cancellazione dell\'account', () => {
+    function loggedIn(): void {
+      service.login({ email: 'test@example.com', password: 'pw' }).subscribe();
+      httpMock.expectOne(`${apiUrl}/login`).flush(authResponse);
+    }
+
+    it('manda DELETE /auth/me con la password e chiude la sessione locale', async () => {
+      loggedIn();
+      const done = firstValueFrom(service.deleteAccount('Segreta123!'));
+      const req = httpMock.expectOne(`${apiUrl}/me`);
+      expect(req.request.method).toBe('DELETE');
+      expect(req.request.body).toEqual({ password: 'Segreta123!' });
+      expect(req.request.context.get(SKIP_ERROR_TOAST)).toBe(true);
+      req.flush(null, { status: 204, statusText: 'No Content' });
+      await done;
+
+      expect(service.isLoggedIn()).toBe(false);
+      expect(localStorage.getItem('portfolio_user')).toBeNull();
+    });
+
+    it('con la password sbagliata la sessione resta', async () => {
+      loggedIn();
+      const done = firstValueFrom(service.deleteAccount('sbagliata'));
+      httpMock.expectOne(`${apiUrl}/me`).flush({ message: 'Incorrect password' }, { status: 400, statusText: 'Bad Request' });
+
+      await expect(done).rejects.toMatchObject({ status: 400 });
+      expect(service.isLoggedIn()).toBe(true);
+    });
+
+    it('account senza password (solo OTP): corpo vuoto', () => {
+      loggedIn();
+      service.deleteAccount().subscribe();
+      const req = httpMock.expectOne(`${apiUrl}/me`);
+      expect(req.request.body).toEqual({});
+      req.flush(null, { status: 204, statusText: 'No Content' });
+    });
+
+    it('accountHasPassword legge hasPassword da GET /auth/me', async () => {
+      const result = firstValueFrom(service.accountHasPassword());
+      httpMock.expectOne(`${apiUrl}/me`).flush({ _id: 'u1', role: 'user', hasPassword: true });
+      expect(await result).toBe(true);
+    });
+  });
+
   it('clears the session and redirects to login on logout from within /dashboard', () => {
     router.url = '/dashboard/projects';
     service.login({ email: 'test@example.com', password: 'pw' }).subscribe();
@@ -155,6 +200,88 @@ describe('AuthService', () => {
     req.flush({ ...authResponse, access_token: 'new-access-token' });
 
     expect(results).toEqual(['new-access-token', 'new-access-token']);
+  });
+
+  describe('getFreshToken', () => {
+    const b64url = (s: string) => btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const jwtExpiringIn = (ms: number) =>
+      `${b64url('{"alg":"HS256"}')}.${b64url(JSON.stringify({ sub: 'u1', exp: Math.floor((Date.now() + ms) / 1000) }))}.sig`;
+
+    function loginWith(accessToken: string): void {
+      service.login({ email: 'test@example.com', password: 'pw' }).subscribe();
+      httpMock.expectOne(`${apiUrl}/login`).flush({ ...authResponse, access_token: accessToken });
+    }
+
+    it('senza sessione restituisce null e non fa richieste', async () => {
+      await expect(firstValueFrom(service.getFreshToken())).resolves.toBeNull();
+      httpMock.verify();
+    });
+
+    it('con un token ancora valido lo restituisce senza rinnovarlo', async () => {
+      const token = jwtExpiringIn(10 * 60_000);
+      loginWith(token);
+
+      await expect(firstValueFrom(service.getFreshToken())).resolves.toBe(token);
+      httpMock.verify();
+    });
+
+    it('con un token in scadenza (entro la soglia) lo rinnova e restituisce quello nuovo', () => {
+      loginWith(jwtExpiringIn(30_000));
+
+      let result: string | null | undefined;
+      service.getFreshToken().subscribe((t) => (result = t));
+      httpMock.expectOne(`${apiUrl}/refresh`).flush({ ...authResponse, access_token: 'rinnovato' });
+
+      expect(result).toBe('rinnovato');
+      expect(service.getToken()).toBe('rinnovato');
+    });
+
+    it('con un token già scaduto lo rinnova', () => {
+      loginWith(jwtExpiringIn(-5_000));
+
+      let result: string | null | undefined;
+      service.getFreshToken().subscribe((t) => (result = t));
+      httpMock.expectOne(`${apiUrl}/refresh`).flush({ ...authResponse, access_token: 'rinnovato' });
+
+      expect(result).toBe('rinnovato');
+    });
+
+    it('rispetta la soglia indicata dal chiamante', () => {
+      loginWith(jwtExpiringIn(5 * 60_000));
+
+      let result: string | null | undefined;
+      service.getFreshToken(10 * 60_000).subscribe((t) => (result = t));
+      httpMock.expectOne(`${apiUrl}/refresh`).flush({ ...authResponse, access_token: 'rinnovato' });
+
+      expect(result).toBe('rinnovato');
+    });
+
+    it('se il rinnovo fallisce restituisce null e la sessione viene chiusa', () => {
+      loginWith(jwtExpiringIn(-5_000));
+
+      let result: string | null | undefined;
+      service.getFreshToken().subscribe((t) => (result = t));
+      httpMock.expectOne(`${apiUrl}/refresh`).flush('no', { status: 401, statusText: 'Unauthorized' });
+
+      expect(result).toBeNull();
+      expect(service.isLoggedIn()).toBe(false);
+    });
+
+    it('un token senza scadenza leggibile viene restituito com\'è: il server decide', async () => {
+      loginWith('access-token');
+
+      await expect(firstValueFrom(service.getFreshToken())).resolves.toBe('access-token');
+      httpMock.verify();
+    });
+
+    it('il rinnovo da socket non porta alla pagina di login', () => {
+      loginWith(jwtExpiringIn(-5_000));
+
+      service.getFreshToken().subscribe();
+      httpMock.expectOne(`${apiUrl}/refresh`).flush('no', { status: 401, statusText: 'Unauthorized' });
+
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    });
   });
 
   it('clears the session and redirects to login when refresh fails', () => {
