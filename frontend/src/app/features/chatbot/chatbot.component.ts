@@ -337,11 +337,19 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.teaserTimer = null;
       // Chi ha già aperto la chat o ha una conversazione non ha bisogno dell'invito.
       if (this.isOpen || this.chatbot.hasMessages) return;
+      // Sulle pagine di accesso e con un modale aperto l'invito finirebbe sopra il pulsante principale
+      // (su telefono copriva "Accedi"): meglio non mostrarlo.
+      if (this.coversPrimaryAction()) return;
       this.teaserVisible = true;
       this.inviteUnread = true;
       this.armTeaserExpiry();
       this.cdr.markForCheck();
     }, TEASER_DELAY_MS);
+  }
+
+  private coversPrimaryAction(): boolean {
+    const path = this.document.location?.pathname ?? '';
+    return /\/dashboard\/(login|register)/.test(path) || !!this.document.querySelector?.('[role="dialog"][aria-modal="true"]');
   }
 
   private armTeaserExpiry(): void {

@@ -1,5 +1,6 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 export interface DonutItem {
   label: string;
@@ -18,15 +19,16 @@ const DEFAULT_COLORS = [
 @Component({
   selector: 'app-donut-chart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (items.length) {
       <div class="donut-wrap">
-        <div class="donut" [style.background]="gradient" aria-hidden="true">
+        <div class="donut" aria-hidden="true">
+          <div class="donut-ring" [style.background]="gradient"></div>
           <div class="donut-hole">
-            <strong>{{ total }}</strong>
-            <span>total</span>
+            <strong>{{ total | number }}</strong>
+            <span>{{ 'dash_v2.total' | translate }}</span>
           </div>
         </div>
         <ul class="donut-legend" role="list">
@@ -53,33 +55,44 @@ const DEFAULT_COLORS = [
 
     .donut {
       position: relative;
-      width: 110px;
-      height: 110px;
-      min-width: 110px;
-      border-radius: 50%;
+      width: 124px;
+      height: 124px;
+      min-width: 124px;
       flex-shrink: 0;
+    }
+
+    /* Anello ricavato con una maschera: il centro è davvero vuoto (prima era un cerchio semitrasparente
+       sopra la torta e i colori ci si vedevano attraverso, sporcando il numero). */
+    .donut-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      -webkit-mask: radial-gradient(farthest-side, transparent 64%, #000 65%);
+      mask: radial-gradient(farthest-side, transparent 64%, #000 65%);
     }
 
     .donut-hole {
       position: absolute;
-      inset: 22%;
-      border-radius: 50%;
-      background: var(--panel-surface, #0d1221);
+      inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 0.15rem;
       text-align: center;
 
       strong {
-        font-size: 0.95rem;
+        font-size: 1.2rem;
         font-weight: 700;
         line-height: 1;
+        font-variant-numeric: tabular-nums;
       }
 
       span {
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
       }
     }
 

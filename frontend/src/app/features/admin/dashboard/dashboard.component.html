@@ -27,6 +27,7 @@
   } @else {
     <!-- Dashboard toolbar: last updated + manual refresh -->
     <div class="dashboard-toolbar">
+      <h1 class="dashboard-toolbar__title">{{ 'admin.dashboard' | translate }}</h1>
       @if (lastLoadedAt) {
         <span class="dashboard-toolbar__updated text-muted">
           <mat-icon>update</mat-icon>

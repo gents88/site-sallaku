@@ -73,6 +73,11 @@ Other PDF/document utilities (not AI-based):
 - Converter (/lab/convert): upload a file and convert it between PDF, Word, Excel, images, and more.
 - OCR (/lab/ocr): upload a scanned PDF or image → it extracts the text inside so you can copy or search it.
 - Scanner (/lab/scanner): use your device's camera to scan a physical document and turn it into a PDF.
+- Sign & Fill PDF (/lab/sign-pdf): open a PDF, draw or type a signature, add text and dates anywhere on the page, then download the signed PDF. It runs entirely in the browser, nothing is uploaded.
+- Compress PDF (/lab/compress-pdf): make a heavy PDF lighter with three levels (light, medium, strong) and see the saving before downloading. A lossless mode keeps the text selectable; the image mode rebuilds pages as pictures. Runs in the browser.
+- Photo tools (/lab/image-tools): convert iPhone HEIC photos to JPG/PNG, resize images and compress JPG/PNG/WebP, one by one or as a ZIP. Runs in the browser. There are dedicated pages for the most common searches, such as /lab/heic-to-jpg, /lab/resize-image and /lab/compress-image.
+- QR Code generator (/lab/qr-code): create QR codes for links, text, Wi-Fi (/lab/wifi-qr-code), contacts/vCard (/lab/vcard-qr-code), email, phone and WhatsApp (/lab/whatsapp-qr-code); download as PNG or SVG. Runs in the browser.
+- Handy shortcuts for common tasks: /lab/pdf-to-jpg, /lab/excel-to-pdf, /lab/png-to-jpg, /lab/webp-to-jpg, /lab/html-to-pdf, /lab/reduce-pdf-size, /lab/fill-pdf, /lab/edit-pdf. Note: the document converter (/lab/convert and its shortcuts) sends the file to the server to convert it, while the sign, compress, photo and QR tools work locally in the browser.
 
 Your role:
 - Answer questions about Gent's skills, projects, and experience
