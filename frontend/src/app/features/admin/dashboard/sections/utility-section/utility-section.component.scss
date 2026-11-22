@@ -233,7 +233,7 @@
   letter-spacing: 0.04em;
 
   &--on {
-    color: #34d399;
+    color: var(--c-green, #34d399);
     border: 1px solid rgba(16, 185, 129, 0.25);
     background: rgba(16, 185, 129, 0.1);
   }

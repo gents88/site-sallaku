@@ -27,7 +27,7 @@
   height: 3rem;
   margin-bottom: 0.5rem;
 
-  &--ok { color: #22c55e; }
+  &--ok { color: var(--c-green, #22c55e); }
   &--error { color: var(--color-danger, #ef4444); }
 }
 

@@ -65,12 +65,12 @@
 .lec-btn:active { transform: scale(0.97); }
 
 .lec-btn--primary {
-  background: linear-gradient(135deg, #4f6af5, #8b5cf6);
+  background: var(--gradient-button);
   color: #fff;
 }
 
 .lec-btn--danger {
-  background: linear-gradient(135deg, #f59e0b, #dc2626);
+  background: linear-gradient(135deg, #b45309, #b91c1c); /* testo bianco ≥5:1 (prima 2,1:1 su ambra) */
   color: #fff;
 }
 
