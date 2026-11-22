@@ -1073,7 +1073,7 @@
     "prev_slide": "Diapositiva anterior",
     "next_slide": "Diapositiva siguiente",
     "seo_title": "Generador de Presentaciones con IA",
-    "seo_description": "Genera una presentación profesional completa sobre cualquier tema en segundos. Hasta 20 diapositivas con títulos, viñetas, notas del orador y 5 estilos. Gratis online."
+    "seo_description": "Generador de presentaciones con IA: crea diapositivas a partir de un tema en segundos, con títulos, viñetas y notas. De 5 a 20 diapositivas, gratis."
   },
   "ai_formatter": {
     "title": "Formateador IA",
@@ -1129,7 +1129,7 @@
     "copied": "Copiado",
     "copy": "Copiar",
     "seo_title": "Formateador de Texto con IA",
-    "seo_description": "Convierte notas, texto sin formato o contenido de IA en documentos profesionales estructurados al instante. Informes, propuestas, CV, artículos y más. Formateador de IA gratuito online."
+    "seo_description": "Formateador de texto con IA: convierte apuntes en bruto o texto de IA en un documento ordenado con títulos y listas. Vista previa o Markdown, gratis."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1164,7 +1164,7 @@
     "err_generic": "Se ha producido un error al analizar el archivo.",
     "remove_file": "Quitar archivo",
     "seo_title": "Resumen de PDF con IA: Puntos Clave",
-    "seo_description": "Sube un PDF, Word o TXT y obtén un resumen generado por IA al instante. Resumen breve, análisis detallado o puntos clave. Resumidor de documentos con IA gratuito online.",
+    "seo_description": "Resumen de PDF con IA: sube un PDF, Word o TXT y obtén en segundos un resumen con los puntos clave. Gratis, hasta 20 MB.",
     "reading_stats": "{{words}} palabras · ~{{min}} min de lectura"
   },
   "workspace": {
@@ -1261,7 +1261,7 @@
     "upload_aria": "Subir un archivo PDF",
     "remove_file": "Quitar archivo",
     "seo_title": "Traductor de PDF con IA: Mantiene Páginas",
-    "seo_description": "Traduce cualquier PDF a 12 idiomas manteniendo el mismo número de páginas y formato. Traducción con IA de nivel empresarial. Gratis online, sin registro."
+    "seo_description": "Traductor de PDF con IA: traduce un PDF a 12 idiomas manteniendo las mismas páginas y dimensiones. Gratis, también PDF escaneados con OCR."
   },
   "pdf_search": {
     "title": "Buscar PDF",
@@ -1330,7 +1330,7 @@
     "preview_prev_page": "Página anterior",
     "preview_next_page": "Página siguiente",
     "seo_title": "Buscar Libros PDF Gratis: Dominio Público",
-    "seo_description": "Busca y descarga libros de dominio público, artículos científicos y publicaciones de acceso abierto, sin problemas de derechos de autor. Busca en Internet Archive, Project Gutenberg, arXiv y PubMed Central con vista previa antes de descargar.",
+    "seo_description": "Busca y descarga libros de dominio público, artículos científicos y PDF de acceso abierto de Internet Archive, Project Gutenberg y arXiv. Gratis.",
     "filter_favorites": "Favoritos",
     "results_count": "{{count}} resultados",
     "btn_copy_link": "Copiar enlace",
@@ -1525,7 +1525,7 @@
     "my_files_title": "Mis archivos",
     "my_files_desc": "Encuentra los resultados que has guardado de las herramientas de IA",
     "seo_title": "Herramientas PDF e IA Gratis en Línea",
-    "seo_description": "Herramientas online gratuitas con IA: traductor de PDF, generador de presentaciones, formateador de texto y resumidor de PDF. Herramientas profesionales para documentos. Sin registro."
+    "seo_description": "Herramientas PDF e IA gratis en línea: OCR, conversor, editor, visor, escáner, traductor, resumen y generador de presentaciones."
   },
   "about_manage": {
     "title": "Sección About",
@@ -1672,7 +1672,7 @@
     "delete": "Eliminar",
     "persistence_hint": "Los cambios no se guardan: se pierden al recargar o cerrar esta pestaña.",
     "seo_title": "Editor PDF Gratis: Unir, Dividir, Girar",
-    "seo_description": "Une PDF, divide y extrae páginas, rota o elimina páginas y añade marcas de agua — todo en el navegador, los archivos nunca salen de tu dispositivo.",
+    "seo_description": "Editor de PDF en línea gratis: une, divide, gira y elimina páginas y añade una marca de agua, en el navegador y sin subir archivos.",
     "undo": "Deshacer",
     "duplicate": "Duplicar página",
     "undone": "Cambio deshecho"
@@ -1711,7 +1711,7 @@
     "prev_match": "Resultado anterior",
     "next_match": "Resultado siguiente",
     "seo_title": "Visor de PDF en Línea Gratis",
-    "seo_description": "Visualiza documentos PDF en tu navegador: navegación de páginas, zoom, búsqueda de texto completo y vista de miniaturas. Gratis, privado, sin subir archivos."
+    "seo_description": "Visor de PDF en línea gratis: zoom, búsqueda de texto, miniaturas y resaltador, todo en el navegador. El archivo no se sube."
   },
   "scanner": {
     "title": "Escáner de Documentos",
@@ -1765,7 +1765,7 @@
     "err_camera_unsupported": "Cámara no disponible en este navegador o conexión no segura (se requiere HTTPS). Aun así puedes subir una imagen.",
     "persistence_hint": "Las páginas capturadas no se guardan: se pierden al recargar o cerrar esta pestaña.",
     "seo_title": "Escáner de Documentos: Foto a PDF",
-    "seo_description": "Escanea documentos con la webcam o la cámara del teléfono, recórtalos y mejóralos, expórtalos como PDF. Gratis, sin registro."
+    "seo_description": "Escáner de documentos en línea: usa la cámara del móvil o la webcam, recorta las páginas y exporta un PDF. Gratis, sin registro."
   },
   "library": {
     "badge": "Nuevo",

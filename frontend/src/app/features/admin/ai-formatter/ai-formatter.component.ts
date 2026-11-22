@@ -105,14 +105,12 @@ export class AiFormatterComponent implements OnInit {
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'AI Document Formatter',
-        description: 'Transform raw text and notes into structured professional documents with AI. Supports reports, proposals, résumés and more.',
-        url: 'https://gentsallaku.it/lab/ai-formatter',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         featureList: ['Instant formatting', 'Smart structure detection', '6 document types', 'Markdown output', 'Live preview'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        ...this.labInfo.appFields('ai-formatter'),
       },
       ...this.labInfo.faqSchemas('ai-formatter'),
       this.seo.breadcrumb([

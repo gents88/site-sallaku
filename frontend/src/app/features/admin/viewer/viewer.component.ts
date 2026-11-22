@@ -131,14 +131,12 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Free PDF Viewer',
-      description: 'View PDF documents in the browser with page navigation, zoom, full-text search and thumbnail preview.',
-      url: 'https://gentsallaku.it/lab/viewer',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Page navigation', 'Zoom', 'Full-text search', 'Thumbnail preview', 'Private, no upload'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      ...this.labInfo.appFields('viewer'),
     },
     ...this.labInfo.faqSchemas('viewer'),
     this.seo.breadcrumb([
