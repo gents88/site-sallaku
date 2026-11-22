@@ -1,6 +1,6 @@
 # Gent Sallaku
 
-> Portfolio di Gent Sallaku, Senior Front-End & API Developer: Angular, TypeScript, NestJS, data visualization 3D e architetture enterprise. Il sito contiene anche il Lab, una raccolta di strumenti gratuiti per lavorare con i PDF (ricerca, riassunto, traduzione, conversione, OCR) e un blog tecnico. Contenuti in italiano, con traduzioni in altre lingue sotto il prefisso /en, /es, /fr, /pt, /de, /sq.
+> Portfolio di Gent Sallaku, Senior Front-End & API Developer: Angular, TypeScript, NestJS, data visualization 3D e architetture enterprise. Il sito contiene anche il Lab, una raccolta di strumenti gratuiti, che funzionano nel browser senza caricare i file, per PDF e immagini (ricerca, riassunto, traduzione, conversione, OCR, firma, compressione, HEIC in JPG, QR code) e un blog tecnico. Contenuti in italiano, con traduzioni in altre lingue sotto il prefisso /en, /es, /fr, /pt, /de, /sq.
 
 ## Sito
 
@@ -13,7 +13,9 @@
 - [Blog](https://gentsallaku.it/blog): articoli tecnici su sviluppo front-end, Angular e architetture web
 - [Feed RSS](https://gentsallaku.it/rss.xml): elenco aggiornato degli articoli
 
-## Lab: strumenti PDF e AI
+## Lab: strumenti PDF, immagini e AI
+
+Gli strumenti sono gratuiti e senza registrazione. Firma, compressione, foto e QR code elaborano i file nel browser, senza caricarli su un server.
 
 - [Lab](https://gentsallaku.it/lab): indice degli strumenti
 - [Ricerca PDF](https://gentsallaku.it/lab/pdf-search): ricerca di libri e articoli scientifici in PDF da fonti aperte
@@ -21,6 +23,24 @@
 - [Traduzione PDF](https://gentsallaku.it/lab/pdf-translate): traduzione di un PDF
 - [Conversione](https://gentsallaku.it/lab/convert): conversione tra formati di documento
 - [OCR](https://gentsallaku.it/lab/ocr): estrazione del testo da immagini e PDF scansionati
+- [Firma PDF](https://gentsallaku.it/lab/sign-pdf): compila e firma un PDF con firma disegnata o digitata, testo e data
+- [Comprimi PDF](https://gentsallaku.it/lab/compress-pdf): riduce il peso di un PDF con tre livelli, mostrando il risparmio
+- [Foto: HEIC, ridimensiona, comprimi](https://gentsallaku.it/lab/image-tools): converte HEIC in JPG/PNG, ridimensiona e comprime immagini, anche in ZIP
+- [Generatore di QR Code](https://gentsallaku.it/lab/qr-code): QR code per link, testo, Wi-Fi, contatto, email, telefono e WhatsApp in PNG o SVG
+
+### Pagine per ricerca specifica
+
+- [HEIC in JPG](https://gentsallaku.it/lab/heic-to-jpg): converte le foto HEIC dell'iPhone in JPG
+- [Ridimensiona immagine](https://gentsallaku.it/lab/resize-image): cambia le dimensioni di una foto mantenendo le proporzioni
+- [Comprimi immagine](https://gentsallaku.it/lab/compress-image): riduce il peso di JPG, PNG e WebP
+- [Riduci peso PDF](https://gentsallaku.it/lab/reduce-pdf-size): comprime un PDF pesante per inviarlo per email
+- [Compila e firma PDF](https://gentsallaku.it/lab/fill-pdf): compila moduli e firma senza stampare
+- [QR code Wi-Fi](https://gentsallaku.it/lab/wifi-qr-code): codice per far collegare gli ospiti al Wi-Fi con una scansione
+- [PDF in JPG](https://gentsallaku.it/lab/pdf-to-jpg), [Excel in PDF](https://gentsallaku.it/lab/excel-to-pdf), [HTML in PDF](https://gentsallaku.it/lab/html-to-pdf), [PDF in TXT](https://gentsallaku.it/lab/pdf-to-txt), [TXT in PDF](https://gentsallaku.it/lab/txt-to-pdf): conversioni di documento
+- [PNG in JPG](https://gentsallaku.it/lab/png-to-jpg), [JPG in PNG](https://gentsallaku.it/lab/jpg-to-png), [WebP in PNG](https://gentsallaku.it/lab/webp-to-png), [WebP in JPG](https://gentsallaku.it/lab/webp-to-jpg), [JPG in WebP](https://gentsallaku.it/lab/jpg-to-webp): conversioni di immagine
+- [Modifica PDF](https://gentsallaku.it/lab/edit-pdf): riordina, elimina, ruota e unisce le pagine di un PDF
+- [QR code WhatsApp](https://gentsallaku.it/lab/whatsapp-qr-code), [QR code biglietto da visita (vCard)](https://gentsallaku.it/lab/vcard-qr-code)
+- [PDF in Word](https://gentsallaku.it/lab/pdf-to-word), [Word in PDF](https://gentsallaku.it/lab/word-to-pdf), [JPG in PDF](https://gentsallaku.it/lab/jpg-to-pdf), [Unisci PDF](https://gentsallaku.it/lab/merge-pdf), [Dividi PDF](https://gentsallaku.it/lab/split-pdf), [Ruota PDF](https://gentsallaku.it/lab/rotate-pdf), [Immagine in testo](https://gentsallaku.it/lab/image-to-text)
 
 ## Note legali
 

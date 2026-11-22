@@ -1,8 +1,8 @@
 <div class="cp-page">
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
   <header class="cp-header">
-    <h1 class="cp-title">✍️ {{ 'sign_pdf.title' | translate }}</h1>
-    <p class="cp-subtitle">{{ 'sign_pdf.subtitle' | translate }}</p>
+    <h1 class="cp-title">✍️ {{ (page.headingKey ?? 'sign_pdf.title') | translate }}</h1>
+    <p class="cp-subtitle">{{ (page.leadKey ?? 'sign_pdf.subtitle') | translate }}</p>
   </header>
 
   @if (workspaceItem()) {
