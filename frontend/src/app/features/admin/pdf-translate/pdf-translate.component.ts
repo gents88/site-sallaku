@@ -8,6 +8,7 @@ import {
   inject,
   ElementRef,
   ViewChild,
+  afterNextRender,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -45,6 +46,7 @@ type TranslationMode = 'high_fidelity' | 'standard';
 
 /** Allineato al limite lato backend (validateFile(file, 50) in ai.controller.ts). */
 const MAX_FILE_MB = 50;
+const LANG_STORAGE_KEY = 'pdf-translate-lang';
 
 @Component({
   selector: 'app-pdf-translate',
@@ -126,7 +128,22 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   readonly file             = signal<File | null>(null);
   readonly result           = signal<TranslatePdfResult | null>(null);
   readonly error            = signal('');
+  // Fallback deterministico per SSR/idratazione; la lingua scelta l'ultima volta si applica dopo il primo render.
   readonly selectedLanguage = signal<TranslationLanguage>('english');
+
+  constructor() {
+    afterNextRender(() => {
+      try {
+        const saved = localStorage.getItem(LANG_STORAGE_KEY);
+        if (saved && this.languages.some((l) => l.value === saved)) this.selectedLanguage.set(saved as TranslationLanguage);
+      } catch { /* storage non disponibile */ }
+    });
+  }
+
+  selectLanguage(lang: TranslationLanguage): void {
+    this.selectedLanguage.set(lang);
+    try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch { /* ignora */ }
+  }
   readonly copied           = signal(false);
   readonly mode             = signal<TranslationMode>('high_fidelity');
 
@@ -311,7 +328,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
 
   retranslate(lang: TranslationLanguage): void {
     if (!this.file() || this.loading()) return;
-    this.selectedLanguage.set(lang);
+    this.selectLanguage(lang);
     this.translate();
   }
 
@@ -319,7 +336,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
     navigator.clipboard.writeText(text).then(() => {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 2000);
-    });
+    }).catch(() => { /* clipboard negata: niente falso "Copiato" */ });
   }
 
   downloadPdf(): void {

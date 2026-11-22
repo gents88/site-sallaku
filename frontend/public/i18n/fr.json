@@ -1164,7 +1164,8 @@
     "err_generic": "Une erreur est survenue lors de l'analyse du fichier.",
     "remove_file": "Supprimer le fichier",
     "seo_title": "Résumé de PDF par IA : Points Clés",
-    "seo_description": "Téléchargez un PDF, Word ou TXT et obtenez un résumé généré par IA instantanément. Résumé court, analyse détaillée ou points clés. Résumeur de documents IA gratuit en ligne."
+    "seo_description": "Téléchargez un PDF, Word ou TXT et obtenez un résumé généré par IA instantanément. Résumé court, analyse détaillée ou points clés. Résumeur de documents IA gratuit en ligne.",
+    "reading_stats": "{{words}} mots · ~{{min}} min de lecture"
   },
   "workspace": {
     "badge": "Nouveau",
@@ -1671,7 +1672,10 @@
     "delete": "Supprimer",
     "persistence_hint": "Les modifications ne sont pas enregistrées : elles sont perdues si vous rechargez ou fermez cet onglet.",
     "seo_title": "Éditeur PDF Gratuit : Fusionner, Diviser",
-    "seo_description": "Fusionnez des PDF, divisez et extrayez des pages, pivotez ou supprimez des pages et ajoutez des filigranes — entièrement dans le navigateur, vos fichiers ne quittent jamais votre appareil."
+    "seo_description": "Fusionnez des PDF, divisez et extrayez des pages, pivotez ou supprimez des pages et ajoutez des filigranes — entièrement dans le navigateur, vos fichiers ne quittent jamais votre appareil.",
+    "undo": "Annuler",
+    "duplicate": "Dupliquer la page",
+    "undone": "Modification annulée"
   },
   "viewer": {
     "title": "Visionneuse PDF",
@@ -1819,7 +1823,8 @@
     "chat_error": "La réponse a échoué. Réessayez.",
     "import_skipped": "{{count}} fichier(s) ignoré(s) : seuls les PDF peuvent être importés dans la Bibliothèque.",
     "seo_title": "Ma Bibliothèque PDF — Archive Personnelle avec Recherche et Chat IA",
-    "seo_description": "Enregistrez les PDF que vous trouvez, recherchez-les page par page, annotez-les et posez des questions sur vos documents. Tout reste dans votre navigateur, rien n'est envoyé."
+    "seo_description": "Enregistrez les PDF que vous trouvez, recherchez-les page par page, annotez-les et posez des questions sur vos documents. Tout reste dans votre navigateur, rien n'est envoyé.",
+    "filter_placeholder": "Filtrer par titre, auteur ou tag…"
   },
   "blog_manage": {
     "title": "Articles du blog",

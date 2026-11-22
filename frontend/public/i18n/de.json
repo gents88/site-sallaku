@@ -1164,7 +1164,8 @@
     "err_generic": "Bei der Analyse der Datei ist ein Fehler aufgetreten.",
     "remove_file": "Datei entfernen",
     "seo_title": "PDF-Zusammenfassung mit KI: Kernpunkte",
-    "seo_description": "Lade ein PDF, Word- oder TXT-Dokument hoch und erhalte sofort eine KI-Zusammenfassung. Kurzfassung, detaillierte Analyse oder Kernpunkte. Kostenloser KI-Dokumenten-Zusammenfasser online."
+    "seo_description": "Lade ein PDF, Word- oder TXT-Dokument hoch und erhalte sofort eine KI-Zusammenfassung. Kurzfassung, detaillierte Analyse oder Kernpunkte. Kostenloser KI-Dokumenten-Zusammenfasser online.",
+    "reading_stats": "{{words}} Wörter · ~{{min}} Min. Lesezeit"
   },
   "workspace": {
     "badge": "Neu",
@@ -1671,7 +1672,10 @@
     "delete": "Löschen",
     "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
     "seo_title": "PDF-Editor: Zusammenfügen, Teilen, Drehen",
-    "seo_description": "PDFs zusammenführen, Seiten teilen und extrahieren, Seiten drehen oder löschen und Wasserzeichen hinzufügen — komplett im Browser, Dateien verlassen nie dein Gerät."
+    "seo_description": "PDFs zusammenführen, Seiten teilen und extrahieren, Seiten drehen oder löschen und Wasserzeichen hinzufügen — komplett im Browser, Dateien verlassen nie dein Gerät.",
+    "undo": "Rückgängig",
+    "duplicate": "Seite duplizieren",
+    "undone": "Änderung rückgängig gemacht"
   },
   "viewer": {
     "title": "PDF-Betrachter",
@@ -1819,7 +1823,8 @@
     "chat_error": "Die Antwort ist fehlgeschlagen. Versuch es erneut.",
     "import_skipped": "{{count}} Datei(en) übersprungen: In die Bibliothek können nur PDFs importiert werden.",
     "seo_title": "Meine PDF-Bibliothek — Persönliches Archiv mit Suche und KI-Chat",
-    "seo_description": "Speichere gefundene PDFs, durchsuche sie Seite für Seite, kommentiere sie und stelle Fragen zu deinen Dokumenten. Alles bleibt im Browser, nichts wird hochgeladen."
+    "seo_description": "Speichere gefundene PDFs, durchsuche sie Seite für Seite, kommentiere sie und stelle Fragen zu deinen Dokumenten. Alles bleibt im Browser, nichts wird hochgeladen.",
+    "filter_placeholder": "Nach Titel, Autor oder Tag filtern…"
   },
   "blog_manage": {
     "title": "Blogbeiträge",
