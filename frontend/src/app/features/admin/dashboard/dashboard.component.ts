@@ -58,6 +58,29 @@ import {
   liveHandoffRoute,
 } from './live-handoff-card.util';
 
+/** Voce di "Da fare adesso": un conteggio che richiede attenzione e dove andare a gestirlo. */
+export interface AttentionItem {
+  id: string;
+  icon: string;
+  count: number;
+  labelKey: string;
+  tone: 'bad' | 'warn' | 'info';
+  /** Pagina da aprire, oppure id della sezione a cui scorrere. */
+  route?: (string | number)[];
+  section?: string;
+}
+
+/** Riepilogo di una riga nell'intestazione di una sezione chiusa. */
+export interface SectionBadge {
+  icon: string;
+  value: number | string;
+  labelKey: string;
+  tone: 'bad' | 'warn' | 'ok' | 'info';
+}
+
+/** Le quattro metriche grandi in alto; le altre (contenuti) sono una riga compatta. */
+const PRIMARY_STATS = ['admin.visits', 'admin.visitors', 'admin.contacts', 'admin.users'] as const;
+
 interface StatCard {
   labelKey: string;
   /** null = sezione fallita: il template mostra "—" invece di uno zero finto. */
@@ -235,6 +258,79 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   /** Indice delle sezioni: la SEO compare solo se Search Console è configurato, i messaggi solo se ce ne sono. */
+  /** Numeri chiave: visite, visitatori, contatti, utenti. */
+  get primaryStats(): StatCard[] {
+    return PRIMARY_STATS.map(key => this.stats.find(s => s.labelKey === key)).filter((s): s is StatCard => !!s);
+  }
+
+  /** Il resto (progetti, esperienze, articoli…), in forma compatta. */
+  get compactStats(): StatCard[] {
+    return this.stats.filter(s => !(PRIMARY_STATS as readonly string[]).includes(s.labelKey));
+  }
+
+  /** Cose che richiedono un'azione adesso, dalla più urgente. Vuota = tutto a posto. */
+  get attention(): AttentionItem[] {
+    const items: AttentionItem[] = [];
+    const waiting = this.liveHandoffWaiting;
+    if (waiting.length) {
+      items.push({ id: 'live', icon: 'support_agent', count: waiting.length, labelKey: 'dash_v2.att_live', tone: 'bad', route: this.liveHandoffRoute(waiting[0]) });
+    }
+    if (this.unreadCount > 0) {
+      items.push({ id: 'unread', icon: 'mark_email_unread', count: this.unreadCount, labelKey: 'dash_v2.att_unread', tone: 'warn', route: ['/dashboard/contacts'] });
+    }
+    const followUps = this.leads?.followUpsDue ?? 0;
+    if (followUps > 0) {
+      items.push({ id: 'followups', icon: 'schedule', count: followUps, labelKey: 'dash_v2.att_followups', tone: 'warn', section: 'dash-leads' });
+    }
+    const errors = this.serverErrors?.open ?? 0;
+    if (errors > 0) {
+      items.push({ id: 'errors', icon: 'bug_report', count: errors, labelKey: 'dash_v2.att_errors', tone: 'bad', section: 'dash-ops' });
+    }
+    const broken = this.notFound?.open ?? 0;
+    if (broken > 0) {
+      items.push({ id: 'broken', icon: 'link_off', count: broken, labelKey: 'dash_v2.att_broken', tone: 'info', section: 'dash-content' });
+    }
+    const translations = this.translationHealth?.postsWithIssues ?? 0;
+    if (translations > 0) {
+      items.push({ id: 'translations', icon: 'translate', count: translations, labelKey: 'dash_v2.att_translations', tone: 'info', section: 'dash-content' });
+    }
+    return items;
+  }
+
+  /** Riassunto per l'intestazione di una sezione (visibile anche da chiusa). */
+  badgesFor(id: string): SectionBadge[] {
+    const out: SectionBadge[] = [];
+    switch (id) {
+      case 'dash-ops': {
+        const errors = this.serverErrors?.open ?? 0;
+        const warnings = this.serverHealth?.warnings.length ?? 0;
+        out.push({ icon: 'bug_report', value: errors, labelKey: 'dash_v2.b_errors', tone: errors ? 'bad' : 'ok' });
+        if (warnings) out.push({ icon: 'error_outline', value: warnings, labelKey: 'dash_v2.b_warnings', tone: 'warn' });
+        break;
+      }
+      case 'dash-content': {
+        const tr = this.translationHealth?.postsWithIssues ?? 0;
+        const nf = this.notFound?.open ?? 0;
+        const sch = this.scheduledPosts.length;
+        if (tr) out.push({ icon: 'translate', value: tr, labelKey: 'dash_v2.b_translations', tone: 'warn' });
+        if (nf) out.push({ icon: 'link_off', value: nf, labelKey: 'dash_v2.b_broken', tone: 'info' });
+        if (sch) out.push({ icon: 'schedule', value: sch, labelKey: 'dash_v2.b_scheduled', tone: 'info' });
+        break;
+      }
+      case 'dash-activity':
+        out.push({ icon: 'article', value: this.publishedPosts, labelKey: 'dash_v2.b_published', tone: 'info' });
+        if (this.draftPosts) out.push({ icon: 'edit', value: this.draftPosts, labelKey: 'dash_v2.b_drafts', tone: 'info' });
+        break;
+      case 'dash-visitors':
+        out.push({ icon: 'person', value: this.todayVisitors, labelKey: 'dash_v2.b_today', tone: 'info' });
+        break;
+      case 'dash-seo':
+        if (this.gscSummary.configured) out.push({ icon: 'trending_up', value: this.gscSummary.clicks, labelKey: 'dash_v2.b_clicks', tone: 'info' });
+        break;
+    }
+    return out;
+  }
+
   get navItems(): DashboardNavItem[] {
     return [
       { id: 'dash-overview', labelKey: 'dashboard_ux.nav_overview' },
@@ -356,7 +452,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       { labelKey: 'admin.contacts',    value: coreValue(adminStats.contacts),                                icon: 'mail',                   route: '/dashboard/contacts',             color: '#ec4899', spark: sparkline(adminStats.contactsByDay) },
       { labelKey: 'admin.users',       value: coreValue(adminStats.users),                                   icon: 'group',                  route: '/dashboard/users',             color: '#8b5cf6', spark: null },
       { labelKey: 'admin.visits',      value: coreValue(adminStats.visits.totalViews),                       icon: 'visibility',             route: '/dashboard',             color: '#14b8a6', spark: sparkline(adminStats.visits.viewsByDay) },
-      { labelKey: 'admin.visitors',    value: coreValue(adminStats.visits.uniqueVisitors),                   icon: 'monitoring',             route: '/dashboard',             color: '#ef4444', spark: null },
+      { labelKey: 'admin.visitors',    value: coreValue(adminStats.visits.uniqueVisitors),                   icon: 'person',             route: '/dashboard',             color: '#ef4444', spark: null },
     ];
     this.recentContacts = adminStats.recentContacts;
     this.unreadCount = adminStats.unreadContacts ?? 0;

@@ -11,8 +11,8 @@ function memoryStorage(initial: string | null = null) {
 }
 
 describe('dashboard-sections', () => {
-  it('alla prima visita sono tutte aperte', () => {
-    expect([...loadOpenSections(memoryStorage())]).toEqual([...COLLAPSIBLE_SECTIONS]);
+  it('alla prima visita sono tutte chiuse (in alto restano numeri chiave e cose da fare)', () => {
+    expect([...loadOpenSections(memoryStorage())]).toEqual([]);
   });
 
   it('ricorda le sezioni lasciate aperte', () => {
@@ -21,10 +21,10 @@ describe('dashboard-sections', () => {
     expect([...loadOpenSections(storage)]).toEqual(['dash-ops', 'dash-chat']);
   });
 
-  it('con un valore corrotto o uno storage che lancia errori riparte da tutte aperte', () => {
-    expect(loadOpenSections(memoryStorage('{non json')).size).toBe(COLLAPSIBLE_SECTIONS.length);
+  it('con un valore corrotto o uno storage che lancia errori riparte da tutte chiuse', () => {
+    expect(loadOpenSections(memoryStorage('{non json')).size).toBe(0);
     const broken = { getItem: () => { throw new Error('blocked'); } };
-    expect(loadOpenSections(broken).size).toBe(COLLAPSIBLE_SECTIONS.length);
+    expect(loadOpenSections(broken).size).toBe(0);
     expect(() => saveOpenSections(new Set(), { setItem: () => { throw new Error('full'); } })).not.toThrow();
   });
 });
