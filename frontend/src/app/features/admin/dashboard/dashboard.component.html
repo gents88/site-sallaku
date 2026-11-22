@@ -816,7 +816,7 @@
             <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
           }
           @if (gscSummary.topPages?.length) {
-            <h3 style="font-size:0.85rem;margin:1.25rem 0 0.6rem;">{{ 'acquisition.gsc_top_pages' | translate }}</h3>
+            <h3 class="gsc-subtitle">{{ 'acquisition.gsc_top_pages' | translate }}</h3>
             <div class="h-bars">
               @for (p of gscSummary.topPages; track p.page; let i = $index) {
                 <div class="h-bar-row">
