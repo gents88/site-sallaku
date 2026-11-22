@@ -18,6 +18,7 @@ const LAB_TOOL_LOADERS: Record<string, NonNullable<Route['loadComponent']>> = {
   ocr: () => import('./features/admin/ocr/ocr.component').then(m => m.OcrComponent),
   'sign-pdf': () => import('./features/admin/sign-pdf/sign-pdf.component').then(m => m.SignPdfComponent),
   'compress-pdf': () => import('./features/admin/compress-pdf/compress-pdf.component').then(m => m.CompressPdfComponent),
+  'image-tools': () => import('./features/admin/image-tools/image-tools.component').then(m => m.ImageToolsComponent),
 };
 
 const publicPages: Route[] = [
@@ -133,6 +134,10 @@ const publicPages: Route[] = [
   {
     path: 'lab/compress-pdf',
     loadComponent: () => import('./features/admin/compress-pdf/compress-pdf.component').then(m => m.CompressPdfComponent),
+  },
+  {
+    path: 'lab/image-tools',
+    loadComponent: () => import('./features/admin/image-tools/image-tools.component').then(m => m.ImageToolsComponent),
   },
   {
     path: 'lab/viewer',
