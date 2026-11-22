@@ -21,7 +21,7 @@ describe('SampleFileButtonComponent', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('scarica il PDF d’esempio ed emette un FileList con quel file', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(new Blob(['%PDF-1.4'], { type: 'application/pdf' })));
+    const fetchMock = vi.fn().mockResolvedValue(new Response('%PDF-1.4', { headers: { 'Content-Type': 'application/pdf' } }));
     vi.stubGlobal('fetch', fetchMock);
     const { fixture, picked } = setup();
 
@@ -55,7 +55,7 @@ describe('SampleFileButtonComponent', () => {
     fixture.detectChanges();
     expect(button.disabled).toBe(true);
 
-    release(new Response(new Blob(['x'])));
+    release(new Response('x'));
     await pending;
     fixture.detectChanges();
     expect(button.disabled).toBe(false);
