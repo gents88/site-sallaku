@@ -2505,5 +2505,40 @@
     "none_title": "No file received",
     "none_hint": "To open a file in the Lab, share it from another app using “Share with…”, or choose “Open with” on the file after installing the site as an app. You can also drag it straight into the Lab.",
     "go_lab": "Go to the Lab"
+  },
+  "page_meta": {
+    "home_title": "Senior Front-End & API Developer",
+    "home_description": "Senior Front-End Developer specialising in Angular, TypeScript, 3D data visualization and enterprise architectures.",
+    "blog_title": "Blog — Angular, TypeScript and web development",
+    "blog_description": "Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern development."
+  },
+  "acquisition": {
+    "title": "Visitor acquisition",
+    "desc": "Where visitors come from and which page they land on",
+    "period": "Period",
+    "last_days": "Last {{days}} days",
+    "total_entries": "Arrivals",
+    "referrers": "Referring sites",
+    "no_referrers": "No external sites in this period: arrivals are direct or without a referrer.",
+    "entry_pages": "Landing pages",
+    "page": "Page",
+    "from": "From",
+    "entries": "Arrivals",
+    "recent_visits": "Recent visits",
+    "when": "When",
+    "landing": "Landing page",
+    "where": "Location",
+    "device": "Device",
+    "pages": "Pages",
+    "duration": "Duration",
+    "loading": "Loading…",
+    "gsc_top_pages": "Pages with most clicks from Google",
+    "source_search": "Search",
+    "source_social": "Social",
+    "source_referral": "Other sites",
+    "source_direct": "Direct",
+    "source_campaign": "Campaign",
+    "source_internal": "Internal",
+    "source_other": "Other"
   }
 }

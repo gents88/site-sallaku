@@ -66,3 +66,40 @@ export interface AdvancedAnalytics {
   osBreakdown: BreakdownItem[];
   trafficSources: BreakdownItem[];
 }
+
+/** Pagina da cui i visitatori sono entrati nel sito, con la ripartizione per sorgente. */
+export interface EntryPageRow {
+  path: string;
+  /** Arrivi totali su questa pagina (prima pagina della visita) */
+  entries: number;
+  /** Arrivi per sorgente: { search: 12, social: 3, direct: 5, … } */
+  sources: Record<string, number>;
+}
+
+/** Una visita (sessione) recente: da dove è arrivata, dove è entrata, quanto ha visto. */
+export interface RecentVisit {
+  at: string;
+  trafficSource: string;
+  /** Host del sito di provenienza (google.com, linkedin.com…), '' se diretto */
+  referrerHost: string;
+  utmSource: string;
+  entryPath: string;
+  country: string;
+  city: string;
+  deviceType: string;
+  /** Pagine viste nella visita (1 se la sessione non è tracciabile) */
+  pages: number;
+  /** Tempo attivo totale della visita in secondi, null se non riportato */
+  durationSec: number | null;
+}
+
+export interface AcquisitionReport {
+  days: number;
+  /** Arrivi dall'esterno nel periodo (prime pagine delle visite) */
+  totalEntries: number;
+  sources: BreakdownItem[];
+  /** Siti di provenienza raggruppati per host, senza il dominio del sito */
+  referrers: BreakdownItem[];
+  entryPages: EntryPageRow[];
+  recentVisits: RecentVisit[];
+}
