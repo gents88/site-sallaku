@@ -11,7 +11,7 @@
   margin-bottom: 1.5rem;
 
   button { cursor: pointer; user-select: none; transition: all 0.2s; }
-  .badge.active, .badge:hover { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+  .badge.active, .badge:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 }
 
 .results-count {

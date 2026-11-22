@@ -15,7 +15,7 @@
   --cb-border: var(--glass-edge, rgba(255, 255, 255, 0.12));
   --cb-hi: var(--glass-hi, rgba(255, 255, 255, 0.16));
   --cb-in-fill: rgba(255, 255, 255, 0.06);
-  --cb-in-edge: rgba(255, 255, 255, 0.12);
+  --cb-in-edge: rgba(255, 255, 255, 0.4);
   --cb-in-hover: rgba(255, 255, 255, 0.11);
   --cb-bot-bg: rgba(255, 255, 255, 0.07);
   --cb-strong: #c7d2fe;
@@ -31,7 +31,7 @@
   --cb-panel: color-mix(in srgb, #ffffff 72%, transparent);
   --cb-surface: rgba(255, 255, 255, 0.94);
   --cb-in-fill: rgba(79, 106, 245, 0.06);
-  --cb-in-edge: rgba(79, 106, 245, 0.18);
+  --cb-in-edge: rgba(15, 23, 42, 0.5);
   --cb-in-hover: rgba(79, 106, 245, 0.11);
   --cb-bot-bg: #eef2ff;
   --cb-strong: #3038d7;
@@ -940,7 +940,7 @@
 
 .cb-field-error {
   font-size: 0.75rem;
-  color: #f87171;
+  color: var(--c-red, #f87171);
 }
 
 .cb-send-transcript-btn {

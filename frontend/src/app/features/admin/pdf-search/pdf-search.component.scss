@@ -42,7 +42,7 @@ $error-clr:     #f87171;
   border-radius: 100px;
   font-size: 12px;
   font-weight: 600;
-  color: #34d399;
+  color: var(--c-green, #34d399);
   margin-bottom: 28px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -244,7 +244,7 @@ $error-clr:     #f87171;
 
   &.active {
     background: $accent-glow; border-color: $accent-border;
-    color: #34d399;
+    color: var(--c-green, #34d399);
   }
 }
 
@@ -275,7 +275,7 @@ $error-clr:     #f87171;
 .sort-select {
   padding: 7px 12px; border-radius: 10px;
   background: var(--bg-secondary, #161b22);
-  border: 1px solid var(--border-color, #30363d);
+  border: 1px solid var(--border-strong, #5f6b82);
   color: var(--text-primary, #e6edf3);
   font-size: 12.5px; font-weight: 600; cursor: pointer;
 }
@@ -413,12 +413,12 @@ $error-clr:     #f87171;
   font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 100px;
   background: rgba(148, 163, 184, 0.12); color: #94a3b8;
 
-  &.source-ia { background: rgba(56, 189, 248, 0.12); color: #38bdf8; }
-  &.source-gb { background: $accent-glow; color: #34d399; }
-  &.source-arxiv { background: rgba(248, 113, 113, 0.12); color: #f87171; }
-  &.source-pmc { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
-  &.source-zenodo { background: rgba(56, 189, 248, 0.12); color: #38bdf8; }
-  &.source-wm { background: rgba(244, 114, 182, 0.12); color: #f472b6; }
+  &.source-ia { background: rgba(56, 189, 248, 0.12); color: var(--c-sky, #38bdf8); }
+  &.source-gb { background: $accent-glow; color: var(--c-green, #34d399); }
+  &.source-arxiv { background: rgba(248, 113, 113, 0.12); color: var(--c-red, #f87171); }
+  &.source-pmc { background: rgba(251, 191, 36, 0.12); color: var(--c-amber, #fbbf24); }
+  &.source-zenodo { background: rgba(56, 189, 248, 0.12); color: var(--c-sky, #38bdf8); }
+  &.source-wm { background: rgba(244, 114, 182, 0.12); color: var(--c-pink, #f472b6); }
 }
 
 .year-pill {
@@ -428,8 +428,8 @@ $error-clr:     #f87171;
 .quality-pill {
   font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 100px;
 
-  &.quality-hd { background: rgba(52, 211, 153, 0.12); color: #34d399; }
-  &.quality-low { background: rgba(251, 146, 60, 0.12); color: #fb923c; }
+  &.quality-hd { background: rgba(52, 211, 153, 0.12); color: var(--c-green, #34d399); }
+  &.quality-low { background: rgba(251, 146, 60, 0.12); color: var(--c-orange, #fb923c); }
 }
 
 // ── PREVIEW MODAL ─────────────────────────────────────────────────────────────
@@ -626,7 +626,7 @@ $error-clr:     #f87171;
 .btn-library {
   background: rgba(108, 99, 255, 0.14);
   border: 1px solid rgba(108, 99, 255, 0.4);
-  color: #c4b5fd;
+  color: var(--c-violet-soft, #c4b5fd);
 }
 
 .legal-note {

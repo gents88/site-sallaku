@@ -18,7 +18,7 @@
   color: #d1fae5;
 
   mat-icon {
-    color: #34d399;
+    color: var(--c-green, #34d399);
   }
 }
 
@@ -188,7 +188,7 @@
   font-weight: 700;
   line-height: 1;
   color: #fff;
-  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  background: linear-gradient(135deg, #be185d, #7c3aed);
   box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
   text-transform: none;
   letter-spacing: 0;
@@ -648,8 +648,8 @@
   padding: 0.4rem 0.75rem;
   border-radius: 8px;
 
-  &--ok { background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
-  &--err { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  &--ok { background: rgba(16,185,129,0.12); color: var(--c-green, #34d399); border: 1px solid rgba(16,185,129,0.2); }
+  &--err { background: rgba(239,68,68,0.1); color: var(--c-red, #f87171); border: 1px solid rgba(239,68,68,0.2); }
 }
 
 .reply-actions {
@@ -704,12 +704,12 @@
 
 .live-chat-badge--live {
   background: rgba(52, 211, 153, 0.16);
-  color: #34d399;
+  color: var(--c-green, #34d399);
 }
 
 .live-chat-badge--waiting {
   background: rgba(245, 158, 11, 0.16);
-  color: #fbbf24;
+  color: var(--c-amber, #fbbf24);
 }
 
 .live-chat-card__empty {

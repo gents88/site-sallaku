@@ -58,7 +58,7 @@
 
 .ci-select {
   min-height: 38px; padding: .4rem .7rem; border-radius: 10px; font: inherit; font-size: .85rem;
-  border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);
+  border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text-primary);
   color-scheme: light dark;
 }
 .ci-check { display: inline-flex; align-items: center; gap: .4rem; font-size: .85rem; color: var(--text-secondary); cursor: pointer; }
@@ -66,7 +66,7 @@
 .ci-lead {
   margin-left: auto; flex-shrink: 0; padding: .05rem .5rem; border-radius: 999px; font-size: .7rem; font-weight: 700;
   background: rgba(127, 127, 127, .14); color: var(--text-secondary);
-  &--in_progress { background: rgba(79, 106, 245, .14); color: #4f6af5; }
+  &--in_progress { background: rgba(79, 106, 245, .14); color: var(--link, #8aa0ff); }
   &--won { background: rgba(16, 185, 129, .14); color: #059669; }
   &--lost { background: rgba(239, 68, 68, .12); color: #dc2626; }
 }

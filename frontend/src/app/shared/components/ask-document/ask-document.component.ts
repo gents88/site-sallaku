@@ -100,7 +100,7 @@ export function isAskable(file: File | null): boolean {
     .ask__src { display: block; margin-top: .35rem; font-size: .78rem; color: var(--text-secondary, #9aa4b2); }
     .ask__chip { display: inline-block; margin-left: .25rem; padding: 0 .4rem; border-radius: 999px; border: 1px solid var(--border-color, rgba(255,255,255,.18)); }
     .ask__form { display: flex; gap: .5rem; }
-    .ask__input { flex: 1; min-width: 0; font: inherit; font-size: .9rem; padding: .5rem .7rem; border-radius: 8px; color: var(--text-primary, #e6edf3); background: var(--bg-input, rgba(255,255,255,.05)); border: 1px solid var(--border-color, rgba(255,255,255,.15)); box-sizing: border-box; }
+    .ask__input { flex: 1; min-width: 0; font: inherit; font-size: .9rem; padding: .5rem .7rem; border-radius: 8px; color: var(--text-primary, #e6edf3); background: var(--bg-input, rgba(255,255,255,.05)); border: 1px solid var(--border-strong, #5f6b82); box-sizing: border-box; }
     .ask__send { font: inherit; font-size: .88rem; padding: .5rem .9rem; border-radius: 8px; border: 0; cursor: pointer; color: #fff; background: var(--color-primary, #8b5cf6); }
     .ask__send:disabled { opacity: .5; cursor: not-allowed; }
     .ask__privacy { margin: 0; font-size: .75rem; color: var(--text-secondary, #9aa4b2); }
