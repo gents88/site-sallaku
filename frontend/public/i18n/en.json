@@ -69,7 +69,8 @@
       "contacts": "Contacts",
       "users": "Users",
       "ai_assistant": "AI Assistant",
-      "live_chat": "Live chat"
+      "live_chat": "Live chat",
+      "sign_pdf": "Sign PDF"
     }
   },
   "lang": {
@@ -1529,7 +1530,9 @@
     "my_files_title": "My files",
     "my_files_desc": "Find the results you have saved from the AI tools",
     "seo_title": "Free PDF and AI Tools Online",
-    "seo_description": "Free PDF and AI tools online: OCR, converter, editor, viewer, scanner, translator, summarizer and presentation generator."
+    "seo_description": "Free PDF and AI tools online: OCR, converter, editor, viewer, scanner, translator, summarizer and presentation generator.",
+    "sign_pdf_title": "Sign PDF",
+    "sign_pdf_desc": "Sign a PDF with a drawn, typed or uploaded signature and add text, date and check marks."
   },
   "about_manage": {
     "title": "About Section",
@@ -3077,6 +3080,39 @@
           "a": "Italian, English, Spanish, French, German, Portuguese and Albanian."
         }
       ]
+    },
+    "sign_pdf": {
+      "about": "The online PDF signing tool lets you sign a contract or form without printing it. Draw your signature with a finger or mouse, type your name in a handwriting style, or upload a photo of your signature, then place it on any page together with text, the date and check marks. The signed PDF is created in your browser.",
+      "steps": [
+        "Open the PDF: drag it into the box or choose it from your device.",
+        "Pick a tool — Signature, Text, Date, check mark or cross — and the item appears on the page.",
+        "Drag it where you need it; use the handle to resize it and the buttons to duplicate it, repeat it on all pages or delete it.",
+        "Press “Download signed PDF”."
+      ],
+      "privacy": "The PDF and your signature are processed entirely in your browser and are never uploaded. If you tick “Remember on this device”, the signature is stored only in this browser’s local storage, and you can remove it at any time.",
+      "limits": "It adds a simple electronic signature — an image of your signature — and it does not produce a qualified or digital signature with legal certification. Password-protected PDFs cannot be opened. Edits are lost if you close the tab before downloading.",
+      "faq": [
+        {
+          "q": "Is it free?",
+          "a": "Yes, completely free and with no sign-up."
+        },
+        {
+          "q": "Is my document uploaded anywhere?",
+          "a": "No. The PDF and the signature are processed in your browser and never leave your device."
+        },
+        {
+          "q": "Is the signature legally valid?",
+          "a": "It is a simple electronic signature, accepted for many everyday documents, but it is not a qualified or digital signature. For documents that require one, use a certified provider."
+        },
+        {
+          "q": "Can I sign from my phone?",
+          "a": "Yes. You can draw your signature with your finger, then drag and resize it on the page."
+        },
+        {
+          "q": "Can I put my signature on every page?",
+          "a": "Yes: select the signature and choose “On all pages”."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3132,5 +3168,71 @@
       "h1": "Image to text",
       "lead": "Turn a photo, a screenshot or a scanned page into text you can copy and edit: upload the image and choose the language."
     }
+  },
+  "sign_pdf": {
+    "title": "Sign PDF",
+    "subtitle": "Sign a PDF, add text, date and check marks — right in your browser, without uploading the file.",
+    "seo_title": "Sign PDF Online Free — Add Signature, Text and Date",
+    "seo_description": "Sign a PDF online for free: draw, type or upload your signature, add text, date and check marks, then download. Everything runs in your browser — the file is never uploaded.",
+    "drop_prompt": "Drop a PDF here or click to choose",
+    "drop_hint": "Contracts, forms, declarations — any PDF",
+    "privacy_note": "The file stays on your device: it is not uploaded to any server.",
+    "workspace_banner_title": "A file is waiting in the Workspace",
+    "workspace_banner_use": "Use it",
+    "workspace_banner_dismiss": "Ignore",
+    "tools_label": "Tools",
+    "tool_signature": "Signature",
+    "tool_text": "Text",
+    "tool_date": "Date",
+    "tool_check": "Check mark",
+    "tool_cross": "Cross",
+    "ink_label": "Ink colour",
+    "ink_black": "Black ink",
+    "ink_blue": "Blue ink",
+    "change_signature": "Change signature",
+    "forget_signature": "Forget saved signature",
+    "undo": "Undo",
+    "close_file": "Close file",
+    "selected_label": "Selected item",
+    "field_text_label": "Text of the selected item",
+    "field_smaller": "Smaller",
+    "field_bigger": "Bigger",
+    "field_duplicate": "Duplicate",
+    "field_all_pages": "On all pages",
+    "field_delete": "Delete",
+    "hint_place": "Choose a tool above: the item appears on the page, then drag it where you need it.",
+    "hint_drag": "Drag items to move them. Tap one to resize it or edit its text.",
+    "page_prev": "Previous page",
+    "page_next": "Next page",
+    "page_label": "Page",
+    "items_here": "{{count}} items on this page",
+    "btn_download": "Download signed PDF",
+    "downloading": "Preparing…",
+    "success": "Done: the signed PDF has been downloaded.",
+    "disclaimer": "This adds a simple electronic signature (an image of your signature). It is not a qualified or digital signature with legal certification.",
+    "workspace_send": "Send to Workspace",
+    "workspace_sent": "Sent",
+    "pad_title": "Create your signature",
+    "pad_tab_draw": "Draw",
+    "pad_tab_type": "Type",
+    "pad_tab_upload": "Image",
+    "pad_draw_hint": "Sign inside the box with your finger or mouse",
+    "pad_type_placeholder": "Type your name",
+    "pad_type_sample": "Your name",
+    "pad_upload_pick": "Choose a photo of your signature",
+    "pad_upload_hint": "Sign on white paper and take a clear photo",
+    "pad_remove_bg": "Remove the white background",
+    "pad_clear": "Clear",
+    "pad_remember": "Remember on this device",
+    "pad_remember_hint": "Saved only in this browser, never sent anywhere",
+    "pad_cancel": "Cancel",
+    "pad_use": "Use signature",
+    "text_default": "Text",
+    "err_not_pdf": "Please choose a PDF file.",
+    "err_open": "This PDF could not be opened. It may be damaged or protected by a password.",
+    "err_render": "The page could not be displayed. Try again.",
+    "err_image": "That image could not be read. Try another one.",
+    "err_no_fields": "Add a signature, text or date first.",
+    "err_export": "The PDF could not be created. Try again."
   }
 }
