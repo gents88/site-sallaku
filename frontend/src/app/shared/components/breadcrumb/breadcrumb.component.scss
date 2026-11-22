@@ -24,6 +24,9 @@
 }
 
 .breadcrumb__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   color: var(--text-secondary, #94a3b8);
   text-decoration: none;
   transition: var(--transition-base, color 0.2s ease);
