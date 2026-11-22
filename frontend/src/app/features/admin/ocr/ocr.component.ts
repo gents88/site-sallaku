@@ -344,7 +344,7 @@ export class OcrComponent implements OnInit {
     a.href = url;
     a.download = `${name}.txt`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 
   isLowConfidence(p: PageText): boolean {

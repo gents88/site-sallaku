@@ -43,6 +43,8 @@ const MAX_IMAGE_BYTES = MAX_IMAGE_MB * 1024 * 1024;
 /** Allineato al limite lato server per l'export (conversion.controller.ts: MAX_FILE_COUNT). */
 const MAX_PAGES = 20;
 /** Passo di spostamento/ridimensionamento del ritaglio da tastiera, in pixel immagine. */
+/** Lato lungo massimo (px) della pagina in modifica: una foto da 12 MP rende filtri, soglia e crop lentissimi sui telefoni senza rendere il documento più leggibile. */
+const MAX_PAGE_SIDE = 3000;
 const CROP_KEY_STEP = 16;
 const CROP_KEY_STEP_FINE = 4;
 
@@ -136,7 +138,8 @@ export class ScannerComponent implements OnInit, OnDestroy {
     ];
   }
 
-  ngOnDestroy(): void { this.stopCamera(); }
+  private destroyed = false;
+  ngOnDestroy(): void { this.destroyed = true; this.stopCamera(); }
 
   // ── Camera ───────────────────────────────────────────────────────────
 
@@ -153,6 +156,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
         audio: false,
       });
+      if (this.destroyed) { this.stopCamera(); return; } // pagina chiusa mentre si attendeva il permesso: la spia della camera non deve restare accesa
       this.videoRef.nativeElement.srcObject = this.stream;
       this.cameraOn.set(true);
     } catch (err) {
@@ -415,7 +419,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
             a.href = url;
             a.download = filename;
             a.click();
-            URL.revokeObjectURL(url);
+            setTimeout(() => URL.revokeObjectURL(url), 4000);
             this.lastPdf.set({ blob: ev.body, filename });
             this.msg.set(`✅ ${this.t.instant('scanner.success')}`);
             this.msgOk.set(true);
@@ -496,7 +500,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
     a.href = url;
     a.download = `scan-${new Date().toISOString().slice(0, 10)}.txt`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 
   private resetOcrState(): void {
@@ -541,7 +545,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
     } catch {
       this.msg.set(`❌ ${this.t.instant('scanner.err_failed')}`);
     } finally {
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
     }
   }
 
@@ -550,12 +554,28 @@ export class ScannerComponent implements OnInit, OnDestroy {
     if (next) void this.openImageFile(next);
   }
 
-  private openEditor(base: HTMLCanvasElement): void {
+  private openEditor(source: HTMLCanvasElement): void {
+    const base = this.limitSize(source);
     this.baseCanvas = base;
     this.crop.set(null);
     this.filter.set('none');
     this.editing.set(true);
     this.syncEditCanvas();
+  }
+
+  private limitSize(src: HTMLCanvasElement): HTMLCanvasElement {
+    const longest = Math.max(src.width, src.height);
+    if (longest <= MAX_PAGE_SIDE) return src;
+    const ratio = MAX_PAGE_SIDE / longest;
+    const c = document.createElement('canvas');
+    c.width = Math.round(src.width * ratio);
+    c.height = Math.round(src.height * ratio);
+    const ctx = c.getContext('2d');
+    if (!ctx) return src;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(src, 0, 0, c.width, c.height);
+    src.width = 0; src.height = 0; // libera subito la memoria del bitmap originale
+    return c;
   }
 
   private syncEditCanvas(): void {

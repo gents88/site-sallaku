@@ -290,7 +290,7 @@ export class PdfSummaryComponent implements OnInit {
       href: URL.createObjectURL(new Blob([content], { type: 'text/markdown' })),
       download: `${(r.title ?? '').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 80) || 'summary'}.md`,
     });
-    a.click(); URL.revokeObjectURL(a.href);
+    a.click(); const href = a.href; setTimeout(() => URL.revokeObjectURL(href), 4000);
   }
 
   summarize(): void {

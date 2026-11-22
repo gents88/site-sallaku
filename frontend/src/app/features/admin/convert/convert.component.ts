@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, afterNextRender, computed, effect, inject, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -254,7 +255,13 @@ export class ConvertComponent implements OnInit, OnDestroy {
     return f.size <= MAX_FILE_MB * 1024 * 1024;
   }
 
-  ngOnDestroy(): void { this.clean(); }
+  ngOnDestroy(): void {
+    this.activeSub?.unsubscribe();
+    this.clean();
+  }
+
+  /** Conversione in corso: va annullata uscendo dalla pagina e prima di avviarne un'altra, altrimenti il download parte a pagina chiusa. */
+  private activeSub: Subscription | null = null;
 
   open(def: ConversionDef): void {
     this.clean();
@@ -404,7 +411,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.done = false;
 
     if (def.id.startsWith('base64-')) {
-      this.svc.convertBase64(def.id as ConversionTypeId, this.b64 ?? '').subscribe({
+      this.activeSub?.unsubscribe();
+      this.activeSub = this.svc.convertBase64(def.id as ConversionTypeId, this.b64 ?? '').subscribe({
         next: (b) => {
           this.download(b, def.to.toLowerCase());
           this.done = true;
@@ -422,7 +430,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
       if (fs.length === 0) { this.run.set(false); this.msg.set(this.t.instant('convert.no_file')); return; }
 
       this.batchStatus.set('running');
-      this.svc.convertFiles(def.id as ConversionTypeId, fs).subscribe({
+      this.activeSub?.unsubscribe();
+      this.activeSub = this.svc.convertFiles(def.id as ConversionTypeId, fs).subscribe({
         next: (ev) => {
           if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
             if (ev.body instanceof Blob) {
@@ -450,7 +459,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
     const f = this.file();
     if (!f) { this.run.set(false); this.msg.set(this.t.instant('convert.no_file')); return; }
 
-    this.svc.convertFiles(def.id as ConversionTypeId, [f]).subscribe({
+    this.activeSub?.unsubscribe();
+    this.activeSub = this.svc.convertFiles(def.id as ConversionTypeId, [f]).subscribe({
       next: (ev) => {
         if (ev.type === HttpEventType.Response && ev instanceof HttpResponse) {
           if (ev.body instanceof Blob) {
@@ -528,7 +538,9 @@ export class ConvertComponent implements OnInit, OnDestroy {
     } else if (k === 'text' || k === 'base64') {
       this.img.set(null);
       this.pdf.set(null);
-      const t = await f.text();
+      // L'anteprima mostra solo 5000 caratteri: per un testo normale non serve leggere un file da centinaia di MB.
+      // Il base64 invece va letto intero, perché è quello che poi viene convertito.
+      const t = await (k === 'text' ? f.slice(0, 40_000) : f).text();
       this.txt.set(t.slice(0, 5000));
       if (k === 'base64') this.b64 = this.parseB64(t);
     } else {
@@ -600,7 +612,9 @@ export class ConvertComponent implements OnInit, OnDestroy {
     a.href = u;
     a.download = filename;
     a.click();
-    URL.revokeObjectURL(u);
+    // Revoca differita: su Safari/iOS il download parte in modo asincrono e un
+    // revoke immediato lo annulla (file vuoto o "impossibile scaricare").
+    setTimeout(() => URL.revokeObjectURL(u), 4000);
   }
 
   private clean(): void {

@@ -85,6 +85,7 @@
                   <span>{{ i + 1 }}</span>
                   <span class="page-btns">
                     <button (click)="rotate(i)" [attr.aria-label]="'pdf_editor.rotate' | translate">⟳</button>
+                    <button (click)="duplicate(i)" [attr.aria-label]="'pdf_editor.duplicate' | translate">⧉</button>
                     <button [disabled]="i === 0" (click)="move(i, -1)" [attr.aria-label]="'pdf_editor.move_left' | translate">←</button>
                     <button [disabled]="i === pages().length - 1" (click)="move(i, 1)" [attr.aria-label]="'pdf_editor.move_right' | translate">→</button>
                     <button [disabled]="pages().length === 1" (click)="remove(i)" [attr.aria-label]="'pdf_editor.delete' | translate">🗑</button>
@@ -111,6 +112,7 @@
                      [value]="range()" (input)="range.set($any($event.target).value)">
             </label>
             <div class="ac">
+              <button class="btn btn-s" [disabled]="!canUndo() || exporting()" (click)="undo()">↩ {{ 'pdf_editor.undo' | translate }}</button>
               <button class="btn btn-s" [disabled]="exporting()" (click)="reset()">{{ 'pdf_editor.clear' | translate }}</button>
               <button class="btn btn-p" [disabled]="exporting()" (click)="exportPdf()">
                 {{ (exporting() ? 'pdf_editor.exporting' : 'pdf_editor.export') | translate }}

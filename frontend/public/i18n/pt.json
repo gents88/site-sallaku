@@ -1672,7 +1672,10 @@
     "delete": "Eliminar",
     "persistence_hint": "As alterações não são guardadas: perdem-se ao recarregar ou fechar este separador.",
     "seo_title": "Editor de PDF Gratuito — Junte, Divida, Gire e Adicione Marca d'Água",
-    "seo_description": "Junte PDFs, divida e extraia páginas, gire ou exclua páginas e adicione marcas d'água — tudo no navegador, os arquivos nunca saem do seu dispositivo."
+    "seo_description": "Junte PDFs, divida e extraia páginas, gire ou exclua páginas e adicione marcas d'água — tudo no navegador, os arquivos nunca saem do seu dispositivo.",
+    "undo": "Desfazer",
+    "duplicate": "Duplicar página",
+    "undone": "Alteração desfeita"
   },
   "viewer": {
     "title": "Visualizador de PDF",

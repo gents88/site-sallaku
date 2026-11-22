@@ -1672,7 +1672,10 @@
     "delete": "Supprimer",
     "persistence_hint": "Les modifications ne sont pas enregistrées : elles sont perdues si vous rechargez ou fermez cet onglet.",
     "seo_title": "Éditeur PDF Gratuit — Fusionner, Diviser, Pivoter et Filigraner",
-    "seo_description": "Fusionnez des PDF, divisez et extrayez des pages, pivotez ou supprimez des pages et ajoutez des filigranes — entièrement dans le navigateur, vos fichiers ne quittent jamais votre appareil."
+    "seo_description": "Fusionnez des PDF, divisez et extrayez des pages, pivotez ou supprimez des pages et ajoutez des filigranes — entièrement dans le navigateur, vos fichiers ne quittent jamais votre appareil.",
+    "undo": "Annuler",
+    "duplicate": "Dupliquer la page",
+    "undone": "Modification annulée"
   },
   "viewer": {
     "title": "Visionneuse PDF",

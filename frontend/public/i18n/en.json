@@ -1672,7 +1672,10 @@
     "delete": "Delete",
     "persistence_hint": "Changes are not saved: they are lost if you reload or close this tab.",
     "seo_title": "Free PDF Editor — Merge, Split, Rotate & Watermark",
-    "seo_description": "Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device."
+    "seo_description": "Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.",
+    "undo": "Undo",
+    "duplicate": "Duplicate page",
+    "undone": "Change undone"
   },
   "viewer": {
     "title": "PDF Viewer",
