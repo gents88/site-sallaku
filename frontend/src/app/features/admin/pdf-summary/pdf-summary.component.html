@@ -7,7 +7,7 @@
         </div>
         <div class="header-controls">
           <label class="ctrl-label" for="pdf-summary-lang">🌐 {{ 'pdf_summary.lang_label' | translate }}</label>
-          <select id="pdf-summary-lang" class="lang-select" [(ngModel)]="selectedLang">
+          <select id="pdf-summary-lang" class="lang-select" [ngModel]="selectedLang" (ngModelChange)="onLangChange($event)">
             <option value="it">Italiano</option>
             <option value="en">English</option>
             <option value="es">Español</option>
@@ -106,6 +106,9 @@
             <span class="result-type-badge">{{ result()!.detectedType }}</span>
             <h3>{{ result()!.title }}</h3>
           </div>
+          @if (summaryStats().words > 0) {
+            <p class="summary-stats">{{ 'pdf_summary.reading_stats' | translate: { words: summaryStats().words, min: summaryStats().minutes } }}</p>
+          }
 
           @if (result()!.truncated) {
             <div class="truncated-banner">⚠️ {{ 'pdf_summary.truncated_warning' | translate }}</div>

@@ -93,6 +93,8 @@
         <input type="file" accept="application/pdf,.pdf" multiple hidden (change)="onFilesSelected($event)" />
       </label>
 
+      <input type="search" class="title-filter" [ngModel]="titleFilter()" (ngModelChange)="titleFilter.set($event)" [placeholder]="'library.filter_placeholder' | translate" [attr.aria-label]="'library.filter_placeholder' | translate" />
+
       <select class="sort-select" [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)" [attr.aria-label]="'library.sort' | translate">
         <option value="recent">{{ 'library.sort_recent' | translate }}</option>
         <option value="title">{{ 'library.sort_title' | translate }}</option>

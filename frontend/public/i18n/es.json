@@ -1164,7 +1164,8 @@
     "err_generic": "Se ha producido un error al analizar el archivo.",
     "remove_file": "Quitar archivo",
     "seo_title": "Resumen de PDF con IA — Extrae los Puntos Clave de Cualquier Documento",
-    "seo_description": "Sube un PDF, Word o TXT y obtén un resumen generado por IA al instante. Resumen breve, análisis detallado o puntos clave. Resumidor de documentos con IA gratuito online."
+    "seo_description": "Sube un PDF, Word o TXT y obtén un resumen generado por IA al instante. Resumen breve, análisis detallado o puntos clave. Resumidor de documentos con IA gratuito online.",
+    "reading_stats": "{{words}} palabras · ~{{min}} min de lectura"
   },
   "workspace": {
     "badge": "Nuevo",
@@ -1819,7 +1820,8 @@
     "chat_error": "La respuesta ha fallado. Inténtalo de nuevo.",
     "import_skipped": "{{count}} archivo(s) omitido(s): solo se pueden importar PDF a la Biblioteca.",
     "seo_title": "Mi Biblioteca PDF — Archivo Personal con Búsqueda y Chat IA",
-    "seo_description": "Guarda los PDF que encuentres, búscalos página por página, anótalos y haz preguntas sobre tus documentos. Todo permanece en tu navegador, nada se sube al servidor."
+    "seo_description": "Guarda los PDF que encuentres, búscalos página por página, anótalos y haz preguntas sobre tus documentos. Todo permanece en tu navegador, nada se sube al servidor.",
+    "filter_placeholder": "Filtrar por título, autor o etiqueta…"
   },
   "blog_manage": {
     "title": "Artículos del blog",
