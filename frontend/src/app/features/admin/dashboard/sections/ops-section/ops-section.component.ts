@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { AiUsageOverview, OverviewSection, ServerErrorSummary, ServerHealth } from '../../admin-dashboard.service';
 import { DashboardCardComponent } from '../../components/dashboard-card/dashboard-card.component';
@@ -11,7 +10,7 @@ import { ServerHealthPanelComponent } from '../../panels/server-health-panel.com
 @Component({
   selector: 'app-ops-section',
   standalone: true,
-  imports: [MatIconModule, TranslateModule, DashboardCardComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent],
+  imports: [TranslateModule, DashboardCardComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ops-section.component.html',
   styleUrls: ['./ops-section.component.scss'],

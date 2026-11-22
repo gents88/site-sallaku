@@ -2590,6 +2590,8 @@
     "cities_title": "Qytetet e vizitorëve",
     "cities_desc": "Të gjitha vizitat e regjistruara, sipas qytetit",
     "activity_section": "Aktiviteti dhe përmbajtja",
-    "acquisition_section": "Prejardhja dhe kontaktet"
+    "acquisition_section": "Prejardhja dhe kontaktet",
+    "expand_all": "Hap të gjitha",
+    "collapse_all": "Mbyll të gjitha"
   }
 }
