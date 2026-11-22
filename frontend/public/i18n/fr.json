@@ -1337,7 +1337,11 @@
     "link_copied": "Lien copié",
     "preview_goto_page": "Aller à la page",
     "zoom_out": "Réduire le zoom",
-    "zoom_in": "Agrandir le zoom"
+    "zoom_in": "Agrandir le zoom",
+    "preview_failed": "Impossible de charger ce PDF. Il est peut-être trop volumineux, la source ne répond peut-être pas ou le fichier est illisible. Réessayez, ou utilisez « Télécharger le PDF » pour l'ouvrir depuis la source.",
+    "preview_blank": "Cette page semble vide. Il peut s'agir d'une vraie page blanche du document (couverture, verso) : essayez › pour avancer. Si toutes restent blanches, téléchargez le PDF ou ouvrez-le depuis la source.",
+    "preview_page_error": "Impossible d'afficher cette page. Réessayez, ou téléchargez le PDF pour la lire.",
+    "preview_retry": "Réessayer"
   },
   "convert": {
     "title": "Convertisseur",

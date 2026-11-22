@@ -281,11 +281,22 @@
                 <p>{{ 'pdf_search.preview_loading' | translate }}</p>
               </div>
             } @else if (canvasViewerFailed()) {
-              <div class="preview-unavailable">
-                <span class="state-icon">🔒</span>
-                <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
+              <div class="preview-unavailable" role="alert">
+                <span class="state-icon">⚠️</span>
+                <p>{{ 'pdf_search.preview_failed' | translate }}</p>
+                <button type="button" class="preview-retry" (click)="retryCanvasPreview()">{{ 'pdf_search.preview_retry' | translate }}</button>
               </div>
             } @else if (canvasPageUrl(); as src) {
+              @if (canvasPageError()) {
+                <div class="preview-note preview-note--error" role="alert">
+                  <p>{{ 'pdf_search.preview_page_error' | translate }}</p>
+                  <button type="button" class="preview-retry" (click)="retryCanvasPage()">{{ 'pdf_search.preview_retry' | translate }}</button>
+                </div>
+              } @else if (canvasPageBlank() && !canvasPageRendering()) {
+                <div class="preview-note" role="status">
+                  <p>{{ 'pdf_search.preview_blank' | translate }}</p>
+                </div>
+              }
               <div class="canvas-page-wrap" (touchstart)="onSwipeStart($event)" (touchend)="onSwipeEnd($event)" [class.is-rendering]="canvasPageRendering()" [class.is-zoomed]="zoomIndex() > 1">
                 <img [src]="src" [alt]="sel.title + ' — ' + canvasPageNum()" [style.width.%]="zoomPercent()" decoding="async" />
                 @if (canvasPageRendering()) { <span class="spinner canvas-page-spinner" aria-hidden="true"></span> }
