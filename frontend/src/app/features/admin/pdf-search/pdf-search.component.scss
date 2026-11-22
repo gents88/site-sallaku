@@ -374,6 +374,8 @@ $error-clr:     #f87171;
   &.source-gb:not(:has(img)) { background: linear-gradient(150deg, $accent-glow, var(--bg-tertiary, #0d1117)); }
   &.source-arxiv:not(:has(img)) { background: linear-gradient(150deg, rgba(248, 113, 113, 0.16), var(--bg-tertiary, #0d1117)); }
   &.source-pmc:not(:has(img)) { background: linear-gradient(150deg, rgba(251, 191, 36, 0.16), var(--bg-tertiary, #0d1117)); }
+  &.source-zenodo:not(:has(img)) { background: linear-gradient(150deg, rgba(56, 189, 248, 0.16), var(--bg-tertiary, #0d1117)); }
+  &.source-wm:not(:has(img)) { background: linear-gradient(150deg, rgba(244, 114, 182, 0.16), var(--bg-tertiary, #0d1117)); }
 }
 
 .hover-hint {
@@ -415,6 +417,8 @@ $error-clr:     #f87171;
   &.source-gb { background: $accent-glow; color: #34d399; }
   &.source-arxiv { background: rgba(248, 113, 113, 0.12); color: #f87171; }
   &.source-pmc { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
+  &.source-zenodo { background: rgba(56, 189, 248, 0.12); color: #38bdf8; }
+  &.source-wm { background: rgba(244, 114, 182, 0.12); color: #f472b6; }
 }
 
 .year-pill {

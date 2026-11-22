@@ -9,7 +9,7 @@ import { isProductionEnv } from '../common/utils/runtime-env';
 
 // Hosts the /proxy endpoint will fetch on the client's behalf — an allow-list,
 // not a generic proxy, to keep this from becoming an SSRF vector.
-const PROXY_ALLOWED_HOSTS = ['archive.org', 'arxiv.org', 'europepmc.org'];
+const PROXY_ALLOWED_HOSTS = ['archive.org', 'arxiv.org', 'europepmc.org', 'zenodo.org', 'wikimedia.org'];
 const PROXY_MAX_BYTES = 100 * 1024 * 1024;
 // archive.org/download/... risponde 302 verso dnNNN.ca.archive.org: pochi hop
 // bastano, e ognuno viene rivalidato contro l'allow-list (vedi fetchAllowListed).
