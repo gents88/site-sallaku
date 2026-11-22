@@ -1,0 +1,146 @@
+<div class="cp-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+  <header class="cp-header">
+    <h1 class="cp-title">🖼️ {{ 'image_tools.title' | translate }}</h1>
+    <p class="cp-subtitle">{{ 'image_tools.subtitle' | translate }}</p>
+  </header>
+
+  @if (workspaceItem()) {
+    <div class="workspace-banner">
+      <span class="workspace-banner-icon">🔗</span>
+      <div class="workspace-banner-text">
+        <strong>{{ 'image_tools.workspace_banner_title' | translate }}</strong>
+        <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+      </div>
+      <div class="workspace-banner-actions">
+        <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">{{ 'image_tools.workspace_banner_use' | translate }}</button>
+        <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">{{ 'image_tools.workspace_banner_dismiss' | translate }}</button>
+      </div>
+    </div>
+  }
+
+  <div class="cp-panel">
+    <div class="dz" appFileDropzone #dz="fileDropzone" (click)="pick.click()" (filesDropped)="onFilesDropped($event)" [class.dz--drag]="dz.isDragging">
+      <input #pick type="file" hidden multiple accept="image/*,.heic,.heif" (change)="select($event)">
+      <span class="dz-icon">📷</span>
+      <strong>{{ (queue().length ? 'image_tools.add_more' : 'image_tools.drop_prompt') | translate }}</strong>
+      <small>{{ 'image_tools.drop_hint' | translate }}</small>
+    </div>
+    @if (msg()) { <p class="msg" role="alert">{{ msg() }}</p> }
+    <p class="privacy-note">🔒 {{ 'image_tools.privacy_note' | translate }}</p>
+  </div>
+
+  @if (queue().length) {
+    <!-- ── File scelti ──────────────────────────── -->
+    <section class="cp-panel">
+      <div class="sec-head">
+        <h2 class="sec-title">{{ 'image_tools.files_title' | translate: { count: queue().length } }}</h2>
+        <button type="button" class="link-btn" [disabled]="working()" (click)="clearAll()">{{ 'image_tools.clear_all' | translate }}</button>
+      </div>
+      <ul class="file-list">
+        @for (q of queue(); track q.id) {
+          <li class="file-item">
+            <span class="file-name">{{ q.file.name }}</span>
+            <span class="file-size">{{ fileSizeLabel(q.file) }}</span>
+            <button type="button" class="x-btn" [disabled]="working()" (click)="removeFromQueue(q.id)" [attr.aria-label]="('image_tools.remove' | translate) + ' ' + q.file.name">✕</button>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- ── Impostazioni ─────────────────────────── -->
+    <section class="cp-panel">
+      <h2 class="sec-title">{{ 'image_tools.format_label' | translate }}</h2>
+      <div class="choice-grid" role="radiogroup" [attr.aria-label]="'image_tools.format_label' | translate">
+        @for (f of formats; track f) {
+          <button type="button" role="radio" class="choice" [class.choice--on]="format() === f" [attr.aria-checked]="format() === f" [disabled]="working()" (click)="setFormat(f)">
+            <span class="choice-title">{{ 'image_tools.fmt_' + f | translate }}</span>
+            <span class="choice-desc">{{ 'image_tools.fmt_' + f + '_desc' | translate }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="opts">
+        <label class="opt">
+          <span class="opt-label">{{ 'image_tools.size_label' | translate }}</span>
+          <select class="select" [disabled]="working()" (change)="setMaxSide($any($event.target).value)">
+            @for (s of sizePresets; track s) {
+              <option [value]="sizeValue(s)" [selected]="maxSide() === s">{{ s === null ? ('image_tools.size_original' | translate) : (s + ' px') }}</option>
+            }
+          </select>
+        </label>
+        @if (lossy()) {
+          <label class="opt opt--grow">
+            <span class="opt-label">{{ 'image_tools.quality_label' | translate }}: <strong>{{ qualityPct() }}%</strong></span>
+            <input class="range" type="range" min="30" max="100" step="5" [value]="quality() * 100" [disabled]="working()" (input)="setQuality($any($event.target).value)">
+          </label>
+        }
+      </div>
+
+      <div class="run-row">
+        @if (working()) {
+          <div class="progress-wrap" role="progressbar" [attr.aria-valuenow]="progressPct()" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar"><div class="progress-fill" [style.width.%]="progressPct()"></div></div>
+            <small>
+              @if (decodingHeic()) { {{ 'image_tools.decoding_heic' | translate }} · }
+              {{ 'image_tools.progress' | translate: { done: progress().done, total: progress().total } }}
+            </small>
+          </div>
+          <button type="button" class="btn-ghost" (click)="cancel()">{{ 'image_tools.cancel' | translate }}</button>
+        } @else {
+          <button type="button" class="btn-main" (click)="convert()">✨ {{ 'image_tools.btn_convert' | translate }}</button>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- ── Risultati ──────────────────────────────── -->
+  @if (results().length || failed().length) {
+    <section class="cp-panel" aria-live="polite">
+      @if (results().length) {
+        <div class="sec-head">
+          <h2 class="sec-title">
+            {{ 'image_tools.result_title' | translate: { count: results().length } }}
+            <span class="total" [class.total--up]="totalPercent() < 0">{{ totalBeforeLabel() }} → {{ totalAfterLabel() }}
+              @if (totalPercent() > 0) { ({{ 'image_tools.smaller' | translate: { percent: totalPercent() } }}) }
+              @else if (totalPercent() < 0) { ({{ 'image_tools.bigger' | translate: { percent: -totalPercent() } }}) }
+            </span>
+          </h2>
+          <button type="button" class="btn-main btn-main--sm" (click)="downloadAll()">
+            📥 {{ (results().length > 1 ? 'image_tools.download_zip' : 'image_tools.download') | translate }}
+          </button>
+        </div>
+        <ul class="result-grid">
+          @for (r of results(); track r.id) {
+            <li class="result-card">
+              <img class="thumb" [src]="r.url" [alt]="r.name" loading="lazy">
+              <div class="result-info">
+                <strong class="result-name" [attr.title]="r.name">{{ r.name }}</strong>
+                <span class="result-meta">{{ r.width }}×{{ r.height }} · {{ fmtBytes(r.before) }} → {{ fmtBytes(r.after) }}
+                  @if (r.percent > 0) { <span class="pill pill--ok">−{{ r.percent }}%</span> }
+                  @else if (r.percent < 0) { <span class="pill pill--warn">+{{ -r.percent }}%</span> }
+                </span>
+                @if (r.heic) { <span class="pill pill--info">HEIC</span> }
+              </div>
+              <div class="result-actions">
+                <button type="button" class="mini-btn" (click)="downloadOne(r)" [attr.aria-label]="('image_tools.download' | translate) + ' ' + r.name">📥</button>
+                <button type="button" class="mini-btn" (click)="sendToWorkspace(r)" [attr.aria-label]="'image_tools.workspace_send' | translate" [attr.title]="'image_tools.workspace_send' | translate">🔗</button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+      @if (failed().length) {
+        <div class="failed" role="alert">
+          <strong>⚠️ {{ 'image_tools.failed_title' | translate: { count: failed().length } }}</strong>
+          <ul>
+            @for (f of failed(); track f.name) { <li>{{ f.name }}</li> }
+          </ul>
+          <small>{{ 'image_tools.failed_hint' | translate }}</small>
+        </div>
+      }
+    </section>
+  }
+</div>
+
+<app-lab-tool-info [tool]="page.id" />

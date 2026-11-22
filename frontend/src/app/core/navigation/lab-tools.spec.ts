@@ -14,8 +14,8 @@ describe('lab-tools', () => {
       expect(ids(labToolsAccepting({ kind: 'text' }, 'ocr'))).toEqual(['ai-formatter', 'editor']);
     });
 
-    it('sends images to OCR and the converter only', () => {
-      expect(ids(labToolsAccepting({ kind: 'file', filename: 'scan.jpeg' }))).toEqual(['ocr', 'convert']);
+    it('sends images to OCR, the image tools and the converter', () => {
+      expect(ids(labToolsAccepting({ kind: 'file', filename: 'scan.jpeg' }))).toEqual(['ocr', 'image-tools', 'convert']);
     });
 
     it('falls back to the MIME type when the file name has no extension', () => {
