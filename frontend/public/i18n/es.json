@@ -1164,7 +1164,8 @@
     "err_generic": "Se ha producido un error al analizar el archivo.",
     "remove_file": "Quitar archivo",
     "seo_title": "Resumen de PDF con IA: Puntos Clave",
-    "seo_description": "Sube un PDF, Word o TXT y obtén un resumen generado por IA al instante. Resumen breve, análisis detallado o puntos clave. Resumidor de documentos con IA gratuito online."
+    "seo_description": "Sube un PDF, Word o TXT y obtén un resumen generado por IA al instante. Resumen breve, análisis detallado o puntos clave. Resumidor de documentos con IA gratuito online.",
+    "reading_stats": "{{words}} palabras · ~{{min}} min de lectura"
   },
   "workspace": {
     "badge": "Nuevo",
@@ -1671,7 +1672,10 @@
     "delete": "Eliminar",
     "persistence_hint": "Los cambios no se guardan: se pierden al recargar o cerrar esta pestaña.",
     "seo_title": "Editor PDF Gratis: Unir, Dividir, Girar",
-    "seo_description": "Une PDF, divide y extrae páginas, rota o elimina páginas y añade marcas de agua — todo en el navegador, los archivos nunca salen de tu dispositivo."
+    "seo_description": "Une PDF, divide y extrae páginas, rota o elimina páginas y añade marcas de agua — todo en el navegador, los archivos nunca salen de tu dispositivo.",
+    "undo": "Deshacer",
+    "duplicate": "Duplicar página",
+    "undone": "Cambio deshecho"
   },
   "viewer": {
     "title": "Visor de PDF",
@@ -1819,7 +1823,8 @@
     "chat_error": "La respuesta ha fallado. Inténtalo de nuevo.",
     "import_skipped": "{{count}} archivo(s) omitido(s): solo se pueden importar PDF a la Biblioteca.",
     "seo_title": "Mi Biblioteca PDF — Archivo Personal con Búsqueda y Chat IA",
-    "seo_description": "Guarda los PDF que encuentres, búscalos página por página, anótalos y haz preguntas sobre tus documentos. Todo permanece en tu navegador, nada se sube al servidor."
+    "seo_description": "Guarda los PDF que encuentres, búscalos página por página, anótalos y haz preguntas sobre tus documentos. Todo permanece en tu navegador, nada se sube al servidor.",
+    "filter_placeholder": "Filtrar por título, autor o etiqueta…"
   },
   "blog_manage": {
     "title": "Artículos del blog",

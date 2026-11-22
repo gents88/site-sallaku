@@ -191,3 +191,7 @@
       .result-actions { gap: 0.4rem; }
       .action-btn { flex: 1 1 calc(50% - 0.4rem); }
     }
+
+.summary-stats { margin: 0 0 12px; font-size: 12px; color: var(--text-muted, #6e7681); font-variant-numeric: tabular-nums; }
+// Righe lunghe e fitte stancano: interlinea più larga e misura limitata.
+.short-summary, .long-summary { line-height: 1.7; max-width: 72ch; }

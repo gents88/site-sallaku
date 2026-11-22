@@ -115,7 +115,7 @@
             <button
               class="lang-btn"
               [class.active]="selectedLanguage() === lang.value"
-              (click)="selectedLanguage.set(lang.value)"
+              (click)="selectLanguage(lang.value)"
             >
               <span class="lang-flag">{{ lang.flag }}</span>
               <span class="lang-name">{{ lang.label }}</span>
