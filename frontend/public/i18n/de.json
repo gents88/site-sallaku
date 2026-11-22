@@ -3217,6 +3217,150 @@
           "a": "Meist wegen zu geringem Kontrast, invertierten Farben oder zu kleiner Druckgröße. Nehmen Sie einen dunklen Code auf hellem Grund, mindestens 2 cm breit."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "iPhones speichern Fotos als HEIC, ein Format, das Windows, viele Webseiten und ältere Apps nicht öffnen können. Dieses Werkzeug wandelt HEIC- und HEIF-Dateien direkt im Browser in JPG oder PNG um, in der gewählten Qualität und mit ZIP-Download für viele Fotos auf einmal.",
+      "steps": [
+        "Ziehe deine HEIC-Fotos in den Upload-Bereich oder klicke darauf, um sie auszuwählen.",
+        "Prüfe, dass das Format JPG ist, und wähle die Qualität.",
+        "Wandle um und lade jedes Foto oder alle zusammen als ZIP herunter."
+      ],
+      "privacy": "Die Fotos werden komplett in deinem Browser verarbeitet: Sie werden auf keinen Server hochgeladen und niemand sonst kann sie sehen.",
+      "limits": "Sehr große Fotos oder viele Dateien auf einmal können ein Handy bremsen, weil dein Gerät die Arbeit macht. Arbeite bei Bedarf in kleinen Gruppen.",
+      "faq": [
+        {
+          "q": "Wie öffne ich HEIC-Fotos unter Windows?",
+          "a": "Wandle sie mit diesem Werkzeug in JPG um: Es läuft im Browser, ohne Installation."
+        },
+        {
+          "q": "Werden meine Fotos hochgeladen?",
+          "a": "Nein. Die Umwandlung passiert auf deinem Gerät, die Fotos verlassen es nicht."
+        },
+        {
+          "q": "Kann ich viele HEIC-Dateien auf einmal umwandeln?",
+          "a": "Ja: Füge sie alle hinzu und lade das Ergebnis als ZIP herunter."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Mit diesem Werkzeug verkleinerst du die Pixelgröße eines oder mehrerer Fotos, zum Beispiel für den E-Mail-Versand, ein Formular oder eine Webseite. Die Proportionen bleiben erhalten, und du kannst auch Format und Qualität ändern.",
+      "steps": [
+        "Füge ein oder mehrere Bilder hinzu.",
+        "Wähle die längste Seite in Pixeln und das Ausgabeformat.",
+        "Lade die verkleinerten Bilder einzeln oder als ZIP herunter."
+      ],
+      "privacy": "Die Fotos werden komplett in deinem Browser verarbeitet: Sie werden auf keinen Server hochgeladen und niemand sonst kann sie sehen.",
+      "limits": "Sehr große Fotos oder viele Dateien auf einmal können ein Handy bremsen, weil dein Gerät die Arbeit macht. Arbeite bei Bedarf in kleinen Gruppen.",
+      "faq": [
+        {
+          "q": "Wie verkleinere ich ein Foto ohne Verzerrung?",
+          "a": "Gib nur die längste Seite an: Die andere wird passend zu den Proportionen berechnet."
+        },
+        {
+          "q": "Wird die Originaldatei verändert?",
+          "a": "Nein. Du lädst eine neue Datei herunter, das Original bleibt unberührt."
+        },
+        {
+          "q": "Welche Formate kann ich nutzen?",
+          "a": "JPG, PNG und WebP, zusätzlich HEIC-Fotos vom iPhone als Eingabe."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "Große Fotos sind langsam zu versenden und zu laden. Dieses Werkzeug macht sie leichter, indem es die Qualität leicht senkt und die Pixelgröße begrenzt, und zeigt dir vor dem Download für jede Datei die Ersparnis.",
+      "steps": [
+        "Füge die Fotos hinzu, die leichter werden sollen.",
+        "Wähle die Qualität: Etwa 70 % sind ein guter Kompromiss aus Größe und Schärfe.",
+        "Prüfe die angezeigte Ersparnis je Datei und lade das Ergebnis herunter."
+      ],
+      "privacy": "Die Fotos werden komplett in deinem Browser verarbeitet: Sie werden auf keinen Server hochgeladen und niemand sonst kann sie sehen.",
+      "limits": "Sehr große Fotos oder viele Dateien auf einmal können ein Handy bremsen, weil dein Gerät die Arbeit macht. Arbeite bei Bedarf in kleinen Gruppen.",
+      "faq": [
+        {
+          "q": "Wie mache ich ein Foto für E-Mail kleiner?",
+          "a": "Komprimiere es mit etwa 70 % Qualität und begrenze die längste Seite auf rund 2000 Pixel."
+        },
+        {
+          "q": "Wird die Qualität schlechter?",
+          "a": "Ein wenig, aber bei moderaten Einstellungen ist der Unterschied am Bildschirm kaum zu sehen."
+        },
+        {
+          "q": "Gehen meine Fotos an einen Server?",
+          "a": "Nein. Die Komprimierung läuft in deinem Browser."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "Gescannte oder bildlastige PDFs können zu groß zum Versenden sein. Das Werkzeug bietet eine verlustfreie Optimierung, bei der Text auswählbar bleibt, und einen stärkeren Modus, der die Seiten in gewählter Qualität als Bilder neu aufbaut, mit klarer Größe vorher und nachher.",
+      "steps": [
+        "Ziehe die PDF in den Upload-Bereich.",
+        "Wähle Modus und Stufe: leicht, mittel oder stark.",
+        "Prüfe die Ersparnis und lade die leichtere PDF herunter."
+      ],
+      "privacy": "Die PDF wird komplett in deinem Browser verarbeitet: Sie wird auf keinen Server hochgeladen, du kannst also auch mit vertraulichen Dokumenten arbeiten.",
+      "limits": "Eine sehr große oder passwortgeschützte PDF lässt sich eventuell nicht öffnen oder bremst den Browser, weil dein Gerät die Arbeit macht. Lade das Ergebnis herunter, bevor du den Tab schließt.",
+      "faq": [
+        {
+          "q": "Wie bekomme ich eine PDF unter 2 MB?",
+          "a": "Probiere die starke Stufe: Sie senkt die Auflösung der Seiten. Prüfe das Ergebnis vor dem Versenden."
+        },
+        {
+          "q": "Bleibt der Text auswählbar?",
+          "a": "Im verlustfreien Modus ja. Der Bildmodus macht aus den Seiten Bilder, daher ist der Text dann nicht mehr auswählbar."
+        },
+        {
+          "q": "Wird meine PDF hochgeladen?",
+          "a": "Nein. Alles passiert in deinem Browser."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Mit diesem Werkzeug füllst du Formulare aus und unterschreibst Verträge ohne Drucken. Du kannst deine Unterschrift zeichnen oder tippen, Text und Datum an beliebiger Stelle der Seite platzieren, verschieben und skalieren und dann eine neue PDF exportieren.",
+      "steps": [
+        "Öffne die PDF, die du ausfüllen willst.",
+        "Erstelle deine Unterschrift oder füge Text- und Datumsfelder hinzu und platziere sie auf der Seite.",
+        "Exportiere und lade die unterschriebene PDF herunter."
+      ],
+      "privacy": "Die PDF wird komplett in deinem Browser verarbeitet: Sie wird auf keinen Server hochgeladen, du kannst also auch mit vertraulichen Dokumenten arbeiten.",
+      "limits": "Eine sehr große oder passwortgeschützte PDF lässt sich eventuell nicht öffnen oder bremst den Browser, weil dein Gerät die Arbeit macht. Lade das Ergebnis herunter, bevor du den Tab schließt.",
+      "faq": [
+        {
+          "q": "Wie unterschreibe ich eine PDF ohne Drucken?",
+          "a": "Zeichne oder tippe deine Unterschrift hier, platziere sie auf der Seite und lade die PDF herunter."
+        },
+        {
+          "q": "Ist das rechtlich gültig?",
+          "a": "Es ist eine einfache elektronische Signatur, ausreichend für viele Alltagsdokumente. Manche Verträge verlangen eine qualifizierte Signatur: Prüfe die für dich geltenden Regeln."
+        },
+        {
+          "q": "Wird mein Dokument hochgeladen?",
+          "a": "Nein. Dokument und Unterschrift bleiben in deinem Browser."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "Ein WLAN-QR-Code enthält Netzwerkname, Sicherheitstyp und Passwort. Handys, die ihn scannen, bieten die Verbindung ohne Tippen an. Drucke ihn für Zuhause, Laden oder Gästezimmer, als PNG oder SVG.",
+      "steps": [
+        "Gib den Netzwerknamen ein, wähle den Sicherheitstyp und füge das Passwort hinzu.",
+        "Passe auf Wunsch Farben und Größe an.",
+        "Scanne den Code zum Testen mit deinem Handy und lade ihn dann herunter oder drucke ihn."
+      ],
+      "privacy": "Der Code wird in deinem Browser erzeugt und was du eingibst, wird nirgendwohin gesendet.",
+      "limits": "Jeder, der den Code scannt, kann den Inhalt lesen: Teile WLAN-Codes nicht mit Personen, denen du nicht vertraust. Teste den Code immer mit dem Handy, bevor du ihn druckst.",
+      "faq": [
+        {
+          "q": "Wie teile ich mein WLAN-Passwort per QR-Code?",
+          "a": "Gib hier Name und Passwort ein, lade den Code herunter und zeige oder drucke ihn: Gäste scannen ihn zum Verbinden."
+        },
+        {
+          "q": "Ist das Passwort sicher?",
+          "a": "Der Code wird in deinem Browser erzeugt und nirgendwohin gesendet, aber jeder, der ihn scannt, kann das Passwort lesen."
+        },
+        {
+          "q": "Funktioniert es auf iPhone und Android?",
+          "a": "Ja, beide öffnen die Kamera und bieten an, dem Netzwerk beizutreten."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3415,48 @@
       "seo_description": "Extrahieren Sie Text aus Fotos, Screenshots und Bildern mit kostenloser Online-OCR, in 7 Sprachen und ohne Anmeldung. Text in Sekunden kopieren.",
       "h1": "Vom Bild zum Text",
       "lead": "Verwandeln Sie ein Foto, einen Screenshot oder eine gescannte Seite in Text, den Sie kopieren und bearbeiten können: Bild hochladen und Sprache wählen."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC in JPG",
+      "seo_title": "HEIC in JPG Kostenlos — iPhone-Fotos umwandeln, ohne Upload",
+      "seo_description": "Wandle HEIC- und HEIF-Fotos vom iPhone kostenlos in JPG oder PNG um. Alles läuft im Browser: kein Upload, keine Anmeldung, Mehrfach-Umwandlung und ZIP-Download.",
+      "h1": "HEIC in JPG umwandeln",
+      "lead": "Verwandle iPhone-Fotos im HEIC-Format in JPG, das überall funktioniert. Dateien hineinziehen, umwandeln und einzeln oder als ZIP herunterladen. Ohne Upload."
+    },
+    "resize_image": {
+      "label": "Bild verkleinern",
+      "seo_title": "Bild Verkleinern Online Kostenlos — Größe ändern, ohne Upload",
+      "seo_description": "Fotos und Bilder online kostenlos verkleinern: längste Seite wählen, Proportionen behalten und als JPG, PNG oder WebP herunterladen. Läuft im Browser, ohne Upload.",
+      "h1": "Bild verkleinern",
+      "lead": "Mach ein Foto kleiner oder halte eine Größenvorgabe ein: längste Seite wählen, Proportionen behalten und herunterladen. Alles bleibt in deinem Browser."
+    },
+    "compress_image": {
+      "label": "Bild komprimieren",
+      "seo_title": "Bild Komprimieren Online Kostenlos — Fotos verkleinern (JPG, PNG, WebP)",
+      "seo_description": "Fotos und Bilder kostenlos komprimieren: Dateigröße senken, Ersparnis sehen und als JPG oder WebP herunterladen. Alles läuft im Browser, ohne Upload.",
+      "h1": "Bild komprimieren",
+      "lead": "Verringere die Dateigröße deiner Fotos ohne sichtbaren Qualitätsverlust: Qualität wählen, Größen vergleichen und herunterladen. Ohne Upload und Anmeldung."
+    },
+    "reduce_pdf_size": {
+      "label": "PDF verkleinern",
+      "seo_title": "PDF Verkleinern Kostenlos — PDF Online komprimieren, ohne Upload",
+      "seo_description": "PDF kostenlos verkleinern: drei Komprimierungsstufen und die Ersparnis vor dem Download. Läuft im Browser, deine Datei wird nie hochgeladen.",
+      "h1": "PDF verkleinern",
+      "lead": "Mach eine schwere PDF leicht genug für E-Mail oder Upload: Stufe wählen, Ersparnis sehen und herunterladen. Die Datei verlässt dein Gerät nicht."
+    },
+    "fill_pdf": {
+      "label": "PDF ausfüllen und unterschreiben",
+      "seo_title": "PDF Ausfüllen und Unterschreiben Kostenlos — Text, Datum und Unterschrift online",
+      "seo_description": "PDF kostenlos ausfüllen und unterschreiben: Unterschrift zeichnen oder tippen, Text und Datum überall einfügen und herunterladen. Ohne Upload und Anmeldung.",
+      "h1": "PDF ausfüllen und unterschreiben",
+      "lead": "Öffne ein Formular, fülle die Felder aus, füge Unterschrift und Datum hinzu und lade die PDF herunter. Ohne Upload und ohne Konto."
+    },
+    "wifi_qr_code": {
+      "label": "WLAN-QR-Code",
+      "seo_title": "WLAN-QR-Code Generator Kostenlos — Passwort per Scan teilen",
+      "seo_description": "WLAN-QR-Code kostenlos erstellen: Netzwerkname und Passwort eingeben, als PNG oder SVG herunterladen und Gäste mit einem Scan verbinden. Läuft im Browser.",
+      "h1": "WLAN-QR-Code Generator",
+      "lead": "Lass Gäste per Scan in dein WLAN: Netzwerkname und Passwort eingeben, dann herunterladen oder drucken. Es wird nichts gesendet."
     }
   },
   "sign_pdf": {

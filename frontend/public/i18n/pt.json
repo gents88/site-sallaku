@@ -3217,6 +3217,150 @@
           "a": "Em geral por pouco contraste, cores invertidas ou tamanho de impressão pequeno demais. Use um código escuro sobre fundo claro e com pelo menos 2 cm de largura."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "Os iPhone guardam as fotos em HEIC, um formato que o Windows, muitos sites e aplicações antigas não conseguem abrir. Esta ferramenta converte ficheiros HEIC e HEIF para JPG ou PNG diretamente no navegador, com a qualidade que escolher e download em ZIP para várias fotos.",
+      "steps": [
+        "Arraste as suas fotos HEIC para a área de envio, ou clique para as escolher.",
+        "Confirme que o formato é JPG e escolha a qualidade.",
+        "Converta e transfira cada foto, ou todas num único ZIP."
+      ],
+      "privacy": "As fotos são processadas inteiramente no seu navegador: não são enviadas para nenhum servidor e mais ninguém as pode ver.",
+      "limits": "Fotos muito grandes ou muitos ficheiros de uma vez podem tornar o telemóvel lento, porque quem trabalha é o seu dispositivo. Se for preciso, trabalhe em grupos pequenos.",
+      "faq": [
+        {
+          "q": "Como abro fotos HEIC no Windows?",
+          "a": "Converta-as para JPG com esta ferramenta: funciona no navegador, sem instalar nada."
+        },
+        {
+          "q": "As minhas fotos são enviadas para a internet?",
+          "a": "Não. A conversão acontece no seu dispositivo e as fotos não saem dele."
+        },
+        {
+          "q": "Posso converter muitos HEIC de uma vez?",
+          "a": "Sim: adicione-os todos e transfira o resultado num ZIP."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Use esta ferramenta para reduzir o tamanho em píxeis de uma ou mais fotos, por exemplo para as enviar por email, anexar a um formulário ou publicar num site. As proporções mantêm-se e também pode alterar o formato e a qualidade.",
+      "steps": [
+        "Adicione uma ou mais imagens.",
+        "Escolha o lado maior em píxeis e o formato de saída.",
+        "Transfira as imagens redimensionadas, uma a uma ou em ZIP."
+      ],
+      "privacy": "As fotos são processadas inteiramente no seu navegador: não são enviadas para nenhum servidor e mais ninguém as pode ver.",
+      "limits": "Fotos muito grandes ou muitos ficheiros de uma vez podem tornar o telemóvel lento, porque quem trabalha é o seu dispositivo. Se for preciso, trabalhe em grupos pequenos.",
+      "faq": [
+        {
+          "q": "Como redimensiono uma foto sem a deformar?",
+          "a": "Indique apenas o lado maior: o outro é calculado para manter as proporções."
+        },
+        {
+          "q": "O ficheiro original é alterado?",
+          "a": "Não. Transfere um ficheiro novo e o original fica intacto."
+        },
+        {
+          "q": "Que formatos posso usar?",
+          "a": "JPG, PNG e WebP, além de fotos HEIC de iPhone na entrada."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "As fotos grandes demoram a enviar e a carregar. Esta ferramenta aligeira-as baixando um pouco a qualidade e limitando o tamanho em píxeis, e mostra quanto espaço poupa em cada ficheiro antes de transferir.",
+      "steps": [
+        "Adicione as fotos que quer aligeirar.",
+        "Escolha a qualidade: cerca de 70% é um bom equilíbrio entre peso e nitidez.",
+        "Veja a poupança de cada ficheiro e transfira o resultado."
+      ],
+      "privacy": "As fotos são processadas inteiramente no seu navegador: não são enviadas para nenhum servidor e mais ninguém as pode ver.",
+      "limits": "Fotos muito grandes ou muitos ficheiros de uma vez podem tornar o telemóvel lento, porque quem trabalha é o seu dispositivo. Se for preciso, trabalhe em grupos pequenos.",
+      "faq": [
+        {
+          "q": "Como aligeiro uma foto para o email?",
+          "a": "Comprima-a a cerca de 70% de qualidade e limite o lado maior a uns 2000 píxeis."
+        },
+        {
+          "q": "A qualidade piora?",
+          "a": "Um pouco, mas com definições moderadas a diferença quase não se nota no ecrã."
+        },
+        {
+          "q": "As minhas fotos vão para um servidor?",
+          "a": "Não. A compressão é feita no seu navegador."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "PDF digitalizados ou cheios de imagens podem ser grandes demais para enviar. A ferramenta oferece uma otimização sem perdas que mantém o texto selecionável e um modo mais forte que reconstrói as páginas como imagens na qualidade escolhida, mostrando o peso antes e depois.",
+      "steps": [
+        "Arraste o PDF para a área de envio.",
+        "Escolha o modo e o nível: leve, médio ou forte.",
+        "Veja a poupança e transfira o PDF mais leve."
+      ],
+      "privacy": "O PDF é processado inteiramente no seu navegador: não é enviado para nenhum servidor, por isso pode trabalhar com documentos confidenciais.",
+      "limits": "Um PDF muito grande ou protegido por palavra-passe pode não abrir ou tornar o navegador lento, porque quem trabalha é o seu dispositivo. Transfira o resultado antes de fechar o separador.",
+      "faq": [
+        {
+          "q": "Como reduzo um PDF para menos de 2 MB?",
+          "a": "Experimente o nível forte: baixa a resolução das páginas. Verifique o resultado antes de enviar."
+        },
+        {
+          "q": "O texto continua selecionável?",
+          "a": "Com o modo sem perdas sim. O modo de imagens transforma as páginas em figuras, por isso o texto deixa de ser selecionável."
+        },
+        {
+          "q": "O meu PDF é enviado para a internet?",
+          "a": "Não. Tudo acontece no seu navegador."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Use esta ferramenta para preencher formulários e assinar contratos sem imprimir. Pode desenhar ou escrever a assinatura, colocar texto e datas em qualquer ponto da página, mover e redimensionar, e depois exportar um novo PDF.",
+      "steps": [
+        "Abra o PDF a preencher.",
+        "Crie a assinatura ou adicione campos de texto e data e coloque-os na página.",
+        "Exporte e transfira o PDF assinado."
+      ],
+      "privacy": "O PDF é processado inteiramente no seu navegador: não é enviado para nenhum servidor, por isso pode trabalhar com documentos confidenciais.",
+      "limits": "Um PDF muito grande ou protegido por palavra-passe pode não abrir ou tornar o navegador lento, porque quem trabalha é o seu dispositivo. Transfira o resultado antes de fechar o separador.",
+      "faq": [
+        {
+          "q": "Como assino um PDF sem imprimir?",
+          "a": "Desenhe ou escreva a assinatura aqui, coloque-a na página e transfira o PDF."
+        },
+        {
+          "q": "Tem validade legal?",
+          "a": "É uma assinatura eletrónica simples, suficiente para muitos documentos do dia a dia. Alguns contratos exigem assinatura qualificada: verifique as regras que lhe dizem respeito."
+        },
+        {
+          "q": "O meu documento é enviado para a internet?",
+          "a": "Não. O documento e a assinatura ficam no seu navegador."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "Um QR code Wi-Fi contém o nome da rede, o tipo de segurança e a palavra-passe. Os telemóveis que o leem propõem ligar sem escrever nada. Imprima-o para casa, loja ou quarto de hóspedes, em PNG ou SVG.",
+      "steps": [
+        "Introduza o nome da rede, escolha o tipo de segurança e adicione a palavra-passe.",
+        "Ajuste cores e tamanho, se quiser.",
+        "Leia o código com o telemóvel para o testar e depois transfira-o ou imprima-o."
+      ],
+      "privacy": "O código é gerado no seu navegador e o que escreve não é enviado para lado nenhum.",
+      "limits": "Qualquer pessoa que leia o código pode ver o conteúdo: não partilhe códigos Wi-Fi com quem não é de confiança. Teste sempre o código com o telemóvel antes de o imprimir.",
+      "faq": [
+        {
+          "q": "Como partilho a palavra-passe do Wi-Fi com um QR code?",
+          "a": "Introduza aqui o nome e a palavra-passe, transfira o código e mostre-o ou imprima-o: os convidados leem-no para se ligarem."
+        },
+        {
+          "q": "A palavra-passe está segura?",
+          "a": "O código é gerado no seu navegador e não é enviado para lado nenhum, mas quem o ler pode ver a palavra-passe."
+        },
+        {
+          "q": "Funciona em iPhone e Android?",
+          "a": "Sim, ambos abrem a câmara e propõem ligar à rede."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3415,48 @@
       "seo_description": "Extraia o texto de fotos, capturas e imagens com OCR online grátis, em 7 idiomas e sem registo. Copie o texto em segundos.",
       "h1": "De imagem para texto",
       "lead": "Transforme uma foto, uma captura ou uma página digitalizada em texto que pode copiar e editar: carregue a imagem e escolha o idioma."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC para JPG",
+      "seo_title": "HEIC para JPG Grátis — Converta Fotos do iPhone, Sem Enviar",
+      "seo_description": "Converta fotos HEIC e HEIF do iPhone para JPG ou PNG grátis. Tudo no navegador: sem envio, sem registo, conversão em lote e download em ZIP.",
+      "h1": "Converter HEIC para JPG",
+      "lead": "Transforme fotos HEIC do iPhone em JPG que abre em qualquer lado. Arraste os ficheiros, converta e transfira um a um ou em ZIP. Sem envio."
+    },
+    "resize_image": {
+      "label": "Redimensionar imagem",
+      "seo_title": "Redimensionar Imagem Online Grátis — Alterar o Tamanho, Sem Enviar",
+      "seo_description": "Redimensione fotos e imagens online grátis: escolha o lado maior, mantenha as proporções e transfira JPG, PNG ou WebP. Funciona no navegador, sem envio.",
+      "h1": "Redimensionar uma imagem",
+      "lead": "Torne uma foto mais pequena ou cumpra um limite de tamanho: escolha o lado maior, mantenha as proporções e transfira. Tudo fica no seu navegador."
+    },
+    "compress_image": {
+      "label": "Comprimir imagem",
+      "seo_title": "Comprimir Imagem Online Grátis — Reduza o Peso das Fotos (JPG, PNG, WebP)",
+      "seo_description": "Comprima fotos e imagens grátis: reduza o peso do ficheiro, veja a poupança e transfira JPG ou WebP. Tudo no navegador, sem envio.",
+      "h1": "Comprimir uma imagem",
+      "lead": "Reduza o peso das fotos sem perda de qualidade visível: escolha a qualidade, compare os tamanhos e transfira. Sem envio nem registo."
+    },
+    "reduce_pdf_size": {
+      "label": "Reduzir tamanho do PDF",
+      "seo_title": "Reduzir Tamanho de PDF Grátis — Comprimir PDF Online, Sem Enviar",
+      "seo_description": "Reduza o tamanho de um PDF grátis: três níveis de compressão e a poupança visível antes de transferir. Funciona no navegador, o ficheiro nunca é enviado.",
+      "h1": "Reduzir o tamanho de um PDF",
+      "lead": "Deixe um PDF pesado leve o suficiente para enviar por email ou carregar: escolha o nível, veja quanto poupa e transfira. O ficheiro não sai do seu dispositivo."
+    },
+    "fill_pdf": {
+      "label": "Preencher e assinar PDF",
+      "seo_title": "Preencher e Assinar PDF Grátis — Adicione Texto, Data e Assinatura Online",
+      "seo_description": "Preencha e assine um PDF grátis: desenhe ou escreva a assinatura, adicione texto e datas onde quiser e transfira. Sem envio nem registo.",
+      "h1": "Preencher e assinar um PDF",
+      "lead": "Abra um formulário, preencha os campos, adicione a assinatura e a data e transfira o PDF. Sem envio e sem conta."
+    },
+    "wifi_qr_code": {
+      "label": "QR code Wi-Fi",
+      "seo_title": "Gerador de QR Code Wi-Fi Grátis — Partilhe a Palavra-passe com um Scan",
+      "seo_description": "Crie um QR code para o Wi-Fi grátis: introduza o nome da rede e a palavra-passe, transfira PNG ou SVG e deixe os convidados ligar-se com um scan.",
+      "h1": "Gerador de QR code Wi-Fi",
+      "lead": "Deixe os convidados ligar-se ao seu Wi-Fi com um scan: introduza o nome da rede e a palavra-passe e transfira ou imprima. Nada é enviado."
     }
   },
   "sign_pdf": {

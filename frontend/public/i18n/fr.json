@@ -3217,6 +3217,150 @@
           "a": "Le plus souvent à cause d’un faible contraste, de couleurs inversées ou d’une taille d’impression trop petite. Utilisez un code foncé sur fond clair, large d’au moins 2 cm."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "Les iPhone enregistrent les photos en HEIC, un format que Windows, de nombreux sites et d’anciennes applications ne savent pas ouvrir. Cet outil convertit les fichiers HEIC et HEIF en JPG ou PNG directement dans le navigateur, avec la qualité choisie et un téléchargement ZIP pour plusieurs photos.",
+      "steps": [
+        "Glissez vos photos HEIC dans la zone de dépôt, ou cliquez pour les choisir.",
+        "Vérifiez que le format est JPG et choisissez la qualité.",
+        "Convertissez et téléchargez chaque photo, ou toutes dans un seul ZIP."
+      ],
+      "privacy": "Les photos sont traitées entièrement dans votre navigateur : elles ne sont envoyées à aucun serveur et personne d’autre ne peut les voir.",
+      "limits": "Des photos très volumineuses ou de nombreux fichiers à la fois peuvent ralentir un téléphone, car c’est votre appareil qui travaille. Au besoin, procédez par petits lots.",
+      "faq": [
+        {
+          "q": "Comment ouvrir des photos HEIC sous Windows ?",
+          "a": "Convertissez-les en JPG avec cet outil : il fonctionne dans le navigateur, sans rien installer."
+        },
+        {
+          "q": "Mes photos sont-elles envoyées en ligne ?",
+          "a": "Non. La conversion se fait sur votre appareil et les photos n’en sortent pas."
+        },
+        {
+          "q": "Puis-je convertir beaucoup de HEIC à la fois ?",
+          "a": "Oui : ajoutez-les tous et téléchargez le résultat dans un ZIP."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Utilisez cet outil pour réduire les dimensions en pixels d’une ou plusieurs photos, par exemple pour les envoyer par e-mail, les joindre à un formulaire ou les publier sur un site. Les proportions sont conservées et vous pouvez aussi changer le format et la qualité.",
+      "steps": [
+        "Ajoutez une ou plusieurs images.",
+        "Choisissez le plus grand côté en pixels et le format de sortie.",
+        "Téléchargez les images redimensionnées, une par une ou en ZIP."
+      ],
+      "privacy": "Les photos sont traitées entièrement dans votre navigateur : elles ne sont envoyées à aucun serveur et personne d’autre ne peut les voir.",
+      "limits": "Des photos très volumineuses ou de nombreux fichiers à la fois peuvent ralentir un téléphone, car c’est votre appareil qui travaille. Au besoin, procédez par petits lots.",
+      "faq": [
+        {
+          "q": "Comment redimensionner une photo sans la déformer ?",
+          "a": "Indiquez seulement le plus grand côté : l’autre est calculé pour garder les proportions."
+        },
+        {
+          "q": "Le fichier d’origine est-il modifié ?",
+          "a": "Non. Vous téléchargez un nouveau fichier et l’original reste intact."
+        },
+        {
+          "q": "Quels formats puis-je utiliser ?",
+          "a": "JPG, PNG et WebP, ainsi que les photos HEIC d’iPhone en entrée."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "Les grandes photos sont longues à envoyer et à charger. Cet outil les allège en baissant un peu la qualité et en limitant les dimensions en pixels, et affiche la place gagnée pour chaque fichier avant le téléchargement.",
+      "steps": [
+        "Ajoutez les photos à alléger.",
+        "Choisissez la qualité : environ 70 % est un bon équilibre entre poids et netteté.",
+        "Vérifiez l’économie affichée pour chaque fichier et téléchargez le résultat."
+      ],
+      "privacy": "Les photos sont traitées entièrement dans votre navigateur : elles ne sont envoyées à aucun serveur et personne d’autre ne peut les voir.",
+      "limits": "Des photos très volumineuses ou de nombreux fichiers à la fois peuvent ralentir un téléphone, car c’est votre appareil qui travaille. Au besoin, procédez par petits lots.",
+      "faq": [
+        {
+          "q": "Comment alléger une photo pour l’e-mail ?",
+          "a": "Compressez-la à environ 70 % de qualité et limitez le plus grand côté à 2000 pixels environ."
+        },
+        {
+          "q": "La qualité se dégrade-t-elle ?",
+          "a": "Un peu, mais avec des réglages modérés la différence est difficile à voir à l’écran."
+        },
+        {
+          "q": "Mes photos vont-elles sur un serveur ?",
+          "a": "Non. La compression se fait dans votre navigateur."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "Les PDF numérisés ou riches en images peuvent être trop gros pour être envoyés. L’outil propose une optimisation sans perte qui garde le texte sélectionnable et un mode plus fort qui reconstruit les pages en images à la qualité choisie, avec le poids avant et après.",
+      "steps": [
+        "Déposez le PDF dans la zone de chargement.",
+        "Choisissez le mode et le niveau : léger, moyen ou fort.",
+        "Vérifiez l’économie et téléchargez le PDF allégé."
+      ],
+      "privacy": "Le PDF est traité entièrement dans votre navigateur : il n’est envoyé à aucun serveur, vous pouvez donc travailler sur des documents confidentiels.",
+      "limits": "Un PDF très volumineux ou protégé par mot de passe peut ne pas s’ouvrir ou ralentir le navigateur, car c’est votre appareil qui travaille. Téléchargez le résultat avant de fermer l’onglet.",
+      "faq": [
+        {
+          "q": "Comment passer un PDF sous 2 Mo ?",
+          "a": "Essayez le niveau fort : il réduit la résolution des pages. Vérifiez le résultat avant de l’envoyer."
+        },
+        {
+          "q": "Le texte reste-t-il sélectionnable ?",
+          "a": "Avec le mode sans perte, oui. Le mode image transforme les pages en images, le texte n’est donc plus sélectionnable."
+        },
+        {
+          "q": "Mon PDF est-il envoyé en ligne ?",
+          "a": "Non. Tout se passe dans votre navigateur."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Utilisez cet outil pour remplir des formulaires et signer des contrats sans imprimer. Vous pouvez dessiner ou saisir votre signature, placer texte et dates n’importe où sur la page, les déplacer et les redimensionner, puis exporter un nouveau PDF.",
+      "steps": [
+        "Ouvrez le PDF à remplir.",
+        "Créez votre signature ou ajoutez des champs de texte et de date, puis placez-les sur la page.",
+        "Exportez et téléchargez le PDF signé."
+      ],
+      "privacy": "Le PDF est traité entièrement dans votre navigateur : il n’est envoyé à aucun serveur, vous pouvez donc travailler sur des documents confidentiels.",
+      "limits": "Un PDF très volumineux ou protégé par mot de passe peut ne pas s’ouvrir ou ralentir le navigateur, car c’est votre appareil qui travaille. Téléchargez le résultat avant de fermer l’onglet.",
+      "faq": [
+        {
+          "q": "Comment signer un PDF sans l’imprimer ?",
+          "a": "Dessinez ou saisissez votre signature ici, placez-la sur la page et téléchargez le PDF."
+        },
+        {
+          "q": "A-t-elle une valeur légale ?",
+          "a": "C’est une signature électronique simple, suffisante pour de nombreux documents courants. Certains contrats exigent une signature qualifiée : vérifiez les règles qui vous concernent."
+        },
+        {
+          "q": "Mon document est-il envoyé en ligne ?",
+          "a": "Non. Le document et votre signature restent dans votre navigateur."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "Un QR code Wi-Fi contient le nom du réseau, le type de sécurité et le mot de passe. Les téléphones qui le scannent proposent de se connecter sans rien saisir. Imprimez-le pour la maison, la boutique ou la chambre d’amis, en PNG ou SVG.",
+      "steps": [
+        "Saisissez le nom du réseau, choisissez le type de sécurité et ajoutez le mot de passe.",
+        "Réglez les couleurs et la taille si vous le souhaitez.",
+        "Scannez le code avec votre téléphone pour le tester, puis téléchargez-le ou imprimez-le."
+      ],
+      "privacy": "Le code est généré dans votre navigateur et ce que vous saisissez n’est envoyé nulle part.",
+      "limits": "Toute personne qui scanne le code peut en lire le contenu : ne partagez pas de codes Wi-Fi avec des personnes de confiance limitée. Testez toujours le code avec votre téléphone avant de l’imprimer.",
+      "faq": [
+        {
+          "q": "Comment partager le mot de passe Wi-Fi avec un QR code ?",
+          "a": "Saisissez ici le nom et le mot de passe, téléchargez le code et montrez-le ou imprimez-le : vos invités le scannent pour se connecter."
+        },
+        {
+          "q": "Le mot de passe est-il en sécurité ?",
+          "a": "Le code est généré dans votre navigateur et n’est envoyé nulle part, mais toute personne qui le scanne peut lire le mot de passe."
+        },
+        {
+          "q": "Cela fonctionne-t-il sur iPhone et Android ?",
+          "a": "Oui, les deux ouvrent l’appareil photo et proposent de rejoindre le réseau."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3415,48 @@
       "seo_description": "Extrayez le texte de photos, captures d'écran et images avec l'OCR en ligne gratuit, en 7 langues et sans inscription. Copiez le texte en secondes.",
       "h1": "De l'image au texte",
       "lead": "Transformez une photo, une capture d'écran ou une page numérisée en texte que vous pouvez copier et modifier : importez l'image et choisissez la langue."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC en JPG",
+      "seo_title": "HEIC en JPG Gratuit — Convertir les Photos iPhone, Sans Envoi",
+      "seo_description": "Convertissez gratuitement les photos HEIC et HEIF de l’iPhone en JPG ou PNG. Tout se passe dans votre navigateur : sans envoi, sans inscription, conversion multiple et ZIP.",
+      "h1": "Convertir HEIC en JPG",
+      "lead": "Transformez les photos HEIC de l’iPhone en JPG lisibles partout. Glissez les fichiers, convertissez et téléchargez un par un ou en ZIP. Sans envoi."
+    },
+    "resize_image": {
+      "label": "Redimensionner une image",
+      "seo_title": "Redimensionner une Image en Ligne Gratuit — Changer la Taille, Sans Envoi",
+      "seo_description": "Redimensionnez photos et images en ligne gratuitement : choisissez le plus grand côté, gardez les proportions et téléchargez en JPG, PNG ou WebP. Sans envoi.",
+      "h1": "Redimensionner une image",
+      "lead": "Réduisez une photo ou respectez une limite de taille : choisissez le plus grand côté, gardez les proportions et téléchargez. Tout reste dans votre navigateur."
+    },
+    "compress_image": {
+      "label": "Compresser une image",
+      "seo_title": "Compresser une Image en Ligne Gratuit — Réduire le Poids des Photos (JPG, PNG, WebP)",
+      "seo_description": "Compressez gratuitement photos et images : réduisez le poids du fichier, voyez l’économie et téléchargez en JPG ou WebP. Tout se passe dans votre navigateur.",
+      "h1": "Compresser une image",
+      "lead": "Réduisez le poids de vos photos sans perte de qualité visible : choisissez la qualité, comparez les tailles et téléchargez. Sans envoi ni inscription."
+    },
+    "reduce_pdf_size": {
+      "label": "Réduire la taille d’un PDF",
+      "seo_title": "Réduire la Taille d’un PDF Gratuit — Compresser un PDF en Ligne, Sans Envoi",
+      "seo_description": "Réduisez gratuitement la taille d’un PDF : trois niveaux de compression et l’économie visible avant le téléchargement. Dans votre navigateur, le fichier n’est jamais envoyé.",
+      "h1": "Réduire la taille d’un PDF",
+      "lead": "Allégez un PDF trop lourd pour l’envoyer par e-mail ou le déposer : choisissez le niveau, voyez l’économie et téléchargez. Le fichier ne quitte pas votre appareil."
+    },
+    "fill_pdf": {
+      "label": "Remplir et signer un PDF",
+      "seo_title": "Remplir et Signer un PDF Gratuit — Ajouter Texte, Date et Signature en Ligne",
+      "seo_description": "Remplissez et signez un PDF gratuitement : dessinez ou saisissez votre signature, ajoutez texte et dates où vous voulez et téléchargez. Sans envoi ni inscription.",
+      "h1": "Remplir et signer un PDF",
+      "lead": "Ouvrez un formulaire, remplissez les champs, ajoutez votre signature et la date, puis téléchargez le PDF. Sans envoi et sans compte."
+    },
+    "wifi_qr_code": {
+      "label": "QR code Wi-Fi",
+      "seo_title": "Générateur de QR Code Wi-Fi Gratuit — Partagez le Mot de Passe d’un Scan",
+      "seo_description": "Créez gratuitement un QR code Wi-Fi : saisissez le nom du réseau et le mot de passe, téléchargez en PNG ou SVG et laissez vos invités se connecter d’un scan.",
+      "h1": "Générateur de QR code Wi-Fi",
+      "lead": "Laissez vos invités rejoindre votre Wi-Fi en scannant un code : saisissez le nom du réseau et le mot de passe, puis téléchargez ou imprimez. Rien n’est envoyé."
     }
   },
   "sign_pdf": {
