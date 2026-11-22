@@ -11,6 +11,8 @@ import { AiProviderService } from '../common/services/ai-provider.service';
 import { ProjectsService } from '../projects/projects.service';
 import { BlogService } from '../blog/blog.service';
 import { SettingsService } from '../common/settings/settings.service';
+import { StreamMarkerFilter } from './stream-markers';
+import { buildLabBlock, selectPostsForPrompt } from './chatbot-context';
 
 interface PromptProject {
   title?: string;
@@ -22,12 +24,14 @@ interface PromptPost {
   title?: string;
   slug?: string;
   excerpt?: string;
+  tags?: string[];
 }
 
 function buildSystemPrompt(
   about?: Partial<AboutDocument> | null,
   projects?: PromptProject[],
   posts?: PromptPost[],
+  labBlock: string = buildLabBlock(),
 ): string {
   const aboutLines = [
     about?.headline && `Headline: ${about.headline}`,
@@ -60,24 +64,7 @@ He built this portfolio to showcase his projects, experiences, and free tools.
 ${aboutBlock}${projectsBlock}${blogBlock}
 Gent also built a suite of free tools available on this site, under the "🧰 AI & Tools" menu (base path /lab/...). If a visitor asks about tools, document processing, PDFs, or productivity utilities, proactively mention the relevant ones and give their exact path. If the visitor asks specifically how one of these tools works, explain briefly (1-2 short sentences, using the steps below) what they do and don't — don't just repeat the name. Always give this explanation in the visitor's own language (per the language rules below), never only in English, no matter which language they ask in.
 
-AI-powered tools:
-- AI Document Summarizer (/lab/pdf-summary): upload a PDF, Word, or TXT file → the AI reads it and returns a short summary in seconds, ready to copy or download.
-- AI Formatter (/lab/ai-formatter): paste in raw, unformatted notes or text → the AI restructures it into a polished, well-formatted document (headings, lists, paragraphs).
-- AI PDF Translator (/lab/pdf-translate): upload a PDF or document and pick a target language → the AI translates the full content, preserving layout, into any of 12 languages.
-- AI Slides Generator (/lab/ai-ppt): type in any topic → the AI generates a full slide deck with structured content and speaker notes, ready to export.
-
-Other PDF/document utilities (not AI-based):
-- PDF Editor (/lab/pdf-editor): upload a PDF and merge, split, rotate, delete pages, or add watermarks directly in the browser.
-- Viewer (/lab/viewer): open a PDF to view, navigate, and search inside it, no download needed.
-- Editor (/lab/editor): a rich text editor in the browser; write or paste content and export it to PDF or DOCX.
-- Converter (/lab/convert): upload a file and convert it between PDF, Word, Excel, images, and more.
-- OCR (/lab/ocr): upload a scanned PDF or image → it extracts the text inside so you can copy or search it.
-- Scanner (/lab/scanner): use your device's camera to scan a physical document and turn it into a PDF.
-- Sign & Fill PDF (/lab/sign-pdf): open a PDF, draw or type a signature, add text and dates anywhere on the page, then download the signed PDF. It runs entirely in the browser, nothing is uploaded.
-- Compress PDF (/lab/compress-pdf): make a heavy PDF lighter with three levels (light, medium, strong) and see the saving before downloading. A lossless mode keeps the text selectable; the image mode rebuilds pages as pictures. Runs in the browser.
-- Photo tools (/lab/image-tools): convert iPhone HEIC photos to JPG/PNG, resize images and compress JPG/PNG/WebP, one by one or as a ZIP. Runs in the browser. There are dedicated pages for the most common searches, such as /lab/heic-to-jpg, /lab/resize-image and /lab/compress-image.
-- QR Code generator (/lab/qr-code): create QR codes for links, text, Wi-Fi (/lab/wifi-qr-code), contacts/vCard (/lab/vcard-qr-code), email, phone and WhatsApp (/lab/whatsapp-qr-code); download as PNG or SVG. Runs in the browser.
-- Handy shortcuts for common tasks: /lab/pdf-to-jpg, /lab/excel-to-pdf, /lab/png-to-jpg, /lab/webp-to-jpg, /lab/html-to-pdf, /lab/reduce-pdf-size, /lab/fill-pdf, /lab/edit-pdf. Note: the document converter (/lab/convert and its shortcuts) sends the file to the server to convert it, while the sign, compress, photo and QR tools work locally in the browser.
+${labBlock}
 
 Your role:
 - Answer questions about Gent's skills, projects, and experience
@@ -166,16 +153,121 @@ const DEFAULT_LOCALIZED_FALLBACKS: Record<string, string> = {
   de: 'Ich bin der KI-Assistent dieses Portfolios. Ich kann Fragen zu Gents Projekten, Fähigkeiten und den Tools dieser Website beantworten. Du kannst ihn auch direkt über den Bereich **Contact** kontaktieren.',
 };
 
+/**
+ * Parole frequenti per lingua. Il riconoscimento conta quante ne compaiono e sceglie la lingua che ne ha di più
+ * (prima bastava una parola-chiave, quindi "Quali strumenti avete per i PDF?" non era riconosciuto come italiano).
+ * Serve solo alle risposte predefinite: quando l'AI risponde, la lingua la sceglie il modello.
+ */
+const LANGUAGE_WORDS: Record<string, string> = {
+  en: 'the is are can you your how what do does hire my with for me about tell have want where who why',
+  it: 'ciao sono sei grazie perche come posso vorrei buongiorno buonasera progetto progetti quali avete hai cosa dove quando puoi fare voglio disponibile lavoro strumenti il lo gli di che per un una',
+  es: 'hola gracias cómo como puedo quiero proyecto proyectos buenos qué que cuáles tienes tus sobre cuéntame cuentame para trabajo herramientas dónde donde el los las una',
+  pt: 'olá ola obrigado obrigada como posso quero projeto projetos bom quais você voce tens tem para uma trabalho ferramentas onde não nao os as',
+  fr: 'bonjour merci comment peux voudrais projet projets salut quels quelles avez vous pour une travail outils où est les des je tu parle ton tes',
+  de: 'hallo danke wie kann möchte projekt projekte guten welche haben sie für eine arbeit werkzeuge wo ich ist der die das und mit deine',
+  sq: 'dhe është eshte për çfarë cfare shqip lutem faleminderit përshëndetje projektet mjete punë ku si mund ka tungjatjeta',
+};
+
 function detectLanguage(message: string): string | undefined {
-  if (/\b(dhe|është|eshte|për|çfarë|cfare|shqip|ju lutem|faleminderit|përshëndetje)\b/i.test(message)) {
-    return 'sq';
-  }
-  if (/\b(sono|ciao|grazie|perché|perche|come|posso|vorrei|buongiorno|buonasera|progetto|progetti)\b/i.test(message)) return 'it';
-  if (/\b(hola|gracias|cómo|como|puedo|quiero|proyecto|proyectos|buenos)\b/i.test(message)) return 'es';
-  if (/\b(olá|obrigado|obrigada|como|posso|quero|projeto|projetos|bom)\b/i.test(message)) return 'pt';
-  if (/\b(bonjour|merci|comment|peux|voudrais|projet|projets|salut)\b/i.test(message)) return 'fr';
-  if (/\b(hallo|danke|wie|kann|möchte|projekt|projekte|guten)\b/i.test(message)) return 'de';
-  return undefined;
+  const words = message.toLowerCase().match(/[\p{L}]+/gu) ?? [];
+  if (!words.length) return undefined;
+  const scores = Object.entries(LANGUAGE_WORDS).map(([lang, list]) => {
+    const set = new Set(list.split(' '));
+    return { lang, score: words.filter((w) => set.has(w)).length };
+  });
+  scores.sort((a, b) => b.score - a.score);
+  const [best, second] = scores;
+  // L'inglese non è un "riconoscimento": è il comportamento predefinito, quindi qui non si restituisce.
+  if (best.score === 0 || best.score === second.score || best.lang === 'en') return undefined;
+  return best.lang;
+}
+
+/**
+ * Risposte predefinite per argomento nelle lingue del sito, usate quando l'AI non è disponibile (prima solo
+ * l'inglese aveva risposte per argomento; le altre lingue ricevevano un messaggio generico). Per l'inglese
+ * restano FALLBACK_RESPONSES. Il contatto rimanda alla sezione Contatti del sito, senza ripetere indirizzi.
+ */
+type FallbackTopic = 'greeting' | 'services' | 'contact' | 'projects' | 'skills' | 'blog' | 'tools' | 'about';
+
+const TOPIC_PATTERNS: { topic: FallbackTopic; pattern: RegExp }[] = [
+  // I servizi prima dei progetti: "lavoro freelance" contiene "lavoro" ma è una domanda sulla disponibilità.
+  { topic: 'greeting', pattern: /^\s*(ciao|hello|hi|hey|salve|buongiorno|buonasera|hej|hola|bonjour|salut|hallo|olá|ola|tungjatjeta|përshëndetje)\b/i },
+  { topic: 'services', pattern: /service|servizi|freelance|hire|availab|disponibil|assum|preventiv|quote|collaborazion|colabor|incarico|dispon[ií]vel|contrat|embaucher|einstellen|punësoj/i },
+  { topic: 'contact', pattern: /contact|contatt|email|messag|reach|kontakt|contacto|contactar|contacter|escrib|scriv/i },
+  { topic: 'tools', pattern: /tool|strument|pdf|qr|convert|firma|firmar|signer|comprim|heic|herramienta|outil|werkzeug|ferramenta|mjet/i },
+  { topic: 'blog', pattern: /blog|article|articol|artícul|artigo|artikel|post/i },
+  { topic: 'projects', pattern: /project|progett|lavor|work|portfolio|proyecto|projet|projekt|projeto|projekte/i },
+  { topic: 'skills', pattern: /experience|esperienz|skill|competenz|tecnolog|technology|stack|experiencia|habilidad|compétence|fähigkeit|competência|aftësi/i },
+  { topic: 'about', pattern: /about|chi è|chi sei|presentati|introduce|quién|qui es|wer bist|quem é|kush je/i },
+];
+
+const TOPIC_RESPONSES: Record<string, Record<FallbackTopic, string>> = {
+  it: {
+    greeting: "Ciao! Sono l'assistente AI di questo portfolio. Posso rispondere a domande sui progetti, le competenze e gli strumenti gratuiti del sito. Cosa ti interessa?",
+    services: 'Gent al momento lavora come dipendente e non accetta lavori freelance né nuovi incarichi tramite questo sito. Puoi esplorare i suoi **Progetti** e gli strumenti gratuiti **AI & Tools**, oppure usare la sezione **Contatti** per domande.',
+    contact: "Puoi usare la sezione **Contatti** del sito: c'è un modulo per scrivere direttamente a Gent e anche il numero di telefono, per chiamarlo o scrivergli su WhatsApp. Preferisci parlare con lui dal vivo, adesso?",
+    projects: 'Gent ha realizzato diversi progetti full-stack con Angular, NestJS e MongoDB. Li trovi nella sezione **Progetti** del sito. Vuoi saperne di più su uno in particolare?',
+    skills: 'Gent è uno sviluppatore full-stack: **Angular** per il frontend, **NestJS** per il backend, **MongoDB** per i dati e **TypeScript** ovunque. Usa anche Docker e Railway per il rilascio.',
+    blog: 'Gent scrive di sviluppo web, Angular, NestJS e ingegneria del software nella sezione **Blog**. Dai un\'occhiata per guide e approfondimenti!',
+    tools: 'Nel menu **AI & Tools** trovi strumenti gratuiti: firmare, comprimere e unire PDF, convertire foto HEIC in JPG, creare QR code e molto altro. Dimmi cosa vuoi fare e ti indico quello giusto.',
+    about: 'Gent Sallaku è uno sviluppatore full-stack appassionato di applicazioni web moderne e performanti. Questo portfolio raccoglie i suoi lavori: i dettagli sono nella sezione **Chi sono**.',
+  },
+  es: {
+    greeting: '¡Hola! Soy el asistente de IA de este portfolio. Puedo responder preguntas sobre los proyectos, las habilidades y las herramientas gratuitas del sitio. ¿Qué te interesa?',
+    services: 'Gent trabaja actualmente como empleado y no acepta trabajos freelance ni nuevos encargos a través de este sitio. Puedes explorar sus **Proyectos** y las herramientas gratuitas de **AI & Tools**, o usar la sección **Contacto** para preguntas.',
+    contact: 'Puedes usar la sección **Contacto** del sitio: hay un formulario para escribir directamente a Gent y también su teléfono, para llamarlo o escribirle por WhatsApp. ¿Prefieres hablar con él en directo ahora?',
+    projects: 'Gent ha creado varios proyectos full-stack con Angular, NestJS y MongoDB. Los encuentras en la sección **Proyectos**. ¿Quieres saber más de alguno en concreto?',
+    skills: 'Gent es desarrollador full-stack: **Angular** en el frontend, **NestJS** en el backend, **MongoDB** para los datos y **TypeScript** en todo el proyecto. También usa Docker y Railway para los despliegues.',
+    blog: 'Gent escribe sobre desarrollo web, Angular, NestJS e ingeniería de software en la sección **Blog**. ¡Échale un vistazo para guías y artículos técnicos!',
+    tools: 'En el menú **AI & Tools** hay herramientas gratuitas: firmar, comprimir y unir PDF, convertir fotos HEIC a JPG, crear códigos QR y mucho más. Dime qué quieres hacer y te indico la adecuada.',
+    about: 'Gent Sallaku es un desarrollador full-stack apasionado por las aplicaciones web modernas y rápidas. Este portfolio reúne su trabajo: los detalles están en la sección **Sobre mí**.',
+  },
+  pt: {
+    greeting: 'Olá! Sou o assistente de IA deste portfólio. Posso responder a perguntas sobre os projetos, as competências e as ferramentas gratuitas do site. O que te interessa?',
+    services: 'O Gent trabalha atualmente como funcionário e não aceita trabalhos freelance nem novos projetos através deste site. Podes explorar os seus **Projetos** e as ferramentas gratuitas de **AI & Tools**, ou usar a secção **Contacto** para perguntas.',
+    contact: 'Podes usar a secção **Contacto** do site: há um formulário para escrever diretamente ao Gent e também o telefone, para ligar-lhe ou escrever no WhatsApp. Preferes falar com ele ao vivo, agora?',
+    projects: 'O Gent criou vários projetos full-stack com Angular, NestJS e MongoDB. Encontras na secção **Projetos**. Queres saber mais sobre algum em particular?',
+    skills: 'O Gent é programador full-stack: **Angular** no frontend, **NestJS** no backend, **MongoDB** para os dados e **TypeScript** em todo o lado. Também usa Docker e Railway para publicar.',
+    blog: 'O Gent escreve sobre desenvolvimento web, Angular, NestJS e engenharia de software na secção **Blog**. Espreita para guias e artigos técnicos!',
+    tools: 'No menu **AI & Tools** há ferramentas gratuitas: assinar, comprimir e juntar PDF, converter fotos HEIC em JPG, criar códigos QR e muito mais. Diz-me o que queres fazer e indico-te a certa.',
+    about: 'O Gent Sallaku é um programador full-stack apaixonado por aplicações web modernas e rápidas. Este portfólio reúne o seu trabalho: os detalhes estão na secção **Sobre mim**.',
+  },
+  fr: {
+    greeting: "Bonjour ! Je suis l'assistant IA de ce portfolio. Je peux répondre aux questions sur les projets, les compétences et les outils gratuits du site. Qu'est-ce qui vous intéresse ?",
+    services: "Gent travaille actuellement comme salarié et n'accepte ni missions freelance ni nouveaux engagements via ce site. Vous pouvez découvrir ses **Projets** et les outils gratuits **AI & Tools**, ou utiliser la section **Contact** pour poser vos questions.",
+    contact: "Vous pouvez utiliser la section **Contact** du site : un formulaire permet d'écrire directement à Gent, et son numéro de téléphone s'y trouve aussi, pour l'appeler ou lui écrire sur WhatsApp. Préférez-vous lui parler en direct, maintenant ?",
+    projects: "Gent a réalisé plusieurs projets full-stack avec Angular, NestJS et MongoDB. Vous les trouverez dans la section **Projets**. Souhaitez-vous en savoir plus sur l'un d'eux ?",
+    skills: 'Gent est développeur full-stack : **Angular** pour le frontend, **NestJS** pour le backend, **MongoDB** pour les données et **TypeScript** partout. Il utilise aussi Docker et Railway pour les déploiements.',
+    blog: "Gent écrit sur le développement web, Angular, NestJS et l'ingénierie logicielle dans la section **Blog**. Jetez-y un œil pour des guides et des articles techniques !",
+    tools: "Dans le menu **AI & Tools**, vous trouverez des outils gratuits : signer, compresser et fusionner des PDF, convertir des photos HEIC en JPG, créer des QR codes et bien plus. Dites-moi ce que vous voulez faire et je vous indique le bon.",
+    about: "Gent Sallaku est un développeur full-stack passionné par les applications web modernes et performantes. Ce portfolio réunit ses réalisations : les détails sont dans la section **À propos**.",
+  },
+  de: {
+    greeting: 'Hallo! Ich bin der KI-Assistent dieses Portfolios. Ich kann Fragen zu Projekten, Fähigkeiten und den kostenlosen Tools der Website beantworten. Was interessiert dich?',
+    services: 'Gent arbeitet derzeit als Angestellter und nimmt über diese Website weder Freelance-Aufträge noch neue Projekte an. Du kannst seine **Projekte** und die kostenlosen **AI & Tools** ansehen oder den Bereich **Kontakt** für Fragen nutzen.',
+    contact: 'Nutze den Bereich **Kontakt** der Website: Dort gibt es ein Formular, um Gent direkt zu schreiben, und auch seine Telefonnummer, um ihn anzurufen oder ihm auf WhatsApp zu schreiben. Möchtest du jetzt lieber live mit ihm sprechen?',
+    projects: 'Gent hat mehrere Full-Stack-Projekte mit Angular, NestJS und MongoDB umgesetzt. Du findest sie im Bereich **Projekte**. Möchtest du mehr über eines davon erfahren?',
+    skills: 'Gent ist Full-Stack-Entwickler: **Angular** im Frontend, **NestJS** im Backend, **MongoDB** für die Daten und überall **TypeScript**. Außerdem nutzt er Docker und Railway für Deployments.',
+    blog: 'Gent schreibt im **Blog** über Webentwicklung, Angular, NestJS und Software-Engineering. Schau vorbei für Anleitungen und technische Artikel!',
+    tools: 'Im Menü **AI & Tools** findest du kostenlose Werkzeuge: PDFs signieren, komprimieren und zusammenfügen, HEIC-Fotos in JPG umwandeln, QR-Codes erstellen und mehr. Sag mir, was du vorhast, und ich nenne dir das passende.',
+    about: 'Gent Sallaku ist ein Full-Stack-Entwickler mit Leidenschaft für moderne, schnelle Webanwendungen. Dieses Portfolio zeigt seine Arbeit: Details findest du im Bereich **Über mich**.',
+  },
+  sq: {
+    greeting: 'Përshëndetje! Jam asistenti AI i këtij portofoli. Mund t’u përgjigjem pyetjeve për projektet, aftësitë dhe mjetet falas të faqes. Çfarë të intereson?',
+    services: 'Gent aktualisht punon si i punësuar dhe nuk pranon punë freelance apo angazhime të reja përmes kësaj faqeje. Mund të shohësh **Projektet** e tij dhe mjetet falas **AI & Tools**, ose të përdorësh seksionin **Kontakt** për pyetje.',
+    contact: 'Mund të përdorësh seksionin **Kontakt** të faqes: aty ka një formular për t’i shkruar drejtpërdrejt Gentit dhe edhe numrin e telefonit, për ta thirrur ose për t’i shkruar në WhatsApp. Preferon të flasësh me të drejtpërdrejt, tani?',
+    projects: 'Gent ka realizuar disa projekte full-stack me Angular, NestJS dhe MongoDB. I gjen te seksioni **Projektet**. Dëshiron të dish më shumë për ndonjërin?',
+    skills: 'Gent është zhvillues full-stack: **Angular** për frontend-in, **NestJS** për backend-in, **MongoDB** për të dhënat dhe **TypeScript** kudo. Përdor edhe Docker e Railway për publikimin.',
+    blog: 'Gent shkruan për zhvillimin e uebit, Angular, NestJS dhe inxhinierinë e softuerit te seksioni **Blog**. Hidhi një sy për udhëzues dhe artikuj teknikë!',
+    tools: 'Te menuja **AI & Tools** gjen mjete falas: nënshkrim, kompresim dhe bashkim PDF, konvertim i fotove HEIC në JPG, krijim kodesh QR e më shumë. Më thuaj çfarë dëshiron të bësh dhe të tregoj mjetin e duhur.',
+    about: 'Gent Sallaku është zhvillues full-stack i pasionuar pas aplikacioneve moderne dhe të shpejta të uebit. Ky portofol përmbledh punën e tij: detajet janë te seksioni **Rreth meje**.',
+  },
+};
+
+/** Lingua dell'interfaccia (es. "it", "pt-BR") ridotta a uno dei codici supportati. */
+function normalizeLang(lang?: string): string | undefined {
+  const code = (lang ?? '').toLowerCase().slice(0, 2);
+  return code === 'en' || TOPIC_RESPONSES[code] ? code : undefined;
 }
 
 /** Matches the visitor asking to contact Gent, in any of the site's supported languages — used to offer live chat from the static fallback replies. */
@@ -253,12 +345,43 @@ export class ChatbotService {
       .slice(-20) // last 20 messages for context window
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const { content: reply, suggestions, liveOffer, usedFallback } = await this.callAI(historyForAI);
+    const { content: reply, suggestions, liveOffer, usedFallback } = await this.callAI(historyForAI, lang);
 
     const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date(), usedFallback };
     session.messages.push(assistantMsg);
     session.lastActivity = new Date();
 
+    await session.save();
+
+    return { sessionId: sid, reply, timestamp: assistantMsg.timestamp, suggestions, liveOffer };
+  }
+
+  /**
+   * Stessa cosa di sendMessage, ma `onDelta` riceve il testo man mano che il modello lo scrive.
+   * Il risultato finale è identico a quello di sendMessage (testo pulito, suggerimenti, offerta live).
+   */
+  async sendMessageStream(
+    message: string,
+    sessionId: string | undefined,
+    _meta: { ip?: string; userAgent?: string } | undefined,
+    lang: string | undefined,
+    onDelta: (text: string) => void,
+  ): Promise<{ sessionId: string; reply: string; timestamp: Date; suggestions?: string[]; liveOffer?: boolean }> {
+    const sid = sessionId && sessionId.length > 0 ? sessionId : randomUUID();
+
+    let session = await this.chatSessionModel.findOne({ sessionId: sid }).exec();
+    if (!session) {
+      session = new this.chatSessionModel({ sessionId: sid, messages: [] });
+    }
+
+    session.messages.push({ role: 'user', content: message, timestamp: new Date() });
+    const historyForAI = session.messages.slice(-20).map((m) => ({ role: m.role, content: m.content }));
+
+    const { content: reply, suggestions, liveOffer, usedFallback } = await this.callAIStream(historyForAI, lang, onDelta);
+
+    const assistantMsg: ChatMessage = { role: 'assistant', content: reply, timestamp: new Date(), usedFallback };
+    session.messages.push(assistantMsg);
+    session.lastActivity = new Date();
     await session.save();
 
     return { sessionId: sid, reply, timestamp: assistantMsg.timestamp, suggestions, liveOffer };
@@ -392,32 +515,95 @@ export class ChatbotService {
     return { success: result.success };
   }
 
+  /** Tutti gli articoli pubblicati (titolo, slug, estratto, tag), in memoria per 10 minuti: servono alla ricerca del bot. */
+  private postsCache: { at: number; data: PromptPost[] } | null = null;
+
+  private async allPublishedPosts(): Promise<PromptPost[]> {
+    if (this.postsCache && Date.now() - this.postsCache.at < 10 * 60_000) return this.postsCache.data;
+    const data: PromptPost[] = [];
+    try {
+      for (let page = 1; page <= 6; page++) {
+        const res = await this.blogService.findPublished(undefined, page, 50);
+        data.push(...((res.data ?? []) as PromptPost[]));
+        if (!res.totalPages || page >= res.totalPages) break;
+      }
+    } catch (err) {
+      this.logger.warn('Blog posts unavailable for the chatbot prompt', err instanceof Error ? err.message : err);
+      return this.postsCache?.data ?? data;
+    }
+    this.postsCache = { at: Date.now(), data };
+    return data;
+  }
+
+  /** System prompt + conversazione, con gli strumenti e gli articoli più pertinenti all'ultimo messaggio. */
+  private async buildPromptMessages(messages: { role: string; content: string }[]): Promise<{ role: string; content: string }[]> {
+    const last = messages[messages.length - 1]?.content ?? '';
+    const [about, projects, posts] = await Promise.all([
+      this.aboutService.get().catch(() => null),
+      this.projectsService.findAll().catch(() => []) as Promise<PromptProject[]>,
+      this.allPublishedPosts(),
+    ]);
+    const system = buildSystemPrompt(about, projects, selectPostsForPrompt(posts, last), buildLabBlock(last));
+    return [{ role: 'system', content: system }, ...messages];
+  }
+
+  private readonly aiOptions = { model: 'openai/gpt-oss-120b', maxTokens: 900, timeoutMs: 20_000, source: 'chatbot' as const };
+
   // Provider attivo: Groq.
   private async callAI(
     messages: { role: string; content: string }[],
+    lang?: string,
   ): Promise<{ content: string; suggestions?: string[]; liveOffer?: boolean; usedFallback: boolean }> {
+    const last = messages[messages.length - 1].content;
     const apiKey = this.configService.get<string>('GROQ_API_KEY');
     // AI spenta dalla dashboard (interruttore d'emergenza): risposte predefinite.
     const aiEnabled = (await this.settings?.isEnabled('aiEnabled').catch(() => true)) ?? true;
     if (!apiKey || !aiEnabled) {
-      return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      return { ...this.getFallbackResponse(last, lang), usedFallback: true };
     }
 
     try {
-      const [about, projects, postsPage] = await Promise.all([
-        this.aboutService.get().catch(() => null),
-        this.projectsService.findAll().catch(() => []) as Promise<PromptProject[]>,
-        this.blogService.findPublished(undefined, 1, 8).catch(() => ({ data: [] as PromptPost[] })),
-      ]);
-      const raw = await this.aiProvider.chatCompletion(
-        [{ role: 'system', content: buildSystemPrompt(about, projects, postsPage.data) }, ...messages],
-        { model: 'openai/gpt-oss-120b', maxTokens: 900, timeoutMs: 20_000, source: 'chatbot' },
-      );
-      if (!raw) return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      const raw = await this.aiProvider.chatCompletion(await this.buildPromptMessages(messages), this.aiOptions);
+      if (!raw) return { ...this.getFallbackResponse(last, lang), usedFallback: true };
       return { ...parseAIReply(raw), usedFallback: false };
     } catch (err) {
       this.logger.warn('AI call failed, using fallback', err instanceof Error ? err.message : err);
-      return { ...this.getFallbackResponse(messages[messages.length - 1].content), usedFallback: true };
+      return { ...this.getFallbackResponse(last, lang), usedFallback: true };
+    }
+  }
+
+  /**
+   * Come callAI, ma il testo arriva a pezzi (`onDelta`) mentre il modello lo scrive. Le righe di servizio
+   * (LIVE_OFFER/SUGGESTIONS) non vengono mai inviate come testo: escono solo nel risultato finale.
+   * Se lo stream fallisce prima di mostrare qualcosa si ripiega sulla risposta predefinita; se fallisce a metà
+   * si tiene il testo già mostrato invece di cancellarlo.
+   */
+  private async callAIStream(
+    messages: { role: string; content: string }[],
+    lang: string | undefined,
+    onDelta: (text: string) => void,
+  ): Promise<{ content: string; suggestions?: string[]; liveOffer?: boolean; usedFallback: boolean }> {
+    const last = messages[messages.length - 1].content;
+    const apiKey = this.configService.get<string>('GROQ_API_KEY');
+    const aiEnabled = (await this.settings?.isEnabled('aiEnabled').catch(() => true)) ?? true;
+    if (!apiKey || !aiEnabled) {
+      return { ...this.getFallbackResponse(last, lang), usedFallback: true };
+    }
+
+    const filter = new StreamMarkerFilter();
+    let partial = '';
+    try {
+      const raw = await this.aiProvider.chatCompletionStream(await this.buildPromptMessages(messages), this.aiOptions, (text) => {
+        partial += text;
+        const visible = filter.push(text);
+        if (visible) onDelta(visible);
+      });
+      if (!raw) return { ...this.getFallbackResponse(last, lang), usedFallback: true };
+      return { ...parseAIReply(raw), usedFallback: false };
+    } catch (err) {
+      this.logger.warn('AI stream failed', err instanceof Error ? err.message : err);
+      if (partial.trim().length > 20) return { ...parseAIReply(partial), usedFallback: false };
+      return { ...this.getFallbackResponse(last, lang), usedFallback: true };
     }
   }
 
@@ -466,12 +652,15 @@ export class ChatbotService {
   //   }
   // }
 
-  private getFallbackResponse(userMessage: string): { content: string; liveOffer?: boolean } {
+  private getFallbackResponse(userMessage: string, uiLang?: string): { content: string; liveOffer?: boolean } {
     const liveOffer = CONTACT_INTENT_PATTERN.test(userMessage) || undefined;
 
-    const language = detectLanguage(userMessage);
-    if (language && DEFAULT_LOCALIZED_FALLBACKS[language]) {
-      return { content: DEFAULT_LOCALIZED_FALLBACKS[language], liveOffer };
+    // La lingua del messaggio ha la precedenza; se non si riconosce, quella dell'interfaccia del sito.
+    const language = detectLanguage(userMessage) ?? normalizeLang(uiLang);
+    if (language && language !== 'en' && TOPIC_RESPONSES[language]) {
+      const topic = TOPIC_PATTERNS.find((t) => t.pattern.test(userMessage))?.topic;
+      const content = topic ? TOPIC_RESPONSES[language][topic] : (DEFAULT_LOCALIZED_FALLBACKS[language] ?? DEFAULT_FALLBACK);
+      return { content, liveOffer };
     }
 
     for (const { pattern, response } of FALLBACK_RESPONSES) {

@@ -11,6 +11,7 @@
     "start:uat": "NODE_ENV=uat nest start",
     "start:debug": "nest start --debug --watch",
     "start:prod": "NODE_ENV=prod node dist/main",
+    "build:lab-catalog": "node scripts/build-lab-catalog.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:pdf": "NODE_OPTIONS='--experimental-vm-modules --max-old-space-size=4096' jest ai/ai\\.service\\.spec\\.ts$ --testPathIgnorePatterns=/node_modules/",
