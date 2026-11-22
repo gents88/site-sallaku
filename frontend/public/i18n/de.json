@@ -4093,6 +4093,7 @@
     "b_published": "veröffentlicht",
     "b_drafts": "Entwürfe",
     "b_today": "Besucher heute",
-    "b_clicks": "Klicks von Google"
+    "b_clicks": "Klicks von Google",
+    "total": "gesamt"
   }
 }
