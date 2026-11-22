@@ -374,6 +374,8 @@ $error-clr:     #f87171;
   &.source-gb:not(:has(img)) { background: linear-gradient(150deg, $accent-glow, var(--bg-tertiary, #0d1117)); }
   &.source-arxiv:not(:has(img)) { background: linear-gradient(150deg, rgba(248, 113, 113, 0.16), var(--bg-tertiary, #0d1117)); }
   &.source-pmc:not(:has(img)) { background: linear-gradient(150deg, rgba(251, 191, 36, 0.16), var(--bg-tertiary, #0d1117)); }
+  &.source-zenodo:not(:has(img)) { background: linear-gradient(150deg, rgba(56, 189, 248, 0.16), var(--bg-tertiary, #0d1117)); }
+  &.source-wm:not(:has(img)) { background: linear-gradient(150deg, rgba(244, 114, 182, 0.16), var(--bg-tertiary, #0d1117)); }
 }
 
 .hover-hint {
@@ -415,6 +417,8 @@ $error-clr:     #f87171;
   &.source-gb { background: $accent-glow; color: #34d399; }
   &.source-arxiv { background: rgba(248, 113, 113, 0.12); color: #f87171; }
   &.source-pmc { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
+  &.source-zenodo { background: rgba(56, 189, 248, 0.12); color: #38bdf8; }
+  &.source-wm { background: rgba(244, 114, 182, 0.12); color: #f472b6; }
 }
 
 .year-pill {
@@ -615,8 +619,8 @@ $error-clr:     #f87171;
 
 // ── RESPONSIVE ────────────────────────────────────────────────────────────────
 @media (max-width: 640px) {
-  // A tutto schermo davvero: sopra la tab bar mobile e i FAB (chat / torna su,
-  // z-index ~1500), che altrimenti coprivano barra pagine e bottoni d'azione.
+  // A tutto schermo davvero, ma con il minimo di "cornice": il documento è il
+  // protagonista, titolo e comandi si comprimono in barre sottili.
   // La bottom tab bar del sito vive in un altro stacking context e resta sopra la
   // modale: invece di combatterla, si lascia sotto di lei lo spazio che occupa.
   .modal-backdrop {
@@ -625,28 +629,44 @@ $error-clr:     #f87171;
   }
   .preview-modal { width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
   .preview-header, .canvas-page-nav, .preview-actions { flex-shrink: 0; }
-  .preview-header { padding-top: calc(12px + env(safe-area-inset-top)); }
-  .preview-close { width: 40px; height: 40px; font-size: 16px; }
 
-  // Barra pagine: controlli da 40px (tap target) e a capo invece che tagliati.
+  // Intestazione: una sola riga (titolo troncato + ✕), niente copertina né autore.
+  .preview-header {
+    align-items: center; padding: calc(6px + env(safe-area-inset-top)) 8px 6px 12px;
+    .preview-header-cover { display: none; }
+    h3 {
+      margin: 0; font-size: 13px; line-height: 1.3;
+      display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    p { display: none; }
+  }
+  .preview-close { width: 36px; height: 36px; font-size: 15px; }
+
+  // Il documento usa quasi tutta la larghezza.
+  .canvas-page-wrap { padding: 4px; }
+
+  // Barra pagine: una riga sola, controlli da 36px.
   .canvas-page-nav {
-    flex-wrap: wrap; gap: 8px 10px; padding: 8px 12px;
-    button { width: 40px; height: 40px; }
-    .zoom-group { margin-left: 0; button { width: 40px; height: 40px; } }
-    .page-jump input { width: 56px; height: 40px; font-size: 16px; } // 16px evita lo zoom automatico di iOS
+    flex-wrap: nowrap; gap: 4px; padding: 4px 8px; justify-content: space-between; font-size: 12px;
+    button { width: 36px; height: 36px; }
+    .zoom-group { margin-left: 0; gap: 4px; button { width: 36px; height: 36px; } }
+    .zoom-level { min-width: 36px; }
+    .page-jump { gap: 4px; input { width: 46px; height: 36px; font-size: 16px; } } // 16px evita lo zoom automatico di iOS
   }
 
-  // Azioni compatte: Scarica a tutta larghezza, le altre in griglia 2x2.
+  // Azioni: una riga di 4 bottoni solo-icona (etichette nascoste, restano per gli screen reader).
   .preview-actions {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    padding: 8px 12px; gap: 6px; align-items: stretch; grid-auto-rows: min-content; align-content: start;
-    .btn-download { grid-column: 1 / -1; }
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 6px; align-items: stretch;
+    padding: 6px 8px; flex-wrap: nowrap;
     .btn-download, .btn-source, .btn-workspace, .btn-library {
-      box-sizing: border-box; width: auto; padding: 8px; font-size: 12.5px; line-height: 1.2; min-height: 42px; height: auto;
-      display: flex; align-items: center; justify-content: center;
+      box-sizing: border-box; width: auto; min-width: 0; height: 42px; min-height: 42px; padding: 0 6px;
+      font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
     }
-    // "Vedi pagina sorgente" è secondario: riga intera ma bassa, invece di un quarto bottone orfano.
-    .btn-source { grid-column: 1 / -1; min-height: 36px; padding: 6px 8px; font-size: 12px; border-color: transparent; color: var(--text-secondary, #8b949e); }
+    .btn-ico { font-size: 18px; }
+    // Il download mantiene l'etichetta (azione principale), gli altri solo l'icona.
+    .btn-library .btn-label, .btn-workspace .btn-label, .btn-source .btn-label {
+      position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+    }
   }
 
   // The compact variant (no iframe) keeps its own auto-height + rounded

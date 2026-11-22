@@ -12,7 +12,7 @@ import { isPlatformBrowser } from '@angular/common';
  * l'utente tra dispositivi — accettato consapevolmente.
  */
 
-export type LibrarySource = 'internet_archive' | 'gutenberg' | 'arxiv' | 'pmc' | 'upload';
+export type LibrarySource = 'internet_archive' | 'gutenberg' | 'arxiv' | 'pmc' | 'zenodo' | 'wikimedia' | 'upload';
 
 export interface LibraryDoc {
   id: string;

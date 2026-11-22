@@ -6,10 +6,12 @@ import { InternetArchiveProvider } from './providers/internet-archive.provider';
 import { GutenbergProvider } from './providers/gutenberg.provider';
 import { ArxivProvider } from './providers/arxiv.provider';
 import { PmcProvider } from './providers/pmc.provider';
+import { ZenodoProvider } from './providers/zenodo.provider';
+import { WikimediaProvider } from './providers/wikimedia.provider';
 
 @Module({
   imports: [ConversionModule],
   controllers: [PdfSearchController],
-  providers: [PdfSearchService, InternetArchiveProvider, GutenbergProvider, ArxivProvider, PmcProvider],
+  providers: [PdfSearchService, InternetArchiveProvider, GutenbergProvider, ArxivProvider, PmcProvider, ZenodoProvider, WikimediaProvider],
 })
 export class PdfSearchModule {}
