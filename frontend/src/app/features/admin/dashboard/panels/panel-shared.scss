@@ -246,3 +246,16 @@
   .panel-switch::after,
   .panel-meter__fill { transition: none; }
 }
+
+// Distanze che prima erano stili inline nei template dei pannelli.
+.panel-sub--spaced {
+  margin-top: 0.75rem;
+}
+
+.panel-badge--spaced {
+  margin-left: 0.4rem;
+}
+
+.panel-kpis--spaced {
+  margin-top: 1rem;
+}

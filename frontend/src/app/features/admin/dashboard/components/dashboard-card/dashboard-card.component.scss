@@ -1,0 +1,64 @@
+:host {
+  display: block;
+  /* Elemento di una griglia con tracce 1fr: senza min-width il minimo è la
+     larghezza del contenuto e la card sborda dallo schermo. */
+  min-width: 0;
+}
+
+:host(.dashboard-card--wide) {
+  grid-column: 1 / -1;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.analytics-card {
+  padding: 1.35rem;
+  /* Elemento di una griglia con tracce 1fr: senza questo il minimo automatico è la larghezza del
+     contenuto (un titolo senza a capo di 660px) e la card sborda dallo schermo. */
+  min-width: 0;
+}
+
+.analytics-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  h2 {
+    font-size: 1.05rem;
+    margin: 0 0 0.2rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+
+  mat-icon {
+    color: var(--color-primary, #6366f1);
+  }
+}
+
+.analytics-card__heading {
+  min-width: 0;
+}
+
+.analytics-card__aside {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analytics-card__period {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+}

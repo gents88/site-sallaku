@@ -1,0 +1,241 @@
+@let s = stats();
+<h2 class="section-label"><mat-icon>people</mat-icon>{{ 'admin.visitor_analytics' | translate }}</h2>
+
+<div class="analytics-grid adv-top-grid">
+  <app-dashboard-card titleKey="admin.monthly_vs_total_views" descKey="admin.monthly_views_desc" icon="calendar_month" periodKey="dashboard_ux.period_month_total">
+    <div class="visitor-overview">
+      <div class="visitor-overview__item">
+        <strong>{{ s.totalViews }}</strong>
+        <span class="text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
+      </div>
+      <div class="visitor-overview__item visitor-overview__item--accent">
+        <strong>{{ s.monthlyViews }}</strong>
+        <span class="text-muted">{{ 'admin.monthly_views_this_month' | translate }}</span>
+      </div>
+      @if (s.lastResetAt) {
+        <div class="visitor-overview__item">
+          <strong class="visitor-overview__small">{{ s.lastResetAt | date: 'dd/MM/yy' }}</strong>
+          <span class="text-muted">{{ 'admin.last_reset' | translate }}</span>
+        </div>
+      }
+    </div>
+    <button type="button" class="reset-stats-btn" [disabled]="resetting()" (click)="resetMonthly.emit()">
+      <mat-icon [class.spin]="resetting()">{{ resetting() ? 'sync' : 'restart_alt' }}</mat-icon>
+      {{ resetting() ? ('common.loading' | translate) : ('admin.reset_monthly_stats' | translate) }}
+    </button>
+    <button type="button" class="reset-stats-btn reset-stats-btn--csv" (click)="downloadCsv.emit()">
+      <mat-icon>download</mat-icon>
+      {{ 'admin.export_csv' | translate }}
+    </button>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.device_breakdown" descKey="admin.device_breakdown_desc" icon="devices" periodKey="dashboard_ux.period_month_total">
+    <p class="stats-sublabel text-muted">{{ 'admin.monthly_views_this_month' | translate }}</p>
+    <app-donut-chart [items]="s.statsMonthlyDevices" [colors]="deviceColors" />
+    <div class="stats-totals">
+      <span class="stats-totals__label text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
+      <div class="stats-totals__row">
+        @for (item of s.statsDevices; track item.label) {
+          <span class="stats-totals__item">
+            <strong>{{ item.count }}</strong>
+            <span class="text-muted">{{ item.label }}</span>
+          </span>
+        } @empty {
+          <span class="text-muted">—</span>
+        }
+      </div>
+    </div>
+  </app-dashboard-card>
+</div>
+
+<div class="analytics-grid adv-bottom-grid">
+  <app-dashboard-card titleKey="dashboard_ux.countries_month_total" descKey="dashboard_ux.countries_month_total_desc" icon="location_on" periodKey="dashboard_ux.period_month_total">
+    <p class="stats-sublabel text-muted">{{ 'admin.monthly_views_this_month' | translate }}</p>
+    <div class="h-bars">
+      @for (item of s.statsMonthlyLocations; track item.label; let i = $index) {
+        <div class="h-bar-row">
+          <span class="h-bar-label text-muted">{{ item.label }}</span>
+          <div class="h-bar-track">
+            <div class="h-bar-fill h-bar-fill--month" [style.width.%]="bar(item.count, s.statsMonthlyLocations)" [style.background]="seriesColors[i % seriesColors.length]"></div>
+          </div>
+          <span class="h-bar-count">{{ item.count }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">—</p>
+      }
+    </div>
+    <div class="stats-totals stats-totals--locations">
+      <span class="stats-totals__label text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
+      @for (item of s.statsLocations; track item.label; let i = $index) {
+        <div class="stats-totals__loc-row">
+          <span class="stats-totals__loc-dot" [style.background]="seriesColors[i % seriesColors.length]"></span>
+          <span class="text-muted">{{ item.label }}</span>
+          <strong class="stats-totals__loc-count">{{ item.count }}</strong>
+        </div>
+      } @empty {
+        <span class="text-muted">—</span>
+      }
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.os_breakdown" descKey="admin.os_breakdown_desc" icon="computer" periodKey="dashboard_ux.period_all_time">
+    <app-donut-chart [items]="s.osBreakdown" [colors]="browserColors" />
+  </app-dashboard-card>
+</div>
+
+<div class="analytics-grid adv-top-grid">
+  <app-dashboard-card titleKey="admin.visitor_overview" descKey="admin.visitor_overview_desc" icon="people">
+    <div class="visitor-overview">
+      <div class="visitor-overview__item">
+        <strong>{{ s.todayVisitors }}</strong>
+        <span class="text-muted">{{ 'admin.today_visitors' | translate }}</span>
+      </div>
+      <div class="visitor-overview__item">
+        <strong>{{ s.totalViews }}</strong>
+        <span class="text-muted">{{ 'admin.visits' | translate }}</span>
+      </div>
+      <div class="visitor-overview__item">
+        <strong>{{ s.uniqueVisitors }}</strong>
+        <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
+      </div>
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.traffic_sources" descKey="admin.traffic_sources_desc" icon="alt_route" periodKey="dashboard_ux.period_all_time">
+    <app-donut-chart [items]="s.trafficSources" [colors]="trafficColors" />
+  </app-dashboard-card>
+</div>
+
+<div class="analytics-grid adv-bottom-grid">
+  <app-dashboard-card titleKey="dashboard_ux.cities_title" descKey="dashboard_ux.cities_desc" icon="location_on" periodKey="dashboard_ux.period_all_time">
+    <div class="h-bars h-bars--locations">
+      @for (item of s.topLocations; track item.label; let i = $index) {
+        <div class="h-bar-row h-bar-row--locations">
+          <span class="h-bar-label text-muted">{{ item.label }}</span>
+          <div class="h-bar-track">
+            <div class="h-bar-fill h-bar-fill--location" [style.width.%]="bar(item.count, s.topLocations)" [style.background]="seriesColors[i % seriesColors.length]"></div>
+          </div>
+          <span class="h-bar-count">{{ item.count }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">—</p>
+      }
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.top_countries" descKey="admin.top_countries_desc" icon="public" periodKey="dashboard_ux.period_all_time">
+    <div class="h-bars">
+      @for (item of s.topCountries; track item.label; let i = $index) {
+        <div class="h-bar-row">
+          <span class="h-bar-label text-muted">{{ item.label }}</span>
+          <div class="h-bar-track">
+            <div class="h-bar-fill" [style.width.%]="bar(item.count, s.topCountries)" [style.background]="seriesColors[i % seriesColors.length]"></div>
+          </div>
+          <span class="h-bar-count">{{ item.count }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">—</p>
+      }
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.browser_breakdown" descKey="admin.browser_breakdown_desc" icon="web" periodKey="dashboard_ux.period_all_time">
+    <div class="h-bars">
+      @for (item of s.browserBreakdown; track item.label; let i = $index) {
+        <div class="h-bar-row">
+          <span class="h-bar-label text-muted">{{ item.label }}</span>
+          <div class="h-bar-track">
+            <div class="h-bar-fill h-bar-fill--browser" [style.width.%]="bar(item.count, s.browserBreakdown)" [style.background]="browserColors[i % browserColors.length]"></div>
+          </div>
+          <span class="h-bar-count">{{ item.count }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">—</p>
+      }
+    </div>
+  </app-dashboard-card>
+</div>
+
+<div class="analytics-grid adv-bottom-grid">
+  <app-dashboard-card titleKey="admin.monthly_trend" descKey="admin.monthly_trend_desc" icon="bar_chart" periodKey="dashboard_ux.period_months">
+    <div class="h-bars">
+      @for (entry of s.trend; track entry.month; let last = $last) {
+        <div class="h-bar-row">
+          <span class="h-bar-label text-muted">{{ entry.month }}</span>
+          <div class="h-bar-track">
+            <div class="h-bar-fill" [class.h-bar-fill--month]="last" [class.h-bar-fill--current]="last" [class.h-bar-fill--past]="!last" [style.width.%]="trendBar(entry.views)"></div>
+          </div>
+          <span class="h-bar-count">{{ entry.views }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">—</p>
+      }
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.chatbot_stats" descKey="admin.chatbot_stats_desc" icon="smart_toy">
+    <div class="visitor-overview">
+      <div class="visitor-overview__item visitor-overview__item--accent">
+        <strong>{{ s.chatbotStats.totalSessions }}</strong>
+        <span class="text-muted">{{ 'admin.chatbot_total_sessions' | translate }}</span>
+      </div>
+      <div class="visitor-overview__item">
+        <strong>{{ s.chatbotStats.totalMessages }}</strong>
+        <span class="text-muted">{{ 'admin.chatbot_total_messages' | translate }}</span>
+      </div>
+      <div class="visitor-overview__item">
+        <strong>{{ s.chatbotStats.interactionsToday }}</strong>
+        <span class="text-muted">{{ 'admin.chatbot_today' | translate }}</span>
+      </div>
+    </div>
+    <div class="visitor-overview visitor-overview--spaced">
+      <div class="visitor-overview__item">
+        <strong>{{ s.chatbotStats.sessionsThisMonth }}</strong>
+        <span class="text-muted">{{ 'admin.chatbot_this_month' | translate }}</span>
+      </div>
+      <div class="visitor-overview__item" [class.visitor-overview__item--warn]="s.chatbotStats.fallbackRepliesToday > 0" [title]="'admin.chatbot_fallback_desc' | translate">
+        <strong>{{ s.chatbotStats.fallbackRepliesToday }}</strong>
+        <span class="text-muted">{{ 'admin.chatbot_fallback_today' | translate }}</span>
+      </div>
+    </div>
+  </app-dashboard-card>
+</div>
+
+<div class="analytics-grid adv-bottom-grid">
+  <app-dashboard-card titleKey="admin.top_pages" descKey="admin.top_pages_desc" icon="pages" periodKey="dashboard_ux.period_all_time" [wide]="true">
+    <div class="h-bars">
+      @for (page of s.topPages; track page.label; let i = $index) {
+        <div class="h-bar-row h-bar-row--wide">
+          <span class="h-bar-label h-bar-label--mono text-muted">{{ page.label }}</span>
+          <div class="h-bar-track">
+            <div class="h-bar-fill" [style.width.%]="bar(page.count, s.topPages, 4)" [style.background]="seriesColors[i % seriesColors.length]"></div>
+          </div>
+          <span class="h-bar-count">{{ page.count }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">—</p>
+      }
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.tool_conversion" descKey="admin.tool_conversion_desc" icon="trending_up" periodKey="dashboard_ux.period_30d" [wide]="true">
+    <div class="h-bars">
+      <div class="tool-conv-row tool-conv-row--head text-muted">
+        <span>{{ 'admin.tool_conversion_col_tool' | translate }}</span>
+        <span>{{ 'admin.tool_conversion_col_visitors' | translate }}</span>
+        <span>{{ 'admin.tool_conversion_col_leads' | translate }}</span>
+        <span>{{ 'admin.tool_conversion_col_rate' | translate }}</span>
+      </div>
+      @for (row of s.toolConversion; track row.tool) {
+        <div class="tool-conv-row">
+          <span class="h-bar-label h-bar-label--mono">{{ row.tool }}</span>
+          <span>{{ row.uniqueVisitors }}</span>
+          <span>{{ row.becameLead }}</span>
+          <span class="tool-conv-rate">{{ row.conversionRate }}%</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">—</p>
+      }
+    </div>
+  </app-dashboard-card>
+</div>

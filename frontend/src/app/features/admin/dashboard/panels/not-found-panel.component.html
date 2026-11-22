@@ -1,0 +1,34 @@
+@if (failed) {
+  <p class="panel-error" role="alert">{{ 'admin.overview_partial_error' | translate }}</p>
+} @else {
+  <div class="panel-kpis">
+    <div class="panel-kpi" [class.panel-kpi--warn]="data.open > 0" [class.panel-kpi--ok]="data.open === 0">
+      <strong>{{ data.open }}</strong>
+      <span>{{ 'not_found.open' | translate }}</span>
+    </div>
+  </div>
+  @if (data.top.length) {
+    <ul class="panel-list">
+      @for (hit of data.top; track hit._id) {
+        <li>
+          <span class="panel-list__main nf-row">
+            <span class="panel-mono panel-ellipsis" [title]="hit.path">{{ hit.path }}</span>
+            <span class="panel-sub panel-ellipsis">
+              {{ 'not_found.kind_' + hit.kind | translate }} · {{ hit.lastSeenAt | date: 'dd/MM HH:mm' }}
+              @if (hit.lastReferrer) { · {{ 'not_found.from' | translate }} {{ hit.lastReferrer }} }
+            </span>
+          </span>
+          <span class="nf-actions">
+            <strong>×{{ hit.count }}</strong>
+            <button type="button" class="panel-btn" (click)="dismiss(hit._id)" [disabled]="busy()">{{ 'not_found.dismiss' | translate }}</button>
+          </span>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="panel-empty">{{ 'not_found.none' | translate }}</p>
+  }
+  @if (error()) {
+    <p class="panel-error" role="alert">{{ 'feature_flags.save_error' | translate }}</p>
+  }
+}

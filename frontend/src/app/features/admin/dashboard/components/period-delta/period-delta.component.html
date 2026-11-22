@@ -1,0 +1,14 @@
+@let d = delta();
+<span
+  class="delta"
+  [class.delta--up]="d.direction === 'up'"
+  [class.delta--down]="d.direction === 'down'"
+  [title]="'dashboard_ux.previous_value' | translate: { value: previous() }"
+>
+  @if (d.pct === null) {
+    {{ d.direction === 'flat' ? '=' : ('dashboard_ux.new_vs_previous' | translate) }}
+  } @else {
+    {{ d.pct > 0 ? '+' : '' }}{{ d.pct }}%
+  }
+  <span class="delta__period">{{ 'dashboard_ux.vs_previous_days' | translate: { days: days() } }}</span>
+</span>

@@ -1,20 +1,21 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild, inject, viewChild } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
-import { DonutChartComponent, DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
 import {
   AdminDashboardService,
   DashboardOverview,
+  DashboardOverviewData,
+  LIVE_SECTIONS,
   OverviewSection,
+  PartialOverview,
   TopPost,
   TopPage,
   MonthlyHistoryEntry,
@@ -24,7 +25,6 @@ import {
   SystemHealth,
   SystemDetails,
   OperationsInfo,
-  ChatbotSession,
   RecentContact,
   LiveHandoffSession,
   ToolConversionRow,
@@ -37,17 +37,17 @@ import {
   NotFoundSummary,
   SecuritySummary,
 } from './admin-dashboard.service';
-import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
-import { FeatureFlagsPanelComponent } from './panels/feature-flags-panel.component';
-import { AiUsagePanelComponent } from './panels/ai-usage-panel.component';
-import { ServerErrorsPanelComponent } from './panels/server-errors-panel.component';
-import { ServerHealthPanelComponent } from './panels/server-health-panel.component';
-import { TranslationHealthPanelComponent } from './panels/translation-health-panel.component';
-import { ScheduledPostsPanelComponent } from './panels/scheduled-posts-panel.component';
+import { DASHBOARD_POLL_MS, failedSectionLabels, needsFullRefresh, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
+import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
 import { LeadsPanelComponent } from './panels/leads-panel.component';
-import { NotFoundPanelComponent } from './panels/not-found-panel.component';
-import { SecurityPanelComponent } from './panels/security-panel.component';
-import { AcquisitionPanelComponent } from './panels/acquisition-panel.component';
+import { OpsSectionComponent } from './sections/ops-section/ops-section.component';
+import { ContentSectionComponent } from './sections/content-section/content-section.component';
+import { ActivitySectionComponent, ConsentRates, DayBar } from './sections/activity-section/activity-section.component';
+import { VisitorStats, VisitorsSectionComponent } from './sections/visitors-section/visitors-section.component';
+import { AcquisitionSectionComponent } from './sections/acquisition-section/acquisition-section.component';
+import { SeoSectionComponent } from './sections/seo-section/seo-section.component';
+import { UtilitySectionComponent } from './sections/utility-section/utility-section.component';
+import { ChatSessionsSectionComponent } from './sections/chat-sessions-section/chat-sessions-section.component';
 import {
   activeLiveHandoffs,
   waitingLiveHandoffs,
@@ -68,15 +68,30 @@ interface StatCard {
   query?: Record<string, string>;
 }
 
-interface ChartBar {
-  date: string;
-  value: number;
+/** Voce dell'indice in cima alla dashboard: porta alla sezione con quell'id. */
+export interface DashboardNavItem {
+  id: string;
+  labelKey: string;
 }
 
+/**
+ * Dashboard admin. Questo componente carica i dati (GET /stats/overview) e
+ * gestisce i messaggi; le sezioni (sections/*) li mostrano e quelle sotto la
+ * piega si caricano solo quando ci si arriva (@defer on viewport).
+ *
+ * Polling: ogni DASHBOARD_POLL_MS solo le sezioni vive (LIVE_SECTIONS: chat
+ * live, contatori, errori…), ogni DASHBOARD_FULL_REFRESH_MS tutto. Il pulsante
+ * "Aggiorna" ricarica sempre tutto saltando la cache del server.
+ */
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, MatCardModule, MatIconModule, MatButtonModule, MatExpansionModule, TranslateModule, DonutChartComponent, ConfirmDialogComponent, FeatureFlagsPanelComponent, AiUsagePanelComponent, ServerErrorsPanelComponent, ServerHealthPanelComponent, TranslationHealthPanelComponent, ScheduledPostsPanelComponent, LeadsPanelComponent, NotFoundPanelComponent, SecurityPanelComponent, AcquisitionPanelComponent],
+  imports: [
+    CommonModule, RouterLink, FormsModule, MatButtonModule, MatIconModule, TranslateModule, ConfirmDialogComponent,
+    DashboardCardComponent, LeadsPanelComponent,
+    OpsSectionComponent, ContentSectionComponent, ActivitySectionComponent, VisitorsSectionComponent,
+    AcquisitionSectionComponent, SeoSectionComponent, UtilitySectionComponent, ChatSessionsSectionComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,8 +101,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /** Chat live aperte o in attesa — permette di rientrare in una sessione lasciata a metà. */
   liveHandoffs: LiveHandoffSession[] = [];
   recentContacts: RecentContact[] = [];
-  contactBars: ChartBar[] = [];
-  visitBars: ChartBar[] = [];
+  contactBars: DayBar[] = [];
+  visitBars: DayBar[] = [];
   publishedPosts = 0;
   draftPosts = 0;
   totalViews = 0;
@@ -116,24 +131,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     onConfirm: (() => void) | null;
   } = { visible: false, messageKey: '', messageParams: {}, onConfirm: null };
 
-  // Advanced analytics
+  // Statistiche visitatori (dalle visite registrate)
   topLocations: DonutItem[] = [];
   topCountries: DonutItem[] = [];
-  deviceBreakdown: DonutItem[] = [];
   browserBreakdown: DonutItem[] = [];
   osBreakdown: DonutItem[] = [];
   trafficSources: DonutItem[] = [];
 
-  // Pre-aggregated monthly + total stats
+  // Contatori pre-aggregati del mese e complessivi
   monthlyViews = 0;
-  // Consent stats
-  consentTotal = 0;
-  consentAnalytics = 0;
-  consentMarketing = 0;
-  consentPreferences = 0;
-  consentAnalyticsRate = 0;
-  consentMarketingRate = 0;
-  consentPreferencesRate = 0;
+  consent: ConsentRates = { total: 0, analyticsRate: 0, marketingRate: 0, preferencesRate: 0 };
   statsLocations: DonutItem[] = [];
   statsMonthlyLocations: DonutItem[] = [];
   statsDevices: DonutItem[] = [];
@@ -141,7 +148,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   lastResetAt: string | null = null;
   resettingStats = false;
 
-  // Additional dashboard sections
   topPages: TopPage[] = [];
   toolConversion: ToolConversionRow[] = [];
   monthlyHistory: MonthlyHistoryEntry[] = [];
@@ -158,22 +164,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   leads!: LeadStats;
   notFound: NotFoundSummary = { open: 0, top: [] };
   security: SecuritySummary = { failedLogins24h: 0, otpFailed24h: 0, tokenReuse: 0, activeSessions: 0, suspiciousIps: [], sessions: [], events: [] };
-  totalContacts = 0;
 
-  // Google Search Console
   gscSummary: SearchConsoleSummary = {
     configured: false, clicks: 0, impressions: 0, avgCtr: 0, avgPosition: 0, topQueries: [], topPages: [],
   };
 
-  // Chat session viewer
-  todaySessions: ChatbotSession[] = [];
-  todaySessionsTotal = 0;
-  todaySessionsTotalPages = 1;
-  todaySessionsPage = 1;
-  expandedSessionId: string | null = null;
-  loadingTodaySessions = false;
+  /** Tutto ciò che mostra la sezione Visitatori, ricostruito a ogni aggiornamento. */
+  visitorStats!: VisitorStats;
 
   lastLoadedAt: Date | null = null;
+  /** Ultimo caricamento completo (tutte le sezioni): il polling leggero lo rinnova ogni DASHBOARD_FULL_REFRESH_MS. */
+  private lastFullAt: Date | null = null;
+  /** Dati dell'ultimo snapshot, su cui si fondono gli aggiornamenti parziali. */
+  private lastData: DashboardOverviewData | null = null;
   /** Sezioni che il server non è riuscito a caricare nell'ultimo snapshot. */
   failedSections: ReadonlySet<OverviewSection> = new Set();
   /** L'intera richiesta è fallita (rete, 401, 5xx): si tengono i dati precedenti e lo si dice. */
@@ -182,21 +185,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   refreshing = false;
   private readonly document = inject(DOCUMENT);
   private readonly onVisibilityChange = () => {
-    if (shouldRefreshOnVisible(this.document.hidden, this.lastLoadedAt)) this.loadData();
+    if (shouldRefreshOnVisible(this.document.hidden, this.lastLoadedAt)) this.poll();
   };
   private dataSubscription: Subscription | null = null;
   private refreshInterval: ReturnType<typeof setInterval> | null = null;
+
+  private readonly acquisitionSection = viewChild(AcquisitionSectionComponent);
+  private readonly chatSessions = viewChild(ChatSessionsSectionComponent);
 
   // Reply form
   showReplyForm = false;
   replyText = '';
   sendingReply = false;
   replyResult: 'success' | 'error' | null = null;
-
-  readonly trafficColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444'];
-  readonly deviceColors  = ['#06b6d4', '#ec4899', '#10b981'];
-  readonly browserColors = ['#f59e0b', '#6366f1', '#ef4444', '#14b8a6', '#8b5cf6', '#06b6d4', '#10b981', '#ec4899'];
-  readonly countryColors = ['#6366f1', '#14b8a6', '#f59e0b', '#ef4444', '#06b6d4', '#10b981', '#ec4899', '#8b5cf6', '#0ea5e9', '#a78bfa'];
 
   readonly quickLinks = [
     { labelKey: 'admin.manage_projects',    icon: 'work',       route: '/dashboard/projects' },
@@ -217,7 +218,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // In una scheda nascosta non si interroga il server: al ritorno si
     // aggiorna subito se lo snapshot è più vecchio del polling.
     this.refreshInterval = setInterval(() => {
-      if (!this.document.hidden) this.loadData();
+      if (!this.document.hidden) this.poll();
     }, DASHBOARD_POLL_MS);
     this.document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
@@ -229,6 +230,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
       clearInterval(this.refreshInterval);
       this.refreshInterval = null;
     }
+  }
+
+  /** Indice delle sezioni: la SEO compare solo se Search Console è configurato, i messaggi solo se ce ne sono. */
+  get navItems(): DashboardNavItem[] {
+    return [
+      { id: 'dash-overview', labelKey: 'dashboard_ux.nav_overview' },
+      { id: 'dash-ops', labelKey: 'dashboard_ux.nav_ops' },
+      { id: 'dash-content', labelKey: 'dashboard_ux.nav_content' },
+      { id: 'dash-activity', labelKey: 'dashboard_ux.nav_activity' },
+      { id: 'dash-visitors', labelKey: 'dashboard_ux.nav_visitors' },
+      { id: 'dash-acquisition', labelKey: 'dashboard_ux.nav_acquisition' },
+      ...(this.gscSummary.configured ? [{ id: 'dash-seo', labelKey: 'dashboard_ux.nav_seo' }] : []),
+      { id: 'dash-utility', labelKey: 'dashboard_ux.nav_utility' },
+      { id: 'dash-chat', labelKey: 'dashboard_ux.nav_chat' },
+      ...(this.recentContacts.length ? [{ id: 'dash-messages', labelKey: 'dashboard_ux.nav_messages' }] : []),
+    ];
+  }
+
+  scrollTo(id: string): void {
+    this.document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   /** Pulsante "Aggiorna": salta la cache di 30s del server. */
@@ -244,17 +265,53 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return failedSectionLabels(this.failedSections);
   }
 
+  /** Giro di polling: tutto ogni DASHBOARD_FULL_REFRESH_MS, altrimenti solo le sezioni vive. */
+  poll(): void {
+    if (needsFullRefresh(this.lastFullAt) || !this.lastData) {
+      this.loadData();
+    } else {
+      this.loadLive();
+    }
+  }
+
   loadData(fresh = false): void {
     this.refreshing = !this.loading;
     this.dataSubscription?.unsubscribe();
     this.dataSubscription = this.adminDashboard.loadOverview(fresh).subscribe({
-      next: (overview) => this.applyOverview(overview),
-      error: () => {
-        this.loadFailed = true;
-        this.loading = false;
-        this.refreshing = false;
-        this.cdr.markForCheck();
+      next: (overview) => {
+        this.lastFullAt = new Date();
+        // I pannelli Provenienza e Contatti caricano da soli: al giro completo si aggiornano anche loro.
+        if (this.lastData) this.acquisitionSection()?.reload();
+        this.applyOverview(overview);
       },
+      error: () => this.onLoadError(),
+    });
+  }
+
+  /** Solo le sezioni vive, fuse con lo snapshot in pagina. */
+  private loadLive(): void {
+    this.dataSubscription?.unsubscribe();
+    this.dataSubscription = this.adminDashboard.loadSections(LIVE_SECTIONS).subscribe({
+      next: (partial) => this.applyPartial(partial),
+      error: () => this.onLoadError(),
+    });
+  }
+
+  private onLoadError(): void {
+    this.loadFailed = true;
+    this.loading = false;
+    this.refreshing = false;
+    this.cdr.markForCheck();
+  }
+
+  private applyPartial(partial: PartialOverview): void {
+    if (!this.lastData) return;
+    const failed = new Set([...this.failedSections].filter(k => !partial.requested.has(k)));
+    partial.failed.forEach(k => failed.add(k));
+    this.applyOverview({
+      data: { ...this.lastData, ...partial.data },
+      failed,
+      generatedAt: new Date().toISOString(),
     });
   }
 
@@ -263,11 +320,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const coreFailed = failed.has('core');
     const coreValue = (v: number) => (coreFailed ? null : v);
 
+    this.lastData = data;
     this.failedSections = failed;
     this.loadFailed = false;
     this.liveHandoffs = data.liveHandoffs;
     this.toolConversion = data.toolConversion;
-
     this.stats = [
       { labelKey: 'admin.projects',    value: failed.has('projectsCount') ? null : data.projectsCount,       icon: 'work',                   route: '/dashboard/projects',    color: '#6366f1', spark: null },
       { labelKey: 'admin.experiences', value: failed.has('experiencesCount') ? null : data.experiencesCount, icon: 'history_edu',            route: '/dashboard/experiences', color: '#06b6d4', spark: null },
@@ -288,7 +345,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.draftPosts = adminStats.content.drafts;
     this.totalViews = adminStats.visits.totalViews;
     this.uniqueVisitors = adminStats.visits.uniqueVisitors;
-    this.totalContacts = adminStats.contacts;
 
     // Già ordinati e limitati lato server (prima si scaricavano tutti i post).
     this.topPosts = data.topPosts;
@@ -297,7 +353,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.todayVisitors = advanced.todayCount;
     this.topLocations = advanced.topLocations;
     this.topCountries = advanced.topCountries;
-    this.deviceBreakdown = advanced.deviceBreakdown;
     this.browserBreakdown = advanced.browserBreakdown;
     this.osBreakdown = advanced.osBreakdown;
     this.trafficSources = advanced.trafficSources;
@@ -327,18 +382,48 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.security = data.security;
     this.gscSummary = data.gsc;
 
-    this.consentTotal = consentStats.total;
-    this.consentAnalytics = consentStats.analytics;
-    this.consentMarketing = consentStats.marketing;
-    this.consentPreferences = consentStats.preferences;
-    this.consentAnalyticsRate = consentStats.analyticsRate;
-    this.consentMarketingRate = consentStats.marketingRate;
-    this.consentPreferencesRate = consentStats.preferencesRate;
+    this.consent = {
+      total: consentStats.total,
+      analyticsRate: consentStats.analyticsRate,
+      marketingRate: consentStats.marketingRate,
+      preferencesRate: consentStats.preferencesRate,
+    };
+    this.visitorStats = this.buildVisitorStats();
 
     this.lastLoadedAt = new Date();
     this.loading = false;
     this.refreshing = false;
     this.cdr.markForCheck();
+  }
+
+  /** Mesi passati + mese corrente, per l'andamento mensile. */
+  private get trendData(): MonthlyHistoryEntry[] {
+    const n = new Date();
+    const current = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
+    return [...this.monthlyHistory, { month: current, views: this.monthlyViews }];
+  }
+
+  private buildVisitorStats(): VisitorStats {
+    return {
+      totalViews: this.totalViews,
+      monthlyViews: this.monthlyViews,
+      lastResetAt: this.lastResetAt,
+      todayVisitors: this.todayVisitors,
+      uniqueVisitors: this.uniqueVisitors,
+      statsLocations: this.statsLocations,
+      statsMonthlyLocations: this.statsMonthlyLocations,
+      statsDevices: this.statsDevices,
+      statsMonthlyDevices: this.statsMonthlyDevices,
+      osBreakdown: this.osBreakdown,
+      trafficSources: this.trafficSources,
+      topLocations: this.topLocations,
+      topCountries: this.topCountries,
+      browserBreakdown: this.browserBreakdown,
+      trend: this.trendData,
+      chatbotStats: this.chatbotStats,
+      topPages: this.topPages,
+      toolConversion: this.toolConversion,
+    };
   }
 
   get allSelected(): boolean {
@@ -350,182 +435,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.selectedIds.size > 0;
   }
 
-  get maxContactBarValue(): number {
-    return Math.max(...this.contactBars.map(bar => bar.value), 1);
-  }
-
-  get maxVisitBarValue(): number {
-    return Math.max(...this.visitBars.map(bar => bar.value), 1);
-  }
-
-  get maxStatsLocationCount(): number {
-    return Math.max(...this.statsLocations.map(l => l.count), 1);
-  }
-
-  get maxStatsMonthlyLocationCount(): number {
-    return Math.max(...this.statsMonthlyLocations.map(l => l.count), 1);
-  }
-
-  statsLocationBarWidth(count: number): number {
-    return Math.max((count / this.maxStatsLocationCount) * 100, count > 0 ? 6 : 0);
-  }
-
-  statsMonthlyLocationBarWidth(count: number): number {
-    return Math.max((count / this.maxStatsMonthlyLocationCount) * 100, count > 0 ? 6 : 0);
-  }
-
-  get conversionRate(): number {
-    return this.totalViews ? (this.totalContacts / this.totalViews) * 100 : 0;
-  }
-
-  private get currentMonthKey(): string {
-    const n = new Date();
-    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}`;
-  }
-
-  get trendData(): MonthlyHistoryEntry[] {
-    return [
-      ...this.monthlyHistory,
-      { month: this.currentMonthKey, views: this.monthlyViews },
-    ];
-  }
-
-  get monthlyGrowth(): number | null {
-    if (this.monthlyHistory.length < 1) return null;
-    const prev = this.monthlyHistory[this.monthlyHistory.length - 1].views;
-    if (!prev) return null;
-    return ((this.monthlyViews - prev) / prev) * 100;
-  }
-
-  get maxTrendViews(): number {
-    return Math.max(...this.trendData.map(h => h.views), 1);
-  }
-
-  trendBarWidth(views: number): number {
-    return Math.max((views / this.maxTrendViews) * 100, views > 0 ? 4 : 0);
-  }
-
-  get gscMaxPageClicks(): number {
-    return Math.max(...(this.gscSummary.topPages ?? []).map(p => p.clicks), 1);
-  }
-
-  /** URL completo di Search Console → solo il percorso, più leggibile nella barra. */
-  gscPagePath(url: string): string {
-    try {
-      const u = new URL(url);
-      return decodeURIComponent(u.pathname) || '/';
-    } catch {
-      return url;
-    }
-  }
-
-  get gscMaxClicks(): number {
-    return Math.max(...this.gscSummary.topQueries.map(q => q.clicks), 1);
-  }
-
-  get maxCountryCount(): number {
-    return Math.max(...this.topCountries.map(c => c.count), 1);
-  }
-
-  get maxLocationCount(): number {
-    return Math.max(...this.topLocations.map(location => location.count), 1);
-  }
-
-  get maxBrowserCount(): number {
-    return Math.max(...this.browserBreakdown.map(b => b.count), 1);
-  }
-
-  countryBarWidth(count: number): number {
-    return Math.max((count / this.maxCountryCount) * 100, count > 0 ? 6 : 0);
-  }
-
-  locationBarWidth(count: number): number {
-    return Math.max((count / this.maxLocationCount) * 100, count > 0 ? 6 : 0);
-  }
-
-  browserBarWidth(count: number): number {
-    return Math.max((count / this.maxBrowserCount) * 100, count > 0 ? 6 : 0);
-  }
-
-  get maxTopPageCount(): number {
-    return Math.max(...this.topPages.map(p => p.count), 1);
-  }
-
-  topPageBarWidth(count: number): number {
-    return Math.max((count / this.maxTopPageCount) * 100, count > 0 ? 4 : 0);
-  }
-
-  methodBadgeColor(method: string): string {
-    const map: Record<string, string> = {
-      POST: '#10b981', PUT: '#f59e0b', PATCH: '#6366f1', DELETE: '#ef4444',
-    };
-    return map[method?.toUpperCase()] ?? '#8b5cf6';
-  }
-
-  loadTodaySessions(page = 1): void {
-    if (this.loadingTodaySessions) return;
-    this.loadingTodaySessions = true;
-    this.adminDashboard.getTodaySessions(page).subscribe({
-      next: ({ data, total, page: p, totalPages }) => {
-        this.todaySessions = data;
-        this.todaySessionsTotal = total;
-        this.todaySessionsPage = p;
-        this.todaySessionsTotalPages = totalPages;
-        this.loadingTodaySessions = false;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.loadingTodaySessions = false;
-        this.cdr.markForCheck();
-      },
-    });
-  }
-
-  toggleSession(sessionId: string): void {
-    this.expandedSessionId = this.expandedSessionId === sessionId ? null : sessionId;
-  }
-
-  sessionPreview(session: ChatbotSession): string {
-    const first = session.messages.find(m => m.role === 'user');
-    if (!first) return '—';
-    return first.content.length > 60 ? first.content.slice(0, 60) + '…' : first.content;
-  }
-
-  get totalContent(): number {
-    return this.publishedPosts + this.draftPosts;
-  }
-
-  get publishedPercent(): number {
-    return this.totalContent ? (this.publishedPosts / this.totalContent) * 100 : 0;
-  }
-
-  get draftPercent(): number {
-    return this.totalContent ? (this.draftPosts / this.totalContent) * 100 : 0;
-  }
-
-  contactBarHeight(value: number): string {
-    const percent = (value / this.maxContactBarValue) * 100;
-    return `${Math.max(percent, value > 0 ? 18 : 8)}%`;
-  }
-
-  visitBarHeight(value: number): string {
-    const percent = (value / this.maxVisitBarValue) * 100;
-    return `${Math.max(percent, value > 0 ? 18 : 8)}%`;
-  }
-
-  formatUptimeHours(seconds: number | null | undefined): string {
-    if (seconds === null || seconds === undefined) return '—';
-    return `${Math.max(0, Math.round(seconds / 3600))}h`;
-  }
-
-  formatMemoryMb(memoryMb: number | null | undefined): string {
-    if (memoryMb === null || memoryMb === undefined) return '—';
-    return `${memoryMb} MB`;
-  }
-
-  cronNextRunLabel(nextRun: string | null): string {
-    if (!nextRun) return '—';
-    return new Date(nextRun).toLocaleString();
+  /** Dal pannello Utility: carica le chat di oggi e porta alla sezione. */
+  loadTodaySessions(): void {
+    this.chatSessions()?.load();
+    this.scrollTo('dash-chat');
   }
 
   async logout(): Promise<void> {
@@ -788,6 +701,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.statsMonthlyLocations = [];
           this.statsMonthlyDevices = [];
           this.lastResetAt = new Date().toISOString();
+          this.visitorStats = this.buildVisitorStats();
           this.showActionMessage('admin.monthly_stats_reset');
           this.cdr.markForCheck();
         },
@@ -836,5 +750,4 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.actionMessageTimeoutId = null;
     }, 2600);
   }
-
 }

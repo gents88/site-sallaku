@@ -1,0 +1,20 @@
+<section class="analytics-card card">
+  <div class="analytics-card__header">
+    <div class="analytics-card__heading">
+      <h2>{{ titleKey() | translate }}</h2>
+      @if (descKey(); as desc) {
+        <p class="text-muted">{{ desc | translate }}</p>
+      }
+    </div>
+    <div class="analytics-card__aside">
+      @if (periodKey(); as period) {
+        <span class="analytics-card__period">{{ period | translate }}</span>
+      }
+      <ng-content select="[cardAction]" />
+      @if (icon(); as name) {
+        <mat-icon aria-hidden="true">{{ name }}</mat-icon>
+      }
+    </div>
+  </div>
+  <ng-content />
+</section>

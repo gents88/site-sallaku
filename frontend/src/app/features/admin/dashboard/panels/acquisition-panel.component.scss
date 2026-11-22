@@ -2,19 +2,6 @@
 // panel-error) arrivano da panel-shared.scss.
 
 .acq {
-  &__periods {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: 1rem;
-  }
-
-  &__period[aria-pressed='true'] {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: #fff;
-  }
-
   &__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
