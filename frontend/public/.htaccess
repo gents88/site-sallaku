@@ -88,6 +88,18 @@
 
 ErrorDocument 404 /index.csr.html
 
+# Le rotte servite con la shell CSR e 200 (ricerca interna, link della
+# newsletter, area admin, file personali) non hanno contenuto proprio da
+# indicizzare: una ricerca senza risultati o un token scaduto sono una pagina
+# "vuota" con 200, che Search Console segnala come soft 404. Il noindex arriva
+# già nell'header, senza aspettare il rendering JS. THE_REQUEST è la riga della
+# richiesta originale, quindi il test non dipende dai rewrite sopra.
+<IfModule mod_headers.c>
+  <If "%{THE_REQUEST} =~ m#^[A-Z]+ /(?:(?:en|sq|es|pt|fr|de)/)?(?:search|newsletter|dashboard|lab/i-miei-file|lab/open-file)(?:[/?\s])#">
+    Header always set X-Robots-Tag "noindex, follow"
+  </If>
+</IfModule>
+
 # Brotli first: when the client advertises `br`, Apache prefers this filter
 # over mod_deflate's gzip below and skips it. Browsers that only send
 # `gzip` fall through to mod_deflate untouched, so this is purely additive
