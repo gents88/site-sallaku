@@ -25,6 +25,7 @@ interface LabToolRelations {
 export const LAB_RELATIONS: Readonly<Record<string, LabToolRelations>> = {
   ocr: { tools: ['image-to-text', 'scanner', 'pdf-editor', 'convert', 'pdf-summary'], articles: ['ocr-online-estrarre-testo-da-scansioni-e-foto', 'scansionare-documenti-con-il-telefono-senza-scanner'] },
   scanner: { tools: ['ocr', 'pdf-editor', 'sign-pdf', 'compress-pdf', 'convert'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'ocr-online-estrarre-testo-da-scansioni-e-foto'] },
+  'qr-code': { tools: ['image-tools', 'scanner', 'ocr', 'sign-pdf'], articles: [] },
   'image-tools': { tools: ['jpg-to-pdf', 'ocr', 'scanner', 'compress-pdf'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner'] },
   'compress-pdf': { tools: ['pdf-editor', 'sign-pdf', 'viewer', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   'sign-pdf': { tools: ['pdf-editor', 'viewer', 'scanner', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
