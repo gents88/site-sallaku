@@ -33,7 +33,12 @@ module.exports = {
       // database di geoip-lite caricato in memoria + librerie native.
       node_args: '--max-old-space-size=384',
       max_memory_restart: '560M',
-      env: { NODE_ENV: 'production' },
+      env: {
+        NODE_ENV: 'production',
+        // Shell Angular servita da seo/shell per /blog/<slug> e /projects/<slug>
+        // non prerenderizzati (vedi backend/src/seo/page-shell.service.ts).
+        FRONTEND_SHELL_PATH: `${process.env.HOME}/httpdocs/index.csr.html`,
+      },
       autorestart: true,
       restart_delay: 3000,
       kill_timeout: 10000,
