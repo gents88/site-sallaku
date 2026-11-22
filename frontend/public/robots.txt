@@ -7,8 +7,13 @@ Allow: /
 # Block the admin dashboard (CMS login/content management)
 Disallow: /dashboard/
 
-# Block backend API endpoints
-Disallow: /api/
+# /api/ NON va bloccato: le pagine prerenderizzate, una volta caricate,
+# richiedono di nuovo i dati a /api/v1 (articolo, progetti, flag). Googlebot
+# rispetta robots.txt anche per queste richieste: con "Disallow: /api/" la
+# chiamata falliva e la pagina diventava "Articolo non trovato", cioè 244
+# articoli del blog segnalati come soft 404 (Search Console, 2026-11).
+# Le risposte API non finiscono nell'indice comunque: Apache le serve con
+# X-Robots-Tag: noindex (frontend/public/.htaccess).
 Disallow: /auth/
 Disallow: /analytics/
 Disallow: /audit/
