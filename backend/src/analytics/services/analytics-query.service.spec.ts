@@ -184,7 +184,9 @@ describe('AnalyticsQueryService', () => {
 
   describe('getAcquisition', () => {
     it('raggruppa provenienze, pagine d\'ingresso e ultime visite degli arrivi dall\'esterno', async () => {
-      mockPageViewModel.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(5) });
+      mockPageViewModel.countDocuments
+        .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(5) })
+        .mockReturnValueOnce({ exec: jest.fn().mockResolvedValue(3) });
       mockPageViewModel.aggregate.mockImplementation((pipeline: any[]) => {
         const json = JSON.stringify(pipeline);
         let rows: unknown[] = [];
@@ -218,6 +220,9 @@ describe('AnalyticsQueryService', () => {
       expect(mockPageViewModel.countDocuments.mock.calls[0][0].navigationType).toEqual({ $ne: 'internal' });
       expect(report.days).toBe(7);
       expect(report.totalEntries).toBe(5);
+      // Stessi giorni subito prima, per il confronto.
+      expect(report.previousTotalEntries).toBe(3);
+      expect(mockPageViewModel.countDocuments.mock.calls[1][0].createdAt.$lt).toBeInstanceOf(Date);
       expect(report.sources).toEqual([{ label: 'search', count: 3 }, { label: 'direct', count: 2 }]);
       // google.com con e senza www finisce in una riga; il sito stesso viene scartato.
       expect(report.referrers).toEqual([{ label: 'google.com', count: 3 }]);
@@ -228,6 +233,50 @@ describe('AnalyticsQueryService', () => {
         { at: '2026-11-22T09:00:00.000Z', trafficSource: 'direct', referrerHost: '', utmSource: '',
           entryPath: '/', country: 'AL', city: '', deviceType: 'Desktop', pages: 1, durationSec: null },
       ]);
+    });
+  });
+
+  describe('getLeadAttribution', () => {
+    const lean = (rows: unknown[]) => {
+      const chain: any = { select: jest.fn(() => chain), sort: jest.fn(() => chain), lean: jest.fn(() => chain), exec: jest.fn().mockResolvedValue(rows) };
+      return chain;
+    };
+
+    it('senza lead restituisce un report vuoto con il confronto', async () => {
+      mockClickEventModel.find = jest.fn(() => lean([]));
+      mockClickEventModel.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(2) });
+      const r = await service.getLeadAttribution(30);
+      expect(r).toEqual({ days: 30, totalLeads: 0, previousTotalLeads: 2, byKind: [], bySource: [], byReferrer: [], byEntryPage: [], articles: [] });
+    });
+
+    it('attribuisce ogni lead all\'ultimo arrivo dall\'esterno e conta gli articoli letti prima', async () => {
+      const t = (h: number) => new Date(`2026-11-20T${String(h).padStart(2, '0')}:00:00Z`);
+      mockClickEventModel.find = jest.fn(() => lean([
+        { visitorId: 'v1', label: 'contact_form', createdAt: t(12) },
+        { visitorId: 'v2', label: 'live_handoff', createdAt: t(15) },
+      ]));
+      mockClickEventModel.countDocuments.mockReturnValue({ exec: jest.fn().mockResolvedValue(1) });
+      mockPageViewModel.find = jest.fn(() => lean([
+        // v1: arriva da LinkedIn, poi da Google su un articolo, legge, scrive.
+        { visitorId: 'v1', path: '/', trafficSource: 'social', referrer: 'https://www.linkedin.com/', navigationType: 'entry', createdAt: t(8) },
+        { visitorId: 'v1', path: '/en/blog/rxjs?utm=x', trafficSource: 'search', referrer: 'https://www.google.com/', navigationType: 'entry', createdAt: t(10) },
+        { visitorId: 'v1', path: '/contact', trafficSource: 'internal', referrer: '', navigationType: 'internal', createdAt: t(11) },
+        // Dopo il lead: non conta.
+        { visitorId: 'v1', path: '/blog/dopo', trafficSource: 'direct', referrer: '', navigationType: 'entry', createdAt: t(13) },
+        // v2: diretto su un articolo.
+        { visitorId: 'v2', path: '/en/blog/rxjs', trafficSource: 'direct', referrer: '', navigationType: 'entry', createdAt: t(14) },
+      ]));
+      mockPageViewModel.aggregate.mockReturnValue({ exec: jest.fn().mockResolvedValue([{ _id: '/en/blog/rxjs', visitors: 20 }]) });
+
+      const r = await service.getLeadAttribution(30);
+
+      expect(r.totalLeads).toBe(2);
+      expect(r.previousTotalLeads).toBe(1);
+      expect(r.byKind).toEqual(expect.arrayContaining([{ label: 'contact_form', count: 1 }, { label: 'live_handoff', count: 1 }]));
+      expect(r.bySource).toEqual(expect.arrayContaining([{ label: 'search', count: 1 }, { label: 'direct', count: 1 }]));
+      expect(r.byReferrer).toEqual([{ label: 'google.com', count: 1 }]);
+      expect(r.byEntryPage).toEqual([{ label: '/en/blog/rxjs', count: 2 }]);
+      expect(r.articles).toEqual([{ path: '/en/blog/rxjs', leads: 2, visitors: 20, rate: 10 }]);
     });
   });
 });
