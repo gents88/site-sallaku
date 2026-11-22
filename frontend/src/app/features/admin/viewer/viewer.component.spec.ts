@@ -1,4 +1,5 @@
 // Installa i globali IndexedDB (indexedDB, IDBKeyRange, ...) che jsdom non fornisce.
+import { provideRouter } from '@angular/router';
 import 'fake-indexeddb/auto';
 import { PLATFORM_ID, importProvidersFrom } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -47,6 +48,7 @@ describe('ViewerComponent', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         importProvidersFrom(TranslateModule.forRoot()),
         { provide: IDB_FACTORY, useValue: new IDBFactory() },
         {

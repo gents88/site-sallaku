@@ -9,6 +9,8 @@ import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspace.service';
 import { SampleFileButtonComponent } from '../../../shared/components/sample-file-button/sample-file-button.component';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 interface SourcePdf {
   bytes: Uint8Array; // per pdf-lib (export)
@@ -27,13 +29,14 @@ interface PageEntry {
   selector: 'app-pdf-editor',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent, SampleFileButtonComponent],
+  imports: [LabToolInfoComponent, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, SampleFileButtonComponent],
   templateUrl: './pdf-editor.component.html',
   styleUrls: ['./pdf-editor.component.scss'],
 })
 export class PdfEditorComponent implements OnInit {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
@@ -86,32 +89,7 @@ export class PdfEditorComponent implements OnInit {
         featureList: ['Merge PDFs', 'Split & extract pages', 'Rotate & delete pages', 'Add watermark', 'Client-side, no upload'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'Can I merge multiple PDFs into one?',
-            acceptedAnswer: { '@type': 'Answer', text: "Yes, select multiple files and they'll be merged in the order you arrange them." },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I reorder, rotate or delete individual pages?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, drag pages to reorder them, and rotate or delete any page individually before exporting.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I add a watermark to my PDF?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, an optional text watermark can be applied across the document.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Is my PDF uploaded to a server?',
-            acceptedAnswer: { '@type': 'Answer', text: 'No — all editing happens client-side in your browser, so your file never leaves your device.' },
-          },
-        ],
-      },
+      ...this.labInfo.faqSchemas('pdf-editor'),
       this.seo.breadcrumb([
         { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
         { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },

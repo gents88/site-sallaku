@@ -1,0 +1,60 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { LAB_RELATIONS, allLabArticleSlugs, labInfoKey, labToolsForArticle, relatedLabArticles, relatedLabTools } from './lab-info.data';
+import { NAV_REGISTRY } from '../../../core/navigation/nav-registry';
+
+describe('lab-info.data', () => {
+  it('ogni strumento e ogni articolo collegato esiste', () => {
+    const toolIds = new Set(NAV_REGISTRY.map(e => e.id));
+    for (const [tool, rel] of Object.entries(LAB_RELATIONS)) {
+      expect(toolIds.has(tool), `strumento ${tool}`).toBe(true);
+      rel.tools.forEach(id => expect(toolIds.has(id), `${tool} → ${id}`).toBe(true));
+      for (const lang of ['it', 'en', 'de'] as const) {
+        expect(relatedLabArticles(tool, lang).length, `${tool} articoli ${lang}`).toBe(rel.articles.length);
+      }
+    }
+  });
+
+  it('i link agli articoli usano lo slug della lingua e il titolo tradotto', () => {
+    const [en] = relatedLabArticles('ocr', 'en');
+    expect(en.path).toBe('/blog/ocr-how-to-extract-text-from-scans-and-photos-and-why-it-sometimes-fails');
+    expect(en.title.toLowerCase()).toContain('ocr');
+    const [it] = relatedLabArticles('ocr', 'it');
+    expect(it.path).toBe('/blog/ocr-online-estrarre-testo-da-scansioni-e-foto');
+  });
+
+  it('gli strumenti correlati non includono lo strumento stesso', () => {
+    for (const tool of Object.keys(LAB_RELATIONS)) {
+      expect(relatedLabTools(tool).map(e => e.id)).not.toContain(tool);
+    }
+  });
+
+  it('la chiave i18n sostituisce i trattini', () => {
+    expect(labInfoKey('pdf-editor')).toBe('pdf_editor');
+    expect(labInfoKey('ocr')).toBe('ocr');
+  });
+
+  it('dall\'articolo si risale agli strumenti', () => {
+    expect(labToolsForArticle('ocr-online-estrarre-testo-da-scansioni-e-foto').map(e => e.id)).toEqual(['ocr', 'scanner']);
+    expect(labToolsForArticle('non-esiste')).toEqual([]);
+  });
+
+  // Ogni pagina di strumento deve includere il contenuto informativo e restare una pagina vera:
+  // un template ridotto al solo <app-lab-tool-info> (file svuotato per errore) non darebbe errori nei test.
+  it('la pagina di ogni strumento include il contenuto informativo e il suo template non è vuoto', () => {
+    for (const tool of Object.keys(LAB_RELATIONS)) {
+      const html = readFileSync(resolve(process.cwd(), `src/app/features/admin/${tool}/${tool}.component.html`), 'utf8');
+      expect(html, `${tool}: manca <app-lab-tool-info>`).toContain(`<app-lab-tool-info tool="${tool}" />`);
+      expect(html.split('\n').length, `${tool}: template quasi vuoto`).toBeGreaterThan(60);
+    }
+  });
+
+  // Se un articolo viene rinominato, il link dagli strumenti si romperebbe in silenzio:
+  // lo slug deve comparire nella sitemap, che il bot rigenera a ogni deploy.
+  it('ogni slug collegato è nella sitemap pubblicata', () => {
+    const sitemap = readFileSync(resolve(process.cwd(), 'public/sitemap.xml'), 'utf8');
+    const missing = allLabArticleSlugs().filter(({ slug }) => !sitemap.includes(`/blog/${slug}<`));
+    expect(missing).toEqual([]);
+  });
+});

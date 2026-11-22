@@ -38,6 +38,8 @@ import {
   TRANSLATION_LANGUAGES,
   TranslateOptions,
 } from '../../../core/services/pdf-translate.service';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 type TranslationMode = 'high_fidelity' | 'standard';
 
@@ -48,7 +50,7 @@ const MAX_FILE_MB = 50;
   selector: 'app-pdf-translate',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent, SampleFileButtonComponent],
+  imports: [LabToolInfoComponent, CommonModule, FormsModule, RouterLink, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent, SampleFileButtonComponent],
   templateUrl: './pdf-translate.component.html',
   styleUrls: ['./pdf-translate.component.scss'],
 })
@@ -59,6 +61,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
   private readonly service      = inject(PdfTranslateService);
   private readonly sanitizer    = inject(DomSanitizer);
   private readonly seo          = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService  = inject(LanguageService);
   private readonly workspace    = inject(WorkspaceService);
   private readonly t            = inject(TranslateService);
@@ -97,32 +100,7 @@ export class PdfTranslateComponent implements OnInit, OnDestroy {
         featureList: ['12 languages', 'Page-accurate layout', 'OCR for scanned PDFs', 'AI translation', '50 MB limit'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'How many languages can I translate a PDF into?',
-            acceptedAnswer: { '@type': 'Answer', text: 'You can translate PDFs into 12 languages, with AI translation designed for natural, accurate results.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Will the translated PDF keep the original layout?',
-            acceptedAnswer: { '@type': 'Answer', text: "High Fidelity mode keeps the same page count and page size as the original, page by page — not the original fonts or images, which no online translator can carry over losslessly. A faster Standard mode is also available, reflowing the whole document as clean text." },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can it translate scanned PDFs?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes — pages with no extractable text are automatically detected and read via OCR before translation.' },
-          },
-          {
-            '@type': 'Question',
-            name: "What's the maximum file size?",
-            acceptedAnswer: { '@type': 'Answer', text: 'Up to 50 MB per PDF.' },
-          },
-        ],
-      },
+      ...this.labInfo.faqSchemas('pdf-translate'),
       this.seo.breadcrumb([
         { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
         { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },

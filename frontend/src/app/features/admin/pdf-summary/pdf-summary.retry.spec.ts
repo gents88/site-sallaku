@@ -8,6 +8,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { PdfSummaryComponent } from './pdf-summary.component';
 import { UploadClient } from '../../../core/http/upload-client.service';
 import { UploadEvent } from '../../../core/http/upload-events';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabToolInfoStubComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.testing';
 
 function setup() {
   const calls: Subject<UploadEvent<unknown>>[] = [];
@@ -16,6 +18,7 @@ function setup() {
     imports: [PdfSummaryComponent, TranslateModule.forRoot()],
     providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), { provide: UploadClient, useValue: { post } }],
   });
+  TestBed.overrideComponent(PdfSummaryComponent, { remove: { imports: [LabToolInfoComponent] }, add: { imports: [LabToolInfoStubComponent] } });
   const fixture = TestBed.createComponent(PdfSummaryComponent);
   fixture.componentInstance.selectedFile.set(new File(['x'], 'doc.pdf', { type: 'application/pdf' }));
   fixture.detectChanges();

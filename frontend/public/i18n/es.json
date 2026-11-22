@@ -1072,7 +1072,7 @@
     "remove_context_file": "Eliminar archivo",
     "prev_slide": "Diapositiva anterior",
     "next_slide": "Diapositiva siguiente",
-    "seo_title": "Generador de Presentaciones con IA — Crea Diapositivas con IA",
+    "seo_title": "Generador de Presentaciones con IA",
     "seo_description": "Genera una presentación profesional completa sobre cualquier tema en segundos. Hasta 20 diapositivas con títulos, viñetas, notas del orador y 5 estilos. Gratis online."
   },
   "ai_formatter": {
@@ -1128,7 +1128,7 @@
     "textarea_placeholder": "Pega aquí el texto sin formato...\n\n✦ Notas de reunión, contenido en bruto, salida de IA, correos...\n✦ O haz clic en \"Usar ejemplo\" para ver una demo",
     "copied": "Copiado",
     "copy": "Copiar",
-    "seo_title": "Formateador de Texto con IA — De Notas a Documento Profesional",
+    "seo_title": "Formateador de Texto con IA",
     "seo_description": "Convierte notas, texto sin formato o contenido de IA en documentos profesionales estructurados al instante. Informes, propuestas, CV, artículos y más. Formateador de IA gratuito online."
   },
   "pdf_summary": {
@@ -1163,7 +1163,7 @@
     "err_file_too_large": "Archivo demasiado grande (máx {{max}}MB): {{name}}",
     "err_generic": "Se ha producido un error al analizar el archivo.",
     "remove_file": "Quitar archivo",
-    "seo_title": "Resumen de PDF con IA — Extrae los Puntos Clave de Cualquier Documento",
+    "seo_title": "Resumen de PDF con IA: Puntos Clave",
     "seo_description": "Sube un PDF, Word o TXT y obtén un resumen generado por IA al instante. Resumen breve, análisis detallado o puntos clave. Resumidor de documentos con IA gratuito online."
   },
   "workspace": {
@@ -1259,7 +1259,7 @@
     "err_generic": "Error al traducir. Inténtalo de nuevo.",
     "upload_aria": "Subir un archivo PDF",
     "remove_file": "Quitar archivo",
-    "seo_title": "Traductor de PDF con IA — Traducción Manteniendo las Páginas Originales",
+    "seo_title": "Traductor de PDF con IA: Mantiene Páginas",
     "seo_description": "Traduce cualquier PDF a 12 idiomas manteniendo el mismo número de páginas y formato. Traducción con IA de nivel empresarial. Gratis online, sin registro."
   },
   "pdf_search": {
@@ -1328,7 +1328,7 @@
     "err_library_save": "Error al guardar en la Biblioteca. Inténtalo de nuevo.",
     "preview_prev_page": "Página anterior",
     "preview_next_page": "Página siguiente",
-    "seo_title": "Buscador de PDF de Dominio Público — Libros sin Copyright",
+    "seo_title": "Buscar Libros PDF Gratis: Dominio Público",
     "seo_description": "Busca y descarga libros de dominio público, artículos científicos y publicaciones de acceso abierto, sin problemas de derechos de autor. Busca en Internet Archive, Project Gutenberg, arXiv y PubMed Central con vista previa antes de descargar.",
     "filter_favorites": "Favoritos",
     "results_count": "{{count}} resultados",
@@ -1447,7 +1447,7 @@
     "workspace_send": "Enviar a Workspace",
     "workspace_sent": "Enviado ✓",
     "blog_link": "Guía: cómo convertir PDF a Word sin perder el formato",
-    "seo_title": "Convertidor de Archivos Gratuito — PDF, Word, Excel, Imágenes",
+    "seo_title": "Conversor de Archivos: PDF, Word y Más",
     "seo_description": "Convierte entre PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG y más — {{count}} tipos de conversión, gratis, en tu navegador. Sin registro."
   },
   "ocr": {
@@ -1488,12 +1488,12 @@
     "sent": "Enviado ✓",
     "save_library": "Guardar en la biblioteca",
     "saved_library": "Guardado en la biblioteca",
-    "seo_title": "OCR Online Gratuito — Extrae Texto de Imágenes y PDF Escaneados",
+    "seo_title": "OCR Gratis: Texto de Imágenes y PDF",
     "seo_description": "Extrae texto de fotos, documentos escaneados y PDF en 7 idiomas. OCR online gratuito, sin registro."
   },
   "tools": {
     "badge": "AI & PDF Tools",
-    "heading": "Tu Suite de Productividad",
+    "heading": "Herramientas PDF e IA gratis",
     "subtitle": "Herramientas documentales con IA y utilidades PDF, todo en un solo lugar.",
     "section_ai": "Herramientas IA",
     "section_tools": "Herramientas PDF",
@@ -1523,7 +1523,7 @@
     "library_desc": "Guarda los PDF en el navegador, busca en su contenido, anótalos y haz preguntas a tus documentos.",
     "my_files_title": "Mis archivos",
     "my_files_desc": "Encuentra los resultados que has guardado de las herramientas de IA",
-    "seo_title": "Herramientas PDF e IA Gratuitas — Traducción, Resumen, Presentaciones",
+    "seo_title": "Herramientas PDF e IA Gratis en Línea",
     "seo_description": "Herramientas online gratuitas con IA: traductor de PDF, generador de presentaciones, formateador de texto y resumidor de PDF. Herramientas profesionales para documentos. Sin registro."
   },
   "about_manage": {
@@ -1635,7 +1635,7 @@
     "workspace_send": "Enviar a Workspace",
     "workspace_sent": "Enviado ✓",
     "err_file_too_large": "Archivo demasiado grande (máx {{max}}MB): {{name}}",
-    "seo_title": "Editor de Documentos Online Gratuito — Exporta a PDF y DOCX",
+    "seo_title": "Editor de Documentos: Exporta a PDF y DOCX",
     "seo_description": "Escribe y da formato a documentos en tu navegador, importa archivos Word y exporta a PDF, DOCX o HTML. Gratis, sin registro."
   },
   "pdf_editor": {
@@ -1670,7 +1670,7 @@
     "move_right": "Mover a la derecha",
     "delete": "Eliminar",
     "persistence_hint": "Los cambios no se guardan: se pierden al recargar o cerrar esta pestaña.",
-    "seo_title": "Editor de PDF Gratuito — Une, Divide, Rota y Añade Marca de Agua",
+    "seo_title": "Editor PDF Gratis: Unir, Dividir, Girar",
     "seo_description": "Une PDF, divide y extrae páginas, rota o elimina páginas y añade marcas de agua — todo en el navegador, los archivos nunca salen de tu dispositivo."
   },
   "viewer": {
@@ -1706,7 +1706,7 @@
     "zoom_in": "Aumentar zoom",
     "prev_match": "Resultado anterior",
     "next_match": "Resultado siguiente",
-    "seo_title": "Visor de PDF Online Gratuito — Zoom, Búsqueda y Miniaturas",
+    "seo_title": "Visor de PDF en Línea Gratis",
     "seo_description": "Visualiza documentos PDF en tu navegador: navegación de páginas, zoom, búsqueda de texto completo y vista de miniaturas. Gratis, privado, sin subir archivos."
   },
   "scanner": {
@@ -1760,7 +1760,7 @@
     "page_alt": "página {{n}}",
     "err_camera_unsupported": "Cámara no disponible en este navegador o conexión no segura (se requiere HTTPS). Aun así puedes subir una imagen.",
     "persistence_hint": "Las páginas capturadas no se guardan: se pierden al recargar o cerrar esta pestaña.",
-    "seo_title": "Escáner de Documentos Gratuito — De la Cámara al PDF Online",
+    "seo_title": "Escáner de Documentos: Foto a PDF",
     "seo_description": "Escanea documentos con la webcam o la cámara del teléfono, recórtalos y mejóralos, expórtalos como PDF. Gratis, sin registro."
   },
   "library": {
@@ -2600,5 +2600,306 @@
     "acquisition_section": "Procedencia y contactos",
     "expand_all": "Expandir todo",
     "collapse_all": "Contraer todo"
+  },
+  "lab_info": {
+    "section_label": "Sobre esta herramienta",
+    "about_title": "Para qué sirve",
+    "how_title": "Cómo se usa",
+    "privacy_title": "Tus archivos y la privacidad",
+    "limits_title": "Límites que conviene conocer",
+    "faq_title": "Preguntas frecuentes",
+    "related_articles": "Para profundizar",
+    "related_tools": "Otras herramientas",
+    "all_tools": "Todas las herramientas",
+    "ocr": {
+      "about": "Esta herramienta de OCR (reconocimiento óptico de caracteres) convierte fotos, imágenes y PDF escaneados en texto que puedes seleccionar, copiar y editar. Sirve para recuperar el texto de un recibo fotografiado, de una página de libro, de un documento escaneado o de una captura de pantalla, sin tener que reescribirlo a mano.",
+      "steps": [
+        "Arrastra las imágenes o el PDF al área de carga, o haz clic en ella para elegirlos.",
+        "Selecciona el idioma del texto: el reconocimiento es mucho más preciso si el idioma es el correcto.",
+        "Inicia el reconocimiento: de cada página ves el texto extraído y, cuando la fiabilidad es baja, un aviso.",
+        "Copia el texto, pásalo a otra herramienta del Lab o guárdalo en tu Biblioteca."
+      ],
+      "privacy": "Las imágenes se envían a nuestro servidor solo para el reconocimiento y se procesan en memoria, sin guardarse como archivo. No hace falta crear una cuenta.",
+      "limits": "Puedes cargar hasta 30 archivos o páginas a la vez; cada imagen puede pesar hasta 15 MB y de cada PDF se leen las primeras 20 páginas. Los idiomas disponibles son italiano, inglés, español, francés, alemán, portugués y albanés. La calidad depende de la foto: un texto torcido, borroso o con poca luz reduce la precisión.",
+      "faq": [
+        {
+          "q": "¿El OCR funciona también con PDF?",
+          "a": "Sí. Si el PDF es un escaneo, es decir, sus páginas son imágenes, la herramienta las lee y extrae el texto. Si el PDF ya contiene texto seleccionable, normalmente no hace falta OCR."
+        },
+        {
+          "q": "¿Qué idiomas reconoce?",
+          "a": "Italiano, inglés, español, francés, alemán, portugués y albanés. Elige el idioma antes de empezar: con el correcto el resultado es mucho más preciso."
+        },
+        {
+          "q": "¿Por qué el texto extraído tiene errores?",
+          "a": "El OCR se equivoca cuando la imagen está borrosa, inclinada, con poco contraste o con caracteres poco comunes. Prueba a repetir la foto con más luz, manteniendo la hoja recta, y comprueba que has elegido el idioma correcto."
+        },
+        {
+          "q": "¿Tengo que registrarme o pagar?",
+          "a": "No, la herramienta es gratuita y no requiere cuenta. Solo hay un límite de solicitudes en un periodo corto, para evitar abusos: si lo superas, espera un momento y vuelve a intentarlo."
+        }
+      ]
+    },
+    "scanner": {
+      "about": "El escáner convierte la cámara de tu teléfono o de tu ordenador en un escáner de documentos: fotografías las páginas, las recortas, aplicas un filtro para mejorar la legibilidad y las unes en un único PDF para descargar. Es útil cuando no tienes un escáner a mano y necesitas un contrato, un recibo o un formulario en PDF.",
+      "steps": [
+        "Inicia la cámara y encuadra la página, o sube una imagen que ya tengas.",
+        "Arrastra sobre la imagen para recortar los bordes de la hoja y eliminar el fondo.",
+        "Repite con cada página; si una página ha salido mal puedes eliminarla.",
+        "Exporta el PDF y descárgalo; si necesitas el texto, usa también el OCR."
+      ],
+      "privacy": "Captura, recorte y filtros se hacen en tu navegador: las imágenes no salen de tu dispositivo hasta que decidas otra cosa. Solo si usas el OCR o exportas el PDF las páginas se envían a nuestro servidor, durante el tiempo necesario para procesarlas.",
+      "limits": "Se aceptan imágenes PNG, JPG y WEBP, de hasta 20 MB cada una y hasta 20 páginas por documento. Las páginas capturadas no se guardan: si recargas o cierras la pestaña las pierdes, así que descarga el PDF antes de salir. La cámara requiere una conexión segura (HTTPS) y tu permiso.",
+      "faq": [
+        {
+          "q": "¿Funciona también desde el móvil?",
+          "a": "Sí, está pensado también para el smartphone: el navegador te pide permiso para usar la cámara. Si no está disponible puedes subir las fotos que ya hayas hecho."
+        },
+        {
+          "q": "¿Puedo poner varias páginas en un solo PDF?",
+          "a": "Sí, hasta 20 páginas: cada página capturada se añade al documento, que al final exportas como un único PDF."
+        },
+        {
+          "q": "¿Cómo obtengo el texto para copiarlo?",
+          "a": "Usa la función OCR del escáner o pasa las páginas a la herramienta OCR del Lab: reconoce el texto y lo hace seleccionable y copiable."
+        },
+        {
+          "q": "¿Se guardan mis fotos?",
+          "a": "No: las páginas capturadas se quedan en el navegador y desaparecen si recargas la página. Llegan al servidor solo si eliges el OCR o la exportación a PDF."
+        }
+      ]
+    },
+    "pdf_editor": {
+      "about": "El editor de PDF en línea permite unir varios PDF en uno, dividir un documento, girar o eliminar páginas sueltas, cambiar el orden de las páginas y añadir una marca de agua de texto. Todo ocurre en tu navegador: es la forma más cómoda de arreglar un PDF sin instalar programas y sin enviar el archivo a un servicio externo.",
+      "steps": [
+        "Arrastra uno o más PDF al área de carga: si eliges más de uno se colocan en secuencia.",
+        "En la vista previa de las páginas arrastra para reordenarlas, gira las torcidas o elimina las que no necesites.",
+        "Si hace falta, escribe un texto para la marca de agua o indica un intervalo de páginas para dividir el documento.",
+        "Exporta el PDF y descárgalo."
+      ],
+      "privacy": "Los archivos se procesan por completo en tu navegador: no se suben a ningún servidor. Así puedes trabajar también con contratos, documentos de identidad o facturas sin compartirlos con terceros.",
+      "limits": "Los cambios no se guardan: si recargas o cierras la pestaña los pierdes, así que descarga el resultado antes de salir. Un PDF protegido con contraseña o muy pesado puede no abrirse o ralentizar el navegador, porque el trabajo lo hace tu dispositivo. La marca de agua es solo de texto.",
+      "faq": [
+        {
+          "q": "¿Cómo uno dos PDF?",
+          "a": "Sube los dos archivos juntos: aparecen en secuencia y puedes reordenar las páginas arrastrándolas. Después exporta el resultado como un único PDF."
+        },
+        {
+          "q": "¿Mis PDF se suben a internet?",
+          "a": "No. El procesamiento se hace en el navegador, así que los archivos permanecen en tu dispositivo."
+        },
+        {
+          "q": "¿Puedo extraer solo algunas páginas?",
+          "a": "Sí: elimina las páginas que no necesites o usa el intervalo de páginas para dividir el documento, y luego exporta."
+        },
+        {
+          "q": "¿Puedo modificar el texto dentro de un PDF?",
+          "a": "No, esta herramienta trabaja con las páginas (unir, dividir, girar, eliminar, marca de agua), no con el contenido. Para modificar el texto puedes convertir el PDF a Word con el conversor de archivos."
+        }
+      ]
+    },
+    "viewer": {
+      "about": "El visor de PDF en línea abre un documento en el navegador con zoom, búsqueda de texto, miniaturas de las páginas y resaltador. Sirve para leer y consultar un PDF sin instalar ningún programa y sin subirlo a ninguna parte, también desde el móvil.",
+      "steps": [
+        "Arrastra el PDF al área de carga o elige el archivo desde tu dispositivo.",
+        "Muévete entre las páginas con las miniaturas y usa el zoom para ampliar o reducir.",
+        "Busca una palabra: la herramienta resalta las coincidencias en el texto.",
+        "Activa el resaltador y arrastra sobre el texto para marcar los pasajes importantes."
+      ],
+      "privacy": "El documento se lee por completo en tu navegador y nunca se sube: puedes consultar con seguridad también archivos confidenciales.",
+      "limits": "La búsqueda solo funciona si el PDF contiene texto seleccionable. Si es un escaneo, es decir, las páginas son imágenes, la herramienta te avisa: en ese caso extrae antes el texto con la herramienta OCR. Los archivos muy pesados pueden tardar más en dispositivos antiguos.",
+      "faq": [
+        {
+          "q": "¿Por qué la búsqueda no encuentra nada en mi PDF?",
+          "a": "Probablemente el PDF es un escaneo: las páginas son imágenes y no contienen texto buscable. Pasa el archivo a la herramienta OCR para extraer el texto y luego busca."
+        },
+        {
+          "q": "¿El archivo se sube a un servidor?",
+          "a": "No. El PDF lo abre y lo lee tu navegador, así que se queda en tu dispositivo."
+        },
+        {
+          "q": "¿Puedo resaltar y anotar el texto?",
+          "a": "Sí: activa el resaltador y arrastra sobre el texto para marcarlo."
+        },
+        {
+          "q": "¿Funciona desde un smartphone?",
+          "a": "Sí, el visor se adapta a la pantalla del móvil; con documentos muy pesados la apertura puede ser más lenta."
+        }
+      ]
+    },
+    "editor": {
+      "about": "El editor de documentos en línea permite escribir y dar formato a un texto directamente en el navegador y exportarlo a PDF, DOCX (Word) o HTML. Es útil cuando tienes que preparar rápido una carta, un acta o un informe sin abrir Word, o cuando necesitas convertir un texto a un formato fácil de compartir.",
+      "steps": [
+        "Escribe o pega el texto y dale formato con la barra de herramientas: títulos, listas, negrita y cursiva.",
+        "Si ya tienes un documento puedes importarlo y seguir trabajando en él.",
+        "Elige el formato de exportación: PDF, DOCX o HTML.",
+        "Descarga el archivo obtenido."
+      ],
+      "privacy": "Mientras escribes, el texto se queda en tu navegador. Cuando exportas a PDF o DOCX el contenido se envía a nuestro servidor solo para generar el archivo.",
+      "limits": "Los documentos importados pueden pesar hasta 50 MB. La exportación requiere una conexión activa. Exporta el documento antes de cerrar la pestaña para no perder tu trabajo.",
+      "faq": [
+        {
+          "q": "¿A qué formatos puedo exportar?",
+          "a": "A PDF, DOCX (compatible con Word) y HTML."
+        },
+        {
+          "q": "¿Puedo partir de un documento que ya tengo?",
+          "a": "Sí, puedes importar un documento, de hasta 50 MB, y seguir editándolo en el editor."
+        },
+        {
+          "q": "¿Tengo que instalar algo o crear una cuenta?",
+          "a": "No: funciona en el navegador, también desde el móvil, y no requiere cuenta."
+        },
+        {
+          "q": "¿Mi texto se envía a un servidor?",
+          "a": "Solo cuando exportas a PDF o DOCX: en ese momento el servidor necesita el contenido para crear el archivo."
+        }
+      ]
+    },
+    "convert": {
+      "about": "El conversor de archivos en línea transforma documentos e imágenes de un formato a otro: entre PDF, Word (DOCX), texto, HTML y Markdown, pero también imágenes a WebP para la web y CSV o JSON a informes PDF, además de unir varios PDF en uno. Elige la conversión que necesitas, sube el archivo y descarga el resultado.",
+      "steps": [
+        "Busca o elige en la lista la conversión que necesitas, por ejemplo PDF → DOCX.",
+        "Arrastra el archivo al área de carga o elígelo desde tu dispositivo.",
+        "Inicia la conversión y espera unos segundos.",
+        "Al terminar, la descarga empieza automáticamente."
+      ],
+      "privacy": "Para convertir el archivo se envía a nuestro servidor, que lo procesa y te devuelve el resultado. Los archivos sirven solo para realizar la conversión solicitada.",
+      "limits": "Cada archivo puede pesar hasta 50 MB; en las conversiones que combinan varios archivos, como la unión de PDF, puedes seleccionar hasta 20. Un PDF con tablas o diseños muy complejos puede perder parte del formato al pasar a Word. Un PDF escaneado no se convierte en texto editable: usa antes el OCR.",
+      "faq": [
+        {
+          "q": "¿Cómo convierto un PDF a Word sin perder el formato?",
+          "a": "Elige la conversión PDF → DOCX. Los PDF con texto seleccionable suelen conservar títulos, párrafos y listas; los diseños muy elaborados pueden requerir pequeños retoques tras la conversión. En el artículo enlazado más abajo tienes la guía completa."
+        },
+        {
+          "q": "¿Puedo convertir varios archivos a la vez?",
+          "a": "En las conversiones que combinan archivos, como la unión de PDF, puedes subir hasta 20 a la vez."
+        },
+        {
+          "q": "¿Un PDF escaneado se vuelve editable?",
+          "a": "No directamente: un escaneo está hecho de imágenes. Extrae primero el texto con la herramienta OCR y luego trabaja con el texto obtenido."
+        },
+        {
+          "q": "¿Cuánto puede pesar como máximo un archivo?",
+          "a": "Hasta 50 MB por archivo. Si tu archivo es más grande, intenta reducirlo o dividirlo antes de convertirlo."
+        }
+      ]
+    },
+    "pdf_summary": {
+      "about": "El resumidor de PDF con inteligencia artificial lee un documento y produce un resumen con los puntos clave en pocos segundos. Es útil para orientarte en un informe largo, un contrato, un artículo científico o unos apuntes antes de decidir si leerlo entero.",
+      "steps": [
+        "Sube un PDF, un documento de Word (.docx o .doc), un archivo de texto o una página HTML.",
+        "Inicia el análisis y espera unos segundos.",
+        "Lee el resumen con los puntos clave: puedes copiarlo o pasarlo a otra herramienta del Lab."
+      ],
+      "privacy": "El contenido del documento se envía a un servicio de inteligencia artificial para generar el resumen. No subas documentos que no quieras compartir con un servicio externo, como los que contienen datos personales o confidenciales.",
+      "limits": "Se aceptan archivos de hasta 20 MB. Si el documento es muy largo solo se procesa la primera parte y la herramienta te lo indica. Un resumen automático puede omitir detalles o contener imprecisiones: para decisiones importantes comprueba el texto original. Un PDF escaneado debe pasar antes por el OCR. Para contener los costes hay un límite de uso diario.",
+      "faq": [
+        {
+          "q": "¿Qué archivos puedo resumir?",
+          "a": "PDF, Word (.docx y .doc), archivos de texto y HTML, de hasta 20 MB."
+        },
+        {
+          "q": "¿Es fiable el resumen?",
+          "a": "Es un buen punto de partida para entender de qué trata un documento, pero una IA puede equivocarse o dejar detalles fuera. Comprueba siempre las partes importantes en el documento original."
+        },
+        {
+          "q": "¿Funciona con PDF escaneados?",
+          "a": "Solo si contienen texto. Si las páginas son imágenes, extrae el texto con la herramienta OCR y luego resúmelo."
+        },
+        {
+          "q": "¿Puedo resumir un documento muy largo?",
+          "a": "Se lee la parte inicial y la herramienta te avisa de que el resto no está incluido. Para textos muy largos conviene dividir el documento en partes."
+        }
+      ]
+    },
+    "pdf_translate": {
+      "about": "El traductor de PDF con inteligencia artificial traduce un documento a otro idioma intentando mantener el mismo número de páginas y las mismas dimensiones que el original, página por página. Está pensado para contratos, manuales, informes y apuntes que necesitas leer o compartir en otro idioma sin reconstruir el documento a mano.",
+      "steps": [
+        "Sube un PDF, un archivo de Word (DOCX) o un archivo de texto.",
+        "Elige el idioma de destino y el modo: «alta fidelidad» mantiene el número y el tamaño de las páginas, «estándar» es más rápido y da un texto limpio.",
+        "Inicia la traducción: la herramienta traduce bloque a bloque y reconstruye el documento.",
+        "Descarga el archivo traducido o pásalo a otra herramienta del Lab."
+      ],
+      "privacy": "El contenido del documento se envía a un servicio de inteligencia artificial para ser traducido. Evita subir documentos confidenciales o con datos personales que no quieras compartir con un servicio externo.",
+      "limits": "El límite es de 50 MB por archivo. El diseño se reconstruye con las mismas páginas y dimensiones, pero no se reproducen las fuentes ni las imágenes originales. Si el PDF está hecho de imágenes la herramienta lo detecta y usa el OCR, con resultados que dependen de la calidad del escaneo. En documentos muy largos puede traducirse solo la primera parte, y la herramienta te lo indica.",
+      "faq": [
+        {
+          "q": "¿El PDF traducido mantiene el formato?",
+          "a": "Mantiene el número y las dimensiones de las páginas e intenta adaptar el texto al espacio disponible, pero no reproduce las fuentes ni las imágenes originales. Para una comprobación final, compáralo con el original."
+        },
+        {
+          "q": "¿A qué idiomas puedo traducir?",
+          "a": "Inglés, italiano, albanés, español, alemán, francés y más."
+        },
+        {
+          "q": "¿Funciona con PDF escaneados?",
+          "a": "Sí: si el PDF está hecho de imágenes, la herramienta lo reconoce y ejecuta primero el OCR. La calidad depende de la nitidez del escaneo."
+        },
+        {
+          "q": "¿La traducción es tan precisa como la de un traductor humano?",
+          "a": "No: es una traducción automática, muy buena para entender y trabajar, pero para contratos o textos legales sigue siendo recomendable la revisión de un profesional."
+        }
+      ]
+    },
+    "ai_ppt": {
+      "about": "El generador de presentaciones con inteligencia artificial crea la estructura de una presentación a partir de un tema: títulos de diapositivas, viñetas, notas del orador y un hilo lógico que seguir. Sirve para superar la página en blanco y tener en pocos segundos un borrador que pulir.",
+      "steps": [
+        "Escribe el tema de la presentación en una frase.",
+        "Elige el estilo (negocios, educación, minimalista, moderno o pitch deck) y el número de diapositivas: 5, 10, 15 o 20.",
+        "Si quieres, sube un PDF, un DOCX o un TXT como material de partida: la IA lo usa como contexto.",
+        "Genera la presentación, léela y descárgala."
+      ],
+      "privacy": "El tema y el documento de contexto, si lo hay, se envían a un servicio de inteligencia artificial para generar las diapositivas. No introduzcas datos confidenciales que no quieras compartir.",
+      "limits": "El documento de contexto puede pesar hasta 20 MB (PDF, DOCX o TXT). El resultado es un borrador: títulos, puntos y notas hay que revisarlos, adaptarlos y enriquecerlos con tus imágenes y datos. Si el contenido de algunas diapositivas es demasiado largo puede acortarse: en ese caso acorta el tema y genera de nuevo.",
+      "faq": [
+        {
+          "q": "¿Cuántas diapositivas puedo generar?",
+          "a": "5, 10, 15 o 20, según lo detallada que deba ser la presentación."
+        },
+        {
+          "q": "¿Puedo partir de un documento mío?",
+          "a": "Sí: sube un PDF, un DOCX o un TXT y la IA lo usa como contexto para construir las diapositivas."
+        },
+        {
+          "q": "¿Las diapositivas generadas están listas para presentar?",
+          "a": "Son un buen borrador con estructura, viñetas y notas del orador, pero conviene revisarlas y añadir imágenes, gráficos y datos concretos antes de presentarlas."
+        },
+        {
+          "q": "¿Qué estilos hay disponibles?",
+          "a": "Negocios, Educación, Minimalista, Moderno y Pitch Deck para startups."
+        }
+      ]
+    },
+    "ai_formatter": {
+      "about": "El formateador de texto con inteligencia artificial convierte apuntes en bruto, actas de reuniones o textos generados por una IA en un documento ordenado, con títulos, listas y párrafos. Sirve cuando ya tienes el contenido pero no quieres perder tiempo maquetándolo.",
+      "steps": [
+        "Pega el texto en el cuadro o arrastra un archivo .txt o .md.",
+        "Inicia el formato: la IA reconoce encabezados, viñetas y párrafos.",
+        "Alterna entre la vista previa con formato y el resultado en Markdown sin procesar.",
+        "Copia el resultado o pásalo al editor para exportarlo a PDF o DOCX."
+      ],
+      "privacy": "El texto se envía a un servicio de inteligencia artificial para ser formateado. No pegues información confidencial que no quieras compartir con un servicio externo. Si recargas la página, el borrador se restaura en el navegador.",
+      "limits": "Se necesitan al menos 10 caracteres de texto y se admiten archivos .txt y .md. Si el texto es muy largo solo se formatea la primera parte y la herramienta te lo indica. La IA intenta mantener el contenido, pero conviene releer el resultado antes de usarlo.",
+      "faq": [
+        {
+          "q": "¿Qué tipo de documentos puedo crear?",
+          "a": "Propuestas, informes, actas de reuniones, currículums y artículos: la herramienta adapta el estilo al tipo de texto."
+        },
+        {
+          "q": "¿En qué formato obtengo el resultado?",
+          "a": "Como vista previa con formato o como Markdown, que puedes copiar y pegar donde quieras."
+        },
+        {
+          "q": "¿Puedo usar un texto escrito por otra IA?",
+          "a": "Sí, está pensado también para ordenar textos generados por otras herramientas de IA, que a menudo llegan sin una estructura clara."
+        },
+        {
+          "q": "¿Cómo obtengo un PDF o un archivo de Word?",
+          "a": "Pasa el texto formateado al editor de documentos del Lab, que lo exporta a PDF, DOCX o HTML."
+        }
+      ]
+    },
+    "try_tool": "Prueba ya la herramienta gratuita"
   }
 }
