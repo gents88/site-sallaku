@@ -38,6 +38,8 @@ const SEARCH_CACHE_MAX = 20;
 // Pagine già rasterizzate nel viewer canvas: tornare indietro non deve
 // rifare il rendering. Tetto basso perché ogni PNG a 1.5x pesa qualche MB.
 const PAGE_CACHE_MAX = 6;
+/** Spostamento orizzontale minimo (px) perché un tocco conti come swipe. */
+const SWIPE_MIN_PX = 50;
 const ZOOM_LEVELS = [1, 1.5, 2, 3] as const;
 const DEFAULT_ZOOM_INDEX = 1;
 
@@ -797,6 +799,27 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     } catch {
       // Documento salvato ma non indicizzato: la Libreria lo segnala e offre di riprovare.
     }
+  }
+
+  // ── Swipe sul viewer canvas (touch): scorri a sinistra = pagina successiva, a destra = precedente ──
+  private swipeStart: { x: number; y: number } | null = null;
+
+  onSwipeStart(e: TouchEvent): void {
+    // Più dita = pinch/zoom del browser, non un cambio pagina.
+    this.swipeStart = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  }
+
+  onSwipeEnd(e: TouchEvent): void {
+    const start = this.swipeStart;
+    this.swipeStart = null;
+    if (!start || e.changedTouches.length !== 1) return;
+    // Con zoom oltre il 100% il gesto orizzontale serve a spostarsi dentro la pagina.
+    if (this.zoomIndex() > DEFAULT_ZOOM_INDEX) return;
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    // Soglia minima e prevalenza dell'asse orizzontale: lo scroll verticale della pagina non deve cambiare pagina.
+    if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    if (dx < 0) this.nextCanvasPage(); else this.prevCanvasPage();
   }
 
   /** ←/→ sfogliano le pagine del viewer canvas (se non si sta scrivendo in un campo). */

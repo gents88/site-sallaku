@@ -507,6 +507,8 @@ $error-clr:     #f87171;
   background: #525659; padding: 12px;
 
   position: relative;
+  // Lo scroll verticale resta al browser; lo swipe orizzontale lo gestiamo noi (cambio pagina).
+  touch-action: pan-y pinch-zoom;
   img { max-width: none; flex: 0 0 auto; height: auto; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); transition: opacity 0.15s; }
   &.is-rendering img { opacity: 0.55; }
 }
