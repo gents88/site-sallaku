@@ -20,12 +20,24 @@
 .um-badge { margin-left: .4rem; font-size: .72rem; padding: .1rem .5rem; border-radius: 999px; background: rgba(79, 106, 245, .15); }
 .um-verified { margin-left: .3rem; color: #10b981; }
 .um-actions { text-align: right; white-space: nowrap; }
-.um-danger { color: var(--color-danger, #ef4444) !important; border-color: rgba(239, 68, 68, .4) !important; }
+.um-danger { border-color: rgba(239, 68, 68, .45) !important; }
 .um-pager { display: flex; justify-content: center; align-items: center; gap: 1rem; padding: .75rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
 
 .admin-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; }
-.um-actions { display: flex; gap: .35rem; justify-content: flex-end; flex-wrap: wrap; }
+/* La cella resta una cella di tabella (con display:flex le righe si sfalsavano rispetto alle altre colonne).
+   I pulsanti hanno un aspetto da azione secondaria: prima erano grigio pieno e "Elimina" rosso su grigio. */
+.um-actions .btn {
+  margin-left: .35rem;
+  padding: .4rem .8rem;
+  border: 1px solid var(--border-color, rgba(148, 163, 184, .35));
+  background: transparent;
+  color: var(--text-primary, inherit);
+  &:hover:not(:disabled) { background: rgba(99, 102, 241, .12); border-color: rgba(99, 102, 241, .5); }
+  &:disabled { opacity: .45; cursor: not-allowed; }
+}
+:host-context([data-theme='light']) .um-danger { color: #b91c1c !important; }
+.um-danger { color: #f87171 !important; }
 .um-editor { padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; h2 { font-size: 1.1rem; margin: 0 0 1rem; } }
 .um-grid {
   display: grid; grid-template-columns: 1fr; gap: .9rem 1rem;
