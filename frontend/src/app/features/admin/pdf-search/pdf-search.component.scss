@@ -574,6 +574,23 @@ $error-clr:     #f87171;
   .state-icon { font-size: 28px; }
 }
 
+.preview-retry {
+  padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700;
+  background: var(--accent, #6c63ff); color: #fff; border: none;
+}
+
+// Avviso sopra la pagina: resta visibile anche se il documento è scorso in basso.
+.preview-note {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 10px 14px; text-align: center;
+  background: var(--bg-tertiary, #1c2333); color: var(--text-primary, #e6edf3);
+  border-bottom: 1px solid var(--border-color, #30363d);
+
+  p { margin: 0; font-size: 13px; line-height: 1.45; }
+  &--error { border-bottom-color: #f59e0b; }
+}
+
 .preview-actions {
   display: flex; gap: 10px; padding: 12px 16px; flex-wrap: wrap;
   border-top: 1px solid var(--border-color, #30363d);

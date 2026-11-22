@@ -1337,7 +1337,11 @@
     "link_copied": "Lidhja u kopjua",
     "preview_goto_page": "Shko te faqja",
     "zoom_out": "Zvogëlo",
-    "zoom_in": "Zmadho"
+    "zoom_in": "Zmadho",
+    "preview_failed": "Nuk e ngarkuam dot këtë PDF. Mund të jetë shumë i madh, burimi mund të mos përgjigjet ose skedari mund të mos lexohet. Provo përsëri ose përdor «Shkarko PDF» për ta hapur nga burimi.",
+    "preview_blank": "Kjo faqe duket e zbrazët. Mund të jetë një faqe e bardhë e dokumentit (kopertinë, anë e pasme): provo › për të vazhduar. Nëse të gjitha mbeten të bardha, shkarko PDF-në ose hape nga burimi.",
+    "preview_page_error": "Nuk e shfaqëm dot këtë faqe. Provo përsëri ose shkarko PDF-në për ta lexuar.",
+    "preview_retry": "Provo përsëri"
   },
   "convert": {
     "title": "Konvertues",
