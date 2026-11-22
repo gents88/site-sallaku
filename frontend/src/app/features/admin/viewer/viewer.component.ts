@@ -1,7 +1,8 @@
 import {
   Component, ChangeDetectionStrategy, OnInit, OnDestroy, ElementRef,
-  ViewChild, inject, signal, computed,
+  ViewChild, HostListener, PLATFORM_ID, inject, signal, computed,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -23,6 +24,9 @@ import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-inf
 interface SearchMatch { page: number; }
 
 const MAX_THUMBS = 200;
+// Ultima pagina letta per documento: riaprire un libro riparte da dove eri.
+const POSITION_KEY = 'viewer-last-position';
+const MAX_POSITIONS = 50;
 
 @Component({
   selector: 'app-viewer',
@@ -102,6 +106,10 @@ export class ViewerComponent implements OnInit, OnDestroy {
   private cachedPageTexts: Map<number, string> | null = null;
 
   private renderToken = 0;
+  /** Render pdf.js in corso: va annullato prima di riusare il canvas, altrimenti zoom/pagina rapidi lanciano "Cannot use the same canvas during multiple render()". */
+  private renderTask: { cancel(): void } | null = null;
+  private readonly platformId = inject(PLATFORM_ID);
+  private positionKey: string | null = null;
 
   ngOnInit(): void {
     const docId = this.route.snapshot.queryParamMap.get('doc');
@@ -178,6 +186,12 @@ export class ViewerComponent implements OnInit, OnDestroy {
       this.matches.set([]);
       this.docSparseText.set(false);
       this.thumbs.set(new Array(Math.min(doc.numPages, MAX_THUMBS)).fill(null));
+      this.positionKey = `${f.name}:${f.size}`;
+      const saved = this.readPosition(this.positionKey);
+      if (saved && saved.page > 1 && saved.page <= doc.numPages) {
+        this.pageNum.set(saved.page);
+        this.scale.set(saved.scale);
+      }
       await this.renderPage();
       void this.renderThumbs(doc);
     } catch {
@@ -203,6 +217,50 @@ export class ViewerComponent implements OnInit, OnDestroy {
     this.query.set('');
     this.docSparseText.set(false);
     this.renderToken++;
+    this.renderTask?.cancel();
+    this.renderTask = null;
+    this.positionKey = null;
+  }
+
+  // ── Posizione di lettura ──
+  private readPositions(): Record<string, { page: number; scale: number }> {
+    if (!isPlatformBrowser(this.platformId)) return {};
+    try { return JSON.parse(localStorage.getItem(POSITION_KEY) ?? '{}'); } catch { return {}; }
+  }
+
+  private readPosition(key: string): { page: number; scale: number } | null {
+    const v = this.readPositions()[key];
+    return v && Number.isFinite(v.page) && Number.isFinite(v.scale) ? v : null;
+  }
+
+  private savePosition(): void {
+    if (!this.positionKey || !isPlatformBrowser(this.platformId)) return;
+    const all = this.readPositions();
+    delete all[this.positionKey]; // reinserisce in coda: l'ordine di inserimento fa da LRU
+    all[this.positionKey] = { page: this.pageNum(), scale: this.scale() };
+    const keys = Object.keys(all);
+    for (const k of keys.slice(0, Math.max(0, keys.length - MAX_POSITIONS))) delete all[k];
+    try { localStorage.setItem(POSITION_KEY, JSON.stringify(all)); } catch { /* storage pieno/non disponibile */ }
+  }
+
+  /** Scorciatoie: ←/→ PgUp/PgDn pagina, Home/End capo/fine, +/− zoom, 0 adatta alla larghezza, / cerca. */
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(e: KeyboardEvent): void {
+    if (!this.doc() || e.ctrlKey || e.metaKey || e.altKey) return;
+    const el = e.target as HTMLElement | null;
+    if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable)) return;
+    switch (e.key) {
+      case 'ArrowRight': case 'PageDown': this.goTo(this.pageNum() + 1); break;
+      case 'ArrowLeft': case 'PageUp': this.goTo(this.pageNum() - 1); break;
+      case 'Home': this.goTo(1); break;
+      case 'End': this.goTo(this.numPages()); break;
+      case '+': case '=': this.zoomBy(0.25); break;
+      case '-': this.zoomBy(-0.25); break;
+      case '0': void this.fitWidth(); break;
+      case '/': document.querySelector<HTMLInputElement>('.vw-searchin')?.focus(); break;
+      default: return;
+    }
+    e.preventDefault();
   }
 
   goTo(n: number): void {
@@ -460,6 +518,9 @@ export class ViewerComponent implements OnInit, OnDestroy {
     if (!doc || !canvas) return;
 
     const token = ++this.renderToken;
+    this.renderTask?.cancel();
+    this.renderTask = null;
+    this.savePosition();
     const page = await doc.getPage(this.pageNum());
     if (token !== this.renderToken) return;
 
@@ -468,8 +529,15 @@ export class ViewerComponent implements OnInit, OnDestroy {
     canvas.width = Math.ceil(viewport.width);
     canvas.height = Math.ceil(viewport.height);
     canvas.style.width = `${Math.ceil(viewport.width / dpr)}px`;
-    await page.render({ canvas, viewport }).promise;
+    const task = page.render({ canvas, viewport });
+    this.renderTask = task;
+    try {
+      await task.promise;
+    } catch {
+      return; // annullato da un render più recente
+    }
     if (token !== this.renderToken) return;
+    this.renderTask = null;
 
     if (this.query().trim()) await this.highlight(page, viewport, canvas);
   }
@@ -506,12 +574,15 @@ export class ViewerComponent implements OnInit, OnDestroy {
         c.width = Math.ceil(viewport.width);
         c.height = Math.ceil(viewport.height);
         await page.render({ canvas: c, viewport }).promise;
+        page.cleanup();
         const url = c.toDataURL('image/jpeg', 0.6);
         this.thumbs.update((arr) => {
           const next = [...arr];
           next[i - 1] = url;
           return next;
         });
+        // Cede il main thread: le miniature non devono bloccare lo scroll o il render della pagina.
+        await new Promise<void>((r) => setTimeout(r, 0));
       } catch {
         return; // rendering interrotto (es. documento distrutto)
       }
