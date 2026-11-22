@@ -1329,7 +1329,14 @@
     "preview_prev_page": "Pagina precedente",
     "preview_next_page": "Pagina successiva",
     "seo_title": "Cerca Libri PDF Gratis: Pubblico Dominio",
-    "seo_description": "Motore di ricerca PDF per trovare e scaricare libri di pubblico dominio, paper scientifici e articoli open access, senza problemi di copyright. Cerca su Internet Archive, Project Gutenberg, arXiv e PubMed Central con anteprima prima del download."
+    "seo_description": "Motore di ricerca PDF per trovare e scaricare libri di pubblico dominio, paper scientifici e articoli open access, senza problemi di copyright. Cerca su Internet Archive, Project Gutenberg, arXiv e PubMed Central con anteprima prima del download.",
+    "filter_favorites": "Preferiti",
+    "results_count": "{{count}} risultati",
+    "btn_copy_link": "Copia link",
+    "link_copied": "Link copiato",
+    "preview_goto_page": "Vai alla pagina",
+    "zoom_out": "Riduci zoom",
+    "zoom_in": "Aumenta zoom"
   },
   "convert": {
     "title": "Convertitore",
