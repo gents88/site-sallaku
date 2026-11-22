@@ -1329,7 +1329,14 @@
     "preview_prev_page": "Faqja e mëparshme",
     "preview_next_page": "Faqja tjetër",
     "seo_title": "Motor Kërkimi PDF me Pronë Publike — Libra pa të Drejta Autori",
-    "seo_description": "Kërko dhe shkarko libra me pronë publike, artikuj shkencorë dhe artikuj me qasje të hapur, pa probleme të drejtash autori. Kërko në Internet Archive, Project Gutenberg, arXiv dhe PubMed Central me pamje paraprake."
+    "seo_description": "Kërko dhe shkarko libra me pronë publike, artikuj shkencorë dhe artikuj me qasje të hapur, pa probleme të drejtash autori. Kërko në Internet Archive, Project Gutenberg, arXiv dhe PubMed Central me pamje paraprake.",
+    "filter_favorites": "Të preferuarat",
+    "results_count": "{{count}} rezultate",
+    "btn_copy_link": "Kopjo lidhjen",
+    "link_copied": "Lidhja u kopjua",
+    "preview_goto_page": "Shko te faqja",
+    "zoom_out": "Zvogëlo",
+    "zoom_in": "Zmadho"
   },
   "convert": {
     "title": "Konvertues",
