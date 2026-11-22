@@ -8,6 +8,7 @@
   --cb-accent-2: #8b5cf6;
   --cb-accent-text: #a78bfa;
   --cb-panel: color-mix(in srgb, var(--bg-secondary, #0f1424) 76%, transparent);
+  --cb-panel-solid: color-mix(in srgb, var(--bg-secondary, #0f1424) 97%, transparent);
   --cb-surface: color-mix(in srgb, var(--bg-secondary, #0f1424) 92%, transparent);
   --cb-text: var(--text-primary, #f1f5f9);
   --cb-text-muted: var(--text-secondary, #94a3b8);
@@ -29,6 +30,7 @@
 :host-context([data-theme='light']) {
   --cb-accent-text: #5b3fd1;
   --cb-panel: color-mix(in srgb, #ffffff 72%, transparent);
+  --cb-panel-solid: color-mix(in srgb, #ffffff 97%, transparent);
   --cb-surface: rgba(255, 255, 255, 0.94);
   --cb-in-fill: rgba(79, 106, 245, 0.06);
   --cb-in-edge: rgba(15, 23, 42, 0.5);
@@ -194,6 +196,7 @@
   bottom: 102px;
   right: 28px;
   z-index: 1499;
+  box-sizing: border-box;
   width: min(400px, calc(100vw - 40px));
   height: min(620px, calc(100vh - 140px));
   border-radius: var(--cb-radius);
@@ -636,6 +639,23 @@
 
 .cb-msg__content :global(strong) { color: var(--cb-strong); }
 .cb-msg--user .cb-msg__content :global(strong) { color: #fff; }
+
+/* Elenchi e codice nelle risposte: il testo arriva come HTML già escapato (format-message.ts). */
+.cb-msg__content ::ng-deep ul,
+.cb-msg__content ::ng-deep ol {
+  margin: 0.4rem 0;
+  padding-left: 1.25rem;
+}
+/* Il reset globale azzera list-style: senza queste righe i puntini non si vedono. */
+.cb-msg__content ::ng-deep ul { list-style: disc; }
+.cb-msg__content ::ng-deep ol { list-style: decimal; }
+.cb-msg__content ::ng-deep li { margin: 0.2rem 0; }
+.cb-msg__content ::ng-deep code {
+  padding: 0.05rem 0.35rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--cb-text) 12%, transparent);
+  font-size: 0.92em;
+}
 .cb-msg__content :global(em) { color: var(--cb-text-muted); }
 
 .cb-msg__time {
@@ -1011,6 +1031,12 @@
   }
 
   .cb-teaser { right: 16px; }
+
+  /* Su telefono il fondo del pannello è pieno: con il vetro trasparente il testo della pagina dietro
+     passava sotto il campo di scrittura e si confondeva con il segnaposto. */
+  .cb-panel::before {
+    background: linear-gradient(var(--cb-panel-solid, rgba(15, 20, 36, 0.96)), var(--cb-panel-solid, rgba(15, 20, 36, 0.96)));
+  }
 
   .cb-panel {
     top: calc(env(safe-area-inset-top, 0px) + 10px);
