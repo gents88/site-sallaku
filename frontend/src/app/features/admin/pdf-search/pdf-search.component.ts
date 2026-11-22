@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { Subject, of, switchMap, catchError } from 'rxjs';
+import { Subject, Subscription, of, switchMap, catchError, tap } from 'rxjs';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
@@ -31,8 +31,16 @@ const PREVIEW_TIMEOUT_MS = 10000;
 // unremarkable — no badge, to keep the signal meaningful.
 const HD_SCAN_PPI = 300;
 const LOW_SCAN_PPI = 150;
+// Ricerche già fatte in questa sessione: ripetere una query (o tornare a una
+// recente) è istantaneo e non consuma il limite anti-abuso delle API.
+const SEARCH_CACHE_MAX = 20;
+// Pagine già rasterizzate nel viewer canvas: tornare indietro non deve
+// rifare il rendering. Tetto basso perché ogni PNG a 1.5x pesa qualche MB.
+const PAGE_CACHE_MAX = 6;
+const ZOOM_LEVELS = [1, 1.5, 2, 3] as const;
+const DEFAULT_ZOOM_INDEX = 1;
 
-export type SourceFilter = 'all' | 'books' | 'papers';
+export type SourceFilter = 'all' | 'books' | 'papers' | 'favorites';
 export type SortOrder = 'relevance' | 'year_desc' | 'year_asc';
 export type ScanQuality = 'hd' | 'low' | null;
 export type DisplayResult = PdfSearchResult & { duplicateCount: number };
@@ -90,7 +98,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   readonly displayResults = computed<DisplayResult[]>(() => {
     const filter = this.sourceFilter();
-    let list = this.results();
+    let list = filter === 'favorites' ? this.favorites() : this.results();
     if (filter === 'books') list = list.filter((r) => BOOK_SOURCES.includes(r.source));
     else if (filter === 'papers') list = list.filter((r) => PAPER_SOURCES.includes(r.source));
 
@@ -113,6 +121,16 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       else byTitle.set(key, { ...r, duplicateCount: 1 });
     }
     return [...byTitle.values()];
+  });
+
+  /** Conteggi per i chip dei filtri: evitano il tentativo alla cieca ("Paper" è vuoto?). */
+  readonly filterCounts = computed(() => {
+    const list = this.results();
+    return {
+      all: list.length,
+      books: list.filter((r) => BOOK_SOURCES.includes(r.source)).length,
+      papers: list.filter((r) => PAPER_SOURCES.includes(r.source)).length,
+    };
   });
 
   readonly skeletonPlaceholders = Array.from({ length: 8 });
@@ -157,6 +175,16 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   readonly canvasNumPages = signal(0);
   readonly canvasViewerLoading = signal(false);
   readonly canvasViewerFailed = signal(false);
+  readonly canvasPageRendering = signal(false);
+  readonly zoomIndex = signal(DEFAULT_ZOOM_INDEX);
+  readonly zoomPercent = computed(() => Math.round((ZOOM_LEVELS[this.zoomIndex()] / ZOOM_LEVELS[DEFAULT_ZOOM_INDEX]) * 100));
+  readonly canZoomIn = computed(() => this.zoomIndex() < ZOOM_LEVELS.length - 1);
+  readonly canZoomOut = computed(() => this.zoomIndex() > 0);
+  /** Incrementato a ogni apertura/chiusura: scarta i risultati asincroni di una preview ormai obsoleta. */
+  private previewToken = 0;
+  private downloadSub: Subscription | null = null;
+  private readonly pageCache = new Map<string, string>();
+  readonly linkCopied = signal(false);
 
   readonly useCanvasViewer = computed(() => {
     const sel = this.selected();
@@ -208,7 +236,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.searchTrigger$
       .pipe(
         switchMap((q) =>
-          this.service.search(q).pipe(
+          this.searchCache(q).pipe(
             catchError((err) => {
               const rawMsg = err?.error?.message;
               const msg = Array.isArray(rawMsg) ? rawMsg.join(' ') : rawMsg || this.translate.instant('pdf_search.err_search');
@@ -224,7 +252,28 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
         if (results === null) return;
         this.error.set('');
         this.results.set(results);
+        // Se il filtro attivo resterebbe vuoto (es. "Paper" su una query di soli libri) si torna a "Tutti".
+        if (this.sourceFilter() !== 'all' && this.sourceFilter() !== 'favorites' && this.displayResults().length === 0) {
+          this.sourceFilter.set('all');
+        }
       });
+  }
+
+  private readonly resultsCache = new Map<string, PdfSearchResult[]>();
+
+  private searchCache(q: string) {
+    const key = q.trim().toLowerCase();
+    const hit = this.resultsCache.get(key);
+    if (hit) return of(hit);
+    return this.service.search(q).pipe(
+      tap((res) => {
+        if (res.length === 0) return;
+        this.resultsCache.set(key, res);
+        if (this.resultsCache.size > SEARCH_CACHE_MAX) {
+          this.resultsCache.delete(this.resultsCache.keys().next().value as string);
+        }
+      }),
+    );
   }
 
   ngOnInit(): void {
@@ -338,7 +387,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.mobileQuery?.removeEventListener('change', this.onMobileQueryChange);
     this._revokePreview();
-    this._revokeCanvasPage();
+    this.disposeCanvasViewer();
   }
 
   private _revokePreview(): void {
@@ -358,8 +407,21 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   }
 
   private _revokeCanvasPage(): void {
-    if (this._pdfPageObjectUrl) { URL.revokeObjectURL(this._pdfPageObjectUrl); this._pdfPageObjectUrl = null; }
+    this._pdfPageObjectUrl = null;
     this.canvasPageUrl.set(null);
+  }
+
+  /** Libera download in corso, documento pdf.js (worker incluso) e tutte le pagine in cache. */
+  private disposeCanvasViewer(): void {
+    this.previewToken++;
+    this.downloadSub?.unsubscribe();
+    this.downloadSub = null;
+    for (const url of this.pageCache.values()) URL.revokeObjectURL(url);
+    this.pageCache.clear();
+    this._revokeCanvasPage();
+    const doc = this.pdfDoc;
+    this.pdfDoc = null;
+    void doc?.loadingTask?.destroy?.();
   }
 
   // ── Recent searches (localStorage) ──────────────────────────────────────
@@ -486,6 +548,8 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     this.selected.set(result);
 
     if (result.previewable && !this.isMobile()) {
+      this.disposeCanvasViewer();
+      this.canvasViewerLoading.set(false);
       this.previewLoading.set(true);
       this.previewFailed.set(false);
       this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(result.pdfUrl));
@@ -506,61 +570,142 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   /** Fetches the PDF via the same proxy Workspace uses and renders it page-by-page with pdf.js. */
   private loadCanvasPreview(result: PdfSearchResult): void {
+    this.disposeCanvasViewer();
+    const token = this.previewToken;
     this.canvasViewerLoading.set(true);
     this.canvasViewerFailed.set(false);
-    this._revokeCanvasPage();
-    this.pdfDoc = null;
     this.canvasPageNum.set(1);
     this.canvasNumPages.set(0);
+    this.zoomIndex.set(DEFAULT_ZOOM_INDEX);
 
-    this.service.downloadBlob(result).subscribe({
+    this.downloadSub = this.service.downloadBlob(result).subscribe({
       next: async (blob) => {
         try {
           const buffer = await blob.arrayBuffer();
-          this.pdfDoc = await this.pdfjs.openDocument(buffer);
-          this.canvasNumPages.set(this.pdfDoc.numPages);
+          const doc = await this.pdfjs.openDocument(buffer);
+          // Nel frattempo l'utente ha chiuso la preview o aperto un altro risultato.
+          if (token !== this.previewToken) { void doc.loadingTask?.destroy?.(); return; }
+          this.pdfDoc = doc;
+          this.canvasNumPages.set(doc.numPages);
           await this.renderCanvasPage();
         } catch {
-          this.canvasViewerFailed.set(true);
+          if (token === this.previewToken) this.canvasViewerFailed.set(true);
         } finally {
-          this.canvasViewerLoading.set(false);
+          if (token === this.previewToken) this.canvasViewerLoading.set(false);
         }
       },
       error: () => {
+        if (token !== this.previewToken) return;
         this.canvasViewerFailed.set(true);
         this.canvasViewerLoading.set(false);
       },
     });
   }
 
+  private async rasterPage(pageNum: number): Promise<string | null> {
+    const doc = this.pdfDoc;
+    if (!doc) return null;
+    const scale = ZOOM_LEVELS[this.zoomIndex()];
+    const key = `${scale}:${pageNum}`;
+    const cached = this.pageCache.get(key);
+    if (cached) {
+      // Rinfresca la posizione LRU.
+      this.pageCache.delete(key);
+      this.pageCache.set(key, cached);
+      return cached;
+    }
+    const token = this.previewToken;
+    const page = await doc.getPage(pageNum);
+    const blob = await this.pdfjs.renderPageToBlob(page, scale);
+    page.cleanup?.();
+    if (token !== this.previewToken) return null;
+    const url = URL.createObjectURL(blob);
+    this.pageCache.set(key, url);
+    while (this.pageCache.size > PAGE_CACHE_MAX) {
+      const oldest = this.pageCache.keys().next().value as string;
+      const oldUrl = this.pageCache.get(oldest)!;
+      if (oldUrl === this._pdfPageObjectUrl) break;
+      URL.revokeObjectURL(oldUrl);
+      this.pageCache.delete(oldest);
+    }
+    return url;
+  }
+
   private async renderCanvasPage(): Promise<void> {
-    if (!this.pdfDoc) return;
-    const page = await this.pdfDoc.getPage(this.canvasPageNum());
-    const blob = await this.pdfjs.renderPageToBlob(page, 1.5);
-    this._revokeCanvasPage();
-    this._pdfPageObjectUrl = URL.createObjectURL(blob);
-    this.canvasPageUrl.set(this._pdfPageObjectUrl);
+    const token = this.previewToken;
+    const pageNum = this.canvasPageNum();
+    this.canvasPageRendering.set(true);
+    try {
+      const url = await this.rasterPage(pageNum);
+      // Click rapidi su ›: vince solo l'ultima pagina richiesta.
+      if (!url || token !== this.previewToken || pageNum !== this.canvasPageNum()) return;
+      this._pdfPageObjectUrl = url;
+      this.canvasPageUrl.set(url);
+      void this.prefetchPage(pageNum + 1);
+    } finally {
+      if (token === this.previewToken) this.canvasPageRendering.set(false);
+    }
+  }
+
+  /** Pre-renderizza la pagina successiva a riposo, così "›" è istantaneo. */
+  private async prefetchPage(pageNum: number): Promise<void> {
+    if (pageNum > this.canvasNumPages()) return;
+    try { await this.rasterPage(pageNum); } catch { /* best effort */ }
   }
 
   nextCanvasPage(): void {
     if (this.canvasPageNum() >= this.canvasNumPages()) return;
     this.canvasPageNum.update((p) => p + 1);
-    this.renderCanvasPage();
+    void this.renderCanvasPage();
   }
 
   prevCanvasPage(): void {
     if (this.canvasPageNum() <= 1) return;
     this.canvasPageNum.update((p) => p - 1);
-    this.renderCanvasPage();
+    void this.renderCanvasPage();
+  }
+
+  goToCanvasPage(value: string | number): void {
+    const n = Math.round(Number(value));
+    if (!Number.isFinite(n)) return;
+    const clamped = Math.min(Math.max(n, 1), this.canvasNumPages());
+    if (clamped === this.canvasPageNum()) return;
+    this.canvasPageNum.set(clamped);
+    void this.renderCanvasPage();
+  }
+
+  zoomIn(): void {
+    if (!this.canZoomIn()) return;
+    this.zoomIndex.update((i) => i + 1);
+    void this.renderCanvasPage();
+  }
+
+  zoomOut(): void {
+    if (!this.canZoomOut()) return;
+    this.zoomIndex.update((i) => i - 1);
+    void this.renderCanvasPage();
+  }
+
+  /** Copia un link condivisibile alla ricerca corrente. */
+  async copySearchLink(): Promise<void> {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const q = this.query().trim();
+    const url = `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-search', this.langService.current())}${q ? `?q=${encodeURIComponent(q)}` : ''}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 1800);
+      this.analytics.trackClick('pdf_search_copy_link', q);
+    } catch { /* clipboard non disponibile: nessun feedback fuorviante */ }
   }
 
   closePreview(): void {
     this.selected.set(null);
     this.previewLoading.set(false);
     this._revokePreview();
-    this.pdfDoc = null;
     this.canvasViewerFailed.set(false);
-    this._revokeCanvasPage();
+    this.canvasViewerLoading.set(false);
+    this.disposeCanvasViewer();
   }
 
   scanQuality(result: PdfSearchResult): ScanQuality {
@@ -651,6 +796,16 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     } catch {
       // Documento salvato ma non indicizzato: la Libreria lo segnala e offre di riprovare.
     }
+  }
+
+  /** ←/→ sfogliano le pagine del viewer canvas (se non si sta scrivendo in un campo). */
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (!this.selected() || !this.useCanvasViewer() || this.canvasNumPages() === 0) return;
+    const t = event.target as HTMLElement | null;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+    if (event.key === 'ArrowRight') { event.preventDefault(); this.nextCanvasPage(); }
+    else if (event.key === 'ArrowLeft') { event.preventDefault(); this.prevCanvasPage(); }
   }
 
   @HostListener('window:keydown.escape')
