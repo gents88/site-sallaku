@@ -87,14 +87,12 @@ export class PdfEditorComponent implements OnInit {
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'Free PDF Editor',
-        description: 'Merge, split, extract, rotate, delete pages and add watermarks to PDF files entirely in the browser.',
-        url: 'https://gentsallaku.it/lab/pdf-editor',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         featureList: ['Merge PDFs', 'Split & extract pages', 'Rotate & delete pages', 'Add watermark', 'Client-side, no upload'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        ...this.labInfo.appFields('pdf-editor'),
       },
       ...this.labInfo.faqSchemas('pdf-editor'),
       this.seo.breadcrumb([

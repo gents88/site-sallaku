@@ -15,6 +15,7 @@ import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service'
 import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
 import { LibraryService } from '../../../core/services/library.service';
 import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
 const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
@@ -71,6 +72,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly service = inject(PdfSearchService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
   private readonly analytics = inject(AnalyticsTrackingService);
@@ -308,13 +310,11 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'Ricerca PDF',
-        description: 'Motore di ricerca PDF di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima integrata.',
-        url: 'https://gentsallaku.it/lab/pdf-search',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        ...this.labInfo.appFields('pdf-search'),
       },
       // FAQPage schema — eligible for expandable Q&A rich results in Google's
       // SERP, which raises click-through even without ranking #1. Kept in
