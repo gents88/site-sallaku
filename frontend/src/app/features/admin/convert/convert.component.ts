@@ -13,6 +13,8 @@ import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspac
 import {
   ConversionService, ConversionTypeId, CONVERSION_TYPES, ConversionDef,
 } from '../../../core/services/conversion.service';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 type Step = 'preview' | 'convert';
 type Kind = 'pdf' | 'image' | 'text' | 'base64' | 'unknown';
@@ -35,7 +37,7 @@ const GROUP_META: Record<string, { icon: string; nameKey: string; descKey: strin
   selector: 'app-convert',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, TranslateModule, FileDropzoneDirective, RouterLink, BreadcrumbComponent],
+  imports: [LabToolInfoComponent, CommonModule, TranslateModule, FileDropzoneDirective, RouterLink, BreadcrumbComponent],
   templateUrl: './convert.component.html',
   styleUrls: ['./convert.component.scss'],
 })
@@ -44,6 +46,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
   private readonly san = inject(DomSanitizer);
   private readonly t   = inject(TranslateService);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
 
@@ -127,6 +130,7 @@ export class ConvertComponent implements OnInit, OnDestroy {
       featureList: ['PDF to Word/Text/HTML', 'Word to PDF', 'Excel/CSV conversion', 'Image format conversion', 'Base64 encode/decode', 'Favorites & instant search'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
     },
+    ...this.labInfo.faqSchemas('convert'),
     this.seo.breadcrumb([
       { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
       { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },

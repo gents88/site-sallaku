@@ -1,4 +1,5 @@
 // Installa i globali IndexedDB (indexedDB, IDBKeyRange, ...) che jsdom non fornisce.
+import { provideRouter } from '@angular/router';
 import 'fake-indexeddb/auto';
 import { PLATFORM_ID, importProvidersFrom } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
@@ -17,6 +18,8 @@ import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspac
 import { LibraryService, IDB_FACTORY } from '../../../core/services/library.service';
 import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { BreadcrumbStubComponent } from '../../../../testing/breadcrumb-stub';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabToolInfoStubComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.testing';
 
 type NewDocMeta = Parameters<LibraryService['add']>[0];
 
@@ -68,6 +71,7 @@ describe('OcrComponent — collegamento con la Libreria', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         importProvidersFrom(TranslateModule.forRoot()),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -79,7 +83,7 @@ describe('OcrComponent — collegamento con la Libreria', () => {
         { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });
-    TestBed.overrideComponent(OcrComponent, { remove: { imports: [BreadcrumbComponent] }, add: { imports: [BreadcrumbStubComponent] } });
+    TestBed.overrideComponent(OcrComponent, { remove: { imports: [BreadcrumbComponent, LabToolInfoComponent] }, add: { imports: [BreadcrumbStubComponent, LabToolInfoStubComponent] } });
 
     library = TestBed.inject(LibraryService);
     workspace = TestBed.inject(WorkspaceService);

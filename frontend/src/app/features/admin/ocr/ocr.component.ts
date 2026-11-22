@@ -14,6 +14,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 type Status = 'idle' | 'preparing' | 'recognizing' | 'done' | 'error';
 
@@ -57,7 +59,7 @@ const UI_TO_OCR_LANG: Record<string, string> = {
   selector: 'app-ocr',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
+  imports: [LabToolInfoComponent, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './ocr.component.html',
   styleUrls: ['./ocr.component.scss'],
 })
@@ -65,6 +67,7 @@ export class OcrComponent implements OnInit {
   private readonly svc = inject(OcrService);
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
@@ -149,27 +152,7 @@ export class OcrComponent implements OnInit {
         featureList: ['7 languages', 'Images & scanned PDFs', 'PNG/JPG/WEBP/BMP/TIFF/PDF support', 'No signup required'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What file formats does the OCR tool support?',
-            acceptedAnswer: { '@type': 'Answer', text: 'PNG, JPG, WEBP, BMP, TIFF images and PDF documents, including scanned PDFs.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'How many languages does it recognize?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Text recognition is available in 7 languages, selectable before processing.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Do I need to sign up to use it?',
-            acceptedAnswer: { '@type': 'Answer', text: "No signup is required — it's free to use directly in the browser." },
-          },
-        ],
-      },
+      ...this.labInfo.faqSchemas('ocr'),
       this.seo.breadcrumb([
         { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
         { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },

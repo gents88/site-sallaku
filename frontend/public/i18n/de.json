@@ -1072,7 +1072,7 @@
     "remove_context_file": "Datei entfernen",
     "prev_slide": "Vorherige Folie",
     "next_slide": "Nächste Folie",
-    "seo_title": "KI-Präsentationsgenerator — Folien mit Künstlicher Intelligenz Erstellen",
+    "seo_title": "KI-Präsentationsgenerator",
     "seo_description": "Erstelle eine vollständige professionelle Präsentation zu jedem Thema in Sekunden. Bis zu 20 Folien mit Titeln, Stichpunkten, Sprechernotizen und 5 Stilen. Kostenlos online."
   },
   "ai_formatter": {
@@ -1128,7 +1128,7 @@
     "textarea_placeholder": "Füge hier deinen unformatierten Text ein...\n\n✦ Besprechungsnotizen, Rohinhalt, KI-Ausgabe, E-Mails...\n✦ Oder klicke auf „Beispiel verwenden“ für eine Demo",
     "copied": "Kopiert",
     "copy": "Kopieren",
-    "seo_title": "KI-Textformatierer — Von Notizen zum Professionellen Dokument",
+    "seo_title": "KI-Textformatierer",
     "seo_description": "Verwandle Notizen, unformatierten Text oder KI-Inhalte sofort in strukturierte, professionelle Dokumente. Berichte, Angebote, Lebensläufe, Artikel und mehr. Kostenloser KI-Formatierer online."
   },
   "pdf_summary": {
@@ -1163,7 +1163,7 @@
     "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
     "err_generic": "Bei der Analyse der Datei ist ein Fehler aufgetreten.",
     "remove_file": "Datei entfernen",
-    "seo_title": "KI-PDF-Zusammenfassung — Kernpunkte aus Jedem Dokument",
+    "seo_title": "PDF-Zusammenfassung mit KI: Kernpunkte",
     "seo_description": "Lade ein PDF, Word- oder TXT-Dokument hoch und erhalte sofort eine KI-Zusammenfassung. Kurzfassung, detaillierte Analyse oder Kernpunkte. Kostenloser KI-Dokumenten-Zusammenfasser online.",
     "reading_stats": "{{words}} Wörter · ~{{min}} Min. Lesezeit"
   },
@@ -1260,7 +1260,7 @@
     "err_generic": "Übersetzung fehlgeschlagen. Bitte versuche es erneut.",
     "upload_aria": "Eine PDF-Datei hochladen",
     "remove_file": "Datei entfernen",
-    "seo_title": "KI-PDF-Übersetzer — Übersetzung mit Erhaltenen Seiten",
+    "seo_title": "PDF-Übersetzer mit KI: Seiten bleiben",
     "seo_description": "Übersetze jedes PDF in 12 Sprachen bei gleichbleibender Seitenzahl und Formatierung. KI-Übersetzung auf Enterprise-Niveau. Kostenlos online, keine Anmeldung."
   },
   "pdf_search": {
@@ -1329,7 +1329,7 @@
     "err_library_save": "Speichern in der Bibliothek fehlgeschlagen. Bitte versuche es erneut.",
     "preview_prev_page": "Vorherige Seite",
     "preview_next_page": "Nächste Seite",
-    "seo_title": "PDF-Suchmaschine für Gemeinfreie Werke — Bücher ohne Urheberrecht",
+    "seo_title": "PDF-Bücher suchen: Gemeinfrei, kostenlos",
     "seo_description": "Suche und lade gemeinfreie Bücher, wissenschaftliche Paper und Open-Access-Artikel herunter, ohne Urheberrechtsprobleme. Durchsuche Internet Archive, Project Gutenberg, arXiv und PubMed Central mit Vorschau vor dem Download.",
     "filter_favorites": "Favoriten",
     "results_count": "{{count}} Ergebnisse",
@@ -1448,7 +1448,7 @@
     "workspace_send": "An Workspace senden",
     "workspace_sent": "Gesendet ✓",
     "blog_link": "Leitfaden: PDF in Word umwandeln, ohne die Formatierung zu verlieren",
-    "seo_title": "Kostenloser Dateikonverter — PDF, Word, Excel, Bilder",
+    "seo_title": "Dateikonverter Online: PDF, Word und mehr",
     "seo_description": "Konvertiere zwischen PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG und mehr — {{count}} Konvertierungsarten, kostenlos, im Browser. Keine Anmeldung."
   },
   "ocr": {
@@ -1489,12 +1489,12 @@
     "sent": "Gesendet ✓",
     "save_library": "In Bibliothek speichern",
     "saved_library": "In Bibliothek gespeichert",
-    "seo_title": "Kostenloses Online-OCR — Text aus Bildern und Gescannten PDFs",
+    "seo_title": "OCR Kostenlos: Text aus Bildern und PDF",
     "seo_description": "Extrahiere Text aus Fotos, gescannten Dokumenten und PDFs in 7 Sprachen. Kostenloses Online-OCR, keine Anmeldung."
   },
   "tools": {
     "badge": "AI & PDF Tools",
-    "heading": "Deine Produktivitäts-Suite",
+    "heading": "Kostenlose PDF- und KI-Werkzeuge",
     "subtitle": "KI-gestützte Dokumenten-Tools und PDF-Utilities — alles an einem Ort.",
     "section_ai": "KI-Tools",
     "section_tools": "PDF-Tools",
@@ -1524,7 +1524,7 @@
     "library_desc": "PDFs im Browser behalten, ihren Inhalt durchsuchen, Anmerkungen setzen und den Dokumenten Fragen stellen.",
     "my_files_title": "Meine Dateien",
     "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast",
-    "seo_title": "Kostenlose PDF- & KI-Tools — Übersetzung, Zusammenfassung, Präsentationen",
+    "seo_title": "Kostenlose PDF- und KI-Werkzeuge Online",
     "seo_description": "Kostenlose Online-Tools mit KI: PDF-Übersetzer, Präsentationsgenerator, Textformatierer und PDF-Zusammenfasser. Professionelle Dokumententools. Keine Anmeldung."
   },
   "about_manage": {
@@ -1636,7 +1636,7 @@
     "workspace_send": "An Workspace senden",
     "workspace_sent": "Gesendet ✓",
     "err_file_too_large": "Datei zu groß (max. {{max}}MB): {{name}}",
-    "seo_title": "Kostenloser Online-Dokumenteneditor — Export als PDF & DOCX",
+    "seo_title": "Dokumenteneditor: Export als PDF und DOCX",
     "seo_description": "Schreibe und formatiere Dokumente im Browser, importiere Word-Dateien und exportiere als PDF, DOCX oder HTML. Kostenlos, keine Anmeldung."
   },
   "pdf_editor": {
@@ -1671,7 +1671,7 @@
     "move_right": "Nach rechts verschieben",
     "delete": "Löschen",
     "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
-    "seo_title": "Kostenloser PDF-Editor — Zusammenführen, Teilen, Drehen & Wasserzeichen",
+    "seo_title": "PDF-Editor: Zusammenfügen, Teilen, Drehen",
     "seo_description": "PDFs zusammenführen, Seiten teilen und extrahieren, Seiten drehen oder löschen und Wasserzeichen hinzufügen — komplett im Browser, Dateien verlassen nie dein Gerät.",
     "undo": "Rückgängig",
     "duplicate": "Seite duplizieren",
@@ -1710,7 +1710,7 @@
     "zoom_in": "Vergrößern",
     "prev_match": "Vorheriger Treffer",
     "next_match": "Nächster Treffer",
-    "seo_title": "Kostenloser PDF-Viewer Online — Zoom, Suche & Miniaturansichten",
+    "seo_title": "Kostenloser PDF-Viewer Online",
     "seo_description": "Betrachte PDF-Dokumente im Browser: Seitennavigation, Zoom, Volltextsuche und Miniaturansicht. Kostenlos, privat, kein Upload."
   },
   "scanner": {
@@ -1764,7 +1764,7 @@
     "page_alt": "Seite {{n}}",
     "err_camera_unsupported": "Kamera in diesem Browser nicht verfügbar oder unsichere Verbindung (HTTPS erforderlich). Du kannst trotzdem ein Bild hochladen.",
     "persistence_hint": "Erfasste Seiten werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
-    "seo_title": "Kostenloser Dokumentenscanner — Von der Kamera zum PDF Online",
+    "seo_title": "Dokumentenscanner: Foto zu PDF",
     "seo_description": "Scanne Dokumente mit Webcam oder Handykamera, schneide und verbessere sie, exportiere sie als PDF. Kostenlos, keine Anmeldung."
   },
   "library": {
@@ -2605,5 +2605,306 @@
     "acquisition_section": "Herkunft und Kontakte",
     "expand_all": "Alle aufklappen",
     "collapse_all": "Alle zuklappen"
+  },
+  "lab_info": {
+    "section_label": "Über dieses Werkzeug",
+    "about_title": "Wofür es gedacht ist",
+    "how_title": "So wird es benutzt",
+    "privacy_title": "Ihre Dateien und der Datenschutz",
+    "limits_title": "Grenzen, die Sie kennen sollten",
+    "faq_title": "Häufige Fragen",
+    "related_articles": "Zum Weiterlesen",
+    "related_tools": "Weitere Werkzeuge",
+    "all_tools": "Alle Werkzeuge",
+    "ocr": {
+      "about": "Dieses OCR-Werkzeug (optische Zeichenerkennung) verwandelt Fotos, Bilder und gescannte PDFs in Text, den Sie markieren, kopieren und bearbeiten können. Es hilft, den Text aus einem fotografierten Beleg, einer Buchseite, einem gescannten Dokument oder einem Screenshot zu holen, ohne ihn von Hand abzutippen.",
+      "steps": [
+        "Ziehen Sie Ihre Bilder oder das PDF in den Upload-Bereich oder klicken Sie darauf, um sie auszuwählen.",
+        "Wählen Sie die Sprache des Textes: Die Erkennung ist deutlich genauer, wenn die Sprache stimmt.",
+        "Starten Sie die Erkennung: Für jede Seite sehen Sie den extrahierten Text und, wenn die Zuverlässigkeit niedrig ist, einen Hinweis.",
+        "Kopieren Sie den Text, geben Sie ihn an ein anderes Lab-Werkzeug weiter oder speichern Sie ihn in Ihrer Bibliothek."
+      ],
+      "privacy": "Die Bilder werden nur für die Erkennung an unseren Server gesendet und im Arbeitsspeicher verarbeitet, ohne als Archiv gespeichert zu werden. Ein Konto ist nicht nötig.",
+      "limits": "Sie können bis zu 30 Dateien oder Seiten auf einmal hochladen; jedes Bild darf bis zu 15 MB groß sein, von jedem PDF werden die ersten 20 Seiten gelesen. Verfügbare Sprachen sind Italienisch, Englisch, Spanisch, Französisch, Deutsch, Portugiesisch und Albanisch. Die Qualität hängt vom Foto ab: schiefer, unscharfer oder schlecht beleuchteter Text verringert die Genauigkeit.",
+      "faq": [
+        {
+          "q": "Funktioniert OCR auch bei PDFs?",
+          "a": "Ja. Ist das PDF ein Scan, die Seiten also Bilder, liest das Werkzeug sie und extrahiert den Text. Enthält das PDF bereits markierbaren Text, braucht man meist keine OCR."
+        },
+        {
+          "q": "Welche Sprachen werden erkannt?",
+          "a": "Italienisch, Englisch, Spanisch, Französisch, Deutsch, Portugiesisch und Albanisch. Wählen Sie die Sprache vor dem Start: Mit der richtigen ist das Ergebnis deutlich genauer."
+        },
+        {
+          "q": "Warum enthält der extrahierte Text Fehler?",
+          "a": "OCR macht Fehler, wenn das Bild unscharf, schief, kontrastarm ist oder ungewöhnliche Zeichen enthält. Versuchen Sie, das Foto mit mehr Licht und gerade gehaltenem Blatt neu aufzunehmen, und prüfen Sie, ob die richtige Sprache gewählt ist."
+        },
+        {
+          "q": "Muss ich mich registrieren oder bezahlen?",
+          "a": "Nein, das Werkzeug ist kostenlos und braucht kein Konto. Es gibt lediglich ein Limit für Anfragen in kurzer Zeit, um Missbrauch zu verhindern: Wenn Sie es erreichen, warten Sie einen Moment und versuchen Sie es erneut."
+        }
+      ]
+    },
+    "scanner": {
+      "about": "Der Scanner macht die Kamera Ihres Smartphones oder Computers zu einem Dokumentenscanner: Sie fotografieren die Seiten, schneiden sie zu, wenden einen Filter für bessere Lesbarkeit an und fassen sie in einem einzigen PDF zum Herunterladen zusammen. Praktisch, wenn kein Scanner zur Hand ist und Sie einen Vertrag, einen Beleg oder ein Formular als PDF brauchen.",
+      "steps": [
+        "Starten Sie die Kamera und erfassen Sie die Seite, oder laden Sie ein vorhandenes Bild hoch.",
+        "Ziehen Sie auf dem Bild, um die Blattränder zuzuschneiden und den Hintergrund zu entfernen.",
+        "Wiederholen Sie das für jede Seite; eine misslungene Seite können Sie löschen.",
+        "Exportieren Sie das PDF und laden Sie es herunter; wenn Sie den Text brauchen, nutzen Sie zusätzlich die OCR."
+      ],
+      "privacy": "Aufnahme, Zuschnitt und Filter laufen in Ihrem Browser: Die Bilder verlassen Ihr Gerät erst, wenn Sie etwas anderes wählen. Nur wenn Sie die OCR nutzen oder das PDF exportieren, werden die Seiten für die Dauer der Verarbeitung an unseren Server gesendet.",
+      "limits": "Akzeptiert werden PNG-, JPG- und WEBP-Bilder, jeweils bis 20 MB und bis zu 20 Seiten pro Dokument. Aufgenommene Seiten werden nicht gespeichert: Wenn Sie den Tab neu laden oder schließen, sind sie weg – laden Sie das PDF daher vor dem Verlassen herunter. Die Kamera erfordert eine sichere Verbindung (HTTPS) und Ihre Erlaubnis.",
+      "faq": [
+        {
+          "q": "Funktioniert es auch auf dem Smartphone?",
+          "a": "Ja, es ist auch für Smartphones gedacht: Der Browser fragt Sie um Erlaubnis, die Kamera zu nutzen. Ist sie nicht verfügbar, können Sie bereits aufgenommene Fotos hochladen."
+        },
+        {
+          "q": "Kann ich mehrere Seiten in einem PDF zusammenfassen?",
+          "a": "Ja, bis zu 20 Seiten: Jede aufgenommene Seite wird dem Dokument hinzugefügt, das Sie am Ende als ein PDF exportieren."
+        },
+        {
+          "q": "Wie bekomme ich Text zum Kopieren?",
+          "a": "Nutzen Sie die OCR-Funktion des Scanners oder geben Sie die Seiten an das OCR-Werkzeug des Labs weiter: Es erkennt den Text und macht ihn markier- und kopierbar."
+        },
+        {
+          "q": "Werden meine Fotos gespeichert?",
+          "a": "Nein: Aufgenommene Seiten bleiben im Browser und verschwinden, wenn Sie die Seite neu laden. Sie gelangen nur zum Server, wenn Sie OCR oder PDF-Export wählen."
+        }
+      ]
+    },
+    "pdf_editor": {
+      "about": "Der Online-PDF-Editor kann mehrere PDFs zu einem zusammenfügen, ein Dokument teilen, einzelne Seiten drehen oder löschen, die Seitenreihenfolge ändern und ein Text-Wasserzeichen hinzufügen. Alles läuft in Ihrem Browser: Es ist der bequemste Weg, ein PDF zu bearbeiten, ohne Software zu installieren und ohne die Datei an einen externen Dienst zu schicken.",
+      "steps": [
+        "Ziehen Sie ein oder mehrere PDFs in den Upload-Bereich: Wählen Sie mehrere aus, werden sie hintereinander angeordnet.",
+        "In der Seitenvorschau ziehen Sie Seiten in die richtige Reihenfolge, drehen schiefe oder löschen nicht benötigte.",
+        "Geben Sie bei Bedarf einen Wasserzeichentext ein oder einen Seitenbereich, um das Dokument zu teilen.",
+        "Exportieren Sie das PDF und laden Sie es herunter."
+      ],
+      "privacy": "Die Dateien werden vollständig in Ihrem Browser verarbeitet: Sie werden auf keinen Server hochgeladen. So können Sie auch mit Verträgen, Ausweisdokumenten oder Rechnungen arbeiten, ohne sie mit Dritten zu teilen.",
+      "limits": "Änderungen werden nicht gespeichert: Wenn Sie den Tab neu laden oder schließen, gehen sie verloren – laden Sie das Ergebnis daher vor dem Verlassen herunter. Ein passwortgeschütztes oder sehr großes PDF lässt sich unter Umständen nicht öffnen oder bremst den Browser, weil Ihr Gerät die Arbeit erledigt. Das Wasserzeichen besteht nur aus Text.",
+      "faq": [
+        {
+          "q": "Wie füge ich zwei PDFs zusammen?",
+          "a": "Laden Sie beide Dateien gemeinsam hoch: Sie erscheinen hintereinander, und Sie können die Seiten per Ziehen neu anordnen. Exportieren Sie das Ergebnis dann als ein einziges PDF."
+        },
+        {
+          "q": "Werden meine PDFs online hochgeladen?",
+          "a": "Nein. Die Verarbeitung findet im Browser statt, die Dateien bleiben also auf Ihrem Gerät."
+        },
+        {
+          "q": "Kann ich nur einzelne Seiten extrahieren?",
+          "a": "Ja: Löschen Sie die nicht benötigten Seiten oder teilen Sie das Dokument mit dem Seitenbereich, und exportieren Sie anschließend."
+        },
+        {
+          "q": "Kann ich den Text in einem PDF bearbeiten?",
+          "a": "Nein, dieses Werkzeug arbeitet mit Seiten (zusammenfügen, teilen, drehen, löschen, Wasserzeichen), nicht mit dem Inhalt. Um den Text zu bearbeiten, können Sie das PDF mit dem Dateikonverter in Word umwandeln."
+        }
+      ]
+    },
+    "viewer": {
+      "about": "Der Online-PDF-Viewer öffnet ein Dokument im Browser mit Zoom, Textsuche, Seitenminiaturen und Textmarker. Er eignet sich zum Lesen und Nachschlagen in einem PDF, ohne ein Programm zu installieren und ohne es irgendwohin hochzuladen – auch vom Smartphone aus.",
+      "steps": [
+        "Ziehen Sie das PDF in den Upload-Bereich oder wählen Sie die Datei auf Ihrem Gerät aus.",
+        "Wechseln Sie mit den Miniaturen zwischen den Seiten und vergrößern oder verkleinern Sie mit dem Zoom.",
+        "Suchen Sie ein Wort: Das Werkzeug hebt die Treffer im Text hervor.",
+        "Aktivieren Sie den Textmarker und ziehen Sie über den Text, um wichtige Stellen zu markieren."
+      ],
+      "privacy": "Das Dokument wird vollständig in Ihrem Browser gelesen und nie hochgeladen: Sie können auch vertrauliche Dateien sicher einsehen.",
+      "limits": "Die Suche funktioniert nur, wenn das PDF markierbaren Text enthält. Ist es ein Scan, die Seiten also Bilder, weist das Werkzeug Sie darauf hin: Extrahieren Sie dann zuerst den Text mit dem OCR-Werkzeug. Sehr große Dateien können auf älteren Geräten länger zum Öffnen brauchen.",
+      "faq": [
+        {
+          "q": "Warum findet die Suche in meinem PDF nichts?",
+          "a": "Wahrscheinlich ist das PDF ein Scan: Die Seiten sind Bilder und enthalten keinen durchsuchbaren Text. Geben Sie die Datei an das OCR-Werkzeug weiter, um den Text zu extrahieren, und suchen Sie dann."
+        },
+        {
+          "q": "Wird die Datei auf einen Server hochgeladen?",
+          "a": "Nein. Das PDF wird von Ihrem Browser geöffnet und gelesen und bleibt auf Ihrem Gerät."
+        },
+        {
+          "q": "Kann ich Text hervorheben und kommentieren?",
+          "a": "Ja: Aktivieren Sie den Textmarker und ziehen Sie über den Text, um ihn zu markieren."
+        },
+        {
+          "q": "Funktioniert es auf dem Smartphone?",
+          "a": "Ja, der Viewer passt sich dem Smartphone-Bildschirm an; bei sehr großen Dokumenten kann das Öffnen länger dauern."
+        }
+      ]
+    },
+    "editor": {
+      "about": "Der Online-Dokumenteneditor lässt Sie Text direkt im Browser schreiben und formatieren und als PDF, DOCX (Word) oder HTML exportieren. Er ist nützlich, wenn Sie schnell einen Brief, ein Protokoll oder einen Bericht erstellen müssen, ohne Word zu öffnen, oder einen Text in ein leicht teilbares Format bringen wollen.",
+      "steps": [
+        "Schreiben oder fügen Sie den Text ein und formatieren Sie ihn mit der Symbolleiste: Überschriften, Listen, Fett und Kursiv.",
+        "Wenn Sie schon ein Dokument haben, können Sie es importieren und weiter daran arbeiten.",
+        "Wählen Sie das Exportformat: PDF, DOCX oder HTML.",
+        "Laden Sie die erzeugte Datei herunter."
+      ],
+      "privacy": "Beim Schreiben bleibt der Text in Ihrem Browser. Beim Export als PDF oder DOCX wird der Inhalt nur zur Erzeugung der Datei an unseren Server gesendet.",
+      "limits": "Importierte Dokumente dürfen bis zu 50 MB groß sein. Für den Export ist eine aktive Verbindung nötig. Exportieren Sie das Dokument vor dem Schließen des Tabs, damit Ihre Arbeit nicht verloren geht.",
+      "faq": [
+        {
+          "q": "In welche Formate kann ich exportieren?",
+          "a": "In PDF, DOCX (kompatibel mit Word) und HTML."
+        },
+        {
+          "q": "Kann ich mit einem vorhandenen Dokument beginnen?",
+          "a": "Ja, Sie können ein Dokument bis 50 MB importieren und im Editor weiter bearbeiten."
+        },
+        {
+          "q": "Muss ich etwas installieren oder ein Konto anlegen?",
+          "a": "Nein: Es läuft im Browser, auch auf dem Smartphone, und braucht kein Konto."
+        },
+        {
+          "q": "Wird mein Text an einen Server gesendet?",
+          "a": "Nur beim Export als PDF oder DOCX: Dann benötigt der Server den Inhalt, um die Datei zu erzeugen."
+        }
+      ]
+    },
+    "convert": {
+      "about": "Der Online-Dateikonverter wandelt Dokumente und Bilder von einem Format in ein anderes um: zwischen PDF, Word (DOCX), Text, HTML und Markdown, aber auch Bilder in WebP für das Web und CSV oder JSON in PDF-Berichte, außerdem lassen sich mehrere PDFs zu einem zusammenfügen. Wählen Sie die gewünschte Umwandlung, laden Sie die Datei hoch und laden Sie das Ergebnis herunter.",
+      "steps": [
+        "Suchen oder wählen Sie in der Liste die gewünschte Umwandlung, zum Beispiel PDF → DOCX.",
+        "Ziehen Sie die Datei in den Upload-Bereich oder wählen Sie sie auf Ihrem Gerät aus.",
+        "Starten Sie die Umwandlung und warten Sie einige Sekunden.",
+        "Am Ende startet der Download automatisch."
+      ],
+      "privacy": "Zur Umwandlung wird die Datei an unseren Server gesendet, der sie verarbeitet und Ihnen das Ergebnis zurückgibt. Die Dateien dienen nur dazu, die gewünschte Umwandlung auszuführen.",
+      "limits": "Jede Datei darf bis zu 50 MB groß sein; bei Umwandlungen, die mehrere Dateien kombinieren, etwa dem Zusammenfügen von PDFs, können Sie bis zu 20 auswählen. Ein PDF mit sehr komplexen Tabellen oder Layouts kann beim Wechsel zu Word einen Teil seiner Formatierung verlieren. Ein gescanntes PDF wird nicht zu bearbeitbarem Text: Nutzen Sie dafür zuerst die OCR.",
+      "faq": [
+        {
+          "q": "Wie wandle ich ein PDF in Word um, ohne die Formatierung zu verlieren?",
+          "a": "Wählen Sie die Umwandlung PDF → DOCX. PDFs mit markierbarem Text behalten in der Regel Überschriften, Absätze und Listen; sehr aufwendige Layouts brauchen nach der Umwandlung unter Umständen kleine Nacharbeiten. Den vollständigen Leitfaden finden Sie im unten verlinkten Artikel."
+        },
+        {
+          "q": "Kann ich mehrere Dateien gleichzeitig umwandeln?",
+          "a": "Bei Umwandlungen, die Dateien kombinieren, etwa dem Zusammenfügen von PDFs, können Sie bis zu 20 auf einmal hochladen."
+        },
+        {
+          "q": "Wird ein gescanntes PDF bearbeitbar?",
+          "a": "Nicht direkt: Ein Scan besteht aus Bildern. Extrahieren Sie zuerst den Text mit dem OCR-Werkzeug und arbeiten Sie dann mit dem erhaltenen Text weiter."
+        },
+        {
+          "q": "Wie groß darf eine Datei höchstens sein?",
+          "a": "Bis zu 50 MB pro Datei. Ist Ihre Datei größer, verkleinern oder teilen Sie sie vor der Umwandlung."
+        }
+      ]
+    },
+    "pdf_summary": {
+      "about": "Der KI-PDF-Zusammenfasser liest ein Dokument und erstellt in wenigen Sekunden eine Zusammenfassung mit den wichtigsten Punkten. Er hilft, sich in einem langen Bericht, einem Vertrag, einem wissenschaftlichen Artikel oder einem Skript zu orientieren, bevor Sie entscheiden, ob Sie alles lesen.",
+      "steps": [
+        "Laden Sie ein PDF, ein Word-Dokument (.docx oder .doc), eine Textdatei oder eine HTML-Seite hoch.",
+        "Starten Sie die Analyse und warten Sie einige Sekunden.",
+        "Lesen Sie die Zusammenfassung mit den wichtigsten Punkten: Sie können sie kopieren oder an ein anderes Lab-Werkzeug weitergeben."
+      ],
+      "privacy": "Der Inhalt des Dokuments wird zur Erstellung der Zusammenfassung an einen KI-Dienst gesendet. Laden Sie keine Dokumente hoch, die Sie nicht mit einem externen Dienst teilen möchten, etwa solche mit personenbezogenen oder vertraulichen Daten.",
+      "limits": "Dateien bis 20 MB werden akzeptiert. Ist das Dokument sehr lang, wird nur der erste Teil verarbeitet, und das Werkzeug weist Sie darauf hin. Eine automatische Zusammenfassung kann Details auslassen oder Ungenauigkeiten enthalten: Prüfen Sie bei wichtigen Entscheidungen den Originaltext. Ein gescanntes PDF muss zuerst durch die OCR. Zur Kostenbegrenzung gibt es ein tägliches Nutzungslimit.",
+      "faq": [
+        {
+          "q": "Welche Dateien kann ich zusammenfassen?",
+          "a": "PDF, Word (.docx und .doc), Textdateien und HTML, bis 20 MB."
+        },
+        {
+          "q": "Ist die Zusammenfassung zuverlässig?",
+          "a": "Sie ist ein guter Ausgangspunkt, um zu verstehen, worum es in einem Dokument geht, aber eine KI kann sich irren oder Details auslassen. Prüfen Sie wichtige Stellen immer im Originaldokument."
+        },
+        {
+          "q": "Funktioniert es mit gescannten PDFs?",
+          "a": "Nur wenn sie Text enthalten. Sind die Seiten Bilder, extrahieren Sie den Text mit dem OCR-Werkzeug und fassen ihn dann zusammen."
+        },
+        {
+          "q": "Kann ich ein sehr langes Dokument zusammenfassen?",
+          "a": "Der Anfang wird gelesen, und das Werkzeug weist darauf hin, dass der Rest nicht enthalten ist. Bei sehr langen Texten teilen Sie das Dokument am besten in Abschnitte."
+        }
+      ]
+    },
+    "pdf_translate": {
+      "about": "Der KI-PDF-Übersetzer übersetzt ein Dokument in eine andere Sprache und versucht dabei, dieselbe Seitenzahl und dieselben Maße wie das Original beizubehalten, Seite für Seite. Er ist gedacht für Verträge, Handbücher, Berichte und Skripte, die Sie in einer anderen Sprache lesen oder weitergeben müssen, ohne das Dokument von Hand neu aufzubauen.",
+      "steps": [
+        "Laden Sie ein PDF, eine Word-Datei (DOCX) oder eine Textdatei hoch.",
+        "Wählen Sie die Zielsprache und den Modus: „Hohe Originaltreue“ behält Anzahl und Größe der Seiten bei, „Standard“ ist schneller und liefert sauberen Text.",
+        "Starten Sie die Übersetzung: Das Werkzeug übersetzt Block für Block und baut das Dokument neu auf.",
+        "Laden Sie die übersetzte Datei herunter oder geben Sie sie an ein anderes Lab-Werkzeug weiter."
+      ],
+      "privacy": "Der Inhalt des Dokuments wird zur Übersetzung an einen KI-Dienst gesendet. Laden Sie keine vertraulichen Dokumente oder solche mit personenbezogenen Daten hoch, die Sie nicht mit einem externen Dienst teilen möchten.",
+      "limits": "Das Limit liegt bei 50 MB pro Datei. Das Layout wird mit denselben Seiten und Maßen neu aufgebaut, die Originalschriften und -bilder werden jedoch nicht übernommen. Besteht das PDF aus Bildern, erkennt das Werkzeug das und nutzt OCR, mit Ergebnissen, die von der Scanqualität abhängen. Bei sehr langen Dokumenten wird unter Umständen nur der erste Teil übersetzt, und das Werkzeug weist darauf hin.",
+      "faq": [
+        {
+          "q": "Behält das übersetzte PDF die Formatierung?",
+          "a": "Es behält Anzahl und Maße der Seiten bei und versucht, den Text in den verfügbaren Platz einzupassen, gibt aber die Originalschriften und -bilder nicht wieder. Vergleichen Sie es zur Kontrolle mit dem Original."
+        },
+        {
+          "q": "In welche Sprachen kann ich übersetzen?",
+          "a": "Englisch, Italienisch, Albanisch, Spanisch, Deutsch, Französisch und weitere."
+        },
+        {
+          "q": "Funktioniert es mit gescannten PDFs?",
+          "a": "Ja: Besteht das PDF aus Bildern, erkennt das Werkzeug das und führt zuerst OCR aus. Die Qualität hängt von der Schärfe des Scans ab."
+        },
+        {
+          "q": "Ist die Übersetzung so genau wie die eines menschlichen Übersetzers?",
+          "a": "Nein: Es ist eine maschinelle Übersetzung, sehr gut zum Verstehen und Arbeiten, aber bei Verträgen oder juristischen Texten bleibt die Prüfung durch eine Fachperson empfehlenswert."
+        }
+      ]
+    },
+    "ai_ppt": {
+      "about": "Der KI-Präsentationsgenerator erstellt aus einem Thema die Struktur einer Präsentation: Folientitel, Aufzählungspunkte, Sprechernotizen und einen roten Faden. Er hilft, die leere Seite zu überwinden, und liefert in Sekunden einen Entwurf zum Feinschliff.",
+      "steps": [
+        "Schreiben Sie das Thema der Präsentation in einem Satz.",
+        "Wählen Sie den Stil (Business, Bildung, minimalistisch, modern oder Pitch-Deck) und die Folienanzahl: 5, 10, 15 oder 20.",
+        "Laden Sie bei Bedarf ein PDF, ein DOCX oder eine TXT als Ausgangsmaterial hoch: Die KI nutzt es als Kontext.",
+        "Erzeugen Sie die Präsentation, lesen Sie sie und laden Sie sie herunter."
+      ],
+      "privacy": "Das Thema und ein eventuelles Kontextdokument werden zur Erstellung der Folien an einen KI-Dienst gesendet. Geben Sie keine vertraulichen Daten ein, die Sie nicht teilen möchten.",
+      "limits": "Das Kontextdokument darf bis zu 20 MB groß sein (PDF, DOCX oder TXT). Das Ergebnis ist ein Entwurf: Titel, Punkte und Notizen sollten geprüft, angepasst und mit eigenen Bildern und Daten ergänzt werden. Ist der Inhalt mancher Folien zu lang, kann er gekürzt werden: Kürzen Sie dann das Thema und erzeugen Sie die Präsentation neu.",
+      "faq": [
+        {
+          "q": "Wie viele Folien kann ich erzeugen?",
+          "a": "5, 10, 15 oder 20, je nachdem, wie ausführlich die Präsentation sein soll."
+        },
+        {
+          "q": "Kann ich von einem eigenen Dokument ausgehen?",
+          "a": "Ja: Laden Sie ein PDF, ein DOCX oder eine TXT hoch, und die KI nutzt es als Kontext für die Folien."
+        },
+        {
+          "q": "Sind die erzeugten Folien präsentationsreif?",
+          "a": "Sie sind ein guter Entwurf mit Struktur, Aufzählungspunkten und Sprechernotizen, sollten aber vor dem Vortrag überarbeitet und um Bilder, Diagramme und konkrete Daten ergänzt werden."
+        },
+        {
+          "q": "Welche Stile gibt es?",
+          "a": "Business, Bildung, Minimalistisch, Modern und Pitch-Deck für Startups."
+        }
+      ]
+    },
+    "ai_formatter": {
+      "about": "Der KI-Textformatierer verwandelt rohe Notizen, Besprechungsprotokolle oder KI-generierte Texte in ein geordnetes Dokument mit Überschriften, Listen und Absätzen. Er hilft, wenn Sie den Inhalt schon haben, aber keine Zeit mit dem Layouten verlieren wollen.",
+      "steps": [
+        "Fügen Sie den Text in das Feld ein oder ziehen Sie eine .txt- oder .md-Datei hinein.",
+        "Starten Sie die Formatierung: Die KI erkennt Überschriften, Aufzählungspunkte und Absätze.",
+        "Wechseln Sie zwischen der formatierten Vorschau und der rohen Markdown-Ausgabe.",
+        "Kopieren Sie das Ergebnis oder geben Sie es an den Editor weiter, um es als PDF oder DOCX zu exportieren."
+      ],
+      "privacy": "Der Text wird zur Formatierung an einen KI-Dienst gesendet. Fügen Sie keine vertraulichen Informationen ein, die Sie nicht mit einem externen Dienst teilen möchten. Wenn Sie die Seite neu laden, wird der Entwurf im Browser wiederhergestellt.",
+      "limits": "Es sind mindestens 10 Zeichen Text nötig, unterstützt werden .txt- und .md-Dateien. Ist der Text sehr lang, wird nur der erste Teil formatiert, und das Werkzeug weist darauf hin. Die KI versucht, den Inhalt zu erhalten, dennoch sollten Sie das Ergebnis vor der Verwendung nachlesen.",
+      "faq": [
+        {
+          "q": "Welche Dokumentarten kann ich erstellen?",
+          "a": "Angebote, Berichte, Besprechungsprotokolle, Lebensläufe und Artikel: Das Werkzeug passt den Stil an die Textart an."
+        },
+        {
+          "q": "In welchem Format erhalte ich das Ergebnis?",
+          "a": "Als formatierte Vorschau oder als Markdown, das Sie kopieren und einfügen können, wo Sie möchten."
+        },
+        {
+          "q": "Kann ich einen von einer anderen KI geschriebenen Text verwenden?",
+          "a": "Ja, es ist auch dafür gedacht, Texte aus anderen KI-Werkzeugen zu ordnen, die oft ohne klare Struktur ankommen."
+        },
+        {
+          "q": "Wie bekomme ich ein PDF oder eine Word-Datei?",
+          "a": "Geben Sie den formatierten Text an den Dokumenteneditor des Labs weiter, der ihn als PDF, DOCX oder HTML exportiert."
+        }
+      ]
+    },
+    "try_tool": "Das kostenlose Werkzeug jetzt ausprobieren"
   }
 }
