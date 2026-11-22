@@ -79,7 +79,8 @@ function passwordsMatch(ctrl: AbstractControl) {
             <a [routerLink]="'/terms' | langUrl" target="_blank" rel="noopener">{{ 'footer.terms_link' | translate }}</a>.
           </p>
 
-          <button mat-raised-button color="primary" type="submit" [disabled]="loading || !flags.registrationEnabled()" class="submit-btn">
+          <!-- Il tema Material non è caricato: mat-raised-button color="primary" usciva senza sfondo (sembrava testo). Si usa il bottone del sito. -->
+          <button type="submit" [disabled]="loading || !flags.registrationEnabled()" class="btn btn-primary submit-btn">
             @if (loading) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>person_add</mat-icon> }
             {{ (loading ? 'auth.registering' : 'auth.register_btn') | translate }}
           </button>
