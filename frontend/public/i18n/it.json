@@ -1164,7 +1164,8 @@
     "err_generic": "Si è verificato un errore durante l'analisi del file.",
     "remove_file": "Rimuovi file",
     "seo_title": "Riassunto PDF con AI — Estrai i Punti Chiave da Ogni Documento",
-    "seo_description": "Carica un PDF, Word o TXT e ottieni un riassunto generato dall'AI all'istante. Riassunto breve, analisi dettagliata, punti chiave. Riassuntore AI gratuito online."
+    "seo_description": "Carica un PDF, Word o TXT e ottieni un riassunto generato dall'AI all'istante. Riassunto breve, analisi dettagliata, punti chiave. Riassuntore AI gratuito online.",
+    "reading_stats": "{{words}} parole · ~{{min}} min di lettura"
   },
   "workspace": {
     "badge": "Novità",
@@ -1819,7 +1820,8 @@
     "chat_error": "Risposta non riuscita. Riprova.",
     "import_skipped": "{{count}} file ignorati: solo i PDF possono essere importati in Libreria.",
     "seo_title": "La Mia Libreria PDF — Archivio Personale con Ricerca e Chat AI",
-    "seo_description": "Salva i PDF trovati, cercali per contenuto pagina per pagina, annotali e fai domande ai tuoi documenti. Tutto resta nel tuo browser, nessun caricamento sul server."
+    "seo_description": "Salva i PDF trovati, cercali per contenuto pagina per pagina, annotali e fai domande ai tuoi documenti. Tutto resta nel tuo browser, nessun caricamento sul server.",
+    "filter_placeholder": "Filtra per titolo, autore o tag…"
   },
   "blog_manage": {
     "title": "Articoli del blog",

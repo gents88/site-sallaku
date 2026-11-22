@@ -1164,7 +1164,8 @@
     "err_generic": "An error occurred while analyzing the file.",
     "remove_file": "Remove file",
     "seo_title": "AI PDF Summarizer — Extract Key Points from Any Document",
-    "seo_description": "Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online."
+    "seo_description": "Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.",
+    "reading_stats": "{{words}} words · ~{{min}} min read"
   },
   "workspace": {
     "badge": "New",
@@ -1819,7 +1820,8 @@
     "chat_error": "The answer failed. Try again.",
     "import_skipped": "{{count}} file(s) skipped: only PDFs can be imported into the Library.",
     "seo_title": "My PDF Library — Personal Archive with Search and AI Chat",
-    "seo_description": "Save the PDFs you find, search them page by page, annotate them and ask questions about your documents. Everything stays in your browser, nothing is uploaded."
+    "seo_description": "Save the PDFs you find, search them page by page, annotate them and ask questions about your documents. Everything stays in your browser, nothing is uploaded.",
+    "filter_placeholder": "Filter by title, author or tag…"
   },
   "blog_manage": {
     "title": "Blog Posts",

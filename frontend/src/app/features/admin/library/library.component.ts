@@ -84,6 +84,8 @@ export class LibraryComponent implements OnInit {
 
   readonly activeTag = signal<string | null>(null);
   readonly sortBy = signal<SortOrder>('recent');
+  /** Filtro rapido locale su titolo/autore/tag: istantaneo, distinto dalla ricerca full-text nei contenuti. */
+  readonly titleFilter = signal('');
   readonly openMenuId = signal<string | null>(null);
   readonly tagEditorId = signal<string | null>(null);
   readonly tagDraft = signal('');
@@ -147,7 +149,13 @@ export class LibraryComponent implements OnInit {
 
   readonly visibleDocs = computed<LibraryDoc[]>(() => {
     const tag = this.activeTag();
-    const list = tag ? this.docs().filter((d) => d.tags.includes(tag)) : [...this.docs()];
+    let list = tag ? this.docs().filter((d) => d.tags.includes(tag)) : [...this.docs()];
+    const needle = this.titleFilter().trim().toLowerCase();
+    if (needle) {
+      list = list.filter((d) =>
+        `${d.title} ${d.author} ${d.tags.join(' ')}`.toLowerCase().includes(needle),
+      );
+    }
     switch (this.sortBy()) {
       case 'title':
         return list.sort((a, b) => a.title.localeCompare(b.title));
@@ -315,16 +323,18 @@ export class LibraryComponent implements OnInit {
     if (!blob) return;
 
     this.setProgress(id, 0);
+    let pdfDoc: Awaited<ReturnType<PdfjsService['openDocument']>> | null = null;
     try {
-      const doc = await this.pdfjs.openDocument(await blob.arrayBuffer());
-      const pages = await this.pdfjs.extractPages(doc, (done, total) =>
+      pdfDoc = await this.pdfjs.openDocument(await blob.arrayBuffer());
+      const pages = await this.pdfjs.extractPages(pdfDoc, (done, total) =>
         this.setProgress(id, Math.round((done / total) * 100)),
       );
       await this.library.indexPages(id, pages);
-      await doc.loadingTask.destroy();
     } catch {
       this.error.set(this.translate.instant('library.err_index'));
     } finally {
+      // Anche in caso di errore: il documento pdf.js tiene worker e memoria finché non viene distrutto.
+      if (pdfDoc) void pdfDoc.loadingTask.destroy();
       this.clearProgress(id);
     }
   }

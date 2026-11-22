@@ -40,6 +40,10 @@ type SummaryLang = 'it' | 'en' | 'es' | 'fr' | 'de' | 'pt';
 
 /** Allineato al limite lato backend (validateFile(file, 20) in ai.controller.ts). */
 const MAX_FILE_MB = 20;
+const LANG_STORAGE_KEY = 'pdf-summary-lang';
+const SUMMARY_LANGS: readonly SummaryLang[] = ['it', 'en', 'es', 'fr', 'de', 'pt'];
+/** Velocità di lettura media usata per la stima "min di lettura". */
+const WORDS_PER_MINUTE = 220;
 const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
 
 @Component({
@@ -137,7 +141,22 @@ export class PdfSummaryComponent implements OnInit {
   justSaved      = signal(false);
   saveError      = signal('');
 
-  selectedLang: SummaryLang = 'en';
+  // Default = lingua dell'interfaccia (o 'en'); la scelta esplicita dell'utente, se c'è, la sovrascrive.
+  selectedLang: SummaryLang = this.defaultLang();
+
+  private defaultLang(): SummaryLang {
+    try {
+      const saved = localStorage.getItem(LANG_STORAGE_KEY) as SummaryLang | null;
+      if (saved && SUMMARY_LANGS.includes(saved)) return saved;
+    } catch { /* storage non disponibile (SSR / modalità privata) */ }
+    const ui = this.t.currentLang as SummaryLang;
+    return SUMMARY_LANGS.includes(ui) ? ui : 'en';
+  }
+
+  onLangChange(lang: SummaryLang): void {
+    this.selectedLang = lang;
+    try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch { /* ignora */ }
+  }
   outputMode     = signal<OutputMode>('short');
 
   readonly outputModes: { id: OutputMode; icon: string; labelKey: string }[] = [
@@ -157,6 +176,13 @@ export class PdfSummaryComponent implements OnInit {
       case 'insights': return r.keywords?.join(', ') ?? r.shortSummary;
       default:         return r.shortSummary;
     }
+  });
+
+  /** Parole e minuti di lettura del testo mostrato: dà subito l'idea di quanto è lungo. */
+  readonly summaryStats = computed(() => {
+    const text = this.displayedSummary().trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    return { words, minutes: Math.max(1, Math.round(words / WORDS_PER_MINUTE)) };
   });
 
   onFilesDropped(files: FileList): void {
@@ -204,7 +230,7 @@ export class PdfSummaryComponent implements OnInit {
     navigator.clipboard.writeText(text).then(() => {
       this.justCopied.set(true);
       setTimeout(() => this.justCopied.set(false), 2000);
-    });
+    }).catch(() => { /* clipboard negata: niente falso "Copiato" */ });
   }
 
   saveToAccount(): void {
@@ -262,7 +288,7 @@ export class PdfSummaryComponent implements OnInit {
     ].join('\n');
     const a = Object.assign(document.createElement('a'), {
       href: URL.createObjectURL(new Blob([content], { type: 'text/markdown' })),
-      download: `${r.title ?? 'summary'}.md`,
+      download: `${(r.title ?? '').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 80) || 'summary'}.md`,
     });
     a.click(); URL.revokeObjectURL(a.href);
   }
