@@ -1329,7 +1329,14 @@
     "preview_prev_page": "Previous page",
     "preview_next_page": "Next page",
     "seo_title": "Public Domain PDF Search Engine — Copyright-Free Books",
-    "seo_description": "Search and download public domain books, scientific papers and open-access articles with no copyright issues. Search Internet Archive, Project Gutenberg, arXiv and PubMed Central with a preview before downloading."
+    "seo_description": "Search and download public domain books, scientific papers and open-access articles with no copyright issues. Search Internet Archive, Project Gutenberg, arXiv and PubMed Central with a preview before downloading.",
+    "filter_favorites": "Favorites",
+    "results_count": "{{count}} results",
+    "btn_copy_link": "Copy link",
+    "link_copied": "Link copied",
+    "preview_goto_page": "Go to page",
+    "zoom_out": "Zoom out",
+    "zoom_in": "Zoom in"
   },
   "convert": {
     "title": "Converter",
