@@ -13,6 +13,8 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
 import { FileDropzoneDirective } from '../../../shared/directives/file-dropzone.directive';
 import { TrackedRequest } from '../../../shared/utils/tracked-request';
 import { RequestProgressComponent } from '../../../shared/components/request-progress/request-progress.component';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 type Filter = 'none' | 'grayscale' | 'bw' | 'enhance';
 
@@ -52,7 +54,7 @@ const CROP_KEY_STEP_FINE = 4;
   selector: 'app-scanner',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
+  imports: [LabToolInfoComponent, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent],
   templateUrl: './scanner.component.html',
   styleUrls: ['./scanner.component.scss'],
 })
@@ -60,6 +62,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
   private readonly conv = inject(ConversionService);
   private readonly ocr = inject(OcrService);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
@@ -125,6 +128,7 @@ export class ScannerComponent implements OnInit, OnDestroy {
       featureList: ['Camera capture', 'Auto crop & enhance', 'Multi-page scan', 'Export as PDF'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
     },
+    ...this.labInfo.faqSchemas('scanner'),
     this.seo.breadcrumb([
       { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
       { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },

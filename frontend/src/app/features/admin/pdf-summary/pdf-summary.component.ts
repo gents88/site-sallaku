@@ -23,6 +23,8 @@ import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { AskDocumentComponent } from '../../../shared/components/ask-document/ask-document.component';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 interface FileSummaryResult {
   title: string;
@@ -50,7 +52,7 @@ const ALLOWED_EXTENSIONS = ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'];
   selector: 'app-pdf-summary',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent, SampleFileButtonComponent, AskDocumentComponent],
+  imports: [LabToolInfoComponent, CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent, SampleFileButtonComponent, AskDocumentComponent],
   templateUrl: './pdf-summary.component.html',
   styleUrls: ['./pdf-summary.component.scss'],
 })
@@ -59,6 +61,7 @@ export class PdfSummaryComponent implements OnInit {
 
   private readonly upload = inject(UploadClient);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
   private readonly t = inject(TranslateService);
@@ -94,27 +97,7 @@ export class PdfSummaryComponent implements OnInit {
         featureList: ['Short summary', 'Detailed analysis', 'Bullet points', 'Key insights', 'Multiple languages', '20 MB limit'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'What file types can I summarize?',
-            acceptedAnswer: { '@type': 'Answer', text: 'PDF, Word (.docx) and plain text (.txt) files, up to 20 MB.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'What kind of summary do I get?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Choose between a short summary, a detailed analysis, or a bullet-point list of key insights.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Does it support multiple languages?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, summaries can be generated in multiple languages.' },
-          },
-        ],
-      },
+      ...this.labInfo.faqSchemas('pdf-summary'),
       this.seo.breadcrumb([
         { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
         { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
