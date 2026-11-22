@@ -65,6 +65,9 @@ export class SearchResultsComponent implements OnInit {
         title: this.query ? `${this.query} — Search` : 'Search',
         description: 'Search results across blog posts and projects.',
         url: pageUrl,
+        // Le pagine dei risultati di ricerca interna non vanno indicizzate:
+        // con zero risultati (o query vuota) Google le classifica soft 404.
+        noindex: true,
       });
       this.seo.injectJsonLd([
         this.seo.breadcrumb([
