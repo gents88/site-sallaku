@@ -91,7 +91,7 @@ describe('BlogDetailComponent view tracking', () => {
     expect(component.labTools).toEqual([]);
 
     component.post = { ...post, slug: 'ocr-online-estrarre-testo-da-scansioni-e-foto' } as Post;
-    expect(component.labTools.map(t => t.route)).toEqual(['/lab/ocr', '/lab/scanner']);
+    expect(component.labTools.map(t => t.route)).toEqual(['/lab/ocr', '/lab/scanner', '/lab/image-to-text']);
   });
 
   it('does not count a view while prerendering on the server', () => {

@@ -38,11 +38,16 @@
     .cp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0.9rem; }
 
     .cp-card {
-      position: relative; display: flex; flex-direction: column; gap: 0.65rem;
-      padding: 1.25rem; background: var(--bg-secondary, #161b22);
+      position: relative; display: flex;
+      background: var(--bg-secondary, #161b22);
       border: 1px solid var(--border-color, #30363d); border-radius: 14px;
-      cursor: pointer; text-align: left; color: inherit; font-family: inherit;
       transition: border-color .18s, transform .18s, box-shadow .18s;
+    }
+    .cp-card-main {
+      flex: 1; display: flex; flex-direction: column; gap: 0.65rem; padding: 1.25rem;
+      background: none; border: none; border-radius: inherit;
+      cursor: pointer; text-align: left; color: inherit; font-family: inherit;
+      &:focus-visible { outline: 2px solid var(--accent, #6c63ff); outline-offset: 2px; }
     }
     .cp-card:hover { border-color: var(--accent, #6c63ff); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
     .cp-card:active { transform: translateY(0); }
@@ -56,23 +61,23 @@
     }
     .cp-badge--sm { font-size: 0.62rem; padding: 0.15rem 0.38rem; }
 
-    .cp-badge[data-fmt="PDF"]  { background: rgba(239,68,68,.15);   color: #fca5a5; border-color: rgba(239,68,68,.35); }
-    .cp-badge[data-fmt="PDF+"] { background: rgba(239,68,68,.15);   color: #fca5a5; border-color: rgba(239,68,68,.35); }
-    .cp-badge[data-fmt="DOCX"] { background: rgba(59,130,246,.15);  color: #93c5fd; border-color: rgba(59,130,246,.35); }
-    .cp-badge[data-fmt="DOC"]  { background: rgba(59,130,246,.15);  color: #93c5fd; border-color: rgba(59,130,246,.35); }
-    .cp-badge[data-fmt="TXT"]  { background: rgba(156,163,175,.12); color: #d1d5db; border-color: rgba(156,163,175,.3); }
-    .cp-badge[data-fmt="HTML"] { background: rgba(249,115,22,.15);  color: #fdba74; border-color: rgba(249,115,22,.35); }
-    .cp-badge[data-fmt="JSON"] { background: rgba(34,197,94,.15);   color: #86efac; border-color: rgba(34,197,94,.35); }
-    .cp-badge[data-fmt="CSV"]  { background: rgba(16,185,129,.15);  color: #6ee7b7; border-color: rgba(16,185,129,.35); }
-    .cp-badge[data-fmt="XLSX"] { background: rgba(16,185,129,.15);  color: #6ee7b7; border-color: rgba(16,185,129,.35); }
-    .cp-badge[data-fmt="PNG"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="JPG"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="WEBP"] { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="IMG"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="ZIP"]  { background: rgba(168,85,247,.15);  color: #d8b4fe; border-color: rgba(168,85,247,.35); }
-    .cp-badge[data-fmt="B64"]  { background: rgba(251,191,36,.15);  color: #fde68a; border-color: rgba(251,191,36,.35); }
-    .cp-badge[data-fmt="MD"]   { background: rgba(20,184,166,.15);  color: #99f6e4; border-color: rgba(20,184,166,.35); }
-    .cp-badge[data-fmt="File"] { background: rgba(156,163,175,.12); color: #d1d5db; border-color: rgba(156,163,175,.3); }
+    .cp-badge[data-fmt="PDF"]  { background: rgba(239,68,68,.15);   color: color-mix(in srgb, #fca5a5 25%, var(--color-text, #e6edf3)); border-color: rgba(239,68,68,.35); }
+    .cp-badge[data-fmt="PDF+"] { background: rgba(239,68,68,.15);   color: color-mix(in srgb, #fca5a5 25%, var(--color-text, #e6edf3)); border-color: rgba(239,68,68,.35); }
+    .cp-badge[data-fmt="DOCX"] { background: rgba(59,130,246,.15);  color: color-mix(in srgb, #93c5fd 25%, var(--color-text, #e6edf3)); border-color: rgba(59,130,246,.35); }
+    .cp-badge[data-fmt="DOC"]  { background: rgba(59,130,246,.15);  color: color-mix(in srgb, #93c5fd 25%, var(--color-text, #e6edf3)); border-color: rgba(59,130,246,.35); }
+    .cp-badge[data-fmt="TXT"]  { background: rgba(156,163,175,.12); color: color-mix(in srgb, #d1d5db 25%, var(--color-text, #e6edf3)); border-color: rgba(156,163,175,.3); }
+    .cp-badge[data-fmt="HTML"] { background: rgba(249,115,22,.15);  color: color-mix(in srgb, #fdba74 25%, var(--color-text, #e6edf3)); border-color: rgba(249,115,22,.35); }
+    .cp-badge[data-fmt="JSON"] { background: rgba(34,197,94,.15);   color: color-mix(in srgb, #86efac 25%, var(--color-text, #e6edf3)); border-color: rgba(34,197,94,.35); }
+    .cp-badge[data-fmt="CSV"]  { background: rgba(16,185,129,.15);  color: color-mix(in srgb, #6ee7b7 25%, var(--color-text, #e6edf3)); border-color: rgba(16,185,129,.35); }
+    .cp-badge[data-fmt="XLSX"] { background: rgba(16,185,129,.15);  color: color-mix(in srgb, #6ee7b7 25%, var(--color-text, #e6edf3)); border-color: rgba(16,185,129,.35); }
+    .cp-badge[data-fmt="PNG"]  { background: rgba(168,85,247,.15);  color: color-mix(in srgb, #d8b4fe 25%, var(--color-text, #e6edf3)); border-color: rgba(168,85,247,.35); }
+    .cp-badge[data-fmt="JPG"]  { background: rgba(168,85,247,.15);  color: color-mix(in srgb, #d8b4fe 25%, var(--color-text, #e6edf3)); border-color: rgba(168,85,247,.35); }
+    .cp-badge[data-fmt="WEBP"] { background: rgba(168,85,247,.15);  color: color-mix(in srgb, #d8b4fe 25%, var(--color-text, #e6edf3)); border-color: rgba(168,85,247,.35); }
+    .cp-badge[data-fmt="IMG"]  { background: rgba(168,85,247,.15);  color: color-mix(in srgb, #d8b4fe 25%, var(--color-text, #e6edf3)); border-color: rgba(168,85,247,.35); }
+    .cp-badge[data-fmt="ZIP"]  { background: rgba(168,85,247,.15);  color: color-mix(in srgb, #d8b4fe 25%, var(--color-text, #e6edf3)); border-color: rgba(168,85,247,.35); }
+    .cp-badge[data-fmt="B64"]  { background: rgba(251,191,36,.15);  color: color-mix(in srgb, #fde68a 25%, var(--color-text, #e6edf3)); border-color: rgba(251,191,36,.35); }
+    .cp-badge[data-fmt="MD"]   { background: rgba(20,184,166,.15);  color: color-mix(in srgb, #99f6e4 25%, var(--color-text, #e6edf3)); border-color: rgba(20,184,166,.35); }
+    .cp-badge[data-fmt="File"] { background: rgba(156,163,175,.12); color: color-mix(in srgb, #d1d5db 25%, var(--color-text, #e6edf3)); border-color: rgba(156,163,175,.3); }
 
     .cp-arrow { color: var(--text-secondary, #8b949e); font-size: 0.9rem; }
     .cp-card-label { font-size: 0.9rem; color: var(--text-primary, #e6edf3); line-height: 1.4; padding-right: 1.6rem; }
@@ -83,7 +88,7 @@
       padding: 0.2rem; border-radius: 4px; opacity: 0; transition: opacity .15s, color .15s; line-height: 1;
       &:focus-visible { outline: 2px solid var(--accent, #6c63ff); outline-offset: 1px; opacity: 1; }
     }
-    .cp-card:hover .cp-fav { opacity: 1; }
+    .cp-card:hover .cp-fav, .cp-card:focus-within .cp-fav { opacity: 1; }
     .cp-fav--active { color: #f59e0b !important; opacity: 1 !important; }
 
     .cp-empty { text-align: center; padding: 4rem 1rem; color: var(--text-secondary, #8b949e); }
@@ -234,7 +239,7 @@
       .cp-page { padding: 1rem; }
       .cp-title { font-size: 1.35rem; }
       .cp-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.65rem; }
-      .cp-card { padding: 1rem; }
+      .cp-card-main { padding: 1rem; }
       .meta { grid-template-columns: 1fr; }
       .ac { flex-direction: column; align-items: stretch; }
     }
@@ -242,7 +247,7 @@
     // ── Blog cross-link ──────────────────────────────────────────────
     .cp-blog-link {
       display: inline-block; margin-top: .5rem;
-      font-size: .8rem; color: var(--accent, #6c63ff); text-decoration: none;
+      font-size: .8rem; color: color-mix(in srgb, var(--accent, #6c63ff) 65%, var(--color-text, #e6edf3)); text-decoration: none;
       &:hover { text-decoration: underline; }
     }
 
@@ -279,3 +284,10 @@
         &:hover { opacity: .85; }
       }
     }
+
+// Pulsante principale delle pagine per ricerca specifica (es. "Converti PDF in Word").
+.cp-intent-cta {
+  margin: 0.5rem 0 1.25rem;
+  padding: 0.85rem 1.6rem;
+  font-size: 1.05rem;
+}

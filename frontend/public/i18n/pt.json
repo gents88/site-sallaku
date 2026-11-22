@@ -2905,6 +2905,228 @@
         }
       ]
     },
-    "try_tool": "Experimente já a ferramenta gratuita"
+    "try_tool": "Experimente já a ferramenta gratuita",
+    "pdf_to_word": {
+      "about": "Com esta ferramenta transforma um PDF num documento Word (DOCX) que pode editar: texto, títulos, parágrafos e listas voltam a ser editáveis sem ter de reescrever nada. Serve quando recebe um contrato, um formulário ou um relatório em PDF e precisa de o corrigir, completar ou reutilizar o conteúdo.",
+      "steps": [
+        "Clique em «Converter PDF em Word» e carregue o ficheiro PDF.",
+        "Inicie a conversão e aguarde alguns segundos.",
+        "Descarregue o documento Word e abra-o com o Word ou outro processador de texto."
+      ],
+      "privacy": "Para converter o ficheiro, este é enviado para o nosso servidor, que o processa e devolve o resultado. O ficheiro serve apenas para executar a conversão pedida.",
+      "limits": "O ficheiro pode ter até 50 MB. Os PDF com texto selecionável costumam manter títulos, parágrafos e listas, mas tabelas e esquemas muito complexos podem precisar de pequenos retoques no Word. Um PDF digitalizado é feito de imagens e não se torna texto editável: antes extraia o texto com a ferramenta OCR.",
+      "faq": [
+        {
+          "q": "A formatação é mantida?",
+          "a": "Com os PDF que contêm texto selecionável, títulos, parágrafos e listas costumam manter-se bem. Esquemas muito elaborados, tabelas complexas ou várias colunas podem precisar de alguns retoques depois da conversão."
+        },
+        {
+          "q": "Posso converter um PDF digitalizado?",
+          "a": "Não diretamente: uma digitalização é feita de imagens. Extraia primeiro o texto com a ferramenta OCR e depois trabalhe sobre o texto obtido."
+        },
+        {
+          "q": "Tenho de instalar alguma coisa?",
+          "a": "Não, a conversão é feita online a partir de qualquer navegador. Para editar o resultado precisa do Word ou de outro programa compatível com o formato DOCX."
+        }
+      ]
+    },
+    "word_to_pdf": {
+      "about": "Esta ferramenta transforma um documento Word (DOC ou DOCX) num PDF: o formato ideal para partilhar, enviar ou imprimir um ficheiro sem que a paginação mude no computador de quem o abre. É útil para currículos, contratos, cartas e relatórios.",
+      "steps": [
+        "Clique em «Converter Word em PDF» e carregue o documento DOC ou DOCX.",
+        "Inicie a conversão e aguarde alguns segundos.",
+        "Descarregue o PDF e partilhe-o ou imprima-o."
+      ],
+      "privacy": "Para converter o ficheiro, este é enviado para o nosso servidor, que o processa e devolve o resultado. O ficheiro serve apenas para executar a conversão pedida.",
+      "limits": "São aceites ficheiros .doc e .docx até 50 MB. O resultado depende do documento de origem: confira o PDF antes de o enviar, sobretudo se contiver tabelas, imagens ou tipos de letra pouco comuns.",
+      "faq": [
+        {
+          "q": "Que formatos Word são aceites?",
+          "a": "Tanto os ficheiros .docx como os antigos .doc, até 50 MB."
+        },
+        {
+          "q": "A paginação do PDF será igual à do Word?",
+          "a": "Normalmente sim, mas o resultado depende do documento: com tabelas, imagens ou tipos de letra pouco comuns convém conferir o PDF antes de o partilhar."
+        },
+        {
+          "q": "Posso juntar vários PDF depois de os converter?",
+          "a": "Sim: pode juntá-los com a página «Juntar PDF», que funciona diretamente no navegador."
+        }
+      ]
+    },
+    "jpg_to_pdf": {
+      "about": "Esta ferramenta transforma uma ou mais imagens (JPG, PNG ou WEBP) num único PDF. É útil para enviar fotos de documentos, recibos ou apontamentos como um só ficheiro organizado, ou para criar um PDF a partir de uma série de fotos.",
+      "steps": [
+        "Clique em «Converter imagens em PDF» e carregue uma ou mais imagens.",
+        "Inicie a conversão e aguarde alguns segundos.",
+        "Descarregue o PDF resultante."
+      ],
+      "privacy": "As imagens são enviadas para o nosso servidor para criar o PDF e servem apenas para esta operação.",
+      "limits": "São aceites imagens PNG, JPG e WEBP, até 50 MB cada e até 20 ficheiros de cada vez, que ficam num único PDF. Para obter texto que possa copiar, use depois a ferramenta OCR.",
+      "faq": [
+        {
+          "q": "Posso pôr várias imagens num só PDF?",
+          "a": "Sim, pode carregar até 20 imagens em conjunto e obter um único PDF."
+        },
+        {
+          "q": "Que formatos de imagem são aceites?",
+          "a": "JPG (JPEG), PNG e WEBP."
+        },
+        {
+          "q": "O texto do PDF será selecionável?",
+          "a": "Por norma o PDF contém as imagens das páginas, não texto selecionável. Para extrair o texto use a ferramenta OCR."
+        }
+      ]
+    },
+    "merge_pdf": {
+      "about": "Com esta ferramenta junta dois ou mais PDF num único documento, sem instalar programas. Pode reordenar as páginas arrastando-as e eliminar as que não precisa antes de descarregar o ficheiro final. Serve para reunir contratos, formulários, recibos ou capítulos num só PDF.",
+      "steps": [
+        "Arraste os PDF para a área de carregamento, ou clique nela para os escolher: se escolher mais do que um, ficam em sequência.",
+        "Na pré-visualização arraste as páginas para mudar a ordem, rode ou elimine as que não precisa.",
+        "Exporte o PDF e descarregue-o."
+      ],
+      "privacy": "Os ficheiros são processados inteiramente no seu navegador: não são carregados para nenhum servidor. Pode trabalhar também com documentos confidenciais sem os partilhar com terceiros.",
+      "limits": "As alterações não são guardadas: se recarregar ou fechar o separador perde-as, por isso descarregue o resultado antes de sair. Um PDF protegido por palavra-passe ou muito pesado pode não abrir ou abrandar o navegador, porque o trabalho é feito pelo seu dispositivo.",
+      "faq": [
+        {
+          "q": "Como junto dois PDF?",
+          "a": "Carregue os dois ficheiros em conjunto: aparecem em sequência e pode reordenar as páginas arrastando-as. Depois exporte o resultado como um único PDF."
+        },
+        {
+          "q": "Os meus PDF são carregados na internet?",
+          "a": "Não. A junção é feita no seu navegador, por isso os ficheiros ficam no seu dispositivo."
+        },
+        {
+          "q": "Posso juntar apenas algumas páginas de um PDF?",
+          "a": "Sim: elimine as páginas de que não precisa antes de exportar."
+        }
+      ]
+    },
+    "split_pdf": {
+      "about": "Esta ferramenta permite dividir um PDF e extrair só as páginas de que precisa: elimina as que estão a mais ou usa um intervalo de páginas, e descarrega o novo PDF. É útil para enviar apenas um capítulo, um formulário retirado de um documento longo ou só as páginas assinadas.",
+      "steps": [
+        "Carregue o PDF arrastando-o para a área de carregamento.",
+        "Na pré-visualização elimine as páginas que não quer, ou use o intervalo de páginas para dividir o documento.",
+        "Exporte o PDF e descarregue-o: obtém um ficheiro novo só com as páginas escolhidas."
+      ],
+      "privacy": "Os ficheiros são processados inteiramente no seu navegador: não são carregados para nenhum servidor. Pode trabalhar também com documentos confidenciais sem os partilhar com terceiros.",
+      "limits": "As alterações não são guardadas: se recarregar ou fechar o separador perde-as, por isso descarregue o resultado antes de sair. Um PDF protegido por palavra-passe ou muito pesado pode não abrir ou abrandar o navegador, porque o trabalho é feito pelo seu dispositivo.",
+      "faq": [
+        {
+          "q": "Como extraio uma única página de um PDF?",
+          "a": "Carregue o PDF, elimine todas as páginas exceto a que precisa e exporte o resultado."
+        },
+        {
+          "q": "O PDF original é alterado?",
+          "a": "Não: trabalha no navegador e descarrega um PDF novo, enquanto o ficheiro de origem fica como está no seu dispositivo."
+        },
+        {
+          "q": "O ficheiro é carregado para um servidor?",
+          "a": "Não. O processamento é feito no seu navegador, por isso o ficheiro não sai do seu dispositivo."
+        }
+      ]
+    },
+    "rotate_pdf": {
+      "about": "Esta ferramenta roda as páginas de um PDF diretamente no navegador: pode endireitar uma página digitalizada ao contrário, arranjar só as tortas e deixar as outras como estavam. Depois descarrega o PDF corrigido, sem instalar programas.",
+      "steps": [
+        "Carregue o PDF arrastando-o para a área de carregamento.",
+        "Na pré-visualização rode as páginas tortas ou viradas ao contrário.",
+        "Exporte o PDF e descarregue-o."
+      ],
+      "privacy": "Os ficheiros são processados inteiramente no seu navegador: não são carregados para nenhum servidor. Pode trabalhar também com documentos confidenciais sem os partilhar com terceiros.",
+      "limits": "A rotação muda a orientação das páginas, não o seu conteúdo. As alterações não são guardadas: se recarregar ou fechar o separador perde-as, por isso descarregue o resultado antes de sair.",
+      "faq": [
+        {
+          "q": "Posso rodar só algumas páginas?",
+          "a": "Sim: na pré-visualização roda as páginas individuais, e as que não tocar ficam como estão."
+        },
+        {
+          "q": "O PDF é carregado na internet?",
+          "a": "Não. O processamento é feito no seu navegador, por isso o ficheiro fica no seu dispositivo."
+        },
+        {
+          "q": "Funciona com um PDF digitalizado ao contrário?",
+          "a": "Sim: rode as páginas viradas ao contrário e exporte o PDF corrigido."
+        }
+      ]
+    },
+    "image_to_text": {
+      "about": "Esta ferramenta transforma uma foto, uma captura de ecrã ou uma página digitalizada em texto que pode selecionar, copiar e editar, graças ao OCR (reconhecimento ótico de carateres). Serve para recuperar o texto de um recibo fotografado, de um diapositivo ou de um documento impresso.",
+      "steps": [
+        "Arraste a imagem (PNG, JPG, WEBP, BMP ou TIFF) para a área de carregamento.",
+        "Escolha o idioma do texto: com o certo o resultado é muito mais preciso.",
+        "Inicie o reconhecimento e copie o texto obtido."
+      ],
+      "privacy": "As imagens são enviadas para o nosso servidor apenas para o reconhecimento e são processadas em memória, sem serem guardadas como arquivo. Não é preciso criar uma conta.",
+      "limits": "Pode carregar até 30 ficheiros ou páginas de cada vez; cada imagem pode ter até 15 MB. A qualidade depende da foto: texto torto, desfocado ou com pouca luz reduz a precisão.",
+      "faq": [
+        {
+          "q": "Como copio o texto de uma imagem?",
+          "a": "Carregue a imagem, escolha o idioma e inicie o reconhecimento: o texto extraído aparece em baixo e pode copiá-lo."
+        },
+        {
+          "q": "Funciona também com capturas de ecrã?",
+          "a": "Sim, com capturas, fotos de documentos e páginas digitalizadas, desde que o texto seja legível."
+        },
+        {
+          "q": "Que idiomas reconhece?",
+          "a": "Italiano, inglês, espanhol, francês, alemão, português e albanês."
+        }
+      ]
+    }
+  },
+  "lab_intents": {
+    "pdf_to_word": {
+      "label": "PDF para Word",
+      "seo_title": "PDF para Word Grátis: Converta em DOCX",
+      "seo_description": "Converta PDF em Word (DOCX) online e grátis: carregue o ficheiro e descarregue o documento editável em segundos. Até 50 MB.",
+      "h1": "Converter PDF em Word",
+      "lead": "Transforme um PDF num documento Word (DOCX) editável: carregue o ficheiro, inicie a conversão e descarregue o resultado.",
+      "cta": "Converter PDF em Word"
+    },
+    "word_to_pdf": {
+      "label": "Word para PDF",
+      "seo_title": "Word para PDF Grátis: Converta DOCX",
+      "seo_description": "Converta Word (DOC e DOCX) em PDF online e grátis: carregue o documento e descarregue o PDF em segundos. Até 50 MB.",
+      "h1": "Converter Word em PDF",
+      "lead": "Transforme um documento Word (DOC ou DOCX) num PDF pronto a partilhar ou imprimir: carregue o ficheiro e descarregue o resultado.",
+      "cta": "Converter Word em PDF"
+    },
+    "jpg_to_pdf": {
+      "label": "JPG para PDF",
+      "seo_title": "JPG para PDF Grátis: Imagens num só PDF",
+      "seo_description": "Converta JPG, PNG e WEBP em PDF online e grátis: carregue uma ou mais imagens e descarregue um único PDF. Até 20 ficheiros de cada vez.",
+      "h1": "Converter JPG em PDF",
+      "lead": "Transforme uma ou mais imagens (JPG, PNG, WEBP) num único PDF: carregue os ficheiros, inicie a conversão e descarregue o documento.",
+      "cta": "Converter imagens em PDF"
+    },
+    "merge_pdf": {
+      "label": "Juntar PDF",
+      "seo_title": "Juntar PDF Grátis: Combine Ficheiros num",
+      "seo_description": "Junte vários PDF num só ficheiro diretamente no navegador, sem os carregar para nenhum servidor. Reordene as páginas e descarregue o resultado. Grátis.",
+      "h1": "Juntar PDF",
+      "lead": "Junte dois ou mais PDF num único documento: arraste-os para aqui, reordene as páginas e descarregue o PDF final. Tudo no seu navegador."
+    },
+    "split_pdf": {
+      "label": "Dividir PDF",
+      "seo_title": "Dividir PDF Grátis: Extraia as Páginas",
+      "seo_description": "Divida um PDF e extraia só as páginas de que precisa, no navegador e sem carregar o ficheiro. Elimine as páginas a mais e descarregue o resultado.",
+      "h1": "Dividir PDF",
+      "lead": "Divida um PDF em partes ou fique só com as páginas de que precisa: elimine as outras e descarregue o resultado. Tudo no seu navegador."
+    },
+    "rotate_pdf": {
+      "label": "Rodar PDF",
+      "seo_title": "Rodar PDF Grátis: Endireite as Páginas",
+      "seo_description": "Rode as páginas de um PDF online e grátis, no navegador e sem carregar o ficheiro. Endireite só as páginas tortas e descarregue o PDF corrigido.",
+      "h1": "Rodar PDF",
+      "lead": "Endireite as páginas viradas ao contrário ou tortas de um PDF: rode só as que precisa e descarregue o documento corrigido. No seu navegador."
+    },
+    "image_to_text": {
+      "label": "Imagem em texto",
+      "seo_title": "De Imagem para Texto: OCR Grátis Online",
+      "seo_description": "Extraia o texto de fotos, capturas e imagens com OCR online grátis, em 7 idiomas e sem registo. Copie o texto em segundos.",
+      "h1": "De imagem para texto",
+      "lead": "Transforme uma foto, uma captura ou uma página digitalizada em texto que pode copiar e editar: carregue a imagem e escolha o idioma."
+    }
   }
 }

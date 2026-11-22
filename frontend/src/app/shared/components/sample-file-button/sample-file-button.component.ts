@@ -37,7 +37,7 @@ export function toFileList(file: File): FileList {
     :host { display: block; text-align: center; margin: .6rem 0; }
     .sfb {
       font: inherit; font-size: .88rem; cursor: pointer; padding: .4rem .9rem; border-radius: 999px;
-      color: var(--color-primary, #8b5cf6); background: transparent;
+      color: color-mix(in srgb, var(--color-primary, #8b5cf6) 65%, var(--color-text, #111)); background: transparent;
       border: 1px dashed var(--color-primary, #8b5cf6);
     }
     .sfb:hover:not(:disabled) { background: rgba(139, 92, 246, .1); }
