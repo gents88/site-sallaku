@@ -4094,6 +4094,7 @@
     "b_drafts": "drafts",
     "b_today": "visitors today",
     "b_clicks": "clicks from Google",
-    "total": "total"
+    "total": "total",
+    "jump_to": "Jump to…"
   }
 }
