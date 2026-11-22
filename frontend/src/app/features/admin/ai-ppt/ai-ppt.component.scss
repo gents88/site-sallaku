@@ -611,6 +611,15 @@ app-breadcrumb {
     flex-direction: column;
     justify-content: center;
     gap: 24px;
+
+    /* Telefono: la tab bar del sito sta sopra (z-index 10050) e copriva i comandi
+       Precedente/Successivo in fondo; il contenuto lungo deve poter scorrere. */
+    @media (max-width: 900px) {
+      padding: 16px 16px calc(16px + var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
+      overflow-y: auto;
+      justify-content: flex-start;
+      gap: 16px;
+    }
   }
 }
 
