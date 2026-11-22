@@ -1,5 +1,5 @@
 import {
-  Component, ChangeDetectionStrategy, OnInit, inject, signal, computed,
+  Component, ChangeDetectionStrategy, HostListener, OnInit, inject, signal, computed,
 } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
@@ -11,6 +11,11 @@ import { WorkspaceService, WorkspaceItem } from '../../../core/services/workspac
 import { SampleFileButtonComponent } from '../../../shared/components/sample-file-button/sample-file-button.component';
 import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
 import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
+
+/** Quanti passi di annulla si ricordano: bastano per un errore di click, senza tenere in memoria snapshot all'infinito. */
+const MAX_UNDO = 30;
+/** Le miniature si applicano a gruppi: un update dell'array per ogni pagina rendeva il caricamento O(n²) su PDF lunghi. */
+const THUMB_BATCH = 6;
 
 interface SourcePdf {
   bytes: Uint8Array; // per pdf-lib (export)
@@ -55,6 +60,8 @@ export class PdfEditorComponent implements OnInit {
   readonly moveAnnouncement = signal('');
   readonly exportReady = signal(false);
   breadcrumbItems: BreadcrumbItem[] = [];
+  private undoStack: PageEntry[][] = [];
+  readonly canUndo = signal(false);
   private lastExportBlob: Blob | null = null;
   private lastExportName = '';
 
@@ -138,7 +145,45 @@ export class PdfEditorComponent implements OnInit {
     setTimeout(() => this.justSent.set(false), 1500);
   }
 
+  /** Salva lo stato corrente prima di una modifica, per poterla annullare. */
+  private snapshot(): void {
+    this.undoStack.push(this.pages());
+    if (this.undoStack.length > MAX_UNDO) this.undoStack.shift();
+    this.canUndo.set(true);
+  }
+
+  undo(): void {
+    const prev = this.undoStack.pop();
+    if (!prev) return;
+    // Le miniature non cambiano con una modifica: si riusano quelle correnti se la pagina esiste ancora.
+    const thumbs = new Map(this.pages().map((p) => [p.id, p.thumb]));
+    this.pages.set(prev.map((p) => ({ ...p, thumb: p.thumb ?? thumbs.get(p.id) ?? null })));
+    this.canUndo.set(this.undoStack.length > 0);
+    this.moveAnnouncement.set(this.t.instant('pdf_editor.undone'));
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(e: KeyboardEvent): void {
+    if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.key.toLowerCase() !== 'z') return;
+    const el = e.target as HTMLElement | null;
+    if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) return; // l'undo nativo dei campi di testo
+    if (!this.canUndo()) return;
+    e.preventDefault();
+    this.undo();
+  }
+
+  duplicate(i: number): void {
+    this.snapshot();
+    this.pages.update((all) => {
+      const next = [...all];
+      next.splice(i + 1, 0, { ...all[i], id: this.nextId++ });
+      return next;
+    });
+    this.announceMove(i + 1);
+  }
+
   rotate(i: number): void {
+    this.snapshot();
     this.pages.update((all) => {
       const next = [...all];
       next[i] = { ...next[i], rot: ((next[i].rot + 90) % 360) as PageEntry['rot'] };
@@ -147,6 +192,7 @@ export class PdfEditorComponent implements OnInit {
   }
 
   move(i: number, dir: -1 | 1): void {
+    this.snapshot();
     this.pages.update((all) => {
       const next = [...all];
       [next[i], next[i + dir]] = [next[i + dir], next[i]];
@@ -156,6 +202,7 @@ export class PdfEditorComponent implements OnInit {
   }
 
   remove(i: number): void {
+    this.snapshot();
     this.pages.update((all) => all.filter((_, idx) => idx !== i));
   }
 
@@ -186,6 +233,7 @@ export class PdfEditorComponent implements OnInit {
     this.dragOverIndex.set(null);
     if (from === null || from === i) return;
 
+    this.snapshot();
     this.pages.update((all) => {
       const next = [...all];
       const [moved] = next.splice(from, 1);
@@ -203,6 +251,8 @@ export class PdfEditorComponent implements OnInit {
   reset(): void {
     this.sources = [];
     this.pages.set([]);
+    this.undoStack = [];
+    this.canUndo.set(false);
     this.watermark.set('');
     this.range.set('');
     this.msg.set('');
@@ -226,11 +276,15 @@ export class PdfEditorComponent implements OnInit {
 
     try {
       const { PDFDocument, degrees, rgb, StandardFonts } = await import('pdf-lib');
-      const srcDocs = await Promise.all(this.sources.map((s) => PDFDocument.load(s.bytes)));
+      // Solo i sorgenti ancora in uso: se hai eliminato tutte le pagine di un file, non serve nemmeno parsarlo.
+      const usedSources = [...new Set(selected.map((e) => e.src))];
+      const srcDocs = new Map(
+        await Promise.all(usedSources.map(async (i) => [i, await PDFDocument.load(this.sources[i].bytes)] as const)),
+      );
       const out = await PDFDocument.create();
 
       for (const entry of selected) {
-        const [copied] = await out.copyPages(srcDocs[entry.src], [entry.page]);
+        const [copied] = await out.copyPages(srcDocs.get(entry.src)!, [entry.page]);
         if (entry.rot !== 0) {
           copied.setRotation(degrees((copied.getRotation().angle + entry.rot) % 360));
         }
@@ -264,7 +318,7 @@ export class PdfEditorComponent implements OnInit {
       a.href = url;
       a.download = this.outputName();
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
       this.lastExportBlob = blob;
       this.lastExportName = this.outputName();
       this.exportReady.set(true);
@@ -292,36 +346,53 @@ export class PdfEditorComponent implements OnInit {
     this.loading.set(true);
     this.msg.set('');
 
-    try {
-      for (const f of pdfs) {
+    for (const f of pdfs) {
+      const srcIdx = this.sources.length;
+      let doc: Awaited<ReturnType<PdfjsService['openDocument']>> | null = null;
+      let added: PageEntry[] = [];
+      try {
         const bytes = new Uint8Array(await f.arrayBuffer());
-        const srcIdx = this.sources.length;
-        this.sources.push({ bytes, name: f.name });
-
         // pdfjs trasferisce (e stacca) il buffer al worker → passare una copia
-        const doc = await this.pdfjs.openDocument(bytes.slice().buffer);
-        const entries: PageEntry[] = Array.from({ length: doc.numPages }, (_, i) => ({
-          id: this.nextId++, src: srcIdx, page: i, rot: 0, thumb: null,
+        doc = await this.pdfjs.openDocument(bytes.slice().buffer);
+        this.sources.push({ bytes, name: f.name });
+        added = Array.from({ length: doc.numPages }, (_, i) => ({
+          id: this.nextId++, src: srcIdx, page: i, rot: 0 as const, thumb: null,
         }));
-        this.pages.update((all) => [...all, ...entries]);
+        this.pages.update((all) => [...all, ...added]);
 
-        for (const entry of entries) {
+        let pending = new Map<number, string>();
+        const flush = () => {
+          if (pending.size === 0) return;
+          const batch = pending;
+          pending = new Map();
+          this.pages.update((all) => all.map((p) => (batch.has(p.id) ? { ...p, thumb: batch.get(p.id)! } : p)));
+        };
+        for (const entry of added) {
           const page = await doc.getPage(entry.page + 1);
           const viewport = page.getViewport({ scale: 130 / page.getViewport({ scale: 1 }).width });
           const c = document.createElement('canvas');
           c.width = Math.ceil(viewport.width);
           c.height = Math.ceil(viewport.height);
           await page.render({ canvas: c, viewport }).promise;
-          const thumb = c.toDataURL('image/jpeg', 0.6);
-          this.pages.update((all) => all.map((p) => (p.id === entry.id ? { ...p, thumb } : p)));
+          pending.set(entry.id, c.toDataURL('image/jpeg', 0.6));
+          page.cleanup?.();
+          if (pending.size >= THUMB_BATCH) {
+            flush();
+            await new Promise<void>((r) => setTimeout(r, 0)); // lascia respirare UI e scroll
+          }
         }
-        await doc.loadingTask.destroy();
+        flush();
+      } catch {
+        // File illeggibile (o cifrato): si toglie solo lui, senza lasciare pagine fantasma senza sorgente.
+        if (this.sources.length > srcIdx) this.sources.length = srcIdx;
+        const ids = new Set(added.map((p) => p.id));
+        this.pages.update((all) => all.filter((p) => !ids.has(p.id)));
+        this.msg.set(`❌ ${this.t.instant('pdf_editor.err_open')}`);
+      } finally {
+        if (doc) void doc.loadingTask?.destroy?.();
       }
-    } catch {
-      this.msg.set(`❌ ${this.t.instant('pdf_editor.err_open')}`);
-    } finally {
-      this.loading.set(false);
     }
+    this.loading.set(false);
   }
 
   /** Applica il range "1-3,5" alle pagine correnti; null = range non valido. */
