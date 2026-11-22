@@ -611,8 +611,32 @@ $error-clr:     #f87171;
 
 // ── RESPONSIVE ────────────────────────────────────────────────────────────────
 @media (max-width: 640px) {
-  .modal-backdrop { padding: 0; }
-  .preview-modal { width: 100%; height: 100%; border-radius: 0; }
+  // A tutto schermo davvero: sopra la tab bar mobile e i FAB (chat / torna su,
+  // z-index ~1500), che altrimenti coprivano barra pagine e bottoni d'azione.
+  .modal-backdrop { padding: 0; z-index: 1600; }
+  .preview-modal { width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .preview-header, .canvas-page-nav, .preview-actions { flex-shrink: 0; }
+  .preview-header { padding-top: calc(12px + env(safe-area-inset-top)); }
+  .preview-close { width: 40px; height: 40px; font-size: 16px; }
+
+  // Barra pagine: controlli da 40px (tap target) e a capo invece che tagliati.
+  .canvas-page-nav {
+    flex-wrap: wrap; gap: 8px 10px; padding: 8px 12px;
+    button { width: 40px; height: 40px; }
+    .zoom-group { margin-left: 0; button { width: 40px; height: 40px; } }
+    .page-jump input { width: 56px; height: 40px; font-size: 16px; } // 16px evita lo zoom automatico di iOS
+  }
+
+  // Azioni compatte: Scarica a tutta larghezza, le altre in griglia 2x2.
+  .preview-actions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    .btn-download { grid-column: 1 / -1; }
+    .btn-download, .btn-source, .btn-workspace, .btn-library {
+      width: auto; padding: 11px 8px; font-size: 12.5px; min-height: 44px;
+      display: flex; align-items: center; justify-content: center;
+    }
+  }
 
   // The compact variant (no iframe) keeps its own auto-height + rounded
   // corners instead of the full-bleed takeover meant for the PDF viewer.
@@ -627,10 +651,6 @@ $error-clr:     #f87171;
   .search-box { flex-wrap: wrap; }
   .search-btn { width: 100%; justify-content: center; display: flex; align-items: center; }
 
-  // Side-by-side "Scarica PDF" / "Vedi pagina sorgente →" gets too cramped
-  // for the longer label at this width — stack them full-width instead.
-  .preview-actions { flex-direction: column; }
-  .btn-download, .btn-source, .btn-workspace, .btn-library { width: 100%; }
 }
 
 // ── FAQ ──────────────────────────────────────────────────────────────────────
