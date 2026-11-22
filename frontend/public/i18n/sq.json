@@ -69,7 +69,8 @@
       "contacts": "Kontaktet",
       "users": "Përdoruesit",
       "ai_assistant": "Asistenti AI",
-      "live_chat": "Bisedë live"
+      "live_chat": "Bisedë live",
+      "sign_pdf": "Nënshkruaj PDF"
     }
   },
   "lang": {
@@ -1529,7 +1530,9 @@
     "my_files_title": "Skedarët e mi",
     "my_files_desc": "Gjej rezultatet që ke ruajtur nga mjetet AI",
     "seo_title": "Mjete PDF dhe AI Falas në Internet",
-    "seo_description": "Mjete PDF dhe AI falas në internet: OCR, konvertues, editor, shikues, skaner, përkthyes, përmbledhës dhe gjenerator prezantimesh."
+    "seo_description": "Mjete PDF dhe AI falas në internet: OCR, konvertues, editor, shikues, skaner, përkthyes, përmbledhës dhe gjenerator prezantimesh.",
+    "sign_pdf_title": "Nënshkruaj PDF",
+    "sign_pdf_desc": "Nënshkruaj një PDF me nënshkrim të vizatuar, të shkruar ose të ngarkuar dhe shto tekst, datë dhe shenja."
   },
   "about_manage": {
     "title": "Seksioni About",
@@ -3077,6 +3080,39 @@
           "a": "Italisht, anglisht, spanjisht, frëngjisht, gjermanisht, portugalisht dhe shqip."
         }
       ]
+    },
+    "sign_pdf": {
+      "about": "Mjeti për të nënshkruar PDF online të lejon të nënshkruash një kontratë ose formular pa e printuar. Vizato nënshkrimin me gisht ose me mouse, shkruaj emrin me stil dore ose ngarko një foto të nënshkrimit, pastaj vendose në çdo faqe së bashku me tekst, datë dhe shenja. PDF-ja e nënshkruar krijohet në shfletuesin tënd.",
+      "steps": [
+        "Hap PDF-në: tërhiqe në kuti ose zgjidhe nga pajisja.",
+        "Zgjidh një mjet — Nënshkrim, Tekst, Datë, shenjë ose kryq — dhe elementi shfaqet në faqe.",
+        "Tërhiqe aty ku të duhet; përdor dorezën për të ndryshuar madhësinë dhe butonat për ta dyfishuar, përsëritur në të gjitha faqet ose fshirë.",
+        "Shtyp “Shkarko PDF-në e nënshkruar”."
+      ],
+      "privacy": "PDF-ja dhe nënshkrimi përpunohen tërësisht në shfletues dhe nuk ngarkohen kurrë. Nëse zgjedh “Kujtoje në këtë pajisje”, nënshkrimi ruhet vetëm në memorien lokale të këtij shfletuesi dhe mund ta heqësh kur të duash.",
+      "limits": "Shton një nënshkrim elektronik të thjeshtë — një imazh i nënshkrimit tënd — dhe nuk prodhon nënshkrim të kualifikuar ose dixhital me çertifikim ligjor. PDF-të me fjalëkalim nuk hapen. Ndryshimet humbasin nëse mbyll skedën para shkarkimit.",
+      "faq": [
+        {
+          "q": "A është falas?",
+          "a": "Po, plotësisht falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ngarkohet dokumenti im diku?",
+          "a": "Jo. PDF-ja dhe nënshkrimi përpunohen në shfletuesin tënd dhe nuk dalin kurrë nga pajisja jote."
+        },
+        {
+          "q": "A ka vlerë ligjore nënshkrimi?",
+          "a": "Është nënshkrim elektronik i thjeshtë, i pranuar për shumë dokumente të përditshme, por nuk është nënshkrim i kualifikuar ose dixhital. Për dokumentet që e kërkojnë, përdor një shërbim të çertifikuar."
+        },
+        {
+          "q": "A mund të nënshkruaj nga telefoni?",
+          "a": "Po. Mund ta vizatosh nënshkrimin me gisht, pastaj ta tërheqësh dhe ta ndryshosh madhësinë në faqe."
+        },
+        {
+          "q": "A mund ta vendos nënshkrimin në çdo faqe?",
+          "a": "Po: zgjidh nënshkrimin dhe zgjidh “Në të gjitha faqet”."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3132,5 +3168,71 @@
       "h1": "Nga imazhi në tekst",
       "lead": "Kthe një foto, një pamje ekrani ose një faqe të skanuar në tekst që mund ta kopjosh e ndryshosh: ngarko imazhin dhe zgjidh gjuhën."
     }
+  },
+  "sign_pdf": {
+    "title": "Nënshkruaj PDF",
+    "subtitle": "Nënshkruaj një PDF, shto tekst, datë dhe shenja — drejtpërdrejt në shfletues, pa ngarkuar skedarin.",
+    "seo_title": "Nënshkruaj PDF Online Falas — Shto Nënshkrim, Tekst dhe Datë",
+    "seo_description": "Nënshkruaj një PDF online falas: vizato, shkruaj ose ngarko nënshkrimin, shto tekst, datë dhe shenja, pastaj shkarko. Gjithçka ndodh në shfletuesin tënd — skedari nuk ngarkohet asnjëherë.",
+    "drop_prompt": "Hiq një PDF këtu ose kliko për ta zgjedhur",
+    "drop_hint": "Kontrata, formularë, deklarata — çdo PDF",
+    "privacy_note": "Skedari mbetet në pajisjen tënde: nuk ngarkohet në asnjë server.",
+    "workspace_banner_title": "Ka një skedar në Workspace",
+    "workspace_banner_use": "Përdore",
+    "workspace_banner_dismiss": "Injoro",
+    "tools_label": "Mjetet",
+    "tool_signature": "Nënshkrim",
+    "tool_text": "Tekst",
+    "tool_date": "Datë",
+    "tool_check": "Shenjë ✓",
+    "tool_cross": "Kryq",
+    "ink_label": "Ngjyra e bojës",
+    "ink_black": "Bojë e zezë",
+    "ink_blue": "Bojë blu",
+    "change_signature": "Ndrysho nënshkrimin",
+    "forget_signature": "Harro nënshkrimin e ruajtur",
+    "undo": "Zhbëj",
+    "close_file": "Mbyll skedarin",
+    "selected_label": "Elementi i zgjedhur",
+    "field_text_label": "Teksti i elementit të zgjedhur",
+    "field_smaller": "Më i vogël",
+    "field_bigger": "Më i madh",
+    "field_duplicate": "Dyfisho",
+    "field_all_pages": "Në të gjitha faqet",
+    "field_delete": "Fshi",
+    "hint_place": "Zgjidh një mjet më sipër: elementi shfaqet në faqe, pastaj tërhiqe aty ku të duhet.",
+    "hint_drag": "Tërhiq elementet për t’i lëvizur. Prekni një për t’i ndryshuar madhësinë ose tekstin.",
+    "page_prev": "Faqja e mëparshme",
+    "page_next": "Faqja tjetër",
+    "page_label": "Faqja",
+    "items_here": "{{count}} elemente në këtë faqe",
+    "btn_download": "Shkarko PDF-në e nënshkruar",
+    "downloading": "Po përgatitet…",
+    "success": "U krye: PDF-ja e nënshkruar u shkarkua.",
+    "disclaimer": "Shton një nënshkrim elektronik të thjeshtë (një imazh i nënshkrimit tënd). Nuk është nënshkrim i kualifikuar ose dixhital me çertifikim ligjor.",
+    "workspace_send": "Dërgo te Workspace",
+    "workspace_sent": "U dërgua",
+    "pad_title": "Krijo nënshkrimin tënd",
+    "pad_tab_draw": "Vizato",
+    "pad_tab_type": "Shkruaj",
+    "pad_tab_upload": "Imazh",
+    "pad_draw_hint": "Nënshkruaj brenda kutisë me gisht ose me mouse",
+    "pad_type_placeholder": "Shkruaj emrin tënd",
+    "pad_type_sample": "Emri yt",
+    "pad_upload_pick": "Zgjidh një foto të nënshkrimit",
+    "pad_upload_hint": "Nënshkruaj në letër të bardhë dhe bëj një foto të qartë",
+    "pad_remove_bg": "Hiq sfondin e bardhë",
+    "pad_clear": "Pastro",
+    "pad_remember": "Kujtoje në këtë pajisje",
+    "pad_remember_hint": "Ruhet vetëm në këtë shfletues, nuk dërgohet askund",
+    "pad_cancel": "Anulo",
+    "pad_use": "Përdor nënshkrimin",
+    "text_default": "Tekst",
+    "err_not_pdf": "Zgjidh një skedar PDF.",
+    "err_open": "Kjo PDF nuk u hap. Mund të jetë e dëmtuar ose e mbrojtur me fjalëkalim.",
+    "err_render": "Faqja nuk u shfaq. Provo përsëri.",
+    "err_image": "Ky imazh nuk u lexua. Provo një tjetër.",
+    "err_no_fields": "Shto së pari një nënshkrim, tekst ose datë.",
+    "err_export": "PDF-ja nuk u krijua. Provo përsëri."
   }
 }

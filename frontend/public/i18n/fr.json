@@ -69,7 +69,8 @@
       "contacts": "Contacts",
       "users": "Utilisateurs",
       "ai_assistant": "Assistant IA",
-      "live_chat": "Chat en direct"
+      "live_chat": "Chat en direct",
+      "sign_pdf": "Signer un PDF"
     }
   },
   "lang": {
@@ -1529,7 +1530,9 @@
     "my_files_title": "Mes fichiers",
     "my_files_desc": "Retrouve les résultats que tu as enregistrés depuis les outils IA",
     "seo_title": "Outils PDF et IA Gratuits en Ligne",
-    "seo_description": "Outils PDF et IA gratuits en ligne : OCR, convertisseur, éditeur, visionneuse, scanner, traducteur, résumé et générateur de présentations."
+    "seo_description": "Outils PDF et IA gratuits en ligne : OCR, convertisseur, éditeur, visionneuse, scanner, traducteur, résumé et générateur de présentations.",
+    "sign_pdf_title": "Signer un PDF",
+    "sign_pdf_desc": "Signez un PDF avec une signature dessinée, tapée ou importée et ajoutez texte, date et coches."
   },
   "about_manage": {
     "title": "Section À propos",
@@ -3077,6 +3080,39 @@
           "a": "Italien, anglais, espagnol, français, allemand, portugais et albanais."
         }
       ]
+    },
+    "sign_pdf": {
+      "about": "L’outil de signature de PDF en ligne permet de signer un contrat ou un formulaire sans l’imprimer. Dessinez votre signature au doigt ou à la souris, tapez votre nom en style manuscrit ou importez une photo de votre signature, puis placez-la sur n’importe quelle page avec du texte, la date et des coches. Le PDF signé est créé dans votre navigateur.",
+      "steps": [
+        "Ouvrez le PDF : faites-le glisser dans le cadre ou choisissez-le sur votre appareil.",
+        "Choisissez un outil — Signature, Texte, Date, coche ou croix — et l’élément apparaît sur la page.",
+        "Faites-le glisser où il faut ; utilisez la poignée pour le redimensionner et les boutons pour le dupliquer, le répéter sur toutes les pages ou le supprimer.",
+        "Appuyez sur « Télécharger le PDF signé »."
+      ],
+      "privacy": "Le PDF et votre signature sont traités entièrement dans votre navigateur et ne sont jamais envoyés. Si vous cochez « Mémoriser sur cet appareil », la signature est conservée uniquement dans le stockage local de ce navigateur et vous pouvez la supprimer à tout moment.",
+      "limits": "Il ajoute une signature électronique simple — une image de votre signature — et ne produit pas de signature qualifiée ou numérique avec certification légale. Les PDF protégés par mot de passe ne peuvent pas être ouverts. Les modifications sont perdues si vous fermez l’onglet avant de télécharger.",
+      "faq": [
+        {
+          "q": "Est-ce gratuit ?",
+          "a": "Oui, entièrement gratuit et sans inscription."
+        },
+        {
+          "q": "Mon document est-il envoyé quelque part ?",
+          "a": "Non. Le PDF et la signature sont traités dans votre navigateur et ne quittent jamais votre appareil."
+        },
+        {
+          "q": "La signature a-t-elle une valeur légale ?",
+          "a": "C’est une signature électronique simple, acceptée pour de nombreux documents courants, mais pas une signature qualifiée ou numérique. Pour les documents qui l’exigent, utilisez un service certifié."
+        },
+        {
+          "q": "Puis-je signer depuis mon téléphone ?",
+          "a": "Oui. Vous pouvez dessiner la signature au doigt, puis la déplacer et la redimensionner sur la page."
+        },
+        {
+          "q": "Puis-je mettre la signature sur chaque page ?",
+          "a": "Oui : sélectionnez la signature et choisissez « Sur toutes les pages »."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3132,5 +3168,71 @@
       "h1": "De l'image au texte",
       "lead": "Transformez une photo, une capture d'écran ou une page numérisée en texte que vous pouvez copier et modifier : importez l'image et choisissez la langue."
     }
+  },
+  "sign_pdf": {
+    "title": "Signer un PDF",
+    "subtitle": "Signez un PDF, ajoutez texte, date et coches — directement dans le navigateur, sans envoyer le fichier.",
+    "seo_title": "Signer un PDF en Ligne Gratuit — Ajouter Signature, Texte et Date",
+    "seo_description": "Signez un PDF en ligne gratuitement : dessinez, tapez ou importez votre signature, ajoutez texte, date et coches, puis téléchargez. Tout se passe dans votre navigateur : le fichier n’est jamais envoyé.",
+    "drop_prompt": "Déposez un PDF ici ou cliquez pour le choisir",
+    "drop_hint": "Contrats, formulaires, attestations — n’importe quel PDF",
+    "privacy_note": "Le fichier reste sur votre appareil : il n’est envoyé à aucun serveur.",
+    "workspace_banner_title": "Un fichier attend dans le Workspace",
+    "workspace_banner_use": "L’utiliser",
+    "workspace_banner_dismiss": "Ignorer",
+    "tools_label": "Outils",
+    "tool_signature": "Signature",
+    "tool_text": "Texte",
+    "tool_date": "Date",
+    "tool_check": "Coche",
+    "tool_cross": "Croix",
+    "ink_label": "Couleur de l’encre",
+    "ink_black": "Encre noire",
+    "ink_blue": "Encre bleue",
+    "change_signature": "Changer de signature",
+    "forget_signature": "Oublier la signature enregistrée",
+    "undo": "Annuler",
+    "close_file": "Fermer le fichier",
+    "selected_label": "Élément sélectionné",
+    "field_text_label": "Texte de l’élément sélectionné",
+    "field_smaller": "Plus petit",
+    "field_bigger": "Plus grand",
+    "field_duplicate": "Dupliquer",
+    "field_all_pages": "Sur toutes les pages",
+    "field_delete": "Supprimer",
+    "hint_place": "Choisissez un outil ci-dessus : l’élément apparaît sur la page, puis faites-le glisser où il faut.",
+    "hint_drag": "Faites glisser les éléments pour les déplacer. Touchez-en un pour le redimensionner ou modifier son texte.",
+    "page_prev": "Page précédente",
+    "page_next": "Page suivante",
+    "page_label": "Page",
+    "items_here": "{{count}} éléments sur cette page",
+    "btn_download": "Télécharger le PDF signé",
+    "downloading": "Préparation…",
+    "success": "Terminé : le PDF signé a été téléchargé.",
+    "disclaimer": "Ajoute une signature électronique simple (une image de votre signature). Ce n’est pas une signature qualifiée ou numérique avec certification légale.",
+    "workspace_send": "Envoyer vers le Workspace",
+    "workspace_sent": "Envoyé",
+    "pad_title": "Créez votre signature",
+    "pad_tab_draw": "Dessiner",
+    "pad_tab_type": "Taper",
+    "pad_tab_upload": "Image",
+    "pad_draw_hint": "Signez dans le cadre avec le doigt ou la souris",
+    "pad_type_placeholder": "Tapez votre nom",
+    "pad_type_sample": "Votre nom",
+    "pad_upload_pick": "Choisissez une photo de votre signature",
+    "pad_upload_hint": "Signez sur une feuille blanche et prenez une photo nette",
+    "pad_remove_bg": "Supprimer le fond blanc",
+    "pad_clear": "Effacer",
+    "pad_remember": "Mémoriser sur cet appareil",
+    "pad_remember_hint": "Enregistrée uniquement dans ce navigateur, jamais envoyée",
+    "pad_cancel": "Annuler",
+    "pad_use": "Utiliser la signature",
+    "text_default": "Texte",
+    "err_not_pdf": "Choisissez un fichier PDF.",
+    "err_open": "Impossible d’ouvrir ce PDF. Il est peut-être endommagé ou protégé par un mot de passe.",
+    "err_render": "La page n’a pas pu être affichée. Réessayez.",
+    "err_image": "Cette image n’a pas pu être lue. Essayez-en une autre.",
+    "err_no_fields": "Ajoutez d’abord une signature, un texte ou une date.",
+    "err_export": "Le PDF n’a pas pu être créé. Réessayez."
   }
 }

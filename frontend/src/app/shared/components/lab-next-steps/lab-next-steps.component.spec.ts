@@ -40,7 +40,7 @@ describe('LabNextStepsComponent', () => {
     workspace.send({ kind: 'file', filename: 'a.pdf', mime: 'application/pdf', fromTool: 'pdf-summary' });
     render();
     const hrefs = Array.from(el.querySelectorAll('.next-steps__chip')).map(a => a.getAttribute('href'));
-    expect(hrefs).toEqual(['/lab/pdf-translate', '/lab/ocr', '/lab/pdf-editor', '/lab/viewer']);
+    expect(hrefs).toEqual(['/lab/pdf-translate', '/lab/ocr', '/lab/pdf-editor', '/lab/sign-pdf']);
   });
 
   it('ignores an item that was already in the workspace when the page loaded', async () => {

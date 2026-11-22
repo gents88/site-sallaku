@@ -21,6 +21,7 @@ const LAB_TOOL_INPUTS: readonly LabToolInput[] = [
   { id: 'ocr', extensions: ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'bmp', 'tiff'] },
   { id: 'ai-formatter', text: true },
   { id: 'pdf-editor', extensions: ['pdf'] },
+  { id: 'sign-pdf', extensions: ['pdf'] },
   { id: 'viewer', extensions: ['pdf'] },
   { id: 'editor', text: true },
   { id: 'convert', extensions: '*' },
