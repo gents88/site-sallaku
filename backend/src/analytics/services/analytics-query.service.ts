@@ -14,12 +14,17 @@ import {
   PageEngagement,
   ToolConversionRow,
   AcquisitionReport,
+  LeadAttributionReport,
+  LeadArticleRow,
   EntryPageRow,
   RecentVisit,
 } from '../analytics.types';
 
 /** Domini del sito stesso: come referrer non sono una provenienza esterna. */
 const OWN_HOSTS = ['gentsallaku.it', 'www.gentsallaku.it', 'localhost'];
+
+/** Pagina di un articolo: /blog/<slug> con o senza prefisso lingua. */
+const BLOG_POST_PATH = /^(?:\/(?:en|sq|es|pt|fr|de))?\/blog\/[^/]+$/;
 
 /**
  * Read/aggregation side of the former monolithic AnalyticsService. Tracking
@@ -269,8 +274,10 @@ export class AnalyticsQueryService {
       const entryMatch = { createdAt: { $gte: start }, navigationType: { $ne: 'internal' } };
       const normalizedPath = { $arrayElemAt: [{ $split: ['$path', '?'] }, 0] };
 
-      const [totalEntries, sources, referrerRows, entryRows, recent] = await Promise.all([
+      const previousMatch = { createdAt: { $gte: new Date(start.getTime() - days * 86_400_000), $lt: start }, navigationType: { $ne: 'internal' } };
+      const [totalEntries, previousTotalEntries, sources, referrerRows, entryRows, recent] = await Promise.all([
         this.pageViewModel.countDocuments(entryMatch).exec(),
+        this.pageViewModel.countDocuments(previousMatch).exec(),
         this.aggregateByField('trafficSource', 8, entryMatch),
         this.pageViewModel
           .aggregate<{ _id: string; count: number }>([
@@ -340,10 +347,120 @@ export class AnalyticsQueryService {
       return {
         days,
         totalEntries,
+        previousTotalEntries,
         sources,
         referrers: this.mergeReferrersByHost(referrerRows, 15),
         entryPages,
         recentVisits,
+      };
+    });
+  }
+
+  /**
+   * Da dove arrivano i contatti. Per ogni lead (eventType 'lead': form contatti
+   * o richiesta di chat live) prende l'ultimo arrivo dall'esterno dello stesso
+   * visitatore prima del contatto (attribuzione last-touch) e gli articoli del
+   * blog che aveva letto prima di scrivere. Un visitatore con più lead conta una
+   * volta per ogni lead nelle sorgenti, una volta sola negli articoli.
+   */
+  async getLeadAttribution(days = 30): Promise<LeadAttributionReport> {
+    return this.cache.getOrSet(`analytics:lead-attribution:${days}`, async () => {
+      const now = Date.now();
+      const since = new Date(now - days * 86_400_000);
+      const previousSince = new Date(now - 2 * days * 86_400_000);
+
+      const [leads, previousTotalLeads] = await Promise.all([
+        this.clickEventModel
+          .find({ eventType: 'lead', createdAt: { $gte: since } })
+          .select('visitorId label createdAt')
+          .lean<Array<{ visitorId: string; label: string; createdAt: Date }>>()
+          .exec(),
+        this.clickEventModel.countDocuments({ eventType: 'lead', createdAt: { $gte: previousSince, $lt: since } }).exec(),
+      ]);
+
+      const empty: LeadAttributionReport = {
+        days, totalLeads: 0, previousTotalLeads, byKind: [], bySource: [], byReferrer: [], byEntryPage: [], articles: [],
+      };
+      if (!leads.length) return empty;
+
+      const visitorIds = [...new Set(leads.map(l => l.visitorId))];
+      // Le visite fino a `days` giorni prima dell'inizio del periodo: un lead di
+      // oggi può venire da un articolo letto la settimana scorsa.
+      const views = await this.pageViewModel
+        .find({ visitorId: { $in: visitorIds }, createdAt: { $gte: previousSince } })
+        .select('visitorId path trafficSource referrer navigationType createdAt')
+        .sort({ createdAt: 1 })
+        .lean<Array<PageView & { createdAt: Date }>>()
+        .exec();
+
+      const viewsByVisitor = new Map<string, Array<PageView & { createdAt: Date }>>();
+      for (const v of views) {
+        const list = viewsByVisitor.get(v.visitorId) ?? [];
+        list.push(v);
+        viewsByVisitor.set(v.visitorId, list);
+      }
+
+      const count = (map: Map<string, number>, key: string) => map.set(key, (map.get(key) ?? 0) + 1);
+      const kinds = new Map<string, number>();
+      const sources = new Map<string, number>();
+      const referrers = new Map<string, number>();
+      const entryPages = new Map<string, number>();
+      const articleLeads = new Map<string, Set<string>>();
+
+      for (const lead of leads) {
+        count(kinds, lead.label || 'other');
+        const before = (viewsByVisitor.get(lead.visitorId) ?? []).filter(v => v.createdAt <= lead.createdAt);
+        const lastEntry = [...before].reverse().find(v => v.navigationType !== 'internal');
+        count(sources, lastEntry?.trafficSource || 'direct');
+        const host = this.referrerHost(lastEntry?.referrer);
+        if (host) count(referrers, host);
+        if (lastEntry) count(entryPages, (lastEntry.path || '/').split('?')[0]);
+        for (const v of before) {
+          const path = (v.path || '').split('?')[0];
+          if (!BLOG_POST_PATH.test(path)) continue;
+          const set = articleLeads.get(path) ?? new Set<string>();
+          set.add(lead.visitorId);
+          articleLeads.set(path, set);
+        }
+      }
+
+      // Visitatori unici di quegli articoli nel periodo, per il tasso di conversione.
+      const articlePaths = [...articleLeads.keys()];
+      const visitorRows = articlePaths.length
+        ? await this.pageViewModel
+            .aggregate<{ _id: string; visitors: number }>([
+              { $match: { createdAt: { $gte: since } } },
+              { $addFields: { normalizedPath: { $arrayElemAt: [{ $split: ['$path', '?'] }, 0] } } },
+              { $match: { normalizedPath: { $in: articlePaths } } },
+              { $group: { _id: { path: '$normalizedPath', visitorId: '$visitorId' } } },
+              { $group: { _id: '$_id.path', visitors: { $sum: 1 } } },
+            ])
+            .exec()
+        : [];
+      const visitorsByPath = new Map(visitorRows.map(r => [r._id, r.visitors]));
+
+      const articles: LeadArticleRow[] = articlePaths
+        .map(path => {
+          const leadsCount = articleLeads.get(path)!.size;
+          // Almeno quanti lead: un lettore del periodo precedente non è nel conteggio dei visitatori.
+          const visitors = Math.max(visitorsByPath.get(path) ?? 0, leadsCount);
+          return { path, leads: leadsCount, visitors, rate: Math.round((leadsCount / visitors) * 1000) / 10 };
+        })
+        .sort((a, b) => b.leads - a.leads || b.rate - a.rate)
+        .slice(0, 15);
+
+      const toItems = (map: Map<string, number>, limit: number) =>
+        [...map.entries()].map(([label, c]) => ({ label, count: c })).sort((a, b) => b.count - a.count).slice(0, limit);
+
+      return {
+        days,
+        totalLeads: leads.length,
+        previousTotalLeads,
+        byKind: toItems(kinds, 5),
+        bySource: toItems(sources, 8),
+        byReferrer: toItems(referrers, 10),
+        byEntryPage: toItems(entryPages, 10),
+        articles,
       };
     });
   }
