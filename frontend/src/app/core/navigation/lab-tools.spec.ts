@@ -7,7 +7,7 @@ describe('lab-tools', () => {
   describe('labToolsAccepting', () => {
     it('suggests the PDF tools for a PDF, excluding the tool it came from', () => {
       expect(ids(labToolsAccepting({ kind: 'file', filename: 'report.PDF' }, 'viewer')))
-        .toEqual(['pdf-summary', 'pdf-translate', 'ocr', 'pdf-editor', 'sign-pdf', 'convert']);
+        .toEqual(['pdf-summary', 'pdf-translate', 'ocr', 'pdf-editor', 'sign-pdf', 'compress-pdf', 'convert']);
     });
 
     it('suggests the text tools for a text result (e.g. after OCR)', () => {
