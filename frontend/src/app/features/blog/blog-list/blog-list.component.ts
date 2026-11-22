@@ -175,8 +175,9 @@ export class BlogListComponent implements OnInit {
     const lang = this.currentLang();
     const pageUrl = `${SITE_ORIGIN}${withLangPrefix('/blog', lang)}`;
     this.seo.update({
-      title: 'Blog',
-      description: 'Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern IT development.',
+      // Tradotti per lingua (prima identici in tutte e 7 le versioni di /blog).
+      title: this.translate.instant('page_meta.blog_title'),
+      description: this.translate.instant('page_meta.blog_description'),
       url: pageUrl,
     });
     const homeLabel = this.translate.instant('nav.home');

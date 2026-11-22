@@ -2505,5 +2505,11 @@
     "none_title": "No file received",
     "none_hint": "To open a file in the Lab, share it from another app using “Share with…”, or choose “Open with” on the file after installing the site as an app. You can also drag it straight into the Lab.",
     "go_lab": "Go to the Lab"
+  },
+  "page_meta": {
+    "home_title": "Senior Front-End & API Developer",
+    "home_description": "Senior Front-End Developer specialising in Angular, TypeScript, 3D data visualization and enterprise architectures.",
+    "blog_title": "Blog — Angular, TypeScript and web development",
+    "blog_description": "Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern development."
   }
 }

@@ -2505,5 +2505,11 @@
     "none_title": "No se ha recibido ningún archivo",
     "none_hint": "Para abrir un archivo en el Lab, compártelo desde otra app con «Compartir con…» o elige «Abrir con» en el archivo tras instalar el sitio como app. También puedes arrastrarlo directamente al Lab.",
     "go_lab": "Ir al Lab"
+  },
+  "page_meta": {
+    "home_title": "Desarrollador Senior Front-End y API",
+    "home_description": "Desarrollador Senior Front-End especializado en Angular, TypeScript, visualización de datos 3D y arquitecturas empresariales.",
+    "blog_title": "Blog — Angular, TypeScript y desarrollo web",
+    "blog_description": "Artículos, tutoriales y análisis sobre Angular, TypeScript, NestJS, rendimiento web, visualizaciones 3D y desarrollo moderno."
   }
 }
