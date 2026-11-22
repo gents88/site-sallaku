@@ -217,6 +217,22 @@ describe('DashboardComponent', () => {
     expect(component.isOpen('dash-ops')).toBe(false);
   });
 
+  it('il menu "Vai a…" (schermi stretti) elenca le sezioni, apre quella scelta e torna sulla voce neutra', async () => {
+    const { fixture, component, el } = await setup(() => of(overview()));
+    await fixture.whenStable();
+    const select = el.querySelector('select.dash-nav__select') as HTMLSelectElement;
+    expect(select).not.toBeNull();
+    // voce neutra + una per sezione, nello stesso ordine dell'indice
+    expect(Array.from(select.options).slice(1).map((o) => o.value)).toEqual(component.navItems.map((i) => i.id));
+
+    component.collapseAll();
+    select.value = 'dash-visitors';
+    select.dispatchEvent(new Event('change'));
+
+    expect(component.isOpen('dash-visitors')).toBe(true);
+    expect(select.value).toBe('');
+  });
+
   it('does not stack requests: a new load cancels the in-flight one', async () => {
     const pending = new Subject<DashboardOverview>();
     const { component } = await setup(() => pending);
