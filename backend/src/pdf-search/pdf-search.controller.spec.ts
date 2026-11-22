@@ -167,10 +167,10 @@ describe('PdfSearchController', () => {
       expect(res.send).toHaveBeenCalled();
     });
 
-    it('rejects a non-PDF content-type from the upstream', async () => {
+    it('answers 404 when the upstream does not return a PDF (e.g. Europe PMC "Failed to retrieve PDF")', async () => {
       fetchMock.mockResolvedValue(jsonUpstream(new ArrayBuffer(8), true, 200, 'text/html'));
 
-      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(BadRequestException);
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(NotFoundException);
     });
 
     it('propagates an upstream fetch failure as NotFoundException', async () => {
