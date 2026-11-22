@@ -3,6 +3,7 @@ import { adminRoutes } from './features/admin/admin.routes';
 import { langCanMatchGuard } from './core/routing/lang-can-match.guard';
 import { langResolver } from './core/routing/lang.resolver';
 import { notFoundGuard } from './core/routing/not-found.guard';
+import { LAB_INTENTS } from './core/navigation/lab-intents';
 
 // Shared by both the unprefixed (Italian default) and /:lang-prefixed route
 // trees below — same component references, listed once. langResolver on
@@ -10,6 +11,13 @@ import { notFoundGuard } from './core/routing/not-found.guard';
 // these children activate, so the prefix actually changes rendered content
 // (both for real navigation and Angular's build-time prerenderer), not just
 // what SeoService's hreflang tags claim.
+/** Caricatori dei componenti che le pagine per ricerca specifica riusano. */
+const LAB_TOOL_LOADERS: Record<string, NonNullable<Route['loadComponent']>> = {
+  convert: () => import('./features/admin/convert/convert.component').then(m => m.ConvertComponent),
+  'pdf-editor': () => import('./features/admin/pdf-editor/pdf-editor.component').then(m => m.PdfEditorComponent),
+  ocr: () => import('./features/admin/ocr/ocr.component').then(m => m.OcrComponent),
+};
+
 const publicPages: Route[] = [
   {
     path: '',
@@ -132,6 +140,13 @@ const publicPages: Route[] = [
     path: 'lab/scanner',
     loadComponent: () => import('./features/admin/scanner/scanner.component').then(m => m.ScannerComponent),
   },
+  // Pagine per ricerche specifiche ("unire PDF", "PDF in Word"…): riusano il componente di
+  // uno strumento ma hanno title, testi e dati strutturati propri (core/navigation/lab-intents.ts).
+  ...Object.entries(LAB_INTENTS).map(([intent, { tool }]): Route => ({
+    path: `lab/${intent}`,
+    data: { labIntent: intent },
+    loadComponent: LAB_TOOL_LOADERS[tool],
+  })),
   {
     path: 'lab/workspace',
     loadComponent: () => import('./features/admin/workspace/workspace.component').then(m => m.WorkspaceComponent),
