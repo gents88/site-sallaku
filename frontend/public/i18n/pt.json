@@ -1337,7 +1337,11 @@
     "link_copied": "Link copiado",
     "preview_goto_page": "Ir para a página",
     "zoom_out": "Diminuir zoom",
-    "zoom_in": "Aumentar zoom"
+    "zoom_in": "Aumentar zoom",
+    "preview_failed": "Não foi possível carregar este PDF. Pode ser demasiado grande, a fonte pode não responder ou o ficheiro pode não ser legível. Tente de novo ou use «Descarregar PDF» para o abrir a partir da fonte.",
+    "preview_blank": "Esta página aparece em branco. Pode ser uma página realmente em branco do documento (capa, verso): experimente › para avançar. Se todas continuarem em branco, descarregue o PDF ou abra-o a partir da fonte.",
+    "preview_page_error": "Não foi possível mostrar esta página. Tente de novo ou descarregue o PDF para a ler.",
+    "preview_retry": "Tentar de novo"
   },
   "convert": {
     "title": "Conversor",

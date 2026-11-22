@@ -1337,7 +1337,11 @@
     "link_copied": "Link kopiert",
     "preview_goto_page": "Gehe zu Seite",
     "zoom_out": "Verkleinern",
-    "zoom_in": "Vergrößern"
+    "zoom_in": "Vergrößern",
+    "preview_failed": "Dieses PDF konnte nicht geladen werden. Es ist vielleicht zu groß, die Quelle antwortet nicht oder die Datei ist nicht lesbar. Versuchen Sie es erneut oder öffnen Sie es über „PDF herunterladen“ direkt von der Quelle.",
+    "preview_blank": "Diese Seite erscheint leer. Es kann eine tatsächlich leere Seite des Dokuments sein (Umschlag, Rückseite): Mit › gehen Sie weiter. Bleiben alle Seiten leer, laden Sie das PDF herunter oder öffnen es über die Quelle.",
+    "preview_page_error": "Diese Seite konnte nicht angezeigt werden. Versuchen Sie es erneut oder laden Sie das PDF zum Lesen herunter.",
+    "preview_retry": "Erneut versuchen"
   },
   "convert": {
     "title": "Konverter",
