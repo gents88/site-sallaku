@@ -280,4 +280,6 @@
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 
   mat-icon { font-size: 16px; height: 16px; width: 16px; }
+  // Il lilla chiaro va bene sullo sfondo scuro; sul chiaro era quasi invisibile (contrasto 1,75:1).
+  :host-context([data-theme='light']) & { color: #4338ca; }
 }

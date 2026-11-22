@@ -83,7 +83,8 @@ describe('DashboardComponent', () => {
     expect(el.querySelector('.dashboard-error')?.textContent).toContain('admin.overview_partial_error');
     expect(el.querySelector('.dashboard-error')?.textContent).toContain('admin.seo_title');
     const values = Array.from(el.querySelectorAll('.stat-card__value')).map(v => v.textContent?.trim());
-    expect(values[0]).toBe('3'); // projectsCount è caricato
+    // Ordine: 4 numeri chiave (visite, visitatori, contatti, utenti), poi la riga dei contenuti (progetti per primo).
+    expect(values[4]).toBe('3'); // projectsCount è caricato
     expect(values.filter(v => v === '—')).toHaveLength(7); // le 7 card derivate da "core" (bozze inclusa)
     expect(values).not.toContain('0');
   });
@@ -164,6 +165,13 @@ describe('DashboardComponent', () => {
   it('le sezioni sono richiudibili: chiusa non crea il contenuto, e la scelta resta memorizzata', async () => {
     const { fixture, component, el } = await setup(() => of(overview()));
     await fixture.whenStable();
+    // Alla prima visita le sezioni sono chiuse e il contenuto non viene creato.
+    expect(component.isOpen('dash-ops')).toBe(false);
+    expect(el.querySelector('#dash-ops app-ops-section')).toBeNull();
+
+    (el.querySelector('#dash-ops .mat-expansion-panel-header') as HTMLElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
     expect(component.isOpen('dash-ops')).toBe(true);
     expect(el.querySelector('#dash-ops app-ops-section')).not.toBeNull();
 
@@ -171,13 +179,34 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(component.isOpen('dash-ops')).toBe(false);
-    expect(JSON.parse(localStorage.getItem('admin_dashboard_open_sections')!)).not.toContain('dash-ops');
+    expect(JSON.parse(localStorage.getItem('admin_dashboard_open_sections_v2')!)).not.toContain('dash-ops');
 
     component.expandAll();
     fixture.detectChanges();
     expect(component.isOpen('dash-ops')).toBe(true);
     component.collapseAll();
     expect(component.openSections().size).toBe(0);
+  });
+
+  it('"Da fare adesso" elenca solo ciò che richiede azione e i badge riassumono le sezioni', async () => {
+    const { component } = await setup(() => of(overview()));
+    expect(component.primaryStats.map(s => s.labelKey)).toEqual(['admin.visits', 'admin.visitors', 'admin.contacts', 'admin.users']);
+    expect(component.compactStats.length).toBe(component.stats.length - 4);
+
+    component.unreadCount = 3;
+    component.leads = { ...component.leads, followUpsDue: 2 };
+    component.serverErrors = { ...component.serverErrors, open: 5 };
+    const att = component.attention;
+    expect(att.find(a => a.id === 'unread')?.count).toBe(3);
+    expect(att.find(a => a.id === 'followups')?.section).toBe('dash-leads');
+    expect(att.find(a => a.id === 'errors')?.count).toBe(5);
+    expect(component.badgesFor('dash-ops')[0]).toMatchObject({ value: 5, tone: 'bad' });
+
+    component.unreadCount = 0;
+    component.leads = { ...component.leads, followUpsDue: 0 };
+    component.serverErrors = { ...component.serverErrors, open: 0 };
+    expect(component.attention.find(a => ['unread', 'followups', 'errors'].includes(a.id))).toBeUndefined();
+    expect(component.badgesFor('dash-ops')[0]).toMatchObject({ value: 0, tone: 'ok' });
   });
 
   it('dall\'indice una sezione chiusa si apre', async () => {
