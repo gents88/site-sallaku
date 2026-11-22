@@ -366,6 +366,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.updateOpenSections(new Set());
   }
 
+  /** Dal menu "Vai a…" (telefono e tablet): porta alla sezione scelta e torna sulla voce neutra. */
+  jumpTo(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const id = select.value;
+    select.value = '';
+    if (id) this.scrollTo(id);
+  }
+
   /** Dall'indice: apre la sezione se è chiusa, poi ci porta. */
   scrollTo(id: string): void {
     this.setOpen(id, true);

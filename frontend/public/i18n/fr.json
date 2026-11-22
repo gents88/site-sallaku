@@ -4094,6 +4094,7 @@
     "b_drafts": "brouillons",
     "b_today": "visiteurs aujourd’hui",
     "b_clicks": "clics depuis Google",
-    "total": "total"
+    "total": "total",
+    "jump_to": "Aller à…"
   }
 }

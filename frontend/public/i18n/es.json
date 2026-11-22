@@ -4094,6 +4094,7 @@
     "b_drafts": "borradores",
     "b_today": "visitantes hoy",
     "b_clicks": "clics desde Google",
-    "total": "total"
+    "total": "total",
+    "jump_to": "Ir a…"
   }
 }
