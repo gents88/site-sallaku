@@ -72,7 +72,8 @@
       "live_chat": "Live chat",
       "sign_pdf": "Sign PDF",
       "compress_pdf": "Compress PDF",
-      "image_tools": "Photos & HEIC"
+      "image_tools": "Photos & HEIC",
+      "qr_code": "QR Code"
     }
   },
   "lang": {
@@ -1538,7 +1539,9 @@
     "compress_pdf_title": "Compress PDF",
     "compress_pdf_desc": "Reduce the size of a PDF to send it by email or upload it, with three levels of compression.",
     "image_tools_title": "Photos: HEIC to JPG, resize, compress",
-    "image_tools_desc": "Convert HEIC photos to JPG, resize and compress many images at once, and remove GPS data."
+    "image_tools_desc": "Convert HEIC photos to JPG, resize and compress many images at once, and remove GPS data.",
+    "qr_code_title": "QR Code Generator",
+    "qr_code_desc": "Create QR codes for links, Wi-Fi, contacts, email and WhatsApp and download them as PNG or SVG."
   },
   "about_manage": {
     "title": "About Section",
@@ -3181,6 +3184,39 @@
           "a": "Yes, free and with no sign-up."
         }
       ]
+    },
+    "qr_code": {
+      "about": "The QR code generator turns a link, text, Wi‑Fi network, contact card, email, phone number or WhatsApp message into a QR code that any phone camera can read. Choose the colours and the size and download the code as a PNG image or as a scalable SVG for printing. The code is created in your browser from what you type.",
+      "steps": [
+        "Pick the type of code: Link, Text, Wi‑Fi, Contact, Email, Phone or WhatsApp.",
+        "Fill in the details: the code appears on the right as you type.",
+        "Open “Options” to change error correction, margin, size and colours.",
+        "Scan it with your phone to check it, then download the PNG or SVG."
+      ],
+      "privacy": "Everything you type is turned into a code in your browser and is never sent to a server. There is no tracking of the content, and no sign-up.",
+      "limits": "A QR code can hold only a limited amount of text (a few thousand characters); longer content is refused. Codes are static: they cannot be edited or counted after printing, and they never expire. Keep a dark code on a light background with enough contrast, or some scanners will not read it.",
+      "faq": [
+        {
+          "q": "Is it free and without a watermark?",
+          "a": "Yes. The codes are free, have no watermark and never expire."
+        },
+        {
+          "q": "Is what I type sent anywhere?",
+          "a": "No. The code is generated in your browser; nothing is uploaded."
+        },
+        {
+          "q": "Should I download PNG or SVG?",
+          "a": "PNG for screens, documents and social media; SVG for printing, because it stays sharp at any size."
+        },
+        {
+          "q": "How do I make a Wi‑Fi QR code?",
+          "a": "Choose Wi‑Fi, enter the network name and password, and print the code: guests scan it to join without typing the password."
+        },
+        {
+          "q": "Why can’t my phone read the code?",
+          "a": "Usually because of low contrast, inverted colours, or a printed size that is too small. Use a dark code on a light background and at least 2 cm wide."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3391,5 +3427,64 @@
     "note_skipped": "{{count}} file(s) skipped: they are not images.",
     "note_too_big": "{{count}} file(s) skipped: larger than {{max}} MB.",
     "note_limit": "Only the first {{max}} files were added."
+  },
+  "qr_code": {
+    "title": "QR Code Generator",
+    "subtitle": "Create a QR code for a link, Wi‑Fi, contact, email or WhatsApp and download it as PNG or SVG — in your browser, with no sign-up.",
+    "seo_title": "Free QR Code Generator — Link, Wi-Fi, Contact, WhatsApp (PNG & SVG)",
+    "seo_description": "Create QR codes online for free: link, text, Wi-Fi, contact card, email, phone and WhatsApp. Choose colours and size, download PNG or SVG. Everything runs in your browser.",
+    "alt": "QR code preview",
+    "type_label": "QR code type",
+    "type_url": "Link",
+    "type_text": "Text",
+    "type_wifi": "Wi‑Fi",
+    "type_contact": "Contact",
+    "type_email": "Email",
+    "type_phone": "Phone",
+    "type_whatsapp": "WhatsApp",
+    "content_label": "Content",
+    "f_url": "Web address",
+    "ph_url": "example.com/page",
+    "f_text": "Text",
+    "ph_text": "Write any text",
+    "f_ssid": "Network name (SSID)",
+    "f_security": "Security",
+    "sec_none": "No password",
+    "f_password": "Password",
+    "f_hidden": "Hidden network",
+    "f_first": "First name",
+    "f_last": "Last name",
+    "f_phone": "Phone",
+    "ph_phone": "+1 555 123 4567",
+    "f_email": "Email",
+    "f_org": "Company",
+    "f_website": "Website",
+    "f_to": "Recipient email",
+    "f_subject": "Subject",
+    "f_body": "Message",
+    "f_wa_phone": "WhatsApp number (with country code)",
+    "ph_wa_phone": "+1 555 123 4567",
+    "f_wa_text": "Pre-filled message (optional)",
+    "privacy_sensitive": "What you type is turned into a code in your browser and is never sent anywhere. Anyone who scans the code can read it, so do not share codes that contain a password with people you do not trust.",
+    "options": "Options",
+    "ec_label": "Error correction",
+    "ec_hint": "Higher levels still scan when the code is dirty or partly covered, but make it denser. M is a good default.",
+    "margin_label": "Quiet zone (modules)",
+    "size_label": "PNG size",
+    "colors_label": "Colours",
+    "fg": "Code",
+    "bg": "Background",
+    "swap": "Swap",
+    "reset": "Reset",
+    "warn_contrast": "Low contrast: many phones will not be able to read this code. Use a much darker code on a lighter background.",
+    "warn_inverted": "Light code on a dark background: some scanners cannot read inverted codes. Dark on light is the safest choice.",
+    "meta": "{{modules}}×{{px}}",
+    "copy": "Copy image",
+    "copied": "Copied",
+    "workspace_send": "Send to Workspace",
+    "sent": "Sent",
+    "scan_tip": "Before printing, scan the code with your phone to check it. For print use SVG, and keep it at least 2 cm wide.",
+    "too_long": "This content is too long for a QR code. Shorten it or lower the error correction level.",
+    "empty": "Fill in the details on the left: the code appears here as you type."
   }
 }
