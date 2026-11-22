@@ -58,11 +58,18 @@
       </div>
     }
 
-    <!-- Indice: porta alle sezioni (quelle sotto la piega si caricano quando ci si arriva). -->
+    <!-- Indice: apre la sezione (se chiusa) e ci porta. -->
     <nav class="dash-nav" [attr.aria-label]="'dashboard_ux.nav_label' | translate">
       @for (item of navItems; track item.id) {
         <button type="button" class="dash-nav__link" (click)="scrollTo(item.id)">{{ item.labelKey | translate }}</button>
       }
+      <span class="dash-nav__spacer"></span>
+      <button type="button" class="dash-nav__link dash-nav__link--action" (click)="expandAll()">
+        <mat-icon aria-hidden="true">unfold_more</mat-icon>{{ 'dashboard_ux.expand_all' | translate }}
+      </button>
+      <button type="button" class="dash-nav__link dash-nav__link--action" (click)="collapseAll()">
+        <mat-icon aria-hidden="true">unfold_less</mat-icon>{{ 'dashboard_ux.collapse_all' | translate }}
+      </button>
     </nav>
 
     <div id="dash-overview" class="dash-anchor">
@@ -141,102 +148,208 @@
       </div>
     </div>
 
-    <div id="dash-ops" class="dash-anchor">
-      <app-ops-section
-        [aiUsage]="aiUsage"
-        [serverErrors]="serverErrors"
-        [serverHealth]="serverHealth"
-        [failed]="failedSections"
-        (changed)="refresh()"
-      />
-    </div>
+    <!-- Sezioni richiudibili: il contenuto di una sezione chiusa non viene creato.
+         Aperta/chiusa resta memorizzato nel browser (DashboardComponent.openSections). -->
+    <mat-accordion class="dash-accordion" multi>
+      <mat-expansion-panel
+        id="dash-ops"
+        class="dash-panel dash-anchor"
+        [expanded]="isOpen('dash-ops')"
+        (opened)="setOpen('dash-ops', true)"
+        (closed)="setOpen('dash-ops', false)"
+      >
+        <mat-expansion-panel-header class="dash-panel__header">
+          <mat-panel-title class="dash-panel__title">
+            <mat-icon aria-hidden="true">monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-ops-section
+            [aiUsage]="aiUsage"
+            [serverErrors]="serverErrors"
+            [serverHealth]="serverHealth"
+            [failed]="failedSections"
+            (changed)="refresh()"
+          />
+        </ng-template>
+      </mat-expansion-panel>
 
-    <div id="dash-content" class="dash-anchor">
-      <app-content-section
-        [translationHealth]="translationHealth"
-        [scheduledPosts]="scheduledPosts"
-        [notFound]="notFound"
-        [security]="security"
-        [failed]="failedSections"
-        (changed)="refresh()"
-      />
-    </div>
+      <mat-expansion-panel
+        id="dash-content"
+        class="dash-panel dash-anchor"
+        [expanded]="isOpen('dash-content')"
+        (opened)="setOpen('dash-content', true)"
+        (closed)="setOpen('dash-content', false)"
+      >
+        <mat-expansion-panel-header class="dash-panel__header">
+          <mat-panel-title class="dash-panel__title">
+            <mat-icon aria-hidden="true">edit_note</mat-icon>{{ 'content_health.section' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-content-section
+            [translationHealth]="translationHealth"
+            [scheduledPosts]="scheduledPosts"
+            [notFound]="notFound"
+            [security]="security"
+            [failed]="failedSections"
+            (changed)="refresh()"
+          />
+        </ng-template>
+      </mat-expansion-panel>
 
-    <!-- Da qui in giù le sezioni si creano quando arrivano a schermo (o quando il browser è libero). -->
-    <div id="dash-activity" class="dash-anchor">
-      @defer (on viewport; prefetch on idle) {
-        <app-activity-section
-          [contactBars]="contactBars"
-          [visitBars]="visitBars"
-          [totalViews]="totalViews"
-          [uniqueVisitors]="uniqueVisitors"
-          [publishedPosts]="publishedPosts"
-          [draftPosts]="draftPosts"
-          [topPosts]="topPosts"
-          [consent]="consent"
-          (refresh)="refresh()"
-        />
-      } @placeholder {
-        <div class="dash-placeholder" aria-hidden="true"></div>
+      <mat-expansion-panel
+        id="dash-activity"
+        class="dash-panel dash-anchor"
+        [expanded]="isOpen('dash-activity')"
+        (opened)="setOpen('dash-activity', true)"
+        (closed)="setOpen('dash-activity', false)"
+      >
+        <mat-expansion-panel-header class="dash-panel__header">
+          <mat-panel-title class="dash-panel__title">
+            <mat-icon aria-hidden="true">show_chart</mat-icon>{{ 'dashboard_ux.activity_section' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          @defer (on viewport; prefetch on idle) {
+            <app-activity-section
+              [contactBars]="contactBars"
+              [visitBars]="visitBars"
+              [totalViews]="totalViews"
+              [uniqueVisitors]="uniqueVisitors"
+              [publishedPosts]="publishedPosts"
+              [draftPosts]="draftPosts"
+              [topPosts]="topPosts"
+              [consent]="consent"
+              (refresh)="refresh()"
+            />
+          } @placeholder {
+            <div class="dash-placeholder" aria-hidden="true"></div>
+          }
+        </ng-template>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel
+        id="dash-visitors"
+        class="dash-panel dash-anchor"
+        [expanded]="isOpen('dash-visitors')"
+        (opened)="setOpen('dash-visitors', true)"
+        (closed)="setOpen('dash-visitors', false)"
+      >
+        <mat-expansion-panel-header class="dash-panel__header">
+          <mat-panel-title class="dash-panel__title">
+            <mat-icon aria-hidden="true">people</mat-icon>{{ 'admin.visitor_analytics' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          @defer (on viewport; prefetch on idle) {
+            <app-visitors-section
+              [stats]="visitorStats"
+              [resetting]="resettingStats"
+              (resetMonthly)="resetMonthlyStats()"
+              (downloadCsv)="downloadCsv()"
+            />
+          } @placeholder {
+            <div class="dash-placeholder" aria-hidden="true"></div>
+          }
+        </ng-template>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel
+        id="dash-acquisition"
+        class="dash-panel dash-anchor"
+        [expanded]="isOpen('dash-acquisition')"
+        (opened)="setOpen('dash-acquisition', true)"
+        (closed)="setOpen('dash-acquisition', false)"
+      >
+        <mat-expansion-panel-header class="dash-panel__header">
+          <mat-panel-title class="dash-panel__title">
+            <mat-icon aria-hidden="true">public</mat-icon>{{ 'dashboard_ux.acquisition_section' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          @defer (on viewport; prefetch on idle) {
+            <app-acquisition-section />
+          } @placeholder {
+            <div class="dash-placeholder" aria-hidden="true"></div>
+          }
+        </ng-template>
+      </mat-expansion-panel>
+
+      @if (gscSummary.configured) {
+        <mat-expansion-panel
+          id="dash-seo"
+          class="dash-panel dash-anchor"
+          [expanded]="isOpen('dash-seo')"
+          (opened)="setOpen('dash-seo', true)"
+          (closed)="setOpen('dash-seo', false)"
+        >
+          <mat-expansion-panel-header class="dash-panel__header">
+            <mat-panel-title class="dash-panel__title">
+              <mat-icon aria-hidden="true">search</mat-icon>{{ 'admin.seo_title' | translate }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+              @defer (on viewport; prefetch on idle) {
+                <app-seo-section [gsc]="gscSummary" />
+              } @placeholder {
+                <div class="dash-placeholder" aria-hidden="true"></div>
+              }
+          </ng-template>
+        </mat-expansion-panel>
       }
-    </div>
 
-    <div id="dash-visitors" class="dash-anchor">
-      @defer (on viewport; prefetch on idle) {
-        <app-visitors-section
-          [stats]="visitorStats"
-          [resetting]="resettingStats"
-          (resetMonthly)="resetMonthlyStats()"
-          (downloadCsv)="downloadCsv()"
-        />
-      } @placeholder {
-        <div class="dash-placeholder" aria-hidden="true"></div>
-      }
-    </div>
+      <mat-expansion-panel
+        id="dash-utility"
+        class="dash-panel dash-anchor"
+        [expanded]="isOpen('dash-utility')"
+        (opened)="setOpen('dash-utility', true)"
+        (closed)="setOpen('dash-utility', false)"
+      >
+        <mat-expansion-panel-header class="dash-panel__header">
+          <mat-panel-title class="dash-panel__title">
+            <mat-icon aria-hidden="true">build_circle</mat-icon>{{ 'admin.utility_section' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          @defer (on viewport; prefetch on idle) {
+            <app-utility-section
+              [systemHealth]="systemHealth"
+              [systemDetails]="systemDetails"
+              [systemOps]="systemOps"
+              [adminName]="auth.currentUser()?.name ?? null"
+              [adminEmail]="auth.currentUser()?.email ?? null"
+              [unreadCount]="unreadCount"
+              [auditCount]="auditLogs.length"
+              (refresh)="refresh()"
+              (loadSessions)="loadTodaySessions()"
+              (downloadCsv)="downloadCsv()"
+              (resetMonthly)="resetMonthlyStats()"
+            />
+          } @placeholder {
+            <div class="dash-placeholder" aria-hidden="true"></div>
+          }
+        </ng-template>
+      </mat-expansion-panel>
 
-    <div id="dash-acquisition" class="dash-anchor">
-      @defer (on viewport; prefetch on idle) {
-        <app-acquisition-section />
-      } @placeholder {
-        <div class="dash-placeholder" aria-hidden="true"></div>
-      }
-    </div>
+      <mat-expansion-panel
+        id="dash-chat"
+        class="dash-panel dash-anchor"
+        [expanded]="isOpen('dash-chat')"
+        (opened)="setOpen('dash-chat', true)"
+        (closed)="setOpen('dash-chat', false)"
+      >
+        <mat-expansion-panel-header class="dash-panel__header">
+          <mat-panel-title class="dash-panel__title">
+            <mat-icon aria-hidden="true">forum</mat-icon>{{ 'admin.chat_sessions_section' | translate }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <app-chat-sessions-section [interactionsToday]="chatbotStats.interactionsToday" />
+        </ng-template>
+      </mat-expansion-panel>
 
-    <!-- SEO – Google Search Console: nascosta finché non è configurata. -->
-    @if (gscSummary.configured) {
-      <div id="dash-seo" class="dash-anchor">
-        @defer (on viewport; prefetch on idle) {
-          <app-seo-section [gsc]="gscSummary" />
-        } @placeholder {
-          <div class="dash-placeholder" aria-hidden="true"></div>
-        }
-      </div>
-    }
-
-    <div id="dash-utility" class="dash-anchor">
-      @defer (on viewport; prefetch on idle) {
-        <app-utility-section
-          [systemHealth]="systemHealth"
-          [systemDetails]="systemDetails"
-          [systemOps]="systemOps"
-          [adminName]="auth.currentUser()?.name ?? null"
-          [adminEmail]="auth.currentUser()?.email ?? null"
-          [unreadCount]="unreadCount"
-          [auditCount]="auditLogs.length"
-          (refresh)="refresh()"
-          (loadSessions)="loadTodaySessions()"
-          (downloadCsv)="downloadCsv()"
-          (resetMonthly)="resetMonthlyStats()"
-        />
-      } @placeholder {
-        <div class="dash-placeholder" aria-hidden="true"></div>
-      }
-    </div>
-
-    <!-- Non in @defer: il pannello Utility lo chiama per caricare le chat di oggi. -->
-    <div id="dash-chat" class="dash-anchor">
-      <app-chat-sessions-section [interactionsToday]="chatbotStats.interactionsToday" />
-    </div>
+    </mat-accordion>
 
     <!-- Quick links -->
     <h2 class="section-label">{{ 'admin.quick_actions' | translate }}</h2>
@@ -252,77 +365,89 @@
 
     <!-- Recent contacts -->
     @if (recentContacts.length) {
-      <div id="dash-messages" class="dash-anchor">
-      <h2 class="section-label">
-        {{ 'admin.recent_activity' | translate }}
-        @if (unreadCount > 0) {
-          <span class="section-unread-badge" [attr.aria-label]="unreadCount + ' unread'">{{ unreadCount }}</span>
-        }
-      </h2>
-      <div class="contacts-list card">
-
-        <!-- Bulk action toolbar -->
-        <div class="contacts-toolbar">
-          <label class="contacts-toolbar__select-all">
-            <input
-              type="checkbox"
-              class="contact-checkbox"
-              [checked]="allSelected"
-              (change)="toggleSelectAll()"
-              aria-label="Select all messages">
-            <span class="contacts-toolbar__label">
-              @if (anySelected) {
-                {{ selectedIds.size }}&nbsp;{{ 'admin.selected' | translate }}
-              } @else {
-                {{ 'admin.select_all' | translate }}
+      <mat-accordion class="dash-accordion" multi>
+        <mat-expansion-panel
+          id="dash-messages"
+          class="dash-panel dash-anchor"
+          [expanded]="isOpen('dash-messages')"
+          (opened)="setOpen('dash-messages', true)"
+          (closed)="setOpen('dash-messages', false)"
+        >
+          <mat-expansion-panel-header class="dash-panel__header">
+            <mat-panel-title class="dash-panel__title">
+              <mat-icon aria-hidden="true">mail</mat-icon>{{ 'admin.recent_activity' | translate }}
+              @if (unreadCount > 0) {
+                <span class="section-unread-badge" [attr.aria-label]="unreadCount + ' unread'">{{ unreadCount }}</span>
               }
-            </span>
-          </label>
-          @if (anySelected) {
-            <button
-              type="button"
-              class="contacts-delete-btn"
-              [disabled]="bulkDeleting"
-              (click)="deleteSelected()">
-              <mat-icon [class.spin]="bulkDeleting">{{ bulkDeleting ? 'sync' : 'delete_sweep' }}</mat-icon>
-              {{ bulkDeleting ? ('common.loading' | translate) : ('admin.delete_selected' | translate) }}
-            </button>
-          }
-        </div>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+          <div class="contacts-list card">
 
-        @for (c of recentContacts; track c._id ?? c.email + c.createdAt) {
-          <div
-            class="contact-row"
-            [class.contact-row--unread]="!c.read"
-            [class.contact-row--selected]="c._id && selectedIds.has(c._id)">
-            <!-- Checkbox cell — click stops propagation to keep row-open separate -->
-            <div class="contact-check-cell" (click)="$event.stopPropagation()">
-              <input
-                type="checkbox"
-                class="contact-checkbox"
-                [checked]="c._id ? selectedIds.has(c._id) : false"
-                (change)="c._id ? toggleSelectContact(c._id) : null"
-                [attr.aria-label]="'Select message from ' + c.name">
-            </div>
-            <!-- Clickable area opens the modal -->
-            <button type="button" class="contact-row__btn" (click)="openContact(c)">
-              <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
-              <div class="contact-body">
-                <span class="contact-name" [class.contact-name--unread]="!c.read">{{ c.name }}</span>
-                <span class="contact-email text-muted">{{ c.email }}</span>
-                <span class="contact-subject">
-                  {{ c.subject }}
-                  @if (!c.read) {
-                    <span class="contact-badge">{{ 'admin.new_badge' | translate }}</span>
+            <!-- Bulk action toolbar -->
+            <div class="contacts-toolbar">
+              <label class="contacts-toolbar__select-all">
+                <input
+                  type="checkbox"
+                  class="contact-checkbox"
+                  [checked]="allSelected"
+                  (change)="toggleSelectAll()"
+                  aria-label="Select all messages">
+                <span class="contacts-toolbar__label">
+                  @if (anySelected) {
+                    {{ selectedIds.size }}&nbsp;{{ 'admin.selected' | translate }}
+                  } @else {
+                    {{ 'admin.select_all' | translate }}
                   }
                 </span>
+              </label>
+              @if (anySelected) {
+                <button
+                  type="button"
+                  class="contacts-delete-btn"
+                  [disabled]="bulkDeleting"
+                  (click)="deleteSelected()">
+                  <mat-icon [class.spin]="bulkDeleting">{{ bulkDeleting ? 'sync' : 'delete_sweep' }}</mat-icon>
+                  {{ bulkDeleting ? ('common.loading' | translate) : ('admin.delete_selected' | translate) }}
+                </button>
+              }
+            </div>
+
+            @for (c of recentContacts; track c._id ?? c.email + c.createdAt) {
+              <div
+                class="contact-row"
+                [class.contact-row--unread]="!c.read"
+                [class.contact-row--selected]="c._id && selectedIds.has(c._id)">
+                <!-- Checkbox cell — click stops propagation to keep row-open separate -->
+                <div class="contact-check-cell" (click)="$event.stopPropagation()">
+                  <input
+                    type="checkbox"
+                    class="contact-checkbox"
+                    [checked]="c._id ? selectedIds.has(c._id) : false"
+                    (change)="c._id ? toggleSelectContact(c._id) : null"
+                    [attr.aria-label]="'Select message from ' + c.name">
+                </div>
+                <!-- Clickable area opens the modal -->
+                <button type="button" class="contact-row__btn" (click)="openContact(c)">
+                  <div class="contact-icon"><mat-icon>mail_outline</mat-icon></div>
+                  <div class="contact-body">
+                    <span class="contact-name" [class.contact-name--unread]="!c.read">{{ c.name }}</span>
+                    <span class="contact-email text-muted">{{ c.email }}</span>
+                    <span class="contact-subject">
+                      {{ c.subject }}
+                      @if (!c.read) {
+                        <span class="contact-badge">{{ 'admin.new_badge' | translate }}</span>
+                      }
+                    </span>
+                  </div>
+                  <span class="contact-date text-muted">{{ c.createdAt | date:'dd/MM/yy' }}</span>
+                </button>
               </div>
-              <span class="contact-date text-muted">{{ c.createdAt | date:'dd/MM/yy' }}</span>
-            </button>
+            }
           </div>
-        }
-      </div>
-      </div>
+          </ng-template>
+        </mat-expansion-panel>
+      </mat-accordion>
     }
 
     <section class="admin-actions card">

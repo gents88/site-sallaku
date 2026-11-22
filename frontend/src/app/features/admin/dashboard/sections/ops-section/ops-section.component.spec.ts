@@ -24,7 +24,7 @@ describe('OpsSectionComponent', () => {
 
     const el = fixture.nativeElement as HTMLElement;
     const titles = Array.from(el.querySelectorAll('h2')).map(h => h.textContent?.trim());
-    expect(titles).toEqual(['monitor_heartops_health.section', 'ai_usage.title', 'server_errors.title', 'server_health.title']);
+    expect(titles).toEqual(['ai_usage.title', 'server_errors.title', 'server_health.title']);
     expect(el.textContent).toContain('dashboard_ux.period_today');
     fixture.componentInstance.changed.emit();
     expect(changed).toHaveBeenCalled();

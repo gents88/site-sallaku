@@ -2590,6 +2590,8 @@
     "cities_title": "Cidades dos visitantes",
     "cities_desc": "Todas as visitas registradas, por cidade",
     "activity_section": "Atividade e conteúdo",
-    "acquisition_section": "Origem e contatos"
+    "acquisition_section": "Origem e contatos",
+    "expand_all": "Expandir tudo",
+    "collapse_all": "Recolher tudo"
   }
 }
