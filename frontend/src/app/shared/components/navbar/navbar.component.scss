@@ -614,7 +614,7 @@
   font-size: 0.6rem;
   font-weight: 800;
   color: #fff;
-  background: linear-gradient(135deg, #4f6af5, #8b5cf6);
+  background: var(--gradient-button);
   text-transform: uppercase;
 }
 

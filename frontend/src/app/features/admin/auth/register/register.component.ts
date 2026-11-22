@@ -103,7 +103,7 @@ function passwordsMatch(ctrl: AbstractControl) {
     .form-field { width:100%; margin-bottom:0.5rem; }
     .feature-off-notice { margin:0 0 1rem; padding:0.75rem 1rem; border-radius:12px; border:1px solid var(--color-warning, #f59e0b); font-size:0.9rem; }
     .terms-note { font-size:0.85rem; margin:0.25rem 0 0; }
-    .terms-note a { color: var(--brand-primary, #4f6af5); text-decoration: underline; }
+    .terms-note a { color: var(--link, #8aa0ff); text-decoration: underline; }
     .submit-btn { width:100%; margin-top:0.75rem; padding:0.75rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
     .text-muted { color:var(--text-secondary); }
     @keyframes spin { to { transform:rotate(360deg); } } .spin { animation:spin 1s linear infinite; }

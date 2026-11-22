@@ -7,7 +7,9 @@ import { expect, test } from '@playwright/test';
  * "critical": le "minor/moderate" vengono stampate per essere sistemate
  * senza bloccare la pipeline.
  */
-const PAGES = ['/', '/projects', '/blog', '/contact', '/testimonials', '/lab', '/en/lab', '/lab/pdf-summary', '/lab/pdf-editor', '/lab/convert', '/lab/editor', '/lab/merge-pdf', '/en/lab/pdf-to-word'];
+const PAGES = ['/', '/projects', '/blog', '/contact', '/testimonials', '/lab', '/en/lab', '/lab/pdf-summary', '/lab/pdf-editor', '/lab/convert', '/lab/editor', '/lab/merge-pdf', '/en/lab/pdf-to-word',
+  // Aggiunte dopo l'audit dei temi: gli stati "attivo" dei chip e i badge colorati qui erano a 1,5:1 nel tema chiaro.
+  '/lab/pdf-search', '/lab/ai-ppt', '/lab/ai-formatter', '/lab/pdf-translate', '/lab/viewer', '/lab/ocr', '/lab/scanner', '/lab/library', '/lab/workspace', '/lab/i-miei-file', '/privacy-policy', '/terms', '/search'];
 
 for (const scheme of ['light', 'dark'] as const) for (const path of PAGES) {
   test(`a11y (${scheme}): ${path}`, async ({ page }, testInfo) => {

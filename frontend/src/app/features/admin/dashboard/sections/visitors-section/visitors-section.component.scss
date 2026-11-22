@@ -51,7 +51,7 @@
   border-radius: 10px;
   border: 1px solid rgba(239, 68, 68, 0.25);
   background: rgba(239, 68, 68, 0.08);
-  color: #fca5a5;
+  color: var(--c-red-soft, #fca5a5);
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
