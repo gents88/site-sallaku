@@ -69,7 +69,8 @@
       "contacts": "Kontakte",
       "users": "Benutzer",
       "ai_assistant": "KI-Assistent",
-      "live_chat": "Live-Chat"
+      "live_chat": "Live-Chat",
+      "sign_pdf": "PDF signieren"
     }
   },
   "lang": {
@@ -1529,7 +1530,9 @@
     "my_files_title": "Meine Dateien",
     "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast",
     "seo_title": "Kostenlose PDF- und KI-Werkzeuge Online",
-    "seo_description": "Kostenlose PDF- und KI-Werkzeuge online: OCR, Konverter, Editor, Viewer, Scanner, Übersetzer, Zusammenfassung und Präsentationsgenerator."
+    "seo_description": "Kostenlose PDF- und KI-Werkzeuge online: OCR, Konverter, Editor, Viewer, Scanner, Übersetzer, Zusammenfassung und Präsentationsgenerator.",
+    "sign_pdf_title": "PDF signieren",
+    "sign_pdf_desc": "PDF mit gezeichneter, getippter oder hochgeladener Unterschrift signieren und Text, Datum und Häkchen hinzufügen."
   },
   "about_manage": {
     "title": "About-Bereich",
@@ -3077,6 +3080,39 @@
           "a": "Italienisch, Englisch, Spanisch, Französisch, Deutsch, Portugiesisch und Albanisch."
         }
       ]
+    },
+    "sign_pdf": {
+      "about": "Mit dem Online-Werkzeug zum Signieren von PDFs unterschreiben Sie einen Vertrag oder ein Formular, ohne es auszudrucken. Zeichnen Sie Ihre Unterschrift mit Finger oder Maus, tippen Sie Ihren Namen in Handschrift oder laden Sie ein Foto Ihrer Unterschrift hoch und platzieren Sie sie auf jeder Seite, zusammen mit Text, Datum und Häkchen. Das signierte PDF wird in Ihrem Browser erstellt.",
+      "steps": [
+        "PDF öffnen: in das Feld ziehen oder vom Gerät auswählen.",
+        "Ein Werkzeug wählen — Unterschrift, Text, Datum, Häkchen oder Kreuz — das Element erscheint auf der Seite.",
+        "An die richtige Stelle ziehen; mit dem Griff die Größe ändern und mit den Schaltflächen duplizieren, auf alle Seiten übertragen oder löschen.",
+        "„Signiertes PDF herunterladen“ drücken."
+      ],
+      "privacy": "PDF und Unterschrift werden vollständig in Ihrem Browser verarbeitet und nie hochgeladen. Wenn Sie „Auf diesem Gerät merken“ aktivieren, wird die Unterschrift nur im lokalen Speicher dieses Browsers abgelegt und kann jederzeit entfernt werden.",
+      "limits": "Es wird eine einfache elektronische Signatur hinzugefügt — ein Bild Ihrer Unterschrift — keine qualifizierte oder digitale Signatur mit rechtlicher Zertifizierung. Passwortgeschützte PDFs lassen sich nicht öffnen. Änderungen gehen verloren, wenn Sie den Tab vor dem Herunterladen schließen.",
+      "faq": [
+        {
+          "q": "Ist es kostenlos?",
+          "a": "Ja, vollständig kostenlos und ohne Registrierung."
+        },
+        {
+          "q": "Wird mein Dokument irgendwohin hochgeladen?",
+          "a": "Nein. PDF und Unterschrift werden in Ihrem Browser verarbeitet und verlassen Ihr Gerät nie."
+        },
+        {
+          "q": "Ist die Unterschrift rechtsgültig?",
+          "a": "Es ist eine einfache elektronische Signatur, die für viele Alltagsdokumente akzeptiert wird, aber keine qualifizierte oder digitale Signatur. Für Dokumente, die das verlangen, nutzen Sie einen zertifizierten Anbieter."
+        },
+        {
+          "q": "Kann ich vom Handy aus signieren?",
+          "a": "Ja. Sie können die Unterschrift mit dem Finger zeichnen und sie dann auf der Seite verschieben und skalieren."
+        },
+        {
+          "q": "Kann ich die Unterschrift auf jede Seite setzen?",
+          "a": "Ja: Unterschrift auswählen und „Auf allen Seiten“ wählen."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3132,5 +3168,71 @@
       "h1": "Vom Bild zum Text",
       "lead": "Verwandeln Sie ein Foto, einen Screenshot oder eine gescannte Seite in Text, den Sie kopieren und bearbeiten können: Bild hochladen und Sprache wählen."
     }
+  },
+  "sign_pdf": {
+    "title": "PDF signieren",
+    "subtitle": "PDF unterschreiben, Text, Datum und Häkchen hinzufügen — direkt im Browser, ohne die Datei hochzuladen.",
+    "seo_title": "PDF Online Signieren Kostenlos — Unterschrift, Text und Datum",
+    "seo_description": "PDF kostenlos online unterschreiben: Unterschrift zeichnen, tippen oder hochladen, Text, Datum und Häkchen hinzufügen und herunterladen. Alles läuft im Browser — die Datei wird nie hochgeladen.",
+    "drop_prompt": "PDF hierher ziehen oder klicken zum Auswählen",
+    "drop_hint": "Verträge, Formulare, Erklärungen — jedes PDF",
+    "privacy_note": "Die Datei bleibt auf Ihrem Gerät: Sie wird auf keinen Server hochgeladen.",
+    "workspace_banner_title": "Im Workspace wartet eine Datei",
+    "workspace_banner_use": "Verwenden",
+    "workspace_banner_dismiss": "Ignorieren",
+    "tools_label": "Werkzeuge",
+    "tool_signature": "Unterschrift",
+    "tool_text": "Text",
+    "tool_date": "Datum",
+    "tool_check": "Häkchen",
+    "tool_cross": "Kreuz",
+    "ink_label": "Tintenfarbe",
+    "ink_black": "Schwarze Tinte",
+    "ink_blue": "Blaue Tinte",
+    "change_signature": "Unterschrift ändern",
+    "forget_signature": "Gespeicherte Unterschrift vergessen",
+    "undo": "Rückgängig",
+    "close_file": "Datei schließen",
+    "selected_label": "Ausgewähltes Element",
+    "field_text_label": "Text des ausgewählten Elements",
+    "field_smaller": "Kleiner",
+    "field_bigger": "Größer",
+    "field_duplicate": "Duplizieren",
+    "field_all_pages": "Auf allen Seiten",
+    "field_delete": "Löschen",
+    "hint_place": "Wählen Sie oben ein Werkzeug: Das Element erscheint auf der Seite, dann ziehen Sie es an die gewünschte Stelle.",
+    "hint_drag": "Elemente ziehen, um sie zu verschieben. Antippen, um die Größe zu ändern oder den Text zu bearbeiten.",
+    "page_prev": "Vorherige Seite",
+    "page_next": "Nächste Seite",
+    "page_label": "Seite",
+    "items_here": "{{count}} Elemente auf dieser Seite",
+    "btn_download": "Signiertes PDF herunterladen",
+    "downloading": "Wird vorbereitet…",
+    "success": "Fertig: Das signierte PDF wurde heruntergeladen.",
+    "disclaimer": "Fügt eine einfache elektronische Signatur hinzu (ein Bild Ihrer Unterschrift). Es ist keine qualifizierte oder digitale Signatur mit rechtlicher Zertifizierung.",
+    "workspace_send": "An Workspace senden",
+    "workspace_sent": "Gesendet",
+    "pad_title": "Unterschrift erstellen",
+    "pad_tab_draw": "Zeichnen",
+    "pad_tab_type": "Tippen",
+    "pad_tab_upload": "Bild",
+    "pad_draw_hint": "Unterschreiben Sie im Feld mit dem Finger oder der Maus",
+    "pad_type_placeholder": "Namen eingeben",
+    "pad_type_sample": "Ihr Name",
+    "pad_upload_pick": "Foto Ihrer Unterschrift wählen",
+    "pad_upload_hint": "Auf weißem Papier unterschreiben und ein scharfes Foto machen",
+    "pad_remove_bg": "Weißen Hintergrund entfernen",
+    "pad_clear": "Löschen",
+    "pad_remember": "Auf diesem Gerät merken",
+    "pad_remember_hint": "Nur in diesem Browser gespeichert, wird nirgendwohin gesendet",
+    "pad_cancel": "Abbrechen",
+    "pad_use": "Unterschrift verwenden",
+    "text_default": "Text",
+    "err_not_pdf": "Bitte wählen Sie eine PDF-Datei.",
+    "err_open": "Dieses PDF konnte nicht geöffnet werden. Es ist möglicherweise beschädigt oder passwortgeschützt.",
+    "err_render": "Die Seite konnte nicht angezeigt werden. Versuchen Sie es erneut.",
+    "err_image": "Das Bild konnte nicht gelesen werden. Versuchen Sie ein anderes.",
+    "err_no_fields": "Fügen Sie zuerst eine Unterschrift, einen Text oder ein Datum hinzu.",
+    "err_export": "Das PDF konnte nicht erstellt werden. Versuchen Sie es erneut."
   }
 }

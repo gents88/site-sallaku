@@ -69,7 +69,8 @@
       "contacts": "Contactos",
       "users": "Utilizadores",
       "ai_assistant": "Assistente IA",
-      "live_chat": "Chat ao vivo"
+      "live_chat": "Chat ao vivo",
+      "sign_pdf": "Assinar PDF"
     }
   },
   "lang": {
@@ -1529,7 +1530,9 @@
     "my_files_title": "Os meus ficheiros",
     "my_files_desc": "Encontra os resultados que guardaste das ferramentas de IA",
     "seo_title": "Ferramentas PDF e IA Grátis Online",
-    "seo_description": "Ferramentas PDF e IA grátis online: OCR, conversor, editor, visualizador, scanner, tradutor, resumo e gerador de apresentações."
+    "seo_description": "Ferramentas PDF e IA grátis online: OCR, conversor, editor, visualizador, scanner, tradutor, resumo e gerador de apresentações.",
+    "sign_pdf_title": "Assinar PDF",
+    "sign_pdf_desc": "Assine um PDF com uma assinatura desenhada, digitada ou enviada e adicione texto, data e marcas."
   },
   "about_manage": {
     "title": "Secção About",
@@ -3077,6 +3080,39 @@
           "a": "Italiano, inglês, espanhol, francês, alemão, português e albanês."
         }
       ]
+    },
+    "sign_pdf": {
+      "about": "A ferramenta para assinar PDF online permite assinar um contrato ou formulário sem imprimir. Desenhe sua assinatura com o dedo ou o mouse, digite seu nome em estilo manuscrito ou envie uma foto da sua assinatura e coloque-a em qualquer página junto com texto, data e marcas. O PDF assinado é criado no seu navegador.",
+      "steps": [
+        "Abra o PDF: arraste-o para o quadro ou escolha-o no dispositivo.",
+        "Escolha uma ferramenta — Assinatura, Texto, Data, marca ou cruz — e o item aparece na página.",
+        "Arraste-o para onde precisar; use a alça para redimensionar e os botões para duplicar, repetir em todas as páginas ou excluir.",
+        "Toque em “Baixar PDF assinado”."
+      ],
+      "privacy": "O PDF e a sua assinatura são processados inteiramente no navegador e nunca são enviados. Se marcar “Lembrar neste dispositivo”, a assinatura fica guardada apenas no armazenamento local deste navegador e pode ser removida quando quiser.",
+      "limits": "Adiciona uma assinatura eletrônica simples — uma imagem da sua assinatura — e não gera uma assinatura qualificada ou digital com certificação legal. PDFs protegidos por senha não podem ser abertos. As alterações se perdem se fechar a aba antes de baixar.",
+      "faq": [
+        {
+          "q": "É grátis?",
+          "a": "Sim, totalmente grátis e sem cadastro."
+        },
+        {
+          "q": "Meu documento é enviado para algum lugar?",
+          "a": "Não. O PDF e a assinatura são processados no seu navegador e nunca saem do seu dispositivo."
+        },
+        {
+          "q": "A assinatura tem validade legal?",
+          "a": "É uma assinatura eletrônica simples, aceita em muitos documentos do dia a dia, mas não é uma assinatura qualificada ou digital. Para documentos que a exijam, use um serviço certificado."
+        },
+        {
+          "q": "Posso assinar pelo celular?",
+          "a": "Sim. Você pode desenhar a assinatura com o dedo e depois arrastá-la e redimensioná-la na página."
+        },
+        {
+          "q": "Posso colocar a assinatura em todas as páginas?",
+          "a": "Sim: selecione a assinatura e escolha “Em todas as páginas”."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3132,5 +3168,71 @@
       "h1": "De imagem para texto",
       "lead": "Transforme uma foto, uma captura ou uma página digitalizada em texto que pode copiar e editar: carregue a imagem e escolha o idioma."
     }
+  },
+  "sign_pdf": {
+    "title": "Assinar PDF",
+    "subtitle": "Assine um PDF, adicione texto, data e marcas — direto no navegador, sem enviar o arquivo.",
+    "seo_title": "Assinar PDF Online Grátis — Adicione Assinatura, Texto e Data",
+    "seo_description": "Assine um PDF online de graça: desenhe, digite ou envie sua assinatura, adicione texto, data e marcas e baixe. Tudo acontece no seu navegador: o arquivo nunca é enviado.",
+    "drop_prompt": "Solte um PDF aqui ou clique para escolher",
+    "drop_hint": "Contratos, formulários, declarações — qualquer PDF",
+    "privacy_note": "O arquivo fica no seu dispositivo: não é enviado a nenhum servidor.",
+    "workspace_banner_title": "Há um arquivo no Workspace",
+    "workspace_banner_use": "Usar",
+    "workspace_banner_dismiss": "Ignorar",
+    "tools_label": "Ferramentas",
+    "tool_signature": "Assinatura",
+    "tool_text": "Texto",
+    "tool_date": "Data",
+    "tool_check": "Marca ✓",
+    "tool_cross": "Cruz",
+    "ink_label": "Cor da tinta",
+    "ink_black": "Tinta preta",
+    "ink_blue": "Tinta azul",
+    "change_signature": "Mudar assinatura",
+    "forget_signature": "Esquecer a assinatura salva",
+    "undo": "Desfazer",
+    "close_file": "Fechar arquivo",
+    "selected_label": "Item selecionado",
+    "field_text_label": "Texto do item selecionado",
+    "field_smaller": "Menor",
+    "field_bigger": "Maior",
+    "field_duplicate": "Duplicar",
+    "field_all_pages": "Em todas as páginas",
+    "field_delete": "Excluir",
+    "hint_place": "Escolha uma ferramenta acima: o item aparece na página e depois você o arrasta para onde precisar.",
+    "hint_drag": "Arraste os itens para movê-los. Toque em um para redimensionar ou editar o texto.",
+    "page_prev": "Página anterior",
+    "page_next": "Próxima página",
+    "page_label": "Página",
+    "items_here": "{{count}} itens nesta página",
+    "btn_download": "Baixar PDF assinado",
+    "downloading": "Preparando…",
+    "success": "Pronto: o PDF assinado foi baixado.",
+    "disclaimer": "Adiciona uma assinatura eletrônica simples (uma imagem da sua assinatura). Não é uma assinatura qualificada ou digital com certificação legal.",
+    "workspace_send": "Enviar para o Workspace",
+    "workspace_sent": "Enviado",
+    "pad_title": "Crie sua assinatura",
+    "pad_tab_draw": "Desenhar",
+    "pad_tab_type": "Digitar",
+    "pad_tab_upload": "Imagem",
+    "pad_draw_hint": "Assine dentro do quadro com o dedo ou o mouse",
+    "pad_type_placeholder": "Digite seu nome",
+    "pad_type_sample": "Seu nome",
+    "pad_upload_pick": "Escolha uma foto da sua assinatura",
+    "pad_upload_hint": "Assine em papel branco e tire uma foto nítida",
+    "pad_remove_bg": "Remover o fundo branco",
+    "pad_clear": "Limpar",
+    "pad_remember": "Lembrar neste dispositivo",
+    "pad_remember_hint": "Salva apenas neste navegador, nunca enviada",
+    "pad_cancel": "Cancelar",
+    "pad_use": "Usar assinatura",
+    "text_default": "Texto",
+    "err_not_pdf": "Escolha um arquivo PDF.",
+    "err_open": "Não foi possível abrir este PDF. Ele pode estar danificado ou protegido por senha.",
+    "err_render": "Não foi possível mostrar a página. Tente novamente.",
+    "err_image": "Não foi possível ler essa imagem. Tente outra.",
+    "err_no_fields": "Adicione primeiro uma assinatura, um texto ou uma data.",
+    "err_export": "Não foi possível criar o PDF. Tente novamente."
   }
 }
