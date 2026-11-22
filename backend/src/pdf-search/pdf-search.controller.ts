@@ -168,7 +168,7 @@ export class PdfSearchController {
     if (!upstream.ok) throw new NotFoundException('Could not fetch the requested file');
 
     const contentType = upstream.headers.get('content-type') ?? '';
-    if (!contentType.includes('application/pdf')) throw new BadRequestException('Requested resource is not a PDF');
+    if (!contentType.includes('application/pdf')) throw new NotFoundException('The source has no PDF available for this item');
 
     const contentLength = Number(upstream.headers.get('content-length') ?? '0');
     if (contentLength > PROXY_MAX_BYTES) throw new BadRequestException('File is too large to proxy');
