@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, finalize } from 'rxjs/operators';
@@ -55,6 +56,9 @@ export class ChatbotService {
   readonly suggestions$: Observable<string[]> = this._suggestions.asObservable();
 
   private sessionId: string | null = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(SESSION_STORAGE_KEY) : null;
+
+  /** Facoltativo: senza (nei test che costruiscono il servizio a mano) il messaggio d'errore resta in inglese. */
+  private readonly translate = inject(TranslateService, { optional: true });
 
   constructor(private readonly http: HttpClient) {
     // Ogni cambiamento della conversazione si salva (e una conversazione vuota cancella la chiave):
@@ -117,7 +121,7 @@ export class ChatbotService {
         error: () => {
           const errMsg: ChatMessage = {
             role: 'assistant',
-            content: "I'm sorry, I couldn't reach the server right now. Please try again in a moment.",
+            content: this.serverErrorText(),
             timestamp: new Date(),
           };
           this._messages.next([...this._messages.getValue(), errMsg]);
@@ -145,5 +149,12 @@ export class ChatbotService {
 
   get currentSessionId(): string | null {
     return this.sessionId;
+  }
+
+  /** Messaggio d'errore nella lingua dell'interfaccia (prima era sempre inglese, anche con il sito in italiano). */
+  private serverErrorText(): string {
+    const fallback = "I'm sorry, I couldn't reach the server right now. Please try again in a moment.";
+    const text = this.translate?.instant('chatbot_ui.server_error');
+    return typeof text === 'string' && text && text !== 'chatbot_ui.server_error' ? text : fallback;
   }
 }
