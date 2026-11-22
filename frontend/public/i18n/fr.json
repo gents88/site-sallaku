@@ -71,7 +71,8 @@
       "ai_assistant": "Assistant IA",
       "live_chat": "Chat en direct",
       "sign_pdf": "Signer un PDF",
-      "compress_pdf": "Compresser un PDF"
+      "compress_pdf": "Compresser un PDF",
+      "image_tools": "Photos et HEIC"
     }
   },
   "lang": {
@@ -1535,7 +1536,9 @@
     "sign_pdf_title": "Signer un PDF",
     "sign_pdf_desc": "Signez un PDF avec une signature dessinée, tapée ou importée et ajoutez texte, date et coches.",
     "compress_pdf_title": "Compresser un PDF",
-    "compress_pdf_desc": "Réduisez le poids d’un PDF pour l’envoyer par e-mail ou le téléverser, avec trois niveaux de compression."
+    "compress_pdf_desc": "Réduisez le poids d’un PDF pour l’envoyer par e-mail ou le téléverser, avec trois niveaux de compression.",
+    "image_tools_title": "Photos : HEIC en JPG, redimensionner, compresser",
+    "image_tools_desc": "Convertissez les photos HEIC en JPG, redimensionnez et compressez de nombreuses images à la fois et supprimez les données GPS."
   },
   "about_manage": {
     "title": "Section À propos",
@@ -3145,6 +3148,39 @@
           "a": "Oui, gratuit et sans inscription."
         }
       ]
+    },
+    "image_tools": {
+      "about": "Cet outil convertit les photos entre JPG, PNG et WebP, transforme les photos HEIC de l’iPhone en JPG et allège les images en les redimensionnant et en baissant la qualité. Vous pouvez traiter jusqu’à 40 images à la fois et les télécharger ensemble dans un ZIP. Tout se passe dans votre navigateur et la position et les autres données cachées de chaque photo sont supprimées du nouveau fichier.",
+      "steps": [
+        "Déposez vos photos dans le cadre ou choisissez-les sur votre appareil (HEIC, JPG, PNG, WebP…).",
+        "Choisissez le format, le plus grand côté (par exemple 1920 px pour le web ou l’e-mail) et, pour JPG et WebP, la qualité.",
+        "Appuyez sur « Convertir » et vérifiez le poids avant et après pour chaque image.",
+        "Téléchargez les fichiers un par un ou tous ensemble dans un ZIP."
+      ],
+      "privacy": "Les images sont traitées entièrement dans votre navigateur et ne sont jamais envoyées. Les nouveaux fichiers n’ont ni position GPS, ni données d’appareil, ni autres métadonnées.",
+      "limits": "La première fois que vous ouvrez un fichier HEIC, le navigateur télécharge un petit décodeur, ce qui peut prendre quelques secondes (Safari ouvre directement le HEIC). Les photos de plus de 64 mégapixels environ sont ignorées et la limite est de 40 fichiers de 60 Mo maximum. Reconvertir une image avec perte réduit toujours un peu la qualité : gardez vos originaux.",
+      "faq": [
+        {
+          "q": "Comment convertir du HEIC en JPG ?",
+          "a": "Déposez ici les photos HEIC, laissez le format sur JPG et appuyez sur Convertir. Vous pouvez les télécharger une par une ou en ZIP."
+        },
+        {
+          "q": "Mes photos sont-elles envoyées quelque part ?",
+          "a": "Non. Elles sont converties dans votre navigateur et ne quittent jamais votre appareil."
+        },
+        {
+          "q": "La position GPS est-elle supprimée ?",
+          "a": "Oui. Les nouveaux fichiers sont créés uniquement à partir des pixels de l’image, donc la position, le modèle d’appareil et les autres métadonnées ne sont pas copiés."
+        },
+        {
+          "q": "Quelle taille choisir pour l’e-mail ou le web ?",
+          "a": "Un grand côté de 1920 px avec une qualité de 80–85 % est un bon compromis. Utilisez 1280 px ou moins pour de petits aperçus."
+        },
+        {
+          "q": "Est-ce gratuit ?",
+          "a": "Oui, gratuit et sans inscription."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3312,5 +3348,48 @@
     "err_open": "Impossible d’ouvrir ce PDF. Il est peut-être endommagé ou protégé par un mot de passe.",
     "err_compress": "Le PDF n’a pas pu être compressé. Essayez un autre niveau ou un fichier plus petit.",
     "err_too_many_pages": "Ce PDF a trop de pages pour le navigateur (limite 400)."
+  },
+  "image_tools": {
+    "title": "Photos : HEIC en JPG, redimensionner, compresser",
+    "subtitle": "Convertissez les photos HEIC de l’iPhone en JPG, redimensionnez et compressez de nombreuses images à la fois — dans le navigateur, sans les envoyer.",
+    "seo_title": "Convertir HEIC en JPG, Redimensionner et Compresser des Images en Ligne Gratuit",
+    "seo_description": "Convertissez HEIC en JPG, redimensionnez et compressez vos photos en ligne gratuitement. Plusieurs images à la fois, données GPS supprimées, téléchargement en ZIP. Tout se passe dans votre navigateur : rien n’est envoyé.",
+    "drop_prompt": "Déposez vos photos ici ou cliquez pour les choisir",
+    "add_more": "Ajouter des photos",
+    "drop_hint": "HEIC, JPG, PNG, WebP, GIF, BMP — jusqu’à 40 fichiers à la fois",
+    "privacy_note": "Vos photos restent sur votre appareil et ne sont jamais envoyées. La position (GPS) et les autres données cachées sont supprimées des nouveaux fichiers.",
+    "workspace_banner_title": "Une image attend dans le Workspace",
+    "workspace_banner_use": "L’utiliser",
+    "workspace_banner_dismiss": "Ignorer",
+    "files_title": "{{count}} fichiers sélectionnés",
+    "clear_all": "Tout retirer",
+    "remove": "Retirer",
+    "format_label": "Enregistrer en",
+    "fmt_jpeg": "JPG",
+    "fmt_jpeg_desc": "Le meilleur pour les photos. Léger et accepté partout.",
+    "fmt_png": "PNG",
+    "fmt_png_desc": "Sans perte de qualité, garde la transparence. Fichiers plus gros.",
+    "fmt_webp": "WebP",
+    "fmt_webp_desc": "Le plus léger pour le web. Pas accepté par tous les logiciels.",
+    "size_label": "Plus grand côté",
+    "size_original": "Taille d’origine",
+    "quality_label": "Qualité",
+    "btn_convert": "Convertir",
+    "progress": "Image {{done}} sur {{total}}",
+    "decoding_heic": "Décodage HEIC (la première fois, cela peut prendre quelques secondes)",
+    "cancel": "Annuler",
+    "cancelled": "Conversion annulée.",
+    "result_title": "{{count}} converties",
+    "smaller": "{{percent}} % plus légères",
+    "bigger": "{{percent}} % plus lourdes",
+    "download": "Télécharger",
+    "download_zip": "Tout télécharger (ZIP)",
+    "workspace_send": "Envoyer vers le Workspace",
+    "failed_title": "{{count}} non converties",
+    "failed_hint": "Le fichier est peut-être endommagé, trop gros ou dans un format que le navigateur ne sait pas ouvrir.",
+    "err_all_failed": "Aucun fichier n’a pu être converti.",
+    "note_skipped": "{{count}} fichier(s) ignorés : ce ne sont pas des images.",
+    "note_too_big": "{{count}} fichier(s) ignorés : plus de {{max}} Mo.",
+    "note_limit": "Seuls les {{max}} premiers fichiers ont été ajoutés."
   }
 }

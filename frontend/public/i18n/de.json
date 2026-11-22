@@ -71,7 +71,8 @@
       "ai_assistant": "KI-Assistent",
       "live_chat": "Live-Chat",
       "sign_pdf": "PDF signieren",
-      "compress_pdf": "PDF komprimieren"
+      "compress_pdf": "PDF komprimieren",
+      "image_tools": "Fotos & HEIC"
     }
   },
   "lang": {
@@ -1535,7 +1536,9 @@
     "sign_pdf_title": "PDF signieren",
     "sign_pdf_desc": "PDF mit gezeichneter, getippter oder hochgeladener Unterschrift signieren und Text, Datum und Häkchen hinzufügen.",
     "compress_pdf_title": "PDF komprimieren",
-    "compress_pdf_desc": "PDF verkleinern, um es per E-Mail zu senden oder hochzuladen — mit drei Kompressionsstufen."
+    "compress_pdf_desc": "PDF verkleinern, um es per E-Mail zu senden oder hochzuladen — mit drei Kompressionsstufen.",
+    "image_tools_title": "Fotos: HEIC in JPG, verkleinern, komprimieren",
+    "image_tools_desc": "HEIC-Fotos in JPG umwandeln, viele Bilder gleichzeitig verkleinern und komprimieren und GPS-Daten entfernen."
   },
   "about_manage": {
     "title": "About-Bereich",
@@ -3145,6 +3148,39 @@
           "a": "Ja, kostenlos und ohne Registrierung."
         }
       ]
+    },
+    "image_tools": {
+      "about": "Dieses Werkzeug wandelt Fotos zwischen JPG, PNG und WebP um, macht aus iPhone-HEIC-Fotos JPG-Dateien und verkleinert Bilder durch Skalieren und geringere Qualität. Sie können bis zu 40 Bilder gleichzeitig verarbeiten und gemeinsam als ZIP herunterladen. Alles läuft in Ihrem Browser, und Standort und andere versteckte Daten jedes Fotos werden aus der neuen Datei entfernt.",
+      "steps": [
+        "Fotos in das Feld ziehen oder vom Gerät auswählen (HEIC, JPG, PNG, WebP …).",
+        "Format, längste Seite (z. B. 1920 px für Web oder E-Mail) und bei JPG und WebP die Qualität wählen.",
+        "„Umwandeln“ drücken und die Größe vorher und nachher je Bild prüfen.",
+        "Dateien einzeln oder alle zusammen als ZIP herunterladen."
+      ],
+      "privacy": "Die Bilder werden vollständig in Ihrem Browser verarbeitet und nie hochgeladen. Die neuen Dateien enthalten keine GPS-Position, Kameradaten oder andere Metadaten.",
+      "limits": "Beim ersten Öffnen einer HEIC-Datei lädt der Browser einen kleinen Decoder, was einige Sekunden dauern kann (Safari öffnet HEIC direkt). Fotos über etwa 64 Megapixel werden übersprungen; das Limit liegt bei 40 Dateien von höchstens 60 MB. Ein erneutes Umwandeln verlustbehafteter Bilder kostet immer etwas Qualität: Behalten Sie die Originale.",
+      "faq": [
+        {
+          "q": "Wie wandle ich HEIC in JPG um?",
+          "a": "Ziehen Sie die HEIC-Fotos hierher, lassen Sie das Format auf JPG und drücken Sie Umwandeln. Sie können sie einzeln oder als ZIP herunterladen."
+        },
+        {
+          "q": "Werden meine Fotos irgendwohin hochgeladen?",
+          "a": "Nein. Sie werden in Ihrem Browser umgewandelt und verlassen Ihr Gerät nie."
+        },
+        {
+          "q": "Wird der GPS-Standort entfernt?",
+          "a": "Ja. Die neuen Dateien entstehen nur aus den Bildpixeln, daher werden Standort, Kameramodell und andere Metadaten nicht übernommen."
+        },
+        {
+          "q": "Welche Größe wähle ich für E-Mail oder Web?",
+          "a": "Eine längste Seite von 1920 px bei 80–85 % Qualität ist ein guter Kompromiss. Für kleine Vorschauen 1280 px oder weniger."
+        },
+        {
+          "q": "Ist es kostenlos?",
+          "a": "Ja, kostenlos und ohne Registrierung."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3312,5 +3348,48 @@
     "err_open": "Dieses PDF konnte nicht geöffnet werden. Es ist möglicherweise beschädigt oder passwortgeschützt.",
     "err_compress": "Das PDF konnte nicht komprimiert werden. Versuchen Sie eine andere Stufe oder eine kleinere Datei.",
     "err_too_many_pages": "Dieses PDF hat zu viele Seiten für den Browser (Limit 400)."
+  },
+  "image_tools": {
+    "title": "Fotos: HEIC in JPG, verkleinern, komprimieren",
+    "subtitle": "iPhone-HEIC-Fotos in JPG umwandeln, viele Bilder gleichzeitig verkleinern und komprimieren — im Browser, ohne Hochladen.",
+    "seo_title": "HEIC in JPG umwandeln, Bilder verkleinern und komprimieren — kostenlos online",
+    "seo_description": "HEIC in JPG umwandeln, Fotos online kostenlos verkleinern und komprimieren. Viele Bilder gleichzeitig, GPS-Daten entfernt, Download als ZIP. Alles läuft im Browser — nichts wird hochgeladen.",
+    "drop_prompt": "Fotos hierher ziehen oder klicken zum Auswählen",
+    "add_more": "Weitere Fotos hinzufügen",
+    "drop_hint": "HEIC, JPG, PNG, WebP, GIF, BMP — bis zu 40 Dateien gleichzeitig",
+    "privacy_note": "Ihre Fotos bleiben auf Ihrem Gerät und werden nie hochgeladen. Standort (GPS) und andere versteckte Daten werden aus den neuen Dateien entfernt.",
+    "workspace_banner_title": "Im Workspace wartet ein Bild",
+    "workspace_banner_use": "Verwenden",
+    "workspace_banner_dismiss": "Ignorieren",
+    "files_title": "{{count}} Dateien ausgewählt",
+    "clear_all": "Alle entfernen",
+    "remove": "Entfernen",
+    "format_label": "Speichern als",
+    "fmt_jpeg": "JPG",
+    "fmt_jpeg_desc": "Am besten für Fotos. Klein und überall akzeptiert.",
+    "fmt_png": "PNG",
+    "fmt_png_desc": "Ohne Qualitätsverlust und mit Transparenz. Größere Dateien.",
+    "fmt_webp": "WebP",
+    "fmt_webp_desc": "Am leichtesten fürs Web. Nicht jedes Programm akzeptiert es.",
+    "size_label": "Längste Seite",
+    "size_original": "Originalgröße",
+    "quality_label": "Qualität",
+    "btn_convert": "Umwandeln",
+    "progress": "Bild {{done}} von {{total}}",
+    "decoding_heic": "HEIC wird dekodiert (beim ersten Mal kann das einige Sekunden dauern)",
+    "cancel": "Abbrechen",
+    "cancelled": "Umwandlung abgebrochen.",
+    "result_title": "{{count}} umgewandelt",
+    "smaller": "{{percent}} % kleiner",
+    "bigger": "{{percent}} % größer",
+    "download": "Herunterladen",
+    "download_zip": "Alle herunterladen (ZIP)",
+    "workspace_send": "An Workspace senden",
+    "failed_title": "{{count}} konnten nicht umgewandelt werden",
+    "failed_hint": "Die Datei ist möglicherweise beschädigt, zu groß oder in einem Format, das der Browser nicht öffnen kann.",
+    "err_all_failed": "Keine der Dateien konnte umgewandelt werden.",
+    "note_skipped": "{{count}} Datei(en) übersprungen: keine Bilder.",
+    "note_too_big": "{{count}} Datei(en) übersprungen: größer als {{max}} MB.",
+    "note_limit": "Nur die ersten {{max}} Dateien wurden hinzugefügt."
   }
 }
