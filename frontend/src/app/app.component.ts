@@ -65,41 +65,52 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
         (click)="$event.stopPropagation()"
         (keydown.tab)="onAccountModalTabKey($event)"
       >
+        <span class="account-modal__grabber" aria-hidden="true"></span>
+        <div class="account-modal__cover" aria-hidden="true"></div>
         <button type="button" class="account-modal__close" (click)="closeAccountModal()" [attr.aria-label]="'common.close' | translate">
-          ×
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
-        <div class="account-modal__hero">
-          @if (auth.isAdmin()) {
-            <div class="account-modal__avatar account-modal__avatar--photo"><app-profile-photo /></div>
-          } @else {
-            <div class="account-modal__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</div>
-          }
-          <div class="account-modal__identity">
+        <div class="account-modal__body">
+          <div class="account-modal__avatar-wrap">
             @if (auth.isAdmin()) {
-              <span class="account-modal__badge">{{ 'account_modal.badge_admin' | translate }}</span>
+              <div class="account-modal__avatar account-modal__avatar--photo"><app-profile-photo /></div>
+            } @else {
+              <div class="account-modal__avatar">{{ auth.currentUser()?.name?.charAt(0) || 'A' }}</div>
             }
+            <span class="account-modal__presence" aria-hidden="true"></span>
+          </div>
+          <div class="account-modal__identity">
             <h2 id="account-modal-title">{{ auth.currentUser()?.name || 'Admin' }}</h2>
-            <p class="account-modal__subtitle">{{ auth.currentUser()?.email }}</p>
+            <p class="account-modal__subtitle" [attr.title]="auth.currentUser()?.email">{{ auth.currentUser()?.email }}</p>
           </div>
-        </div>
-        <div class="account-modal__meta">
-          <div class="account-modal__meta-card">
-            <span class="account-modal__meta-label">{{ 'account_modal.status_label' | translate }}</span>
-            <strong>{{ 'account_modal.status_active' | translate }}</strong>
+          <ul class="account-modal__chips">
+            <li class="account-modal__chip account-modal__chip--status">
+              <span class="account-modal__dot" aria-hidden="true"></span>
+              <span class="account-modal__chip-label">{{ 'account_modal.status_label' | translate }}:</span>
+              {{ 'account_modal.status_active' | translate }}
+            </li>
+            <li class="account-modal__chip" [class.account-modal__chip--admin]="auth.isAdmin()">
+              <span class="account-modal__chip-label">{{ 'account_modal.role_label' | translate }}:</span>
+              {{ (auth.isAdmin() ? 'account_modal.role_admin' : 'account_modal.role_user') | translate }}
+            </li>
+          </ul>
+          <div class="account-modal__actions">
+            @if (auth.isAdmin()) {
+              <button type="button" class="account-modal__button account-modal__button--primary" (click)="goToDashboard()">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="9" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="5" rx="1.5"/><rect x="13.5" y="11.5" width="7" height="9" rx="1.5"/><rect x="3.5" y="15.5" width="7" height="5" rx="1.5"/></svg>
+                {{ 'nav.dashboard' | translate }}
+              </button>
+            } @else {
+              <button type="button" class="account-modal__button account-modal__button--primary" (click)="goToMyFiles()">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></svg>
+                {{ 'sidebar.items.my_files' | translate }}
+              </button>
+            }
+            <button type="button" class="account-modal__button account-modal__button--warn" (click)="logoutFromModal()">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4.5H6.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H9"/><path d="M15 8l4 4-4 4M19 12H9.5"/></svg>
+              {{ 'admin.logout' | translate }}
+            </button>
           </div>
-          <div class="account-modal__meta-card">
-            <span class="account-modal__meta-label">{{ 'account_modal.role_label' | translate }}</span>
-            <strong>{{ (auth.isAdmin() ? 'account_modal.role_admin' : 'account_modal.role_user') | translate }}</strong>
-          </div>
-        </div>
-        <div class="account-modal__actions">
-          @if (auth.isAdmin()) {
-            <button type="button" class="account-modal__button account-modal__button--primary" (click)="goToDashboard()">{{ 'nav.dashboard' | translate }}</button>
-          } @else {
-            <button type="button" class="account-modal__button account-modal__button--primary" (click)="goToMyFiles()">{{ 'sidebar.items.my_files' | translate }}</button>
-          }
-          <button type="button" class="account-modal__button account-modal__button--warn" (click)="logoutFromModal()">{{ 'admin.logout' | translate }}</button>
-          <button type="button" class="account-modal__button account-modal__button--ghost" (click)="closeAccountModal()">{{ 'common.close' | translate }}</button>
         </div>
       </section>
     }
@@ -151,247 +162,256 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
       background: var(--surface-overlay-strong, rgba(6, 10, 18, 0.58));
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      animation: accountFade 0.2s ease-out;
     }
 
+    /* Scheda dell'account: su schermi larghi un pannello ancorato in alto a destra,
+       su telefono un "bottom sheet" a tutta larghezza (qualunque sistema operativo). */
     .account-modal {
       position: fixed;
-      top: 92px;
+      top: 84px;
       right: 24px;
       z-index: 1600;
-      width: min(360px, calc(100vw - 24px));
-      padding: 1.1rem;
-      border-radius: 26px;
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      background:
-        radial-gradient(circle at top right, rgba(79, 106, 245, 0.18), transparent 34%),
-        var(--panel-gradient, linear-gradient(180deg, rgba(13, 18, 33, 0.98), rgba(8, 12, 24, 0.98)));
-      box-shadow: 0 34px 90px rgba(2, 6, 23, 0.46);
+      box-sizing: border-box;
+      width: min(380px, calc(100vw - 24px));
+      max-height: calc(100dvh - 104px);
+      overflow: hidden auto;
+      border-radius: 28px;
+      border: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.18));
+      background: var(--panel-gradient, linear-gradient(180deg, rgba(13, 18, 33, 0.98), rgba(8, 12, 24, 0.98)));
+      box-shadow: 0 30px 80px rgba(2, 6, 23, 0.45);
       color: var(--text-primary, #f0f4ff);
-      animation: accountModalIn 0.22s ease-out;
-      overflow: hidden;
+      animation: accountModalIn 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+      --account-ring: #0d1221;
+    }
+
+    .account-modal__grabber { display: none; }
+
+    .account-modal__cover {
+      height: 88px;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(34, 211, 238, 0.55), transparent 55%),
+        radial-gradient(circle at 10% 100%, rgba(139, 92, 246, 0.55), transparent 55%),
+        linear-gradient(135deg, #3b4fd0, #0e7490);
     }
 
     .account-modal__close {
       position: absolute;
       top: 12px;
       right: 12px;
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 0;
       border-radius: 50%;
-      background: rgba(148, 163, 184, 0.12);
-      color: var(--text-primary, #f0f4ff);
-      font-size: 1.15rem;
-      line-height: 1;
+      background: rgba(2, 6, 23, 0.35);
+      color: #fff;
       cursor: pointer;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: background 0.18s ease, transform 0.18s ease;
     }
 
-    .account-modal__hero {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.45rem 0.1rem 1rem;
+    .account-modal__close:hover { background: rgba(2, 6, 23, 0.55); transform: scale(1.06); }
+
+    .account-modal__body {
+      display: grid;
+      gap: 0.9rem;
+      padding: 0 1.4rem 1.4rem;
     }
 
-    .account-modal__identity {
-      min-width: 0;
+    .account-modal__avatar-wrap {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      margin-top: -42px;
     }
 
     .account-modal__avatar {
-      width: 64px;
-      height: 64px;
+      box-sizing: border-box;
+      width: 84px;
+      height: 84px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      font-size: 1.2rem;
+      font-size: 2rem;
       font-weight: 800;
       text-transform: uppercase;
       color: #fff;
       background: linear-gradient(135deg, #3b4fd0, #0e7490 55%, #0369a1);
-      box-shadow: 0 14px 34px rgba(79, 106, 245, 0.28);
+      border: 4px solid var(--account-ring);
+      box-shadow: 0 14px 34px rgba(79, 106, 245, 0.3);
     }
 
-    .account-modal__avatar--photo {
-      padding: 3px;
-      overflow: hidden;
+    .account-modal__avatar--photo { padding: 0; overflow: hidden; }
+
+    .account-modal__presence {
+      position: absolute;
+      right: 4px;
+      bottom: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #22c55e;
+      border: 3px solid var(--account-ring);
     }
 
-    .account-modal__badge {
-      display: inline-flex;
-      align-items: center;
-      margin-bottom: 0.45rem;
-      padding: 0.25rem 0.55rem;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      color: var(--c-sky-soft, #7dd3fc);
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
+    .account-modal__identity { min-width: 0; }
 
     .account-modal h2 {
       margin: 0;
-      font-size: 1.15rem;
+      font-size: 1.35rem;
+      line-height: 1.2;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .account-modal__subtitle {
-      margin: 0.3rem 0 0;
+      margin: 0.25rem 0 0;
       color: var(--text-secondary, #8892b0);
-      word-break: break-word;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .account-modal__meta {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+    .account-modal__chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
 
-    .account-modal__meta-card {
-      padding: 0.85rem 0.9rem;
-      border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.14);
-      background: var(--panel-surface, rgba(15, 23, 42, 0.34));
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+    .account-modal__chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.2));
+      background: color-mix(in srgb, var(--text-primary, #f0f4ff) 6%, transparent);
+      font-size: 0.82rem;
+      font-weight: 650;
     }
 
-    .account-modal__meta-card strong {
-      display: block;
-      font-size: 0.96rem;
-    }
-
-    .account-modal__meta-label {
-      display: block;
-      margin-bottom: 0.25rem;
-      color: var(--text-secondary, #8892b0);
-      font-size: 0.73rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
+    .account-modal__chip-label { color: var(--text-secondary, #8892b0); font-weight: 500; }
+    .account-modal__chip--admin { border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.12); }
+    .account-modal__dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2); }
 
     .account-modal__actions {
       display: grid;
-      gap: 0.65rem;
+      gap: 0.6rem;
+      margin-top: 0.2rem;
     }
 
     .account-modal__button {
-      min-height: 44px;
-      border: 1px solid rgba(99, 102, 241, 0.16);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      min-height: 50px;
+      border: 1px solid transparent;
       border-radius: 16px;
-      background: rgba(79, 106, 245, 0.08);
-      color: inherit;
       font: inherit;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
     }
 
-    .account-modal__button:hover {
-      transform: translateY(-1px);
-      background: rgba(79, 106, 245, 0.14);
-    }
+    .account-modal__button:hover { transform: translateY(-1px); }
+    .account-modal__button:active { transform: translateY(0) scale(0.99); }
 
     .account-modal__button--primary {
-      background: linear-gradient(135deg, rgba(79, 106, 245, 0.22), rgba(6, 182, 212, 0.14));
-      border-color: rgba(79, 106, 245, 0.24);
+      color: #fff;
+      background: linear-gradient(135deg, #3b4fd0, #0e7490);
+      box-shadow: 0 10px 26px rgba(59, 79, 208, 0.35);
     }
+
+    .account-modal__button--primary:hover { box-shadow: 0 14px 32px rgba(59, 79, 208, 0.5); }
 
     .account-modal__button--warn {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.24);
+      color: var(--c-red-soft, #f87171);
+      background: transparent;
+      border-color: rgba(239, 68, 68, 0.35);
     }
 
-    .account-modal__button--ghost {
-      background: transparent;
-      border-color: rgba(148, 163, 184, 0.16);
-    }
+    .account-modal__button--warn:hover { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.6); }
+
+    :host-context(html[data-theme='light']) .account-modal { --account-ring: #fff; box-shadow: 0 30px 70px rgba(30, 41, 59, 0.22); }
+    :host-context(html[data-theme='light']) .account-modal__button--warn { color: #b91c1c; }
+    :host-context(html[data-theme='light']) .account-modal__chip--admin { color: #075985; }
+
+    @keyframes accountFade { from { opacity: 0; } to { opacity: 1; } }
 
     @keyframes accountModalIn {
-      from {
-        opacity: 0;
-        transform: translate3d(0, -10px, 0) scale(0.98);
-      }
+      from { opacity: 0; transform: translate3d(0, -10px, 0) scale(0.98); }
+      to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
 
-      to {
-        opacity: 1;
-        transform: translate3d(0, 0, 0) scale(1);
-      }
+    @keyframes accountSheetIn {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
     @media (max-width: 900px) {
+      .account-modal { top: 76px; right: 12px; max-height: calc(100dvh - 96px); }
+    }
+
+    /* Telefono: bottom sheet a tutta larghezza, con maniglia e margine per la barra gesti. */
+    @media (max-width: 640px) {
       .account-modal {
-        top: 88px;
-        right: 12px;
-        width: min(360px, calc(100vw - 20px));
-      }
-
-      .account-modal__meta {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* iOS/Android: account panel becomes a bottom sheet on mobile widths.
-       Desktop and any other OS keep the top-right panel above untouched. */
-    @keyframes accountSheetIn {
-      from { transform: translateY(100%); }
-      to   { transform: translateY(0); }
-    }
-
-    :host-context(html[data-os='ios']) .account-modal,
-    :host-context(html[data-os='android']) .account-modal {
-      @media (max-width: 900px) {
         top: auto;
+        right: 0;
         bottom: 0;
         left: 0;
-        right: 0;
         width: 100%;
-        border-radius: 0;
-        border-top-left-radius: var(--radius-xl);
-        border-top-right-radius: var(--radius-xl);
-        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.1rem);
-        animation: accountSheetIn var(--transition-base, 0.3s ease) both;
-        /* Above SnackbarService's toast layer (z-index 9999) so a background
-           error/status toast can never intercept taps on the sheet's actions. */
-        z-index: 10020;
+        max-height: 92dvh;
+        border-radius: 28px 28px 0 0;
+        border-bottom: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        animation: accountSheetIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        /* Sopra la barra a tab in basso (10050) e i toast (9999): il foglio è un modale, non deve restare
+           coperto né farsi intercettare i tocchi da una notifica in background. */
+        z-index: 10070;
       }
+
+      .account-modal-backdrop { z-index: 10060; }
+
+      .account-modal__grabber {
+        display: block;
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        z-index: 1;
+        width: 40px;
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.7);
+        transform: translateX(-50%);
+      }
+
+      .account-modal__cover { height: 96px; }
+      .account-modal__body { padding: 0 1.25rem 1.25rem; }
+      .account-modal__button { min-height: 54px; font-size: 1.02rem; }
     }
 
-    /* iOS: authentic frosted-glass material in place of the solid panel
-       above — blur + saturate is the classic Apple-material recipe. */
+    @media (prefers-reduced-motion: reduce) {
+      .account-modal, .account-modal-backdrop { animation: none; }
+      .account-modal__button, .account-modal__close { transition: none; }
+    }
+
+    /* iOS: materiale "vetro smerigliato" al posto del fondo pieno. */
     :host-context(html[data-os='ios']) .account-modal-backdrop {
       backdrop-filter: blur(16px) saturate(180%);
       -webkit-backdrop-filter: blur(16px) saturate(180%);
     }
 
-    :host-context(html[data-os='ios']) .account-modal {
-      background: radial-gradient(circle at top right, rgba(79, 106, 245, 0.18), transparent 34%), var(--glass-bg);
-      backdrop-filter: blur(30px) saturate(180%);
-      -webkit-backdrop-filter: blur(30px) saturate(180%);
-    }
-
-    :host-context(html[data-os='ios']) .account-modal::before {
-      @media (max-width: 900px) {
-        content: '';
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        width: 36px;
-        height: 5px;
-        border-radius: 999px;
-        background: var(--text-secondary, #8892b0);
-        opacity: 0.5;
-        transform: translateX(-50%);
-      }
-    }
     .back-to-top {
       position: fixed;
       /* Stacked above il fab della chat (58px + margine) per non finirci
