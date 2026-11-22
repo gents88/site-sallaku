@@ -143,14 +143,12 @@ export class OcrComponent implements OnInit {
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'Free Online OCR',
-        description: 'Extract text from photos, scanned documents and PDFs in 7 languages, directly in the browser.',
-        url: 'https://gentsallaku.it/lab/ocr',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         featureList: ['7 languages', 'Images & scanned PDFs', 'PNG/JPG/WEBP/BMP/TIFF/PDF support', 'No signup required'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        ...this.labInfo.appFields('ocr'),
       },
       ...this.labInfo.faqSchemas('ocr'),
       this.seo.breadcrumb([

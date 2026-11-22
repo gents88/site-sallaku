@@ -1073,7 +1073,7 @@
     "prev_slide": "Previous slide",
     "next_slide": "Next slide",
     "seo_title": "AI Presentation Generator",
-    "seo_description": "Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online."
+    "seo_description": "AI presentation generator: create slides from a topic in seconds, with titles, bullet points and speaker notes. 5 to 20 slides, free."
   },
   "ai_formatter": {
     "title": "AI Formatter",
@@ -1129,7 +1129,7 @@
     "copied": "Copied",
     "copy": "Copy",
     "seo_title": "AI Text Formatter",
-    "seo_description": "Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter."
+    "seo_description": "AI text formatter: turn rough notes or AI text into a tidy document with headings and lists. Preview or Markdown, free."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1164,7 +1164,7 @@
     "err_generic": "An error occurred while analyzing the file.",
     "remove_file": "Remove file",
     "seo_title": "AI PDF Summarizer: Key Points in Seconds",
-    "seo_description": "Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.",
+    "seo_description": "AI PDF summarizer: upload a PDF, Word or TXT file and get a summary with the key points in seconds. Free, up to 20 MB.",
     "reading_stats": "{{words}} words · ~{{min}} min read"
   },
   "workspace": {
@@ -1261,7 +1261,7 @@
     "upload_aria": "Upload a PDF file",
     "remove_file": "Remove file",
     "seo_title": "AI PDF Translator: Keeps Your Pages",
-    "seo_description": "Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation. Free online PDF translator — no signup needed."
+    "seo_description": "AI PDF translator: translate a PDF into 12 languages keeping the same pages and page size. Free, scanned PDFs supported via OCR."
   },
   "pdf_search": {
     "title": "PDF Search",
@@ -1330,7 +1330,7 @@
     "preview_prev_page": "Previous page",
     "preview_next_page": "Next page",
     "seo_title": "Free PDF Book Search: Public Domain",
-    "seo_description": "Search and download public domain books, scientific papers and open-access articles with no copyright issues. Search Internet Archive, Project Gutenberg, arXiv and PubMed Central with a preview before downloading.",
+    "seo_description": "Search and download public-domain books, papers and open-access PDFs from Internet Archive, Project Gutenberg and arXiv. Free.",
     "filter_favorites": "Favorites",
     "results_count": "{{count}} results",
     "btn_copy_link": "Copy link",
@@ -1525,7 +1525,7 @@
     "my_files_title": "My files",
     "my_files_desc": "Find the results you have saved from the AI tools",
     "seo_title": "Free PDF and AI Tools Online",
-    "seo_description": "Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools. No signup required."
+    "seo_description": "Free PDF and AI tools online: OCR, converter, editor, viewer, scanner, translator, summarizer and presentation generator."
   },
   "about_manage": {
     "title": "About Section",
@@ -1672,7 +1672,7 @@
     "delete": "Delete",
     "persistence_hint": "Changes are not saved: they are lost if you reload or close this tab.",
     "seo_title": "Free PDF Editor: Merge, Split, Rotate",
-    "seo_description": "Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.",
+    "seo_description": "Free online PDF editor: merge, split, rotate and delete pages and add a watermark, right in your browser without uploading files.",
     "undo": "Undo",
     "duplicate": "Duplicate page",
     "undone": "Change undone"
@@ -1711,7 +1711,7 @@
     "prev_match": "Previous match",
     "next_match": "Next match",
     "seo_title": "Free Online PDF Viewer",
-    "seo_description": "View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload."
+    "seo_description": "Free online PDF viewer: zoom, text search, page thumbnails and highlighter, entirely in your browser. Your file is never uploaded."
   },
   "scanner": {
     "title": "Document Scanner",
@@ -1765,7 +1765,7 @@
     "err_camera_unsupported": "Camera unavailable in this browser or insecure connection (HTTPS required). You can still upload an image.",
     "persistence_hint": "Captured pages are not saved: they are lost if you reload or close this tab.",
     "seo_title": "Online Document Scanner: Photo to PDF",
-    "seo_description": "Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup."
+    "seo_description": "Online document scanner: use your phone or webcam camera, crop and enhance pages and export a PDF. Free, no signup."
   },
   "library": {
     "badge": "New",
