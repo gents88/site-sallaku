@@ -152,17 +152,26 @@
       <div class="results-toolbar">
         <div class="filter-chips">
           <button type="button" class="chip" [class.active]="sourceFilter() === 'all'" (click)="setFilter('all')">
-            {{ 'pdf_search.filter_all' | translate }}
+            {{ 'pdf_search.filter_all' | translate }} <span class="chip-count">{{ filterCounts().all }}</span>
           </button>
           <button type="button" class="chip" [class.active]="sourceFilter() === 'books'" (click)="setFilter('books')">
-            {{ 'pdf_search.filter_books' | translate }}
+            {{ 'pdf_search.filter_books' | translate }} <span class="chip-count">{{ filterCounts().books }}</span>
           </button>
           <button type="button" class="chip" [class.active]="sourceFilter() === 'papers'" (click)="setFilter('papers')">
-            {{ 'pdf_search.filter_papers' | translate }}
+            {{ 'pdf_search.filter_papers' | translate }} <span class="chip-count">{{ filterCounts().papers }}</span>
           </button>
+          @if (favorites().length > 0) {
+            <button type="button" class="chip" [class.active]="sourceFilter() === 'favorites'" (click)="setFilter('favorites')">
+              ⭐ {{ 'pdf_search.filter_favorites' | translate }} <span class="chip-count">{{ favorites().length }}</span>
+            </button>
+          }
         </div>
 
         <div class="toolbar-right">
+          <span class="results-count" aria-live="polite">{{ 'pdf_search.results_count' | translate: { count: displayResults().length } }}</span>
+          <button type="button" class="copy-link-btn" (click)="copySearchLink()">
+            {{ linkCopied() ? '✓ ' + ('pdf_search.link_copied' | translate) : '🔗 ' + ('pdf_search.btn_copy_link' | translate) }}
+          </button>
           <label class="group-toggle">
             <input type="checkbox" [ngModel]="groupSimilar()" (ngModelChange)="setGroupSimilar($event)" />
             {{ 'pdf_search.group_similar_label' | translate }}
@@ -277,8 +286,9 @@
                 <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
               </div>
             } @else if (canvasPageUrl(); as src) {
-              <div class="canvas-page-wrap">
-                <img [src]="src" [alt]="sel.title + ' — ' + canvasPageNum()" />
+              <div class="canvas-page-wrap" [class.is-rendering]="canvasPageRendering()" [class.is-zoomed]="zoomIndex() > 1">
+                <img [src]="src" [alt]="sel.title + ' — ' + canvasPageNum()" [style.width.%]="zoomPercent()" decoding="async" />
+                @if (canvasPageRendering()) { <span class="spinner canvas-page-spinner" aria-hidden="true"></span> }
               </div>
             }
           } @else {
@@ -302,8 +312,16 @@
         @if (useCanvasViewer() && canvasNumPages() > 0) {
           <div class="canvas-page-nav">
             <button type="button" (click)="prevCanvasPage()" [disabled]="canvasPageNum() <= 1" [attr.aria-label]="'pdf_search.preview_prev_page' | translate">‹</button>
-            <span>{{ canvasPageNum() }} / {{ canvasNumPages() }}</span>
+            <span class="page-jump">
+              <input type="number" min="1" [max]="canvasNumPages()" [value]="canvasPageNum()" (change)="goToCanvasPage($any($event.target).value)" [attr.aria-label]="'pdf_search.preview_goto_page' | translate" />
+              / {{ canvasNumPages() }}
+            </span>
             <button type="button" (click)="nextCanvasPage()" [disabled]="canvasPageNum() >= canvasNumPages()" [attr.aria-label]="'pdf_search.preview_next_page' | translate">›</button>
+            <span class="zoom-group">
+              <button type="button" (click)="zoomOut()" [disabled]="!canZoomOut()" [attr.aria-label]="'pdf_search.zoom_out' | translate">−</button>
+              <span class="zoom-level">{{ zoomPercent() }}%</span>
+              <button type="button" (click)="zoomIn()" [disabled]="!canZoomIn()" [attr.aria-label]="'pdf_search.zoom_in' | translate">+</button>
+            </span>
           </div>
         }
 

@@ -1329,7 +1329,14 @@
     "preview_prev_page": "Página anterior",
     "preview_next_page": "Página seguinte",
     "seo_title": "Buscador de PDF de Domínio Público — Livros sem Direitos Autorais",
-    "seo_description": "Busque e baixe livros de domínio público, artigos científicos e publicações de acesso aberto, sem problemas de direitos autorais. Busque no Internet Archive, Project Gutenberg, arXiv e PubMed Central com pré-visualização antes de baixar."
+    "seo_description": "Busque e baixe livros de domínio público, artigos científicos e publicações de acesso aberto, sem problemas de direitos autorais. Busque no Internet Archive, Project Gutenberg, arXiv e PubMed Central com pré-visualização antes de baixar.",
+    "filter_favorites": "Favoritos",
+    "results_count": "{{count}} resultados",
+    "btn_copy_link": "Copiar link",
+    "link_copied": "Link copiado",
+    "preview_goto_page": "Ir para a página",
+    "zoom_out": "Diminuir zoom",
+    "zoom_in": "Aumentar zoom"
   },
   "convert": {
     "title": "Conversor",
