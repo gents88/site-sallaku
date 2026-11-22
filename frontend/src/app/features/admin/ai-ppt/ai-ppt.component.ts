@@ -76,14 +76,12 @@ export class AiPptComponent implements OnInit {
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'AI Slides Generator',
-        description: 'Generate professional presentations from any topic using AI. Up to 20 slides, 5 style themes, speaker notes included.',
-        url: 'https://gentsallaku.it/lab/ai-ppt',
         applicationCategory: 'PresentationApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         featureList: ['AI-generated slides', 'Up to 20 slides', '5 style themes', 'Speaker notes', 'Export ready'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        ...this.labInfo.appFields('ai-ppt'),
       },
       ...this.labInfo.faqSchemas('ai-ppt'),
       this.seo.breadcrumb([

@@ -125,14 +125,12 @@ export class EditorComponent implements OnInit, OnDestroy {
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Free Online Document Editor',
-      description: 'Write and format documents in the browser, import Word files and export to PDF, DOCX or HTML.',
-      url: 'https://gentsallaku.it/lab/editor',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['Rich text editing', 'Import Word (.docx)', 'Export to PDF/DOCX/HTML', 'Word count'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      ...this.labInfo.appFields('editor'),
     },
     ...this.labInfo.faqSchemas('editor'),
     this.seo.breadcrumb([
