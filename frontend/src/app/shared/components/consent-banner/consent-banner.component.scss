@@ -63,6 +63,8 @@
 }
 
 .consent-link {
+  display: inline-block;
+  padding-block: 4px;
   color: var(--cb-link);
   font-weight: 600;
   text-decoration: underline;
