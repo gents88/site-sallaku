@@ -70,7 +70,8 @@
       "users": "Përdoruesit",
       "ai_assistant": "Asistenti AI",
       "live_chat": "Bisedë live",
-      "sign_pdf": "Nënshkruaj PDF"
+      "sign_pdf": "Nënshkruaj PDF",
+      "compress_pdf": "Ngjesh PDF"
     }
   },
   "lang": {
@@ -1532,7 +1533,9 @@
     "seo_title": "Mjete PDF dhe AI Falas në Internet",
     "seo_description": "Mjete PDF dhe AI falas në internet: OCR, konvertues, editor, shikues, skaner, përkthyes, përmbledhës dhe gjenerator prezantimesh.",
     "sign_pdf_title": "Nënshkruaj PDF",
-    "sign_pdf_desc": "Nënshkruaj një PDF me nënshkrim të vizatuar, të shkruar ose të ngarkuar dhe shto tekst, datë dhe shenja."
+    "sign_pdf_desc": "Nënshkruaj një PDF me nënshkrim të vizatuar, të shkruar ose të ngarkuar dhe shto tekst, datë dhe shenja.",
+    "compress_pdf_title": "Ngjesh PDF",
+    "compress_pdf_desc": "Zvogëlo madhësinë e një PDF-je për ta dërguar me email ose ngarkuar, me tre nivele ngjeshjeje."
   },
   "about_manage": {
     "title": "Seksioni About",
@@ -3113,6 +3116,35 @@
           "a": "Po: zgjidh nënshkrimin dhe zgjidh “Në të gjitha faqet”."
         }
       ]
+    },
+    "compress_pdf": {
+      "about": "Ngjeshësi i PDF online zvogëlon madhësinë e një PDF-je që ta dërgosh me email ose ta ngarkosh në një formular me kufi madhësie. Zgjedh mes rivizatimit të faqeve me rezolucion më të ulët — shumë më i vogël, ideal për skanime — ose vetëm rregullimit të strukturës së skedarit që teksti të mbetet i përzgjedhshëm. Shikon madhësinë para dhe pas, dhe skedari përpunohet në shfletuesin tënd.",
+      "steps": [
+        "Hap PDF-në: tërhiqe në kuti ose zgjidhe nga pajisja.",
+        "Zgjidh si të ngjeshet: “Skedar më i lehtë” (faqet si imazhe) ose “Ruaj tekstin”.",
+        "Nëse zgjodhe faqet si imazhe, vendos nivelin: I lehtë, Mesatar ose I fortë.",
+        "Shtyp “Ngjesh PDF”, kontrollo madhësinë para dhe pas, pastaj shkarko."
+      ],
+      "privacy": "PDF-ja përpunohet tërësisht në shfletuesin tënd dhe nuk ngarkohet kurrë. Pas mbylljes së faqes nuk mbetet asgjë.",
+      "limits": "“Skedar më i lehtë” e kthen çdo faqe në imazh, ndaj teksti nuk mund të përzgjidhet ose kërkohet më — përdor “Ruaj tekstin” nëse të duhet, me kursim më të vogël. PDF-të me mbi 400 faqe ose me fjalëkalim nuk mbështeten. Nëse rezultati nuk është dukshëm më i vogël, mjeti ta thotë dhe mund ta mbash origjinalin.",
+      "faq": [
+        {
+          "q": "Sa do të zvogëlohet PDF-ja ime?",
+          "a": "Varet nga përmbajtja. Skanimet dhe fotot shpesh zbresin me 70–90%; dokumentet me tekst kursejnë pak, përveç nëse pranon t’i kthesh faqet në imazhe."
+        },
+        {
+          "q": "A ngarkohet skedari im diku?",
+          "a": "Jo. PDF-ja ngjeshet në shfletuesin tënd dhe nuk del kurrë nga pajisja jote."
+        },
+        {
+          "q": "Pse nuk mund ta përzgjedh tekstin pas ngjeshjes?",
+          "a": "Në modalitetin “Skedar më i lehtë” çdo faqe rivizatohet si imazh. Zgjidh “Ruaj tekstin” për ta ruajtur."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3234,5 +3266,51 @@
     "err_image": "Ky imazh nuk u lexua. Provo një tjetër.",
     "err_no_fields": "Shto së pari një nënshkrim, tekst ose datë.",
     "err_export": "PDF-ja nuk u krijua. Provo përsëri."
+  },
+  "compress_pdf": {
+    "title": "Ngjesh PDF",
+    "subtitle": "Zvogëlo madhësinë e një PDF-je që të futet në një email ose formular — në shfletues, pa e dërguar skedarin askund.",
+    "seo_title": "Ngjesh PDF Online Falas — Zvogëlo Madhësinë e PDF-së",
+    "seo_description": "Ngjesh një PDF online falas: zgjidh nivelin, shih sa kursen dhe shkarko. Gjithçka ndodh në shfletuesin tënd — skedari nuk ngarkohet asnjëherë.",
+    "drop_prompt": "Hiq një PDF këtu ose kliko për ta zgjedhur",
+    "drop_hint": "Deri në 400 faqe — skanime, formularë, raporte",
+    "privacy_note": "Skedari mbetet në pajisjen tënde: nuk ngarkohet në asnjë server.",
+    "workspace_banner_title": "Ka një skedar në Workspace",
+    "workspace_banner_use": "Përdore",
+    "workspace_banner_dismiss": "Injoro",
+    "file_info": "{{pages}} faqe · {{size}}",
+    "close_file": "Mbyll skedarin",
+    "mode_label": "Si të ngjeshet",
+    "mode_images_title": "Skedar më i lehtë (faqet si imazhe)",
+    "mode_images_desc": "Rivizaton çdo faqe me rezolucion më të ulët. Shumë më i vogël, ideal për skanime dhe foto.",
+    "mode_text_title": "Ruaj tekstin",
+    "mode_text_desc": "Rregullon vetëm strukturën e skedarit. Teksti mbetet i përzgjedhshëm dhe i kërkueshëm, por kursimi zakonisht është i vogël.",
+    "level_label": "Niveli i ngjeshjes",
+    "level_light": "I lehtë",
+    "level_light_desc": "Rreth {{dpi}} dpi — ende i mirë për printim",
+    "level_medium": "Mesatar",
+    "level_medium_desc": "Rreth {{dpi}} dpi — i mirë për ekran dhe email",
+    "level_strong": "I fortë",
+    "level_strong_desc": "Rreth {{dpi}} dpi — më i vogli, vetëm për ekran",
+    "text_warning": "Duket si dokument me tekst. Me “faqet si imazhe” teksti nuk do të mund të përzgjidhet ose kërkohet më. Zgjidh “Ruaj tekstin” nëse të duhet.",
+    "images_note": "Faqet bëhen imazhe: teksti nuk do të mund të përzgjidhet ose kërkohet më. Madhësia e faqeve mbetet e njëjtë.",
+    "btn_compress": "Ngjesh PDF",
+    "progress": "Faqja {{done}} nga {{total}}",
+    "cancel": "Anulo",
+    "cancelled": "Ngjeshja u anulua.",
+    "result_saved": "U krye: {{percent}}% më i vogël",
+    "no_gain": "Kjo PDF nuk u zvogëlua dukshëm",
+    "no_gain_hint": "Ndoshta është tashmë e optimizuar. Provo “Skedar më i lehtë” me nivelin e fortë ose mbaje origjinalin.",
+    "before": "Para",
+    "after": "Pas",
+    "btn_download": "Shkarko PDF-në e ngjeshur",
+    "btn_download_anyway": "Shkarko gjithsesi",
+    "workspace_send": "Dërgo te Workspace",
+    "workspace_sent": "U dërgua",
+    "images_after_note": "Në këtë version faqet janë imazhe, ndaj teksti nuk është më i përzgjedhshëm.",
+    "err_not_pdf": "Zgjidh një skedar PDF.",
+    "err_open": "Kjo PDF nuk u hap. Mund të jetë e dëmtuar ose e mbrojtur me fjalëkalim.",
+    "err_compress": "PDF-ja nuk u ngjesh. Provo një nivel tjetër ose një skedar më të vogël.",
+    "err_too_many_pages": "Kjo PDF ka shumë faqe për shfletuesin (kufiri 400)."
   }
 }

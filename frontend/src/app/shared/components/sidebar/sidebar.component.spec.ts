@@ -71,16 +71,16 @@ describe('SidebarComponent', () => {
 describe('SidebarComponent: CTA "N strumenti disponibili"', () => {
   it('conta solo gli strumenti del Lab, non "I miei file"', () => {
     const fixture = setupFixture(false);
-    // 6 AI + Workspace + 7 strumenti: le stesse voci della pagina /lab.
-    expect(fixture.componentInstance.itemCount()).toBe(14);
+    // 6 AI + Workspace + 8 strumenti: le stesse voci della pagina /lab.
+    expect(fixture.componentInstance.itemCount()).toBe(15);
   });
 
   it('per l\'admin non conta Dashboard, Contatti, Blog e le altre pagine di gestione', () => {
     const fixture = setupFixture(true);
     const admin = fixture.componentInstance;
     const allItems = admin.navGroups().reduce((total, g) => total + g.items.length, 0);
-    expect(allItems).toBeGreaterThan(14);
-    expect(admin.itemCount()).toBe(14);
+    expect(allItems).toBeGreaterThan(15);
+    expect(admin.itemCount()).toBe(15);
   });
 });
 

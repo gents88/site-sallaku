@@ -24,9 +24,10 @@ interface LabToolRelations {
  */
 export const LAB_RELATIONS: Readonly<Record<string, LabToolRelations>> = {
   ocr: { tools: ['image-to-text', 'scanner', 'pdf-editor', 'convert', 'pdf-summary'], articles: ['ocr-online-estrarre-testo-da-scansioni-e-foto', 'scansionare-documenti-con-il-telefono-senza-scanner'] },
-  scanner: { tools: ['ocr', 'pdf-editor', 'sign-pdf', 'convert'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'ocr-online-estrarre-testo-da-scansioni-e-foto'] },
+  scanner: { tools: ['ocr', 'pdf-editor', 'sign-pdf', 'compress-pdf', 'convert'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'ocr-online-estrarre-testo-da-scansioni-e-foto'] },
+  'compress-pdf': { tools: ['pdf-editor', 'sign-pdf', 'viewer', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   'sign-pdf': { tools: ['pdf-editor', 'viewer', 'scanner', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
-  'pdf-editor': { tools: ['merge-pdf', 'split-pdf', 'rotate-pdf', 'sign-pdf', 'viewer', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
+  'pdf-editor': { tools: ['merge-pdf', 'split-pdf', 'rotate-pdf', 'sign-pdf', 'compress-pdf', 'viewer', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   viewer: { tools: ['pdf-editor', 'sign-pdf', 'ocr', 'pdf-summary'], articles: ['perche-la-ricerca-nel-pdf-non-trova-niente', 'pdf-accessibili-cosa-serve-davvero'] },
   editor: { tools: ['convert', 'ai-formatter', 'pdf-editor'], articles: ['scrivere-ed-esportare-documenti-pdf-docx-html-senza-word', 'come-convertire-pdf-in-word-senza-perdere-formattazione'] },
   convert: { tools: ['pdf-to-word', 'word-to-pdf', 'jpg-to-pdf', 'pdf-editor', 'ocr', 'editor'], articles: ['come-convertire-pdf-in-word-senza-perdere-formattazione', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
