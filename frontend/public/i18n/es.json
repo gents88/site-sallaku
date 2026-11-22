@@ -1329,7 +1329,14 @@
     "preview_prev_page": "Página anterior",
     "preview_next_page": "Página siguiente",
     "seo_title": "Buscar Libros PDF Gratis: Dominio Público",
-    "seo_description": "Busca y descarga libros de dominio público, artículos científicos y publicaciones de acceso abierto, sin problemas de derechos de autor. Busca en Internet Archive, Project Gutenberg, arXiv y PubMed Central con vista previa antes de descargar."
+    "seo_description": "Busca y descarga libros de dominio público, artículos científicos y publicaciones de acceso abierto, sin problemas de derechos de autor. Busca en Internet Archive, Project Gutenberg, arXiv y PubMed Central con vista previa antes de descargar.",
+    "filter_favorites": "Favoritos",
+    "results_count": "{{count}} resultados",
+    "btn_copy_link": "Copiar enlace",
+    "link_copied": "Enlace copiado",
+    "preview_goto_page": "Ir a la página",
+    "zoom_out": "Reducir zoom",
+    "zoom_in": "Aumentar zoom"
   },
   "convert": {
     "title": "Convertidor",

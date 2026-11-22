@@ -433,4 +433,55 @@ describe('PdfSearchComponent', () => {
       expect(libraryMock.refresh).toHaveBeenCalled();
     });
   });
+  describe('novità UX', () => {
+    it('filterCounts conta libri e paper', () => {
+      configure();
+      const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+      component.results.set([
+        makeResult({ id: 'a', source: 'gutenberg' }),
+        makeResult({ id: 'b', source: 'arxiv' }),
+        makeResult({ id: 'c', source: 'pmc' }),
+      ]);
+      expect(component.filterCounts()).toEqual({ all: 3, books: 1, papers: 2 });
+    });
+
+    it('il filtro preferiti mostra solo i preferiti', () => {
+      configure();
+      const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+      component.results.set([makeResult({ id: 'a', title: 'Aaa' })]);
+      component.favorites.set([makeResult({ id: 'f', title: 'Fav' })]);
+      component.sourceFilter.set('favorites');
+      expect(component.displayResults().map((r) => r.id)).toEqual(['f']);
+    });
+
+    it('una query ripetuta usa la cache e non richiama il servizio', () => {
+      configure();
+      searchMock.mockReturnValue(of([makeResult({ id: 'x', title: 'Xxx' })]));
+      const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+      component.query.set('alice');
+      component.search();
+      component.search();
+      expect(searchMock).toHaveBeenCalledTimes(1);
+      expect(component.results()).toHaveLength(1);
+    });
+
+    it('goToCanvasPage limita il valore al numero di pagine', () => {
+      configure();
+      const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+      component.canvasNumPages.set(5);
+      component.goToCanvasPage('99');
+      expect(component.canvasPageNum()).toBe(5);
+      component.goToCanvasPage(-3);
+      expect(component.canvasPageNum()).toBe(1);
+    });
+
+    it('lo zoom resta entro i limiti', () => {
+      configure();
+      const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+      for (let i = 0; i < 10; i++) component.zoomIn();
+      expect(component.canZoomIn()).toBe(false);
+      for (let i = 0; i < 10; i++) component.zoomOut();
+      expect(component.canZoomOut()).toBe(false);
+    });
+  });
 });

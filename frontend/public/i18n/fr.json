@@ -1329,7 +1329,14 @@
     "preview_prev_page": "Page précédente",
     "preview_next_page": "Page suivante",
     "seo_title": "Recherche de Livres PDF Gratuits",
-    "seo_description": "Recherchez et téléchargez des livres du domaine public, des articles scientifiques et des publications en libre accès, sans problème de droits d'auteur. Recherchez sur Internet Archive, Project Gutenberg, arXiv et PubMed Central avec aperçu avant téléchargement."
+    "seo_description": "Recherchez et téléchargez des livres du domaine public, des articles scientifiques et des publications en libre accès, sans problème de droits d'auteur. Recherchez sur Internet Archive, Project Gutenberg, arXiv et PubMed Central avec aperçu avant téléchargement.",
+    "filter_favorites": "Favoris",
+    "results_count": "{{count}} résultats",
+    "btn_copy_link": "Copier le lien",
+    "link_copied": "Lien copié",
+    "preview_goto_page": "Aller à la page",
+    "zoom_out": "Réduire le zoom",
+    "zoom_in": "Agrandir le zoom"
   },
   "convert": {
     "title": "Convertisseur",
