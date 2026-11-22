@@ -3217,6 +3217,462 @@
           "a": "Di solito per scarso contrasto, colori invertiti o una dimensione di stampa troppo piccola. Usa un codice scuro su sfondo chiaro e largo almeno 2 cm."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "Gli iPhone salvano le foto in HEIC, un formato che Windows, molti siti e le app più vecchie non riescono ad aprire. Questo strumento converte i file HEIC e HEIF in JPG o PNG direttamente nel browser, con la qualità che scegli e il download in ZIP per più foto insieme.",
+      "steps": [
+        "Trascina le foto HEIC nell’area di caricamento, oppure cliccala per sceglierle.",
+        "Controlla che il formato sia JPG e scegli la qualità.",
+        "Converti e scarica ogni foto, oppure tutte insieme in un unico ZIP."
+      ],
+      "privacy": "Le foto vengono elaborate interamente nel tuo browser: non sono caricate su alcun server e nessun altro può vederle.",
+      "limits": "Foto molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo. Se serve, procedi a piccoli gruppi.",
+      "faq": [
+        {
+          "q": "Come apro le foto HEIC su Windows?",
+          "a": "Convertile in JPG con questo strumento: funziona nel browser, senza installare nulla."
+        },
+        {
+          "q": "Le mie foto vengono caricate online?",
+          "a": "No. La conversione avviene sul tuo dispositivo e le foto non ne escono."
+        },
+        {
+          "q": "Posso convertire molti file HEIC insieme?",
+          "a": "Sì: aggiungili tutti e scarica il risultato in un unico ZIP."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Usa questo strumento per ridurre le dimensioni in pixel di una o più foto, ad esempio per inviarle per email, caricarle in un modulo o pubblicarle su un sito. Le proporzioni restano invariate e puoi cambiare anche formato e qualità del risultato.",
+      "steps": [
+        "Aggiungi una o più immagini.",
+        "Scegli il lato maggiore in pixel e il formato di uscita.",
+        "Scarica le immagini ridimensionate, una per una o in ZIP."
+      ],
+      "privacy": "Le foto vengono elaborate interamente nel tuo browser: non sono caricate su alcun server e nessun altro può vederle.",
+      "limits": "Foto molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo. Se serve, procedi a piccoli gruppi.",
+      "faq": [
+        {
+          "q": "Come ridimensiono una foto senza deformarla?",
+          "a": "Imposta solo il lato maggiore: l’altro viene calcolato per mantenere le proporzioni."
+        },
+        {
+          "q": "Il file originale viene modificato?",
+          "a": "No. Scarichi un nuovo file e l’originale resta intatto."
+        },
+        {
+          "q": "Quali formati posso usare?",
+          "a": "JPG, PNG e WebP, oltre alle foto HEIC degli iPhone in ingresso."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "Le foto grandi sono lente da inviare e da caricare. Questo strumento le alleggerisce abbassando un po’ la qualità e limitando le dimensioni in pixel, e ti mostra quanto spazio risparmi per ogni file prima di scaricarlo.",
+      "steps": [
+        "Aggiungi le foto da alleggerire.",
+        "Scegli la qualità: intorno al 70% è un buon equilibrio tra peso e nitidezza.",
+        "Controlla il risparmio mostrato per ogni file e scarica il risultato."
+      ],
+      "privacy": "Le foto vengono elaborate interamente nel tuo browser: non sono caricate su alcun server e nessun altro può vederle.",
+      "limits": "Foto molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo. Se serve, procedi a piccoli gruppi.",
+      "faq": [
+        {
+          "q": "Come alleggerisco una foto per l’email?",
+          "a": "Comprimila intorno al 70% di qualità e limita il lato maggiore a circa 2000 pixel."
+        },
+        {
+          "q": "La qualità peggiora?",
+          "a": "Un poco, ma con impostazioni moderate la differenza è difficile da notare a schermo."
+        },
+        {
+          "q": "Le mie foto vanno su un server?",
+          "a": "No. La compressione avviene nel tuo browser."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "I PDF scansionati o pieni di immagini possono essere troppo grandi da inviare. Lo strumento offre un’ottimizzazione senza perdite che mantiene il testo selezionabile e una modalità più forte che ricostruisce le pagine come immagini alla qualità scelta, con il peso prima e dopo ben visibile.",
+      "steps": [
+        "Trascina il PDF nell’area di caricamento.",
+        "Scegli la modalità e il livello: leggero, medio o forte.",
+        "Controlla il risparmio e scarica il PDF più leggero."
+      ],
+      "privacy": "Il PDF viene elaborato interamente nel tuo browser: non è caricato su alcun server, quindi puoi lavorare anche su documenti riservati.",
+      "limits": "Un PDF molto grande o protetto da password può non aprirsi o rallentare il browser, perché il lavoro lo fa il tuo dispositivo. Scarica il risultato prima di chiudere la scheda.",
+      "faq": [
+        {
+          "q": "Come porto un PDF sotto i 2 MB?",
+          "a": "Prova il livello forte: abbassa la risoluzione delle pagine. Controlla il risultato prima di inviarlo."
+        },
+        {
+          "q": "Il testo resta selezionabile?",
+          "a": "Con la modalità senza perdite sì. La modalità a immagini trasforma le pagine in figure, quindi il testo non è più selezionabile."
+        },
+        {
+          "q": "Il mio PDF viene caricato online?",
+          "a": "No. Tutto avviene nel tuo browser."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Usa questo strumento per compilare moduli e firmare contratti senza stampare. Puoi disegnare o scrivere la firma, posizionare testo e date ovunque nella pagina, spostarli e ridimensionarli, poi esportare un nuovo PDF.",
+      "steps": [
+        "Apri il PDF da compilare.",
+        "Crea la firma o aggiungi campi di testo e data, poi posizionali sulla pagina.",
+        "Esporta e scarica il PDF firmato."
+      ],
+      "privacy": "Il PDF viene elaborato interamente nel tuo browser: non è caricato su alcun server, quindi puoi lavorare anche su documenti riservati.",
+      "limits": "Un PDF molto grande o protetto da password può non aprirsi o rallentare il browser, perché il lavoro lo fa il tuo dispositivo. Scarica il risultato prima di chiudere la scheda.",
+      "faq": [
+        {
+          "q": "Come firmo un PDF senza stamparlo?",
+          "a": "Disegna o scrivi la firma qui, posizionala sulla pagina e scarica il PDF."
+        },
+        {
+          "q": "Ha valore legale?",
+          "a": "È una firma elettronica semplice, sufficiente per molti documenti quotidiani. Alcuni contratti richiedono una firma qualificata: verifica le regole che ti riguardano."
+        },
+        {
+          "q": "Il mio documento viene caricato?",
+          "a": "No. Il documento e la firma restano nel tuo browser."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "Un QR code Wi-Fi contiene il nome della rete, il tipo di sicurezza e la password. I telefoni che lo inquadrano propongono di collegarsi senza scrivere nulla. Stampalo per casa, negozio o camera degli ospiti, in PNG o SVG.",
+      "steps": [
+        "Inserisci il nome della rete, scegli il tipo di sicurezza e aggiungi la password.",
+        "Regola colori e dimensione, se vuoi.",
+        "Inquadra il codice con il telefono per provarlo, poi scaricalo o stampalo."
+      ],
+      "privacy": "Il codice viene generato nel tuo browser e quello che scrivi non viene inviato da nessuna parte.",
+      "limits": "Chiunque scansioni il codice può leggerne il contenuto: non condividere codici Wi-Fi con persone di cui non ti fidi. Prova sempre il codice con il telefono prima di stamparlo.",
+      "faq": [
+        {
+          "q": "Come condivido la password del Wi-Fi con un QR code?",
+          "a": "Inserisci qui nome rete e password, scarica il codice e mostralo o stampalo: gli ospiti lo inquadrano per collegarsi."
+        },
+        {
+          "q": "La password è al sicuro?",
+          "a": "Il codice è generato nel tuo browser e non viene inviato da nessuna parte, ma chiunque lo scansioni può leggere la password."
+        },
+        {
+          "q": "Funziona su iPhone e Android?",
+          "a": "Sì, entrambi aprono la fotocamera e propongono di collegarsi alla rete."
+        }
+      ]
+    },
+    "pdf_to_jpg": {
+      "about": "Questa pagina converte i file PDF in JPG. Ogni pagina del PDF diventa un’immagine separata, comoda per condividere una pagina in chat o usarla in una presentazione. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file PDF nell’area di caricamento.",
+        "Controlla che il formato di uscita sia JPG.",
+        "Converti e scarica il file JPG."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto PDF in JPG?",
+          "a": "Aggiungi qui il file PDF, avvia la conversione e scarica il file JPG."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "excel_to_pdf": {
+      "about": "Questa pagina converte i file Excel in PDF. Un foglio di calcolo diventa un PDF che si vede uguale su ogni dispositivo, pronto da inviare o stampare. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file Excel nell’area di caricamento.",
+        "Controlla che il formato di uscita sia PDF.",
+        "Converti e scarica il file PDF."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto Excel in PDF?",
+          "a": "Aggiungi qui il file Excel, avvia la conversione e scarica il file PDF."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "png_to_jpg": {
+      "about": "Questa pagina converte i file PNG in JPG. I file JPG sono molto più leggeri dei PNG, utile per email e pagine web. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file PNG nell’area di caricamento.",
+        "Controlla che il formato di uscita sia JPG.",
+        "Converti e scarica il file JPG."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto PNG in JPG?",
+          "a": "Aggiungi qui il file PNG, avvia la conversione e scarica il file JPG."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "webp_to_png": {
+      "about": "Questa pagina converte i file WebP in PNG. Il PNG è accettato da quasi ogni programma, mentre il WebP è ancora rifiutato da alcuni. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file WebP nell’area di caricamento.",
+        "Controlla che il formato di uscita sia PNG.",
+        "Converti e scarica il file PNG."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto WebP in PNG?",
+          "a": "Aggiungi qui il file WebP, avvia la conversione e scarica il file PNG."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "jpg_to_png": {
+      "about": "Questa pagina converte i file JPG in PNG. Il PNG mantiene i bordi nitidi e supporta la trasparenza, utile per loghi e screenshot. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file JPG nell’area di caricamento.",
+        "Controlla che il formato di uscita sia PNG.",
+        "Converti e scarica il file PNG."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto JPG in PNG?",
+          "a": "Aggiungi qui il file JPG, avvia la conversione e scarica il file PNG."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "html_to_pdf": {
+      "about": "Questa pagina converte i file HTML in PDF. Una pagina web o un file HTML diventa un PDF da archiviare, condividere o stampare. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file HTML nell’area di caricamento.",
+        "Controlla che il formato di uscita sia PDF.",
+        "Converti e scarica il file PDF."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto HTML in PDF?",
+          "a": "Aggiungi qui il file HTML, avvia la conversione e scarica il file PDF."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "pdf_to_txt": {
+      "about": "Questa pagina converte i file PDF in TXT. Ottieni il testo semplice del PDF, utile per copiarlo, cercarlo o riutilizzarlo. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file PDF nell’area di caricamento.",
+        "Controlla che il formato di uscita sia TXT.",
+        "Converti e scarica il file TXT."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto PDF in TXT?",
+          "a": "Aggiungi qui il file PDF, avvia la conversione e scarica il file TXT."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "txt_to_pdf": {
+      "about": "Questa pagina converte i file TXT in PDF. Un file di testo semplice diventa un PDF pronto da condividere o stampare. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Scegli o trascina il file TXT nell’area di caricamento.",
+        "Controlla che il formato di uscita sia PDF.",
+        "Converti e scarica il file PDF."
+      ],
+      "privacy": "Per convertire il file viene inviato al nostro server, che lo elabora e ti restituisce il risultato. I file servono solo a eseguire la conversione richiesta.",
+      "limits": "Il file può pesare fino a 50 MB. File molto complessi possono richiedere piccoli ritocchi dopo la conversione.",
+      "faq": [
+        {
+          "q": "Come converto TXT in PDF?",
+          "a": "Aggiungi qui il file TXT, avvia la conversione e scarica il file PDF."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "Il mio file viene conservato?",
+          "a": "Il file viene elaborato solo per eseguire la conversione e non è conservato per altri scopi."
+        }
+      ]
+    },
+    "webp_to_jpg": {
+      "about": "Questa pagina converte i file WebP in JPG. Il JPG si apre ovunque, mentre le immagini WebP scaricate dal web sono rifiutate da molti programmi. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Trascina i file WebP nell’area di caricamento, oppure cliccala per sceglierli.",
+        "Controlla che il formato di uscita sia JPG e scegli la qualità.",
+        "Converti e scarica ogni file, oppure tutti insieme in un ZIP."
+      ],
+      "privacy": "I file vengono elaborati interamente nel tuo browser: non sono caricati su alcun server.",
+      "limits": "Immagini molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo.",
+      "faq": [
+        {
+          "q": "Come converto WebP in JPG?",
+          "a": "Aggiungi qui il file WebP, avvia la conversione e scarica il file JPG."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "I miei file vengono caricati?",
+          "a": "No. La conversione avviene nel tuo browser e i file non lasciano il tuo dispositivo."
+        }
+      ]
+    },
+    "jpg_to_webp": {
+      "about": "Questa pagina converte i file JPG in WebP. I file WebP sono più leggeri dei JPG a parità di qualità, e le pagine web si caricano più in fretta. Scegli il file, avvia la conversione e scarica il risultato.",
+      "steps": [
+        "Trascina i file JPG nell’area di caricamento, oppure cliccala per sceglierli.",
+        "Controlla che il formato di uscita sia WebP e scegli la qualità.",
+        "Converti e scarica ogni file, oppure tutti insieme in un ZIP."
+      ],
+      "privacy": "I file vengono elaborati interamente nel tuo browser: non sono caricati su alcun server.",
+      "limits": "Immagini molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo.",
+      "faq": [
+        {
+          "q": "Come converto JPG in WebP?",
+          "a": "Aggiungi qui il file JPG, avvia la conversione e scarica il file WebP."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione."
+        },
+        {
+          "q": "I miei file vengono caricati?",
+          "a": "No. La conversione avviene nel tuo browser e i file non lasciano il tuo dispositivo."
+        }
+      ]
+    },
+    "whatsapp_qr_code": {
+      "about": "Un QR code WhatsApp apre una chat con il tuo numero, con un messaggio precompilato se vuoi. È comodo su vetrine, menu, biglietti da visita e volantini. Inserisci il numero con il prefisso internazionale e scarica il codice in PNG o SVG.",
+      "steps": [
+        "Inserisci il numero con il prefisso internazionale e, se vuoi, un messaggio precompilato.",
+        "Regola colori e dimensione.",
+        "Inquadra il codice con il telefono per provarlo, poi scaricalo o stampalo."
+      ],
+      "privacy": "Il codice viene generato nel tuo browser e quello che scrivi non viene inviato da nessuna parte.",
+      "limits": "Prova sempre il codice con il telefono prima di stamparlo.",
+      "faq": [
+        {
+          "q": "Come creo un QR code WhatsApp?",
+          "a": "Inserisci qui il numero con il prefisso internazionale, aggiungi un messaggio facoltativo e scarica il codice."
+        },
+        {
+          "q": "Posso precompilare il messaggio?",
+          "a": "Sì: chi inquadra il codice trova il testo già pronto da inviare."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratis e senza registrazione. Il codice è generato nel tuo browser."
+        }
+      ]
+    },
+    "vcard_qr_code": {
+      "about": "Un QR code di contatto contiene nome, telefono, email, azienda e sito web nel formato vCard. Stampato su un biglietto da visita o nella firma email, permette di salvarti senza scrivere nulla. Scaricalo in PNG o SVG.",
+      "steps": [
+        "Compila nome, telefono, email, azienda e sito web.",
+        "Regola colori e dimensione.",
+        "Inquadra il codice con il telefono per controllarlo, poi scaricalo o stampalo."
+      ],
+      "privacy": "Il codice viene generato nel tuo browser e quello che scrivi non viene inviato da nessuna parte.",
+      "limits": "Prova sempre il codice con il telefono prima di stamparlo.",
+      "faq": [
+        {
+          "q": "Come faccio il QR code per il mio biglietto da visita?",
+          "a": "Inserisci qui i tuoi contatti e scarica il codice in SVG per la stampa."
+        },
+        {
+          "q": "Che cos’è una vCard?",
+          "a": "Un formato standard per i dati di contatto che ogni telefono capisce."
+        },
+        {
+          "q": "I miei dati vengono inviati da qualche parte?",
+          "a": "No. Il codice è generato nel tuo browser."
+        }
+      ]
+    },
+    "edit_pdf": {
+      "about": "Questo editor lavora sulle pagine di un PDF: trascinale per riordinarle, ruota o elimina quelle che non servono, aggiungi pagine da altri PDF ed esporta un nuovo file. Nulla viene caricato, quindi puoi usarlo su documenti riservati.",
+      "steps": [
+        "Apri il PDF o trascinalo nell’area di caricamento.",
+        "Riordina, ruota o elimina le pagine, oppure aggiungi altri file.",
+        "Esporta il PDF e scaricalo."
+      ],
+      "privacy": "Il PDF viene elaborato interamente nel tuo browser: non è caricato su alcun server.",
+      "limits": "Un PDF molto grande o protetto da password può non aprirsi o rallentare il browser. Scarica il risultato prima di chiudere la scheda.",
+      "faq": [
+        {
+          "q": "Come modifico un PDF gratis?",
+          "a": "Aprilo qui, cambia le pagine che ti servono e scarica il nuovo PDF: senza registrazione."
+        },
+        {
+          "q": "Il mio PDF viene caricato?",
+          "a": "No. Il lavoro si svolge nel tuo browser."
+        },
+        {
+          "q": "Posso cambiare il testo dentro le pagine?",
+          "a": "Questo editor lavora su pagine intere. Per il testo, aggiungi note o compila campi con lo strumento Compila e firma."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3727,139 @@
       "seo_description": "Estrai il testo da foto, screenshot e immagini con l'OCR online gratuito, in 7 lingue e senza registrazione. Copia il testo in pochi secondi.",
       "h1": "Da immagine a testo",
       "lead": "Trasforma una foto, uno screenshot o una pagina scansionata in testo che puoi copiare e modificare: carica l'immagine e scegli la lingua."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC in JPG",
+      "seo_title": "Da HEIC a JPG Gratis — Converti le Foto dell’iPhone, Senza Caricarle",
+      "seo_description": "Converti le foto HEIC e HEIF dell’iPhone in JPG o PNG gratis. Tutto avviene nel browser: nessun caricamento, nessuna registrazione, conversione multipla e download in ZIP.",
+      "h1": "Converti HEIC in JPG",
+      "lead": "Trasforma le foto HEIC dell’iPhone in JPG che si aprono ovunque. Trascina i file, converti e scarica uno per uno o in ZIP. Senza caricamenti."
+    },
+    "resize_image": {
+      "label": "Ridimensiona immagine",
+      "seo_title": "Ridimensiona Immagine Online Gratis — Cambia le Dimensioni, Senza Caricare",
+      "seo_description": "Ridimensiona foto e immagini online gratis: scegli il lato maggiore, mantieni le proporzioni e scarica JPG, PNG o WebP. Funziona nel browser, senza caricamenti.",
+      "h1": "Ridimensiona un’immagine",
+      "lead": "Rendi una foto più piccola o rispetta un limite di dimensioni: scegli il lato maggiore, mantieni le proporzioni e scarica. Tutto resta nel browser."
+    },
+    "compress_image": {
+      "label": "Comprimi immagine",
+      "seo_title": "Comprimi Immagine Online Gratis — Riduci il Peso delle Foto (JPG, PNG, WebP)",
+      "seo_description": "Comprimi foto e immagini gratis: riduci il peso del file, vedi il risparmio e scarica JPG o WebP. Tutto avviene nel browser, senza caricamenti.",
+      "h1": "Comprimi un’immagine",
+      "lead": "Riduci il peso delle foto senza perdita di qualità visibile: scegli la qualità, confronta le dimensioni e scarica. Senza caricamenti né registrazione."
+    },
+    "reduce_pdf_size": {
+      "label": "Riduci peso PDF",
+      "seo_title": "Riduci Peso PDF Gratis — Comprimi PDF Online, Senza Caricarlo",
+      "seo_description": "Riduci le dimensioni di un PDF gratis: tre livelli di compressione e il risparmio visibile prima di scaricare. Funziona nel browser, il file non viene mai caricato.",
+      "h1": "Riduci il peso di un PDF",
+      "lead": "Rendi un PDF pesante abbastanza leggero da inviarlo per email o caricarlo: scegli il livello, vedi quanto risparmi e scarica. Il file non lascia il tuo dispositivo."
+    },
+    "fill_pdf": {
+      "label": "Compila e firma PDF",
+      "seo_title": "Compila e Firma PDF Gratis — Aggiungi Testo, Data e Firma Online",
+      "seo_description": "Compila e firma un PDF gratis: disegna o scrivi la firma, aggiungi testo e date ovunque e scarica. Funziona nel browser, senza caricamenti né registrazione.",
+      "h1": "Compila e firma un PDF",
+      "lead": "Apri un modulo, scrivi nei campi, aggiungi firma e data e scarica il PDF. Nessun caricamento e nessun account."
+    },
+    "wifi_qr_code": {
+      "label": "QR code Wi-Fi",
+      "seo_title": "Generatore QR Code Wi-Fi Gratis — Condividi la Password con una Scansione",
+      "seo_description": "Crea un QR code per il Wi-Fi gratis: inserisci nome rete e password, scarica PNG o SVG e fai collegare gli ospiti con una scansione. Funziona nel browser.",
+      "h1": "Generatore di QR code Wi-Fi",
+      "lead": "Fai collegare gli ospiti al tuo Wi-Fi con una scansione: inserisci nome rete e password, poi scarica o stampa il codice. Nulla viene inviato."
+    },
+    "pdf_to_jpg": {
+      "label": "PDF in JPG",
+      "seo_title": "Da PDF a JPG Gratis — Convertitore Online",
+      "seo_description": "Converti PDF in JPG online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti PDF in JPG",
+      "lead": "Trascina qui il file PDF, convertilo in JPG e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "excel_to_pdf": {
+      "label": "Excel in PDF",
+      "seo_title": "Da Excel a PDF Gratis — Convertitore Online",
+      "seo_description": "Converti Excel in PDF online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti Excel in PDF",
+      "lead": "Trascina qui il file Excel, convertilo in PDF e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "png_to_jpg": {
+      "label": "PNG in JPG",
+      "seo_title": "Da PNG a JPG Gratis — Convertitore Online",
+      "seo_description": "Converti PNG in JPG online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti PNG in JPG",
+      "lead": "Trascina qui il file PNG, convertilo in JPG e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "webp_to_png": {
+      "label": "WebP in PNG",
+      "seo_title": "Da WebP a PNG Gratis — Convertitore Online",
+      "seo_description": "Converti WebP in PNG online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti WebP in PNG",
+      "lead": "Trascina qui il file WebP, convertilo in PNG e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "jpg_to_png": {
+      "label": "JPG in PNG",
+      "seo_title": "Da JPG a PNG Gratis — Convertitore Online",
+      "seo_description": "Converti JPG in PNG online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti JPG in PNG",
+      "lead": "Trascina qui il file JPG, convertilo in PNG e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "html_to_pdf": {
+      "label": "HTML in PDF",
+      "seo_title": "Da HTML a PDF Gratis — Convertitore Online",
+      "seo_description": "Converti HTML in PDF online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti HTML in PDF",
+      "lead": "Trascina qui il file HTML, convertilo in PDF e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "pdf_to_txt": {
+      "label": "PDF in TXT",
+      "seo_title": "Da PDF a TXT Gratis — Convertitore Online",
+      "seo_description": "Converti PDF in TXT online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti PDF in TXT",
+      "lead": "Trascina qui il file PDF, convertilo in TXT e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "txt_to_pdf": {
+      "label": "TXT in PDF",
+      "seo_title": "Da TXT a PDF Gratis — Convertitore Online",
+      "seo_description": "Converti TXT in PDF online gratis. Scegli il file, converti e scarica il risultato: niente da installare e nessuna registrazione.",
+      "h1": "Converti TXT in PDF",
+      "lead": "Trascina qui il file TXT, convertilo in PDF e scarica il risultato in pochi secondi. Gratis e senza registrazione."
+    },
+    "webp_to_jpg": {
+      "label": "WebP in JPG",
+      "seo_title": "Da WebP a JPG Gratis — Convertitore Online",
+      "seo_description": "Converti WebP in JPG online gratis, direttamente nel browser: nessun caricamento, nessuna registrazione, conversione multipla e download in ZIP.",
+      "h1": "Converti WebP in JPG",
+      "lead": "Trascina i file WebP, convertili in JPG e scaricali uno per uno o in ZIP. Tutto resta nel tuo browser."
+    },
+    "jpg_to_webp": {
+      "label": "JPG in WebP",
+      "seo_title": "Da JPG a WebP Gratis — Convertitore Online",
+      "seo_description": "Converti JPG in WebP online gratis, direttamente nel browser: nessun caricamento, nessuna registrazione, conversione multipla e download in ZIP.",
+      "h1": "Converti JPG in WebP",
+      "lead": "Trascina i file JPG, convertili in WebP e scaricali uno per uno o in ZIP. Tutto resta nel tuo browser."
+    },
+    "whatsapp_qr_code": {
+      "label": "QR code WhatsApp",
+      "seo_title": "Generatore QR Code WhatsApp Gratis — Link per Scriverti in Chat",
+      "seo_description": "Crea un QR code WhatsApp gratis: inserisci il tuo numero e un messaggio facoltativo, scarica PNG o SVG. I clienti lo inquadrano e iniziano una chat. Funziona nel browser.",
+      "h1": "Generatore di QR code WhatsApp",
+      "lead": "Fai iniziare ai clienti una chat WhatsApp con te inquadrando un codice. Inserisci il numero e un messaggio facoltativo, poi scarica o stampa."
+    },
+    "vcard_qr_code": {
+      "label": "QR code biglietto da visita",
+      "seo_title": "Generatore QR Code vCard Gratis — QR Code per Biglietto da Visita",
+      "seo_description": "Crea gratis un QR code di contatto: nome, telefono, email, azienda e sito in una vCard. Scarica PNG o SVG per il biglietto da visita. Funziona nel browser.",
+      "h1": "Generatore di QR code contatto (vCard)",
+      "lead": "Metti i tuoi contatti in un QR code: chi lo inquadra può salvarti in rubrica con un tocco. Gratis, nulla viene caricato."
+    },
+    "edit_pdf": {
+      "label": "Modifica PDF",
+      "seo_title": "Modifica PDF Online Gratis — Riordina, Elimina e Ruota Pagine, Senza Caricare",
+      "seo_description": "Modifica un PDF online gratis: riordina, elimina, ruota e unisci pagine, poi scarica. Funziona nel browser, il file non viene mai caricato.",
+      "h1": "Modifica un PDF",
+      "lead": "Apri un PDF, riordina, ruota o elimina le pagine, unisci altri file e scarica il risultato. Tutto avviene nel tuo browser."
     }
   },
   "sign_pdf": {
