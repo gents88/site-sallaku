@@ -1,6 +1,3 @@
-/* Titoli a gradiente: l'inizio chiaro (#e6edf3) è per il tema scuro, su sfondo chiaro il testo spariva. */
-:host-context([data-theme='light']) { --title-grad-start: #1e1b4b; --title-grad-end: #6d28d9; }
-
 // ── Variables / tokens (matching the app's design system) ──────────────
 :host {
   display: block;
@@ -39,7 +36,7 @@ app-breadcrumb {
   border: 1px solid rgba(108, 99, 255, 0.28);
   border-radius: 100px;
   font-size: 12px;
-  color: #a78bfa;
+  color: var(--c-violet, #a78bfa);
   margin-bottom: 28px;
   letter-spacing: 0.02em;
 
@@ -92,7 +89,7 @@ app-breadcrumb {
 
 .btn-primary {
   padding: 13px 26px;
-  background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+  background: var(--gradient-button);
   border: none;
   border-radius: 12px;
   color: #fff;
@@ -145,7 +142,7 @@ app-breadcrumb {
   .stat-value {
     font-size: 1.45rem;
     font-weight: 800;
-    color: #a78bfa;
+    color: var(--c-violet, #a78bfa);
     line-height: 1;
   }
 
@@ -224,7 +221,7 @@ app-breadcrumb {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 6px;
-    background: linear-gradient(130deg, var(--title-grad-start, #e6edf3) 40%, var(--title-grad-end, #a78bfa) 100%);
+    background: linear-gradient(130deg, var(--title-grad-start) 40%, var(--title-grad-end) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -264,7 +261,7 @@ app-breadcrumb {
   &.active {
     background: rgba(108, 99, 255, 0.14);
     border-color: rgba(108, 99, 255, 0.45);
-    color: #a78bfa;
+    color: var(--c-violet, #a78bfa);
   }
 
   &:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -326,7 +323,7 @@ app-breadcrumb {
   &.meta-accent {
     background: rgba(108, 99, 255, 0.09);
     border-color: rgba(108, 99, 255, 0.2);
-    color: #a78bfa;
+    color: var(--c-violet, #a78bfa);
   }
 }
 
@@ -401,7 +398,7 @@ app-breadcrumb {
   border: 1px solid rgba(248, 113, 113, 0.22);
   border-radius: 8px;
   font-size: 0.8rem;
-  color: #f87171;
+  color: var(--c-red, #f87171);
 }
 
 // ── WORKSPACE RECEIVE NOTICE ────────────────────────────────────────────
@@ -455,7 +452,7 @@ app-breadcrumb {
   }
 
   &.primary {
-    background: #6c63ff;
+    background: #5b52f0;
     border-color: #6c63ff;
     color: #fff;
 
@@ -527,7 +524,7 @@ app-breadcrumb {
   align-items: center;
   gap: 7px;
   padding: 9px 20px;
-  background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+  background: var(--gradient-button);
   border: none;
   border-radius: 9px;
   color: #fff;
@@ -593,7 +590,7 @@ app-breadcrumb {
 
     &.active {
       background: rgba(108, 99, 255, 0.2);
-      color: #a78bfa;
+      color: var(--c-violet, #a78bfa);
     }
 
     &:hover:not(.active) {
@@ -621,7 +618,7 @@ app-breadcrumb {
 
   &.is-sent {
     border-color: #34d399;
-    color: #34d399;
+    color: var(--c-green, #34d399);
   }
 }
 
@@ -705,7 +702,7 @@ app-breadcrumb {
       font-size: 1.35rem;
       font-weight: 800;
       margin: 0 0 14px;
-      background: linear-gradient(130deg, var(--title-grad-start, #e6edf3) 40%, var(--title-grad-end, #a78bfa) 100%);
+      background: linear-gradient(130deg, var(--title-grad-start) 40%, var(--title-grad-end) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -714,13 +711,13 @@ app-breadcrumb {
       font-size: 1.05rem;
       font-weight: 700;
       margin: 18px 0 9px;
-      color: #a78bfa;
+      color: var(--c-violet, #a78bfa);
     }
     h3 {
       font-size: 0.92rem;
       font-weight: 600;
       margin: 14px 0 7px;
-      color: #7dd3fc;
+      color: var(--c-sky-soft, #7dd3fc);
     }
     h4 {
       font-size: 0.87rem;
@@ -739,7 +736,7 @@ app-breadcrumb {
       border-radius: 4px;
       font-size: 0.83em;
       font-family: 'SF Mono', 'Fira Code', monospace;
-      color: #7dd3fc;
+      color: var(--c-sky-soft, #7dd3fc);
     }
     hr {
       border: none;
@@ -784,7 +781,7 @@ app-breadcrumb {
     }
     th {
       background: rgba(255, 255, 255, 0.05);
-      color: #a78bfa;
+      color: var(--c-violet, #a78bfa);
       font-weight: 700;
     }
   }
@@ -796,7 +793,7 @@ app-breadcrumb {
   font-size: 0.79rem;
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
   line-height: 1.65;
-  color: #7dd3fc;
+  color: var(--c-sky-soft, #7dd3fc);
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 560px;

@@ -209,7 +209,7 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
       font-weight: 800;
       text-transform: uppercase;
       color: #fff;
-      background: linear-gradient(135deg, #4f6af5, #06b6d4 55%, #38bdf8);
+      background: linear-gradient(135deg, #3b4fd0, #0e7490 55%, #0369a1);
       box-shadow: 0 14px 34px rgba(79, 106, 245, 0.28);
     }
 
@@ -226,7 +226,7 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
       border-radius: 999px;
       background: rgba(56, 189, 248, 0.12);
       border: 1px solid rgba(56, 189, 248, 0.2);
-      color: #7dd3fc;
+      color: var(--c-sky-soft, #7dd3fc);
       font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.06em;

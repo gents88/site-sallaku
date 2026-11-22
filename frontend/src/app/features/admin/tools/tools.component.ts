@@ -175,10 +175,9 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 6px 16px; border-radius: 100px;
       background: rgba(108,99,255,.1); border: 1px solid rgba(108,99,255,.28);
-      font-size: 12px; color: #a78bfa; margin-bottom: 1.25rem; letter-spacing: .03em;
+      font-size: 12px; color: var(--c-violet, #a78bfa); margin-bottom: 1.25rem; letter-spacing: .03em;
     }
     /* #a78bfa su sfondo chiaro era 2.3:1 (axe): tonalità più scura in light. */
-    :host-context([data-theme='light']) .header-badge { color: #6d28d9; }
     .badge-dot {
       width: 7px; height: 7px; border-radius: 50%;
       background: #7c3aed; box-shadow: 0 0 6px #7c3aed;
@@ -189,11 +188,9 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
     h1 {
       font-size: clamp(1.8rem, 4vw, 2.75rem); font-weight: 800;
       margin: 0 0 .75rem; color: var(--text-primary, #e6edf3);
-      background: linear-gradient(130deg, #e6edf3 30%, #a78bfa 100%);
+      background: linear-gradient(130deg, var(--title-grad-start) 30%, var(--title-grad-end) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    /* Il gradiente parte da #e6edf3 (quasi bianco): su sfondo chiaro il titolo spariva. */
-    :host-context([data-theme='light']) h1 { background-image: linear-gradient(130deg, #1e1b4b 30%, #6d28d9 100%); }
 
     .page-header p {
       font-size: 1.05rem; color: var(--text-secondary, #8b949e);
@@ -341,7 +338,7 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
       position: absolute; top: .6rem; right: 2rem;
       font-size: .62rem; font-weight: 700; padding: .2rem .55rem;
       border-radius: 100px; background: rgba(108,99,255,.18);
-      color: #a78bfa; border: 1px solid rgba(108,99,255,.3);
+      color: var(--c-violet, #a78bfa); border: 1px solid rgba(108,99,255,.3);
       letter-spacing: .04em; white-space: nowrap;
     }
 

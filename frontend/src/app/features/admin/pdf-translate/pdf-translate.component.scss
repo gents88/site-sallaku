@@ -44,7 +44,7 @@ $error-clr:     #f87171;
   border-radius: 100px;
   font-size: 12px;
   font-weight: 600;
-  color: #38bdf8;
+  color: var(--c-sky, #38bdf8);
   margin-bottom: 28px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -199,7 +199,7 @@ $error-clr:     #f87171;
 
   &:hover {
     border-color: $accent-border;
-    color: #38bdf8;
+    color: var(--c-sky, #38bdf8);
     background: $accent-glow;
   }
 }
@@ -253,7 +253,7 @@ $error-clr:     #f87171;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s, background 0.15s, opacity 0.15s;
 
-  &:hover { border-color: $accent-border; color: #38bdf8; }
+  &:hover { border-color: $accent-border; color: var(--c-sky, #38bdf8); }
 
   &.primary {
     background: linear-gradient(135deg, $accent 0%, $accent-dark 100%);
@@ -368,7 +368,7 @@ $error-clr:     #f87171;
   .lang-name { font-weight: 500; }
 
   &:hover  { border-color: $accent-border; color: var(--text-primary, #e6edf3); background: $accent-glow; }
-  &.active { border-color: $accent; color: #38bdf8; background: $accent-glow; font-weight: 600; }
+  &.active { border-color: $accent; color: var(--c-sky, #38bdf8); background: $accent-glow; font-weight: 600; }
 }
 
 // ── DROP ZONE ─────────────────────────────────────────────────────────────────
@@ -445,7 +445,7 @@ $error-clr:     #f87171;
   border-radius: 8px;
   font-size: 10px;
   font-weight: 800;
-  color: #38bdf8;
+  color: var(--c-sky, #38bdf8);
   letter-spacing: 0.05em;
 }
 
@@ -482,7 +482,7 @@ $error-clr:     #f87171;
   border: 1px solid rgba(248, 113, 113, 0.28);
   border-radius: 10px;
   font-size: 13px;
-  color: #fca5a5;
+  color: var(--c-red-soft, #fca5a5);
 }
 
 // ── TRANSLATE BUTTON ──────────────────────────────────────────────────────────
@@ -594,7 +594,7 @@ $error-clr:     #f87171;
   }
 
   &.is-active {
-    color: #38bdf8;
+    color: var(--c-sky, #38bdf8);
 
     .step-marker {
       border-color: $accent;
@@ -658,7 +658,7 @@ $error-clr:     #f87171;
   align-items: center;
   gap: 4px;
 
-  &.lang-pill   { border-color: $accent-border; color: #38bdf8; }
+  &.lang-pill   { border-color: $accent-border; color: var(--c-sky, #38bdf8); }
   &.pill-success{ border-color: rgba(52, 211, 153, 0.35); color: $success; }
   &.pill-warn   { border-color: rgba(251, 191, 36, 0.35);  color: $warn;  }
   &.pill-info   { border-color: rgba(129, 140, 248, 0.35); color: #a5b4fc; }
@@ -713,7 +713,7 @@ $error-clr:     #f87171;
 
   &:hover:not(:disabled) {
     border-color: $accent-border;
-    color: #38bdf8;
+    color: var(--c-sky, #38bdf8);
     background: $accent-glow;
     transform: translateY(-1px);
   }
@@ -755,7 +755,7 @@ $error-clr:     #f87171;
     border-radius: 6px;
     font-size: 10px;
     font-weight: 700;
-    color: #38bdf8;
+    color: var(--c-sky, #38bdf8);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -770,7 +770,7 @@ $error-clr:     #f87171;
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
 
-    &:hover { border-color: $accent-border; color: #38bdf8; }
+    &:hover { border-color: $accent-border; color: var(--c-sky, #38bdf8); }
   }
 }
 
@@ -855,7 +855,7 @@ $error-clr:     #f87171;
 .save-error {
   margin: 10px 0 0;
   font-size: 0.85rem;
-  color: #f87171;
+  color: var(--c-red, #f87171);
 }
 
 .download-btn {
@@ -913,7 +913,7 @@ $error-clr:     #f87171;
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 
-  &:hover { border-color: $accent-border; color: #38bdf8; }
+  &:hover { border-color: $accent-border; color: var(--c-sky, #38bdf8); }
 }
 
 // ── RESPONSIVE ────────────────────────────────────────────────────────────────
