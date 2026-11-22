@@ -49,12 +49,17 @@
     list-style: none;
 
     a {
-      color: var(--color-primary);
-      text-decoration: none;
+      // Il colore primario da solo ha contrasto 4,3:1 su entrambi i temi (soglia WCAG AA: 4,5:1,
+      // controllata dal test a11y in CI). Mescolato al colore del testo sale a più di 6:1 in chiaro
+      // e in scuro, restando riconoscibile come link.
+      color: color-mix(in srgb, var(--color-primary) 70%, var(--color-text));
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
 
       &:hover,
       &:focus-visible {
-        text-decoration: underline;
+        text-decoration-thickness: 2px;
       }
     }
 
