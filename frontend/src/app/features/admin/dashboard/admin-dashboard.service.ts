@@ -153,10 +153,35 @@ export interface AcquisitionVisit {
 export interface AcquisitionReport {
   days: number;
   totalEntries: number;
+  /** Arrivi nei `days` giorni appena precedenti, per il confronto */
+  previousTotalEntries: number;
   sources: { label: string; count: number }[];
   referrers: { label: string; count: number }[];
   entryPages: AcquisitionEntryPage[];
   recentVisits: AcquisitionVisit[];
+}
+
+// ── Contatti per provenienza (GET /analytics/lead-attribution?days=N) ──────────
+
+export interface LeadArticle {
+  path: string;
+  /** Visitatori che l'hanno letto prima di scrivere o aprire la chat */
+  leads: number;
+  visitors: number;
+  /** % di lettori diventati contatto */
+  rate: number;
+}
+
+export interface LeadAttributionReport {
+  days: number;
+  totalLeads: number;
+  previousTotalLeads: number;
+  /** contact_form / live_handoff */
+  byKind: { label: string; count: number }[];
+  bySource: { label: string; count: number }[];
+  byReferrer: { label: string; count: number }[];
+  byEntryPage: { label: string; count: number }[];
+  articles: LeadArticle[];
 }
 
 export interface ChatbotStats {
@@ -512,17 +537,37 @@ const OVERVIEW_DEFAULTS: DashboardOverviewData = {
   security: EMPTY_SECURITY,
 };
 
+/** Snapshot parziale: solo le sezioni chieste (le altre restano quelle già in pagina). */
+export interface PartialOverview {
+  data: Partial<DashboardOverviewData>;
+  /** Le sezioni chieste in questo giro */
+  requested: ReadonlySet<OverviewSection>;
+  /** Tra quelle chieste, quelle fallite */
+  failed: ReadonlySet<OverviewSection>;
+}
+
+/**
+ * Sezioni "vive", ricaricate a ogni giro di polling: chat live in attesa,
+ * contatti e visite di oggi, errori, consumo AI, lead e sicurezza. Il resto
+ * (aggregazioni pesanti sulle visite, SEO, sistema) si aggiorna più di rado.
+ */
+export const LIVE_SECTIONS: readonly OverviewSection[] = [
+  'core', 'liveHandoffs', 'serverErrors', 'aiUsage', 'leads', 'security', 'chatbotStats',
+];
+
 /**
  * Riempie i buchi con valori vuoti (così il template non deve gestire null
  * ovunque) ma tiene traccia di cosa è fallito davvero: una sezione mancante
  * o null è "fallita" anche se il server non l'ha elencata in `errors`.
+ *
+ * Con `only` considera solo quelle sezioni (aggiornamento parziale).
  */
-export function normalizeOverview(raw: RawOverview): DashboardOverview {
+export function normalizeOverview(raw: RawOverview, only?: readonly OverviewSection[]): DashboardOverview {
   const failed = new Set<OverviewSection>();
   const data = { ...OVERVIEW_DEFAULTS } as Record<OverviewSection, unknown>;
   const nullable = new Set<OverviewSection>(['systemHealth', 'systemDetails', 'systemOps']);
 
-  for (const key of Object.keys(OVERVIEW_DEFAULTS) as OverviewSection[]) {
+  for (const key of (only ?? Object.keys(OVERVIEW_DEFAULTS)) as OverviewSection[]) {
     const value = raw.sections?.[key];
     const missing = raw.errors?.includes(key) || value === undefined || (value === null && !nullable.has(key));
     if (missing) {
@@ -550,7 +595,19 @@ export class AdminDashboardService {
    */
   loadOverview(fresh = false): Observable<DashboardOverview> {
     const url = `${this.api}/stats/overview${fresh ? '?fresh=1' : ''}`;
-    return this.http.get<RawOverview>(url).pipe(map(normalizeOverview));
+    return this.http.get<RawOverview>(url).pipe(map(raw => normalizeOverview(raw)));
+  }
+
+  /** Solo alcune sezioni dell'overview (polling leggero), senza cache lato server. */
+  loadSections(keys: readonly OverviewSection[]): Observable<PartialOverview> {
+    const url = `${this.api}/stats/overview?sections=${keys.join(',')}`;
+    return this.http.get<RawOverview>(url).pipe(
+      map(raw => {
+        const { data, failed } = normalizeOverview(raw, keys);
+        const picked = Object.fromEntries(keys.map(k => [k, data[k]])) as Partial<DashboardOverviewData>;
+        return { data: picked, requested: new Set(keys), failed };
+      }),
+    );
   }
 
   getConsentStats() {
@@ -632,6 +689,10 @@ export class AdminDashboardService {
 
   getAcquisition(days = 30): Observable<AcquisitionReport> {
     return this.http.get<AcquisitionReport>(`${this.api}/analytics/acquisition?days=${days}`);
+  }
+
+  getLeadAttribution(days = 30): Observable<LeadAttributionReport> {
+    return this.http.get<LeadAttributionReport>(`${this.api}/analytics/lead-attribution?days=${days}`);
   }
 
   getToolConversion(days = 30): Observable<ToolConversionRow[]> {

@@ -1,0 +1,10 @@
+<h2 class="section-label"><mat-icon>public</mat-icon>{{ 'dashboard_ux.acquisition_section' | translate }}</h2>
+<div class="analytics-grid">
+  <app-dashboard-card titleKey="acquisition.title" descKey="acquisition.desc" icon="public" periodKey="dashboard_ux.period_selectable" [wide]="true">
+    <app-acquisition-panel />
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="lead_attribution.title" descKey="lead_attribution.desc" icon="handshake" periodKey="dashboard_ux.period_selectable" [wide]="true">
+    <app-lead-attribution-panel />
+  </app-dashboard-card>
+</div>

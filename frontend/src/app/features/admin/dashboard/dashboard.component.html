@@ -58,1037 +58,184 @@
       </div>
     }
 
-    <!-- Stats grid -->
-    <div class="stats-grid">
-      @for (stat of stats; track stat.labelKey) {
-        <a [routerLink]="stat.route" [queryParams]="stat.query ?? null" class="stat-card card">
-          <div class="stat-card__icon" [style.background]="stat.color + '22'" [style.color]="stat.color">
-            <mat-icon>{{ stat.icon }}</mat-icon>
-          </div>
-          <div class="stat-card__content">
-            <p class="stat-card__value">{{ stat.value ?? '—' }}</p>
-            <p class="stat-card__label text-muted">{{ stat.labelKey | translate }}</p>
-            @if (stat.spark) {
-              <!-- Ultimi 7 giorni, dati reali (contatti/visite per giorno). -->
-              <div class="stat-mini-chart" aria-hidden="true" [title]="'admin.last_7_days' | translate">
-                @for (bar of stat.spark; track $index) {
-                  <span class="stat-mini-chart__bar" [style.height.%]="bar" [style.background]="stat.color"></span>
-                }
-              </div>
-            }
-          </div>
-        </a>
+    <!-- Indice: porta alle sezioni (quelle sotto la piega si caricano quando ci si arriva). -->
+    <nav class="dash-nav" [attr.aria-label]="'dashboard_ux.nav_label' | translate">
+      @for (item of navItems; track item.id) {
+        <button type="button" class="dash-nav__link" (click)="scrollTo(item.id)">{{ item.labelKey | translate }}</button>
       }
-    </div>
+    </nav>
 
-    <!-- ── Chat live: rientro nelle sessioni aperte ────────────────────────
-         Senza questa card l'unico modo per tornare in una chat da cui si è
-         usciti sarebbe ritrovare la vecchia email di notifica. -->
-    <section class="card live-chat-card" [class.live-chat-card--empty]="liveHandoffs.length === 0">
-      <div class="live-chat-card__header">
-        <div class="live-chat-card__title">
-          <mat-icon>support_agent</mat-icon>
-          <h2>{{ 'live_handoff.card_title' | translate }}</h2>
-        </div>
-        @if (liveHandoffActive.length > 0) {
-          <span class="live-chat-badge live-chat-badge--live">
-            {{ liveHandoffActive.length }} {{ 'live_handoff.card_badge_active' | translate }}
-          </span>
-        }
-        @if (liveHandoffWaiting.length > 0) {
-          <span class="live-chat-badge live-chat-badge--waiting">
-            {{ liveHandoffWaiting.length }} {{ 'live_handoff.card_badge_waiting' | translate }}
-          </span>
+    <div id="dash-overview" class="dash-anchor">
+      <!-- Stats grid -->
+      <div class="stats-grid">
+        @for (stat of stats; track stat.labelKey) {
+          <a [routerLink]="stat.route" [queryParams]="stat.query ?? null" class="stat-card card">
+            <div class="stat-card__icon" [style.background]="stat.color + '22'" [style.color]="stat.color">
+              <mat-icon>{{ stat.icon }}</mat-icon>
+            </div>
+            <div class="stat-card__content">
+              <p class="stat-card__value">{{ stat.value ?? '—' }}</p>
+              <p class="stat-card__label text-muted">{{ stat.labelKey | translate }}</p>
+              @if (stat.spark) {
+                <!-- Ultimi 7 giorni, dati reali (contatti/visite per giorno). -->
+                <div class="stat-mini-chart" aria-hidden="true" [title]="'admin.last_7_days' | translate">
+                  @for (bar of stat.spark; track $index) {
+                    <span class="stat-mini-chart__bar" [style.height.%]="bar" [style.background]="stat.color"></span>
+                  }
+                </div>
+              }
+            </div>
+          </a>
         }
       </div>
 
-      @if (liveHandoffs.length === 0) {
-        <p class="live-chat-card__empty text-muted">{{ 'live_handoff.card_empty' | translate }}</p>
-      } @else {
-        <ul class="live-chat-list">
-          @for (session of liveHandoffs; track session.requestId) {
-            <li class="live-chat-item" [class.live-chat-item--live]="session.status === 'live'">
-              <div class="live-chat-item__main">
-                <span class="live-chat-item__status">{{ liveHandoffStatusKey(session) | translate }}</span>
-                @if (session.lastUserMessage) {
-                  <p class="live-chat-item__msg">{{ session.lastUserMessage }}</p>
-                }
-                <span class="live-chat-item__time text-muted">{{ session.requestedAt | date:'dd/MM HH:mm' }}</span>
-              </div>
-              <a class="live-chat-item__cta" [routerLink]="liveHandoffRoute(session)">
-                {{ 'live_handoff.card_open' | translate }}
-                <mat-icon>arrow_forward</mat-icon>
-              </a>
-            </li>
+      <!-- ── Chat live: rientro nelle sessioni aperte ────────────────────────
+           Senza questa card l'unico modo per tornare in una chat da cui si è
+           usciti sarebbe ritrovare la vecchia email di notifica. -->
+      <section class="card live-chat-card" [class.live-chat-card--empty]="liveHandoffs.length === 0">
+        <div class="live-chat-card__header">
+          <div class="live-chat-card__title">
+            <mat-icon>support_agent</mat-icon>
+            <h2>{{ 'live_handoff.card_title' | translate }}</h2>
+          </div>
+          @if (liveHandoffActive.length > 0) {
+            <span class="live-chat-badge live-chat-badge--live">
+              {{ liveHandoffActive.length }} {{ 'live_handoff.card_badge_active' | translate }}
+            </span>
           }
-        </ul>
-      }
-    </section>
-
-    <!-- ── Lead: pipeline dei contatti e follow-up ── -->
-    <div class="analytics-grid">
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'leads.title' | translate }}</h2>
-            <p class="text-muted">{{ 'leads.desc' | translate }}</p>
-          </div>
-          <mat-icon>handshake</mat-icon>
-        </div>
-        <app-leads-panel [data]="leads" [failed]="isFailed('leads')" />
-      </section>
-    </div>
-
-    <!-- ── Salute operativa: costi AI, errori del server, backup e risorse ── -->
-    <h2 class="section-label"><mat-icon>monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}</h2>
-    <div class="analytics-grid">
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'ai_usage.title' | translate }}</h2>
-            <p class="text-muted">{{ 'ai_usage.desc' | translate }}</p>
-          </div>
-          <mat-icon>bolt</mat-icon>
-        </div>
-        <app-ai-usage-panel [data]="aiUsage" [failed]="isFailed('aiUsage')" />
-      </section>
-
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'server_errors.title' | translate }}</h2>
-            <p class="text-muted">{{ 'server_errors.desc' | translate }}</p>
-          </div>
-          <mat-icon>bug_report</mat-icon>
-        </div>
-        <app-server-errors-panel [data]="serverErrors" [failed]="isFailed('serverErrors')" (changed)="refresh()" />
-      </section>
-
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'server_health.title' | translate }}</h2>
-            <p class="text-muted">{{ 'server_health.desc' | translate }}</p>
-          </div>
-          <mat-icon>backup</mat-icon>
-        </div>
-        <app-server-health-panel [data]="serverHealth" [failed]="isFailed('serverHealth')" />
-      </section>
-    </div>
-
-    <!-- ── Contenuti: traduzioni, pubblicazioni programmate, link rotti ── -->
-    <h2 class="section-label"><mat-icon>edit_note</mat-icon>{{ 'content_health.section' | translate }}</h2>
-    <div class="analytics-grid">
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'translation_health.title' | translate }}</h2>
-            <p class="text-muted">{{ 'translation_health.desc' | translate }}</p>
-          </div>
-          <mat-icon>translate</mat-icon>
-        </div>
-        <app-translation-health-panel [data]="translationHealth" [failed]="isFailed('translationHealth')" />
-      </section>
-
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'scheduled_posts.title' | translate }}</h2>
-            <p class="text-muted">{{ 'scheduled_posts.desc' | translate }}</p>
-          </div>
-          <mat-icon>schedule</mat-icon>
-        </div>
-        <app-scheduled-posts-panel [posts]="scheduledPosts" [failed]="isFailed('scheduledPosts')" />
-      </section>
-
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'not_found.title' | translate }}</h2>
-            <p class="text-muted">{{ 'not_found.desc' | translate }}</p>
-          </div>
-          <mat-icon>link_off</mat-icon>
-        </div>
-        <app-not-found-panel [data]="notFound" [failed]="isFailed('notFound')" (changed)="refresh()" />
-      </section>
-
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'security_panel.title' | translate }}</h2>
-            <p class="text-muted">{{ 'security_panel.desc' | translate }}</p>
-          </div>
-          <mat-icon>shield</mat-icon>
-        </div>
-        <app-security-panel [data]="security" [failed]="isFailed('security')" (changed)="refresh()" />
-      </section>
-    </div>
-
-    <div class="analytics-grid">
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.recent_contacts_chart' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.last_7_days' | translate }}</p>
-          </div>
-          <mat-icon>bar_chart</mat-icon>
-        </div>
-
-        <div class="contact-chart" aria-hidden="true">
-          @for (bar of contactBars; track bar.date) {
-            <div class="contact-chart__item">
-              <span class="contact-chart__value">{{ bar.value }}</span>
-              <div class="contact-chart__bar-wrap">
-                <span class="contact-chart__bar" [style.height]="contactBarHeight(bar.value)"></span>
-              </div>
-              <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
-            </div>
-          } @empty {
-            <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
+          @if (liveHandoffWaiting.length > 0) {
+            <span class="live-chat-badge live-chat-badge--waiting">
+              {{ liveHandoffWaiting.length }} {{ 'live_handoff.card_badge_waiting' | translate }}
+            </span>
           }
         </div>
-      </section>
 
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.visits_chart' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.public_traffic' | translate }}</p>
-          </div>
-          <mat-icon>show_chart</mat-icon>
-        </div>
-
-        <div class="visit-summary">
-          <div class="visit-summary__item">
-            <strong>{{ totalViews }}</strong>
-            <span class="text-muted">{{ 'admin.visits' | translate }}</span>
-          </div>
-          <div class="visit-summary__item">
-            <strong>{{ uniqueVisitors }}</strong>
-            <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
-          </div>
-        </div>
-
-        <div class="contact-chart contact-chart--visits" aria-hidden="true">
-          @for (bar of visitBars; track bar.date) {
-            <div class="contact-chart__item">
-              <span class="contact-chart__value">{{ bar.value }}</span>
-              <div class="contact-chart__bar-wrap">
-                <span class="contact-chart__bar contact-chart__bar--visits" [style.height]="visitBarHeight(bar.value)"></span>
-              </div>
-              <span class="contact-chart__label text-muted">{{ bar.date | date:'dd/MM' }}</span>
-            </div>
-          } @empty {
-            <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
-          }
-        </div>
-      </section>
-
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.content_mix' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.content_status' | translate }}</p>
-          </div>
-          <mat-icon>donut_large</mat-icon>
-        </div>
-
-        <div class="content-mix">
-          <div class="content-mix__bar" aria-hidden="true">
-            <span class="content-mix__segment content-mix__segment--published" [style.width.%]="publishedPercent"></span>
-            <span class="content-mix__segment content-mix__segment--drafts" [style.width.%]="draftPercent"></span>
-          </div>
-
-          <div class="content-mix__legend">
-            <div class="mix-item">
-              <span class="mix-item__dot mix-item__dot--published"></span>
-              <div>
-                <strong>{{ publishedPosts }}</strong>
-                <p class="text-muted">{{ 'admin.published' | translate }}</p>
-              </div>
-            </div>
-            <div class="mix-item">
-              <span class="mix-item__dot mix-item__dot--drafts"></span>
-              <div>
-                <strong>{{ draftPosts }}</strong>
-                <p class="text-muted">{{ 'admin.drafts' | translate }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Top posts by views -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.top_posts_title' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.top_posts_desc_card' | translate }}</p>
-          </div>
-          <mat-icon>trending_up</mat-icon>
-        </div>
-
-        @if (topPosts.length) {
-          <ul class="top-posts-list">
-            @for (post of topPosts; track post._id) {
-              <li class="top-posts-list__item">
-                <a [routerLink]="['/blog', post.slug]" target="_blank" rel="noopener" class="top-posts-list__title">{{ post.title }}</a>
-                <span class="top-posts-list__views">
-                  <mat-icon style="font-size:14px;height:14px;width:14px;vertical-align:middle">visibility</mat-icon>&nbsp;{{ post.viewCount ?? 0 }}
-                </span>
+        @if (liveHandoffs.length === 0) {
+          <p class="live-chat-card__empty text-muted">{{ 'live_handoff.card_empty' | translate }}</p>
+        } @else {
+          <ul class="live-chat-list">
+            @for (session of liveHandoffs; track session.requestId) {
+              <li class="live-chat-item" [class.live-chat-item--live]="session.status === 'live'">
+                <div class="live-chat-item__main">
+                  <span class="live-chat-item__status">{{ liveHandoffStatusKey(session) | translate }}</span>
+                  @if (session.lastUserMessage) {
+                    <p class="live-chat-item__msg">{{ session.lastUserMessage }}</p>
+                  }
+                  <span class="live-chat-item__time text-muted">{{ session.requestedAt | date:'dd/MM HH:mm' }}</span>
+                </div>
+                <a class="live-chat-item__cta" [routerLink]="liveHandoffRoute(session)">
+                  {{ 'live_handoff.card_open' | translate }}
+                  <mat-icon>arrow_forward</mat-icon>
+                </a>
               </li>
             }
           </ul>
-        } @else {
-          <p class="text-muted" style="margin-top:1rem;">{{ 'admin.top_posts_empty' | translate }}</p>
         }
       </section>
+
+      <!-- ── Lead: pipeline dei contatti e follow-up ── -->
+      <div class="analytics-grid">
+        <app-dashboard-card titleKey="leads.title" descKey="leads.desc" icon="handshake">
+          <app-leads-panel [data]="leads" [failed]="isFailed('leads')" />
+        </app-dashboard-card>
+      </div>
     </div>
 
-    <!-- Consent Stats -->
-    <div class="analytics-grid">
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.consent.title' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.consent.desc' | translate }}</p>
-          </div>
-          <mat-icon>gavel</mat-icon>
-        </div>
-
-        <div class="consent-summary">
-          <div class="consent-item">
-            <strong>{{ consentTotal }}</strong>
-            <span class="text-muted">{{ 'admin.consent.total' | translate }}</span>
-          </div>
-          <div class="consent-item">
-            <strong>{{ (consentAnalyticsRate * 100) | number:'1.0-0' }}%</strong>
-            <span class="text-muted">{{ 'consent.analytics' | translate }}</span>
-          </div>
-          <div class="consent-item">
-            <strong>{{ (consentMarketingRate * 100) | number:'1.0-0' }}%</strong>
-            <span class="text-muted">{{ 'consent.marketing' | translate }}</span>
-          </div>
-          <div class="consent-item">
-            <strong>{{ (consentPreferencesRate * 100) | number:'1.0-0' }}%</strong>
-            <span class="text-muted">{{ 'consent.preferences' | translate }}</span>
-          </div>
-        </div>
-        <button type="button" class="btn" (click)="refresh()">{{ 'admin.refresh_data' | translate }}</button>
-      </section>
+    <div id="dash-ops" class="dash-anchor">
+      <app-ops-section
+        [aiUsage]="aiUsage"
+        [serverErrors]="serverErrors"
+        [serverHealth]="serverHealth"
+        [failed]="failedSections"
+        (changed)="refresh()"
+      />
     </div>
 
-    <!-- ── Advanced Visitor Analytics ─────────────────────────────────── -->
-    <h2 class="section-label">{{ 'admin.visitor_analytics' | translate }}</h2>
-
-    <!-- ── Monthly vs Total Stats ──────────────────────────────────────── -->
-    <div class="analytics-grid adv-top-grid">
-
-      <!-- Monthly vs Total Views -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.monthly_vs_total_views' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.monthly_views_desc' | translate }}</p>
-          </div>
-          <mat-icon>calendar_month</mat-icon>
-        </div>
-        <div class="visitor-overview">
-          <div class="visitor-overview__item">
-            <strong>{{ totalViews }}</strong>
-            <span class="text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item visitor-overview__item--accent">
-            <strong>{{ monthlyViews }}</strong>
-            <span class="text-muted">{{ 'admin.monthly_views_this_month' | translate }}</span>
-          </div>
-          @if (lastResetAt) {
-            <div class="visitor-overview__item">
-              <strong class="visitor-overview__small">{{ lastResetAt | date:'dd/MM/yy' }}</strong>
-              <span class="text-muted">{{ 'admin.last_reset' | translate }}</span>
-            </div>
-          }
-        </div>
-        <button
-          type="button"
-          class="reset-stats-btn"
-          [disabled]="resettingStats"
-          (click)="resetMonthlyStats()">
-          <mat-icon [class.spin]="resettingStats">{{ resettingStats ? 'sync' : 'restart_alt' }}</mat-icon>
-          {{ resettingStats ? ('common.loading' | translate) : ('admin.reset_monthly_stats' | translate) }}
-        </button>
-        <button
-          type="button"
-          class="reset-stats-btn reset-stats-btn--csv"
-          (click)="downloadCsv()">
-          <mat-icon>download</mat-icon>
-          {{ 'admin.export_csv' | translate }}
-        </button>
-      </section>
-
-      <!-- Devices: monthly donut + total as plain numbers -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.device_breakdown' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.device_breakdown_desc' | translate }}</p>
-          </div>
-          <mat-icon>devices</mat-icon>
-        </div>
-        <p class="stats-sublabel text-muted">{{ 'admin.monthly_views_this_month' | translate }}</p>
-        <app-donut-chart [items]="statsMonthlyDevices" [colors]="deviceColors" />
-        <div class="stats-totals">
-          <span class="stats-totals__label text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
-          <div class="stats-totals__row">
-            @for (item of statsDevices; track item.label) {
-              <span class="stats-totals__item">
-                <strong>{{ item.count }}</strong>
-                <span class="text-muted">{{ item.label }}</span>
-              </span>
-            }
-            @if (!statsDevices.length) {
-              <span class="text-muted">—</span>
-            }
-          </div>
-        </div>
-      </section>
+    <div id="dash-content" class="dash-anchor">
+      <app-content-section
+        [translationHealth]="translationHealth"
+        [scheduledPosts]="scheduledPosts"
+        [notFound]="notFound"
+        [security]="security"
+        [failed]="failedSections"
+        (changed)="refresh()"
+      />
     </div>
 
-    <!-- Locations: monthly bars + total as plain numbers -->
-    <div class="analytics-grid adv-bottom-grid">
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.top_locations' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.top_locations_desc' | translate }}</p>
-          </div>
-          <mat-icon>location_on</mat-icon>
-        </div>
-        <p class="stats-sublabel text-muted">{{ 'admin.monthly_views_this_month' | translate }}</p>
-        <div class="h-bars">
-          @for (item of statsMonthlyLocations; track item.label; let i = $index) {
-            <div class="h-bar-row">
-              <span class="h-bar-label text-muted">{{ item.label }}</span>
-              <div class="h-bar-track">
-                <div class="h-bar-fill h-bar-fill--month" [style.width.%]="statsMonthlyLocationBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
-              </div>
-              <span class="h-bar-count">{{ item.count }}</span>
-            </div>
-          }
-          @if (!statsMonthlyLocations.length) {
-            <p class="text-muted h-bars__empty">—</p>
-          }
-        </div>
-        <div class="stats-totals stats-totals--locations">
-          <span class="stats-totals__label text-muted">{{ 'admin.total_views_all_time' | translate }}</span>
-          @for (item of statsLocations; track item.label; let i = $index) {
-            <div class="stats-totals__loc-row">
-              <span class="stats-totals__loc-dot" [style.background]="countryColors[i % countryColors.length]"></span>
-              <span class="text-muted">{{ item.label }}</span>
-              <strong class="stats-totals__loc-count">{{ item.count }}</strong>
-            </div>
-          }
-          @if (!statsLocations.length) {
-            <span class="text-muted">—</span>
-          }
-        </div>
-      </section>
-
-      <!-- OS breakdown: donut chart -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.os_breakdown' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.os_breakdown_desc' | translate }}</p>
-          </div>
-          <mat-icon>computer</mat-icon>
-        </div>
-        <app-donut-chart [items]="osBreakdown" [colors]="browserColors" />
-      </section>
+    <!-- Da qui in giù le sezioni si creano quando arrivano a schermo (o quando il browser è libero). -->
+    <div id="dash-activity" class="dash-anchor">
+      @defer (on viewport; prefetch on idle) {
+        <app-activity-section
+          [contactBars]="contactBars"
+          [visitBars]="visitBars"
+          [totalViews]="totalViews"
+          [uniqueVisitors]="uniqueVisitors"
+          [publishedPosts]="publishedPosts"
+          [draftPosts]="draftPosts"
+          [topPosts]="topPosts"
+          [consent]="consent"
+          (refresh)="refresh()"
+        />
+      } @placeholder {
+        <div class="dash-placeholder" aria-hidden="true"></div>
+      }
     </div>
 
-    <div class="analytics-grid adv-top-grid">
-      <!-- Visitor overview card -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.visitor_overview' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.visitor_overview_desc' | translate }}</p>
-          </div>
-          <mat-icon>people</mat-icon>
-        </div>
-        <div class="visitor-overview">
-          <div class="visitor-overview__item">
-            <strong>{{ todayVisitors }}</strong>
-            <span class="text-muted">{{ 'admin.today_visitors' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item">
-            <strong>{{ totalViews }}</strong>
-            <span class="text-muted">{{ 'admin.visits' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item">
-            <strong>{{ uniqueVisitors }}</strong>
-            <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Traffic sources: donut chart -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.traffic_sources' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.traffic_sources_desc' | translate }}</p>
-          </div>
-          <mat-icon>alt_route</mat-icon>
-        </div>
-        <app-donut-chart [items]="trafficSources" [colors]="trafficColors" />
-      </section>
+    <div id="dash-visitors" class="dash-anchor">
+      @defer (on viewport; prefetch on idle) {
+        <app-visitors-section
+          [stats]="visitorStats"
+          [resetting]="resettingStats"
+          (resetMonthly)="resetMonthlyStats()"
+          (downloadCsv)="downloadCsv()"
+        />
+      } @placeholder {
+        <div class="dash-placeholder" aria-hidden="true"></div>
+      }
     </div>
 
-    <div class="analytics-grid adv-bottom-grid">
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.top_locations' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.top_locations_desc' | translate }}</p>
-          </div>
-          <mat-icon>location_on</mat-icon>
-        </div>
-        <div class="h-bars h-bars--locations">
-          @for (item of topLocations; track item.label; let i = $index) {
-            <div class="h-bar-row h-bar-row--locations">
-              <span class="h-bar-label text-muted">{{ item.label }}</span>
-              <div class="h-bar-track">
-                <div class="h-bar-fill h-bar-fill--location" [style.width.%]="locationBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
-              </div>
-              <span class="h-bar-count">{{ item.count }}</span>
-            </div>
-          }
-          @if (!topLocations.length) {
-            <p class="text-muted h-bars__empty">—</p>
-          }
-        </div>
-      </section>
-
-      <!-- Top countries: horizontal bars -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.top_countries' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.top_countries_desc' | translate }}</p>
-          </div>
-          <mat-icon>public</mat-icon>
-        </div>
-        <div class="h-bars">
-          @for (item of topCountries; track item.label; let i = $index) {
-            <div class="h-bar-row">
-              <span class="h-bar-label text-muted">{{ item.label }}</span>
-              <div class="h-bar-track">
-                <div class="h-bar-fill" [style.width.%]="countryBarWidth(item.count)" [style.background]="countryColors[i % countryColors.length]"></div>
-              </div>
-              <span class="h-bar-count">{{ item.count }}</span>
-            </div>
-          }
-          @if (!topCountries.length) {
-            <p class="text-muted h-bars__empty">—</p>
-          }
-        </div>
-      </section>
-
-      <!-- Browser breakdown: horizontal bars -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.browser_breakdown' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.browser_breakdown_desc' | translate }}</p>
-          </div>
-          <mat-icon>web</mat-icon>
-        </div>
-        <div class="h-bars">
-          @for (item of browserBreakdown; track item.label; let i = $index) {
-            <div class="h-bar-row">
-              <span class="h-bar-label text-muted">{{ item.label }}</span>
-              <div class="h-bar-track">
-                <div class="h-bar-fill h-bar-fill--browser" [style.width.%]="browserBarWidth(item.count)" [style.background]="browserColors[i % browserColors.length]"></div>
-              </div>
-              <span class="h-bar-count">{{ item.count }}</span>
-            </div>
-          }
-          @if (!browserBreakdown.length) {
-            <p class="text-muted h-bars__empty">—</p>
-          }
-        </div>
-      </section>
+    <div id="dash-acquisition" class="dash-anchor">
+      @defer (on viewport; prefetch on idle) {
+        <app-acquisition-section />
+      } @placeholder {
+        <div class="dash-placeholder" aria-hidden="true"></div>
+      }
     </div>
 
-    <!-- ── Monthly trend + Chatbot stats ──────────────────────────────── -->
-    <div class="analytics-grid adv-bottom-grid">
-
-      <!-- Monthly trend bar chart -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.monthly_trend' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.monthly_trend_desc' | translate }}</p>
-          </div>
-          <mat-icon>bar_chart</mat-icon>
-        </div>
-        <div class="h-bars">
-          @for (entry of trendData; track entry.month; let last = $last) {
-            <div class="h-bar-row">
-              <span class="h-bar-label text-muted">{{ entry.month }}</span>
-              <div class="h-bar-track">
-                <div
-                  class="h-bar-fill"
-                  [class.h-bar-fill--month]="last"
-                  [style.width.%]="trendBarWidth(entry.views)"
-                  [style.background]="last ? '#6366f1' : '#14b8a6'">
-                </div>
-              </div>
-              <span class="h-bar-count">{{ entry.views }}</span>
-            </div>
-          }
-          @if (!trendData.length) {
-            <p class="text-muted h-bars__empty">—</p>
-          }
-        </div>
-      </section>
-
-      <!-- Chatbot stats -->
-      <section class="analytics-card card">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.chatbot_stats' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.chatbot_stats_desc' | translate }}</p>
-          </div>
-          <mat-icon>smart_toy</mat-icon>
-        </div>
-        <div class="visitor-overview">
-          <div class="visitor-overview__item visitor-overview__item--accent">
-            <strong>{{ chatbotStats.totalSessions }}</strong>
-            <span class="text-muted">{{ 'admin.chatbot_total_sessions' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item">
-            <strong>{{ chatbotStats.totalMessages }}</strong>
-            <span class="text-muted">{{ 'admin.chatbot_total_messages' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item">
-            <strong>{{ chatbotStats.interactionsToday }}</strong>
-            <span class="text-muted">{{ 'admin.chatbot_today' | translate }}</span>
-          </div>
-        </div>
-        <div class="visitor-overview" style="margin-top:0.75rem;">
-          <div class="visitor-overview__item">
-            <strong>{{ chatbotStats.sessionsThisMonth }}</strong>
-            <span class="text-muted">{{ 'admin.chatbot_this_month' | translate }}</span>
-          </div>
-          <div class="visitor-overview__item" [class.visitor-overview__item--warn]="chatbotStats.fallbackRepliesToday > 0" [title]="'admin.chatbot_fallback_desc' | translate">
-            <strong>{{ chatbotStats.fallbackRepliesToday }}</strong>
-            <span class="text-muted">{{ 'admin.chatbot_fallback_today' | translate }}</span>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- ── Top Pages ────────────────────────────────────────────────────── -->
-    <div class="analytics-grid adv-bottom-grid">
-      <section class="analytics-card card" style="grid-column: 1 / -1;">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.top_pages' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.top_pages_desc' | translate }}</p>
-          </div>
-          <mat-icon>pages</mat-icon>
-        </div>
-        <div class="h-bars">
-          @for (page of topPages; track page.label; let i = $index) {
-            <div class="h-bar-row">
-              <span class="h-bar-label text-muted" style="font-family:monospace;font-size:0.8rem;">{{ page.label }}</span>
-              <div class="h-bar-track">
-                <div class="h-bar-fill" [style.width.%]="topPageBarWidth(page.count)" [style.background]="countryColors[i % countryColors.length]"></div>
-              </div>
-              <span class="h-bar-count">{{ page.count }}</span>
-            </div>
-          }
-          @if (!topPages.length) {
-            <p class="text-muted h-bars__empty">—</p>
-          }
-        </div>
-      </section>
-    </div>
-
-    <!-- ── Provenienza: da dove arrivano i visitatori e su quale pagina entrano ── -->
-    <div class="analytics-grid adv-bottom-grid">
-      <section class="analytics-card card" style="grid-column: 1 / -1;">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'acquisition.title' | translate }}</h2>
-            <p class="text-muted">{{ 'acquisition.desc' | translate }}</p>
-          </div>
-          <mat-icon>public</mat-icon>
-        </div>
-        <app-acquisition-panel />
-      </section>
-    </div>
-
-    <!-- ── Tool → Lead: quanti utilizzatori di ogni tool /lab diventano un contatto o una chat live ── -->
-    <div class="analytics-grid adv-bottom-grid">
-      <section class="analytics-card card" style="grid-column: 1 / -1;">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.tool_conversion' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.tool_conversion_desc' | translate }}</p>
-          </div>
-          <mat-icon>trending_up</mat-icon>
-        </div>
-        <div class="h-bars">
-          <div class="tool-conv-row tool-conv-row--head text-muted">
-            <span>{{ 'admin.tool_conversion_col_tool' | translate }}</span>
-            <span>{{ 'admin.tool_conversion_col_visitors' | translate }}</span>
-            <span>{{ 'admin.tool_conversion_col_leads' | translate }}</span>
-            <span>{{ 'admin.tool_conversion_col_rate' | translate }}</span>
-          </div>
-          @for (row of toolConversion; track row.tool) {
-            <div class="tool-conv-row">
-              <span class="h-bar-label" style="font-family:monospace;font-size:0.8rem;">{{ row.tool }}</span>
-              <span>{{ row.uniqueVisitors }}</span>
-              <span>{{ row.becameLead }}</span>
-              <span class="tool-conv-rate">{{ row.conversionRate }}%</span>
-            </div>
-          }
-          @if (!toolConversion.length) {
-            <p class="text-muted h-bars__empty">—</p>
-          }
-        </div>
-      </section>
-    </div>
-
-    <!-- ── SEO – Google Search Console (nascosta finché non configurata) ── -->
+    <!-- SEO – Google Search Console: nascosta finché non è configurata. -->
     @if (gscSummary.configured) {
-      <h2 class="section-label">{{ 'admin.seo_title' | translate }}</h2>
-      <div class="analytics-grid adv-bottom-grid">
-        <section class="analytics-card card" style="grid-column: 1 / -1;">
-          <div class="analytics-card__header">
-            <div>
-              <h2>{{ 'admin.seo_title' | translate }}</h2>
-              <p class="text-muted">{{ 'admin.seo_desc' | translate }}</p>
-            </div>
-            <mat-icon>search</mat-icon>
-          </div>
-          <div class="visitor-overview" style="margin-bottom:1.25rem;">
-            <div class="visitor-overview__item visitor-overview__item--accent">
-              <strong>{{ gscSummary.clicks | number }}</strong>
-              <span class="text-muted">{{ 'admin.seo_clicks' | translate }}</span>
-            </div>
-            <div class="visitor-overview__item">
-              <strong>{{ gscSummary.impressions | number }}</strong>
-              <span class="text-muted">{{ 'admin.seo_impressions' | translate }}</span>
-            </div>
-            <div class="visitor-overview__item">
-              <strong>{{ gscSummary.avgPosition > 0 ? gscSummary.avgPosition : '—' }}</strong>
-              <span class="text-muted">{{ 'admin.seo_avg_position' | translate }}</span>
-            </div>
-            <div class="visitor-overview__item">
-              <strong>{{ gscSummary.avgCtr > 0 ? (gscSummary.avgCtr + '%') : '—' }}</strong>
-              <span class="text-muted">{{ 'admin.seo_avg_ctr' | translate }}</span>
-            </div>
-          </div>
-          @if (gscSummary.topQueries.length) {
-            <div class="h-bars">
-              @for (q of gscSummary.topQueries; track q.query; let i = $index) {
-                <div class="h-bar-row">
-                  <span class="h-bar-label text-muted" style="font-family:monospace;font-size:0.8rem;">{{ q.query }}</span>
-                  <div class="h-bar-track">
-                    <div
-                      class="h-bar-fill"
-                      [style.width.%]="gscMaxClicks > 0 ? (q.clicks / gscMaxClicks * 100) : 0"
-                      [style.background]="countryColors[i % countryColors.length]">
-                    </div>
-                  </div>
-                  <span class="h-bar-count">
-                    {{ q.clicks }}&nbsp;<span class="text-muted" style="font-size:0.75rem">click · pos {{ q.position }}</span>
-                  </span>
-                </div>
-              }
-            </div>
-          } @else {
-            <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
-          }
-          @if (gscSummary.topPages?.length) {
-            <h3 class="gsc-subtitle">{{ 'acquisition.gsc_top_pages' | translate }}</h3>
-            <div class="h-bars">
-              @for (p of gscSummary.topPages; track p.page; let i = $index) {
-                <div class="h-bar-row">
-                  <span class="h-bar-label text-muted" style="font-family:monospace;font-size:0.8rem;" [title]="p.page">{{ gscPagePath(p.page) }}</span>
-                  <div class="h-bar-track">
-                    <div
-                      class="h-bar-fill"
-                      [style.width.%]="gscMaxPageClicks > 0 ? (p.clicks / gscMaxPageClicks * 100) : 0"
-                      [style.background]="countryColors[i % countryColors.length]">
-                    </div>
-                  </div>
-                  <span class="h-bar-count">
-                    {{ p.clicks }}&nbsp;<span class="text-muted" style="font-size:0.75rem">click · {{ p.impressions }} impr. · pos {{ p.position }}</span>
-                  </span>
-                </div>
-              }
-            </div>
-          }
-        </section>
+      <div id="dash-seo" class="dash-anchor">
+        @defer (on viewport; prefetch on idle) {
+          <app-seo-section [gsc]="gscSummary" />
+        } @placeholder {
+          <div class="dash-placeholder" aria-hidden="true"></div>
+        }
       </div>
     }
 
-    <!-- ── Utility Admin ─────────────────────────────────────────────── -->
-    <h2 class="section-label">{{ 'admin.utility_section' | translate }}</h2>
-    <mat-accordion class="utility-accordion" multi>
+    <div id="dash-utility" class="dash-anchor">
+      @defer (on viewport; prefetch on idle) {
+        <app-utility-section
+          [systemHealth]="systemHealth"
+          [systemDetails]="systemDetails"
+          [systemOps]="systemOps"
+          [adminName]="auth.currentUser()?.name ?? null"
+          [adminEmail]="auth.currentUser()?.email ?? null"
+          [unreadCount]="unreadCount"
+          [auditCount]="auditLogs.length"
+          (refresh)="refresh()"
+          (loadSessions)="loadTodaySessions()"
+          (downloadCsv)="downloadCsv()"
+          (resetMonthly)="resetMonthlyStats()"
+        />
+      } @placeholder {
+        <div class="dash-placeholder" aria-hidden="true"></div>
+      }
+    </div>
 
-      <!-- 1. Deployment -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon class="utility-panel-icon">dns</mat-icon>
-            {{ 'admin.utility_deployment' | translate }}
-          </mat-panel-title>
-          <mat-panel-description>{{ 'admin.utility_deployment_desc' | translate }}</mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <div class="utility-kv-grid">
-          <div class="utility-kv">
-            <span class="text-muted">{{ 'admin.system_status' | translate }}</span>
-            <strong [class.utility-status--ok]="systemHealth?.ok" [class.utility-status--warn]="!systemHealth?.ok">
-              {{ systemHealth?.ok ? 'OK' : '—' }}
-            </strong>
-          </div>
-          <div class="utility-kv">
-            <span class="text-muted">{{ 'admin.system_version' | translate }}</span>
-            <strong>{{ systemDetails?.version || systemHealth?.version || '—' }}</strong>
-          </div>
-          <div class="utility-kv">
-            <span class="text-muted">{{ 'admin.system_env' | translate }}</span>
-            <strong>{{ systemDetails?.environment || systemHealth?.environment || '—' }}</strong>
-          </div>
-          <div class="utility-kv">
-            <span class="text-muted">{{ 'admin.utility_started_at' | translate }}</span>
-            <strong>{{ (systemDetails?.startedAt || systemHealth?.startedAt) | date:'dd/MM/yyyy HH:mm' }}</strong>
-          </div>
-        </div>
-
-        <div class="utility-tags" style="margin-top: 1rem">
-          <span class="utility-tag">{{ systemDetails?.service || systemHealth?.service || 'backend' }}</span>
-          @if (systemDetails?.commitSha) {
-            <span class="utility-tag">{{ systemDetails?.commitSha?.slice(0, 8) }}</span>
-          }
-          @if (systemDetails?.branch) {
-            <span class="utility-tag">{{ systemDetails?.branch }}</span>
-          }
-          @if (systemDetails?.railway?.serviceName) {
-            <span class="utility-tag">{{ systemDetails?.railway?.serviceName }}</span>
-          }
-        </div>
-      </mat-expansion-panel>
-
-      <!-- 2. Security -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon class="utility-panel-icon">shield</mat-icon>
-            {{ 'admin.utility_security' | translate }}
-          </mat-panel-title>
-          <mat-panel-description>{{ 'admin.utility_security_desc' | translate }}</mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <div class="utility-stack">
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.utility_admin_user' | translate }}</span>
-            <strong>{{ auth.currentUser()?.name || 'Admin' }}</strong>
-          </div>
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.utility_admin_email' | translate }}</span>
-            <strong>{{ auth.currentUser()?.email || '—' }}</strong>
-          </div>
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.unread_contacts' | translate }}</span>
-            <strong>{{ unreadCount }}</strong>
-          </div>
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.audit_log' | translate }}</span>
-            <strong>{{ auditLogs.length }}</strong>
-          </div>
-        </div>
-      </mat-expansion-panel>
-
-      <!-- 3. Interruttori del sito (feature flag + manutenzione) -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon class="utility-panel-icon">toggle_on</mat-icon>
-            {{ 'feature_flags.title' | translate }}
-          </mat-panel-title>
-          <mat-panel-description>{{ 'feature_flags.desc' | translate }}</mat-panel-description>
-        </mat-expansion-panel-header>
-        <app-feature-flags-panel />
-      </mat-expansion-panel>
-
-      <!-- 4. Quick Actions -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon class="utility-panel-icon">build_circle</mat-icon>
-            {{ 'admin.utility_operations' | translate }}
-          </mat-panel-title>
-          <mat-panel-description>{{ 'admin.utility_operations_desc' | translate }}</mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <div class="utility-actions">
-          <button type="button" class="utility-action-btn" (click)="refresh()">
-            <mat-icon>refresh</mat-icon>
-            {{ 'admin.refresh_data' | translate }}
-          </button>
-          <button type="button" class="utility-action-btn" (click)="loadTodaySessions()">
-            <mat-icon>forum</mat-icon>
-            {{ 'admin.chat_sessions_load' | translate }}
-          </button>
-          <button type="button" class="utility-action-btn" (click)="downloadCsv()">
-            <mat-icon>download</mat-icon>
-            {{ 'admin.export_csv' | translate }}
-          </button>
-          <button type="button" class="utility-action-btn" (click)="resetMonthlyStats()">
-            <mat-icon>restart_alt</mat-icon>
-            {{ 'admin.reset_monthly_stats' | translate }}
-          </button>
-        </div>
-      </mat-expansion-panel>
-
-      <!-- 5. Live Health -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <mat-icon class="utility-panel-icon">monitor_heart</mat-icon>
-            {{ 'admin.utility_ops_live' | translate }}
-          </mat-panel-title>
-          <mat-panel-description>{{ 'admin.utility_ops_live_desc' | translate }}</mat-panel-description>
-        </mat-expansion-panel-header>
-
-        <div class="utility-stack">
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.utility_uptime' | translate }}</span>
-            <strong>{{ formatUptimeHours(systemOps?.uptimeSeconds) }}</strong>
-          </div>
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.utility_memory' | translate }}</span>
-            <strong>{{ formatMemoryMb(systemOps?.memoryRssMb) }}</strong>
-          </div>
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.utility_node' | translate }}</span>
-            <strong>{{ systemOps?.nodeVersion || '—' }}</strong>
-          </div>
-          <div class="utility-row">
-            <span class="text-muted">{{ 'admin.utility_mail' | translate }}</span>
-            <strong [class.utility-status--ok]="systemOps?.mail?.configured" [class.utility-status--warn]="!systemOps?.mail?.configured">
-              {{ systemOps?.mail?.provider || '—' }}
-            </strong>
-          </div>
-        </div>
-
-        <div class="utility-cron-list">
-          @for (job of systemOps?.cronJobs ?? []; track job.name) {
-            <div class="utility-cron-item">
-              <div>
-                <strong>{{ job.name }}</strong>
-                <p class="text-muted">{{ job.nextRun ? cronNextRunLabel(job.nextRun) : ('admin.utility_not_scheduled' | translate) }}</p>
-              </div>
-              <span class="utility-cron-pill" [class.utility-cron-pill--on]="job.running" [class.utility-cron-pill--off]="!job.running">
-                {{ job.running ? ('admin.utility_running' | translate) : ('admin.utility_stopped' | translate) }}
-              </span>
-            </div>
-          }
-        </div>
-      </mat-expansion-panel>
-
-    </mat-accordion>
-
-    <!-- ── Chat Sessions Today ───────────────────────────────────────────── -->
-    <h2 class="section-label">{{ 'admin.chat_sessions_section' | translate }}</h2>
-    <div class="analytics-grid adv-bottom-grid">
-      <section class="analytics-card card" style="grid-column: 1 / -1;">
-        <div class="analytics-card__header">
-          <div>
-            <h2>{{ 'admin.chat_sessions_today' | translate }}</h2>
-            <p class="text-muted">{{ 'admin.chat_sessions_today_desc' | translate }}</p>
-          </div>
-          <button
-            type="button"
-            class="chat-load-btn"
-            [disabled]="loadingTodaySessions"
-            (click)="loadTodaySessions()">
-            <mat-icon [class.spin]="loadingTodaySessions">{{ loadingTodaySessions ? 'sync' : 'refresh' }}</mat-icon>
-            {{ loadingTodaySessions ? ('common.loading' | translate) : ('admin.chat_sessions_load' | translate) }}
-            @if (!loadingTodaySessions && chatbotStats.interactionsToday > 0) {
-              <span class="chat-count-badge">{{ chatbotStats.interactionsToday }}</span>
-            }
-          </button>
-        </div>
-
-        @if (!todaySessions.length && !loadingTodaySessions) {
-          <p class="text-muted" style="margin-top:0.5rem;">{{ 'admin.chat_sessions_empty' | translate }}</p>
-        }
-
-        @if (todaySessions.length) {
-          <div class="chat-session-list">
-            @for (session of todaySessions; track session.sessionId) {
-              <div class="chat-session-row" [class.chat-session-row--open]="expandedSessionId === session.sessionId">
-
-                <!-- Session header row -->
-                <button type="button" class="chat-session-header" (click)="toggleSession(session.sessionId)">
-                  <div class="chat-session-meta">
-                    <mat-icon class="chat-session-icon">chat_bubble_outline</mat-icon>
-                    <div class="chat-session-info">
-                      <span class="chat-session-preview">{{ sessionPreview(session) }}</span>
-                      <span class="text-muted chat-session-time">
-                        {{ session.lastActivity | date:'HH:mm' }} &nbsp;·&nbsp;
-                        {{ session.messageCount }} {{ 'admin.chat_messages_count' | translate }}
-                      </span>
-                    </div>
-                  </div>
-                  <mat-icon class="chat-session-chevron">
-                    {{ expandedSessionId === session.sessionId ? 'expand_less' : 'expand_more' }}
-                  </mat-icon>
-                </button>
-
-                <!-- Expanded conversation thread -->
-                @if (expandedSessionId === session.sessionId) {
-                  <div class="chat-thread">
-                    @for (msg of session.messages; track $index) {
-                      <div class="chat-bubble-row" [class.chat-bubble-row--user]="msg.role === 'user'">
-                        <div class="chat-bubble" [class.chat-bubble--user]="msg.role === 'user'" [class.chat-bubble--bot]="msg.role === 'assistant'">
-                          <span class="chat-bubble__role text-muted">{{ msg.role === 'user' ? '👤' : '🤖' }}</span>
-                          <span class="chat-bubble__text">{{ msg.content }}</span>
-                          <span class="chat-bubble__time text-muted">{{ msg.timestamp | date:'HH:mm:ss' }}</span>
-                        </div>
-                      </div>
-                    }
-                  </div>
-                }
-
-              </div>
-            }
-          </div>
-
-          <!-- Pagination -->
-          @if (todaySessionsTotalPages > 1) {
-            <div class="chat-pagination">
-              <button type="button" class="chat-load-btn" [disabled]="todaySessionsPage <= 1 || loadingTodaySessions" (click)="loadTodaySessions(todaySessionsPage - 1)">
-                <mat-icon>chevron_left</mat-icon>
-              </button>
-              <span class="text-muted" style="font-size:0.82rem;">{{ todaySessionsPage }} / {{ todaySessionsTotalPages }}</span>
-              <button type="button" class="chat-load-btn" [disabled]="todaySessionsPage >= todaySessionsTotalPages || loadingTodaySessions" (click)="loadTodaySessions(todaySessionsPage + 1)">
-                <mat-icon>chevron_right</mat-icon>
-              </button>
-            </div>
-          }
-        }
-      </section>
+    <!-- Non in @defer: il pannello Utility lo chiama per caricare le chat di oggi. -->
+    <div id="dash-chat" class="dash-anchor">
+      <app-chat-sessions-section [interactionsToday]="chatbotStats.interactionsToday" />
     </div>
 
     <!-- Quick links -->
@@ -1105,6 +252,7 @@
 
     <!-- Recent contacts -->
     @if (recentContacts.length) {
+      <div id="dash-messages" class="dash-anchor">
       <h2 class="section-label">
         {{ 'admin.recent_activity' | translate }}
         @if (unreadCount > 0) {
@@ -1173,6 +321,7 @@
             </button>
           </div>
         }
+      </div>
       </div>
     }
 

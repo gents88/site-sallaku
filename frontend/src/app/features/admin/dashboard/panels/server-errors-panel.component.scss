@@ -1,0 +1,11 @@
+// Stili del pannello server errors panel. I comuni (panel-kpi, panel-btn, panel-error…)
+// arrivano da panel-shared.scss.
+
+.err-row { display: grid; gap: 0.35rem; }
+.err-row__head { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.err-row__route { min-width: 0; flex: 1; }
+.err-row__msg { font-size: 0.8rem; overflow-wrap: anywhere; }
+.err-row__actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.err-stack { margin: 0; max-height: 220px; overflow: auto; padding: 0.6rem; border-radius: 8px;
+  background: color-mix(in srgb, var(--color-text-muted) 10%, transparent); font-size: 0.72rem; white-space: pre-wrap; }
+.panel-list > li { display: block; }

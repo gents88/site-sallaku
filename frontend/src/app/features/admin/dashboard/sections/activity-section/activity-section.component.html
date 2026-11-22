@@ -1,0 +1,112 @@
+<h2 class="section-label"><mat-icon>show_chart</mat-icon>{{ 'dashboard_ux.activity_section' | translate }}</h2>
+<div class="analytics-grid">
+  <app-dashboard-card titleKey="admin.recent_contacts_chart" icon="bar_chart" periodKey="dashboard_ux.period_7d">
+    <div class="contact-chart" aria-hidden="true">
+      @for (bar of contactBars(); track bar.date) {
+        <div class="contact-chart__item">
+          <span class="contact-chart__value">{{ bar.value }}</span>
+          <div class="contact-chart__bar-wrap">
+            <span class="contact-chart__bar" [style.height]="dayBarHeight(bar.value, contactBars())"></span>
+          </div>
+          <span class="contact-chart__label text-muted">{{ bar.date | date: 'dd/MM' }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
+      }
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.visits_chart" descKey="admin.public_traffic" icon="show_chart" periodKey="dashboard_ux.period_7d">
+    <div class="visit-summary">
+      <div class="visit-summary__item">
+        <strong>{{ totalViews() }}</strong>
+        <span class="text-muted">{{ 'admin.visits' | translate }}</span>
+      </div>
+      <div class="visit-summary__item">
+        <strong>{{ uniqueVisitors() }}</strong>
+        <span class="text-muted">{{ 'admin.visitors' | translate }}</span>
+      </div>
+    </div>
+
+    <div class="contact-chart contact-chart--visits" aria-hidden="true">
+      @for (bar of visitBars(); track bar.date) {
+        <div class="contact-chart__item">
+          <span class="contact-chart__value">{{ bar.value }}</span>
+          <div class="contact-chart__bar-wrap">
+            <span class="contact-chart__bar contact-chart__bar--visits" [style.height]="dayBarHeight(bar.value, visitBars())"></span>
+          </div>
+          <span class="contact-chart__label text-muted">{{ bar.date | date: 'dd/MM' }}</span>
+        </div>
+      } @empty {
+        <p class="text-muted h-bars__empty">{{ 'admin.no_chart_data' | translate }}</p>
+      }
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.content_mix" descKey="admin.content_status" icon="donut_large">
+    <div class="content-mix">
+      <div class="content-mix__bar" aria-hidden="true">
+        <span class="content-mix__segment content-mix__segment--published" [style.width.%]="publishedPercent()"></span>
+        <span class="content-mix__segment content-mix__segment--drafts" [style.width.%]="draftPercent()"></span>
+      </div>
+
+      <div class="content-mix__legend">
+        <div class="mix-item">
+          <span class="mix-item__dot mix-item__dot--published"></span>
+          <div>
+            <strong>{{ publishedPosts() }}</strong>
+            <p class="text-muted">{{ 'admin.published' | translate }}</p>
+          </div>
+        </div>
+        <div class="mix-item">
+          <span class="mix-item__dot mix-item__dot--drafts"></span>
+          <div>
+            <strong>{{ draftPosts() }}</strong>
+            <p class="text-muted">{{ 'admin.drafts' | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="admin.top_posts_title" descKey="admin.top_posts_desc_card" icon="trending_up" periodKey="dashboard_ux.period_all_time">
+    @if (topPosts().length) {
+      <ul class="top-posts-list">
+        @for (post of topPosts(); track post._id) {
+          <li class="top-posts-list__item">
+            <a [routerLink]="['/blog', post.slug]" target="_blank" rel="noopener" class="top-posts-list__title">{{ post.title }}</a>
+            <span class="top-posts-list__views">
+              <mat-icon class="top-posts-list__icon">visibility</mat-icon>&nbsp;{{ post.viewCount ?? 0 }}
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="text-muted top-posts-list__empty">{{ 'admin.top_posts_empty' | translate }}</p>
+    }
+  </app-dashboard-card>
+</div>
+
+<div class="analytics-grid">
+  <app-dashboard-card titleKey="admin.consent.title" descKey="admin.consent.desc" icon="gavel" periodKey="dashboard_ux.period_all_time">
+    <div class="consent-summary">
+      <div class="consent-item">
+        <strong>{{ consent().total }}</strong>
+        <span class="text-muted">{{ 'admin.consent.total' | translate }}</span>
+      </div>
+      <div class="consent-item">
+        <strong>{{ consent().analyticsRate * 100 | number: '1.0-0' }}%</strong>
+        <span class="text-muted">{{ 'consent.analytics' | translate }}</span>
+      </div>
+      <div class="consent-item">
+        <strong>{{ consent().marketingRate * 100 | number: '1.0-0' }}%</strong>
+        <span class="text-muted">{{ 'consent.marketing' | translate }}</span>
+      </div>
+      <div class="consent-item">
+        <strong>{{ consent().preferencesRate * 100 | number: '1.0-0' }}%</strong>
+        <span class="text-muted">{{ 'consent.preferences' | translate }}</span>
+      </div>
+    </div>
+    <button type="button" class="btn" (click)="refresh.emit()">{{ 'admin.refresh_data' | translate }}</button>
+  </app-dashboard-card>
+</div>

@@ -1,0 +1,167 @@
+<h2 class="section-label"><mat-icon>build_circle</mat-icon>{{ 'admin.utility_section' | translate }}</h2>
+<mat-accordion class="utility-accordion" multi>
+
+  <!-- 1. Deployment -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon class="utility-panel-icon">dns</mat-icon>
+        {{ 'admin.utility_deployment' | translate }}
+      </mat-panel-title>
+      <mat-panel-description>{{ 'admin.utility_deployment_desc' | translate }}</mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="utility-kv-grid">
+      <div class="utility-kv">
+        <span class="text-muted">{{ 'admin.system_status' | translate }}</span>
+        <strong [class.utility-status--ok]="systemHealth()?.ok" [class.utility-status--warn]="!systemHealth()?.ok">
+          {{ systemHealth()?.ok ? 'OK' : '—' }}
+        </strong>
+      </div>
+      <div class="utility-kv">
+        <span class="text-muted">{{ 'admin.system_version' | translate }}</span>
+        <strong>{{ systemDetails()?.version || systemHealth()?.version || '—' }}</strong>
+      </div>
+      <div class="utility-kv">
+        <span class="text-muted">{{ 'admin.system_env' | translate }}</span>
+        <strong>{{ systemDetails()?.environment || systemHealth()?.environment || '—' }}</strong>
+      </div>
+      <div class="utility-kv">
+        <span class="text-muted">{{ 'admin.utility_started_at' | translate }}</span>
+        <strong>{{ (systemDetails()?.startedAt || systemHealth()?.startedAt) | date:'dd/MM/yyyy HH:mm' }}</strong>
+      </div>
+    </div>
+
+    <div class="utility-tags utility-tags--spaced">
+      <span class="utility-tag">{{ systemDetails()?.service || systemHealth()?.service || 'backend' }}</span>
+      @if (systemDetails()?.commitSha) {
+        <span class="utility-tag">{{ systemDetails()?.commitSha?.slice(0, 8) }}</span>
+      }
+      @if (systemDetails()?.branch) {
+        <span class="utility-tag">{{ systemDetails()?.branch }}</span>
+      }
+      @if (systemDetails()?.railway?.serviceName) {
+        <span class="utility-tag">{{ systemDetails()?.railway?.serviceName }}</span>
+      }
+    </div>
+  </mat-expansion-panel>
+
+  <!-- 2. Security -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon class="utility-panel-icon">shield</mat-icon>
+        {{ 'admin.utility_security' | translate }}
+      </mat-panel-title>
+      <mat-panel-description>{{ 'admin.utility_security_desc' | translate }}</mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="utility-stack">
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.utility_admin_user' | translate }}</span>
+        <strong>{{ adminName() || 'Admin' }}</strong>
+      </div>
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.utility_admin_email' | translate }}</span>
+        <strong>{{ adminEmail() || '—' }}</strong>
+      </div>
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.unread_contacts' | translate }}</span>
+        <strong>{{ unreadCount() }}</strong>
+      </div>
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.audit_log' | translate }}</span>
+        <strong>{{ auditCount() }}</strong>
+      </div>
+    </div>
+  </mat-expansion-panel>
+
+  <!-- 3. Interruttori del sito (feature flag + manutenzione) -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon class="utility-panel-icon">toggle_on</mat-icon>
+        {{ 'feature_flags.title' | translate }}
+      </mat-panel-title>
+      <mat-panel-description>{{ 'feature_flags.desc' | translate }}</mat-panel-description>
+    </mat-expansion-panel-header>
+    <app-feature-flags-panel />
+  </mat-expansion-panel>
+
+  <!-- 4. Quick Actions -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon class="utility-panel-icon">build_circle</mat-icon>
+        {{ 'admin.utility_operations' | translate }}
+      </mat-panel-title>
+      <mat-panel-description>{{ 'admin.utility_operations_desc' | translate }}</mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="utility-actions">
+      <button type="button" class="utility-action-btn" (click)="refresh.emit()">
+        <mat-icon>refresh</mat-icon>
+        {{ 'admin.refresh_data' | translate }}
+      </button>
+      <button type="button" class="utility-action-btn" (click)="loadSessions.emit()">
+        <mat-icon>forum</mat-icon>
+        {{ 'admin.chat_sessions_load' | translate }}
+      </button>
+      <button type="button" class="utility-action-btn" (click)="downloadCsv.emit()">
+        <mat-icon>download</mat-icon>
+        {{ 'admin.export_csv' | translate }}
+      </button>
+      <button type="button" class="utility-action-btn" (click)="resetMonthly.emit()">
+        <mat-icon>restart_alt</mat-icon>
+        {{ 'admin.reset_monthly_stats' | translate }}
+      </button>
+    </div>
+  </mat-expansion-panel>
+
+  <!-- 5. Live Health -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <mat-icon class="utility-panel-icon">monitor_heart</mat-icon>
+        {{ 'admin.utility_ops_live' | translate }}
+      </mat-panel-title>
+      <mat-panel-description>{{ 'admin.utility_ops_live_desc' | translate }}</mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="utility-stack">
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.utility_uptime' | translate }}</span>
+        <strong>{{ formatUptimeHours(systemOps()?.uptimeSeconds) }}</strong>
+      </div>
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.utility_memory' | translate }}</span>
+        <strong>{{ formatMemoryMb(systemOps()?.memoryRssMb) }}</strong>
+      </div>
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.utility_node' | translate }}</span>
+        <strong>{{ systemOps()?.nodeVersion || '—' }}</strong>
+      </div>
+      <div class="utility-row">
+        <span class="text-muted">{{ 'admin.utility_mail' | translate }}</span>
+        <strong [class.utility-status--ok]="systemOps()?.mail?.configured" [class.utility-status--warn]="!systemOps()?.mail?.configured">
+          {{ systemOps()?.mail?.provider || '—' }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="utility-cron-list">
+      @for (job of systemOps()?.cronJobs ?? []; track job.name) {
+        <div class="utility-cron-item">
+          <div>
+            <strong>{{ job.name }}</strong>
+            <p class="text-muted">{{ job.nextRun ? cronNextRunLabel(job.nextRun) : ('admin.utility_not_scheduled' | translate) }}</p>
+          </div>
+          <span class="utility-cron-pill" [class.utility-cron-pill--on]="job.running" [class.utility-cron-pill--off]="!job.running">
+            {{ job.running ? ('admin.utility_running' | translate) : ('admin.utility_stopped' | translate) }}
+          </span>
+        </div>
+      }
+    </div>
+  </mat-expansion-panel>
+
+</mat-accordion>

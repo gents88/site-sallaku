@@ -1,0 +1,26 @@
+:host {
+  display: block;
+}
+
+.delta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.15rem;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  &--up {
+    color: var(--color-success);
+  }
+
+  &--down {
+    color: var(--color-error);
+  }
+
+  &__period {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+}

@@ -8,6 +8,7 @@ import { AcquisitionReport, AdminDashboardService } from '../admin-dashboard.ser
 const REPORT: AcquisitionReport = {
   days: 30,
   totalEntries: 12,
+  previousTotalEntries: 10,
   sources: [{ label: 'search', count: 8 }, { label: 'direct', count: 4 }],
   referrers: [{ label: 'google.com', count: 7 }, { label: 'linkedin.com', count: 1 }],
   entryPages: [{ path: '/en/blog/rxjs-operators', entries: 6, sources: { direct: 1, search: 5 } }],
@@ -42,7 +43,7 @@ describe('AcquisitionPanelComponent', () => {
 
   it('cambiando periodo ricarica i dati per quei giorni', () => {
     const { el, fixture, get } = setup();
-    const buttons = Array.from(el.querySelectorAll<HTMLButtonElement>('.acq__period'));
+    const buttons = Array.from(el.querySelectorAll<HTMLButtonElement>('.periods__btn'));
     expect(buttons.map(b => b.getAttribute('aria-pressed'))).toEqual(['false', 'true', 'false']);
     buttons[2].click();
     fixture.detectChanges();
