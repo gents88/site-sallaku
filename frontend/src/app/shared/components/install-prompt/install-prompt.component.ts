@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { InstallPromptService } from '../../../core/services/install-prompt.service';
+import { ConsentService } from '../../../core/services/consent.service';
 
 /**
  * Card "Installa l'app": compare solo quando InstallPromptService dice che è
@@ -12,7 +13,7 @@ import { InstallPromptService } from '../../../core/services/install-prompt.serv
   imports: [TranslateModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @if (install.shouldOffer() && !hidden()) {
+    @if (install.shouldOffer() && consent.hasDecided() && !hidden()) {
       <aside class="install-card" role="dialog" aria-labelledby="install-card-title" aria-describedby="install-card-text">
         <img src="/favicon.svg" alt="" width="40" height="40" class="install-card__icon" />
         <div class="install-card__body">
@@ -47,6 +48,7 @@ import { InstallPromptService } from '../../../core/services/install-prompt.serv
       z-index: 1050;
       display: flex;
       gap: 0.85rem;
+      box-sizing: border-box; /* senza, il padding si sommava alla larghezza e la card usciva dallo schermo a destra */
       width: min(360px, calc(100vw - 2rem));
       padding: 1rem;
       border-radius: var(--radius-md, 12px);
@@ -59,18 +61,32 @@ import { InstallPromptService } from '../../../core/services/install-prompt.serv
     @media (max-width: 900px) {
       .install-card { bottom: calc(var(--bottom-tabbar-height, 60px) + 0.75rem + env(safe-area-inset-bottom, 0px)); }
     }
+    /* Telefono: barra compatta (icona + testo + "Non ora" sulla stessa riga) invece di una card che occupava ~40% dello schermo. */
+    @media (max-width: 600px) {
+      .install-card { padding: 0.6rem 0.75rem; gap: 0.6rem; align-items: center; right: 1rem; width: auto; }
+      .install-card__icon { width: 32px; height: 32px; }
+      .install-card__body { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.15rem 0.6rem; flex: 1; }
+      h2 { font-size: 0.85rem; flex-basis: 100%; }
+      p { font-size: 0.78rem; line-height: 1.35; flex: 1 1 60%; }
+      .install-card__actions { margin-top: 0; margin-left: auto; }
+      .install-card__actions .btn { min-height: 36px; }
+    }
     .install-card__icon { flex-shrink: 0; border-radius: 10px; }
     .install-card__body { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
     h2 { margin: 0; font-size: 1rem; text-transform: none; }
     p { margin: 0; font-size: 0.875rem; line-height: 1.5; color: var(--color-text-muted); }
     .install-card__share { vertical-align: -3px; margin: 0 0.15rem; color: var(--color-primary); }
     .install-card__actions { display: flex; gap: 0.5rem; margin-top: 0.35rem; }
+    /* Telefono in orizzontale: tra navbar, tab bar e questa card resta una striscia di schermo — meglio non offrirla finché non si ruota. */
+    @media (max-height: 520px) { .install-card { display: none; } }
     @keyframes install-in { from { opacity: 0; transform: translateY(12px); } }
     @media (prefers-reduced-motion: reduce) { .install-card { animation: none; } }
   `],
 })
 export class InstallPromptComponent {
   readonly install = inject(InstallPromptService);
+  /** Il banner dei cookie ha la precedenza: due card sovrapposte in basso coprivano la pagina e a vicenda. */
+  readonly consent = inject(ConsentService);
   /** Chiusa in questa sessione (anche dopo un'installazione riuscita o annullata). */
   readonly hidden = signal(false);
 

@@ -192,6 +192,8 @@ function cardsFor(group: 'ai' | 'tools'): ToolCard[] {
       background: linear-gradient(130deg, #e6edf3 30%, #a78bfa 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
+    /* Il gradiente parte da #e6edf3 (quasi bianco): su sfondo chiaro il titolo spariva. */
+    :host-context([data-theme='light']) h1 { background-image: linear-gradient(130deg, #1e1b4b 30%, #6d28d9 100%); }
 
     .page-header p {
       font-size: 1.05rem; color: var(--text-secondary, #8b949e);
