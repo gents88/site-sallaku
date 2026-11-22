@@ -23,8 +23,11 @@ export async function takeSharedFiles(storage: CacheStorageLike | undefined): Pr
     for (const request of requests) {
       const response = await cache.match(request);
       if (!response) continue;
-      const blob = await response.blob();
-      files.push(new File([blob], safeDecode(response.headers.get('X-File-Name')) || 'file', { type: blob.type }));
+      // arrayBuffer e non blob(): il Blob della Response non è sempre quello del
+      // File (jsdom/Node 20 lo trasformano in "[object Blob]"); i byte vanno bene ovunque.
+      const bytes = await response.arrayBuffer();
+      const type = response.headers.get('Content-Type') ?? '';
+      files.push(new File([bytes], safeDecode(response.headers.get('X-File-Name')) || 'file', { type }));
     }
     return files;
   } finally {
