@@ -43,6 +43,7 @@
               <strong>{{ 'viewer.drop_prompt' | translate }}</strong>
               <small>PDF</small>
             </div>
+            <app-sample-file-button (picked)="onFilesDropped($event)" />
           }
           @if (msg()) {
             <p class="msg">{{ msg() }}</p>
@@ -125,6 +126,8 @@
             <a routerLink="/lab/ocr" class="vw-hint-link">{{ 'viewer.ocr_hint_cta' | translate }} →</a>
           </div>
         }
+
+        <app-ask-document [file]="currentFile()" />
 
         <!-- ── Layout: thumbs + pagina ──────────── -->
         <div class="vw-body">

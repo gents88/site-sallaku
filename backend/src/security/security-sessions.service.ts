@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Injectable } from '@nestjs/common';
-=======
 import { BadRequestException, Injectable } from '@nestjs/common';
->>>>>>> develop
 import { UsersService } from '../users/users.service';
 import { ClientContext, SecurityService } from './security.service';
 
@@ -17,11 +13,6 @@ export class SecuritySessionsService {
   async revoke(actorId: string, targetId: string, ctx: ClientContext): Promise<void> {
     // Lancia se è sé stessi (c'è il logout) o se l'utente non esiste.
     await this.users.revokeSessions(actorId, targetId);
-<<<<<<< HEAD
-    await this.security.endSession(targetId);
-    await this.security.record('session_revoked', ctx, { userId: targetId, detail: `chiusa da ${actorId}` });
-  }
-=======
     await this.security.endAllSessions(targetId);
     await this.security.record('session_revoked', ctx, { userId: targetId, detail: `chiusa da ${actorId}` });
   }
@@ -37,5 +28,4 @@ export class SecuritySessionsService {
     await this.security.endSession(targetId, sessionId);
     await this.security.record('session_revoked', ctx, { userId: targetId, detail: `un dispositivo chiuso da ${actorId}` });
   }
->>>>>>> develop
 }

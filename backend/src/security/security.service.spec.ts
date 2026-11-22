@@ -12,33 +12,18 @@ const uid = () => new Types.ObjectId().toString();
 /** Query finta: .sort().limit().select().lean().exec() → rows. */
 function query(rows: unknown) {
   const q: Record<string, jest.Mock> = {};
-<<<<<<< HEAD
-  for (const m of ['sort', 'limit', 'select', 'lean']) q[m] = jest.fn(() => q);
-=======
   for (const m of ['sort', 'skip', 'limit', 'select', 'lean']) q[m] = jest.fn(() => q);
->>>>>>> develop
   q.exec = jest.fn().mockResolvedValue(rows);
   return q;
 }
 
-<<<<<<< HEAD
-async function setup(opts: { events?: any; sessions?: any; users?: any; counts?: number[]; ips?: any[] } = {}) {
-=======
 async function setup(opts: { events?: any; sessions?: any; session?: any; indexes?: any[]; eventIndexes?: any[]; users?: any; counts?: number[]; ips?: any[] } = {}) {
->>>>>>> develop
   const counts = [...(opts.counts ?? [0, 0, 0])];
   const events = {
     create: jest.fn().mockResolvedValue({}),
     countDocuments: jest.fn(() => ({ exec: jest.fn().mockResolvedValue(counts.shift() ?? 0) })),
     aggregate: jest.fn(() => ({ exec: jest.fn().mockResolvedValue(opts.ips ?? []) })),
     find: jest.fn(() => query(opts.events ?? [])),
-<<<<<<< HEAD
-  };
-  const sessions = {
-    updateOne: jest.fn(() => ({ exec: jest.fn().mockResolvedValue({}) })),
-    deleteOne: jest.fn(() => ({ exec: jest.fn().mockResolvedValue({}) })),
-    find: jest.fn(() => query(opts.sessions ?? [])),
-=======
     collection: { indexes: jest.fn().mockResolvedValue(opts.eventIndexes ?? []), collectionName: 'security_events' },
     db: { db: { command: jest.fn().mockResolvedValue({ ok: 1 }) } },
   };
@@ -51,7 +36,6 @@ async function setup(opts: { events?: any; sessions?: any; session?: any; indexe
     find: jest.fn(() => query(opts.sessions ?? [])),
     syncIndexes: jest.fn().mockResolvedValue([]),
     collection: { indexes: jest.fn().mockResolvedValue(opts.indexes ?? []), dropIndex: jest.fn().mockResolvedValue({}) },
->>>>>>> develop
   };
   const users = { find: jest.fn(() => query(opts.users ?? [])) };
   const mod = await Test.createTestingModule({
@@ -95,39 +79,6 @@ describe('SecurityService.record', () => {
   });
 });
 
-<<<<<<< HEAD
-describe('SecurityService sessioni', () => {
-  it('startSession riparte da adesso (sostituisce la sessione precedente)', async () => {
-    const { service, sessions } = await setup();
-    const id = uid();
-    await service.startSession(id, ctx);
-    const [filter, update, options] = (sessions.updateOne.mock.calls as any)[0];
-    expect(String(filter.userId)).toBe(id);
-    expect(update.$set).toEqual(expect.objectContaining({ ip: ctx.ip, startedAt: expect.any(Date), lastSeenAt: expect.any(Date) }));
-    expect(options).toEqual({ upsert: true });
-  });
-
-  it('touchSession non sposta l’inizio: lo imposta solo se la sessione non esisteva', async () => {
-    const { service, sessions } = await setup();
-    await service.touchSession(uid(), ctx);
-    const update = (sessions.updateOne.mock.calls as any)[0][1];
-    expect(update.$set.startedAt).toBeUndefined();
-    expect(update.$setOnInsert.startedAt).toBeInstanceOf(Date);
-  });
-
-  it('endSession cancella la sessione e ignora id non validi', async () => {
-    const { service, sessions } = await setup();
-    await service.endSession(uid());
-    expect(sessions.deleteOne).toHaveBeenCalledTimes(1);
-    await service.endSession('xx');
-    expect(sessions.deleteOne).toHaveBeenCalledTimes(1);
-  });
-
-  it('un errore di scrittura sulla sessione non fa fallire l’accesso', async () => {
-    const { service, sessions } = await setup();
-    sessions.updateOne.mockImplementation(() => ({ exec: jest.fn().mockRejectedValue(new Error('x')) }));
-    await expect(service.startSession(uid(), ctx)).resolves.toBeUndefined();
-=======
 describe('SecurityService sessioni (un dispositivo = una sessione)', () => {
   const uid2 = () => new Types.ObjectId().toString();
 
@@ -270,7 +221,6 @@ describe('SecurityService.onModuleInit (migrazione dell’indice)', () => {
     const { service, events } = await setup({ eventIndexes: [{ name: 'createdAt_1', key: { createdAt: 1 }, expireAfterSeconds: 90 * 86400 }] });
     events.db.db.command.mockRejectedValue(new Error('non autorizzato'));
     await expect(service.onModuleInit()).resolves.toBeUndefined();
->>>>>>> develop
   });
 });
 
@@ -283,35 +233,13 @@ describe('SecurityService.summary', () => {
       ips: [{ _id: '198.51.100.9', failures: 6 }],
     });
     const s = await service.summary(now);
-<<<<<<< HEAD
-    expect([s.failedLogins24h, s.otpFailed24h, s.tokenReuse7d]).toEqual([7, 3, 1]);
-=======
     expect([s.failedLogins24h, s.otpFailed24h, s.tokenReuse]).toEqual([7, 3, 1]);
->>>>>>> develop
     expect(s.suspiciousIps).toEqual([{ ip: '198.51.100.9', failures: 6 }]);
     // la soglia degli IP sospetti è nella pipeline, non filtrata a mano dopo
     const pipeline = (events.aggregate.mock.calls as any)[0][0];
     expect(JSON.stringify(pipeline)).toContain(`"failures":{"$gte":${SUSPICIOUS_IP_THRESHOLD}}`);
   });
 
-<<<<<<< HEAD
-  it('mostra solo le sessioni il cui refresh token è ancora valido sull’utente', async () => {
-    const live = uid();
-    const revoked = uid();
-    const t = new Date('2026-10-22T11:00:00Z');
-    const { service, users } = await setup({
-      sessions: [
-        { userId: new Types.ObjectId(live), startedAt: t, lastSeenAt: t, ip: '203.0.113.7', userAgent: ctx.userAgent },
-        { userId: new Types.ObjectId(revoked), startedAt: t, lastSeenAt: t, ip: '203.0.113.8', userAgent: '' },
-      ],
-      // il database restituisce solo gli utenti con refreshTokenHash non nullo
-      users: [{ _id: new Types.ObjectId(live), name: 'Gent', email: 'g@x.it', role: 'admin' }],
-    });
-    const s = await service.summary(now);
-    expect(s.activeSessions).toBe(1);
-    expect(s.sessions).toEqual([expect.objectContaining({ userId: live, name: 'Gent', contact: 'g@x.it', device: 'Chrome su macOS', ip: '203.0.113.7' })]);
-    expect(JSON.stringify((users.find.mock.calls as any)[0][0])).toContain('"refreshTokenHash":{"$ne":null}');
-=======
   it('elenca una riga per dispositivo, anche per lo stesso utente, solo per sessioni con sid e utente esistente', async () => {
     const admin = uid();
     const orphan = uid();
@@ -330,18 +258,13 @@ describe('SecurityService.summary', () => {
     expect(s.sessions[0]).toEqual(expect.objectContaining({ userId: admin, name: 'Gent', contact: 'g@x.it', device: 'Chrome su macOS', ip: '203.0.113.7' }));
     // le sessioni precedenti al multi-dispositivo (senza sid) non si mostrano
     expect(JSON.stringify((sessions.find.mock.calls as any)[0][0])).toContain('"sid":{"$type":"string"}');
->>>>>>> develop
   });
 
   it('un account senza email mostra il telefono come contatto', async () => {
     const id = uid();
     const t = new Date();
     const { service } = await setup({
-<<<<<<< HEAD
-      sessions: [{ userId: new Types.ObjectId(id), startedAt: t, lastSeenAt: t, ip: '', userAgent: '' }],
-=======
       sessions: [{ sid: 's1', userId: new Types.ObjectId(id), startedAt: t, lastSeenAt: t, ip: '', userAgent: '' }],
->>>>>>> develop
       users: [{ _id: new Types.ObjectId(id), name: 'Anna', phone: '+393331234567', role: 'user' }],
     });
     expect((await service.summary(now)).sessions[0].contact).toBe('+393331234567');

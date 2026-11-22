@@ -1,12 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
-<<<<<<< HEAD
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-=======
 import { MatExpansionModule } from '@angular/material/expansion';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { jwtClaims } from '../../../../core/utils/jwt';
->>>>>>> develop
 import { AdminDashboardService, SecurityEventType, SecuritySession, SecuritySummary } from '../admin-dashboard.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -27,11 +23,7 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
 @Component({
   selector: 'app-security-panel',
   standalone: true,
-<<<<<<< HEAD
-  imports: [DatePipe, DecimalPipe, TranslateModule],
-=======
   imports: [DatePipe, DecimalPipe, MatExpansionModule, TranslateModule],
->>>>>>> develop
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./panel-shared.scss'],
   styles: [`
@@ -39,8 +31,6 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
     .sec-row__main { min-width: 0; display: grid; gap: 0.15rem; flex: 1; }
     .sec-ips { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 0.5rem 0; }
     .panel-list > li { display: block; }
-<<<<<<< HEAD
-=======
 
     /* Accordion: stesse variabili del resto della dashboard, così segue il tema chiaro/scuro. */
     .sec-accordion {
@@ -58,7 +48,6 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
     .sec-accordion .mat-expansion-panel { box-shadow: none; border: 1px solid var(--color-border); border-radius: 12px; }
     .sec-title { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem; }
     .sec-note { margin: 0.25rem 0 0.5rem; }
->>>>>>> develop
   `],
   template: `
     @if (failed) {
@@ -73,13 +62,8 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
           <strong>{{ data.otpFailed24h | number }}</strong>
           <span>{{ 'security_panel.otp_failed' | translate }}</span>
         </div>
-<<<<<<< HEAD
-        <div class="panel-kpi" [class.panel-kpi--bad]="data.tokenReuse7d > 0" [class.panel-kpi--ok]="data.tokenReuse7d === 0" [title]="'security_panel.reuse_hint' | translate">
-          <strong>{{ data.tokenReuse7d | number }}</strong>
-=======
         <div class="panel-kpi" [class.panel-kpi--bad]="data.tokenReuse > 0" [class.panel-kpi--ok]="data.tokenReuse === 0" [title]="'security_panel.reuse_hint' | translate">
           <strong>{{ data.tokenReuse | number }}</strong>
->>>>>>> develop
           <span>{{ 'security_panel.token_reuse' | translate }}</span>
         </div>
         <div class="panel-kpi">
@@ -97,62 +81,6 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
         </div>
       }
 
-<<<<<<< HEAD
-      <h3 class="panel-section-title">{{ 'security_panel.sessions' | translate }}</h3>
-      @if (data.sessions.length) {
-        <ul class="panel-list">
-          @for (s of data.sessions; track s.userId) {
-            <li>
-              <div class="sec-row">
-                <span class="sec-row__main">
-                  <span class="panel-ellipsis">
-                    <strong>{{ s.name }}</strong>
-                    <span class="panel-badge">{{ s.role }}</span>
-                    @if (isSelf(s)) { <span class="panel-badge panel-badge--ok">{{ 'security_panel.you' | translate }}</span> }
-                  </span>
-                  <span class="panel-sub panel-ellipsis">{{ s.device }} · <span class="panel-mono">{{ s.ip || '—' }}</span></span>
-                  <span class="panel-sub">
-                    {{ 'security_panel.started' | translate }} {{ s.startedAt | date: 'dd/MM HH:mm' }} ·
-                    {{ 'security_panel.last_active' | translate }} {{ s.lastSeenAt | date: 'dd/MM HH:mm' }}
-                  </span>
-                </span>
-                @if (!isSelf(s)) {
-                  <button type="button" class="panel-btn panel-btn--danger" (click)="close(s)" [disabled]="busyId() !== null">
-                    {{ 'security_panel.close_session' | translate }}
-                  </button>
-                }
-              </div>
-            </li>
-          }
-        </ul>
-      } @else {
-        <p class="panel-empty">{{ 'security_panel.no_sessions' | translate }}</p>
-      }
-
-      <h3 class="panel-section-title">{{ 'security_panel.events' | translate }}</h3>
-      @if (data.events.length) {
-        <ul class="panel-list">
-          @for (e of data.events; track e._id) {
-            <li>
-              <div class="sec-row">
-                <span class="sec-row__main">
-                  <span class="panel-ellipsis">
-                    <span [class]="badgeClass(e.type)">{{ 'security_panel.ev_' + e.type | translate }}</span>
-                    @if (e.identifier) { <span class="panel-mono">{{ e.identifier }}</span> }
-                  </span>
-                  <span class="panel-sub panel-ellipsis">
-                    <span class="panel-mono">{{ e.ip || '—' }}</span> · {{ e.device }}@if (e.detail) { · {{ e.detail }} }
-                  </span>
-                </span>
-                <span class="panel-sub">{{ e.createdAt | date: 'dd/MM HH:mm' }}</span>
-              </div>
-            </li>
-          }
-        </ul>
-      } @else {
-        <p class="panel-empty">{{ 'security_panel.no_events' | translate }}</p>
-      }
-=======
       <mat-accordion class="sec-accordion" multi>
         <mat-expansion-panel [expanded]="data.sessions.length > 0">
           <mat-expansion-panel-header>
@@ -224,7 +152,6 @@ const EVENT_BADGE: Record<SecurityEventType, string> = {
           }
         </mat-expansion-panel>
       </mat-accordion>
->>>>>>> develop
 
       @if (error()) {
         <p class="panel-error" role="alert">{{ 'security_panel.close_error' | translate }}</p>
@@ -242,12 +169,6 @@ export class SecurityPanelComponent {
   private readonly auth = inject(AuthService);
   private readonly translate = inject(TranslateService);
 
-<<<<<<< HEAD
-  readonly busyId = signal<string | null>(null);
-  readonly error = signal(false);
-
-  isSelf(session: SecuritySession): boolean {
-=======
   /** Dopo quanti giorni il backend cancella la cronologia (SECURITY_EVENT_TTL_DAYS lato server). */
   readonly retentionDays = 3;
   readonly busyId = signal<string | null>(null);
@@ -262,7 +183,6 @@ export class SecurityPanelComponent {
     const token = this.auth.getToken();
     const mySid = token ? jwtClaims(token)?.['sid'] : undefined;
     if (typeof mySid === 'string') return session.sessionId === mySid;
->>>>>>> develop
     return session.userId === this.auth.currentUser()?._id;
   }
 
@@ -273,15 +193,9 @@ export class SecurityPanelComponent {
   close(session: SecuritySession): void {
     const message = this.translate.instant('security_panel.close_confirm', { name: session.name }) as string;
     if (!confirm(message)) return;
-<<<<<<< HEAD
-    this.busyId.set(session.userId);
-    this.error.set(false);
-    this.api.revokeSession(session.userId).subscribe({
-=======
     this.busyId.set(session.sessionId);
     this.error.set(false);
     this.api.revokeSession(session.userId, session.sessionId).subscribe({
->>>>>>> develop
       next: () => {
         this.busyId.set(null);
         this.changed.emit();

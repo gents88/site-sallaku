@@ -1,5 +1,5 @@
 import { ApplicationConfig, ErrorHandler, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withViewTransitions, withInMemoryScrolling, withPreloading } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withEnabledBlockingInitialNavigation, withViewTransitions, withInMemoryScrolling, withPreloading } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -10,6 +10,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { cacheInterceptor } from './core/interceptors/cache.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { aiQuotaInterceptor } from './core/interceptors/ai-quota.interceptor';
 import { prerenderBlogCacheInterceptor } from './core/interceptors/prerender-blog-cache.interceptor';
 import { serverApiBaseInterceptor } from './core/interceptors/server-api-base.interceptor';
 import { GlobalErrorHandler } from './core/error-handling/global-error.handler';
@@ -19,6 +20,21 @@ import { resolveInitialLanguage } from './core/services/language.service';
 import { TRANSLATE_LOADER_OPTIONS } from './core/i18n/translate-loader-options';
 
 const initialLanguage = resolveInitialLanguage();
+
+export const routerFeatures = [
+  withComponentInputBinding(),
+  // La cornice (navbar, sidebar, banner cookie, footer) si idrata solo a prima
+  // navigazione conclusa, cioè dopo che langResolver ha caricato le traduzioni
+  // della lingua della pagina. Senza, AppComponent veniva idratato subito con la
+  // lingua stimata da resolveInitialLanguage() (quella del browser, es. 'en' su
+  // una pagina italiana) e traduzioni non ancora caricate: ~55 testi svuotati e
+  // ~200 riscritti poco dopo, cioè layout shift e due ricalcoli di tutta la
+  // pagina sul main thread. Intanto resta visibile l'HTML prerenderizzato.
+  withEnabledBlockingInitialNavigation(),
+  withViewTransitions({ skipInitialTransition: true }),
+  withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
+  withPreloading(SelectivePreloadStrategy),
+];
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -46,16 +62,10 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
 
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
-    provideRouter(
-      routes,
-      withComponentInputBinding(),
-      withViewTransitions({ skipInitialTransition: true }),
-      withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
-      withPreloading(SelectivePreloadStrategy),
-    ),
-    provideHttpClient(withInterceptors([serverApiBaseInterceptor, prerenderBlogCacheInterceptor, authInterceptor, cacheInterceptor, errorInterceptor]), withFetch()),
+    provideRouter(routes, ...routerFeatures),
+    provideHttpClient(withInterceptors([serverApiBaseInterceptor, prerenderBlogCacheInterceptor, authInterceptor, cacheInterceptor, aiQuotaInterceptor, errorInterceptor]), withFetch()),
     provideAnimationsAsync(),
-    provideServiceWorker('ngsw-worker.js', {
+    provideServiceWorker('sw-custom.js', {
       enabled: environment.production,
       registrationStrategy: 'registerWhenStable:30000',
     }),

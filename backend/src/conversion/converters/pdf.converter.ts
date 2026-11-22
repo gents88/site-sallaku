@@ -1,6 +1,8 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import pdfParse = require('pdf-parse');
-import { PDFDocument, PageSizes, rgb } from 'pdf-lib';
+
+// pdf-lib (~15 MB di RAM) si carica al primo PDF da generare, non all'avvio del backend.
+const loadPdfLib = () => import('pdf-lib');
 
 const MAX_PDF_BYTES = 50 * 1024 * 1024;
 
@@ -84,6 +86,7 @@ ${paragraphs}
   }
 
   async imagesToPdf(imageBuffers: Buffer[], mimeTypes: string[]): Promise<Buffer> {
+    const { PDFDocument, PageSizes } = await loadPdfLib();
     const pdfDoc = await PDFDocument.create();
 
     for (let i = 0; i < imageBuffers.length; i++) {
@@ -115,6 +118,7 @@ ${paragraphs}
 
   async merge(buffers: Buffer[]): Promise<Buffer> {
     if (buffers.length === 0) throw new BadRequestException('No PDFs to merge');
+    const { PDFDocument } = await loadPdfLib();
     const merged = await PDFDocument.create();
 
     for (const buf of buffers) {
@@ -129,6 +133,7 @@ ${paragraphs}
 
   async toPageBuffers(buffer: Buffer): Promise<Buffer[]> {
     this.validateSize(buffer);
+    const { PDFDocument } = await loadPdfLib();
     const src = await PDFDocument.load(buffer);
     const results: Buffer[] = [];
 
@@ -143,6 +148,7 @@ ${paragraphs}
   }
 
   async fromJson(data: unknown): Promise<Buffer> {
+    const { PDFDocument, PageSizes, rgb } = await loadPdfLib();
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage(PageSizes.A4);
     const { width, height } = page.getSize();

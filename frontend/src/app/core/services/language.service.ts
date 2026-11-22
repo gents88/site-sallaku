@@ -1,4 +1,4 @@
-import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { DestroyRef, Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
@@ -86,6 +86,7 @@ export class LanguageService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly doc = inject(DOCUMENT);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Set true once a route was reached via an explicit /en/, /es/... prefix — blocks IP-geo from overriding it. */
   private urlLangExplicit = false;
@@ -132,11 +133,18 @@ export class LanguageService {
   private whenIdleAfterLoad(task: () => void): void {
     const win = this.doc.defaultView;
     if (!win) return;
+    // L'attività rimandata va annullata se il servizio viene distrutto prima:
+    // nei test (ambiente condiviso tra file) un servizio di un test precedente
+    // faceva partire la ricerca per IP durante il test successivo, con il suo
+    // fetch finto, e "il ripristino manuale" contava 2 chiamate invece di 1.
+    let cancel = () => win.removeEventListener('load', schedule);
     const schedule = () => {
       if (typeof win.requestIdleCallback === 'function') {
-        win.requestIdleCallback(() => task(), { timeout: 3000 });
+        const id = win.requestIdleCallback(() => task(), { timeout: 3000 });
+        cancel = () => { if (typeof win.cancelIdleCallback === 'function') win.cancelIdleCallback(id); };
       } else {
-        setTimeout(task, 1000);
+        const id = setTimeout(task, 1000);
+        cancel = () => clearTimeout(id);
       }
     };
     if (this.doc.readyState === 'complete') {
@@ -144,6 +152,7 @@ export class LanguageService {
     } else {
       win.addEventListener('load', schedule, { once: true });
     }
+    this.destroyRef.onDestroy(() => cancel());
   }
 
   private lookUpCountryLanguage(): void {

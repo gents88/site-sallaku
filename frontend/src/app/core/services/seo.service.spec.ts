@@ -24,6 +24,33 @@ describe('SeoService', () => {
       .forEach(el => el.remove());
   });
 
+  describe('noindex', () => {
+    const robots = () => document.querySelector('meta[name="robots"]');
+    afterEach(() => robots()?.remove());
+
+    it('update({ noindex: true }) aggiunge robots noindex, follow', () => {
+      const seo = configure();
+      seo.update({ title: 'Pagina non trovata', noindex: true });
+      expect(robots()?.getAttribute('content')).toBe('noindex, follow');
+    });
+
+    it('la pagina successiva senza noindex toglie il tag (navigazione lato client)', () => {
+      const seo = configure();
+      seo.update({ title: '404', noindex: true });
+      seo.update({ title: 'Blog' });
+      expect(robots()).toBeNull();
+    });
+
+    it('setNoIndex funziona anche dopo update(), quando lo si sa solo a dati arrivati', () => {
+      const seo = configure();
+      seo.update({ title: 'Testimonianze' });
+      seo.setNoIndex(true);
+      expect(robots()?.getAttribute('content')).toBe('noindex, follow');
+      seo.setNoIndex(false);
+      expect(robots()).toBeNull();
+    });
+  });
+
   it('defaults og:locale to it_IT on the unprefixed (Italian) route', () => {
     const seo = configure();
     routerStub.url = '/blog';
@@ -121,6 +148,26 @@ describe('SeoService', () => {
 
       const script = document.querySelector('script[data-json-ld="0"]') as HTMLScriptElement;
       expect(JSON.parse(script.textContent ?? '')).toEqual(data);
+    });
+  });
+
+  describe('home page', () => {
+    const href = (lang: string) =>
+      document.querySelector(`link[rel="alternate"][hreflang="${lang}"]`)?.getAttribute('href');
+
+    // La home di ogni lingua è /, /en, /de… (canonical della home): l'hreflang
+    // deve puntare agli stessi URL, non a /xx/homepage, altrimenti non si
+    // "ritorna" col canonical e Google lo scarta.
+    it.each(['/', '/homepage', '/en', '/en/homepage', '/de/homepage'])('hreflang di %s punta alle home /, /en, /de…', url => {
+      const seo = configure();
+      routerStub.url = url;
+
+      seo.update({ title: 'Home' });
+
+      expect(href('it')).toBe('https://gentsallaku.it/');
+      expect(href('x-default')).toBe('https://gentsallaku.it/');
+      expect(href('en')).toBe('https://gentsallaku.it/en');
+      expect(href('de')).toBe('https://gentsallaku.it/de');
     });
   });
 

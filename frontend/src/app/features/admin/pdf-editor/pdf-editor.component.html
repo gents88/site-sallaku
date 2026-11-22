@@ -42,6 +42,9 @@
             <small>{{ sourceNames() }}</small>
           }
         </div>
+        @if (pages().length === 0) {
+          <app-sample-file-button (picked)="onFilesDropped($event)" />
+        }
         @if (loading()) {
           <div class="progress-wrap">
             <div class="progress-bar"><div class="progress-fill"></div></div>

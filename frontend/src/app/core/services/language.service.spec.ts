@@ -216,6 +216,22 @@ describe('LanguageService', () => {
       expect(service.current()).toBe('de');
     });
 
+    it('un servizio distrutto non fa più partire la ricerca rimandata (era la causa del test instabile qui sotto)', async () => {
+      mockIpCountry('AL');
+      delete (window as { requestIdleCallback?: unknown }).requestIdleCallback; // percorso setTimeout, come Safari
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+      try {
+        configure();
+        TestBed.inject(LanguageService);
+        TestBed.resetTestingModule(); // distrugge l'injector, come tra un test e l'altro
+
+        vi.advanceTimersByTime(1500);
+        expect(fetchMock).not.toHaveBeenCalled();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
     it('il ripristino manuale non viene rimandato', async () => {
       mockIpCountry('XK');
       window.requestIdleCallback = (() => 0) as typeof window.requestIdleCallback; // non scatta mai

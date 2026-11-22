@@ -14,19 +14,13 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Types } from 'mongoose';
 import { ClientContext, SecurityService } from '../security/security.service';
-<<<<<<< HEAD
-=======
 import { CacheService } from '../common/services/cache.service';
 
 /** Identica per account nuovo ed esistente: vedi register(). */
 const REGISTER_MESSAGE = 'Account created. Check your email for a verification code.';
->>>>>>> develop
 
 const REFRESH_TOKEN_EXPIRY = '7d';
 const BCRYPT_REFRESH_ROUNDS = 10;
-
-/** Per chi chiama senza contesto (script, test): gli eventi si registrano comunque, senza IP. */
-const NO_CONTEXT: ClientContext = { ip: '', userAgent: '' };
 
 /**
  * Dopo una rotazione il refresh token sostituito resta valido per qualche secondo: due schede (o la
@@ -108,10 +102,7 @@ export class AuthService {
     private configService: ConfigService,
     private otpService: OtpService,
     private security: SecurityService,
-<<<<<<< HEAD
-=======
     private cache: CacheService,
->>>>>>> develop
   ) {}
 
   /**
@@ -157,10 +148,6 @@ export class AuthService {
   }
 
   async login(dto: LoginDto, ctx: ClientContext = NO_CONTEXT) {
-<<<<<<< HEAD
-    const user = await this.usersService.findByEmail(dto.email);
-    if (!user) {
-=======
     const failureKey = loginFailureKey(dto.email);
     if ((await this.cache.getCounter(failureKey)) >= MAX_FAILED_LOGINS) {
       await this.security.record('login_failed', ctx, { identifier: dto.email, detail: 'account bloccato per troppi tentativi' });
@@ -171,35 +158,24 @@ export class AuthService {
     if (!user) {
       await bcrypt.compare(dto.password, DUMMY_PASSWORD_HASH);
       await this.cache.increment(failureKey, 1, LOGIN_LOCK_WINDOW_MS);
->>>>>>> develop
       await this.security.record('login_failed', ctx, { identifier: dto.email, detail: 'account inesistente' });
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const passwordMatch = await bcrypt.compare(dto.password, user.passwordHash);
     if (!passwordMatch) {
-<<<<<<< HEAD
-      await this.security.record('login_failed', ctx, { userId: user._id.toString(), identifier: dto.email, detail: 'password errata' });
-      throw new UnauthorizedException('Invalid credentials');
-    }
-=======
       await this.cache.increment(failureKey, 1, LOGIN_LOCK_WINDOW_MS);
       await this.security.record('login_failed', ctx, { userId: user._id.toString(), identifier: dto.email, detail: 'password errata' });
       throw new UnauthorizedException('Invalid credentials');
     }
     await this.cache.invalidate(failureKey);
->>>>>>> develop
 
     if (!user.emailVerified) {
       await this.security.record('login_failed', ctx, { userId: user._id.toString(), identifier: dto.email, detail: 'email non verificata' });
       throw new UnauthorizedException('Please verify your email before logging in. Check your inbox for the verification code.');
     }
 
-<<<<<<< HEAD
-    const pair = await this.issueTokenPair(user);
-=======
     const pair = await this.openSession(user, ctx);
->>>>>>> develop
     await this.signedIn(user._id.toString(), ctx, 'password');
     return pair;
   }
@@ -223,11 +199,7 @@ export class AuthService {
       }
       throw err;
     }
-<<<<<<< HEAD
-    const pair = await this.issueTokenPair(user);
-=======
     const pair = await this.openSession(user, ctx);
->>>>>>> develop
     await this.signedIn(user._id.toString(), ctx, 'otp');
     return pair;
   }
@@ -236,11 +208,7 @@ export class AuthService {
    * Verify a refresh token and issue a new access token + rotated refresh token.
    * Ogni dispositivo ha la sua sessione (claim `sid`): rinnovare qui non tocca gli altri.
    */
-<<<<<<< HEAD
-  async refreshAccessToken(refreshToken: string, ctx: ClientContext = NO_CONTEXT) {
-=======
   async refreshAccessToken(refreshToken: string, ctx: ClientContext = NO_CONTEXT): Promise<AuthTokens> {
->>>>>>> develop
     // Verify JWT structure and signature first
     let payload: RefreshPayload;
     try {
@@ -258,27 +226,6 @@ export class AuthService {
     const user = await this.usersService.findByIdWithRefreshToken(payload.sub);
     if (!user) throw new UnauthorizedException('Refresh token has been revoked');
 
-<<<<<<< HEAD
-    const hashMatch = await bcrypt.compare(refreshTokenDigest(refreshToken), user.refreshTokenHash);
-    if (!hashMatch) {
-      // Potential token reuse — revoke immediately (token rotation security)
-      await this.usersService.saveRefreshToken(payload.sub, null);
-      await this.security.endSession(payload.sub);
-      await this.security.record('refresh_reuse', ctx, { userId: payload.sub, identifier: payload.email, detail: 'token già ruotato: sessione chiusa' });
-      throw new UnauthorizedException('Refresh token reuse detected. Please log in again.');
-    }
-
-    // Rotate: issue new pair and revoke old refresh token
-    const pair = await this.issueTokenPair(user);
-    await this.security.touchSession(payload.sub, ctx);
-    return pair;
-  }
-
-  /** Revoke the stored refresh token for a user (logout). */
-  async logout(userId: string): Promise<void> {
-    await this.usersService.saveRefreshToken(userId, null);
-    await this.security.endSession(userId);
-=======
     return payload.sid
       ? this.refreshSession(user, payload.sid, refreshToken, payload, ctx)
       : this.refreshLegacy(user, refreshToken, payload, ctx);
@@ -292,20 +239,21 @@ export class AuthService {
       // Token emesso prima del multi-dispositivo: c'è solo il vecchio refresh token unico.
       await this.usersService.saveRefreshToken(userId, null);
     }
->>>>>>> develop
+  }
+
+  /** Dati dell'utente collegato per GET /auth/me (mai hash o token). */
+  async me(user: { _id: unknown; name: string; email?: string; role: string }) {
+    const { _id, name, email, role } = user;
+    return { _id, name, email, role, hasPassword: await this.usersService.hasPassword(String(_id)) };
+  }
+
+  /** L'utente cancella il proprio account (vedi UsersService.deleteOwnAccount). */
+  async deleteAccount(userId: string, password?: string): Promise<void> {
+    await this.usersService.deleteOwnAccount(userId, password);
   }
 
   // ── Internal helpers ───────────────────────────────────────
 
-<<<<<<< HEAD
-  /** Accesso riuscito: lo si registra e la sessione (dispositivo, IP) parte da adesso. */
-  private async signedIn(userId: string, ctx: ClientContext, method: 'password' | 'otp'): Promise<void> {
-    await this.security.record('login_success', ctx, { userId, detail: method === 'otp' ? 'codice OTP' : 'password' });
-    await this.security.startSession(userId, ctx);
-  }
-
-  private async issueTokenPair(user: AuthUser) {
-=======
   /** Accesso riuscito: lo si registra nel registro degli eventi di sicurezza. */
   private async signedIn(userId: string, ctx: ClientContext, method: 'password' | 'otp'): Promise<void> {
     await this.security.record('login_success', ctx, { userId, detail: method === 'otp' ? 'codice OTP' : 'password' });
@@ -407,7 +355,6 @@ export class AuthService {
   }
 
   private async buildTokens(user: AuthUser, sid: string) {
->>>>>>> develop
     const accessPayload = {
       sub: user._id.toString(),
       email: user.email ?? null,

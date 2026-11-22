@@ -6,19 +6,6 @@ export type AuthSessionDocument = AuthSession & Document;
 /** Come REFRESH_TOKEN_EXPIRY in auth.service: una sessione non rinnovata per tanto non è più valida. */
 export const SESSION_TTL_DAYS = 7;
 
-<<<<<<< HEAD
-/**
- * Metadati della sessione di un utente (dove e quando). Il refresh token è
- * uno solo per utente, quindi anche la sessione lo è: un nuovo login su un
- * altro dispositivo sostituisce la precedente. La validità vera resta nel
- * refreshTokenHash dell'utente; questo documento serve solo a mostrarla.
- */
-@Schema({ collection: 'auth_sessions' })
-export class AuthSession {
-  @Prop({ type: Types.ObjectId, required: true, unique: true })
-  userId: Types.ObjectId;
-
-=======
 /** Quanti token ritirati si tengono: abbastanza per rinnovi simultanei, non una cronologia. */
 export const MAX_RETIRED_HASHES = 6;
 
@@ -54,7 +41,6 @@ export class AuthSession {
   @Prop({ type: [{ _id: false, hash: String, retiredAt: Date }], select: false, default: undefined })
   retiredRefreshHashes?: Array<{ hash: string; retiredAt: Date }>;
 
->>>>>>> develop
   @Prop({ type: Date, required: true })
   startedAt: Date;
 
@@ -70,9 +56,6 @@ export class AuthSession {
 
 export const AuthSessionSchema = SchemaFactory.createForClass(AuthSession);
 AuthSessionSchema.index({ lastSeenAt: 1 }, { expireAfterSeconds: SESSION_TTL_DAYS * 24 * 60 * 60 });
-<<<<<<< HEAD
-=======
 AuthSessionSchema.index({ userId: 1 });
 // Più sessioni per utente, ma una sola per (utente, sid). Le sessioni senza sid (precedenti) non entrano nell'indice.
 AuthSessionSchema.index({ userId: 1, sid: 1 }, { unique: true, partialFilterExpression: { sid: { $type: 'string' } } });
->>>>>>> develop

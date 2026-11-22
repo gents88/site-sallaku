@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LangUrlPipe } from '../../../../shared/pipes/lang-url.pipe';
 import { AuthService } from '../../../../core/services/auth.service';
 import { FeatureFlagsService } from '../../../../core/services/feature-flags.service';
 
@@ -24,7 +25,7 @@ function passwordsMatch(ctrl: AbstractControl) {
   imports: [
     CommonModule, ReactiveFormsModule, RouterLink,
     MatInputModule, MatFormFieldModule, MatButtonModule, MatIconModule, MatSnackBarModule,
-    TranslateModule,
+    TranslateModule, LangUrlPipe,
   ],
   template: `
     <div class="auth-page">
@@ -73,6 +74,11 @@ function passwordsMatch(ctrl: AbstractControl) {
             }
           </mat-form-field>
 
+          <p class="terms-note text-muted">
+            {{ 'auth.register_terms' | translate }}
+            <a [routerLink]="'/terms' | langUrl" target="_blank" rel="noopener">{{ 'footer.terms_link' | translate }}</a>.
+          </p>
+
           <button mat-raised-button color="primary" type="submit" [disabled]="loading || !flags.registrationEnabled()" class="submit-btn">
             @if (loading) { <mat-icon class="spin">sync</mat-icon> } @else { <mat-icon>person_add</mat-icon> }
             {{ (loading ? 'auth.registering' : 'auth.register_btn') | translate }}
@@ -95,6 +101,8 @@ function passwordsMatch(ctrl: AbstractControl) {
     .logo-bracket { color:var(--primary-500); }
     .form-field { width:100%; margin-bottom:0.5rem; }
     .feature-off-notice { margin:0 0 1rem; padding:0.75rem 1rem; border-radius:12px; border:1px solid var(--color-warning, #f59e0b); font-size:0.9rem; }
+    .terms-note { font-size:0.85rem; margin:0.25rem 0 0; }
+    .terms-note a { color: var(--brand-primary, #4f6af5); text-decoration: underline; }
     .submit-btn { width:100%; margin-top:0.75rem; padding:0.75rem; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
     .text-muted { color:var(--text-secondary); }
     @keyframes spin { to { transform:rotate(360deg); } } .spin { animation:spin 1s linear infinite; }

@@ -16,6 +16,7 @@ import { LanguageService, stripLangPrefix } from '../../../core/services/languag
 import { DrawerService } from '../../../core/services/drawer.service';
 import { SearchOverlayService } from '../../../core/services/search-overlay.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { TestimonialsService } from '../../../core/services/testimonials.service';
 import { NavEntry, homepageRoutes, navbarEntries } from '../../../core/navigation/nav-registry';
 import { LangUrlPipe } from '../../pipes/lang-url.pipe';
 import { SectionScrollSpy, bottomTabFor } from './section-scroll-spy';
@@ -64,6 +65,7 @@ export class NavbarComponent {
 
   private readonly homeRoutes = homepageRoutes();
   private readonly baseNavLinks = navbarEntries();
+  private readonly hasTestimonials = inject(TestimonialsService).hasPublic();
 
   readonly currentPath = toSignal(
     this.router.events.pipe(
@@ -78,8 +80,14 @@ export class NavbarComponent {
 
   readonly isAdminUser = computed(() => this.auth.isLoggedIn() && this.auth.isAdmin());
 
-  /** La voce Dashboard solo per gli admin: un utente 'user' veniva rimbalzato al login dall'authGuard. */
-  readonly desktopNavLinks = computed(() => (this.isAdminUser() ? [...this.baseNavLinks, DASHBOARD_LINK] : this.baseNavLinks));
+  /**
+   * La voce Dashboard solo per gli admin: un utente 'user' veniva rimbalzato al login dall'authGuard.
+   * Testimonianze solo quando ce n'è almeno una pubblicata: una pagina vuota nel menu era un segnale negativo.
+   */
+  readonly desktopNavLinks = computed(() => {
+    const links = this.hasTestimonials() ? this.baseNavLinks : this.baseNavLinks.filter(l => l.id !== 'testimonials');
+    return this.isAdminUser() ? [...links, DASHBOARD_LINK] : links;
+  });
 
   // Sul mobile, Progetti e Servizi hanno una tab dedicata nella bottom bar:
   // il loro <li> in nav-menu viene nascosto via CSS solo sotto i 900px, così
