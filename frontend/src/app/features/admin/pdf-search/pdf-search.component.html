@@ -92,7 +92,7 @@
           <div class="results-grid">
             @for (r of favorites(); track r.id) {
               <button type="button" class="result-card" [attr.title]="r.title" (click)="select(r)">
-                <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
                   @if (r.coverUrl && !coverFailed(r.id)) {
                     <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" (error)="onCoverError(r.id)" />
                   } @else {
@@ -105,7 +105,7 @@
                     <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
                   }
                   <div class="result-meta">
-                    <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                    <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
                       {{ r.sourceLabel }}
                     </span>
                   </div>
@@ -201,7 +201,7 @@
             [attr.title]="r.title"
             (click)="select(r)"
           >
-            <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+            <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
               @if (r.coverUrl && !coverFailed(r.id)) {
                 <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" (error)="onCoverError(r.id)" />
               } @else {
@@ -218,7 +218,7 @@
                 <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
               }
               <div class="result-meta">
-                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
                   {{ r.sourceLabel }}
                 </span>
                 @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
