@@ -71,7 +71,8 @@
       "ai_assistant": "Asistenti AI",
       "live_chat": "Bisedë live",
       "sign_pdf": "Nënshkruaj PDF",
-      "compress_pdf": "Ngjesh PDF"
+      "compress_pdf": "Ngjesh PDF",
+      "image_tools": "Foto dhe HEIC"
     }
   },
   "lang": {
@@ -1535,7 +1536,9 @@
     "sign_pdf_title": "Nënshkruaj PDF",
     "sign_pdf_desc": "Nënshkruaj një PDF me nënshkrim të vizatuar, të shkruar ose të ngarkuar dhe shto tekst, datë dhe shenja.",
     "compress_pdf_title": "Ngjesh PDF",
-    "compress_pdf_desc": "Zvogëlo madhësinë e një PDF-je për ta dërguar me email ose ngarkuar, me tre nivele ngjeshjeje."
+    "compress_pdf_desc": "Zvogëlo madhësinë e një PDF-je për ta dërguar me email ose ngarkuar, me tre nivele ngjeshjeje.",
+    "image_tools_title": "Foto: HEIC në JPG, ndrysho madhësinë, ngjesh",
+    "image_tools_desc": "Konverto foto HEIC në JPG, ndrysho madhësinë dhe ngjesh shumë imazhe njëherësh dhe hiq të dhënat GPS."
   },
   "about_manage": {
     "title": "Seksioni About",
@@ -3145,6 +3148,39 @@
           "a": "Po, falas dhe pa regjistrim."
         }
       ]
+    },
+    "image_tools": {
+      "about": "Ky mjet konverton foto mes JPG, PNG dhe WebP, kthen fotot HEIC të iPhone në JPG dhe i zvogëlon imazhet duke ndryshuar madhësinë dhe duke ulur cilësinë. Mund të përpunosh deri në 40 imazhe njëherësh dhe t’i shkarkosh së bashku në një ZIP. Gjithçka ndodh në shfletuesin tënd dhe vendndodhja dhe të dhënat e tjera të fshehura të çdo fotoje hiqen nga skedari i ri.",
+      "steps": [
+        "Hiq fotot në kuti ose zgjidhi nga pajisja (HEIC, JPG, PNG, WebP…).",
+        "Zgjidh formatin, anën më të gjatë (p.sh. 1920 px për internet ose email) dhe, për JPG dhe WebP, cilësinë.",
+        "Shtyp “Konverto” dhe kontrollo madhësinë para dhe pas për çdo imazh.",
+        "Shkarko skedarët një nga një ose të gjithë së bashku në një ZIP."
+      ],
+      "privacy": "Imazhet përpunohen tërësisht në shfletuesin tënd dhe nuk ngarkohen kurrë. Skedarët e rinj nuk kanë pozicion GPS, të dhëna kamere ose metadata të tjera.",
+      "limits": "Herën e parë që hap një skedar HEIC shfletuesi shkarkon një dekodues të vogël, që mund të zgjasë disa sekonda (Safari e hap HEIC drejtpërdrejt). Fotot mbi rreth 64 megapiksel anashkalohen dhe kufiri është 40 skedarë deri në 60 MB. Konvertimi i përsëritur i një imazhi me humbje e keqëson pak cilësinë: ruaji origjinalet.",
+      "faq": [
+        {
+          "q": "Si konvertohet HEIC në JPG?",
+          "a": "Hiq këtu fotot HEIC, lëre formatin në JPG dhe shtyp Konverto. Mund t’i shkarkosh një nga një ose në ZIP."
+        },
+        {
+          "q": "A ngarkohen fotot e mia diku?",
+          "a": "Jo. Konvertohen në shfletuesin tënd dhe nuk dalin kurrë nga pajisja jote."
+        },
+        {
+          "q": "A hiqet vendndodhja GPS?",
+          "a": "Po. Skedarët e rinj krijohen vetëm nga pikselët e imazhit, ndaj vendndodhja, modeli i kamerës dhe metadata të tjera nuk kopjohen."
+        },
+        {
+          "q": "Çfarë madhësie të zgjedh për email ose internet?",
+          "a": "Një anë e gjatë 1920 px me cilësi 80–85% është një ekuilibër i mirë. Përdor 1280 px ose më pak për paraqitje të vogla."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3312,5 +3348,48 @@
     "err_open": "Kjo PDF nuk u hap. Mund të jetë e dëmtuar ose e mbrojtur me fjalëkalim.",
     "err_compress": "PDF-ja nuk u ngjesh. Provo një nivel tjetër ose një skedar më të vogël.",
     "err_too_many_pages": "Kjo PDF ka shumë faqe për shfletuesin (kufiri 400)."
+  },
+  "image_tools": {
+    "title": "Foto: HEIC në JPG, ndrysho madhësinë, ngjesh",
+    "subtitle": "Konverto fotot HEIC të iPhone në JPG, ndrysho madhësinë dhe ngjesh shumë imazhe njëherësh — në shfletues, pa i ngarkuar.",
+    "seo_title": "Konverto HEIC në JPG, Ndrysho Madhësinë dhe Ngjesh Imazhe Online Falas",
+    "seo_description": "Konverto HEIC në JPG, ndrysho madhësinë dhe ngjesh foto online falas. Shumë imazhe njëherësh, pa të dhëna GPS, shkarkim në ZIP. Gjithçka ndodh në shfletuesin tënd — asgjë nuk ngarkohet.",
+    "drop_prompt": "Hiq fotot këtu ose kliko për t’i zgjedhur",
+    "add_more": "Shto më shumë foto",
+    "drop_hint": "HEIC, JPG, PNG, WebP, GIF, BMP — deri në 40 skedarë njëherësh",
+    "privacy_note": "Fotot mbeten në pajisjen tënde dhe nuk ngarkohen kurrë. Vendndodhja (GPS) dhe të dhëna të tjera të fshehura hiqen nga skedarët e rinj.",
+    "workspace_banner_title": "Ka një imazh në Workspace",
+    "workspace_banner_use": "Përdore",
+    "workspace_banner_dismiss": "Injoro",
+    "files_title": "{{count}} skedarë të zgjedhur",
+    "clear_all": "Hiqi të gjithë",
+    "remove": "Hiq",
+    "format_label": "Ruaje si",
+    "fmt_jpeg": "JPG",
+    "fmt_jpeg_desc": "Më i miri për foto. I lehtë dhe i pranuar kudo.",
+    "fmt_png": "PNG",
+    "fmt_png_desc": "Pa humbje cilësie dhe ruan tejdukshmërinë. Skedarë më të mëdhenj.",
+    "fmt_webp": "WebP",
+    "fmt_webp_desc": "Më i lehti për internet. Nuk pranohet nga çdo program.",
+    "size_label": "Ana më e gjatë",
+    "size_original": "Madhësia origjinale",
+    "quality_label": "Cilësia",
+    "btn_convert": "Konverto",
+    "progress": "Imazhi {{done}} nga {{total}}",
+    "decoding_heic": "Po dekodohet HEIC (herën e parë mund të zgjasë disa sekonda)",
+    "cancel": "Anulo",
+    "cancelled": "Konvertimi u anulua.",
+    "result_title": "{{count}} të konvertuara",
+    "smaller": "{{percent}}% më të lehta",
+    "bigger": "{{percent}}% më të rënda",
+    "download": "Shkarko",
+    "download_zip": "Shkarko të gjitha (ZIP)",
+    "workspace_send": "Dërgo te Workspace",
+    "failed_title": "{{count}} nuk u konvertuan",
+    "failed_hint": "Skedari mund të jetë i dëmtuar, shumë i madh ose në një format që shfletuesi nuk e hap.",
+    "err_all_failed": "Asnjë skedar nuk u konvertua.",
+    "note_skipped": "{{count}} skedar(ë) u anashkaluan: nuk janë imazhe.",
+    "note_too_big": "{{count}} skedar(ë) u anashkaluan: mbi {{max}} MB.",
+    "note_limit": "U shtuan vetëm {{max}} skedarët e parë."
   }
 }

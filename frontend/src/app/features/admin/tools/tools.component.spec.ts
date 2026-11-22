@@ -28,7 +28,7 @@ describe('ToolsComponent (Lab)', () => {
     expect(component.aiCards.map(c => c.route)).toEqual([
       '/lab/pdf-search', '/lab/library', '/lab/pdf-summary', '/lab/ai-formatter', '/lab/pdf-translate', '/lab/ai-ppt',
     ]);
-    expect(component.toolCards).toHaveLength(8);
+    expect(component.toolCards).toHaveLength(9);
   });
 
   it('keeps the language prefix on card links (regression: /en/lab linked to Italian pages)', () => {

@@ -25,6 +25,7 @@ interface LabToolRelations {
 export const LAB_RELATIONS: Readonly<Record<string, LabToolRelations>> = {
   ocr: { tools: ['image-to-text', 'scanner', 'pdf-editor', 'convert', 'pdf-summary'], articles: ['ocr-online-estrarre-testo-da-scansioni-e-foto', 'scansionare-documenti-con-il-telefono-senza-scanner'] },
   scanner: { tools: ['ocr', 'pdf-editor', 'sign-pdf', 'compress-pdf', 'convert'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'ocr-online-estrarre-testo-da-scansioni-e-foto'] },
+  'image-tools': { tools: ['jpg-to-pdf', 'ocr', 'scanner', 'compress-pdf'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner'] },
   'compress-pdf': { tools: ['pdf-editor', 'sign-pdf', 'viewer', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   'sign-pdf': { tools: ['pdf-editor', 'viewer', 'scanner', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   'pdf-editor': { tools: ['merge-pdf', 'split-pdf', 'rotate-pdf', 'sign-pdf', 'compress-pdf', 'viewer', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
@@ -37,7 +38,7 @@ export const LAB_RELATIONS: Readonly<Record<string, LabToolRelations>> = {
   'ai-formatter': { tools: ['editor', 'ai-ppt', 'pdf-summary'], articles: ['intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
   'pdf-to-word': { tools: ['word-to-pdf', 'ocr', 'editor', 'merge-pdf'], articles: ['come-convertire-pdf-in-word-senza-perdere-formattazione', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
   'word-to-pdf': { tools: ['pdf-to-word', 'merge-pdf', 'jpg-to-pdf', 'editor'], articles: ['come-convertire-pdf-in-word-senza-perdere-formattazione', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
-  'jpg-to-pdf': { tools: ['merge-pdf', 'scanner', 'pdf-to-word', 'image-to-text'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'unire-dividere-ruotare-pdf-senza-caricarli-online'] },
+  'jpg-to-pdf': { tools: ['merge-pdf', 'image-tools', 'scanner', 'image-to-text'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'unire-dividere-ruotare-pdf-senza-caricarli-online'] },
   'merge-pdf': { tools: ['split-pdf', 'rotate-pdf', 'jpg-to-pdf', 'viewer'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online'] },
   'split-pdf': { tools: ['merge-pdf', 'rotate-pdf', 'pdf-to-word', 'viewer'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   'rotate-pdf': { tools: ['merge-pdf', 'split-pdf', 'viewer', 'image-to-text'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online'] },
