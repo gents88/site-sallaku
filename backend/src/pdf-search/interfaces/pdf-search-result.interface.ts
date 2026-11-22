@@ -1,4 +1,4 @@
-export type PdfSource = 'internet_archive' | 'gutenberg' | 'arxiv' | 'pmc';
+export type PdfSource = 'internet_archive' | 'gutenberg' | 'arxiv' | 'pmc' | 'zenodo' | 'wikimedia';
 
 export interface PdfSearchResult {
   id: string;

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, finalize, catchError, throwError } from 'rxjs';
 import { environment } from '@env/environment';
 
-export type PdfSource = 'internet_archive' | 'gutenberg' | 'arxiv' | 'pmc';
+export type PdfSource = 'internet_archive' | 'gutenberg' | 'arxiv' | 'pmc' | 'zenodo' | 'wikimedia';
 
 export interface PdfSearchResult {
   id: string;
