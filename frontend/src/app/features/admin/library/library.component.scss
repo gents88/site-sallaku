@@ -273,6 +273,14 @@ h1 {
   animation: slide-in .22s ease;
 }
 @keyframes slide-in { from { transform: translateX(100%) } to { transform: translateX(0) } }
+/* Telefono: la tab bar del sito sta sopra questo pannello, che finiva con il campo di
+   domanda e il pulsante Invia nascosti sotto di lei. */
+@media (max-width: 900px) {
+  .chat-panel {
+    bottom: calc(var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
+    width: 100vw; border-left: 0;
+  }
+}
 
 .chat-header {
   display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;

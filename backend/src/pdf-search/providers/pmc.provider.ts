@@ -24,6 +24,9 @@ function cleanText(input: string): string {
   return decoded.replace(/<[^>]+>/g, '').trim();
 }
 
+const VERDICT_TTL_MS = 60 * 60 * 1000;
+const VERDICT_CACHE_MAX = 500;
+
 /**
  * PubMed Central via the Europe PMC REST API (free, no key). Only the
  * open-access subset with a PDF actually available (HAS_PDF:Y) is queried.
@@ -36,6 +39,7 @@ function cleanText(input: string): string {
 export class PmcProvider implements PdfSearchProvider {
   readonly source = 'pmc' as const;
   private readonly logger = new Logger(PmcProvider.name);
+  private readonly verdicts = new Map<string, { ok: boolean; until: number }>();
 
   async search(query: string, limit: number): Promise<PdfSearchResult[]> {
     // Scoped to TITLE:(...), not a bare unqualified query: Europe PMC's
@@ -62,14 +66,40 @@ export class PmcProvider implements PdfSearchProvider {
         return [];
       }
       const data = (await res.json()) as EuropePmcResponse;
-      const results = data.resultList?.result ?? [];
-      return results
+      const results = (data.resultList?.result ?? [])
         .map((r) => this.toResult(r))
         .filter((r): r is PdfSearchResult => r !== null);
+      // HAS_PDF:Y non basta: per alcuni articoli Europe PMC poi risponde
+      // "Failed to retrieve PDF". Si scartano quelli che il PDF non lo danno davvero.
+      const available = await Promise.all(results.map((r) => this.pdfAvailable(r.pdfUrl)));
+      return results.filter((_, i) => available[i]);
     } catch (err) {
       this.logger.warn(`Europe PMC search failed: ${(err as Error).message}`);
       return [];
     }
+  }
+
+  /**
+   * Il PDF si scarica davvero? Vale solo un "no" certo (risposta non-OK o non PDF):
+   * un timeout o un errore di rete non scartano il risultato, perché dipendono dal
+   * momento e non dall'articolo. Gli esiti si ricordano per un'ora.
+   */
+  private async pdfAvailable(url: string): Promise<boolean> {
+    const cached = this.verdicts.get(url);
+    if (cached && cached.until > Date.now()) return cached.ok;
+
+    let ok = true;
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(6_000) });
+      ok = res.ok && (res.headers.get('content-type') ?? '').includes('application/pdf');
+      void res.body?.cancel().catch(() => undefined); // basta l'intestazione, non si scarica il file
+    } catch {
+      return true;
+    }
+
+    if (this.verdicts.size >= VERDICT_CACHE_MAX) this.verdicts.clear();
+    this.verdicts.set(url, { ok, until: Date.now() + VERDICT_TTL_MS });
+    return ok;
   }
 
   private toResult(r: EuropePmcResult): PdfSearchResult | null {

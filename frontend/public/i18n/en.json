@@ -1073,7 +1073,7 @@
     "prev_slide": "Previous slide",
     "next_slide": "Next slide",
     "seo_title": "AI Presentation Generator",
-    "seo_description": "Generate a complete professional presentation from any topic in seconds. Up to 20 slides with titles, bullet points, speaker notes and 5 style themes. Free AI presentation maker online."
+    "seo_description": "AI presentation generator: create slides from a topic in seconds, with titles, bullet points and speaker notes. 5 to 20 slides, free."
   },
   "ai_formatter": {
     "title": "AI Formatter",
@@ -1129,7 +1129,7 @@
     "copied": "Copied",
     "copy": "Copy",
     "seo_title": "AI Text Formatter",
-    "seo_description": "Transform unformatted text, meeting notes or raw AI content into structured professional documents instantly. Supports reports, proposals, résumés, articles and more. Free online AI formatter."
+    "seo_description": "AI text formatter: turn rough notes or AI text into a tidy document with headings and lists. Preview or Markdown, free."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1164,7 +1164,7 @@
     "err_generic": "An error occurred while analyzing the file.",
     "remove_file": "Remove file",
     "seo_title": "AI PDF Summarizer: Key Points in Seconds",
-    "seo_description": "Upload any PDF, Word or TXT file and get an AI-powered summary instantly. Short summary, detailed analysis, bullet points or key insights. Free AI document summarizer online.",
+    "seo_description": "AI PDF summarizer: upload a PDF, Word or TXT file and get a summary with the key points in seconds. Free, up to 20 MB.",
     "reading_stats": "{{words}} words · ~{{min}} min read"
   },
   "workspace": {
@@ -1261,7 +1261,7 @@
     "upload_aria": "Upload a PDF file",
     "remove_file": "Remove file",
     "seo_title": "AI PDF Translator: Keeps Your Pages",
-    "seo_description": "Translate any PDF to 12 languages while keeping the same page count and page format. Enterprise-grade AI translation. Free online PDF translator — no signup needed."
+    "seo_description": "AI PDF translator: translate a PDF into 12 languages keeping the same pages and page size. Free, scanned PDFs supported via OCR."
   },
   "pdf_search": {
     "title": "PDF Search",
@@ -1330,14 +1330,18 @@
     "preview_prev_page": "Previous page",
     "preview_next_page": "Next page",
     "seo_title": "Free PDF Book Search: Public Domain",
-    "seo_description": "Search and download public domain books, scientific papers and open-access articles with no copyright issues. Search Internet Archive, Project Gutenberg, arXiv and PubMed Central with a preview before downloading.",
+    "seo_description": "Search and download public-domain books, papers and open-access PDFs from Internet Archive, Project Gutenberg and arXiv. Free.",
     "filter_favorites": "Favorites",
     "results_count": "{{count}} results",
     "btn_copy_link": "Copy link",
     "link_copied": "Link copied",
     "preview_goto_page": "Go to page",
     "zoom_out": "Zoom out",
-    "zoom_in": "Zoom in"
+    "zoom_in": "Zoom in",
+    "preview_failed": "We couldn't load this PDF. It may be too large, the source may not be responding, or the file may be unreadable. Try again, or use “Download PDF” to open it from the source.",
+    "preview_blank": "This page appears to be blank. It may be a genuinely blank page of the document (cover, back of a leaf): try › to move forward. If every page stays blank, download the PDF or open it from the source.",
+    "preview_page_error": "We couldn't display this page. Try again, or download the PDF to read it.",
+    "preview_retry": "Try again"
   },
   "convert": {
     "title": "Converter",
@@ -1525,7 +1529,7 @@
     "my_files_title": "My files",
     "my_files_desc": "Find the results you have saved from the AI tools",
     "seo_title": "Free PDF and AI Tools Online",
-    "seo_description": "Free AI-powered online tools: PDF translator, AI presentation generator, text formatter and PDF summarizer. Professional document tools. No signup required."
+    "seo_description": "Free PDF and AI tools online: OCR, converter, editor, viewer, scanner, translator, summarizer and presentation generator."
   },
   "about_manage": {
     "title": "About Section",
@@ -1672,7 +1676,7 @@
     "delete": "Delete",
     "persistence_hint": "Changes are not saved: they are lost if you reload or close this tab.",
     "seo_title": "Free PDF Editor: Merge, Split, Rotate",
-    "seo_description": "Merge PDFs, split and extract pages, rotate or delete pages and add watermarks — entirely in your browser, files never leave your device.",
+    "seo_description": "Free online PDF editor: merge, split, rotate and delete pages and add a watermark, right in your browser without uploading files.",
     "undo": "Undo",
     "duplicate": "Duplicate page",
     "undone": "Change undone"
@@ -1711,7 +1715,7 @@
     "prev_match": "Previous match",
     "next_match": "Next match",
     "seo_title": "Free Online PDF Viewer",
-    "seo_description": "View PDF documents in your browser: page navigation, zoom, full-text search and thumbnail preview. Free, private, no upload."
+    "seo_description": "Free online PDF viewer: zoom, text search, page thumbnails and highlighter, entirely in your browser. Your file is never uploaded."
   },
   "scanner": {
     "title": "Document Scanner",
@@ -1765,7 +1769,7 @@
     "err_camera_unsupported": "Camera unavailable in this browser or insecure connection (HTTPS required). You can still upload an image.",
     "persistence_hint": "Captured pages are not saved: they are lost if you reload or close this tab.",
     "seo_title": "Online Document Scanner: Photo to PDF",
-    "seo_description": "Scan documents with your webcam or phone camera, crop and enhance them, and export as PDF. Free, no signup."
+    "seo_description": "Online document scanner: use your phone or webcam camera, crop and enhance pages and export a PDF. Free, no signup."
   },
   "library": {
     "badge": "New",
@@ -2905,6 +2909,228 @@
         }
       ]
     },
-    "try_tool": "Try the free tool now"
+    "try_tool": "Try the free tool now",
+    "pdf_to_word": {
+      "about": "This tool turns a PDF into a Word (DOCX) document you can edit: text, headings, paragraphs and lists become editable again without retyping anything. Use it when you receive a contract, a form or a report as a PDF and need to correct it, complete it or reuse its content.",
+      "steps": [
+        "Click “Convert PDF to Word” and upload the PDF file.",
+        "Start the conversion and wait a few seconds.",
+        "Download the Word document and open it in Word or another word processor."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. The file is used only to run the conversion you requested.",
+      "limits": "The file can be up to 50 MB. PDFs with selectable text usually keep headings, paragraphs and lists, but very complex tables and layouts may need small touch-ups in Word. A scanned PDF is made of images and does not become editable text: extract the text first with the OCR tool.",
+      "faq": [
+        {
+          "q": "Is the formatting preserved?",
+          "a": "With PDFs that contain selectable text, headings, paragraphs and lists are usually preserved well. Very elaborate layouts, complex tables or multiple columns may need some touch-ups after conversion."
+        },
+        {
+          "q": "Can I convert a scanned PDF?",
+          "a": "Not directly: a scan is a set of images. Extract the text first with the OCR tool, then work on the resulting text."
+        },
+        {
+          "q": "Do I need to install anything?",
+          "a": "No, the conversion happens online in any browser. To edit the result you need Word or another program that supports the DOCX format."
+        }
+      ]
+    },
+    "word_to_pdf": {
+      "about": "This tool turns a Word document (DOC or DOCX) into a PDF: the ideal format for sharing, sending or printing a file without the layout changing on the recipient's computer. It is useful for CVs, contracts, letters and reports.",
+      "steps": [
+        "Click “Convert Word to PDF” and upload the DOC or DOCX document.",
+        "Start the conversion and wait a few seconds.",
+        "Download the PDF and share or print it."
+      ],
+      "privacy": "To convert the file it is sent to our server, which processes it and returns the result. The file is used only to run the conversion you requested.",
+      "limits": ".doc and .docx files up to 50 MB are accepted. The result depends on the source document: check the PDF before sending it, especially if it contains tables, images or unusual fonts.",
+      "faq": [
+        {
+          "q": "Which Word formats are accepted?",
+          "a": "Both .docx files and the older .doc, up to 50 MB."
+        },
+        {
+          "q": "Will the PDF layout match the Word document?",
+          "a": "Usually yes, but the result depends on the document: with tables, images or unusual fonts it is worth checking the PDF before sharing it."
+        },
+        {
+          "q": "Can I merge several PDFs after converting them?",
+          "a": "Yes: you can merge them with the “Merge PDF” page, which works right in your browser."
+        }
+      ]
+    },
+    "jpg_to_pdf": {
+      "about": "This tool turns one or more images (JPG, PNG or WEBP) into a single PDF. It is useful for sending photos of documents, receipts or notes as one tidy file, or for creating a PDF from a series of shots.",
+      "steps": [
+        "Click “Convert images to PDF” and upload one or more images.",
+        "Start the conversion and wait a few seconds.",
+        "Download the resulting PDF."
+      ],
+      "privacy": "Images are sent to our server to create the PDF and are used only for this operation.",
+      "limits": "PNG, JPG and WEBP images are accepted, up to 50 MB each and up to 20 files at a time, which end up in a single PDF. To get text you can copy, use the OCR tool afterwards.",
+      "faq": [
+        {
+          "q": "Can I put several images in one PDF?",
+          "a": "Yes, you can upload up to 20 images together and get a single PDF."
+        },
+        {
+          "q": "Which image formats are accepted?",
+          "a": "JPG (JPEG), PNG and WEBP."
+        },
+        {
+          "q": "Will the PDF text be selectable?",
+          "a": "As a rule the PDF contains the images of the pages, not selectable text. To extract the text use the OCR tool."
+        }
+      ]
+    },
+    "merge_pdf": {
+      "about": "With this tool you combine two or more PDFs into a single document, without installing any software. You can reorder the pages by dragging them and delete the ones you do not need before downloading the final file. Use it to bring contracts, forms, receipts or chapters together in one PDF.",
+      "steps": [
+        "Drag the PDFs into the upload area, or click it to choose them: if you pick more than one they are placed in sequence.",
+        "In the preview, drag pages to change their order, rotate or delete the ones you do not need.",
+        "Export the PDF and download it."
+      ],
+      "privacy": "Files are processed entirely in your browser: they are not uploaded to any server. You can work on confidential documents without sharing them with third parties.",
+      "limits": "Changes are not saved: if you reload or close the tab you lose them, so download the result before leaving. A password-protected or very large PDF may not open or may slow down the browser, because your device does the work.",
+      "faq": [
+        {
+          "q": "How do I merge two PDFs?",
+          "a": "Upload both files together: they appear in sequence and you can reorder the pages by dragging them. Then export the result as a single PDF."
+        },
+        {
+          "q": "Are my PDFs uploaded online?",
+          "a": "No. Merging happens in your browser, so the files stay on your device."
+        },
+        {
+          "q": "Can I merge only some pages of a PDF?",
+          "a": "Yes: delete the pages you do not need before exporting."
+        }
+      ]
+    },
+    "split_pdf": {
+      "about": "This tool lets you split a PDF and extract only the pages you need: you delete the extra ones or use a page range, and download the new PDF. It is useful for sending a single chapter, a form taken from a long document or only the signed pages.",
+      "steps": [
+        "Upload the PDF by dragging it into the upload area.",
+        "In the preview delete the pages you do not want, or use the page range to split the document.",
+        "Export the PDF and download it: you get a new file with only the pages you chose."
+      ],
+      "privacy": "Files are processed entirely in your browser: they are not uploaded to any server. You can work on confidential documents without sharing them with third parties.",
+      "limits": "Changes are not saved: if you reload or close the tab you lose them, so download the result before leaving. A password-protected or very large PDF may not open or may slow down the browser, because your device does the work.",
+      "faq": [
+        {
+          "q": "How do I extract a single page from a PDF?",
+          "a": "Upload the PDF, delete every page except the one you need and export the result."
+        },
+        {
+          "q": "Is the original PDF modified?",
+          "a": "No: you work in the browser and download a new PDF, while the source file stays as it is on your device."
+        },
+        {
+          "q": "Is the file uploaded to a server?",
+          "a": "No. Processing happens in your browser, so the file never leaves your device."
+        }
+      ]
+    },
+    "rotate_pdf": {
+      "about": "This tool rotates the pages of a PDF right in your browser: you can straighten a page that was scanned upside down, fix only the crooked ones and leave the others as they were. Then you download the corrected PDF, without installing any software.",
+      "steps": [
+        "Upload the PDF by dragging it into the upload area.",
+        "In the preview rotate the individual pages that are crooked or upside down.",
+        "Export the PDF and download it."
+      ],
+      "privacy": "Files are processed entirely in your browser: they are not uploaded to any server. You can work on confidential documents without sharing them with third parties.",
+      "limits": "Rotation changes the orientation of the pages, not their content. Changes are not saved: if you reload or close the tab you lose them, so download the result before leaving.",
+      "faq": [
+        {
+          "q": "Can I rotate only some pages?",
+          "a": "Yes: in the preview you rotate individual pages, and the ones you do not touch stay as they are."
+        },
+        {
+          "q": "Is the PDF uploaded online?",
+          "a": "No. Processing happens in your browser, so the file stays on your device."
+        },
+        {
+          "q": "Does it work with a PDF that was scanned upside down?",
+          "a": "Yes: rotate the upside-down pages and export the corrected PDF."
+        }
+      ]
+    },
+    "image_to_text": {
+      "about": "This tool turns a photo, a screenshot or a scanned page into text you can select, copy and edit, thanks to OCR (optical character recognition). Use it to recover the text from a photographed receipt, a slide or a printed document.",
+      "steps": [
+        "Drag the image (PNG, JPG, WEBP, BMP or TIFF) into the upload area.",
+        "Choose the language of the text: with the right one the result is far more accurate.",
+        "Start the recognition and copy the resulting text."
+      ],
+      "privacy": "Images are sent to our server only for recognition and are processed in memory, without being stored as an archive. You do not need to create an account.",
+      "limits": "You can upload up to 30 files or pages at a time; each image can be up to 15 MB. Quality depends on the photo: crooked, blurry or dim text reduces accuracy.",
+      "faq": [
+        {
+          "q": "How do I copy text from an image?",
+          "a": "Upload the image, choose the language and start the recognition: the extracted text appears below and you can copy it."
+        },
+        {
+          "q": "Does it also work with screenshots?",
+          "a": "Yes, with screenshots, photos of documents and scanned pages, as long as the text is legible."
+        },
+        {
+          "q": "Which languages does it recognise?",
+          "a": "Italian, English, Spanish, French, German, Portuguese and Albanian."
+        }
+      ]
+    }
+  },
+  "lab_intents": {
+    "pdf_to_word": {
+      "label": "PDF to Word",
+      "seo_title": "PDF to Word Online Free: Convert to DOCX",
+      "seo_description": "Convert PDF to Word (DOCX) online for free: upload the file and download the editable document in seconds. Up to 50 MB.",
+      "h1": "Convert PDF to Word",
+      "lead": "Turn a PDF into an editable Word (DOCX) document: upload the file, start the conversion and download the result.",
+      "cta": "Convert PDF to Word"
+    },
+    "word_to_pdf": {
+      "label": "Word to PDF",
+      "seo_title": "Word to PDF Online Free: Convert DOCX",
+      "seo_description": "Convert Word (DOC and DOCX) to PDF online for free: upload the document and download the PDF in seconds. Up to 50 MB.",
+      "h1": "Convert Word to PDF",
+      "lead": "Turn a Word document (DOC or DOCX) into a PDF ready to share or print: upload the file and download the result.",
+      "cta": "Convert Word to PDF"
+    },
+    "jpg_to_pdf": {
+      "label": "JPG to PDF",
+      "seo_title": "JPG to PDF Online Free: Images into One PDF",
+      "seo_description": "Convert JPG, PNG and WEBP to PDF online for free: upload one or more images and download a single PDF. Up to 20 files at a time.",
+      "h1": "Convert JPG to PDF",
+      "lead": "Turn one or more images (JPG, PNG, WEBP) into a single PDF: upload the files, start the conversion and download the document.",
+      "cta": "Convert images to PDF"
+    },
+    "merge_pdf": {
+      "label": "Merge PDF",
+      "seo_title": "Merge PDF Free: Combine Files into One",
+      "seo_description": "Merge several PDFs into one file right in your browser, without uploading them to any server. Reorder pages and download the result. Free.",
+      "h1": "Merge PDF",
+      "lead": "Combine two or more PDFs into a single document: drop them here, reorder the pages and download the final PDF. All in your browser."
+    },
+    "split_pdf": {
+      "label": "Split PDF",
+      "seo_title": "Split PDF Free: Extract Pages",
+      "seo_description": "Split a PDF and extract only the pages you need, in your browser and without uploading the file. Delete extra pages and download the result.",
+      "h1": "Split PDF",
+      "lead": "Split a PDF into parts or keep only the pages you need: delete the others and download the result. All in your browser."
+    },
+    "rotate_pdf": {
+      "label": "Rotate PDF",
+      "seo_title": "Rotate PDF Free: Straighten Pages",
+      "seo_description": "Rotate PDF pages online for free, in your browser and without uploading the file. Straighten only the crooked pages and download the fixed PDF.",
+      "h1": "Rotate PDF",
+      "lead": "Straighten upside-down or crooked PDF pages: rotate only the ones you need and download the corrected document. In your browser."
+    },
+    "image_to_text": {
+      "label": "Image to text",
+      "seo_title": "Image to Text: Free Online OCR",
+      "seo_description": "Extract text from photos, screenshots and images with free online OCR, in 7 languages and without signing up. Copy the text in seconds.",
+      "h1": "Image to text",
+      "lead": "Turn a photo, a screenshot or a scanned page into text you can copy and edit: upload the image and choose the language."
+    }
   }
 }

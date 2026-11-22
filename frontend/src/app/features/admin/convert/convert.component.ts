@@ -15,6 +15,7 @@ import {
 } from '../../../core/services/conversion.service';
 import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
 import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
+import { labIntent } from '../../../core/navigation/lab-intents';
 
 type Step = 'preview' | 'convert';
 type Kind = 'pdf' | 'image' | 'text' | 'base64' | 'unknown';
@@ -47,6 +48,8 @@ export class ConvertComponent implements OnInit, OnDestroy {
   private readonly t   = inject(TranslateService);
   private readonly seo = inject(SeoService);
   private readonly labInfo = inject(LabInfoService);
+  /** La pagina: lo strumento o una pagina per ricerca specifica che lo riusa (rotta con data.labIntent). */
+  readonly page = this.labInfo.page('convert');
   private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
 
@@ -58,6 +61,9 @@ export class ConvertComponent implements OnInit, OnDestroy {
   // settles instead — see the afterNextRender() call below.
   readonly favorites   = signal<Set<string>>(new Set());
   readonly totalCount  = CONVERSION_TYPES.length;
+  /** Conversione proposta dalla pagina per ricerca specifica (es. PDF in Word → pdf-to-docx), se c'è. */
+  readonly intentDef: ConversionDef | null =
+    (CONVERSION_TYPES as unknown as ConversionDef[]).find(c => c.id === labIntent(this.page.intent)?.conversion) ?? null;
 
   /** Blog cross-link: real, relevant existing post — see task note in this file's PR. */
   readonly blogGuideUrl = '/blog/come-convertire-pdf-in-word-senza-perdere-formattazione';
@@ -114,33 +120,31 @@ export class ConvertComponent implements OnInit, OnDestroy {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: this.t.instant('convert.seo_title'),
-      description: this.t.instant('convert.seo_description', { count: this.totalCount }),
-      url: `${SITE_ORIGIN}${withLangPrefix('/lab/convert', this.langService.current())}`,
+      title: this.t.instant(this.page.titleKey),
+      description: this.t.instant(this.page.descriptionKey, { count: this.totalCount }),
+      url: `${SITE_ORIGIN}${withLangPrefix(this.page.path, this.langService.current())}`,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Free File Converter',
-      description: `Convert files between PDF, Word, Excel, images and other formats — ${this.totalCount} conversion types, entirely in the browser.`,
-      url: 'https://gentsallaku.it/lab/convert',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['PDF to Word/Text/HTML', 'Word to PDF', 'Excel/CSV conversion', 'Image format conversion', 'Base64 encode/decode', 'Favorites & instant search'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      ...this.labInfo.appFields(this.page.id),
     },
-    ...this.labInfo.faqSchemas('convert'),
+    ...this.labInfo.faqSchemas(this.page.id),
     this.seo.breadcrumb([
       { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
       { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
-      { name: this.t.instant('sidebar.items.convert'), url: 'https://gentsallaku.it/lab/convert' },
+      { name: this.t.instant(this.page.labelKey), url: `${SITE_ORIGIN}${withLangPrefix(this.page.path, this.langService.current())}` },
     ]),
     ]);
     this.breadcrumbItems = [
       { label: this.t.instant('nav.home'), path: '/' },
       { label: this.t.instant('sidebar.lab'), path: '/lab' },
-      { label: this.t.instant('sidebar.items.convert') },
+      { label: this.t.instant(this.page.labelKey) },
     ];
   }
 

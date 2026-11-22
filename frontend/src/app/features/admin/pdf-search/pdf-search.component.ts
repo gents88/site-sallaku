@@ -15,6 +15,7 @@ import { PdfjsService, PdfDocument } from '../../../core/services/pdfjs.service'
 import { PdfSearchService, PdfSearchResult, PdfSource } from '../../../core/services/pdf-search.service';
 import { LibraryService } from '../../../core/services/library.service';
 import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
 const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg', 'wikimedia'];
@@ -73,6 +74,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   private readonly service = inject(PdfSearchService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly workspace = inject(WorkspaceService);
   private readonly analytics = inject(AnalyticsTrackingService);
@@ -181,6 +183,11 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
   readonly canvasViewerLoading = signal(false);
   readonly canvasViewerFailed = signal(false);
   readonly canvasPageRendering = signal(false);
+  /** La pagina mostrata risulta interamente bianca (pagina vuota del documento o canvas non gestibile). */
+  readonly canvasPageBlank = signal(false);
+  /** La pagina richiesta non si è riusciuta a disegnare. */
+  readonly canvasPageError = signal(false);
+  private readonly blankPages = new Set<string>();
   readonly zoomIndex = signal(DEFAULT_ZOOM_INDEX);
   readonly zoomPercent = computed(() => Math.round((ZOOM_LEVELS[this.zoomIndex()] / ZOOM_LEVELS[DEFAULT_ZOOM_INDEX]) * 100));
   readonly canZoomIn = computed(() => this.zoomIndex() < ZOOM_LEVELS.length - 1);
@@ -310,13 +317,11 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'Ricerca PDF',
-        description: 'Motore di ricerca PDF di pubblico dominio, paper scientifici e articoli accademici open access su Internet Archive, Project Gutenberg, arXiv e PubMed Central, con anteprima integrata.',
-        url: 'https://gentsallaku.it/lab/pdf-search',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        ...this.labInfo.appFields('pdf-search'),
       },
       // FAQPage schema — eligible for expandable Q&A rich results in Google's
       // SERP, which raises click-through even without ranking #1. Kept in
@@ -424,6 +429,9 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     for (const url of this.pageCache.values()) URL.revokeObjectURL(url);
     this.pageCache.clear();
     this._revokeCanvasPage();
+    this.blankPages.clear();
+    this.canvasPageBlank.set(false);
+    this.canvasPageError.set(false);
     const doc = this.pdfDoc;
     this.pdfDoc = null;
     void doc?.loadingTask?.destroy?.();
@@ -621,7 +629,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     }
     const token = this.previewToken;
     const page = await doc.getPage(pageNum);
-    const blob = await this.pdfjs.renderPageToBlob(page, scale, { maxPixels: MAX_PAGE_PIXELS, retryIfBlank: true });
+    const blob = await this.pdfjs.renderPageToBlob(page, scale, { maxPixels: MAX_PAGE_PIXELS, retryIfBlank: true, onBlank: () => this.blankPages.add(key) });
     page.cleanup?.();
     if (token !== this.previewToken) return null;
     const url = URL.createObjectURL(blob);
@@ -640,16 +648,33 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     const token = this.previewToken;
     const pageNum = this.canvasPageNum();
     this.canvasPageRendering.set(true);
+    this.canvasPageError.set(false);
     try {
       const url = await this.rasterPage(pageNum);
       // Click rapidi su ›: vince solo l'ultima pagina richiesta.
       if (!url || token !== this.previewToken || pageNum !== this.canvasPageNum()) return;
       this._pdfPageObjectUrl = url;
+      this.canvasPageBlank.set(this.blankPages.has(`${ZOOM_LEVELS[this.zoomIndex()]}:${pageNum}`));
       this.canvasPageUrl.set(url);
       void this.prefetchPage(pageNum + 1);
+    } catch (err) {
+      // Il primo caricamento gestisce l'errore da sé (anteprima non disponibile); qui è una pagina successiva.
+      if (this.canvasViewerLoading()) throw err;
+      if (token === this.previewToken && pageNum === this.canvasPageNum()) this.canvasPageError.set(true);
     } finally {
       if (token === this.previewToken) this.canvasPageRendering.set(false);
     }
+  }
+
+  /** "Riprova" dopo che l'intero PDF non si è caricato. */
+  retryCanvasPreview(): void {
+    const sel = this.selected();
+    if (sel) this.loadCanvasPreview(sel);
+  }
+
+  /** "Riprova" dopo che una pagina non si è disegnata. */
+  retryCanvasPage(): void {
+    void this.renderCanvasPage();
   }
 
   /** Pre-renderizza la pagina successiva a riposo, così "›" è istantaneo. */

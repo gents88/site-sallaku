@@ -1,3 +1,4 @@
+import { FeatureUnavailableException } from '../common/settings/feature-flags';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
@@ -166,16 +167,28 @@ describe('PdfSearchController', () => {
       expect(res.send).toHaveBeenCalled();
     });
 
-    it('rejects a non-PDF content-type from the upstream', async () => {
+    it('answers 404 when the upstream does not return a PDF (e.g. Europe PMC "Failed to retrieve PDF")', async () => {
       fetchMock.mockResolvedValue(jsonUpstream(new ArrayBuffer(8), true, 200, 'text/html'));
 
-      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(BadRequestException);
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(NotFoundException);
     });
 
     it('propagates an upstream fetch failure as NotFoundException', async () => {
       fetchMock.mockResolvedValue(jsonUpstream(new ArrayBuffer(8), false, 404));
 
       await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('un\'origine che va in timeout dà 503 (ignorato dal registro errori), non un 500', async () => {
+      fetchMock.mockRejectedValue(Object.assign(new Error('aborted'), { name: 'TimeoutError' }));
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(FeatureUnavailableException);
+    });
+
+    it('un\'origine irraggiungibile dà 503', async () => {
+      fetchMock.mockRejectedValue(new TypeError('fetch failed'));
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(FeatureUnavailableException);
     });
 
     it('streams the PDF bytes back for a valid allow-listed request', async () => {

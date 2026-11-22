@@ -38,6 +38,21 @@
   --bg-tertiary: #141a2e;
   --bg-card: rgba(20, 26, 46, 0.6);
 
+  /* Alias semantici usati da molti componenti con un colore scuro "di riserva"
+     (var(--border-color, #30363d) ecc.) ma mai definiti: nel tema chiaro restavano
+     scuri (bordi neri su sfondo bianco, testo chiaro su chiaro). I valori scuri
+     qui sotto coincidono con le riserve, quindi il tema scuro non cambia. */
+  --border-color: #30363d;
+  --border: #30363d;
+  --accent: #6c63ff;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f85149;
+  --color-danger: #ef4444;
+  --brand-primary: #4f6af5;
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
   /* Glass Effect */
   --glass-bg: rgba(15, 20, 36, 0.75);
   --glass-border: rgba(99, 102, 241, 0.15);
@@ -141,6 +156,14 @@
   --bg-secondary: #f0f4ff;
   --bg-tertiary: #e8efff;
   --color-bg: #f8faff;
+  --bg-card: rgba(255, 255, 255, 0.78); /* senza, restava il blu scuro del tema scuro (pannelli neri su sfondo chiaro) */
+  --border-color: rgba(15, 23, 42, 0.16);
+  --border: rgba(15, 23, 42, 0.16);
+  /* Su sfondo chiaro i toni "neon" del tema scuro non raggiungono il contrasto minimo. */
+  --success: #047857;
+  --warning: #b45309;
+  --danger: #b91c1c;
+  --color-danger: #b91c1c;
   --color-bg-alt: #f0f4ff;
   --color-surface: #ffffff;
   --glass-bg: rgba(255, 255, 255, 0.85);
@@ -899,7 +922,8 @@ app-convert,
 app-ocr,
 app-scanner,
 app-workspace,
-app-library {
+app-library,
+app-my-saved-results {
   display: block;
   padding-top: var(--navbar-height, 72px);
 }

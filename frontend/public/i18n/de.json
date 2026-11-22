@@ -1073,7 +1073,7 @@
     "prev_slide": "Vorherige Folie",
     "next_slide": "Nächste Folie",
     "seo_title": "KI-Präsentationsgenerator",
-    "seo_description": "Erstelle eine vollständige professionelle Präsentation zu jedem Thema in Sekunden. Bis zu 20 Folien mit Titeln, Stichpunkten, Sprechernotizen und 5 Stilen. Kostenlos online."
+    "seo_description": "KI-Präsentationsgenerator: Erstellen Sie Folien aus einem Thema in Sekunden, mit Titeln, Aufzählungen und Notizen. 5 bis 20 Folien, kostenlos."
   },
   "ai_formatter": {
     "title": "KI-Formatierer",
@@ -1129,7 +1129,7 @@
     "copied": "Kopiert",
     "copy": "Kopieren",
     "seo_title": "KI-Textformatierer",
-    "seo_description": "Verwandle Notizen, unformatierten Text oder KI-Inhalte sofort in strukturierte, professionelle Dokumente. Berichte, Angebote, Lebensläufe, Artikel und mehr. Kostenloser KI-Formatierer online."
+    "seo_description": "KI-Textformatierer: Verwandeln Sie rohe Notizen oder KI-Text in ein geordnetes Dokument mit Überschriften und Listen. Vorschau oder Markdown, kostenlos."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1164,7 +1164,7 @@
     "err_generic": "Bei der Analyse der Datei ist ein Fehler aufgetreten.",
     "remove_file": "Datei entfernen",
     "seo_title": "PDF-Zusammenfassung mit KI: Kernpunkte",
-    "seo_description": "Lade ein PDF, Word- oder TXT-Dokument hoch und erhalte sofort eine KI-Zusammenfassung. Kurzfassung, detaillierte Analyse oder Kernpunkte. Kostenloser KI-Dokumenten-Zusammenfasser online.",
+    "seo_description": "KI-PDF-Zusammenfassung: Laden Sie ein PDF, Word oder TXT hoch und erhalten Sie in Sekunden eine Zusammenfassung mit den Kernpunkten. Kostenlos, bis 20 MB.",
     "reading_stats": "{{words}} Wörter · ~{{min}} Min. Lesezeit"
   },
   "workspace": {
@@ -1261,7 +1261,7 @@
     "upload_aria": "Eine PDF-Datei hochladen",
     "remove_file": "Datei entfernen",
     "seo_title": "PDF-Übersetzer mit KI: Seiten bleiben",
-    "seo_description": "Übersetze jedes PDF in 12 Sprachen bei gleichbleibender Seitenzahl und Formatierung. KI-Übersetzung auf Enterprise-Niveau. Kostenlos online, keine Anmeldung."
+    "seo_description": "KI-PDF-Übersetzer: Übersetzen Sie ein PDF in 12 Sprachen bei gleichen Seiten und Maßen. Kostenlos, auch gescannte PDFs dank OCR."
   },
   "pdf_search": {
     "title": "PDF-Suche",
@@ -1330,14 +1330,18 @@
     "preview_prev_page": "Vorherige Seite",
     "preview_next_page": "Nächste Seite",
     "seo_title": "PDF-Bücher suchen: Gemeinfrei, kostenlos",
-    "seo_description": "Suche und lade gemeinfreie Bücher, wissenschaftliche Paper und Open-Access-Artikel herunter, ohne Urheberrechtsprobleme. Durchsuche Internet Archive, Project Gutenberg, arXiv und PubMed Central mit Vorschau vor dem Download.",
+    "seo_description": "Suchen und laden Sie gemeinfreie Bücher, Fachartikel und Open-Access-PDFs von Internet Archive, Project Gutenberg und arXiv. Kostenlos.",
     "filter_favorites": "Favoriten",
     "results_count": "{{count}} Ergebnisse",
     "btn_copy_link": "Link kopieren",
     "link_copied": "Link kopiert",
     "preview_goto_page": "Gehe zu Seite",
     "zoom_out": "Verkleinern",
-    "zoom_in": "Vergrößern"
+    "zoom_in": "Vergrößern",
+    "preview_failed": "Dieses PDF konnte nicht geladen werden. Es ist vielleicht zu groß, die Quelle antwortet nicht oder die Datei ist nicht lesbar. Versuchen Sie es erneut oder öffnen Sie es über „PDF herunterladen“ direkt von der Quelle.",
+    "preview_blank": "Diese Seite erscheint leer. Es kann eine tatsächlich leere Seite des Dokuments sein (Umschlag, Rückseite): Mit › gehen Sie weiter. Bleiben alle Seiten leer, laden Sie das PDF herunter oder öffnen es über die Quelle.",
+    "preview_page_error": "Diese Seite konnte nicht angezeigt werden. Versuchen Sie es erneut oder laden Sie das PDF zum Lesen herunter.",
+    "preview_retry": "Erneut versuchen"
   },
   "convert": {
     "title": "Konverter",
@@ -1525,7 +1529,7 @@
     "my_files_title": "Meine Dateien",
     "my_files_desc": "Finde die Ergebnisse, die du aus den KI-Tools gespeichert hast",
     "seo_title": "Kostenlose PDF- und KI-Werkzeuge Online",
-    "seo_description": "Kostenlose Online-Tools mit KI: PDF-Übersetzer, Präsentationsgenerator, Textformatierer und PDF-Zusammenfasser. Professionelle Dokumententools. Keine Anmeldung."
+    "seo_description": "Kostenlose PDF- und KI-Werkzeuge online: OCR, Konverter, Editor, Viewer, Scanner, Übersetzer, Zusammenfassung und Präsentationsgenerator."
   },
   "about_manage": {
     "title": "About-Bereich",
@@ -1672,7 +1676,7 @@
     "delete": "Löschen",
     "persistence_hint": "Änderungen werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
     "seo_title": "PDF-Editor: Zusammenfügen, Teilen, Drehen",
-    "seo_description": "PDFs zusammenführen, Seiten teilen und extrahieren, Seiten drehen oder löschen und Wasserzeichen hinzufügen — komplett im Browser, Dateien verlassen nie dein Gerät.",
+    "seo_description": "Kostenloser Online-PDF-Editor: Seiten zusammenfügen, teilen, drehen, löschen und Wasserzeichen hinzufügen – im Browser, ohne Upload.",
     "undo": "Rückgängig",
     "duplicate": "Seite duplizieren",
     "undone": "Änderung rückgängig gemacht"
@@ -1711,7 +1715,7 @@
     "prev_match": "Vorheriger Treffer",
     "next_match": "Nächster Treffer",
     "seo_title": "Kostenloser PDF-Viewer Online",
-    "seo_description": "Betrachte PDF-Dokumente im Browser: Seitennavigation, Zoom, Volltextsuche und Miniaturansicht. Kostenlos, privat, kein Upload."
+    "seo_description": "Kostenloser Online-PDF-Viewer: Zoom, Textsuche, Miniaturen und Textmarker, alles im Browser. Die Datei wird nicht hochgeladen."
   },
   "scanner": {
     "title": "Dokumentenscanner",
@@ -1765,7 +1769,7 @@
     "err_camera_unsupported": "Kamera in diesem Browser nicht verfügbar oder unsichere Verbindung (HTTPS erforderlich). Du kannst trotzdem ein Bild hochladen.",
     "persistence_hint": "Erfasste Seiten werden nicht gespeichert: Sie gehen beim Neuladen oder Schließen dieses Tabs verloren.",
     "seo_title": "Dokumentenscanner: Foto zu PDF",
-    "seo_description": "Scanne Dokumente mit Webcam oder Handykamera, schneide und verbessere sie, exportiere sie als PDF. Kostenlos, keine Anmeldung."
+    "seo_description": "Online-Dokumentenscanner: Nutzen Sie Handykamera oder Webcam, schneiden Sie Seiten zu und exportieren Sie ein PDF. Kostenlos, ohne Anmeldung."
   },
   "library": {
     "badge": "Neu",
@@ -2905,6 +2909,228 @@
         }
       ]
     },
-    "try_tool": "Das kostenlose Werkzeug jetzt ausprobieren"
+    "try_tool": "Das kostenlose Werkzeug jetzt ausprobieren",
+    "pdf_to_word": {
+      "about": "Mit diesem Werkzeug verwandeln Sie ein PDF in ein Word-Dokument (DOCX), das Sie bearbeiten können: Text, Überschriften, Absätze und Listen sind wieder editierbar, ohne etwas neu abzutippen. Es hilft, wenn Sie einen Vertrag, ein Formular oder einen Bericht als PDF erhalten und ihn korrigieren, ergänzen oder weiterverwenden müssen.",
+      "steps": [
+        "Klicken Sie auf „PDF in Word umwandeln“ und laden Sie die PDF-Datei hoch.",
+        "Starten Sie die Umwandlung und warten Sie einige Sekunden.",
+        "Laden Sie das Word-Dokument herunter und öffnen Sie es mit Word oder einem anderen Textprogramm."
+      ],
+      "privacy": "Zur Umwandlung wird die Datei an unseren Server gesendet, der sie verarbeitet und Ihnen das Ergebnis zurückgibt. Die Datei dient nur dazu, die gewünschte Umwandlung auszuführen.",
+      "limits": "Die Datei darf bis zu 50 MB groß sein. PDFs mit markierbarem Text behalten in der Regel Überschriften, Absätze und Listen, bei sehr komplexen Tabellen und Layouts kann aber in Word etwas Nacharbeit nötig sein. Ein gescanntes PDF besteht aus Bildern und wird nicht zu bearbeitbarem Text: Extrahieren Sie den Text zuerst mit dem OCR-Werkzeug.",
+      "faq": [
+        {
+          "q": "Bleibt die Formatierung erhalten?",
+          "a": "Bei PDFs mit markierbarem Text bleiben Überschriften, Absätze und Listen in der Regel gut erhalten. Sehr aufwendige Layouts, komplexe Tabellen oder mehrere Spalten können nach der Umwandlung etwas Nacharbeit brauchen."
+        },
+        {
+          "q": "Kann ich ein gescanntes PDF umwandeln?",
+          "a": "Nicht direkt: Ein Scan besteht aus Bildern. Extrahieren Sie zuerst den Text mit dem OCR-Werkzeug und arbeiten Sie dann mit dem erhaltenen Text weiter."
+        },
+        {
+          "q": "Muss ich etwas installieren?",
+          "a": "Nein, die Umwandlung läuft online in jedem Browser. Zum Bearbeiten des Ergebnisses brauchen Sie Word oder ein Programm, das das DOCX-Format unterstützt."
+        }
+      ]
+    },
+    "word_to_pdf": {
+      "about": "Dieses Werkzeug verwandelt ein Word-Dokument (DOC oder DOCX) in ein PDF: das ideale Format, um eine Datei zu teilen, zu senden oder zu drucken, ohne dass sich das Layout auf dem Rechner des Empfängers ändert. Praktisch für Lebensläufe, Verträge, Briefe und Berichte.",
+      "steps": [
+        "Klicken Sie auf „Word in PDF umwandeln“ und laden Sie das DOC- oder DOCX-Dokument hoch.",
+        "Starten Sie die Umwandlung und warten Sie einige Sekunden.",
+        "Laden Sie das PDF herunter und teilen oder drucken Sie es."
+      ],
+      "privacy": "Zur Umwandlung wird die Datei an unseren Server gesendet, der sie verarbeitet und Ihnen das Ergebnis zurückgibt. Die Datei dient nur dazu, die gewünschte Umwandlung auszuführen.",
+      "limits": "Akzeptiert werden .doc- und .docx-Dateien bis 50 MB. Das Ergebnis hängt vom Ausgangsdokument ab: Prüfen Sie das PDF vor dem Versand, besonders bei Tabellen, Bildern oder ungewöhnlichen Schriften.",
+      "faq": [
+        {
+          "q": "Welche Word-Formate werden akzeptiert?",
+          "a": "Sowohl .docx-Dateien als auch das ältere .doc, bis 50 MB."
+        },
+        {
+          "q": "Entspricht das PDF-Layout dem des Word-Dokuments?",
+          "a": "Meist ja, aber das Ergebnis hängt vom Dokument ab: Bei Tabellen, Bildern oder ungewöhnlichen Schriften sollten Sie das PDF vor dem Teilen prüfen."
+        },
+        {
+          "q": "Kann ich mehrere PDFs nach der Umwandlung zusammenfügen?",
+          "a": "Ja: Mit der Seite „PDF zusammenfügen“, die direkt im Browser läuft."
+        }
+      ]
+    },
+    "jpg_to_pdf": {
+      "about": "Dieses Werkzeug verwandelt ein oder mehrere Bilder (JPG, PNG oder WEBP) in ein einziges PDF. Praktisch, um Fotos von Dokumenten, Belegen oder Notizen als eine ordentliche Datei zu senden oder um aus einer Reihe von Aufnahmen ein PDF zu erstellen.",
+      "steps": [
+        "Klicken Sie auf „Bilder in PDF umwandeln“ und laden Sie ein oder mehrere Bilder hoch.",
+        "Starten Sie die Umwandlung und warten Sie einige Sekunden.",
+        "Laden Sie das entstandene PDF herunter."
+      ],
+      "privacy": "Die Bilder werden zum Erstellen des PDFs an unseren Server gesendet und dienen nur diesem Vorgang.",
+      "limits": "Akzeptiert werden PNG-, JPG- und WEBP-Bilder, jeweils bis 50 MB und bis zu 20 Dateien auf einmal, die in einem einzigen PDF landen. Für Text zum Kopieren nutzen Sie anschließend das OCR-Werkzeug.",
+      "faq": [
+        {
+          "q": "Kann ich mehrere Bilder in ein PDF packen?",
+          "a": "Ja, Sie können bis zu 20 Bilder gemeinsam hochladen und erhalten ein einziges PDF."
+        },
+        {
+          "q": "Welche Bildformate werden akzeptiert?",
+          "a": "JPG (JPEG), PNG und WEBP."
+        },
+        {
+          "q": "Ist der Text im PDF markierbar?",
+          "a": "In der Regel enthält das PDF die Bilder der Seiten, keinen markierbaren Text. Um den Text zu extrahieren, nutzen Sie das OCR-Werkzeug."
+        }
+      ]
+    },
+    "merge_pdf": {
+      "about": "Mit diesem Werkzeug fügen Sie zwei oder mehr PDFs zu einem Dokument zusammen, ohne Software zu installieren. Sie können die Seiten per Ziehen umordnen und nicht benötigte löschen, bevor Sie die fertige Datei herunterladen. Praktisch, um Verträge, Formulare, Belege oder Kapitel in einem PDF zu vereinen.",
+      "steps": [
+        "Ziehen Sie die PDFs in den Upload-Bereich oder klicken Sie darauf, um sie auszuwählen: Wählen Sie mehrere aus, werden sie hintereinander angeordnet.",
+        "Ziehen Sie in der Vorschau die Seiten in die gewünschte Reihenfolge, drehen oder löschen Sie nicht benötigte.",
+        "Exportieren Sie das PDF und laden Sie es herunter."
+      ],
+      "privacy": "Die Dateien werden vollständig in Ihrem Browser verarbeitet: Sie werden auf keinen Server hochgeladen. So können Sie auch mit vertraulichen Dokumenten arbeiten, ohne sie mit Dritten zu teilen.",
+      "limits": "Änderungen werden nicht gespeichert: Wenn Sie den Tab neu laden oder schließen, gehen sie verloren – laden Sie das Ergebnis daher vor dem Verlassen herunter. Ein passwortgeschütztes oder sehr großes PDF lässt sich unter Umständen nicht öffnen oder bremst den Browser, weil Ihr Gerät die Arbeit erledigt.",
+      "faq": [
+        {
+          "q": "Wie füge ich zwei PDFs zusammen?",
+          "a": "Laden Sie beide Dateien gemeinsam hoch: Sie erscheinen hintereinander, und Sie können die Seiten per Ziehen neu anordnen. Exportieren Sie das Ergebnis dann als ein einziges PDF."
+        },
+        {
+          "q": "Werden meine PDFs online hochgeladen?",
+          "a": "Nein. Das Zusammenfügen findet in Ihrem Browser statt, die Dateien bleiben also auf Ihrem Gerät."
+        },
+        {
+          "q": "Kann ich nur einzelne Seiten eines PDFs zusammenfügen?",
+          "a": "Ja: Löschen Sie vor dem Export die nicht benötigten Seiten."
+        }
+      ]
+    },
+    "split_pdf": {
+      "about": "Mit diesem Werkzeug teilen Sie ein PDF und extrahieren nur die Seiten, die Sie brauchen: Sie löschen die überzähligen oder nutzen einen Seitenbereich und laden das neue PDF herunter. Praktisch, um nur ein Kapitel, ein Formular aus einem langen Dokument oder nur die unterschriebenen Seiten zu senden.",
+      "steps": [
+        "Laden Sie das PDF hoch, indem Sie es in den Upload-Bereich ziehen.",
+        "Löschen Sie in der Vorschau die unerwünschten Seiten oder teilen Sie das Dokument mit dem Seitenbereich.",
+        "Exportieren Sie das PDF und laden Sie es herunter: Sie erhalten eine neue Datei nur mit den gewählten Seiten."
+      ],
+      "privacy": "Die Dateien werden vollständig in Ihrem Browser verarbeitet: Sie werden auf keinen Server hochgeladen. So können Sie auch mit vertraulichen Dokumenten arbeiten, ohne sie mit Dritten zu teilen.",
+      "limits": "Änderungen werden nicht gespeichert: Wenn Sie den Tab neu laden oder schließen, gehen sie verloren – laden Sie das Ergebnis daher vor dem Verlassen herunter. Ein passwortgeschütztes oder sehr großes PDF lässt sich unter Umständen nicht öffnen oder bremst den Browser, weil Ihr Gerät die Arbeit erledigt.",
+      "faq": [
+        {
+          "q": "Wie extrahiere ich eine einzelne Seite aus einem PDF?",
+          "a": "Laden Sie das PDF hoch, löschen Sie alle Seiten außer der benötigten und exportieren Sie das Ergebnis."
+        },
+        {
+          "q": "Wird das Original-PDF verändert?",
+          "a": "Nein: Sie arbeiten im Browser und laden ein neues PDF herunter, die Ausgangsdatei bleibt auf Ihrem Gerät unverändert."
+        },
+        {
+          "q": "Wird die Datei auf einen Server hochgeladen?",
+          "a": "Nein. Die Verarbeitung findet in Ihrem Browser statt, die Datei verlässt Ihr Gerät also nicht."
+        }
+      ]
+    },
+    "rotate_pdf": {
+      "about": "Dieses Werkzeug dreht die Seiten eines PDFs direkt im Browser: Sie können eine verkehrt herum gescannte Seite geraderichten, nur die schiefen Seiten korrigieren und die anderen unverändert lassen. Danach laden Sie das korrigierte PDF herunter, ohne Software zu installieren.",
+      "steps": [
+        "Laden Sie das PDF hoch, indem Sie es in den Upload-Bereich ziehen.",
+        "Drehen Sie in der Vorschau die schiefen oder verkehrt herum stehenden Seiten einzeln.",
+        "Exportieren Sie das PDF und laden Sie es herunter."
+      ],
+      "privacy": "Die Dateien werden vollständig in Ihrem Browser verarbeitet: Sie werden auf keinen Server hochgeladen. So können Sie auch mit vertraulichen Dokumenten arbeiten, ohne sie mit Dritten zu teilen.",
+      "limits": "Das Drehen ändert die Ausrichtung der Seiten, nicht ihren Inhalt. Änderungen werden nicht gespeichert: Wenn Sie den Tab neu laden oder schließen, gehen sie verloren – laden Sie das Ergebnis daher vor dem Verlassen herunter.",
+      "faq": [
+        {
+          "q": "Kann ich nur einzelne Seiten drehen?",
+          "a": "Ja: In der Vorschau drehen Sie einzelne Seiten, nicht angefasste bleiben, wie sie sind."
+        },
+        {
+          "q": "Wird das PDF online hochgeladen?",
+          "a": "Nein. Die Verarbeitung findet in Ihrem Browser statt, die Datei bleibt also auf Ihrem Gerät."
+        },
+        {
+          "q": "Funktioniert es bei einem verkehrt herum gescannten PDF?",
+          "a": "Ja: Drehen Sie die verkehrten Seiten und exportieren Sie das korrigierte PDF."
+        }
+      ]
+    },
+    "image_to_text": {
+      "about": "Dieses Werkzeug verwandelt ein Foto, einen Screenshot oder eine gescannte Seite dank OCR (optische Zeichenerkennung) in Text, den Sie markieren, kopieren und bearbeiten können. Es hilft, den Text aus einem fotografierten Beleg, einer Folie oder einem gedruckten Dokument zu holen.",
+      "steps": [
+        "Ziehen Sie das Bild (PNG, JPG, WEBP, BMP oder TIFF) in den Upload-Bereich.",
+        "Wählen Sie die Sprache des Textes: Mit der richtigen ist das Ergebnis deutlich genauer.",
+        "Starten Sie die Erkennung und kopieren Sie den erhaltenen Text."
+      ],
+      "privacy": "Die Bilder werden nur für die Erkennung an unseren Server gesendet und im Arbeitsspeicher verarbeitet, ohne als Archiv gespeichert zu werden. Ein Konto ist nicht nötig.",
+      "limits": "Sie können bis zu 30 Dateien oder Seiten auf einmal hochladen; jedes Bild darf bis zu 15 MB groß sein. Die Qualität hängt vom Foto ab: schiefer, unscharfer oder schlecht beleuchteter Text verringert die Genauigkeit.",
+      "faq": [
+        {
+          "q": "Wie kopiere ich den Text aus einem Bild?",
+          "a": "Laden Sie das Bild hoch, wählen Sie die Sprache und starten Sie die Erkennung: Der extrahierte Text erscheint darunter, und Sie können ihn kopieren."
+        },
+        {
+          "q": "Funktioniert es auch mit Screenshots?",
+          "a": "Ja, mit Screenshots, Fotos von Dokumenten und gescannten Seiten, solange der Text lesbar ist."
+        },
+        {
+          "q": "Welche Sprachen werden erkannt?",
+          "a": "Italienisch, Englisch, Spanisch, Französisch, Deutsch, Portugiesisch und Albanisch."
+        }
+      ]
+    }
+  },
+  "lab_intents": {
+    "pdf_to_word": {
+      "label": "PDF in Word",
+      "seo_title": "PDF in Word Kostenlos: In DOCX umwandeln",
+      "seo_description": "Wandeln Sie PDF online und kostenlos in Word (DOCX) um: Datei hochladen und das bearbeitbare Dokument in Sekunden herunterladen. Bis 50 MB.",
+      "h1": "PDF in Word umwandeln",
+      "lead": "Verwandeln Sie ein PDF in ein bearbeitbares Word-Dokument (DOCX): Datei hochladen, Umwandlung starten und das Ergebnis herunterladen.",
+      "cta": "PDF in Word umwandeln"
+    },
+    "word_to_pdf": {
+      "label": "Word in PDF",
+      "seo_title": "Word in PDF Kostenlos: DOCX umwandeln",
+      "seo_description": "Wandeln Sie Word (DOC und DOCX) online und kostenlos in PDF um: Dokument hochladen und das PDF in Sekunden herunterladen. Bis 50 MB.",
+      "h1": "Word in PDF umwandeln",
+      "lead": "Verwandeln Sie ein Word-Dokument (DOC oder DOCX) in ein PDF, das Sie teilen oder drucken können: Datei hochladen und Ergebnis herunterladen.",
+      "cta": "Word in PDF umwandeln"
+    },
+    "jpg_to_pdf": {
+      "label": "JPG in PDF",
+      "seo_title": "JPG in PDF Kostenlos: Bilder in einem PDF",
+      "seo_description": "Wandeln Sie JPG, PNG und WEBP online und kostenlos in PDF um: ein oder mehrere Bilder hochladen und ein einziges PDF herunterladen. Bis 20 Dateien.",
+      "h1": "JPG in PDF umwandeln",
+      "lead": "Verwandeln Sie ein oder mehrere Bilder (JPG, PNG, WEBP) in ein einziges PDF: Dateien hochladen, Umwandlung starten und das Dokument herunterladen.",
+      "cta": "Bilder in PDF umwandeln"
+    },
+    "merge_pdf": {
+      "label": "PDF zusammenfügen",
+      "seo_title": "PDF zusammenfügen Kostenlos: Mehrere in Eins",
+      "seo_description": "Fügen Sie mehrere PDFs direkt im Browser zu einer Datei zusammen, ohne sie auf einen Server hochzuladen. Seiten umordnen und herunterladen. Kostenlos.",
+      "h1": "PDF zusammenfügen",
+      "lead": "Fügen Sie zwei oder mehr PDFs zu einem Dokument zusammen: hier ablegen, Seiten umordnen und das fertige PDF herunterladen. Alles in Ihrem Browser."
+    },
+    "split_pdf": {
+      "label": "PDF teilen",
+      "seo_title": "PDF teilen Kostenlos: Seiten extrahieren",
+      "seo_description": "Teilen Sie ein PDF und extrahieren Sie nur die benötigten Seiten, im Browser und ohne die Datei hochzuladen. Überzählige Seiten löschen und herunterladen.",
+      "h1": "PDF teilen",
+      "lead": "Teilen Sie ein PDF in Teile oder behalten Sie nur die benötigten Seiten: Die übrigen löschen und das Ergebnis herunterladen. Alles in Ihrem Browser."
+    },
+    "rotate_pdf": {
+      "label": "PDF drehen",
+      "seo_title": "PDF drehen Kostenlos: Seiten geraderichten",
+      "seo_description": "Drehen Sie PDF-Seiten online und kostenlos, im Browser und ohne die Datei hochzuladen. Nur schiefe Seiten geraderichten und das PDF herunterladen.",
+      "h1": "PDF drehen",
+      "lead": "Richten Sie verdrehte oder schiefe PDF-Seiten gerade: Drehen Sie nur die nötigen und laden Sie das korrigierte Dokument herunter. In Ihrem Browser."
+    },
+    "image_to_text": {
+      "label": "Bild in Text",
+      "seo_title": "Bild in Text: Kostenlose OCR Online",
+      "seo_description": "Extrahieren Sie Text aus Fotos, Screenshots und Bildern mit kostenloser Online-OCR, in 7 Sprachen und ohne Anmeldung. Text in Sekunden kopieren.",
+      "h1": "Vom Bild zum Text",
+      "lead": "Verwandeln Sie ein Foto, einen Screenshot oder eine gescannte Seite in Text, den Sie kopieren und bearbeiten können: Bild hochladen und Sprache wählen."
+    }
   }
 }

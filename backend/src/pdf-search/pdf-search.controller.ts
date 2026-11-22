@@ -5,6 +5,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { PdfSearchService } from './pdf-search.service';
 import { GutenbergProvider } from './providers/gutenberg.provider';
+import { FeatureUnavailableException } from '../common/settings/feature-flags';
 import { isProductionEnv } from '../common/utils/runtime-env';
 
 // Hosts the /proxy endpoint will fetch on the client's behalf — an allow-list,
@@ -22,13 +23,28 @@ export function isProxyAllowed(url: URL): boolean {
 }
 
 /**
+ * Un'origine lenta o irraggiungibile non è un errore nostro: va in 503 invece
+ * di un 500 nel registro errori della dashboard: si risponde 503 (come per le
+ * funzioni spente), che il registro ignora.
+ */
+async function fetchUpstream(url: URL): Promise<globalThis.Response> {
+  try {
+    return await fetch(url.toString(), { redirect: 'manual', signal: AbortSignal.timeout(20_000) });
+  } catch (err) {
+    const name = (err as Error)?.name;
+    if (name === 'TimeoutError' || name === 'AbortError') throw new FeatureUnavailableException('The source took too long to respond');
+    throw new FeatureUnavailableException('Could not reach the source');
+  }
+}
+
+/**
  * fetch() con redirect gestiti a mano: quello automatico seguirebbe un 302
  * verso qualsiasi host, scavalcando l'allow-list controllata solo sul primo URL.
  */
 async function fetchAllowListed(start: URL): Promise<globalThis.Response> {
   let current = start;
   for (let hop = 0; hop <= PROXY_MAX_REDIRECTS; hop++) {
-    const res = await fetch(current.toString(), { redirect: 'manual', signal: AbortSignal.timeout(20_000) });
+    const res = await fetchUpstream(current);
     if (res.status < 300 || res.status >= 400) return res;
 
     const location = res.headers.get('location');
@@ -152,7 +168,7 @@ export class PdfSearchController {
     if (!upstream.ok) throw new NotFoundException('Could not fetch the requested file');
 
     const contentType = upstream.headers.get('content-type') ?? '';
-    if (!contentType.includes('application/pdf')) throw new BadRequestException('Requested resource is not a PDF');
+    if (!contentType.includes('application/pdf')) throw new NotFoundException('The source has no PDF available for this item');
 
     const contentLength = Number(upstream.headers.get('content-length') ?? '0');
     if (contentLength > PROXY_MAX_BYTES) throw new BadRequestException('File is too large to proxy');
