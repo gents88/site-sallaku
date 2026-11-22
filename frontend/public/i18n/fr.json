@@ -4075,5 +4075,24 @@
     "scan_tip": "Avant d’imprimer, scannez le code avec votre téléphone pour le vérifier. Pour l’impression, utilisez le SVG et gardez-le large d’au moins 2 cm.",
     "too_long": "Ce contenu est trop long pour un QR code. Raccourcissez-le ou baissez le niveau de correction d’erreurs.",
     "empty": "Remplissez les informations à gauche : le code apparaît ici pendant la saisie."
+  },
+  "dash_v2": {
+    "attention_title": "À traiter maintenant",
+    "attention_clear": "Tout est en ordre : rien ne demande votre attention",
+    "att_live": "chat en direct en attente",
+    "att_unread": "messages non lus",
+    "att_followups": "relances à faire",
+    "att_errors": "erreurs serveur ouvertes",
+    "att_broken": "liens cassés (404)",
+    "att_translations": "articles avec problèmes de traduction",
+    "b_errors": "erreurs ouvertes",
+    "b_warnings": "avertissements",
+    "b_translations": "articles avec problèmes de traduction",
+    "b_broken": "liens cassés",
+    "b_scheduled": "articles programmés",
+    "b_published": "publiés",
+    "b_drafts": "brouillons",
+    "b_today": "visiteurs aujourd’hui",
+    "b_clicks": "clics depuis Google"
   }
 }

@@ -125,56 +125,177 @@
   mat-icon { font-size: 14px; height: 14px; width: 14px; }
 }
 
+// ── Numeri chiave ───────────────────────────────────────────────────
+// Quattro metriche grandi (con l'andamento degli ultimi 7 giorni) e una riga
+// compatta per i contenuti: prima erano nove card uguali.
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2.5rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
+.stats-grid--primary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stats-grid--compact { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-bottom: 1.5rem; }
+
 .stat-card {
+  --stat-color: var(--color-primary, #6366f1);
+  position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface, transparent);
+  color: var(--color-text);
   text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s;
-  &:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+
+  &:hover, &:focus-visible {
+    border-color: color-mix(in srgb, var(--stat-color) 55%, var(--color-border));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
 
   &__icon {
-    width: 52px;
-    height: 52px;
-    border-radius: var(--radius-sm);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    mat-icon { font-size: 1.5rem; width: 1.5rem; height: 1.5rem; }
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--stat-color) 16%, transparent);
+    color: var(--stat-color);
+    mat-icon { font-size: 20px; width: 20px; height: 20px; }
   }
 
-  &__content {
-    flex: 1;
-    min-width: 0;
-  }
+  &__value { margin: 0; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  &__label { color: var(--color-text-muted); font-size: 0.82rem; font-weight: 500; }
+}
 
-  &__value { font-size: 1.75rem; font-weight: 700; line-height: 1; }
-  &__label { font-size: 0.85rem; margin-top: 0.1rem; }
+.stat-card--primary {
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.1rem 1.2rem 1rem;
+  overflow: hidden;
+
+  .stat-card__head { display: flex; align-items: center; gap: 0.6rem; }
+  .stat-card__value { font-size: 2.1rem; letter-spacing: -0.02em; }
+}
+
+.stat-card--compact {
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.9rem;
+
+  .stat-card__text { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+  .stat-card__value { font-size: 1.2rem; }
+  .stat-card__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
 .stat-mini-chart {
   display: flex;
-  align-items: end;
-  gap: 5px;
-  height: 48px;
-  margin-top: 0.9rem;
+  align-items: flex-end;
+  gap: 3px;
+  height: 36px;
+  overflow: hidden;
 
   &__bar {
     flex: 1;
-    min-width: 8px;
-    border-radius: 999px 999px 4px 4px;
-    opacity: 0.85;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+    min-width: 3px;
+    border-radius: 3px 3px 1px 1px;
+    background: linear-gradient(to top, color-mix(in srgb, var(--stat-color) 35%, transparent), var(--stat-color));
+    opacity: 0.9;
   }
 }
+
+// ── Da fare adesso ─────────────────────────────────────────────────
+.attention {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid color-mix(in srgb, #f59e0b 40%, var(--color-border));
+  border-radius: 16px;
+  background: color-mix(in srgb, #f59e0b 7%, var(--color-surface, transparent));
+
+  &--clear {
+    border-color: color-mix(in srgb, #10b981 40%, var(--color-border));
+    background: color-mix(in srgb, #10b981 7%, var(--color-surface, transparent));
+  }
+
+  &__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 650;
+    mat-icon { width: 20px; height: 20px; font-size: 20px; }
+  }
+
+  &__list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+
+  &__item {
+    --tone: #f59e0b;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--tone) 45%, var(--color-border));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--tone) 12%, var(--color-surface, transparent));
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.85rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+
+    &:hover, &:focus-visible { transform: translateY(-1px); border-color: var(--tone); }
+    > mat-icon { width: 18px; height: 18px; font-size: 18px; color: var(--tone); }
+    strong { font-variant-numeric: tabular-nums; }
+    .attention__go { width: 16px; height: 16px; font-size: 16px; opacity: 0.6; }
+
+    &--bad { --tone: #ef4444; }
+    &--warn { --tone: #f59e0b; }
+    &--info { --tone: #6366f1; }
+  }
+}
+
+:host-context([data-theme='light']) .attention__item > mat-icon:not(.attention__go) { filter: saturate(1.1) brightness(0.82); }
+
+@media (max-width: 600px) {
+  .attention__item { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+  .attention { padding: 0.75rem; }
+  .dash-panel__header { padding: 0 0.75rem; }
+  .dash-panel__badges { padding-left: 0.25rem; gap: 0.3rem; }
+  .dash-panel__title { min-width: 0; font-size: 0.95rem; }
+}
+
+@media (max-width: 900px) {
+  .stats-grid--primary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats-grid--compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-card--primary .stat-card__value { font-size: 1.8rem; }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .stats-grid--compact { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 
 .section-unread-badge {
   display: inline-flex;
@@ -821,7 +942,9 @@
   margin: 0 0 1.5rem;
   padding: 0.5rem 0;
   overflow-x: auto;
-  background: var(--color-bg);
+  // Semitrasparente: sticky deve coprire il contenuto che scorre sotto, ma senza una fascia piatta sopra lo sfondo.
+  background: color-mix(in srgb, var(--color-bg) 72%, transparent);
+  backdrop-filter: blur(10px);
   scrollbar-width: thin;
 
   &__link {
@@ -894,28 +1017,63 @@
 
 .dash-panel.mat-expansion-panel {
   margin: 0 0 0.75rem;
-  border-bottom: 1px solid var(--color-border);
-  border-radius: 0 !important;
+  border: 1px solid var(--color-border);
+  border-radius: 16px !important;
+  background: var(--color-surface, transparent);
   box-shadow: none !important;
+  overflow: hidden;
 }
 
 .dash-panel__header {
-  padding: 0 0.5rem;
-  border-radius: 12px;
+  height: 60px;
+  padding: 0 1rem;
+  border-radius: 0;
 }
 
 .dash-panel__title {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  font-size: 1.05rem;
+  flex: 0 1 auto;
+  gap: 0.6rem;
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 650;
+
+  mat-icon { color: var(--color-primary); }
+}
+
+// Riepilogo accanto al titolo: si vede anche con la sezione chiusa.
+.dash-panel__badges {
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0.5rem 0 auto;
+  padding-left: 0.5rem;
+}
+
+.dash-badge {
+  --tone: #6366f1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  color: var(--color-text);
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+
+  mat-icon { width: 14px; height: 14px; font-size: 14px; color: var(--tone); }
+  &--bad { --tone: #ef4444; }
+  &--warn { --tone: #f59e0b; }
+  &--ok { --tone: #10b981; }
 }
 
 // Il corpo del pannello è un elemento interno di Material: va raggiunto con
 // ::ng-deep, limitato ai pannelli di questo componente.
 :host ::ng-deep .dash-panel .mat-expansion-panel-body {
-  padding: 0.5rem 0 1.5rem;
+  padding: 0.25rem 1rem 1.25rem;
 }
