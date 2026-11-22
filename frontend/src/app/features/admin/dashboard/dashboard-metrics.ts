@@ -1,16 +1,5 @@
 import { OverviewSection } from './admin-dashboard.service';
 
-/** Intervallo di polling della dashboard: ogni giro ricarica solo le sezioni vive (LIVE_SECTIONS). */
-export const DASHBOARD_POLL_MS = 60_000;
-
-/** Ogni quanto il polling ricarica anche le sezioni pesanti (statistiche visite, SEO, sistema). */
-export const DASHBOARD_FULL_REFRESH_MS = 10 * 60_000;
-
-/** Il giro di polling deve ricaricare tutto? Sì al primo, poi ogni DASHBOARD_FULL_REFRESH_MS. */
-export function needsFullRefresh(lastFullAt: Date | null, now = Date.now()): boolean {
-  return !lastFullAt || now - lastFullAt.getTime() >= DASHBOARD_FULL_REFRESH_MS;
-}
-
 /**
  * Altezze (%) di una sparkline da una serie reale per giorno. null quando non
  * c'è una serie: meglio nessun grafico che quello di prima, un pattern fisso
@@ -21,12 +10,6 @@ export function sparkline(series: ReadonlyArray<{ count: number }> | null | unde
   const max = Math.max(...series.map(p => p.count), 0);
   // Serie tutta a zero: barre minime uguali, non un grafico vuoto che sembra rotto.
   return series.map(p => (max > 0 ? Math.max(8, Math.round((p.count / max) * 100)) : 8));
-}
-
-/** Al ritorno sulla scheda si ricarica solo se l'ultimo snapshot è più vecchio del polling. */
-export function shouldRefreshOnVisible(hidden: boolean, lastLoadedAt: Date | null, now = Date.now()): boolean {
-  if (hidden) return false;
-  return !lastLoadedAt || now - lastLoadedAt.getTime() >= DASHBOARD_POLL_MS;
 }
 
 /** Nome leggibile (chiave i18n) di ogni sezione, per il banner "pannelli non aggiornati". */

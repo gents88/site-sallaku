@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DASHBOARD_POLL_MS, failedSectionLabels, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
+import { failedSectionLabels, sparkline } from './dashboard-metrics';
 
 describe('sparkline', () => {
   it('scales a real daily series to bar heights, peak = 100%', () => {
@@ -18,26 +18,6 @@ describe('sparkline', () => {
     expect(sparkline(null)).toBeNull();
     expect(sparkline([])).toBeNull();
     expect(sparkline([{ count: 5 }])).toBeNull();
-  });
-});
-
-describe('shouldRefreshOnVisible', () => {
-  const now = Date.now();
-
-  it('never refreshes while the tab is hidden', () => {
-    expect(shouldRefreshOnVisible(true, null, now)).toBe(false);
-  });
-
-  it('refreshes on return when the snapshot is older than the poll interval', () => {
-    expect(shouldRefreshOnVisible(false, new Date(now - DASHBOARD_POLL_MS), now)).toBe(true);
-  });
-
-  it('does not refresh on return when the snapshot is still fresh', () => {
-    expect(shouldRefreshOnVisible(false, new Date(now - 5_000), now)).toBe(false);
-  });
-
-  it('refreshes when nothing was ever loaded', () => {
-    expect(shouldRefreshOnVisible(false, null, now)).toBe(true);
   });
 });
 
