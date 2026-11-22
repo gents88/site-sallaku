@@ -32,6 +32,7 @@ const TOOL_ACTIONS: ToolAction[] = [
   { id: 'convert', icon: '🔄', route: '/lab/convert' },
   { id: 'pdf_editor', icon: '🖊️', route: '/lab/pdf-editor' },
   { id: 'sign_pdf', icon: '✍️', route: '/lab/sign-pdf' },
+  { id: 'compress_pdf', icon: '🗜️', route: '/lab/compress-pdf' },
 ];
 
 export interface ChatMessage {

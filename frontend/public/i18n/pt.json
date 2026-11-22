@@ -70,7 +70,8 @@
       "users": "Utilizadores",
       "ai_assistant": "Assistente IA",
       "live_chat": "Chat ao vivo",
-      "sign_pdf": "Assinar PDF"
+      "sign_pdf": "Assinar PDF",
+      "compress_pdf": "Comprimir PDF"
     }
   },
   "lang": {
@@ -1532,7 +1533,9 @@
     "seo_title": "Ferramentas PDF e IA Grátis Online",
     "seo_description": "Ferramentas PDF e IA grátis online: OCR, conversor, editor, visualizador, scanner, tradutor, resumo e gerador de apresentações.",
     "sign_pdf_title": "Assinar PDF",
-    "sign_pdf_desc": "Assine um PDF com uma assinatura desenhada, digitada ou enviada e adicione texto, data e marcas."
+    "sign_pdf_desc": "Assine um PDF com uma assinatura desenhada, digitada ou enviada e adicione texto, data e marcas.",
+    "compress_pdf_title": "Comprimir PDF",
+    "compress_pdf_desc": "Reduza o tamanho de um PDF para enviá-lo por e-mail ou carregá-lo, com três níveis de compressão."
   },
   "about_manage": {
     "title": "Secção About",
@@ -3113,6 +3116,35 @@
           "a": "Sim: selecione a assinatura e escolha “Em todas as páginas”."
         }
       ]
+    },
+    "compress_pdf": {
+      "about": "O compressor de PDF online reduz o tamanho de um PDF para enviá-lo por e-mail ou carregá-lo em um formulário com limite de tamanho. Você escolhe entre redesenhar as páginas em resolução menor — bem menor, ideal para digitalizações — ou apenas reorganizar a estrutura do arquivo para que o texto continue selecionável. Você vê o tamanho antes e depois, e o arquivo é processado no seu navegador.",
+      "steps": [
+        "Abra o PDF: arraste-o para o quadro ou escolha-o no dispositivo.",
+        "Escolha como comprimir: “Arquivo menor” (páginas como imagens) ou “Manter o texto”.",
+        "Se escolheu páginas como imagens, defina o nível: Leve, Médio ou Forte.",
+        "Toque em “Comprimir PDF”, confira o tamanho antes e depois e baixe."
+      ],
+      "privacy": "O PDF é processado inteiramente no seu navegador e nunca é enviado. Nada fica guardado depois de fechar a página.",
+      "limits": "“Arquivo menor” transforma cada página em imagem, então o texto não pode mais ser selecionado nem pesquisado — use “Manter o texto” se precisar, com economia menor. PDFs com mais de 400 páginas ou protegidos por senha não são suportados. Se o resultado não for sensivelmente menor, a ferramenta avisa e você pode manter o original.",
+      "faq": [
+        {
+          "q": "Quanto meu PDF vai diminuir?",
+          "a": "Depende do conteúdo. Digitalizações e fotos costumam cair 70–90%; documentos de texto economizam pouco, a menos que aceite transformar as páginas em imagens."
+        },
+        {
+          "q": "Meu arquivo é enviado para algum lugar?",
+          "a": "Não. O PDF é comprimido no seu navegador e nunca sai do seu dispositivo."
+        },
+        {
+          "q": "Por que não consigo selecionar o texto depois de comprimir?",
+          "a": "No modo “Arquivo menor” cada página é redesenhada como imagem. Escolha “Manter o texto” para preservá-lo."
+        },
+        {
+          "q": "É grátis?",
+          "a": "Sim, grátis e sem cadastro."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3234,5 +3266,51 @@
     "err_image": "Não foi possível ler essa imagem. Tente outra.",
     "err_no_fields": "Adicione primeiro uma assinatura, um texto ou uma data.",
     "err_export": "Não foi possível criar o PDF. Tente novamente."
+  },
+  "compress_pdf": {
+    "title": "Comprimir PDF",
+    "subtitle": "Reduza o tamanho de um PDF para caber em um e-mail ou formulário — no navegador, sem enviar o arquivo a lugar nenhum.",
+    "seo_title": "Comprimir PDF Online Grátis — Reduza o Tamanho do PDF",
+    "seo_description": "Comprima um PDF online de graça: escolha o nível, veja quanto economiza e baixe. Tudo acontece no seu navegador: o arquivo nunca é enviado.",
+    "drop_prompt": "Solte um PDF aqui ou clique para escolher",
+    "drop_hint": "Até 400 páginas — digitalizações, formulários, relatórios",
+    "privacy_note": "O arquivo fica no seu dispositivo: não é enviado a nenhum servidor.",
+    "workspace_banner_title": "Há um arquivo no Workspace",
+    "workspace_banner_use": "Usar",
+    "workspace_banner_dismiss": "Ignorar",
+    "file_info": "{{pages}} páginas · {{size}}",
+    "close_file": "Fechar arquivo",
+    "mode_label": "Como comprimir",
+    "mode_images_title": "Arquivo menor (páginas como imagens)",
+    "mode_images_desc": "Redesenha cada página em resolução menor. Bem menor, ideal para digitalizações e fotos.",
+    "mode_text_title": "Manter o texto",
+    "mode_text_desc": "Apenas reorganiza a estrutura do arquivo. O texto continua selecionável e pesquisável, mas a economia costuma ser pequena.",
+    "level_label": "Nível de compressão",
+    "level_light": "Leve",
+    "level_light_desc": "Cerca de {{dpi}} dpi — ainda bom para imprimir",
+    "level_medium": "Médio",
+    "level_medium_desc": "Cerca de {{dpi}} dpi — bom para tela e e-mail",
+    "level_strong": "Forte",
+    "level_strong_desc": "Cerca de {{dpi}} dpi — o menor, só para tela",
+    "text_warning": "Parece um documento de texto. Com “páginas como imagens” o texto não poderá mais ser selecionado nem pesquisado. Escolha “Manter o texto” se precisar disso.",
+    "images_note": "As páginas viram imagens: o texto não poderá mais ser selecionado nem pesquisado. O tamanho das páginas continua o mesmo.",
+    "btn_compress": "Comprimir PDF",
+    "progress": "Página {{done}} de {{total}}",
+    "cancel": "Cancelar",
+    "cancelled": "Compressão cancelada.",
+    "result_saved": "Pronto: {{percent}}% menor",
+    "no_gain": "Não foi possível reduzir este PDF de forma perceptível",
+    "no_gain_hint": "Provavelmente já está otimizado. Tente “Arquivo menor” com o nível Forte ou mantenha o original.",
+    "before": "Antes",
+    "after": "Depois",
+    "btn_download": "Baixar PDF comprimido",
+    "btn_download_anyway": "Baixar mesmo assim",
+    "workspace_send": "Enviar para o Workspace",
+    "workspace_sent": "Enviado",
+    "images_after_note": "Nesta versão as páginas são imagens, então o texto não é mais selecionável.",
+    "err_not_pdf": "Escolha um arquivo PDF.",
+    "err_open": "Não foi possível abrir este PDF. Ele pode estar danificado ou protegido por senha.",
+    "err_compress": "Não foi possível comprimir o PDF. Tente outro nível ou um arquivo menor.",
+    "err_too_many_pages": "Este PDF tem páginas demais para o navegador (limite 400)."
   }
 }

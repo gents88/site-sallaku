@@ -70,7 +70,8 @@
       "users": "Utenti",
       "ai_assistant": "Assistente AI",
       "live_chat": "Chat live",
-      "sign_pdf": "Firma PDF"
+      "sign_pdf": "Firma PDF",
+      "compress_pdf": "Comprimi PDF"
     }
   },
   "lang": {
@@ -1532,7 +1533,9 @@
     "seo_title": "Strumenti PDF e AI Gratuiti Online",
     "seo_description": "Strumenti PDF e AI gratuiti online: OCR, convertitore, editor, visualizzatore, scanner, traduttore, riassunto e generatore di presentazioni.",
     "sign_pdf_title": "Firma PDF",
-    "sign_pdf_desc": "Firma un PDF con una firma disegnata, scritta o caricata e aggiungi testo, data e spunte."
+    "sign_pdf_desc": "Firma un PDF con una firma disegnata, scritta o caricata e aggiungi testo, data e spunte.",
+    "compress_pdf_title": "Comprimi PDF",
+    "compress_pdf_desc": "Riduci il peso di un PDF per inviarlo via email o caricarlo, con tre livelli di compressione."
   },
   "about_manage": {
     "title": "Sezione About",
@@ -3113,6 +3116,35 @@
           "a": "Sì: seleziona la firma e scegli “Su tutte le pagine”."
         }
       ]
+    },
+    "compress_pdf": {
+      "about": "Il compressore PDF online riduce il peso di un PDF per poterlo inviare via email o caricare in un modulo con un limite di dimensione. Scegli se ridisegnare le pagine a risoluzione più bassa — molto più leggero, ideale per le scansioni — oppure riordinare soltanto la struttura del file così il testo resta selezionabile. Vedi il peso prima e dopo e il file viene elaborato nel tuo browser.",
+      "steps": [
+        "Apri il PDF: trascinalo nel riquadro o sceglilo dal dispositivo.",
+        "Scegli come comprimere: “File più leggero” (pagine come immagini) oppure “Mantieni il testo”.",
+        "Se hai scelto le pagine come immagini, imposta il livello: Leggero, Medio o Forte.",
+        "Premi “Comprimi PDF”, controlla il peso prima e dopo e scarica."
+      ],
+      "privacy": "Il PDF viene elaborato interamente nel tuo browser e non viene mai caricato. Dopo la chiusura della pagina non resta nulla.",
+      "limits": "“File più leggero” trasforma ogni pagina in un’immagine, quindi il testo non si può più selezionare né cercare — usa “Mantieni il testo” se ti serve, accettando un risparmio minore. I PDF con più di 400 pagine o protetti da password non sono supportati. Se il risultato non è sensibilmente più leggero, lo strumento te lo dice e puoi tenere l’originale.",
+      "faq": [
+        {
+          "q": "Quanto si ridurrà il mio PDF?",
+          "a": "Dipende dal contenuto. Scansioni e foto spesso scendono del 70–90%; i documenti di testo risparmiano poco, a meno di accettare di trasformare le pagine in immagini."
+        },
+        {
+          "q": "Il mio file viene caricato da qualche parte?",
+          "a": "No. Il PDF viene compresso nel tuo browser e non lascia mai il tuo dispositivo."
+        },
+        {
+          "q": "Perché dopo la compressione non riesco a selezionare il testo?",
+          "a": "Nella modalità “File più leggero” ogni pagina viene ridisegnata come immagine. Scegli “Mantieni il testo” per conservarlo."
+        },
+        {
+          "q": "È gratuito?",
+          "a": "Sì, gratuito e senza registrazione."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3234,5 +3266,51 @@
     "err_image": "Non è stato possibile leggere l’immagine. Provane un’altra.",
     "err_no_fields": "Aggiungi prima una firma, un testo o una data.",
     "err_export": "Non è stato possibile creare il PDF. Riprova."
+  },
+  "compress_pdf": {
+    "title": "Comprimi PDF",
+    "subtitle": "Riduci il peso di un PDF perché stia in una email o in un modulo online — nel browser, senza inviare il file da nessuna parte.",
+    "seo_title": "Comprimi PDF Online Gratis — Riduci il Peso del PDF",
+    "seo_description": "Comprimi un PDF online gratis: scegli il livello, vedi quanto risparmi e scarica. Tutto avviene nel tuo browser: il file non viene mai caricato.",
+    "drop_prompt": "Trascina qui un PDF o clicca per sceglierlo",
+    "drop_hint": "Fino a 400 pagine — scansioni, moduli, relazioni",
+    "privacy_note": "Il file resta sul tuo dispositivo: non viene caricato su nessun server.",
+    "workspace_banner_title": "C’è un file nel Workspace",
+    "workspace_banner_use": "Usalo",
+    "workspace_banner_dismiss": "Ignora",
+    "file_info": "{{pages}} pagine · {{size}}",
+    "close_file": "Chiudi file",
+    "mode_label": "Come comprimere",
+    "mode_images_title": "File più leggero (pagine come immagini)",
+    "mode_images_desc": "Ridisegna ogni pagina a risoluzione più bassa. Molto più leggero, ideale per scansioni e foto.",
+    "mode_text_title": "Mantieni il testo",
+    "mode_text_desc": "Riordina soltanto la struttura del file. Il testo resta selezionabile e ricercabile, ma il risparmio di solito è piccolo.",
+    "level_label": "Livello di compressione",
+    "level_light": "Leggero",
+    "level_light_desc": "Circa {{dpi}} dpi — ancora buono da stampare",
+    "level_medium": "Medio",
+    "level_medium_desc": "Circa {{dpi}} dpi — buono per schermo ed email",
+    "level_strong": "Forte",
+    "level_strong_desc": "Circa {{dpi}} dpi — il più piccolo, solo per schermo",
+    "text_warning": "Sembra un documento di testo. Con “pagine come immagini” il testo non si potrà più selezionare né cercare. Scegli “Mantieni il testo” se ti serve.",
+    "images_note": "Le pagine diventano immagini: il testo non si potrà più selezionare né cercare. Le dimensioni delle pagine restano le stesse.",
+    "btn_compress": "Comprimi PDF",
+    "progress": "Pagina {{done}} di {{total}}",
+    "cancel": "Annulla",
+    "cancelled": "Compressione annullata.",
+    "result_saved": "Fatto: {{percent}}% più leggero",
+    "no_gain": "Non è stato possibile alleggerire sensibilmente questo PDF",
+    "no_gain_hint": "Probabilmente è già ottimizzato. Prova “File più leggero” con il livello Forte, oppure tieni l’originale.",
+    "before": "Prima",
+    "after": "Dopo",
+    "btn_download": "Scarica il PDF compresso",
+    "btn_download_anyway": "Scarica comunque",
+    "workspace_send": "Invia a Workspace",
+    "workspace_sent": "Inviato",
+    "images_after_note": "In questa versione le pagine sono immagini, quindi il testo non è più selezionabile.",
+    "err_not_pdf": "Scegli un file PDF.",
+    "err_open": "Impossibile aprire questo PDF. Potrebbe essere danneggiato o protetto da password.",
+    "err_compress": "Non è stato possibile comprimere il PDF. Prova un altro livello o un file più piccolo.",
+    "err_too_many_pages": "Questo PDF ha troppe pagine per il browser (limite 400)."
   }
 }

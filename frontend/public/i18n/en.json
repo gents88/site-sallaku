@@ -70,7 +70,8 @@
       "users": "Users",
       "ai_assistant": "AI Assistant",
       "live_chat": "Live chat",
-      "sign_pdf": "Sign PDF"
+      "sign_pdf": "Sign PDF",
+      "compress_pdf": "Compress PDF"
     }
   },
   "lang": {
@@ -1532,7 +1533,9 @@
     "seo_title": "Free PDF and AI Tools Online",
     "seo_description": "Free PDF and AI tools online: OCR, converter, editor, viewer, scanner, translator, summarizer and presentation generator.",
     "sign_pdf_title": "Sign PDF",
-    "sign_pdf_desc": "Sign a PDF with a drawn, typed or uploaded signature and add text, date and check marks."
+    "sign_pdf_desc": "Sign a PDF with a drawn, typed or uploaded signature and add text, date and check marks.",
+    "compress_pdf_title": "Compress PDF",
+    "compress_pdf_desc": "Reduce the size of a PDF to send it by email or upload it, with three levels of compression."
   },
   "about_manage": {
     "title": "About Section",
@@ -3113,6 +3116,35 @@
           "a": "Yes: select the signature and choose “On all pages”."
         }
       ]
+    },
+    "compress_pdf": {
+      "about": "The online PDF compressor reduces the size of a PDF so you can send it by email or upload it to a form with a size limit. You choose between redrawing the pages at a lower resolution — much smaller, ideal for scans — or only tidying the file structure so the text stays selectable. You see the size before and after, and the file is processed in your browser.",
+      "steps": [
+        "Open the PDF: drag it into the box or choose it from your device.",
+        "Pick how to compress: “Smaller file” (pages as images) or “Keep the text”.",
+        "If you chose pages as images, set the level: Light, Medium or Strong.",
+        "Press “Compress PDF”, check the size before and after, then download."
+      ],
+      "privacy": "The PDF is processed entirely in your browser and is never uploaded. Nothing is stored after you close the page.",
+      "limits": "“Smaller file” turns each page into an image, so the text can no longer be selected or searched — use “Keep the text” if you need it, accepting a smaller saving. PDFs with more than 400 pages or protected by a password are not supported. If the result is not noticeably smaller, the tool tells you so and you can keep the original.",
+      "faq": [
+        {
+          "q": "How much smaller will my PDF be?",
+          "a": "It depends on the content. Scans and photos often shrink by 70–90%; text documents save little unless you accept turning pages into images."
+        },
+        {
+          "q": "Is my file uploaded anywhere?",
+          "a": "No. The PDF is compressed in your browser and never leaves your device."
+        },
+        {
+          "q": "Why can’t I select the text after compressing?",
+          "a": "In “Smaller file” mode each page is redrawn as an image. Choose “Keep the text” to preserve it."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and with no sign-up."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3234,5 +3266,51 @@
     "err_image": "That image could not be read. Try another one.",
     "err_no_fields": "Add a signature, text or date first.",
     "err_export": "The PDF could not be created. Try again."
+  },
+  "compress_pdf": {
+    "title": "Compress PDF",
+    "subtitle": "Reduce the size of a PDF so it fits in an email or an upload form — in your browser, without sending the file anywhere.",
+    "seo_title": "Compress PDF Online Free — Reduce PDF Size",
+    "seo_description": "Compress a PDF online for free: pick a level, see how much you save and download. Everything runs in your browser — the file is never uploaded.",
+    "drop_prompt": "Drop a PDF here or click to choose",
+    "drop_hint": "Up to 400 pages — scans, forms, reports",
+    "privacy_note": "The file stays on your device: it is not uploaded to any server.",
+    "workspace_banner_title": "A file is waiting in the Workspace",
+    "workspace_banner_use": "Use it",
+    "workspace_banner_dismiss": "Ignore",
+    "file_info": "{{pages}} pages · {{size}}",
+    "close_file": "Close file",
+    "mode_label": "How to compress",
+    "mode_images_title": "Smaller file (pages as images)",
+    "mode_images_desc": "Re-draws each page at a lower resolution. Much smaller, best for scans and photos.",
+    "mode_text_title": "Keep the text",
+    "mode_text_desc": "Only tidies the file structure. Text stays selectable and searchable, but the saving is usually small.",
+    "level_label": "Compression level",
+    "level_light": "Light",
+    "level_light_desc": "About {{dpi}} dpi — still good to print",
+    "level_medium": "Medium",
+    "level_medium_desc": "About {{dpi}} dpi — good for screen and email",
+    "level_strong": "Strong",
+    "level_strong_desc": "About {{dpi}} dpi — smallest, for screen only",
+    "text_warning": "This looks like a text document. With “pages as images” the text can no longer be selected or searched. Choose “Keep the text” if you need that.",
+    "images_note": "Pages become images: the text can no longer be selected or searched. The page sizes stay the same.",
+    "btn_compress": "Compress PDF",
+    "progress": "Page {{done}} of {{total}}",
+    "cancel": "Cancel",
+    "cancelled": "Compression cancelled.",
+    "result_saved": "Done: {{percent}}% smaller",
+    "no_gain": "This PDF could not be made noticeably smaller",
+    "no_gain_hint": "It is probably already optimised. Try “Smaller file” with the Strong level, or keep the original.",
+    "before": "Before",
+    "after": "After",
+    "btn_download": "Download compressed PDF",
+    "btn_download_anyway": "Download anyway",
+    "workspace_send": "Send to Workspace",
+    "workspace_sent": "Sent",
+    "images_after_note": "In this version the pages are images, so the text is no longer selectable.",
+    "err_not_pdf": "Please choose a PDF file.",
+    "err_open": "This PDF could not be opened. It may be damaged or protected by a password.",
+    "err_compress": "The PDF could not be compressed. Try another level or a smaller file.",
+    "err_too_many_pages": "This PDF has too many pages for the browser (limit 400)."
   }
 }
