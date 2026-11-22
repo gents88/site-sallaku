@@ -490,7 +490,7 @@ $error-clr:     #f87171;
 }
 
 .preview-body {
-  flex: 1; min-height: 0; position: relative;
+  flex: 1; min-height: 0; position: relative; overflow: hidden;
 
   // Only when the canvas viewer genuinely couldn't load anything: no page
   // image sits behind it, so there's no reason to force this box to fill all
@@ -502,11 +502,13 @@ $error-clr:     #f87171;
 .pdf-iframe { width: 100%; height: 100%; border: none; background: #fff; }
 
 .canvas-page-wrap {
-  width: 100%; height: 100%; overflow: auto;
+  width: 100%; overflow: auto;
   display: flex; align-items: flex-start; justify-content: center;
   background: #525659; padding: 12px;
 
-  position: relative;
+  // Riempie esattamente il corpo della modale: con height:100% su un figlio flex la
+  // pagina sbordava sotto e copriva la barra pagine/zoom.
+  position: absolute; inset: 0;
   // Lo scroll verticale resta al browser; lo swipe orizzontale lo gestiamo noi (cambio pagina).
   touch-action: pan-y pinch-zoom;
   img { max-width: none; flex: 0 0 auto; height: auto; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); transition: opacity 0.15s; }
@@ -519,7 +521,7 @@ $error-clr:     #f87171;
   display: inline-flex; align-items: center; gap: 6px;
   input {
     width: 54px; padding: 5px 6px; text-align: center; border-radius: 8px;
-    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25);
+    background: var(--bg-tertiary, rgba(128, 128, 128, 0.12)); border: 1px solid var(--border-color, rgba(128, 128, 128, 0.45));
     color: var(--text-primary, #e6edf3); font: inherit;
     &:focus-visible { outline: 2px solid $accent; outline-offset: 1px; }
   }
@@ -539,11 +541,11 @@ $error-clr:     #f87171;
 
   button {
     width: 32px; height: 32px; border-radius: 8px;
-    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25);
+    background: var(--bg-tertiary, rgba(128, 128, 128, 0.12)); border: 1px solid var(--border-color, rgba(128, 128, 128, 0.45));
     color: var(--text-primary, #e6edf3); font-size: 20px; font-weight: 600; line-height: 1;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
 
-    &:hover:not(:disabled) { border-color: $accent-border; background: rgba(255, 255, 255, 0.14); }
+    &:hover:not(:disabled) { border-color: $accent-border; }
     &:disabled { opacity: 0.35; cursor: not-allowed; }
   }
 }
@@ -615,8 +617,13 @@ $error-clr:     #f87171;
 @media (max-width: 640px) {
   // A tutto schermo davvero: sopra la tab bar mobile e i FAB (chat / torna su,
   // z-index ~1500), che altrimenti coprivano barra pagine e bottoni d'azione.
-  .modal-backdrop { padding: 0; z-index: 1600; }
-  .preview-modal { width: 100%; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  // La bottom tab bar del sito vive in un altro stacking context e resta sopra la
+  // modale: invece di combatterla, si lascia sotto di lei lo spazio che occupa.
+  .modal-backdrop {
+    padding: 0 0 calc(var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
+    z-index: 1600;
+  }
+  .preview-modal { width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
   .preview-header, .canvas-page-nav, .preview-actions { flex-shrink: 0; }
   .preview-header { padding-top: calc(12px + env(safe-area-inset-top)); }
   .preview-close { width: 40px; height: 40px; font-size: 16px; }
@@ -632,12 +639,14 @@ $error-clr:     #f87171;
   // Azioni compatte: Scarica a tutta larghezza, le altre in griglia 2x2.
   .preview-actions {
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    padding: 8px 12px; gap: 6px; align-items: stretch; grid-auto-rows: min-content; align-content: start;
     .btn-download { grid-column: 1 / -1; }
     .btn-download, .btn-source, .btn-workspace, .btn-library {
-      width: auto; padding: 11px 8px; font-size: 12.5px; min-height: 44px;
+      box-sizing: border-box; width: auto; padding: 8px; font-size: 12.5px; line-height: 1.2; min-height: 42px; height: auto;
       display: flex; align-items: center; justify-content: center;
     }
+    // "Vedi pagina sorgente" è secondario: riga intera ma bassa, invece di un quarto bottone orfano.
+    .btn-source { grid-column: 1 / -1; min-height: 36px; padding: 6px 8px; font-size: 12px; border-color: transparent; color: var(--text-secondary, #8b949e); }
   }
 
   // The compact variant (no iframe) keeps its own auto-height + rounded
