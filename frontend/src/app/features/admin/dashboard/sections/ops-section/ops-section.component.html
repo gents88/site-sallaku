@@ -1,0 +1,14 @@
+<h2 class="section-label"><mat-icon>monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}</h2>
+<div class="analytics-grid">
+  <app-dashboard-card titleKey="ai_usage.title" descKey="ai_usage.desc" icon="bolt" periodKey="dashboard_ux.period_today">
+    <app-ai-usage-panel [data]="aiUsage()" [failed]="failed().has('aiUsage')" />
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="server_errors.title" descKey="server_errors.desc" icon="bug_report">
+    <app-server-errors-panel [data]="serverErrors()" [failed]="failed().has('serverErrors')" (changed)="changed.emit()" />
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="server_health.title" descKey="server_health.desc" icon="backup" periodKey="dashboard_ux.period_live">
+    <app-server-health-panel [data]="serverHealth()" [failed]="failed().has('serverHealth')" />
+  </app-dashboard-card>
+</div>

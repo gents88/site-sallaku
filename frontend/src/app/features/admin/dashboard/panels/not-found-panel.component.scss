@@ -1,0 +1,4 @@
+// Stili del pannello not found panel. I comuni (panel-kpi, panel-btn, panel-error…)
+// arrivano da panel-shared.scss.
+
+.nf-row { min-width: 0; } .nf-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }

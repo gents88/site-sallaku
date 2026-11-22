@@ -144,6 +144,16 @@ export class AnalyticsController {
     return this.query.getAcquisition(days ?? 30);
   }
 
+  @Get('lead-attribution')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Where contacts and live-chat requests come from, and which articles they read first (admin only)' })
+  @ApiQuery({ name: 'days', required: false })
+  getLeadAttribution(@Query() { days }: DaysQueryDto) {
+    return this.query.getLeadAttribution(days ?? 30);
+  }
+
   @Get('search-console')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)

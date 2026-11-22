@@ -1,0 +1,8 @@
+// Stili del pannello translation health panel. I comuni (panel-kpi, panel-btn, panel-error…)
+// arrivano da panel-shared.scss.
+
+.tr-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.tr-row { display: grid !important; gap: 0.4rem; }
+.tr-row a { color: inherit; font-weight: 600; text-decoration: none; }
+.tr-row a:hover { text-decoration: underline; }
+.tr-legend { margin: 0.75rem 0 0; }

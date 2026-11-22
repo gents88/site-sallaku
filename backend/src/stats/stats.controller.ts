@@ -28,7 +28,10 @@ export class StatsController {
   @Get('overview')
   @ApiOperation({ summary: 'Whole admin dashboard snapshot in one call (30s cache, ?fresh=1 to bypass)' })
   @ApiQuery({ name: 'fresh', required: false, type: Boolean })
-  getOverview(@Query('fresh') fresh?: string): Promise<AdminOverviewResponse> {
+  @ApiQuery({ name: 'sections', required: false, description: 'Comma-separated subset (e.g. core,liveHandoffs): computes only those, uncached' })
+  getOverview(@Query('fresh') fresh?: string, @Query('sections') sections?: string): Promise<AdminOverviewResponse> {
+    const keys = (sections ?? '').split(',').map((k) => k.trim()).filter(Boolean).slice(0, 30);
+    if (keys.length) return this.overview.getSections(keys);
     return this.overview.getOverview(fresh === '1' || fresh === 'true');
   }
 }

@@ -1,7 +1,15 @@
 import { OverviewSection } from './admin-dashboard.service';
 
-/** Intervallo di polling della dashboard. */
+/** Intervallo di polling della dashboard: ogni giro ricarica solo le sezioni vive (LIVE_SECTIONS). */
 export const DASHBOARD_POLL_MS = 60_000;
+
+/** Ogni quanto il polling ricarica anche le sezioni pesanti (statistiche visite, SEO, sistema). */
+export const DASHBOARD_FULL_REFRESH_MS = 10 * 60_000;
+
+/** Il giro di polling deve ricaricare tutto? Sì al primo, poi ogni DASHBOARD_FULL_REFRESH_MS. */
+export function needsFullRefresh(lastFullAt: Date | null, now = Date.now()): boolean {
+  return !lastFullAt || now - lastFullAt.getTime() >= DASHBOARD_FULL_REFRESH_MS;
+}
 
 /**
  * Altezze (%) di una sparkline da una serie reale per giorno. null quando non
@@ -53,4 +61,26 @@ export const SECTION_LABEL_KEYS: Record<OverviewSection, string> = {
 /** Etichette uniche (le tre sezioni di sistema condividono lo stesso pannello). */
 export function failedSectionLabels(failed: ReadonlySet<OverviewSection>): string[] {
   return [...new Set([...failed].map(k => SECTION_LABEL_KEYS[k]))];
+}
+
+/** Variazione rispetto al periodo precedente: % arrotondata e direzione. */
+export interface PeriodDelta {
+  /** null quando il periodo precedente è 0 (nessuna base per una percentuale) */
+  pct: number | null;
+  direction: 'up' | 'down' | 'flat';
+}
+
+export function periodDelta(current: number, previous: number): PeriodDelta {
+  const direction = current > previous ? 'up' : current < previous ? 'down' : 'flat';
+  if (!previous) return { pct: null, direction };
+  return { pct: Math.round(((current - previous) / previous) * 100), direction };
+}
+
+/**
+ * Larghezza (%) di una barra orizzontale rispetto alla più lunga della serie.
+ * Una barra con valore > 0 non scende sotto `minPct`, così resta visibile.
+ */
+export function barPercent(value: number, values: readonly number[], minPct = 6): number {
+  const max = Math.max(...values, 1);
+  return Math.max((value / max) * 100, value > 0 ? minPct : 0);
 }

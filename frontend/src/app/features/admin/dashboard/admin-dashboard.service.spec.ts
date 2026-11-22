@@ -66,6 +66,18 @@ describe('AdminDashboardService.loadOverview', () => {
     http.expectOne(`${environment.apiUrl}/stats/overview?fresh=1`).flush({ generatedAt: 'x', sections: {}, errors: [] });
   });
 
+  it('loadSections chiede solo le sezioni vive e segnala come fallite solo quelle', () => {
+    const { service, http } = setup();
+    let result: any;
+    service.loadSections(['liveHandoffs', 'serverErrors']).subscribe(r => (result = r));
+    http
+      .expectOne(`${environment.apiUrl}/stats/overview?sections=liveHandoffs,serverErrors`)
+      .flush({ generatedAt: 'x', sections: { liveHandoffs: [], serverErrors: null }, errors: ['serverErrors'] });
+    expect(Object.keys(result.data)).toEqual(['liveHandoffs', 'serverErrors']);
+    expect([...result.requested]).toEqual(['liveHandoffs', 'serverErrors']);
+    expect([...result.failed]).toEqual(['serverErrors']);
+  });
+
   it('revokeSession chiude la sessione di un utente con una POST sull’endpoint sicurezza', () => {
     const { service, http } = setup();
     service.revokeSession('u2').subscribe();

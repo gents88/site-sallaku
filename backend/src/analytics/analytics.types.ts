@@ -97,9 +97,39 @@ export interface AcquisitionReport {
   days: number;
   /** Arrivi dall'esterno nel periodo (prime pagine delle visite) */
   totalEntries: number;
+  /** Arrivi dello stesso numero di giorni appena precedente, per il confronto */
+  previousTotalEntries: number;
   sources: BreakdownItem[];
   /** Siti di provenienza raggruppati per host, senza il dominio del sito */
   referrers: BreakdownItem[];
   entryPages: EntryPageRow[];
   recentVisits: RecentVisit[];
+}
+
+/** Articolo letto da visitatori che poi hanno scritto o aperto la chat live. */
+export interface LeadArticleRow {
+  path: string;
+  /** Visitatori che l'hanno letto prima di diventare contatto */
+  leads: number;
+  /** Visitatori unici dell'articolo nel periodo */
+  visitors: number;
+  /** leads / visitors in % (una cifra decimale) */
+  rate: number;
+}
+
+/**
+ * Da dove arrivano i contatti (form e chat live): attribuzione "ultimo arrivo
+ * dall'esterno prima del contatto" e articoli letti prima di scrivere.
+ */
+export interface LeadAttributionReport {
+  days: number;
+  totalLeads: number;
+  /** Lead dello stesso numero di giorni appena precedente, per il confronto */
+  previousTotalLeads: number;
+  /** contact_form / live_handoff */
+  byKind: BreakdownItem[];
+  bySource: BreakdownItem[];
+  byReferrer: BreakdownItem[];
+  byEntryPage: BreakdownItem[];
+  articles: LeadArticleRow[];
 }

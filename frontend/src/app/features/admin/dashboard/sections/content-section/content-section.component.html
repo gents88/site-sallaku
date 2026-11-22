@@ -1,0 +1,18 @@
+<h2 class="section-label"><mat-icon>edit_note</mat-icon>{{ 'content_health.section' | translate }}</h2>
+<div class="analytics-grid">
+  <app-dashboard-card titleKey="translation_health.title" descKey="translation_health.desc" icon="translate">
+    <app-translation-health-panel [data]="translationHealth()" [failed]="failed().has('translationHealth')" />
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="scheduled_posts.title" descKey="scheduled_posts.desc" icon="schedule">
+    <app-scheduled-posts-panel [posts]="scheduledPosts()" [failed]="failed().has('scheduledPosts')" />
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="not_found.title" descKey="not_found.desc" icon="link_off">
+    <app-not-found-panel [data]="notFound()" [failed]="failed().has('notFound')" (changed)="changed.emit()" />
+  </app-dashboard-card>
+
+  <app-dashboard-card titleKey="security_panel.title" descKey="security_panel.desc" icon="shield" periodKey="dashboard_ux.period_24h">
+    <app-security-panel [data]="security()" [failed]="failed().has('security')" (changed)="changed.emit()" />
+  </app-dashboard-card>
+</div>
