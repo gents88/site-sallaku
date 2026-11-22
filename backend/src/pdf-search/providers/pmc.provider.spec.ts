@@ -12,6 +12,8 @@ describe('PmcProvider', () => {
     provider = new PmcProvider();
     fetchMock = jest.fn();
     global.fetch = fetchMock as unknown as typeof fetch;
+    // La verifica del PDF ha test propri (in fondo): negli altri il PDF risulta disponibile.
+    jest.spyOn(provider as unknown as { pdfAvailable: () => Promise<boolean> }, 'pdfAvailable').mockResolvedValue(true);
   });
 
   afterEach(() => {
@@ -116,5 +118,54 @@ describe('PmcProvider', () => {
 
     const requestedUrl = new URL(fetchMock.mock.calls[0][0] as string);
     expect(requestedUrl.searchParams.get('query')).toBe('TITLE:(piccolo principe) AND OPEN_ACCESS:Y AND HAS_PDF:Y');
+  });
+  describe('verifica che il PDF esista davvero', () => {
+    const search = {
+      resultList: { result: [
+        { pmcid: 'PMC1', title: 'Buono', hasPDF: 'Y' },
+        { pmcid: 'PMC2', title: 'Senza PDF', hasPDF: 'Y' },
+      ] },
+    };
+    const pdfRes = (ok: boolean, type: string) => ({ ok, headers: { get: () => type }, body: { cancel: () => Promise.resolve() } }) as unknown as Response;
+
+    beforeEach(() => {
+      (provider as unknown as { pdfAvailable: jest.SpyInstance }).pdfAvailable.mockRestore();
+    });
+
+    it('scarta i risultati il cui PDF non si scarica (risposta non PDF o non OK) e tiene gli altri', async () => {
+      fetchMock.mockImplementation((url: string) => {
+        if (url.includes('webservices/rest/search')) return Promise.resolve(jsonResponse(search));
+        return Promise.resolve(url.includes('PMC1') ? pdfRes(true, 'application/pdf') : pdfRes(true, 'application/json'));
+      });
+
+      const results = await provider.search('x', 10);
+
+      expect(results.map((r) => r.id)).toEqual(['pmc-PMC1']);
+    });
+
+    it('scarta anche una risposta non OK', async () => {
+      fetchMock.mockImplementation((url: string) =>
+        Promise.resolve(url.includes('webservices/rest/search') ? jsonResponse(search) : pdfRes(false, 'application/pdf')));
+
+      expect(await provider.search('x', 10)).toEqual([]);
+    });
+
+    it('un timeout o un errore di rete non scartano il risultato', async () => {
+      fetchMock.mockImplementation((url: string) =>
+        url.includes('webservices/rest/search') ? Promise.resolve(jsonResponse(search)) : Promise.reject(new Error('timeout')));
+
+      expect((await provider.search('x', 10)).map((r) => r.id)).toEqual(['pmc-PMC1', 'pmc-PMC2']);
+    });
+
+    it('ricorda l\'esito: la stessa ricerca ripetuta non ricontrolla i PDF', async () => {
+      fetchMock.mockImplementation((url: string) =>
+        Promise.resolve(url.includes('webservices/rest/search') ? jsonResponse(search) : pdfRes(true, 'application/pdf')));
+
+      await provider.search('x', 10);
+      const calls = fetchMock.mock.calls.length;
+      await provider.search('x', 10);
+
+      expect(fetchMock.mock.calls.length).toBe(calls + 1); // solo la ricerca, non i 2 PDF
+    });
   });
 });
