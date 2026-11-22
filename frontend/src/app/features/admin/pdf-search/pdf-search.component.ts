@@ -40,6 +40,8 @@ const SEARCH_CACHE_MAX = 20;
 const PAGE_CACHE_MAX = 6;
 /** Spostamento orizzontale minimo (px) perché un tocco conti come swipe. */
 const SWIPE_MIN_PX = 50;
+/** Area massima (px) di una pagina rasterizzata: sotto i limiti dei canvas mobile, che oltre questa soglia restituiscono bianco. */
+const MAX_PAGE_PIXELS = 8_000_000;
 const ZOOM_LEVELS = [1, 1.5, 2, 3] as const;
 const DEFAULT_ZOOM_INDEX = 1;
 
@@ -619,7 +621,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     }
     const token = this.previewToken;
     const page = await doc.getPage(pageNum);
-    const blob = await this.pdfjs.renderPageToBlob(page, scale);
+    const blob = await this.pdfjs.renderPageToBlob(page, scale, { maxPixels: MAX_PAGE_PIXELS, retryIfBlank: true });
     page.cleanup?.();
     if (token !== this.previewToken) return null;
     const url = URL.createObjectURL(blob);
