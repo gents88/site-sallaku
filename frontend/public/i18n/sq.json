@@ -2505,5 +2505,11 @@
     "none_title": "Nuk u mor asnjë skedar",
     "none_hint": "Për të hapur një skedar në Lab, ndaje nga një aplikacion tjetër me «Ndaj me…» ose zgjidh «Hap me» te skedari pasi ta kesh instaluar faqen si aplikacion. Mund ta tërheqësh edhe drejtpërdrejt në Lab.",
     "go_lab": "Shko te Lab"
+  },
+  "page_meta": {
+    "home_title": "Zhvillues Senior Front-End & API",
+    "home_description": "Zhvillues Senior Front-End i specializuar në Angular, TypeScript, vizualizim 3D të të dhënave dhe arkitektura enterprise.",
+    "blog_title": "Blog — Angular, TypeScript dhe zhvillim web",
+    "blog_description": "Artikuj, udhëzues dhe analiza për Angular, TypeScript, NestJS, performancën web, vizualizimet 3D dhe zhvillimin modern."
   }
 }
