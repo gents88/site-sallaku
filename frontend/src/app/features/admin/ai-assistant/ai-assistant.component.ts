@@ -90,7 +90,7 @@ import { ProfilePhotoComponent } from '../../../shared/components/profile-photo/
           @if (!hasMessages && !isLoading) {
             <div class="welcome">
               <div class="welcome-icon" aria-hidden="true">✦</div>
-              <h2>Ciao! Sono il tuo AI Assistant</h2>
+              <h1>Ciao! Sono il tuo AI Assistant</h1>
               <p>Chiedimi qualsiasi cosa su Gent Sallaku, i suoi progetti e le sue competenze.</p>
               <div class="prompt-chips" role="list" [attr.aria-label]="'ai_assistant.suggested_prompts' | translate">
                 @for (prompt of suggestedPrompts; track prompt) {
@@ -272,7 +272,7 @@ import { ProfilePhotoComponent } from '../../../shared/components/profile-photo/
     }
 
     .welcome-icon { font-size: 2.5rem; color: var(--accent, #7c6cfc); margin-bottom: 0.5rem; }
-    .welcome h2 { font-size: 1.35rem; font-weight: 700; margin: 0; }
+    .welcome h1 { font-size: 1.35rem; font-weight: 700; margin: 0; }
     .welcome p { color: var(--text-secondary, #8b949e); margin: 0; font-size: 0.95rem; }
 
     .prompt-chips {
