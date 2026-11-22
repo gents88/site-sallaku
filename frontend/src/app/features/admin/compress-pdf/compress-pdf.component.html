@@ -1,0 +1,132 @@
+<div class="cp-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+  <header class="cp-header">
+    <h1 class="cp-title">🗜️ {{ 'compress_pdf.title' | translate }}</h1>
+    <p class="cp-subtitle">{{ 'compress_pdf.subtitle' | translate }}</p>
+  </header>
+
+  @if (workspaceItem()) {
+    <div class="workspace-banner">
+      <span class="workspace-banner-icon">🔗</span>
+      <div class="workspace-banner-text">
+        <strong>{{ 'compress_pdf.workspace_banner_title' | translate }}</strong>
+        <span class="workspace-banner-filename">{{ workspaceItem()!.filename }}</span>
+      </div>
+      <div class="workspace-banner-actions">
+        <button type="button" class="workspace-btn primary" (click)="useWorkspaceFile()">{{ 'compress_pdf.workspace_banner_use' | translate }}</button>
+        <button type="button" class="workspace-btn" (click)="dismissWorkspaceBanner()">{{ 'compress_pdf.workspace_banner_dismiss' | translate }}</button>
+      </div>
+    </div>
+  }
+
+  @if (numPages() === 0) {
+    <div class="cp-panel">
+      <div class="dz" appFileDropzone #dz="fileDropzone" (click)="pick.click()" (filesDropped)="onFilesDropped($event)" [class.dz--drag]="dz.isDragging">
+        <input #pick type="file" hidden accept=".pdf,application/pdf" (change)="select($event)">
+        <span class="dz-icon">📂</span>
+        <strong>{{ 'compress_pdf.drop_prompt' | translate }}</strong>
+        <small>{{ 'compress_pdf.drop_hint' | translate }}</small>
+      </div>
+      <app-sample-file-button (picked)="onFilesDropped($event)" />
+      @if (opening()) {
+        <div class="progress-wrap"><div class="progress-bar progress-bar--indeterminate"><div class="progress-fill"></div></div></div>
+      }
+      @if (msg()) { <p class="msg" role="alert">{{ msg() }}</p> }
+      <p class="privacy-note">🔒 {{ 'compress_pdf.privacy_note' | translate }}</p>
+    </div>
+  } @else {
+    <!-- ── File ─────────────────────────────────── -->
+    <section class="cp-panel file-card">
+      <span class="file-icon" aria-hidden="true">📕</span>
+      <div class="file-meta">
+        <strong class="file-name">{{ fileName() }}</strong>
+        <span class="file-sub">{{ 'compress_pdf.file_info' | translate: { pages: numPages(), size: sizeLabel() } }}</span>
+      </div>
+      <button type="button" class="link-btn" [disabled]="working()" (click)="closeFile()">✕ {{ 'compress_pdf.close_file' | translate }}</button>
+    </section>
+
+    <!-- ── Impostazioni ─────────────────────────── -->
+    <section class="cp-panel">
+      <h2 class="sec-title">{{ 'compress_pdf.mode_label' | translate }}</h2>
+      <div class="choice-grid" role="radiogroup" [attr.aria-label]="'compress_pdf.mode_label' | translate">
+        <button type="button" role="radio" class="choice" [class.choice--on]="mode() === 'images'" [attr.aria-checked]="mode() === 'images'" [disabled]="working()" (click)="setMode('images')">
+          <span class="choice-title">🖼️ {{ 'compress_pdf.mode_images_title' | translate }}</span>
+          <span class="choice-desc">{{ 'compress_pdf.mode_images_desc' | translate }}</span>
+        </button>
+        <button type="button" role="radio" class="choice" [class.choice--on]="mode() === 'keep-text'" [attr.aria-checked]="mode() === 'keep-text'" [disabled]="working()" (click)="setMode('keep-text')">
+          <span class="choice-title">🔤 {{ 'compress_pdf.mode_text_title' | translate }}</span>
+          <span class="choice-desc">{{ 'compress_pdf.mode_text_desc' | translate }}</span>
+        </button>
+      </div>
+
+      @if (mode() === 'images') {
+        <h2 class="sec-title sec-title--spaced">{{ 'compress_pdf.level_label' | translate }}</h2>
+        <div class="choice-grid choice-grid--3" role="radiogroup" [attr.aria-label]="'compress_pdf.level_label' | translate">
+          @for (l of levels; track l) {
+            <button type="button" role="radio" class="choice choice--compact" [class.choice--on]="level() === l" [attr.aria-checked]="level() === l" [disabled]="working()" (click)="setLevel(l)">
+              <span class="choice-title">{{ 'compress_pdf.level_' + l | translate }}</span>
+              <span class="choice-desc">{{ 'compress_pdf.level_' + l + '_desc' | translate: { dpi: levelSpec(l).dpi } }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (showTextWarning()) {
+        <p class="notice notice--warn" role="note">⚠️ {{ 'compress_pdf.text_warning' | translate }}</p>
+      } @else if (mode() === 'images') {
+        <p class="notice" role="note">ℹ️ {{ 'compress_pdf.images_note' | translate }}</p>
+      }
+
+      <div class="run-row">
+        @if (working()) {
+          <div class="progress-wrap progress-wrap--grow" role="progressbar" [attr.aria-valuenow]="progressPct()" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar"><div class="progress-fill progress-fill--det" [style.width.%]="progressPct()"></div></div>
+            <small>{{ 'compress_pdf.progress' | translate: { done: progress().done, total: progress().total } }}</small>
+          </div>
+          <button type="button" class="btn-ghost" (click)="cancel()">{{ 'compress_pdf.cancel' | translate }}</button>
+        } @else {
+          <button type="button" class="btn-main" (click)="compress()">🗜️ {{ 'compress_pdf.btn_compress' | translate }}</button>
+        }
+      </div>
+      @if (msg()) { <p class="msg" role="alert">{{ msg() }}</p> }
+    </section>
+
+    <!-- ── Risultato ────────────────────────────── -->
+    @if (result(); as r) {
+      <section class="cp-panel result" aria-live="polite">
+        @if (r.worthIt) {
+          <h2 class="result-title result-title--ok">✅ {{ 'compress_pdf.result_saved' | translate: { percent: r.percent } }}</h2>
+        } @else {
+          <h2 class="result-title result-title--warn">ℹ️ {{ 'compress_pdf.no_gain' | translate }}</h2>
+          <p class="notice">{{ 'compress_pdf.no_gain_hint' | translate }}</p>
+        }
+        <div class="bars">
+          <div class="bar-row">
+            <span class="bar-label">{{ 'compress_pdf.before' | translate }}</span>
+            <span class="bar"><span class="bar-fill bar-fill--before" style="width:100%"></span></span>
+            <span class="bar-size">{{ beforeLabel() }}</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">{{ 'compress_pdf.after' | translate }}</span>
+            <span class="bar"><span class="bar-fill bar-fill--after" [style.width.%]="afterBarPct()"></span></span>
+            <span class="bar-size">{{ afterLabel() }}</span>
+          </div>
+        </div>
+        <div class="export-row">
+          <button type="button" [class]="r.worthIt ? 'btn-main' : 'btn-ghost'" (click)="download()">
+            📥 {{ (r.worthIt ? 'compress_pdf.btn_download' : 'compress_pdf.btn_download_anyway') | translate }}
+          </button>
+          <button type="button" class="btn-ghost" (click)="sendToWorkspace()">
+            {{ justSent() ? ('compress_pdf.workspace_sent' | translate) : ('🔗 ' + ('compress_pdf.workspace_send' | translate)) }}
+          </button>
+        </div>
+        @if (r.mode === 'images') {
+          <p class="privacy-note">{{ 'compress_pdf.images_after_note' | translate }}</p>
+        }
+      </section>
+    }
+    <p class="privacy-note privacy-note--page">🔒 {{ 'compress_pdf.privacy_note' | translate }}</p>
+  }
+</div>
+
+<app-lab-tool-info [tool]="page.id" />

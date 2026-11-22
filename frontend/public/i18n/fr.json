@@ -70,7 +70,8 @@
       "users": "Utilisateurs",
       "ai_assistant": "Assistant IA",
       "live_chat": "Chat en direct",
-      "sign_pdf": "Signer un PDF"
+      "sign_pdf": "Signer un PDF",
+      "compress_pdf": "Compresser un PDF"
     }
   },
   "lang": {
@@ -1532,7 +1533,9 @@
     "seo_title": "Outils PDF et IA Gratuits en Ligne",
     "seo_description": "Outils PDF et IA gratuits en ligne : OCR, convertisseur, éditeur, visionneuse, scanner, traducteur, résumé et générateur de présentations.",
     "sign_pdf_title": "Signer un PDF",
-    "sign_pdf_desc": "Signez un PDF avec une signature dessinée, tapée ou importée et ajoutez texte, date et coches."
+    "sign_pdf_desc": "Signez un PDF avec une signature dessinée, tapée ou importée et ajoutez texte, date et coches.",
+    "compress_pdf_title": "Compresser un PDF",
+    "compress_pdf_desc": "Réduisez le poids d’un PDF pour l’envoyer par e-mail ou le téléverser, avec trois niveaux de compression."
   },
   "about_manage": {
     "title": "Section À propos",
@@ -3113,6 +3116,35 @@
           "a": "Oui : sélectionnez la signature et choisissez « Sur toutes les pages »."
         }
       ]
+    },
+    "compress_pdf": {
+      "about": "Le compresseur de PDF en ligne réduit le poids d’un PDF pour l’envoyer par e-mail ou le téléverser dans un formulaire limité en taille. Vous choisissez entre redessiner les pages à une résolution plus basse — bien plus léger, idéal pour les scans — ou seulement réorganiser la structure du fichier pour que le texte reste sélectionnable. Vous voyez le poids avant et après, et le fichier est traité dans votre navigateur.",
+      "steps": [
+        "Ouvrez le PDF : faites-le glisser dans le cadre ou choisissez-le sur votre appareil.",
+        "Choisissez comment compresser : « Fichier plus léger » (pages en images) ou « Conserver le texte ».",
+        "Si vous avez choisi les pages en images, réglez le niveau : Léger, Moyen ou Fort.",
+        "Appuyez sur « Compresser le PDF », vérifiez le poids avant et après, puis téléchargez."
+      ],
+      "privacy": "Le PDF est traité entièrement dans votre navigateur et n’est jamais envoyé. Rien n’est conservé après la fermeture de la page.",
+      "limits": "« Fichier plus léger » transforme chaque page en image : le texte ne peut plus être sélectionné ni recherché — utilisez « Conserver le texte » si besoin, avec un gain moindre. Les PDF de plus de 400 pages ou protégés par mot de passe ne sont pas pris en charge. Si le résultat n’est pas sensiblement plus léger, l’outil vous le dit et vous pouvez garder l’original.",
+      "faq": [
+        {
+          "q": "De combien mon PDF va-t-il diminuer ?",
+          "a": "Cela dépend du contenu. Les scans et les photos baissent souvent de 70 à 90 % ; les documents de texte gagnent peu, sauf à accepter de transformer les pages en images."
+        },
+        {
+          "q": "Mon fichier est-il envoyé quelque part ?",
+          "a": "Non. Le PDF est compressé dans votre navigateur et ne quitte jamais votre appareil."
+        },
+        {
+          "q": "Pourquoi ne puis-je plus sélectionner le texte après compression ?",
+          "a": "En mode « Fichier plus léger », chaque page est redessinée en image. Choisissez « Conserver le texte » pour le garder."
+        },
+        {
+          "q": "Est-ce gratuit ?",
+          "a": "Oui, gratuit et sans inscription."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3234,5 +3266,51 @@
     "err_image": "Cette image n’a pas pu être lue. Essayez-en une autre.",
     "err_no_fields": "Ajoutez d’abord une signature, un texte ou une date.",
     "err_export": "Le PDF n’a pas pu être créé. Réessayez."
+  },
+  "compress_pdf": {
+    "title": "Compresser un PDF",
+    "subtitle": "Réduisez le poids d’un PDF pour qu’il passe dans un e-mail ou un formulaire — dans le navigateur, sans envoyer le fichier.",
+    "seo_title": "Compresser un PDF en Ligne Gratuit — Réduire le Poids",
+    "seo_description": "Compressez un PDF en ligne gratuitement : choisissez le niveau, voyez le gain et téléchargez. Tout se passe dans votre navigateur : le fichier n’est jamais envoyé.",
+    "drop_prompt": "Déposez un PDF ici ou cliquez pour le choisir",
+    "drop_hint": "Jusqu’à 400 pages — scans, formulaires, rapports",
+    "privacy_note": "Le fichier reste sur votre appareil : il n’est envoyé à aucun serveur.",
+    "workspace_banner_title": "Un fichier attend dans le Workspace",
+    "workspace_banner_use": "L’utiliser",
+    "workspace_banner_dismiss": "Ignorer",
+    "file_info": "{{pages}} pages · {{size}}",
+    "close_file": "Fermer le fichier",
+    "mode_label": "Comment compresser",
+    "mode_images_title": "Fichier plus léger (pages en images)",
+    "mode_images_desc": "Redessine chaque page à une résolution plus basse. Bien plus léger, idéal pour les scans et les photos.",
+    "mode_text_title": "Conserver le texte",
+    "mode_text_desc": "Réorganise seulement la structure du fichier. Le texte reste sélectionnable et recherchable, mais le gain est souvent faible.",
+    "level_label": "Niveau de compression",
+    "level_light": "Léger",
+    "level_light_desc": "Environ {{dpi}} ppp — encore bon pour imprimer",
+    "level_medium": "Moyen",
+    "level_medium_desc": "Environ {{dpi}} ppp — bon pour l’écran et l’e-mail",
+    "level_strong": "Fort",
+    "level_strong_desc": "Environ {{dpi}} ppp — le plus petit, pour l’écran seulement",
+    "text_warning": "On dirait un document de texte. Avec « pages en images », le texte ne pourra plus être sélectionné ni recherché. Choisissez « Conserver le texte » si besoin.",
+    "images_note": "Les pages deviennent des images : le texte ne pourra plus être sélectionné ni recherché. Les dimensions des pages restent identiques.",
+    "btn_compress": "Compresser le PDF",
+    "progress": "Page {{done}} sur {{total}}",
+    "cancel": "Annuler",
+    "cancelled": "Compression annulée.",
+    "result_saved": "Terminé : {{percent}} % plus léger",
+    "no_gain": "Ce PDF n’a pas pu être sensiblement allégé",
+    "no_gain_hint": "Il est probablement déjà optimisé. Essayez « Fichier plus léger » au niveau Fort, ou gardez l’original.",
+    "before": "Avant",
+    "after": "Après",
+    "btn_download": "Télécharger le PDF compressé",
+    "btn_download_anyway": "Télécharger quand même",
+    "workspace_send": "Envoyer vers le Workspace",
+    "workspace_sent": "Envoyé",
+    "images_after_note": "Dans cette version, les pages sont des images : le texte n’est plus sélectionnable.",
+    "err_not_pdf": "Choisissez un fichier PDF.",
+    "err_open": "Impossible d’ouvrir ce PDF. Il est peut-être endommagé ou protégé par un mot de passe.",
+    "err_compress": "Le PDF n’a pas pu être compressé. Essayez un autre niveau ou un fichier plus petit.",
+    "err_too_many_pages": "Ce PDF a trop de pages pour le navigateur (limite 400)."
   }
 }

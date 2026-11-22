@@ -28,7 +28,7 @@ describe('ToolsComponent (Lab)', () => {
     expect(component.aiCards.map(c => c.route)).toEqual([
       '/lab/pdf-search', '/lab/library', '/lab/pdf-summary', '/lab/ai-formatter', '/lab/pdf-translate', '/lab/ai-ppt',
     ]);
-    expect(component.toolCards).toHaveLength(7);
+    expect(component.toolCards).toHaveLength(8);
   });
 
   it('keeps the language prefix on card links (regression: /en/lab linked to Italian pages)', () => {
@@ -108,7 +108,7 @@ describe('ToolsComponent (Lab)', () => {
       expect(item).toMatchObject({ kind: 'file', filename: 'contratto.pdf', mime: 'application/pdf', fromTool: 'lab' });
       expect(item?.blob).toBeInstanceOf(File);
       const hrefs = Array.from(el.querySelectorAll('.resume-chip')).map(a => a.getAttribute('href'));
-      expect(hrefs).toEqual(['/lab/pdf-summary', '/lab/pdf-translate', '/lab/ocr', '/lab/pdf-editor', '/lab/sign-pdf', '/lab/viewer', '/lab/convert']);
+      expect(hrefs).toEqual(['/lab/pdf-summary', '/lab/pdf-translate', '/lab/ocr', '/lab/pdf-editor', '/lab/sign-pdf', '/lab/compress-pdf', '/lab/viewer', '/lab/convert']);
     });
 
     it('uses only the first of several files and says so', () => {
