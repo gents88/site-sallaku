@@ -134,6 +134,16 @@ export class AnalyticsController {
     return this.query.getToolConversionFunnel(days ?? 30);
   }
 
+  @Get('acquisition')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Where visitors come from and which page they land on, over the last N days (admin only)' })
+  @ApiQuery({ name: 'days', required: false })
+  getAcquisition(@Query() { days }: DaysQueryDto) {
+    return this.query.getAcquisition(days ?? 30);
+  }
+
   @Get('search-console')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
