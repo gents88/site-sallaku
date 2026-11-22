@@ -328,7 +328,7 @@ import { ProfilePhotoComponent } from '../../../shared/components/profile-photo/
       margin-top: 2px;
     }
 
-    .ai-avatar   { background: linear-gradient(135deg, #7c6cfc, #a78bfa); color: white; }
+    .ai-avatar   { background: var(--gradient-button); color: white; }
     .user-avatar { background: var(--accent-user, #3b82f6); color: white; }
     .user-avatar--photo { padding: 2px; overflow: hidden; }
 
@@ -405,7 +405,7 @@ import { ProfilePhotoComponent } from '../../../shared/components/profile-photo/
 
     .md-content :deep(code.inline-code) {
       background: rgba(124, 108, 252, 0.15);
-      color: #a78bfa;
+      color: var(--c-violet, #a78bfa);
       padding: 0.1rem 0.35rem;
       border-radius: 4px;
       font-size: 0.85em;
@@ -453,7 +453,7 @@ import { ProfilePhotoComponent } from '../../../shared/components/profile-photo/
       align-items: flex-end;
       gap: 0.5rem;
       background: var(--bg-secondary, #161b22);
-      border: 1px solid var(--border, #30363d);
+      border: 1px solid var(--border-strong, #5f6b82);
       border-radius: 12px;
       padding: 0.5rem 0.5rem 0.5rem 1rem;
       transition: border-color 0.2s;

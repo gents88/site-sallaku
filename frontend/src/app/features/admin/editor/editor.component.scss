@@ -101,7 +101,7 @@
       cursor: pointer; transition: all .15s; white-space: nowrap;
       &:hover { background: rgba(255,255,255,.05); color: var(--text-primary, #e6edf3); }
       &.primary {
-        background: #6c63ff; border-color: #6c63ff; color: #fff;
+        background: #5b52f0; border-color: #6c63ff; color: #fff;
         &:hover { opacity: .85; }
       }
     }
