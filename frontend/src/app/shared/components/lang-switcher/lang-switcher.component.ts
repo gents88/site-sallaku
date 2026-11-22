@@ -11,7 +11,7 @@ import { LanguageSwitchService } from '../../../core/services/language-switch.se
   template: `
     <div class="lang-switcher" [class.open]="open()">
       <button class="lang-current" (click)="toggle()" [attr.aria-label]="'Change language'">
-        <span class="lang-flag">{{ lang.currentMeta.flag }}</span>
+        <img class="lang-flag" [src]="'/flags/' + lang.current() + '.svg'" alt="" width="22" height="15" />
         <span class="lang-code">{{ lang.current() | uppercase }}</span>
         <i class="fas fa-chevron-down lang-arrow" aria-hidden="true"></i>
       </button>
@@ -23,7 +23,7 @@ import { LanguageSwitchService } from '../../../core/services/language-switch.se
             (click)="select(opt.code)"
             role="menuitem"
           >
-            <span class="lang-flag">{{ opt.flag }}</span>
+            <img class="lang-flag" [src]="'/flags/' + opt.code + '.svg'" alt="" width="22" height="15" />
             <span>{{ opt.label }}</span>
             @if (lang.current() === opt.code) {
               <span class="lang-check">✓</span>
@@ -93,7 +93,7 @@ import { LanguageSwitchService } from '../../../core/services/language-switch.se
       &.active { background: linear-gradient(135deg, rgba(79,106,245,0.28), rgba(139,92,246,0.2)); box-shadow: inset 0 1px 0 var(--glass-hi); color: var(--primary-400, #818cf8); font-weight: 600; }
     }
 
-    .lang-flag { font-size: 1.1rem; }
+    .lang-flag { width: 22px; height: 15px; object-fit: cover; border-radius: 2px; box-shadow: 0 0 0 1px rgba(255,255,255,0.15); flex-shrink: 0; }
     .lang-check { margin-left: auto; font-size: 0.7rem; color: var(--primary-400, #818cf8); }
   `],
 })
