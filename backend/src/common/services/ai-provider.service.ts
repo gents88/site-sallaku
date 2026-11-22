@@ -36,17 +36,11 @@ export class AiProviderService {
     private readonly aiQuota: AiQuotaService,
   ) {}
 
-  async chatCompletion(messages: AiChatMessage[], opts: AiChatOptions): Promise<string> {
-    const apiKey = this.config.get<string>('GROQ_API_KEY');
-    if (!apiKey) throw new Error('GROQ_API_KEY is not configured');
-
-    const body = JSON.stringify({
-      model: opts.model,
-      messages,
-      max_tokens: opts.maxTokens,
-      temperature: opts.temperature ?? 0.7,
-    });
-
+  /**
+   * POST a Groq con i tentativi in più su 429/5xx (e gli errori già tradotti per il client).
+   * Condiviso fra la risposta intera e lo streaming: l'unica differenza è `stream` nel corpo.
+   */
+  private async postWithRetry(body: string, opts: AiChatOptions, apiKey: string): Promise<Response> {
     const maxRetries = opts.maxRetries ?? MAX_RETRIES;
     let res: Response;
     for (let attempt = 0; ; attempt++) {
@@ -59,7 +53,7 @@ export class AiProviderService {
         body,
         signal: AbortSignal.timeout(opts.timeoutMs),
       });
-      if (res.ok) break;
+      if (res.ok) return res;
 
       const text = await res.text();
       const transient = res.status === 429 || res.status >= 500;
@@ -80,6 +74,20 @@ export class AiProviderService {
       }
       throw new Error(`Groq API error ${res.status}`);
     }
+  }
+
+  async chatCompletion(messages: AiChatMessage[], opts: AiChatOptions): Promise<string> {
+    const apiKey = this.config.get<string>('GROQ_API_KEY');
+    if (!apiKey) throw new Error('GROQ_API_KEY is not configured');
+
+    const body = JSON.stringify({
+      model: opts.model,
+      messages,
+      max_tokens: opts.maxTokens,
+      temperature: opts.temperature ?? 0.7,
+    });
+
+    const res = await this.postWithRetry(body, opts, apiKey);
 
     const data = (await res.json()) as {
       choices: { message: { content: string } }[];
@@ -97,6 +105,81 @@ export class AiProviderService {
     await this.aiQuota.recordTokens(tokensUsed, opts.source ?? 'tools');
 
     return data.choices?.[0]?.message?.content?.trim() ?? '';
+  }
+
+  /**
+   * Come chatCompletion, ma la risposta arriva a pezzi: `onDelta` riceve ogni frammento di testo appena
+   * il modello lo produce. Restituisce il testo completo. I token consumati si registrano alla fine
+   * (se Groq non li comunica nello stream, sono una stima: 1 token ogni 4 caratteri).
+   */
+  async chatCompletionStream(
+    messages: AiChatMessage[],
+    opts: AiChatOptions,
+    onDelta: (text: string) => void,
+  ): Promise<string> {
+    const apiKey = this.config.get<string>('GROQ_API_KEY');
+    if (!apiKey) throw new Error('GROQ_API_KEY is not configured');
+
+    const body = JSON.stringify({
+      model: opts.model,
+      messages,
+      max_tokens: opts.maxTokens,
+      temperature: opts.temperature ?? 0.7,
+      stream: true,
+      stream_options: { include_usage: true },
+    });
+
+    const res = await this.postWithRetry(body, opts, apiKey);
+    if (!res.body) throw new Error('Groq stream senza corpo');
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let full = '';
+    let usageTokens: number | null = null;
+
+    const handleLine = (raw: string): void => {
+      const line = raw.trim();
+      if (!line.startsWith('data:')) return;
+      const payload = line.slice(5).trim();
+      if (!payload || payload === '[DONE]') return;
+      let json: {
+        choices?: { delta?: { content?: string } }[];
+        usage?: { prompt_tokens?: number; completion_tokens?: number };
+        x_groq?: { usage?: { prompt_tokens?: number; completion_tokens?: number } };
+      };
+      try {
+        json = JSON.parse(payload);
+      } catch {
+        return; // riga spezzata o non JSON: si ignora
+      }
+      const text = json.choices?.[0]?.delta?.content;
+      if (text) {
+        full += text;
+        onDelta(text);
+      }
+      const usage = json.usage ?? json.x_groq?.usage;
+      if (usage) usageTokens = (usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0);
+    };
+
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let nl: number;
+        while ((nl = buffer.indexOf('\n')) >= 0) {
+          handleLine(buffer.slice(0, nl));
+          buffer = buffer.slice(nl + 1);
+        }
+      }
+      handleLine(buffer);
+    } finally {
+      const used = usageTokens ?? Math.ceil((JSON.stringify(messages).length + full.length) / 4);
+      await this.aiQuota.recordTokens(used, opts.source ?? 'tools').catch(() => undefined);
+      reader.releaseLock?.();
+    }
+    return full.trim();
   }
 
   /** Separato per poterlo sostituire nei test. */

@@ -17,6 +17,23 @@ function groqResponse(content: string, promptTokens: number, completionTokens: n
   } as Response;
 }
 
+/** Risposta in streaming (SSE) che arriva spezzata nei pezzi indicati. */
+function streamResponse(pieces: string[], ok = true, status = 200) {
+  const enc = new TextEncoder();
+  let i = 0;
+  return {
+    ok,
+    status,
+    text: () => Promise.resolve('error body'),
+    body: {
+      getReader: () => ({
+        read: () => Promise.resolve(i < pieces.length ? { done: false, value: enc.encode(pieces[i++]) } : { done: true, value: undefined }),
+        releaseLock: () => undefined,
+      }),
+    },
+  } as unknown as Response;
+}
+
 describe('AiProviderService', () => {
   let config: { get: jest.Mock };
   let aiQuota: jest.Mocked<Pick<AiQuotaService, 'recordTokens'>>;
@@ -155,5 +172,43 @@ describe('AiProviderService', () => {
     ).rejects.toThrow('GROQ_API_KEY is not configured');
 
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  describe('chatCompletionStream', () => {
+    const opts = { model: 'openai/gpt-oss-120b', maxTokens: 100, timeoutMs: 5000, source: 'chatbot' as const };
+    const sse = (text: string) => `data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`;
+
+    it('passa ogni frammento a onDelta anche se le righe arrivano spezzate a metà', async () => {
+      const a = sse('Ciao ');
+      const b = sse('mondo');
+      const usage = `data: ${JSON.stringify({ choices: [], usage: { prompt_tokens: 50, completion_tokens: 8 } })}\n\ndata: [DONE]\n\n`;
+      // il secondo evento viene tagliato nel mezzo
+      fetchMock.mockResolvedValue(streamResponse([a, b.slice(0, 20), b.slice(20) + usage]));
+      const parts: string[] = [];
+
+      const full = await service.chatCompletionStream([{ role: 'user', content: 'hey' }], opts, (t) => parts.push(t));
+
+      expect(parts).toEqual(['Ciao ', 'mondo']);
+      expect(full).toBe('Ciao mondo');
+      expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({ stream: true });
+      expect(aiQuota.recordTokens).toHaveBeenCalledWith(58, 'chatbot');
+    });
+
+    it('senza dati sui token nello stream ne stima il consumo', async () => {
+      fetchMock.mockResolvedValue(streamResponse([sse('abcd'), 'data: [DONE]\n\n']));
+
+      await service.chatCompletionStream([{ role: 'user', content: 'x' }], opts, () => undefined);
+
+      expect(aiQuota.recordTokens).toHaveBeenCalledTimes(1);
+      expect(aiQuota.recordTokens.mock.calls[0][0]).toBeGreaterThan(0);
+    });
+
+    it('ignora righe non JSON e commenti, e un 429 diventa un errore pulito per il client', async () => {
+      fetchMock.mockResolvedValueOnce(streamResponse([': keep-alive\n\n', 'data: {non json\n\n', sse('ok')]));
+      expect(await service.chatCompletionStream([{ role: 'user', content: 'x' }], opts, () => undefined)).toBe('ok');
+
+      fetchMock.mockResolvedValue({ ok: false, status: 429, text: () => Promise.resolve('limit'), headers: { get: () => '120' } } as unknown as Response);
+      await expect(service.chatCompletionStream([{ role: 'user', content: 'x' }], opts, () => undefined)).rejects.toBeInstanceOf(HttpException);
+    });
   });
 });
