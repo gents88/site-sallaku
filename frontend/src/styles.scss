@@ -44,7 +44,29 @@
      qui sotto coincidono con le riserve, quindi il tema scuro non cambia. */
   --border-color: #30363d;
   --border: #30363d;
-  --accent: #6c63ff;
+  /* Bordi in due livelli: --border-subtle per schede e divisori (decorativi), --border-strong
+     per i CONTROLLI (campi, select, checkbox), che WCAG 1.4.11 vuole ad almeno 3:1. */
+  --border-subtle: #30363d;
+  --border-strong: #5f6b82;
+  /* Accento per RIEMPIMENTI con testo bianco sopra (5,4:1; il vecchio #6c63ff era 4,3:1)... */
+  --accent: #5b52f0;
+  /* ...e per accenti usati COME TESTO o link: nel tema scuro serve un tono chiaro. */
+  --accent-text: #a5a0ff;
+  --link: #8aa0ff;
+  /* Gradiente dei pulsanti primari: --gradient-primary arriva a #a78bfa, dove il testo bianco
+     scende a 2,7:1. Questo resta nelle stesse tinte ma sempre sopra 5:1. */
+  --gradient-button: linear-gradient(135deg, #4a5de0 0%, #6d4fe8 50%, #7c3aed 100%);
+  /* Colori semantici per TESTO. Scuro = i pastello storici; chiaro = toni scuri (vedi sotto).
+     Il suffisso -soft è la variante più chiara/enfatica già usata dal design. */
+  --c-violet: #a78bfa;  --c-violet-soft: #c4b5fd;
+  --c-sky: #38bdf8;     --c-sky-soft: #7dd3fc;
+  --c-green: #34d399;   --c-green-soft: #6ee7b7;
+  --c-amber: #fbbf24;   --c-amber-soft: #fcd34d;
+  --c-red: #f87171;     --c-red-soft: #fca5a5;
+  --c-pink: #f472b6;    --c-orange: #fb923c;
+  /* Titoli a gradiente (hero dei tool del Lab) */
+  --title-grad-start: #e6edf3;
+  --title-grad-end: #a78bfa;
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f85149;
@@ -159,6 +181,19 @@
   --bg-card: rgba(255, 255, 255, 0.78); /* senza, restava il blu scuro del tema scuro (pannelli neri su sfondo chiaro) */
   --border-color: rgba(15, 23, 42, 0.16);
   --border: rgba(15, 23, 42, 0.16);
+  --border-subtle: rgba(15, 23, 42, 0.16);
+  --border-strong: rgba(15, 23, 42, 0.5);
+  --accent-text: #4f46e5;
+  --link: #4f46e5;
+  /* Pastello del tema scuro (2:1 su bianco) → toni scuri, tutti ≥5:1 anche sui chip colorati. */
+  --c-violet: #6d28d9;  --c-violet-soft: #5b21b6;
+  --c-sky: #075985;     --c-sky-soft: #0c4a6e;
+  --c-green: #065f46;   --c-green-soft: #064e3b;
+  --c-amber: #92400e;   --c-amber-soft: #78350f;
+  --c-red: #b91c1c;     --c-red-soft: #991b1b;
+  --c-pink: #be185d;    --c-orange: #9a3412;
+  --title-grad-start: #1e1b4b;
+  --title-grad-end: #6d28d9;
   /* Su sfondo chiaro i toni "neon" del tema scuro non raggiungono il contrasto minimo. */
   --success: #047857;
   --warning: #b45309;
@@ -213,6 +248,8 @@
 
   /* Update gradients with Albanian reds */
   --gradient-primary: linear-gradient(135deg, #cd212a 0%, #e8515b 50%, #f07d84 100%);
+  --gradient-button: linear-gradient(135deg, #b51d25 0%, #c6303a 50%, #cc3640 100%);
+  --accent: #b51d25;
   --gradient-accent: linear-gradient(135deg, #a91820 0%, #cd212a 50%, #e8515b 100%);
   --gradient-glow: linear-gradient(135deg, rgba(205,33,42,0.4) 0%, rgba(232,81,91,0.4) 100%);
   --shadow-glow: 0 0 40px rgba(205,33,42,0.2);
@@ -226,6 +263,8 @@
 
 /* ── Albanian theme in light mode ────────────────── */
 [data-theme='light'][data-accent='albanian'] {
+  --accent-text: #b51d25;
+  --link: #b51d25;
   --shadow-glow: 0 0 40px rgba(205,33,42,0.12);
   --card-soft-border: rgba(205, 33, 42, 0.18);
   --glass-border: rgba(205, 33, 42, 0.15);
@@ -234,6 +273,8 @@
 
 /* ── Albanian Background - Premium Dark Mode ──────── */
 [data-theme='dark'][data-accent='albanian'] {
+  --accent-text: #f4a0a5;
+  --link: #f4a0a5;
   --bg-primary: #0a0e1a;
   --bg-secondary: #1a1418;
   background: 
@@ -481,7 +522,7 @@ html[data-os='ios'] .glass-card {
   text-decoration: none;
 
   &.btn-primary, &-primary {
-    background: var(--gradient-primary);
+    background: var(--gradient-button);
     color: white;
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), var(--glass-btn-shadow);
     @media (hover: hover) and (pointer: fine) {
