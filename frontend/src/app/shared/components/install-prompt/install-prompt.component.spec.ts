@@ -4,8 +4,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { describe, expect, it, vi } from 'vitest';
 import { InstallPromptComponent } from './install-prompt.component';
 import { InstallPromptService } from '../../../core/services/install-prompt.service';
+import { ConsentService } from '../../../core/services/consent.service';
 
-function setup(native: boolean) {
+function setup(native: boolean, consentDecided = true) {
   const install = {
     shouldOffer: signal(true),
     canPromptNatively: signal(native),
@@ -14,7 +15,10 @@ function setup(native: boolean) {
   };
   TestBed.configureTestingModule({
     imports: [TranslateModule.forRoot()],
-    providers: [{ provide: InstallPromptService, useValue: install }],
+    providers: [
+      { provide: InstallPromptService, useValue: install },
+      { provide: ConsentService, useValue: { hasDecided: signal(consentDecided) } },
+    ],
   });
   const fixture = TestBed.createComponent(InstallPromptComponent);
   fixture.detectChanges();
@@ -50,6 +54,11 @@ describe('InstallPromptComponent', () => {
     const { fixture, el, install } = setup(true);
     install.shouldOffer.set(false);
     fixture.detectChanges();
+    expect(el.querySelector('.install-card')).toBeNull();
+  });
+
+  it('waits for the cookie banner: no card until the visitor has decided on consent', () => {
+    const { el } = setup(true, false);
     expect(el.querySelector('.install-card')).toBeNull();
   });
 });
