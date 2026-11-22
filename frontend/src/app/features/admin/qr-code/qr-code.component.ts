@@ -100,6 +100,9 @@ export class QrCodeComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    if (this.page.intent === 'wifi-qr-code') this.type.set('wifi');
+    else if (this.page.intent === 'whatsapp-qr-code') this.type.set('whatsapp');
+    else if (this.page.intent === 'vcard-qr-code') this.type.set('contact');
     if (isPlatformBrowser(this.platformId)) {
       this.canCopyImage.set(typeof ClipboardItem !== 'undefined' && !!navigator.clipboard?.write);
     }
