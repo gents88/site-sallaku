@@ -521,9 +521,10 @@
        pannello del chatbot e footer (--bottom-tabbar-height). */
     padding: 0 6px env(safe-area-inset-bottom, 0px);
     box-sizing: content-box;
-    /* Vetro vero: fondo a metà, così sotto si intravede la pagina. Prima su
-       iOS/Android il fondo era al 75–85% (--glass-bg) e il vetro non si vedeva. */
-    background: color-mix(in srgb, var(--bg-primary) 50%, transparent);
+    /* Vetro con fondo al 92% (82% nel tema chiaro): abbastanza pieno perché le etichette restino leggibili anche sopra una
+       pagina chiara (l'editor di testo ha un foglio bianco che scorre sotto la barra: a metà opacità il
+       contrasto delle etichette scendeva a 1,02:1), e il vetro si intravede ancora. */
+    background: color-mix(in srgb, var(--bg-primary) 92%, transparent);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-top: 1px solid var(--glass-edge);
@@ -534,7 +535,7 @@
 /* Chiaro: un filo più pieno, il testo scuro sopra le immagini resta leggibile. */
 :host-context([data-theme='light']) .bottom-tabbar {
   @media (max-width: 900px) {
-    background: color-mix(in srgb, var(--bg-primary) 55%, transparent);
+    background: color-mix(in srgb, var(--bg-primary) 82%, transparent);
   }
 }
 
