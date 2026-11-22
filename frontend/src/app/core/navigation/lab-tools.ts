@@ -19,6 +19,7 @@ const LAB_TOOL_INPUTS: readonly LabToolInput[] = [
   { id: 'pdf-summary', extensions: ['pdf', 'doc', 'docx', 'txt', 'html', 'htm'] },
   { id: 'pdf-translate', extensions: ['pdf', 'docx', 'txt'] },
   { id: 'ocr', extensions: ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'bmp', 'tiff'] },
+  { id: 'image-tools', extensions: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'avif', 'heic', 'heif'] },
   { id: 'ai-formatter', text: true },
   { id: 'pdf-editor', extensions: ['pdf'] },
   { id: 'sign-pdf', extensions: ['pdf'] },
