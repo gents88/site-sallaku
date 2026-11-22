@@ -3217,6 +3217,150 @@
           "a": "Normalmente por poco contraste, colores invertidos o un tamaño de impresión demasiado pequeño. Usa un código oscuro sobre fondo claro y de al menos 2 cm de ancho."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "Los iPhone guardan las fotos en HEIC, un formato que Windows, muchas webs y apps antiguas no pueden abrir. Esta herramienta convierte archivos HEIC y HEIF a JPG o PNG directamente en el navegador, con la calidad que elijas y descarga en ZIP para varias fotos a la vez.",
+      "steps": [
+        "Arrastra tus fotos HEIC al área de carga, o haz clic para elegirlas.",
+        "Comprueba que el formato sea JPG y elige la calidad.",
+        "Convierte y descarga cada foto, o todas juntas en un único ZIP."
+      ],
+      "privacy": "Las fotos se procesan por completo en tu navegador: no se suben a ningún servidor y nadie más puede verlas.",
+      "limits": "Fotos muy grandes o muchos archivos a la vez pueden ralentizar el móvil, porque el trabajo lo hace tu dispositivo. Si hace falta, trabaja en grupos pequeños.",
+      "faq": [
+        {
+          "q": "¿Cómo abro fotos HEIC en Windows?",
+          "a": "Conviértelas a JPG con esta herramienta: funciona en el navegador, sin instalar nada."
+        },
+        {
+          "q": "¿Se suben mis fotos a internet?",
+          "a": "No. La conversión ocurre en tu dispositivo y las fotos no salen de él."
+        },
+        {
+          "q": "¿Puedo convertir muchos HEIC a la vez?",
+          "a": "Sí: añádelos todos y descarga el resultado en un ZIP."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Usa esta herramienta para reducir el tamaño en píxeles de una o varias fotos, por ejemplo para enviarlas por correo, subirlas a un formulario o publicarlas en una web. Las proporciones se mantienen y también puedes cambiar el formato y la calidad del resultado.",
+      "steps": [
+        "Añade una o más imágenes.",
+        "Elige el lado mayor en píxeles y el formato de salida.",
+        "Descarga las imágenes redimensionadas, una a una o en ZIP."
+      ],
+      "privacy": "Las fotos se procesan por completo en tu navegador: no se suben a ningún servidor y nadie más puede verlas.",
+      "limits": "Fotos muy grandes o muchos archivos a la vez pueden ralentizar el móvil, porque el trabajo lo hace tu dispositivo. Si hace falta, trabaja en grupos pequeños.",
+      "faq": [
+        {
+          "q": "¿Cómo redimensiono una foto sin deformarla?",
+          "a": "Indica solo el lado mayor: el otro se calcula para mantener las proporciones."
+        },
+        {
+          "q": "¿Se modifica el archivo original?",
+          "a": "No. Descargas un archivo nuevo y el original queda intacto."
+        },
+        {
+          "q": "¿Qué formatos puedo usar?",
+          "a": "JPG, PNG y WebP, además de fotos HEIC de iPhone como entrada."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "Las fotos grandes tardan en enviarse y en cargarse. Esta herramienta las aligera bajando un poco la calidad y limitando el tamaño en píxeles, y te muestra cuánto espacio ahorras en cada archivo antes de descargarlo.",
+      "steps": [
+        "Añade las fotos que quieres aligerar.",
+        "Elige la calidad: alrededor del 70% es un buen equilibrio entre peso y nitidez.",
+        "Revisa el ahorro de cada archivo y descarga el resultado."
+      ],
+      "privacy": "Las fotos se procesan por completo en tu navegador: no se suben a ningún servidor y nadie más puede verlas.",
+      "limits": "Fotos muy grandes o muchos archivos a la vez pueden ralentizar el móvil, porque el trabajo lo hace tu dispositivo. Si hace falta, trabaja en grupos pequeños.",
+      "faq": [
+        {
+          "q": "¿Cómo aligero una foto para enviarla por correo?",
+          "a": "Comprímela a un 70% de calidad y limita el lado mayor a unos 2000 píxeles."
+        },
+        {
+          "q": "¿Empeora la calidad?",
+          "a": "Un poco, pero con ajustes moderados la diferencia apenas se nota en pantalla."
+        },
+        {
+          "q": "¿Mis fotos van a un servidor?",
+          "a": "No. La compresión se hace en tu navegador."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "Los PDF escaneados o con muchas imágenes pueden ser demasiado grandes para enviarlos. La herramienta ofrece una optimización sin pérdidas que mantiene el texto seleccionable y un modo más fuerte que reconstruye las páginas como imágenes con la calidad elegida, mostrando el peso antes y después.",
+      "steps": [
+        "Arrastra el PDF al área de carga.",
+        "Elige el modo y el nivel: ligero, medio o fuerte.",
+        "Revisa el ahorro y descarga el PDF más ligero."
+      ],
+      "privacy": "El PDF se procesa por completo en tu navegador: no se sube a ningún servidor, así que puedes trabajar con documentos confidenciales.",
+      "limits": "Un PDF muy grande o protegido con contraseña puede no abrirse o ralentizar el navegador, porque el trabajo lo hace tu dispositivo. Descarga el resultado antes de cerrar la pestaña.",
+      "faq": [
+        {
+          "q": "¿Cómo bajo un PDF de 2 MB?",
+          "a": "Prueba el nivel fuerte: reduce la resolución de las páginas. Revisa el resultado antes de enviarlo."
+        },
+        {
+          "q": "¿El texto sigue siendo seleccionable?",
+          "a": "Con el modo sin pérdidas sí. El modo de imágenes convierte las páginas en figuras, así que el texto ya no se puede seleccionar."
+        },
+        {
+          "q": "¿Se sube mi PDF a internet?",
+          "a": "No. Todo ocurre en tu navegador."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Usa esta herramienta para completar formularios y firmar contratos sin imprimir. Puedes dibujar o escribir tu firma, colocar texto y fechas en cualquier parte de la página, moverlos y cambiarles el tamaño, y exportar un PDF nuevo.",
+      "steps": [
+        "Abre el PDF que quieres rellenar.",
+        "Crea tu firma o añade campos de texto y fecha, y colócalos en la página.",
+        "Exporta y descarga el PDF firmado."
+      ],
+      "privacy": "El PDF se procesa por completo en tu navegador: no se sube a ningún servidor, así que puedes trabajar con documentos confidenciales.",
+      "limits": "Un PDF muy grande o protegido con contraseña puede no abrirse o ralentizar el navegador, porque el trabajo lo hace tu dispositivo. Descarga el resultado antes de cerrar la pestaña.",
+      "faq": [
+        {
+          "q": "¿Cómo firmo un PDF sin imprimirlo?",
+          "a": "Dibuja o escribe tu firma aquí, colócala en la página y descarga el PDF."
+        },
+        {
+          "q": "¿Tiene validez legal?",
+          "a": "Es una firma electrónica simple, suficiente para muchos documentos cotidianos. Algunos contratos exigen una firma cualificada: consulta las normas que te afecten."
+        },
+        {
+          "q": "¿Se sube mi documento?",
+          "a": "No. El documento y tu firma permanecen en tu navegador."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "Un código QR Wi-Fi contiene el nombre de la red, el tipo de seguridad y la contraseña. Los móviles que lo escanean ofrecen conectarse sin escribir nada. Imprímelo para tu casa, tienda o habitación de invitados, en PNG o SVG.",
+      "steps": [
+        "Introduce el nombre de la red, elige el tipo de seguridad y añade la contraseña.",
+        "Ajusta colores y tamaño si quieres.",
+        "Escanea el código con tu móvil para probarlo y luego descárgalo o imprímelo."
+      ],
+      "privacy": "El código se genera en tu navegador y lo que escribes no se envía a ninguna parte.",
+      "limits": "Cualquiera que escanee el código puede leer su contenido: no compartas códigos Wi-Fi con personas en las que no confíes. Prueba siempre el código con el móvil antes de imprimirlo.",
+      "faq": [
+        {
+          "q": "¿Cómo comparto la contraseña del Wi-Fi con un código QR?",
+          "a": "Introduce aquí el nombre y la contraseña, descarga el código y muéstralo o imprímelo: tus invitados lo escanean para conectarse."
+        },
+        {
+          "q": "¿Es segura la contraseña?",
+          "a": "El código se genera en tu navegador y no se envía a ninguna parte, pero cualquiera que lo escanee puede leer la contraseña."
+        },
+        {
+          "q": "¿Funciona en iPhone y Android?",
+          "a": "Sí, ambos abren la cámara y ofrecen unirse a la red."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3415,48 @@
       "seo_description": "Extrae el texto de fotos, capturas e imágenes con OCR en línea gratis, en 7 idiomas y sin registrarte. Copia el texto en segundos.",
       "h1": "De imagen a texto",
       "lead": "Convierte una foto, una captura o una página escaneada en texto que puedes copiar y editar: sube la imagen y elige el idioma."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC a JPG",
+      "seo_title": "De HEIC a JPG Gratis — Convierte las Fotos del iPhone, Sin Subirlas",
+      "seo_description": "Convierte fotos HEIC y HEIF del iPhone a JPG o PNG gratis. Todo ocurre en tu navegador: sin subir archivos, sin registro, conversión múltiple y descarga en ZIP.",
+      "h1": "Convertir HEIC a JPG",
+      "lead": "Convierte las fotos HEIC del iPhone en JPG que se abren en cualquier sitio. Arrastra los archivos, convierte y descarga uno a uno o en ZIP. Sin subidas."
+    },
+    "resize_image": {
+      "label": "Redimensionar imagen",
+      "seo_title": "Redimensionar Imagen Online Gratis — Cambia el Tamaño, Sin Subirla",
+      "seo_description": "Redimensiona fotos e imágenes online gratis: elige el lado mayor, mantén las proporciones y descarga JPG, PNG o WebP. Funciona en tu navegador, sin subidas.",
+      "h1": "Redimensionar una imagen",
+      "lead": "Haz una foto más pequeña o ajústala a un límite de tamaño: elige el lado mayor, mantén las proporciones y descarga. Todo queda en tu navegador."
+    },
+    "compress_image": {
+      "label": "Comprimir imagen",
+      "seo_title": "Comprimir Imagen Online Gratis — Reduce el Peso de las Fotos (JPG, PNG, WebP)",
+      "seo_description": "Comprime fotos e imágenes gratis: reduce el peso del archivo, mira el ahorro y descarga JPG o WebP. Todo ocurre en tu navegador, sin subidas.",
+      "h1": "Comprimir una imagen",
+      "lead": "Reduce el peso de tus fotos sin pérdida de calidad visible: elige la calidad, compara tamaños y descarga. Sin subidas ni registro."
+    },
+    "reduce_pdf_size": {
+      "label": "Reducir tamaño de PDF",
+      "seo_title": "Reducir Tamaño de PDF Gratis — Comprimir PDF Online, Sin Subirlo",
+      "seo_description": "Reduce el tamaño de un PDF gratis: tres niveles de compresión y el ahorro visible antes de descargar. Funciona en tu navegador, el archivo nunca se sube.",
+      "h1": "Reducir el tamaño de un PDF",
+      "lead": "Haz que un PDF pesado sea lo bastante ligero para enviarlo por correo o subirlo: elige el nivel, mira cuánto ahorras y descarga. El archivo no sale de tu dispositivo."
+    },
+    "fill_pdf": {
+      "label": "Rellenar y firmar PDF",
+      "seo_title": "Rellenar y Firmar PDF Gratis — Añade Texto, Fecha y Firma Online",
+      "seo_description": "Rellena y firma un PDF gratis: dibuja o escribe tu firma, añade texto y fechas donde quieras y descarga. Funciona en tu navegador, sin subidas ni registro.",
+      "h1": "Rellenar y firmar un PDF",
+      "lead": "Abre un formulario, escribe en los campos, añade tu firma y la fecha y descarga el PDF. Sin subidas y sin cuenta."
+    },
+    "wifi_qr_code": {
+      "label": "Código QR Wi-Fi",
+      "seo_title": "Generador de Código QR Wi-Fi Gratis — Comparte la Contraseña con un Escaneo",
+      "seo_description": "Crea un código QR para tu Wi-Fi gratis: introduce el nombre de la red y la contraseña, descarga PNG o SVG y deja que tus invitados se conecten con un escaneo.",
+      "h1": "Generador de código QR Wi-Fi",
+      "lead": "Deja que tus invitados se conecten a tu Wi-Fi escaneando un código: introduce el nombre de la red y la contraseña, y descarga o imprime. No se envía nada."
     }
   },
   "sign_pdf": {

@@ -3217,6 +3217,150 @@
           "a": "Zakonisht për kontrast të ulët, ngjyra të anasjella ose madhësi printimi shumë të vogël. Përdor kod të errët mbi sfond të çelët dhe të paktën 2 cm të gjerë."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "iPhone i ruan fotot në HEIC, një format që Windows, shumë faqe dhe aplikacione të vjetra nuk mund ta hapin. Ky mjet konverton skedarët HEIC dhe HEIF në JPG ose PNG drejtpërdrejt në shfletues, me cilësinë që zgjedh dhe me shkarkim ZIP për shumë foto njëherësh.",
+      "steps": [
+        "Tërhiq fotot HEIC në zonën e ngarkimit, ose kliko për t’i zgjedhur.",
+        "Kontrollo që formati të jetë JPG dhe zgjidh cilësinë.",
+        "Konverto dhe shkarko çdo foto, ose të gjitha së bashku në një ZIP."
+      ],
+      "privacy": "Fotot përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server dhe askush tjetër nuk mund t’i shohë.",
+      "limits": "Fotot shumë të mëdha ose shumë skedarë njëherësh mund ta ngadalësojnë telefonin, sepse puna bëhet nga pajisja jote. Nëse duhet, punoni në grupe të vogla.",
+      "faq": [
+        {
+          "q": "Si i hap fotot HEIC në Windows?",
+          "a": "Konvertoji në JPG me këtë mjet: punon në shfletues, pa instaluar asgjë."
+        },
+        {
+          "q": "A ngarkohen fotot e mia në internet?",
+          "a": "Jo. Konvertimi bëhet në pajisjen tënde dhe fotot nuk dalin prej saj."
+        },
+        {
+          "q": "A mund të konvertoj shumë HEIC njëherësh?",
+          "a": "Po: shtoji të gjitha dhe shkarko rezultatin në një ZIP."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Përdore këtë mjet për të zvogëluar madhësinë në piksel të një ose më shumë fotove, për shembull për t’i dërguar me email, për t’i bashkëngjitur në një formular ose për t’i publikuar në një faqe. Përpjesëtimet ruhen dhe mund të ndryshosh edhe formatin e cilësinë.",
+      "steps": [
+        "Shto një ose më shumë imazhe.",
+        "Zgjidh anën më të gjatë në piksel dhe formatin e daljes.",
+        "Shkarko imazhet e ridimensionuara, një nga një ose në ZIP."
+      ],
+      "privacy": "Fotot përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server dhe askush tjetër nuk mund t’i shohë.",
+      "limits": "Fotot shumë të mëdha ose shumë skedarë njëherësh mund ta ngadalësojnë telefonin, sepse puna bëhet nga pajisja jote. Nëse duhet, punoni në grupe të vogla.",
+      "faq": [
+        {
+          "q": "Si ta ndryshoj madhësinë e një fotoje pa e deformuar?",
+          "a": "Vendos vetëm anën më të gjatë: tjetra llogaritet për të ruajtur përpjesëtimet."
+        },
+        {
+          "q": "A ndryshohet skedari origjinal?",
+          "a": "Jo. Shkarkon një skedar të ri dhe origjinali mbetet i paprekur."
+        },
+        {
+          "q": "Cilat formate mund t’i përdor?",
+          "a": "JPG, PNG dhe WebP, plus foto HEIC të iPhone si hyrje."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "Fotot e mëdha janë të ngadalta për t’u dërguar e ngarkuar. Ky mjet i lehtëson duke ulur pak cilësinë dhe duke kufizuar madhësinë në piksel, dhe të tregon sa hapësirë kursen për çdo skedar para se ta shkarkosh.",
+      "steps": [
+        "Shto fotot që do t’i lehtësosh.",
+        "Zgjidh cilësinë: rreth 70% është një ekuilibër i mirë mes peshës dhe qartësisë.",
+        "Shiko kursimin për çdo skedar dhe shkarko rezultatin."
+      ],
+      "privacy": "Fotot përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server dhe askush tjetër nuk mund t’i shohë.",
+      "limits": "Fotot shumë të mëdha ose shumë skedarë njëherësh mund ta ngadalësojnë telefonin, sepse puna bëhet nga pajisja jote. Nëse duhet, punoni në grupe të vogla.",
+      "faq": [
+        {
+          "q": "Si ta lehtësoj një foto për email?",
+          "a": "Kompresoje me rreth 70% cilësi dhe kufizo anën më të gjatë në rreth 2000 piksel."
+        },
+        {
+          "q": "A përkeqësohet cilësia?",
+          "a": "Pak, por me cilësime të moderuara dallimi vështirë të shihet në ekran."
+        },
+        {
+          "q": "A shkojnë fotot e mia në një server?",
+          "a": "Jo. Kompresimi bëhet në shfletuesin tënd."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "PDF-të e skanuara ose plot imazhe mund të jenë shumë të mëdha për t’u dërguar. Mjeti ofron një optimizim pa humbje që e mban tekstin të përzgjedhshëm dhe një mënyrë më të fortë që i ndërton faqet si imazhe me cilësinë e zgjedhur, me peshën para dhe pas.",
+      "steps": [
+        "Tërhiq PDF-në në zonën e ngarkimit.",
+        "Zgjidh mënyrën dhe nivelin: i lehtë, mesatar ose i fortë.",
+        "Shiko kursimin dhe shkarko PDF-në më të lehtë."
+      ],
+      "privacy": "PDF-ja përpunohet tërësisht në shfletuesin tënd: nuk ngarkohet në asnjë server, kështu që mund të punosh edhe me dokumente konfidenciale.",
+      "limits": "Një PDF shumë e madhe ose e mbrojtur me fjalëkalim mund të mos hapet ose ta ngadalësojë shfletuesin, sepse puna bëhet nga pajisja jote. Shkarko rezultatin para se ta mbyllësh skedën.",
+      "faq": [
+        {
+          "q": "Si ta zbres një PDF nën 2 MB?",
+          "a": "Provo nivelin e fortë: ul rezolucionin e faqeve. Kontrollo rezultatin para se ta dërgosh."
+        },
+        {
+          "q": "A mbetet teksti i përzgjedhshëm?",
+          "a": "Me mënyrën pa humbje po. Mënyra me imazhe i kthen faqet në figura, ndaj teksti nuk përzgjidhet më."
+        },
+        {
+          "q": "A ngarkohet PDF-ja ime në internet?",
+          "a": "Jo. Gjithçka bëhet në shfletuesin tënd."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Përdore këtë mjet për të plotësuar formularë dhe për të nënshkruar kontrata pa printuar. Mund ta vizatosh ose ta shkruash firmën, të vendosësh tekst e data kudo në faqe, t’i lëvizësh e t’u ndryshosh madhësinë, pastaj të eksportosh një PDF të re.",
+      "steps": [
+        "Hap PDF-në që do ta plotësosh.",
+        "Krijo firmën ose shto fusha teksti dhe date, pastaj vendosi në faqe.",
+        "Eksporto dhe shkarko PDF-në e nënshkruar."
+      ],
+      "privacy": "PDF-ja përpunohet tërësisht në shfletuesin tënd: nuk ngarkohet në asnjë server, kështu që mund të punosh edhe me dokumente konfidenciale.",
+      "limits": "Një PDF shumë e madhe ose e mbrojtur me fjalëkalim mund të mos hapet ose ta ngadalësojë shfletuesin, sepse puna bëhet nga pajisja jote. Shkarko rezultatin para se ta mbyllësh skedën.",
+      "faq": [
+        {
+          "q": "Si ta nënshkruaj një PDF pa e printuar?",
+          "a": "Vizato ose shkruaj firmën këtu, vendose në faqe dhe shkarko PDF-në."
+        },
+        {
+          "q": "A ka vlerë ligjore?",
+          "a": "Është një nënshkrim elektronik i thjeshtë, i mjaftueshëm për shumë dokumente të përditshme. Disa kontrata kërkojnë nënshkrim të kualifikuar: kontrollo rregullat që të përkasin."
+        },
+        {
+          "q": "A ngarkohet dokumenti im në internet?",
+          "a": "Jo. Dokumenti dhe firma mbeten në shfletuesin tënd."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "Një kod QR për Wi-Fi përmban emrin e rrjetit, llojin e sigurisë dhe fjalëkalimin. Telefonat që e skanojnë ofrojnë lidhjen pa shkruar asgjë. Printoje për shtëpinë, dyqanin ose dhomën e mysafirëve, në PNG ose SVG.",
+      "steps": [
+        "Shkruaj emrin e rrjetit, zgjidh llojin e sigurisë dhe shto fjalëkalimin.",
+        "Rregullo ngjyrat dhe madhësinë nëse dëshiron.",
+        "Skano kodin me telefon për ta provuar, pastaj shkarkoje ose printoje."
+      ],
+      "privacy": "Kodi gjenerohet në shfletuesin tënd dhe ajo që shkruan nuk dërgohet askund.",
+      "limits": "Kushdo që skanon kodin mund të lexojë përmbajtjen: mos i ndaj kodet Wi-Fi me persona që nuk u beson. Provoje gjithmonë kodin me telefon para se ta printosh.",
+      "faq": [
+        {
+          "q": "Si ta ndaj fjalëkalimin e Wi-Fi me një kod QR?",
+          "a": "Shkruaj këtu emrin dhe fjalëkalimin, shkarko kodin dhe trego ose printoje: mysafirët e skanojnë për t’u lidhur."
+        },
+        {
+          "q": "A është i sigurt fjalëkalimi?",
+          "a": "Kodi gjenerohet në shfletuesin tënd dhe nuk dërgohet askund, por kushdo që e skanon mund ta lexojë fjalëkalimin."
+        },
+        {
+          "q": "A punon në iPhone dhe Android?",
+          "a": "Po, të dy e hapin kamerën dhe ofrojnë të lidhen me rrjetin."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3415,48 @@
       "seo_description": "Nxirr tekstin nga foto, pamje ekrani dhe imazhe me OCR falas në internet, në 7 gjuhë dhe pa regjistrim. Kopjo tekstin brenda pak sekondash.",
       "h1": "Nga imazhi në tekst",
       "lead": "Kthe një foto, një pamje ekrani ose një faqe të skanuar në tekst që mund ta kopjosh e ndryshosh: ngarko imazhin dhe zgjidh gjuhën."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC në JPG",
+      "seo_title": "HEIC në JPG Falas — Konverto Fotot e iPhone, Pa i Ngarkuar",
+      "seo_description": "Konverto falas fotot HEIC dhe HEIF të iPhone në JPG ose PNG. Gjithçka në shfletues: pa ngarkim, pa regjistrim, konvertim i shumëfishtë dhe shkarkim në ZIP.",
+      "h1": "Konverto HEIC në JPG",
+      "lead": "Kthe fotot HEIC të iPhone në JPG që hapet kudo. Tërhiq skedarët, konverto dhe shkarko një nga një ose në ZIP. Pa ngarkim."
+    },
+    "resize_image": {
+      "label": "Ndrysho madhësinë e imazhit",
+      "seo_title": "Ndrysho Madhësinë e Imazhit Online Falas — Pa e Ngarkuar",
+      "seo_description": "Ndrysho madhësinë e fotove dhe imazheve online falas: zgjidh anën më të gjatë, ruaj përpjesëtimet dhe shkarko JPG, PNG ose WebP. Punon në shfletues, pa ngarkim.",
+      "h1": "Ndrysho madhësinë e një imazhi",
+      "lead": "Bëje një foto më të vogël ose respekto një kufi madhësie: zgjidh anën më të gjatë, ruaj përpjesëtimet dhe shkarko. Gjithçka mbetet në shfletuesin tënd."
+    },
+    "compress_image": {
+      "label": "Kompreso imazhin",
+      "seo_title": "Kompreso Imazhin Online Falas — Zvogëlo Peshën e Fotove (JPG, PNG, WebP)",
+      "seo_description": "Kompreso falas foto dhe imazhe: zvogëlo peshën e skedarit, shiko kursimin dhe shkarko JPG ose WebP. Gjithçka në shfletues, pa ngarkim.",
+      "h1": "Kompreso një imazh",
+      "lead": "Zvogëlo peshën e fotove pa humbje cilësie të dukshme: zgjidh cilësinë, krahaso madhësitë dhe shkarko. Pa ngarkim dhe pa regjistrim."
+    },
+    "reduce_pdf_size": {
+      "label": "Zvogëlo madhësinë e PDF",
+      "seo_title": "Zvogëlo Madhësinë e PDF Falas — Kompreso PDF Online, Pa e Ngarkuar",
+      "seo_description": "Zvogëlo falas madhësinë e një PDF: tre nivele kompresimi dhe kursimi i dukshëm para shkarkimit. Punon në shfletues, skedari nuk ngarkohet kurrë.",
+      "h1": "Zvogëlo madhësinë e një PDF",
+      "lead": "Bëje një PDF të rëndë mjaftueshëm të lehtë për ta dërguar me email ose për ta ngarkuar: zgjidh nivelin, shiko sa kurson dhe shkarko. Skedari nuk del nga pajisja jote."
+    },
+    "fill_pdf": {
+      "label": "Plotëso dhe nënshkruaj PDF",
+      "seo_title": "Plotëso dhe Nënshkruaj PDF Falas — Shto Tekst, Datë dhe Firmë Online",
+      "seo_description": "Plotëso dhe nënshkruaj një PDF falas: vizato ose shkruaj firmën, shto tekst e data kudo dhe shkarko. Pa ngarkim dhe pa regjistrim.",
+      "h1": "Plotëso dhe nënshkruaj një PDF",
+      "lead": "Hap një formular, plotëso fushat, shto firmën dhe datën, pastaj shkarko PDF-në. Pa ngarkim dhe pa llogari."
+    },
+    "wifi_qr_code": {
+      "label": "Kod QR për Wi-Fi",
+      "seo_title": "Gjenerator Kodi QR për Wi-Fi Falas — Ndaj Fjalëkalimin me një Skanim",
+      "seo_description": "Krijo falas një kod QR për Wi-Fi: shkruaj emrin e rrjetit dhe fjalëkalimin, shkarko PNG ose SVG dhe lër mysafirët të lidhen me një skanim.",
+      "h1": "Gjenerator kodi QR për Wi-Fi",
+      "lead": "Lër mysafirët të lidhen në Wi-Fi-n tënd duke skanuar një kod: shkruaj emrin e rrjetit dhe fjalëkalimin, pastaj shkarko ose printo. Asgjë nuk dërgohet."
     }
   },
   "sign_pdf": {
