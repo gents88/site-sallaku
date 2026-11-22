@@ -124,6 +124,14 @@ h1 {
 .dot { opacity: .5; }
 .toolbar-actions { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
 
+.title-filter {
+  flex: 1 1 180px; min-width: 0; max-width: 260px;
+  padding: 8px 12px; border-radius: 10px; font: inherit; font-size: 13px;
+  background: var(--bg-secondary, #161b22); border: 1px solid var(--border-color, #30363d);
+  color: var(--text-primary, #e6edf3);
+  &:focus-visible { outline: 2px solid #6c63ff; outline-offset: 1px; }
+}
+
 .sort-select {
   padding: .65rem .9rem; border-radius: 10px; font-size: .87rem;
   background: var(--bg-secondary, #161b22); color: var(--text-primary, #e6edf3);

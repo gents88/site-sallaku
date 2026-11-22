@@ -89,7 +89,7 @@ export class PdfTranslateService {
     a.href = url;
     a.download = filename;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 
   downloadText(text: string, filename: string): void {
@@ -99,6 +99,6 @@ export class PdfTranslateService {
     a.href = url;
     a.download = filename;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 }

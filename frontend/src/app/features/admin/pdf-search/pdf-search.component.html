@@ -286,7 +286,7 @@
                 <p>{{ 'pdf_search.preview_unavailable' | translate }}</p>
               </div>
             } @else if (canvasPageUrl(); as src) {
-              <div class="canvas-page-wrap" [class.is-rendering]="canvasPageRendering()" [class.is-zoomed]="zoomIndex() > 1">
+              <div class="canvas-page-wrap" (touchstart)="onSwipeStart($event)" (touchend)="onSwipeEnd($event)" [class.is-rendering]="canvasPageRendering()" [class.is-zoomed]="zoomIndex() > 1">
                 <img [src]="src" [alt]="sel.title + ' — ' + canvasPageNum()" [style.width.%]="zoomPercent()" decoding="async" />
                 @if (canvasPageRendering()) { <span class="spinner canvas-page-spinner" aria-hidden="true"></span> }
               </div>

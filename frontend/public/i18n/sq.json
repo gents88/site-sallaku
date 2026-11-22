@@ -1164,7 +1164,8 @@
     "err_generic": "Ndodhi një gabim gjatë analizës së skedarit.",
     "remove_file": "Hiq skedarin",
     "seo_title": "Përmbledhës PDF me AI: Pikat Kryesore",
-    "seo_description": "Ngarko një PDF, Word ose TXT dhe merr një përmbledhje të gjeneruar nga AI brenda sekondash. Përmbledhje e shkurtër, analizë e detajuar, pika kryesore. Falas online."
+    "seo_description": "Ngarko një PDF, Word ose TXT dhe merr një përmbledhje të gjeneruar nga AI brenda sekondash. Përmbledhje e shkurtër, analizë e detajuar, pika kryesore. Falas online.",
+    "reading_stats": "{{words}} fjalë · ~{{min}} min lexim"
   },
   "workspace": {
     "badge": "E re",
@@ -1671,7 +1672,10 @@
     "delete": "Fshi",
     "persistence_hint": "Ndryshimet nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë.",
     "seo_title": "Editor PDF: Bashko, Ndaj, Rrotullo",
-    "seo_description": "Bashko PDF, ndaj dhe nxirr faqe, rrotullo apo fshi faqe dhe shto watermark — gjithçka në shfletues, skedarët nuk largohen kurrë nga pajisja jote."
+    "seo_description": "Bashko PDF, ndaj dhe nxirr faqe, rrotullo apo fshi faqe dhe shto watermark — gjithçka në shfletues, skedarët nuk largohen kurrë nga pajisja jote.",
+    "undo": "Zhbëj",
+    "duplicate": "Dyfisho faqen",
+    "undone": "Ndryshimi u zhbë"
   },
   "viewer": {
     "title": "Shikues PDF",
@@ -1819,7 +1823,8 @@
     "chat_error": "Përgjigjja dështoi. Provo përsëri.",
     "import_skipped": "{{count}} skedarë u anashkaluan: në Librari mund të importohen vetëm PDF.",
     "seo_title": "Biblioteka Ime PDF — Arkiv Personal me Kërkim dhe Chat AI",
-    "seo_description": "Ruaj PDF-të që gjen, kërko brenda tyre faqe për faqe, shëno dhe bëj pyetje për dokumentet e tua. Gjithçka mbetet në shfletuesin tënd, asgjë nuk ngarkohet."
+    "seo_description": "Ruaj PDF-të që gjen, kërko brenda tyre faqe për faqe, shëno dhe bëj pyetje për dokumentet e tua. Gjithçka mbetet në shfletuesin tënd, asgjë nuk ngarkohet.",
+    "filter_placeholder": "Filtro sipas titullit, autorit ose etiketës…"
   },
   "blog_manage": {
     "title": "Artikujt e blogut",

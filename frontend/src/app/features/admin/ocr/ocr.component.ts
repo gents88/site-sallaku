@@ -42,6 +42,13 @@ const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024;
 /** Sotto questa soglia (%) la confidenza OCR di una pagina viene segnalata come bassa. */
 const LOW_CONFIDENCE_THRESHOLD = 60;
 
+/**
+ * Lato massimo (px) oltre cui una foto viene ridimensionata prima dell'invio.
+ * Una foto da telefono (12 MP, 4-8 MB) non migliora il riconoscimento rispetto
+ * a ~2400 px sul lato lungo, ma rende upload e OCR molto più lenti.
+ */
+const MAX_IMAGE_SIDE = 2400;
+
 const IMG_ACCEPT = '.png,.jpg,.jpeg,.webp,.bmp,.tiff,.pdf';
 const LANG_STORAGE_KEY = 'ocr-lang';
 const UI_TO_OCR_LANG: Record<string, string> = {
@@ -309,7 +316,7 @@ export class OcrComponent implements OnInit {
     navigator.clipboard.writeText(this.allText()).then(() => {
       this.copied.set(true);
       setTimeout(() => this.copied.set(false), 2000);
-    });
+    }).catch(() => { /* clipboard negata (permessi/contesto non sicuro): nessun falso "Copiato" */ });
   }
 
   downloadTxt(): void {
@@ -320,7 +327,7 @@ export class OcrComponent implements OnInit {
     a.href = url;
     a.download = `${name}.txt`;
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 
   isLowConfidence(p: PageText): boolean {
@@ -401,7 +408,8 @@ export class OcrComponent implements OnInit {
         const truncated = await this.collectPdfPages(f, fi, perFileTextPages[fi], toOcr);
         if (truncated) truncatedAny = true;
       } else {
-        toOcr.push({ blob: f, name: f.name, fileIdx: fi, pageIndex: 0 });
+        const { blob, name } = await this.downscaleImage(f);
+        toOcr.push({ blob, name, fileIdx: fi, pageIndex: 0 });
       }
     }
     this.preparingFile.set('');
@@ -451,29 +459,60 @@ export class OcrComponent implements OnInit {
   ): Promise<boolean> {
     this.preparingFile.set(f.name);
     const doc = await this.pdfjs.openDocument(await f.arrayBuffer());
-    const total = Math.min(doc.numPages, MAX_PDF_PAGES);
-    this.progress.set({ current: 0, total });
+    try {
+      const total = Math.min(doc.numPages, MAX_PDF_PAGES);
+      this.progress.set({ current: 0, total });
 
-    for (let i = 1; i <= total; i++) {
-      this.progress.set({ current: i, total });
-      const page = await doc.getPage(i);
-      const content = await page.getTextContent();
-      const text = content.items
-        .map((it) => ('str' in it ? it.str : ''))
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+      for (let i = 1; i <= total; i++) {
+        this.progress.set({ current: i, total });
+        const page = await doc.getPage(i);
+        const content = await page.getTextContent();
+        const text = content.items
+          .map((it) => ('str' in it ? it.str : ''))
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim();
 
-      if (text.length >= 40) {
-        textPagesOut.push({ index: i - 1, text, confidence: null });
-      } else {
-        const blob = await this.pdfjs.renderPageToBlob(page, 2);
-        toOcrOut.push({ blob, name: `${f.name}-page-${i}.png`, fileIdx, pageIndex: i - 1 });
+        if (text.length >= 40) {
+          textPagesOut.push({ index: i - 1, text, confidence: null });
+        } else {
+          const blob = await this.pdfjs.renderPageToBlob(page, 2);
+          toOcrOut.push({ blob, name: `${f.name}-page-${i}.png`, fileIdx, pageIndex: i - 1 });
+        }
+        // Libera subito le risorse della pagina: su un PDF da 50 pagine scansionate restano altrimenti tutte in memoria.
+        page.cleanup?.();
       }
+      return doc.numPages > MAX_PDF_PAGES;
+    } finally {
+      // Anche se una pagina lancia: il documento tiene worker e memoria finché non viene distrutto.
+      void doc.loadingTask?.destroy?.();
     }
-    const truncated = doc.numPages > MAX_PDF_PAGES;
-    await doc.loadingTask.destroy();
-    return truncated;
+  }
+
+  /** Riduce le immagini troppo grandi; in caso di formato non decodificabile dal browser (es. TIFF) invia l'originale. */
+  private async downscaleImage(f: File): Promise<{ blob: Blob; name: string }> {
+    const original = { blob: f as Blob, name: f.name };
+    if (typeof createImageBitmap !== 'function') return original;
+    try {
+      const bmp = await createImageBitmap(f);
+      const longest = Math.max(bmp.width, bmp.height);
+      if (longest <= MAX_IMAGE_SIDE) { bmp.close(); return original; }
+      const ratio = MAX_IMAGE_SIDE / longest;
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * ratio);
+      canvas.height = Math.round(bmp.height * ratio);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { bmp.close(); return original; }
+      ctx.fillStyle = '#fff'; // il JPEG non ha trasparenza
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      bmp.close();
+      const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', 0.92));
+      if (!blob || blob.size >= f.size) return original;
+      return { blob, name: f.name.replace(/\.[^.]+$/, '') + '.jpg' };
+    } catch {
+      return original;
+    }
   }
 
   private errText(err: unknown): string {
