@@ -21,6 +21,7 @@ const FILE_CONSUMERS: ToolLink[] = [
   { id: 'convert',       icon: '🔄',  route: '/lab/convert' },
   { id: 'pdf_editor',    icon: '🖊️', route: '/lab/pdf-editor' },
   { id: 'sign_pdf',      icon: '✍️', route: '/lab/sign-pdf' },
+  { id: 'compress_pdf',  icon: '🗜️', route: '/lab/compress-pdf' },
 ];
 
 const TEXT_CONSUMERS: ToolLink[] = [
@@ -38,6 +39,7 @@ const STARTING_TOOLS: ToolLink[] = [
   { id: 'ai_formatter',  icon: '✨',  route: '/lab/ai-formatter' },
   { id: 'pdf_editor',    icon: '🖊️', route: '/lab/pdf-editor' },
   { id: 'sign_pdf',      icon: '✍️', route: '/lab/sign-pdf' },
+  { id: 'compress_pdf',  icon: '🗜️', route: '/lab/compress-pdf' },
 ];
 
 @Component({

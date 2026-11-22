@@ -104,6 +104,36 @@ export class PdfjsService {
     canvas.height = 0;
   }
 
+  /**
+   * Rasterizza una pagina in JPEG (byte), per ricomprimere un PDF. Lo sfondo è bianco:
+   * il JPEG non ha trasparenza e pdf.js disegna su un canvas trasparente, che altrimenti
+   * diventerebbe nero. Restituisce anche le dimensioni reali del bitmap.
+   */
+  async renderPageToJpeg(page: PdfPage, scale: number, quality: number, opts: { maxPixels?: number } = {}): Promise<{ bytes: Uint8Array; width: number; height: number }> {
+    const base = page.getViewport({ scale: 1 });
+    let effective = scale;
+    if (opts.maxPixels) {
+      const area = base.width * base.height * scale * scale;
+      if (area > opts.maxPixels) effective = Math.sqrt(opts.maxPixels / (base.width * base.height));
+    }
+    const viewport = page.getViewport({ scale: effective });
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.ceil(viewport.width));
+    canvas.height = Math.max(1, Math.ceil(viewport.height));
+    const ctx = canvas.getContext('2d');
+    if (ctx) { ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+    await page.render({ canvas, viewport }).promise;
+    const blob: Blob = await new Promise((resolve, reject) => {
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas.toBlob failed'))), 'image/jpeg', quality);
+    });
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    const width = canvas.width;
+    const height = canvas.height;
+    canvas.width = 0; // libera subito la memoria del bitmap: su un PDF da 200 pagine si accumulerebbe
+    canvas.height = 0;
+    return { bytes, width, height };
+  }
+
   private async renderToCanvas(page: PdfPage, scale: number): Promise<HTMLCanvasElement> {
     const viewport = page.getViewport({ scale });
     const canvas = document.createElement('canvas');
