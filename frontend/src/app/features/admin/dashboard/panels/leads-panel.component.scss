@@ -4,3 +4,16 @@
 a.lead-link { color: inherit; text-decoration: none; display: block; }
 a.lead-link:hover strong { text-decoration: underline; }
 .panel-kpi a { color: inherit; text-decoration: none; }
+
+// Nome e oggetto del follow-up: prima si leggevano attaccati ("Elena RossiCollaborazione…").
+.lead-link.panel-list__main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  // Su telefono nome e oggetto vanno uno sopra l'altro: prima il nome si tagliava dopo due lettere.
+  .lead-link.panel-list__main { flex-direction: column; align-items: flex-start; gap: 0.1rem; }
+}
