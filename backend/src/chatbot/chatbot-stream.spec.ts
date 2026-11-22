@@ -119,6 +119,16 @@ describe('ChatbotService — streaming, ricerca e risposte nelle lingue del sito
       expect(prompt).toContain('/blog/come-condividere-wifi');
     });
 
+    it('dichiara che Gent è albanese (di Blinisht, Lezhë) e vive in Italia, e vieta di dirlo italiano', async () => {
+      ai.chatCompletion.mockResolvedValue('ok');
+      await service.sendMessage('di dove è Gent?');
+      const prompt = promptOf(ai.chatCompletion.mock.calls);
+      expect(prompt).toContain('Gent is Albanian, originally from Blinisht');
+      expect(prompt).toContain('Lezhë');
+      expect(prompt).toContain('lives in Italy');
+      expect(prompt).toContain('He is NOT Italian');
+    });
+
     it('legge gli articoli una volta sola per 10 minuti (non a ogni messaggio)', async () => {
       ai.chatCompletion.mockResolvedValue('ok');
       await service.sendMessage('uno');
