@@ -179,6 +179,9 @@ export class LibraryComponent implements OnInit {
       title: this.translate.instant('library.seo_title'),
       description: this.translate.instant('library.seo_description'),
       url: `${SITE_ORIGIN}${withLangPrefix('/lab/library', this.langService.current())}`,
+      // Strumento personale: per chi arriva da Google non c'è contenuto (la libreria è vuota,
+      // il workspace è uno spazio di passaggio). Fuori dall'indice e dalla sitemap.
+      noindex: true,
     });
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',

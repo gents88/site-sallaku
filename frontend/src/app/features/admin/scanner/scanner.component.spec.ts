@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { importProvidersFrom } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
@@ -29,6 +30,7 @@ describe('ScannerComponent', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         importProvidersFrom(TranslateModule.forRoot()),
         { provide: ConversionService, useValue: conv },
         { provide: OcrService, useValue: { extract: vi.fn() } },

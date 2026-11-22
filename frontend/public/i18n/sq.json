@@ -1072,7 +1072,7 @@
     "remove_context_file": "Hiq skedarin",
     "prev_slide": "Slajdi i mëparshëm",
     "next_slide": "Slajdi tjetër",
-    "seo_title": "Gjenerues Prezantimesh me AI — Krijo Slide me Inteligjencë Artificiale",
+    "seo_title": "Gjenerator Prezantimesh me AI",
     "seo_description": "Gjenero një prezantim profesional të plotë nga çdo temë brenda sekondash. Deri në 20 slide me tituj, pika kryesore, shënime dhe 5 stile. Falas online."
   },
   "ai_formatter": {
@@ -1128,7 +1128,7 @@
     "textarea_placeholder": "Ngjit këtu tekstin e paformatuar...\n\n✦ Shënime takimi, përmbajtje e papërpunuar, output AI, email...\n✦ Ose kliko \"Përdor shembull\" për një demo",
     "copied": "U kopjua",
     "copy": "Kopjo",
-    "seo_title": "Formatues Teksti me AI — Nga Shënime në Dokument Profesional",
+    "seo_title": "Formatues Teksti me AI",
     "seo_description": "Shndërro shënime, tekst të papërpunuar apo përmbajtje AI në dokumente profesionale të strukturuara brenda sekondash. Raporte, propozime, CV, artikuj e më shumë. Formatues AI falas online."
   },
   "pdf_summary": {
@@ -1163,7 +1163,7 @@
     "err_file_too_large": "Skedari shumë i madh (max {{max}}MB): {{name}}",
     "err_generic": "Ndodhi një gabim gjatë analizës së skedarit.",
     "remove_file": "Hiq skedarin",
-    "seo_title": "Përmbledhje PDF me AI — Nxirr Pikat Kryesore nga Çdo Dokument",
+    "seo_title": "Përmbledhës PDF me AI: Pikat Kryesore",
     "seo_description": "Ngarko një PDF, Word ose TXT dhe merr një përmbledhje të gjeneruar nga AI brenda sekondash. Përmbledhje e shkurtër, analizë e detajuar, pika kryesore. Falas online."
   },
   "workspace": {
@@ -1259,7 +1259,7 @@
     "err_generic": "Përkthimi dështoi. Provo përsëri.",
     "upload_aria": "Ngarko një skedar PDF",
     "remove_file": "Hiq skedarin",
-    "seo_title": "Përkthyes PDF me AI — Përkthim Duke Ruajtur Faqet Origjinale",
+    "seo_title": "Përkthyes PDF me AI: Ruan Faqet",
     "seo_description": "Përkthe çdo PDF në 12 gjuhë duke ruajtur të njëjtin numër faqesh dhe format. Përkthim AI i nivelit enterprise. Falas online, pa regjistrim."
   },
   "pdf_search": {
@@ -1328,7 +1328,7 @@
     "err_library_save": "Ruajtja në Librari dështoi. Provo përsëri.",
     "preview_prev_page": "Faqja e mëparshme",
     "preview_next_page": "Faqja tjetër",
-    "seo_title": "Motor Kërkimi PDF me Pronë Publike — Libra pa të Drejta Autori",
+    "seo_title": "Kërko Libra PDF Falas: Domen Publik",
     "seo_description": "Kërko dhe shkarko libra me pronë publike, artikuj shkencorë dhe artikuj me qasje të hapur, pa probleme të drejtash autori. Kërko në Internet Archive, Project Gutenberg, arXiv dhe PubMed Central me pamje paraprake."
   },
   "convert": {
@@ -1440,7 +1440,7 @@
     "workspace_send": "Dërgo te Workspace",
     "workspace_sent": "U dërgua ✓",
     "blog_link": "Udhëzues: si të konvertosh PDF në Word pa humbur formatimin",
-    "seo_title": "Konvertues Falas Skedarësh — PDF, Word, Excel, Imazhe",
+    "seo_title": "Konvertues Skedarësh: PDF, Word e Tjerë",
     "seo_description": "Konverto mes PDF, DOCX, TXT, HTML, XLSX, CSV, JSON, PNG, JPG e më shumë — {{count}} lloje konvertimi, falas, në shfletues. Pa regjistrim."
   },
   "ocr": {
@@ -1481,12 +1481,12 @@
     "sent": "U dërgua ✓",
     "save_library": "Ruaj në bibliotekë",
     "saved_library": "U ruajt në bibliotekë",
-    "seo_title": "OCR Online Falas — Nxirr Tekst nga Imazhe dhe PDF të Skanuara",
+    "seo_title": "OCR Falas: Tekst nga Imazhe dhe PDF",
     "seo_description": "Nxirr tekst nga foto, dokumente të skanuara dhe PDF në 7 gjuhë. OCR online falas, pa regjistrim."
   },
   "tools": {
     "badge": "AI & PDF Tools",
-    "heading": "Suita jote e Produktivitetit",
+    "heading": "Mjete PDF dhe AI falas",
     "subtitle": "Mjete dokumentesh të fuqizuara nga AI dhe mjete PDF, të gjitha në një vend.",
     "section_ai": "Mjete AI",
     "section_tools": "Mjete PDF",
@@ -1516,7 +1516,7 @@
     "library_desc": "Mban PDF-të në shfletues, kërko brenda tyre, shëno mbi to dhe bëj pyetje dokumenteve të tua.",
     "my_files_title": "Skedarët e mi",
     "my_files_desc": "Gjej rezultatet që ke ruajtur nga mjetet AI",
-    "seo_title": "Mjete Falas PDF dhe AI — Përkthim, Përmbledhje, Prezantime",
+    "seo_title": "Mjete PDF dhe AI Falas në Internet",
     "seo_description": "Mjete online falas me AI: përkthyes PDF, gjenerues prezantimesh, formatues teksti dhe përmbledhës PDF. Mjete profesionale për dokumentet. Pa regjistrim."
   },
   "about_manage": {
@@ -1628,7 +1628,7 @@
     "workspace_send": "Dërgo te Workspace",
     "workspace_sent": "U dërgua ✓",
     "err_file_too_large": "Skedari shumë i madh (max {{max}}MB): {{name}}",
-    "seo_title": "Editor Dokumentesh Online Falas — Eksporto në PDF dhe DOCX",
+    "seo_title": "Editor Dokumentesh: Eksporto PDF dhe DOCX",
     "seo_description": "Shkruaj dhe formato dokumente në shfletues, importo skedarë Word dhe eksporto në PDF, DOCX ose HTML. Falas, pa regjistrim."
   },
   "pdf_editor": {
@@ -1663,7 +1663,7 @@
     "move_right": "Lëviz djathtas",
     "delete": "Fshi",
     "persistence_hint": "Ndryshimet nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë.",
-    "seo_title": "Editor PDF Falas — Bashko, Ndaj, Rrotullo dhe Shto Watermark",
+    "seo_title": "Editor PDF: Bashko, Ndaj, Rrotullo",
     "seo_description": "Bashko PDF, ndaj dhe nxirr faqe, rrotullo apo fshi faqe dhe shto watermark — gjithçka në shfletues, skedarët nuk largohen kurrë nga pajisja jote."
   },
   "viewer": {
@@ -1699,7 +1699,7 @@
     "zoom_in": "Rrit zoom",
     "prev_match": "Përputhja e mëparshme",
     "next_match": "Përputhja tjetër",
-    "seo_title": "Shikues PDF Online Falas — Zoom, Kërkim dhe Miniatura",
+    "seo_title": "Shikues PDF në Internet, Falas",
     "seo_description": "Shiko dokumente PDF në shfletues: navigim faqesh, zoom, kërkim i plotë teksti dhe pamje miniaturash. Falas, privat, pa ngarkim."
   },
   "scanner": {
@@ -1753,7 +1753,7 @@
     "page_alt": "faqja {{n}}",
     "err_camera_unsupported": "Kamera nuk është e disponueshme në këtë shfletues ose lidhja nuk është e sigurt (nevojitet HTTPS). Mund të ngarkosh gjithsesi një imazh.",
     "persistence_hint": "Faqet e kapura nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë.",
-    "seo_title": "Skaner Dokumentesh Falas — Nga Kamera në PDF Online",
+    "seo_title": "Skaner Dokumentesh: Foto në PDF",
     "seo_description": "Skano dokumente me webcam ose kamerën e telefonit, prit dhe përmirëso ato, eksporto si PDF. Falas, pa regjistrim."
   },
   "library": {
@@ -2593,5 +2593,306 @@
     "acquisition_section": "Prejardhja dhe kontaktet",
     "expand_all": "Hap të gjitha",
     "collapse_all": "Mbyll të gjitha"
+  },
+  "lab_info": {
+    "section_label": "Rreth mjetit",
+    "about_title": "Për çfarë shërben",
+    "how_title": "Si përdoret",
+    "privacy_title": "Skedarët tuaj dhe privatësia",
+    "limits_title": "Kufizime që duhen ditur",
+    "faq_title": "Pyetje të shpeshta",
+    "related_articles": "Për t'u thelluar",
+    "related_tools": "Mjete të tjera",
+    "all_tools": "Të gjitha mjetet",
+    "ocr": {
+      "about": "Ky mjet OCR (njohje optike e karaktereve) i kthen fotot, imazhet dhe PDF-të e skanuara në tekst që mund ta zgjedhësh, kopjosh dhe ndryshosh. Shërben për të nxjerrë tekstin nga një faturë e fotografuar, nga një faqe libri, nga një dokument i skanuar ose nga një pamje ekrani, pa e rishkruar me dorë.",
+      "steps": [
+        "Tërhiq imazhet ose PDF-në në zonën e ngarkimit, ose kliko mbi të për t'i zgjedhur.",
+        "Zgjidh gjuhën e tekstit: njohja është shumë më e saktë kur gjuha është e duhura.",
+        "Nis njohjen: për çdo faqe sheh tekstin e nxjerrë dhe, kur besueshmëria është e ulët, një paralajmërim.",
+        "Kopjo tekstin, dërgoje te një mjet tjetër i Lab-it ose ruaje në Bibliotekën tënde."
+      ],
+      "privacy": "Imazhet dërgohen te serveri ynë vetëm për njohjen dhe përpunohen në memorie, pa u ruajtur si arkiv. Nuk ka nevojë të krijosh llogari.",
+      "limits": "Mund të ngarkosh deri në 30 skedarë ose faqe për herë; çdo imazh mund të peshojë deri në 15 MB dhe nga çdo PDF lexohen 20 faqet e para. Gjuhët e disponueshme janë italisht, anglisht, spanjisht, frëngjisht, gjermanisht, portugalisht dhe shqip. Cilësia varet nga fotoja: teksti i shtrembër, i turbullt ose me pak dritë ul saktësinë.",
+      "faq": [
+        {
+          "q": "A funksionon OCR edhe me PDF?",
+          "a": "Po. Nëse PDF-ja është skanim, pra faqet janë imazhe, mjeti i lexon dhe nxjerr tekstin. Nëse PDF-ja ka tashmë tekst të zgjedhshëm, zakonisht OCR nuk nevojitet."
+        },
+        {
+          "q": "Cilat gjuhë i njeh?",
+          "a": "Italisht, anglisht, spanjisht, frëngjisht, gjermanisht, portugalisht dhe shqip. Zgjidhe gjuhën para se të nisësh njohjen: me gjuhën e duhur rezultati është shumë më i saktë."
+        },
+        {
+          "q": "Pse teksti i nxjerrë ka gabime?",
+          "a": "OCR gabon kur imazhi është i turbullt, i anuar, me kontrast të ulët ose me karaktere të pazakonta. Provo ta bësh foton sërish me më shumë dritë, duke e mbajtur fletën drejt, dhe kontrollo që ke zgjedhur gjuhën e saktë."
+        },
+        {
+          "q": "A duhet të regjistrohem ose të paguaj?",
+          "a": "Jo, mjeti është falas dhe nuk kërkon llogari. Ekziston vetëm një kufi kërkesash në një periudhë të shkurtër, për të shmangur abuzimet: nëse e kalon, prit pak dhe provo sërish."
+        }
+      ]
+    },
+    "scanner": {
+      "about": "Skaneri e kthen kamerën e telefonit ose të kompjuterit në skaner dokumentesh: fotografon faqet, i pret, aplikon një filtër për ta përmirësuar lexueshmërinë dhe i bashkon në një PDF të vetme për ta shkarkuar. Është i dobishëm kur nuk ke skaner pranë dhe të duhet një kontratë, një faturë ose një formular në PDF.",
+      "steps": [
+        "Nis kamerën dhe kadro faqen, ose ngarko një imazh që ke tashmë.",
+        "Tërhiq mbi imazh për të prerë skajet e fletës dhe për të hequr sfondin.",
+        "Përsërite për çdo faqe; nëse një faqe ka dalë keq mund ta fshish.",
+        "Eksporto PDF-në dhe shkarkoje; nëse të nevojitet teksti, përdor edhe OCR."
+      ],
+      "privacy": "Fotografimi, prerja dhe filtrat bëhen në shfletuesin tënd: imazhet nuk dalin nga pajisja derisa të zgjedhësh ndryshe. Vetëm nëse përdor OCR ose eksporton PDF-në, faqet dërgohen te serveri ynë, për kohën e nevojshme për t'i përpunuar.",
+      "limits": "Pranohen imazhe PNG, JPG dhe WEBP, deri në 20 MB secila dhe deri në 20 faqe për dokument. Faqet e kapura nuk ruhen: nëse e rifreskon ose e mbyll skedën i humb, ndaj shkarko PDF-në para se të dalësh. Kamera kërkon lidhje të sigurt (HTTPS) dhe lejen tënde.",
+      "faq": [
+        {
+          "q": "A funksionon edhe nga telefoni?",
+          "a": "Po, është menduar edhe për smartfonin: shfletuesi të kërkon leje për të përdorur kamerën. Nëse nuk është e disponueshme mund të ngarkosh foto që ke bërë tashmë."
+        },
+        {
+          "q": "Mund të vë disa faqe në një PDF të vetme?",
+          "a": "Po, deri në 20 faqe: çdo faqe e kapur i shtohet dokumentit, të cilin në fund e eksporton si një PDF të vetme."
+        },
+        {
+          "q": "Si e marr tekstin për ta kopjuar?",
+          "a": "Përdor funksionin OCR të skanerit ose dërgoji faqet te mjeti OCR i Lab-it: e njeh tekstin dhe e bën të zgjedhshëm e të kopjueshëm."
+        },
+        {
+          "q": "A ruhen fotot e mia?",
+          "a": "Jo: faqet e kapura mbeten në shfletues dhe zhduken nëse rifreskon faqen. Te serveri arrijnë vetëm nëse zgjedh OCR ose eksportin në PDF."
+        }
+      ]
+    },
+    "pdf_editor": {
+      "about": "Editori PDF në internet të lejon të bashkosh disa PDF në një, të ndash një dokument, të rrotullosh ose fshish faqe të veçanta, të ndryshosh radhën e faqeve dhe të shtosh një filigram teksti. Gjithçka ndodh në shfletuesin tënd: është mënyra më e përshtatshme për të rregulluar një PDF pa instaluar programe dhe pa ia dërguar skedarin një shërbimi të jashtëm.",
+      "steps": [
+        "Tërhiq një ose më shumë PDF në zonën e ngarkimit: nëse zgjedh më shumë se një, vendosen me radhë.",
+        "Te pamja paraprake e faqeve tërhiq për t'i risistemuar, rrotullo ato të shtrembra ose fshij ato që nuk të duhen.",
+        "Nëse duhet, shkruaj një tekst për filigramin ose jep një interval faqesh për të ndarë dokumentin.",
+        "Eksporto PDF-në dhe shkarkoje."
+      ],
+      "privacy": "Skedarët përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server. Kështu mund të punosh edhe me kontrata, dokumente identiteti ose fatura pa i ndarë me palë të treta.",
+      "limits": "Ndryshimet nuk ruhen: nëse e rifreskon ose e mbyll skedën i humb, ndaj shkarko rezultatin para se të dalësh. Një PDF e mbrojtur me fjalëkalim ose shumë e rëndë mund të mos hapet ose ta ngadalësojë shfletuesin, sepse punën e bën pajisja jote. Filigrami është vetëm tekst.",
+      "faq": [
+        {
+          "q": "Si i bashkoj dy PDF?",
+          "a": "Ngarko të dy skedarët bashkë: shfaqen me radhë dhe mund t'i risistemosh faqet duke i tërhequr. Pastaj eksportoje rezultatin si një PDF të vetme."
+        },
+        {
+          "q": "A ngarkohen PDF-të e mia në internet?",
+          "a": "Jo. Përpunimi bëhet në shfletues, ndaj skedarët mbeten në pajisjen tënde."
+        },
+        {
+          "q": "Mund të nxjerr vetëm disa faqe?",
+          "a": "Po: fshij faqet që nuk të duhen ose përdor intervalin e faqeve për të ndarë dokumentin, pastaj eksporto."
+        },
+        {
+          "q": "Mund ta ndryshoj tekstin brenda një PDF?",
+          "a": "Jo, ky mjet punon me faqet (bashkim, ndarje, rrotullim, fshirje, filigram), jo me përmbajtjen. Për të ndryshuar tekstin mund ta kthesh PDF-në në Word me konvertuesin e skedarëve."
+        }
+      ]
+    },
+    "viewer": {
+      "about": "Shikuesi i PDF në internet e hap një dokument në shfletues me zmadhim, kërkim teksti, miniatura të faqeve dhe theksues. Shërben për të lexuar e konsultuar një PDF pa instaluar program dhe pa e ngarkuar askund, edhe nga telefoni.",
+      "steps": [
+        "Tërhiq PDF-në në zonën e ngarkimit ose zgjidh skedarin nga pajisja.",
+        "Lëviz mes faqeve me miniaturat dhe përdor zmadhimin për të zmadhuar ose zvogëluar.",
+        "Kërko një fjalë: mjeti i thekson përputhjet në tekst.",
+        "Aktivizo theksuesin dhe tërhiq mbi tekst për të shënuar pjesët e rëndësishme."
+      ],
+      "privacy": "Dokumenti lexohet tërësisht në shfletuesin tënd dhe nuk ngarkohet kurrë: mund të konsultosh me siguri edhe skedarë konfidencialë.",
+      "limits": "Kërkimi funksionon vetëm nëse PDF-ja ka tekst të zgjedhshëm. Nëse është skanim, pra faqet janë imazhe, mjeti të paralajmëron: në atë rast nxirre së pari tekstin me mjetin OCR. Skedarët shumë të rëndë mund të kërkojnë më shumë kohë në pajisje më të vjetra.",
+      "faq": [
+        {
+          "q": "Pse kërkimi nuk gjen asgjë në PDF-në time?",
+          "a": "Ka shumë mundësi që PDF-ja të jetë skanim: faqet janë imazhe dhe nuk kanë tekst të kërkueshëm. Dërgoje skedarin te mjeti OCR për të nxjerrë tekstin, pastaj kërko."
+        },
+        {
+          "q": "A ngarkohet skedari në një server?",
+          "a": "Jo. PDF-ja hapet dhe lexohet nga shfletuesi yt, ndaj mbetet në pajisjen tënde."
+        },
+        {
+          "q": "Mund ta theksoj dhe ta shënoj tekstin?",
+          "a": "Po: aktivizo theksuesin dhe tërhiq mbi tekst për ta shënuar."
+        },
+        {
+          "q": "A funksionon nga smartfoni?",
+          "a": "Po, shikuesi përshtatet me ekranin e telefonit; me dokumente shumë të rëndë hapja mund të jetë më e ngadaltë."
+        }
+      ]
+    },
+    "editor": {
+      "about": "Editori i dokumenteve në internet të lejon të shkruash dhe formatosh tekst drejtpërdrejt në shfletues dhe ta eksportosh në PDF, DOCX (Word) ose HTML. Është i dobishëm kur duhet të përgatisësh shpejt një letër, një procesverbal ose një raport pa hapur Word, ose kur duhet ta kthesh një tekst në një format të lehtë për t'u ndarë.",
+      "steps": [
+        "Shkruaj ose ngjit tekstin dhe formatoje me shiritin e veglave: tituj, lista, shkronja të theksuara dhe të pjerrëta.",
+        "Nëse ke tashmë një dokument mund ta importosh dhe të vazhdosh të punosh mbi të.",
+        "Zgjidh formatin e eksportit: PDF, DOCX ose HTML.",
+        "Shkarko skedarin e marrë."
+      ],
+      "privacy": "Ndërsa shkruan, teksti mbetet në shfletuesin tënd. Kur eksporton në PDF ose DOCX, përmbajtja dërgohet te serveri ynë vetëm për të krijuar skedarin.",
+      "limits": "Dokumentet e importuara mund të peshojnë deri në 50 MB. Eksporti kërkon lidhje aktive. Eksporto dokumentin para se ta mbyllësh skedën, që të mos e humbasësh punën.",
+      "faq": [
+        {
+          "q": "Në cilat formate mund të eksportoj?",
+          "a": "Në PDF, DOCX (i përputhshëm me Word) dhe HTML."
+        },
+        {
+          "q": "Mund të nis nga një dokument që kam tashmë?",
+          "a": "Po, mund të importosh një dokument, deri në 50 MB, dhe të vazhdosh ta ndryshosh në editor."
+        },
+        {
+          "q": "A duhet të instaloj diçka ose të krijoj llogari?",
+          "a": "Jo: funksionon në shfletues, edhe nga telefoni, dhe nuk kërkon llogari."
+        },
+        {
+          "q": "A dërgohet teksti im te një server?",
+          "a": "Vetëm kur eksporton në PDF ose DOCX: në atë çast serveri e ka nevojë për përmbajtjen për të krijuar skedarin."
+        }
+      ]
+    },
+    "convert": {
+      "about": "Konvertuesi i skedarëve në internet i kthen dokumentet dhe imazhet nga një format në tjetrin: mes PDF, Word (DOCX), teksti, HTML dhe Markdown, por edhe imazhe në WebP për internetin dhe CSV ose JSON në raporte PDF, si dhe bashkimin e disa PDF-ve në një. Zgjidh konvertimin që të duhet, ngarko skedarin dhe shkarko rezultatin.",
+      "steps": [
+        "Kërko ose zgjidh nga lista konvertimin që të duhet, për shembull PDF → DOCX.",
+        "Tërhiq skedarin në zonën e ngarkimit ose zgjidhe nga pajisja.",
+        "Nis konvertimin dhe prit disa sekonda.",
+        "Në fund shkarkimi nis automatikisht."
+      ],
+      "privacy": "Për ta konvertuar, skedari dërgohet te serveri ynë, i cili e përpunon dhe të kthen rezultatin. Skedarët shërbejnë vetëm për të kryer konvertimin e kërkuar.",
+      "limits": "Çdo skedar mund të peshojë deri në 50 MB; për konvertimet që bashkojnë disa skedarë, si bashkimi i PDF-ve, mund të zgjedhësh deri në 20. Një PDF me tabela ose struktura shumë komplekse mund të humbasë një pjesë të formatimit kur kalon në Word. Një PDF e skanuar nuk bëhet tekst i ndryshueshëm: përdor më parë OCR.",
+      "faq": [
+        {
+          "q": "Si e kthej një PDF në Word pa humbur formatimin?",
+          "a": "Zgjidh konvertimin PDF → DOCX. PDF-të me tekst të zgjedhshëm zakonisht ruajnë titujt, paragrafët dhe listat; strukturat shumë të ndërlikuara mund të kërkojnë retushime të vogla pas konvertimit. Te artikulli i lidhur më poshtë gjen udhëzuesin e plotë."
+        },
+        {
+          "q": "Mund të konvertoj disa skedarë njëkohësisht?",
+          "a": "Për konvertimet që kombinojnë skedarë, si bashkimi i PDF-ve, mund të ngarkosh deri në 20 njëherësh."
+        },
+        {
+          "q": "A bëhet i ndryshueshëm një PDF e skanuar?",
+          "a": "Jo drejtpërdrejt: një skanim përbëhet nga imazhe. Nxirre më parë tekstin me mjetin OCR, pastaj puno mbi tekstin e marrë."
+        },
+        {
+          "q": "Sa mund të peshojë maksimumi një skedar?",
+          "a": "Deri në 50 MB për skedar. Nëse skedari yt është më i madh, provo ta zvogëlosh ose ta ndash para konvertimit."
+        }
+      ]
+    },
+    "pdf_summary": {
+      "about": "Përmbledhësi i PDF me inteligjencë artificiale lexon një dokument dhe prodhon një përmbledhje me pikat kryesore, brenda pak sekondash. Është i dobishëm për t'u orientuar në një raport të gjatë, një kontratë, një artikull shkencor ose një fashikull para se të vendosësh nëse do ta lexosh të plotë.",
+      "steps": [
+        "Ngarko një PDF, një dokument Word (.docx ose .doc), një skedar teksti ose një faqe HTML.",
+        "Nis analizën dhe prit pak sekonda.",
+        "Lexo përmbledhjen me pikat kryesore: mund ta kopjosh ose ta dërgosh te një mjet tjetër i Lab-it."
+      ],
+      "privacy": "Përmbajtja e dokumentit dërgohet te një shërbim i inteligjencës artificiale për të gjeneruar përmbledhjen. Mos ngarko dokumente që nuk dëshiron t'i ndash me një shërbim të jashtëm, si ato me të dhëna personale ose konfidenciale.",
+      "limits": "Pranohen skedarë deri në 20 MB. Nëse dokumenti është shumë i gjatë përpunohet vetëm pjesa e parë dhe mjeti të njofton. Një përmbledhje automatike mund të lërë jashtë detaje ose të ketë pasaktësi: për vendime të rëndësishme kontrollo tekstin origjinal. Një PDF e skanuar duhet kaluar më parë te OCR. Për të mbajtur nën kontroll kostot ekziston një kufi përdorimi ditor.",
+      "faq": [
+        {
+          "q": "Cilët skedarë mund t'i përmbledh?",
+          "a": "PDF, Word (.docx dhe .doc), skedarë teksti dhe HTML, deri në 20 MB."
+        },
+        {
+          "q": "A është e besueshme përmbledhja?",
+          "a": "Është një pikënisje e mirë për të kuptuar për çfarë flet një dokument, por një AI mund të gabojë ose të lërë jashtë detaje. Kontrollo gjithmonë pjesët e rëndësishme te dokumenti origjinal."
+        },
+        {
+          "q": "A funksionon me PDF të skanuara?",
+          "a": "Vetëm nëse kanë tekst. Nëse faqet janë imazhe, nxirre tekstin me mjetin OCR dhe pastaj përmbledhe."
+        },
+        {
+          "q": "Mund të përmbledh një dokument shumë të gjatë?",
+          "a": "Lexohet pjesa e parë dhe mjeti të njofton se pjesa tjetër nuk përfshihet. Për tekste shumë të gjata ia vlen ta ndash dokumentin në pjesë."
+        }
+      ]
+    },
+    "pdf_translate": {
+      "about": "Përkthyesi i PDF me inteligjencë artificiale e përkthen një dokument në një gjuhë tjetër duke u përpjekur të ruajë të njëjtin numër faqesh dhe të njëjtat përmasa si origjinali, faqe pas faqeje. Është menduar për kontrata, manuale, raporte dhe fashikuj që duhet t'i lexosh ose t'i ndash në një gjuhë tjetër pa e ndërtuar dokumentin me dorë.",
+      "steps": [
+        "Ngarko një PDF, një skedar Word (DOCX) ose një skedar teksti.",
+        "Zgjidh gjuhën e synuar dhe mënyrën: «besnikëri e lartë» ruan numrin dhe përmasat e faqeve, «standard» është më e shpejtë dhe jep tekst të pastër.",
+        "Nis përkthimin: mjeti përkthen bllok pas blloku dhe e rindërton dokumentin.",
+        "Shkarko skedarin e përkthyer ose dërgoje te një mjet tjetër i Lab-it."
+      ],
+      "privacy": "Përmbajtja e dokumentit dërgohet te një shërbim i inteligjencës artificiale për t'u përkthyer. Shmang ngarkimin e dokumenteve konfidenciale ose me të dhëna personale që nuk dëshiron t'i ndash me një shërbim të jashtëm.",
+      "limits": "Kufiri është 50 MB për skedar. Struktura rindërtohet me të njëjtat faqe dhe përmasa, por nuk riprodhohen shkronjat dhe imazhet origjinale. Nëse PDF-ja përbëhet nga imazhe, mjeti e zbulon dhe përdor OCR, me rezultate që varen nga cilësia e skanimit. Për dokumente shumë të gjata mund të përkthehet vetëm pjesa e parë, dhe mjeti të njofton.",
+      "faq": [
+        {
+          "q": "A e ruan formatimin PDF-ja e përkthyer?",
+          "a": "Ruan numrin dhe përmasat e faqeve dhe përpiqet ta përshtatë tekstin me hapësirën e disponueshme, por nuk riprodhon shkronjat dhe imazhet origjinale. Për një kontroll përfundimtar krahasoje me origjinalin."
+        },
+        {
+          "q": "Në cilat gjuhë mund të përkthej?",
+          "a": "Anglisht, italisht, shqip, spanjisht, gjermanisht, frëngjisht dhe të tjera."
+        },
+        {
+          "q": "A funksionon me PDF të skanuara?",
+          "a": "Po: nëse PDF-ja përbëhet nga imazhe, mjeti e njeh dhe kryen më parë OCR. Cilësia varet nga qartësia e skanimit."
+        },
+        {
+          "q": "A është përkthimi aq i saktë sa ai i një përkthyesi njeri?",
+          "a": "Jo: është përkthim automatik, shumë i mirë për të kuptuar e për të punuar, por për kontrata ose tekste ligjore këshillohet gjithsesi rishikimi nga një profesionist."
+        }
+      ]
+    },
+    "ai_ppt": {
+      "about": "Gjeneratori i prezantimeve me inteligjencë artificiale krijon strukturën e një prezantimi nisur nga një temë: tituj sllajdesh, pika të listuara, shënime për prezantuesin dhe një fije logjike për ta ndjekur. Shërben për të kapërcyer faqen e bardhë dhe për të pasur brenda pak sekondash një skicë për ta përsosur.",
+      "steps": [
+        "Shkruaj temën e prezantimit, në një fjali.",
+        "Zgjidh stilin (biznes, arsim, minimal, modern ose pitch deck) dhe numrin e sllajdeve: 5, 10, 15 ose 20.",
+        "Nëse dëshiron, ngarko një PDF, një DOCX ose një TXT si material fillestar: AI e përdor si kontekst.",
+        "Gjenero prezantimin, lexoje dhe shkarkoje."
+      ],
+      "privacy": "Tema dhe dokumenti i kontekstit, nëse ka, dërgohen te një shërbim i inteligjencës artificiale për të gjeneruar sllajdet. Mos fut të dhëna konfidenciale që nuk dëshiron t'i ndash.",
+      "limits": "Dokumenti i kontekstit mund të peshojë deri në 20 MB (PDF, DOCX ose TXT). Rezultati është një skicë: titujt, pikat dhe shënimet duhen kontrolluar, përshtatur dhe pasuruar me imazhe e të dhëna të tuat. Nëse përmbajtja e disa sllajdeve është shumë e gjatë mund të shkurtohet: në atë rast shkurto temën dhe gjenero sërish.",
+      "faq": [
+        {
+          "q": "Sa sllajde mund të gjenerojë?",
+          "a": "5, 10, 15 ose 20, sipas thellësisë që duhet të ketë prezantimi."
+        },
+        {
+          "q": "Mund të nis nga një dokument im?",
+          "a": "Po: ngarko një PDF, një DOCX ose një TXT dhe AI e përdor si kontekst për të ndërtuar sllajdet."
+        },
+        {
+          "q": "A janë sllajdet e gjeneruara gati për t'u paraqitur?",
+          "a": "Janë një skicë e mirë me strukturë, pika dhe shënime për prezantuesin, por ia vlen t'i rishikosh dhe të shtosh imazhe, grafikë e të dhëna specifike para se t'i paraqesësh."
+        },
+        {
+          "q": "Cilat stile janë të disponueshme?",
+          "a": "Biznes, Arsim, Minimal, Modern dhe Pitch Deck për startup-e."
+        }
+      ]
+    },
+    "ai_formatter": {
+      "about": "Formatuesi i tekstit me inteligjencë artificiale i kthen shënimet e papërpunuara, procesverbalet e mbledhjeve ose tekstet e gjeneruara nga një AI në një dokument të rregullt, me tituj, lista dhe paragrafë. Shërben kur përmbajtjen e ke tashmë por nuk do të humbasësh kohë për ta faqosur.",
+      "steps": [
+        "Ngjit tekstin në kuti ose tërhiq një skedar .txt ose .md.",
+        "Nis formatimin: AI njeh titujt, pikat e listuara dhe paragrafët.",
+        "Kalo nga pamja paraprake e formatuar te rezultati Markdown i papërpunuar dhe anasjelltas.",
+        "Kopjo rezultatin ose dërgoje te editori për ta eksportuar në PDF ose DOCX."
+      ],
+      "privacy": "Teksti dërgohet te një shërbim i inteligjencës artificiale për t'u formatuar. Mos ngjit informacione konfidenciale që nuk dëshiron t'i ndash me një shërbim të jashtëm. Nëse e rifreskon faqen, skica rikthehet në shfletues.",
+      "limits": "Nevojiten të paktën 10 karaktere teksti dhe mbështeten skedarët .txt dhe .md. Nëse teksti është shumë i gjatë formatohet vetëm pjesa e parë dhe mjeti të njofton. AI përpiqet ta ruajë përmbajtjen, por ia vlen ta rilexosh rezultatin para se ta përdorësh.",
+      "faq": [
+        {
+          "q": "Çfarë lloj dokumentesh mund të krijoj?",
+          "a": "Propozime, raporte, procesverbale mbledhjesh, CV dhe artikuj: mjeti e përshtat stilin me llojin e tekstit."
+        },
+        {
+          "q": "Në çfarë formati e marr rezultatin?",
+          "a": "Si pamje paraprake e formatuar ose si Markdown, që mund ta kopjosh e ngjitësh ku të duash."
+        },
+        {
+          "q": "Mund të përdor një tekst të shkruar nga një AI tjetër?",
+          "a": "Po, është menduar edhe për të rregulluar tekste të gjeneruara nga mjete të tjera AI, që shpesh vijnë pa strukturë të qartë."
+        },
+        {
+          "q": "Si e marr një PDF ose një skedar Word?",
+          "a": "Dërgoje tekstin e formatuar te editori i dokumenteve i Lab-it, që e eksporton në PDF, DOCX ose HTML."
+        }
+      ]
+    },
+    "try_tool": "Provo menjëherë mjetin falas"
   }
 }

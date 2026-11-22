@@ -474,3 +474,23 @@ $toc-side-room: 1070px;
     &__bar { transition: none; }
   }
 }
+
+// Riquadro "Prova lo strumento" in fondo agli articoli collegati a uno strumento del Lab.
+.post-lab-cta {
+  margin: 2.5rem 0 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+
+  &__title {
+    margin: 0 0 0.85rem;
+    font-weight: 700;
+  }
+
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}

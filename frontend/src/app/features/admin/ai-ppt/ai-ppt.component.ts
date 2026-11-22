@@ -33,6 +33,8 @@ import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { SavedResultsService } from '../../../core/services/saved-results.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 type ViewMode = 'carousel' | 'grid';
 
@@ -43,7 +45,7 @@ const MAX_CONTEXT_FILE_MB = 20;
   selector: 'app-ai-ppt',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent],
+  imports: [LabToolInfoComponent, CommonModule, FormsModule, TranslateModule, FileDropzoneDirective, BreadcrumbComponent, RequestProgressComponent, RequestRetryComponent, OfflineToolHintComponent, AiQuotaComponent],
   templateUrl: './ai-ppt.component.html',
   styleUrls: ['./ai-ppt.component.scss'],
 })
@@ -53,6 +55,7 @@ export class AiPptComponent implements OnInit {
 
   private readonly service      = inject(AiPptService);
   private readonly seo          = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService  = inject(LanguageService);
   private readonly workspace    = inject(WorkspaceService);
   private readonly t            = inject(TranslateService);
@@ -82,32 +85,7 @@ export class AiPptComponent implements OnInit {
         featureList: ['AI-generated slides', 'Up to 20 slides', '5 style themes', 'Speaker notes', 'Export ready'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: 'How many slides can the AI generate?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Choose 5, 10, 15 or 20 slides per presentation.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'What presentation styles are available?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Five style themes: Business, Education, Minimal, Modern, and Pitch Deck.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Does it include speaker notes?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, every generated deck includes speaker notes and a logical slide-to-slide flow.' },
-          },
-          {
-            '@type': 'Question',
-            name: 'Can I give the AI extra context for my presentation?',
-            acceptedAnswer: { '@type': 'Answer', text: 'Yes, you can optionally upload a PDF or TXT file so the AI grounds the generated content in your own material.' },
-          },
-        ],
-      },
+      ...this.labInfo.faqSchemas('ai-ppt'),
       this.seo.breadcrumb([
         { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
         { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
