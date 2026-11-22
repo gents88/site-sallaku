@@ -1,0 +1,38 @@
+<ul class="flags">
+  @for (key of keys; track key) {
+    <li class="flags__row" [class.flags__row--warn]="isWarning(key)">
+      <div class="flags__text">
+        <label class="flags__label" [for]="'flag-' + key">{{ 'feature_flags.' + key | translate }}</label>
+        <span class="flags__desc text-muted">{{ 'feature_flags.' + key + '_desc' | translate }}</span>
+      </div>
+      <input
+        type="checkbox"
+        role="switch"
+        class="panel-switch"
+        [id]="'flag-' + key"
+        [checked]="service.flags()[key]"
+        [disabled]="saving() === key"
+        [attr.aria-checked]="service.flags()[key]"
+        (change)="toggle(key, $any($event.target))"
+      />
+    </li>
+  }
+</ul>
+
+<div class="flags__message">
+  <label for="flag-maintenance-message">{{ 'feature_flags.maintenance_message' | translate }}</label>
+  <textarea
+    id="flag-maintenance-message"
+    rows="2"
+    maxlength="300"
+    [(ngModel)]="message"
+    [placeholder]="'maintenance.default_message' | translate"
+  ></textarea>
+  <button type="button" class="panel-btn" (click)="saveMessage()" [disabled]="saving() === 'maintenanceMessage' || message === service.flags().maintenanceMessage">
+    {{ 'feature_flags.save_message' | translate }}
+  </button>
+</div>
+
+@if (error()) {
+  <p class="panel-error" role="alert">{{ 'feature_flags.save_error' | translate }}</p>
+}

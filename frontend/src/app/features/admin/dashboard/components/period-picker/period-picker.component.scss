@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+
+.periods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+
+  &__btn {
+    min-height: 34px;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s;
+
+    &:hover {
+      background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+    }
+
+    &[aria-pressed='true'] {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+      color: #fff;
+    }
+  }
+}

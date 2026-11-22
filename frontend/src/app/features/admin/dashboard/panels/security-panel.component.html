@@ -1,0 +1,107 @@
+@if (failed) {
+  <p class="panel-error" role="alert">{{ 'admin.overview_partial_error' | translate }}</p>
+} @else {
+  <div class="panel-kpis">
+    <div class="panel-kpi" [class.panel-kpi--warn]="data.failedLogins24h > 0" [class.panel-kpi--ok]="data.failedLogins24h === 0">
+      <strong>{{ data.failedLogins24h | number }}</strong>
+      <span>{{ 'security_panel.failed_logins' | translate }}</span>
+    </div>
+    <div class="panel-kpi" [class.panel-kpi--warn]="data.otpFailed24h > 0">
+      <strong>{{ data.otpFailed24h | number }}</strong>
+      <span>{{ 'security_panel.otp_failed' | translate }}</span>
+    </div>
+    <div class="panel-kpi" [class.panel-kpi--bad]="data.tokenReuse > 0" [class.panel-kpi--ok]="data.tokenReuse === 0" [title]="'security_panel.reuse_hint' | translate">
+      <strong>{{ data.tokenReuse | number }}</strong>
+      <span>{{ 'security_panel.token_reuse' | translate }}</span>
+    </div>
+    <div class="panel-kpi">
+      <strong>{{ data.activeSessions | number }}</strong>
+      <span>{{ 'security_panel.active_sessions' | translate }}</span>
+    </div>
+  </div>
+
+  @if (data.suspiciousIps.length) {
+    <div class="sec-ips" [title]="'security_panel.suspicious_hint' | translate">
+      <span class="panel-sub">{{ 'security_panel.suspicious_ips' | translate }}</span>
+      @for (item of data.suspiciousIps; track item.ip) {
+        <span class="panel-badge panel-badge--bad panel-mono">{{ item.ip }} ×{{ item.failures }}</span>
+      }
+    </div>
+  }
+
+  <mat-accordion class="sec-accordion" multi>
+    <mat-expansion-panel [expanded]="data.sessions.length > 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="sec-title">
+          {{ 'security_panel.sessions' | translate }}
+          <span class="panel-badge">{{ data.sessions.length | number }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      @if (data.sessions.length) {
+        <ul class="panel-list">
+          @for (s of data.sessions; track s.sessionId) {
+            <li>
+              <div class="sec-row">
+                <span class="sec-row__main">
+                  <span class="panel-ellipsis">
+                    <strong>{{ s.name }}</strong>
+                    <span class="panel-badge">{{ s.role }}</span>
+                    @if (isCurrent(s)) { <span class="panel-badge panel-badge--ok">{{ 'security_panel.this_device' | translate }}</span> }
+                  </span>
+                  <span class="panel-sub panel-ellipsis">{{ s.device }} · <span class="panel-mono">{{ s.ip || '—' }}</span></span>
+                  <span class="panel-sub">
+                    {{ 'security_panel.started' | translate }} {{ s.startedAt | date: 'dd/MM HH:mm' }} ·
+                    {{ 'security_panel.last_active' | translate }} {{ s.lastSeenAt | date: 'dd/MM HH:mm' }}
+                  </span>
+                </span>
+                @if (!isCurrent(s)) {
+                  <button type="button" class="panel-btn panel-btn--danger" (click)="close(s)" [disabled]="busyId() !== null">
+                    {{ 'security_panel.close_session' | translate }}
+                  </button>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="panel-empty">{{ 'security_panel.no_sessions' | translate }}</p>
+      }
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title class="sec-title">
+          {{ 'security_panel.events' | translate }}
+          <span class="panel-badge">{{ data.events.length | number }}</span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <p class="panel-sub sec-note">{{ 'security_panel.events_retention' | translate: { days: retentionDays } }}</p>
+      @if (data.events.length) {
+        <ul class="panel-list">
+          @for (e of data.events; track e._id) {
+            <li>
+              <div class="sec-row">
+                <span class="sec-row__main">
+                  <span class="panel-ellipsis">
+                    <span [class]="badgeClass(e.type)">{{ 'security_panel.ev_' + e.type | translate }}</span>
+                    @if (e.identifier) { <span class="panel-mono">{{ e.identifier }}</span> }
+                  </span>
+                  <span class="panel-sub panel-ellipsis">
+                    <span class="panel-mono">{{ e.ip || '—' }}</span> · {{ e.device }}@if (e.detail) { · {{ e.detail }} }
+                  </span>
+                </span>
+                <span class="panel-sub">{{ e.createdAt | date: 'dd/MM HH:mm' }}</span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="panel-empty">{{ 'security_panel.no_events' | translate }}</p>
+      }
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  @if (error()) {
+    <p class="panel-error" role="alert">{{ 'security_panel.close_error' | translate }}</p>
+  }
+}

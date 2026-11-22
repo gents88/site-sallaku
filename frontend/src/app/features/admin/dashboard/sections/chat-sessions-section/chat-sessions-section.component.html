@@ -1,0 +1,64 @@
+<h2 class="section-label"><mat-icon>forum</mat-icon>{{ 'admin.chat_sessions_section' | translate }}</h2>
+<div class="analytics-grid adv-bottom-grid">
+  <app-dashboard-card titleKey="admin.chat_sessions_today" descKey="admin.chat_sessions_today_desc" periodKey="dashboard_ux.period_today" [wide]="true">
+    <button cardAction type="button" class="chat-load-btn" [disabled]="loading()" (click)="load()">
+      <mat-icon [class.spin]="loading()">{{ loading() ? 'sync' : 'refresh' }}</mat-icon>
+      {{ loading() ? ('common.loading' | translate) : ('admin.chat_sessions_load' | translate) }}
+      @if (!loading() && interactionsToday() > 0) {
+        <span class="chat-count-badge">{{ interactionsToday() }}</span>
+      }
+    </button>
+
+    @if (!sessions().length && !loading()) {
+      <p class="text-muted chat-sessions__empty">{{ 'admin.chat_sessions_empty' | translate }}</p>
+    }
+
+    @if (sessions().length) {
+      <div class="chat-session-list">
+        @for (session of sessions(); track session.sessionId) {
+          <div class="chat-session-row" [class.chat-session-row--open]="expandedId() === session.sessionId">
+            <button type="button" class="chat-session-header" (click)="toggle(session.sessionId)">
+              <div class="chat-session-meta">
+                <mat-icon class="chat-session-icon">chat_bubble_outline</mat-icon>
+                <div class="chat-session-info">
+                  <span class="chat-session-preview">{{ sessionPreview(session) }}</span>
+                  <span class="text-muted chat-session-time">
+                    {{ session.lastActivity | date: 'HH:mm' }} &nbsp;·&nbsp;
+                    {{ session.messageCount }} {{ 'admin.chat_messages_count' | translate }}
+                  </span>
+                </div>
+              </div>
+              <mat-icon class="chat-session-chevron">{{ expandedId() === session.sessionId ? 'expand_less' : 'expand_more' }}</mat-icon>
+            </button>
+
+            @if (expandedId() === session.sessionId) {
+              <div class="chat-thread">
+                @for (msg of session.messages; track $index) {
+                  <div class="chat-bubble-row" [class.chat-bubble-row--user]="msg.role === 'user'">
+                    <div class="chat-bubble" [class.chat-bubble--user]="msg.role === 'user'" [class.chat-bubble--bot]="msg.role === 'assistant'">
+                      <span class="chat-bubble__role text-muted">{{ msg.role === 'user' ? '👤' : '🤖' }}</span>
+                      <span class="chat-bubble__text">{{ msg.content }}</span>
+                      <span class="chat-bubble__time text-muted">{{ msg.timestamp | date: 'HH:mm:ss' }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      @if (totalPages() > 1) {
+        <div class="chat-pagination">
+          <button type="button" class="chat-load-btn" [disabled]="page() <= 1 || loading()" (click)="load(page() - 1)">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="text-muted chat-pagination__label">{{ page() }} / {{ totalPages() }}</span>
+          <button type="button" class="chat-load-btn" [disabled]="page() >= totalPages() || loading()" (click)="load(page() + 1)">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      }
+    }
+  </app-dashboard-card>
+</div>

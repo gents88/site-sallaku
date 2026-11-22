@@ -4,8 +4,8 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { AcquisitionReport, AdminDashboardService } from '../admin-dashboard.service';
-
-export const ACQUISITION_PERIODS = [7, 30, 90] as const;
+import { PeriodPickerComponent } from '../components/period-picker/period-picker.component';
+import { PeriodDeltaComponent } from '../components/period-delta/period-delta.component';
 
 /** Sorgenti note: le altre (valori vecchi o futuri) si mostrano come "Altro". */
 const KNOWN_SOURCES = ['search', 'social', 'referral', 'direct', 'campaign', 'internal'];
@@ -38,7 +38,7 @@ export function sortedSources(sources: Record<string, number>): { source: string
 @Component({
   selector: 'app-acquisition-panel',
   standalone: true,
-  imports: [DatePipe, DecimalPipe, TranslateModule],
+  imports: [DatePipe, DecimalPipe, TranslateModule, PeriodPickerComponent, PeriodDeltaComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./panel-shared.scss', './acquisition-panel.component.scss'],
   templateUrl: './acquisition-panel.component.html',
@@ -48,7 +48,6 @@ export class AcquisitionPanelComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private request: Subscription | null = null;
 
-  readonly periods = ACQUISITION_PERIODS;
   readonly days = signal<number>(30);
   readonly report = signal<AcquisitionReport | null>(null);
   readonly failed = signal(false);
@@ -67,15 +66,20 @@ export class AcquisitionPanelComponent implements OnInit {
     this.load();
   }
 
+  /** Ricarica il periodo corrente senza svuotare il pannello (aggiornamento automatico). */
+  reload(): void {
+    this.load(false);
+  }
+
   barWidth(count: number, rows: { count: number }[]): number {
     const max = Math.max(...rows.map(r => r.count), 1);
     return (count / max) * 100;
   }
 
-  private load(): void {
+  private load(reset = true): void {
     this.request?.unsubscribe();
     this.failed.set(false);
-    this.report.set(null);
+    if (reset) this.report.set(null);
     this.request = this.service
       .getAcquisition(this.days())
       .pipe(takeUntilDestroyed(this.destroyRef))

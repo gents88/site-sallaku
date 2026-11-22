@@ -1,0 +1,88 @@
+<app-period-picker [days]="days()" (daysChange)="setDays($event)" />
+
+@if (failed()) {
+  <p class="panel-error" role="alert">{{ 'admin.overview_partial_error' | translate }}</p>
+} @else if (report(); as r) {
+  <div class="panel-kpis">
+    <div class="panel-kpi panel-kpi--ok">
+      <strong>{{ r.totalLeads | number }}</strong>
+      <span>{{ 'lead_attribution.total_leads' | translate }}</span>
+      <app-period-delta [current]="r.totalLeads" [previous]="r.previousTotalLeads" [days]="r.days" />
+    </div>
+    @for (k of r.byKind; track k.label) {
+      <div class="panel-kpi">
+        <strong>{{ k.count | number }}</strong>
+        <span>{{ leadKindKey(k.label) | translate }}</span>
+      </div>
+    }
+  </div>
+
+  @if (!r.totalLeads) {
+    <p class="lead-attr__muted">{{ 'lead_attribution.empty' | translate }}</p>
+  } @else {
+    <div class="lead-attr__grid">
+      <div>
+        <h3 class="lead-attr__subtitle">{{ 'lead_attribution.by_source' | translate }}</h3>
+        @for (s of r.bySource; track s.label) {
+          <div class="lead-attr__bar-row">
+            <span class="lead-attr__bar-label">{{ sourceKey(s.label) | translate }}</span>
+            <div class="lead-attr__bar-track"><div class="lead-attr__bar-fill" [style.width.%]="barWidth(s.count, r.bySource)"></div></div>
+            <span class="lead-attr__num">{{ s.count }}</span>
+          </div>
+        }
+        @if (r.byReferrer.length) {
+          <h3 class="lead-attr__subtitle lead-attr__subtitle--spaced">{{ 'lead_attribution.by_referrer' | translate }}</h3>
+          @for (s of r.byReferrer; track s.label) {
+            <div class="lead-attr__bar-row">
+              <span class="lead-attr__bar-label" [title]="s.label">{{ s.label }}</span>
+              <div class="lead-attr__bar-track"><div class="lead-attr__bar-fill" [style.width.%]="barWidth(s.count, r.byReferrer)"></div></div>
+              <span class="lead-attr__num">{{ s.count }}</span>
+            </div>
+          }
+        }
+      </div>
+
+      <div>
+        <h3 class="lead-attr__subtitle">{{ 'lead_attribution.by_entry_page' | translate }}</h3>
+        @for (s of r.byEntryPage; track s.label) {
+          <div class="lead-attr__bar-row">
+            <span class="lead-attr__bar-label lead-attr__path" [title]="s.label">{{ s.label }}</span>
+            <div class="lead-attr__bar-track"><div class="lead-attr__bar-fill" [style.width.%]="barWidth(s.count, r.byEntryPage)"></div></div>
+            <span class="lead-attr__num">{{ s.count }}</span>
+          </div>
+        } @empty {
+          <p class="lead-attr__muted">—</p>
+        }
+      </div>
+    </div>
+
+    <h3 class="lead-attr__subtitle">{{ 'lead_attribution.articles' | translate }}</h3>
+    <p class="lead-attr__hint">{{ 'lead_attribution.articles_hint' | translate }}</p>
+    <div class="lead-attr__table-wrap">
+      <table class="lead-attr__table">
+        <thead>
+          <tr>
+            <th>{{ 'lead_attribution.article' | translate }}</th>
+            <th class="lead-attr__num">{{ 'lead_attribution.leads' | translate }}</th>
+            <th class="lead-attr__num">{{ 'lead_attribution.readers' | translate }}</th>
+            <th class="lead-attr__num">{{ 'lead_attribution.rate' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of r.articles; track a.path) {
+            <tr>
+              <td class="lead-attr__path">{{ a.path }}</td>
+              <td class="lead-attr__num">{{ a.leads }}</td>
+              <td class="lead-attr__num">{{ a.visitors | number }}</td>
+              <td class="lead-attr__num">{{ a.rate }}%</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4" class="lead-attr__muted">{{ 'lead_attribution.no_articles' | translate }}</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+} @else {
+  <p class="lead-attr__muted">{{ 'acquisition.loading' | translate }}</p>
+}

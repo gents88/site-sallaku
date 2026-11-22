@@ -1,0 +1,93 @@
+@use '../../dashboard-shared';
+
+:host {
+  display: block;
+}
+
+.reset-stats-btn--csv {
+  border-color: rgba(20, 184, 166, 0.3);
+  background: rgba(20, 184, 166, 0.08);
+  color: #5eead4;
+  margin-left: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background: rgba(20, 184, 166, 0.18);
+    border-color: rgba(20, 184, 166, 0.5);
+  }
+}
+
+.tool-conv-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 2fr) 90px 90px 70px;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  padding: 0.15rem 0;
+
+  > * { min-width: 0; overflow-wrap: anywhere; }
+
+  /* Le quattro colonne fisse (350px + spazi) non entrano in una card da telefono: la prima si restringe. */
+  @media (max-width: 480px) { grid-template-columns: minmax(0, 1fr) 64px 48px 52px; gap: 0.4rem; }
+}
+
+.tool-conv-row--head {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tool-conv-rate {
+  font-weight: 600;
+  color: #8b5cf6;
+}
+
+// Reset monthly stats button
+.reset-stats-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+  color: #fca5a5;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.18);
+    border-color: rgba(239, 68, 68, 0.45);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.h-bar-label--mono {
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.visitor-overview--spaced {
+  margin-top: 0.75rem;
+}
+
+// Andamento mensile: i mesi passati in verde acqua, il corrente in viola.
+.h-bar-fill--current {
+  background: #6366f1;
+}
+
+.h-bar-fill--past {
+  background: #14b8a6;
+}

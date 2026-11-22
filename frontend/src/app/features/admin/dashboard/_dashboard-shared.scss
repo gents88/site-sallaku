@@ -1,0 +1,283 @@
+// Mattoni comuni alle sezioni della dashboard (griglie, barre orizzontali,
+// riquadri numerici, totali). Ogni sezione lo include con @use: con
+// l'incapsulamento degli stili, quelli del componente padre non arrivano ai figli.
+
+.chat-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+}
+
+.analytics-grid {
+  display: grid;
+  /* min(): sotto i ~330px di schermo una traccia da 280px più il padding uscirebbe dal bordo. */
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.text-muted { color: var(--color-text-muted); }
+
+.adv-top-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+}
+
+.adv-bottom-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  margin-top: -0.25rem;
+}
+
+.visitor-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.visitor-overview__item {
+  padding: 0.85rem 0.75rem;
+  border: 1px solid var(--color-border, rgba(255,255,255,0.06));
+  border-radius: 14px;
+  background: var(--panel-surface-soft);
+  text-align: center;
+
+  strong {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  span {
+    font-size: 0.75rem;
+  }
+}
+
+// Horizontal bar charts for countries / browsers
+.h-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.h-bars--locations {
+  gap: 0.8rem;
+}
+
+.h-bars__empty {
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
+}
+
+.h-bar-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 38px;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+}
+
+// Card a tutta larghezza con etichette lunghe (percorsi, ricerche): più spazio
+// all'etichetta e il dettaglio numerico su una riga sola.
+.h-bar-row--wide {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) auto;
+
+  .h-bar-count {
+    white-space: nowrap;
+  }
+}
+
+.h-bar-row--locations {
+  grid-template-columns: minmax(80px, 2fr) minmax(60px, 1fr) 38px;
+}
+
+.h-bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8rem;
+}
+
+.h-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  overflow: hidden;
+}
+
+.h-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  transition: width 0.5s ease;
+
+  &--location {
+    background: linear-gradient(90deg, #0ea5e9, #14b8a6);
+  }
+
+  &--browser {
+    background: linear-gradient(90deg, #14b8a6, #06b6d4);
+  }
+
+  &--month {
+    background: linear-gradient(90deg, #f59e0b, #ec4899);
+  }
+}
+
+.visitor-overview__item--accent {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.08);
+
+  strong { color: #a5b4fc; }
+}
+
+.visitor-overview__item--warn {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.08);
+
+  strong { color: #f59e0b; }
+}
+
+.visitor-overview__small {
+  font-size: 1rem !important;
+}
+
+// Sub-label above monthly chart inside a card
+.stats-sublabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0.25rem 0 0.5rem;
+}
+
+// Totals section (plain numbers, no chart) inside a card
+.stats-totals {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--color-border, rgba(255,255,255,0.06));
+
+  &__label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.6rem;
+  }
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+
+    strong {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    span {
+      font-size: 0.72rem;
+    }
+  }
+
+  // Locations variant: one row per country
+  &--locations {
+    .stats-totals__label { margin-bottom: 0.5rem; }
+  }
+
+  &__loc-row {
+    display: grid;
+    grid-template-columns: 8px 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.18rem 0;
+    font-size: 0.8rem;
+  }
+
+  &__loc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__loc-count {
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+}
+
+.h-bar-count {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.spin { animation: spin 0.9s linear infinite; }
+
+@media (max-width: 720px) {
+  .h-bar-row--locations {
+    grid-template-columns: minmax(0, 1fr) 72px 30px;
+    gap: 0.45rem;
+  }
+
+  .h-bars--locations .h-bar-label {
+    white-space: normal;
+    line-height: 1.25;
+  }
+}
+
+.chat-load-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.42rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.07);
+  color: #a5b4fc;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.16);
+    border-color: #6366f1;
+  }
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  mat-icon { font-size: 16px; height: 16px; width: 16px; }
+}
