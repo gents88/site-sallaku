@@ -58,7 +58,7 @@ function passwordsMatch(ctrl: AbstractControl) {
           <mat-form-field appearance="outline" class="form-field">
             <mat-label>{{ 'auth.password' | translate }}</mat-label>
             <input matInput formControlName="password" [type]="showPw ? 'text' : 'password'" />
-            <button mat-icon-button matSuffix type="button" (click)="showPw = !showPw">
+            <button mat-icon-button matSuffix type="button" (click)="showPw = !showPw" [attr.aria-label]="(showPw ? 'auth.hide_password' : 'auth.show_password') | translate" [attr.aria-pressed]="showPw">
               <mat-icon>{{ showPw ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             @if (form.get('password')?.invalid && form.get('password')?.touched) {
