@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { SearchConsoleSummary } from '../../admin-dashboard.service';
 import { DashboardCardComponent } from '../../components/dashboard-card/dashboard-card.component';
@@ -20,7 +19,7 @@ export function gscPagePath(url: string): string {
 @Component({
   selector: 'app-seo-section',
   standalone: true,
-  imports: [DecimalPipe, MatIconModule, TranslateModule, DashboardCardComponent],
+  imports: [DecimalPipe, TranslateModule, DashboardCardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './seo-section.component.html',
   styleUrls: ['./seo-section.component.scss'],

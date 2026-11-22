@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, of, throwError } from 'rxjs';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DashboardComponent } from './dashboard.component';
 import { AdminDashboardService, DashboardOverview, OverviewSection, normalizeOverview } from './admin-dashboard.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -48,7 +48,21 @@ async function setup(load: AdminDashboardService['loadOverview'], sections: Admi
 }
 
 describe('DashboardComponent', () => {
-  afterEach(() => vi.useRealTimers());
+  // Lo stato aperto/chiuso delle sezioni sta nel localStorage: ogni test parte pulito.
+  beforeEach(() => {
+    localStorage.clear();
+    // jsdom non ha IntersectionObserver, che @defer (on viewport) usa per sapere quando caricare.
+    vi.stubGlobal('IntersectionObserver', class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+      takeRecords() { return []; }
+    });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
 
   it('loads everything with a single overview call and builds real sparklines only where a series exists', async () => {
     const { component, loadOverview } = await setup(() => of(overview()));
@@ -141,10 +155,37 @@ describe('DashboardComponent', () => {
     const ids = component.navItems.map(i => i.id);
     expect(ids).toContain('dash-visitors');
     expect(ids).not.toContain('dash-seo');
-    expect(el.querySelectorAll('.dash-nav__link').length).toBe(ids.length);
+    expect(el.querySelectorAll('.dash-nav__link:not(.dash-nav__link--action)').length).toBe(ids.length);
     for (const id of ids.filter(i => i !== 'dash-messages')) {
       expect(el.querySelector(`#${id}`)).not.toBeNull();
     }
+  });
+
+  it('le sezioni sono richiudibili: chiusa non crea il contenuto, e la scelta resta memorizzata', async () => {
+    const { fixture, component, el } = await setup(() => of(overview()));
+    await fixture.whenStable();
+    expect(component.isOpen('dash-ops')).toBe(true);
+    expect(el.querySelector('#dash-ops app-ops-section')).not.toBeNull();
+
+    (el.querySelector('#dash-ops .mat-expansion-panel-header') as HTMLElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(component.isOpen('dash-ops')).toBe(false);
+    expect(JSON.parse(localStorage.getItem('admin_dashboard_open_sections')!)).not.toContain('dash-ops');
+
+    component.expandAll();
+    fixture.detectChanges();
+    expect(component.isOpen('dash-ops')).toBe(true);
+    component.collapseAll();
+    expect(component.openSections().size).toBe(0);
+  });
+
+  it('dall\'indice una sezione chiusa si apre', async () => {
+    const { component } = await setup(() => of(overview()));
+    component.collapseAll();
+    component.scrollTo('dash-visitors');
+    expect(component.isOpen('dash-visitors')).toBe(true);
+    expect(component.isOpen('dash-ops')).toBe(false);
   });
 
   it('does not stack requests: a new load cancels the in-flight one', async () => {
