@@ -88,14 +88,12 @@ export class PdfSummaryComponent implements OnInit {
       {
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'AI PDF Summarizer',
-        description: 'Upload any PDF, Word or TXT file and get an AI-powered summary, key points and insights instantly.',
-        url: 'https://gentsallaku.it/lab/pdf-summary',
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Web',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         featureList: ['Short summary', 'Detailed analysis', 'Bullet points', 'Key insights', 'Multiple languages', '20 MB limit'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+        ...this.labInfo.appFields('pdf-summary'),
       },
       ...this.labInfo.faqSchemas('pdf-summary'),
       this.seo.breadcrumb([

@@ -1073,7 +1073,7 @@
     "prev_slide": "Slajdi i mëparshëm",
     "next_slide": "Slajdi tjetër",
     "seo_title": "Gjenerator Prezantimesh me AI",
-    "seo_description": "Gjenero një prezantim profesional të plotë nga çdo temë brenda sekondash. Deri në 20 slide me tituj, pika kryesore, shënime dhe 5 stile. Falas online."
+    "seo_description": "Gjenerator prezantimesh me AI: krijo sllajde nga një temë brenda pak sekondash, me tituj, pika dhe shënime. Nga 5 në 20 sllajde, falas."
   },
   "ai_formatter": {
     "title": "Formatues AI",
@@ -1129,7 +1129,7 @@
     "copied": "U kopjua",
     "copy": "Kopjo",
     "seo_title": "Formatues Teksti me AI",
-    "seo_description": "Shndërro shënime, tekst të papërpunuar apo përmbajtje AI në dokumente profesionale të strukturuara brenda sekondash. Raporte, propozime, CV, artikuj e më shumë. Formatues AI falas online."
+    "seo_description": "Formatues teksti me AI: kthe shënime të papërpunuara ose tekst AI në dokument të rregullt me tituj dhe lista. Pamje ose Markdown, falas."
   },
   "pdf_summary": {
     "title": "AI Summarizer",
@@ -1164,7 +1164,7 @@
     "err_generic": "Ndodhi një gabim gjatë analizës së skedarit.",
     "remove_file": "Hiq skedarin",
     "seo_title": "Përmbledhës PDF me AI: Pikat Kryesore",
-    "seo_description": "Ngarko një PDF, Word ose TXT dhe merr një përmbledhje të gjeneruar nga AI brenda sekondash. Përmbledhje e shkurtër, analizë e detajuar, pika kryesore. Falas online.",
+    "seo_description": "Përmbledhës PDF me AI: ngarko një PDF, Word ose TXT dhe merr në pak sekonda një përmbledhje me pikat kryesore. Falas, deri në 20 MB.",
     "reading_stats": "{{words}} fjalë · ~{{min}} min lexim"
   },
   "workspace": {
@@ -1261,7 +1261,7 @@
     "upload_aria": "Ngarko një skedar PDF",
     "remove_file": "Hiq skedarin",
     "seo_title": "Përkthyes PDF me AI: Ruan Faqet",
-    "seo_description": "Përkthe çdo PDF në 12 gjuhë duke ruajtur të njëjtin numër faqesh dhe format. Përkthim AI i nivelit enterprise. Falas online, pa regjistrim."
+    "seo_description": "Përkthyes PDF me AI: përkthe një PDF në 12 gjuhë duke ruajtur të njëjtat faqe dhe përmasa. Falas, edhe për PDF të skanuara me OCR."
   },
   "pdf_search": {
     "title": "Kërko PDF",
@@ -1330,7 +1330,7 @@
     "preview_prev_page": "Faqja e mëparshme",
     "preview_next_page": "Faqja tjetër",
     "seo_title": "Kërko Libra PDF Falas: Domen Publik",
-    "seo_description": "Kërko dhe shkarko libra me pronë publike, artikuj shkencorë dhe artikuj me qasje të hapur, pa probleme të drejtash autori. Kërko në Internet Archive, Project Gutenberg, arXiv dhe PubMed Central me pamje paraprake.",
+    "seo_description": "Kërko dhe shkarko libra të domenit publik, punime shkencore dhe PDF me qasje të hapur nga Internet Archive, Project Gutenberg dhe arXiv. Falas.",
     "filter_favorites": "Të preferuarat",
     "results_count": "{{count}} rezultate",
     "btn_copy_link": "Kopjo lidhjen",
@@ -1525,7 +1525,7 @@
     "my_files_title": "Skedarët e mi",
     "my_files_desc": "Gjej rezultatet që ke ruajtur nga mjetet AI",
     "seo_title": "Mjete PDF dhe AI Falas në Internet",
-    "seo_description": "Mjete online falas me AI: përkthyes PDF, gjenerues prezantimesh, formatues teksti dhe përmbledhës PDF. Mjete profesionale për dokumentet. Pa regjistrim."
+    "seo_description": "Mjete PDF dhe AI falas në internet: OCR, konvertues, editor, shikues, skaner, përkthyes, përmbledhës dhe gjenerator prezantimesh."
   },
   "about_manage": {
     "title": "Seksioni About",
@@ -1672,7 +1672,7 @@
     "delete": "Fshi",
     "persistence_hint": "Ndryshimet nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë.",
     "seo_title": "Editor PDF: Bashko, Ndaj, Rrotullo",
-    "seo_description": "Bashko PDF, ndaj dhe nxirr faqe, rrotullo apo fshi faqe dhe shto watermark — gjithçka në shfletues, skedarët nuk largohen kurrë nga pajisja jote.",
+    "seo_description": "Editor PDF falas në internet: bashko, ndaj, rrotullo e fshi faqe dhe shto një filigram, në shfletues pa ngarkuar skedarë.",
     "undo": "Zhbëj",
     "duplicate": "Dyfisho faqen",
     "undone": "Ndryshimi u zhbë"
@@ -1711,7 +1711,7 @@
     "prev_match": "Përputhja e mëparshme",
     "next_match": "Përputhja tjetër",
     "seo_title": "Shikues PDF në Internet, Falas",
-    "seo_description": "Shiko dokumente PDF në shfletues: navigim faqesh, zoom, kërkim i plotë teksti dhe pamje miniaturash. Falas, privat, pa ngarkim."
+    "seo_description": "Shikues PDF falas në internet: zmadhim, kërkim teksti, miniatura dhe theksues, të gjitha në shfletues. Skedari nuk ngarkohet."
   },
   "scanner": {
     "title": "Skaner Dokumentesh",
@@ -1765,7 +1765,7 @@
     "err_camera_unsupported": "Kamera nuk është e disponueshme në këtë shfletues ose lidhja nuk është e sigurt (nevojitet HTTPS). Mund të ngarkosh gjithsesi një imazh.",
     "persistence_hint": "Faqet e kapura nuk ruhen: humbasin nëse rifreskon ose mbyll këtë skedë.",
     "seo_title": "Skaner Dokumentesh: Foto në PDF",
-    "seo_description": "Skano dokumente me webcam ose kamerën e telefonit, prit dhe përmirëso ato, eksporto si PDF. Falas, pa regjistrim."
+    "seo_description": "Skaner dokumentesh në internet: përdor kamerën e telefonit ose webcam-in, pri faqet dhe eksporto një PDF. Falas, pa regjistrim."
   },
   "library": {
     "badge": "E re",

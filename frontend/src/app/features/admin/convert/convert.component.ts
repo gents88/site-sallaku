@@ -121,14 +121,12 @@ export class ConvertComponent implements OnInit, OnDestroy {
     this.seo.injectJsonLd([{
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Free File Converter',
-      description: `Convert files between PDF, Word, Excel, images and other formats — ${this.totalCount} conversion types, entirely in the browser.`,
-      url: 'https://gentsallaku.it/lab/convert',
       applicationCategory: 'UtilitiesApplication',
       operatingSystem: 'Web',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
       featureList: ['PDF to Word/Text/HTML', 'Word to PDF', 'Excel/CSV conversion', 'Image format conversion', 'Base64 encode/decode', 'Favorites & instant search'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
+      ...this.labInfo.appFields('convert'),
     },
     ...this.labInfo.faqSchemas('convert'),
     this.seo.breadcrumb([
