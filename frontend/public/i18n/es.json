@@ -2905,6 +2905,228 @@
         }
       ]
     },
-    "try_tool": "Prueba ya la herramienta gratuita"
+    "try_tool": "Prueba ya la herramienta gratuita",
+    "pdf_to_word": {
+      "about": "Con esta herramienta conviertes un PDF en un documento Word (DOCX) que puedes editar: texto, títulos, párrafos y listas vuelven a ser editables sin tener que reescribir nada. Sirve cuando recibes un contrato, un formulario o un informe en PDF y necesitas corregirlo, completarlo o reutilizar su contenido.",
+      "steps": [
+        "Haz clic en «Convertir PDF a Word» y sube el archivo PDF.",
+        "Inicia la conversión y espera unos segundos.",
+        "Descarga el documento Word y ábrelo con Word u otro procesador de textos."
+      ],
+      "privacy": "Para convertir el archivo se envía a nuestro servidor, que lo procesa y te devuelve el resultado. El archivo sirve solo para realizar la conversión solicitada.",
+      "limits": "El archivo puede pesar hasta 50 MB. Los PDF con texto seleccionable suelen conservar títulos, párrafos y listas, pero las tablas y los diseños muy complejos pueden requerir pequeños retoques en Word. Un PDF escaneado está hecho de imágenes y no se convierte en texto editable: antes extrae el texto con la herramienta OCR.",
+      "faq": [
+        {
+          "q": "¿Se mantiene el formato?",
+          "a": "Con los PDF que contienen texto seleccionable, los títulos, los párrafos y las listas suelen conservarse bien. Los diseños muy elaborados, las tablas complejas o las varias columnas pueden requerir algunos retoques tras la conversión."
+        },
+        {
+          "q": "¿Puedo convertir un PDF escaneado?",
+          "a": "No directamente: un escaneo está hecho de imágenes. Extrae primero el texto con la herramienta OCR y luego trabaja con el texto obtenido."
+        },
+        {
+          "q": "¿Tengo que instalar algo?",
+          "a": "No, la conversión se hace en línea desde cualquier navegador. Para editar el resultado necesitas Word u otro programa compatible con el formato DOCX."
+        }
+      ]
+    },
+    "word_to_pdf": {
+      "about": "Esta herramienta convierte un documento Word (DOC o DOCX) en un PDF: el formato ideal para compartir, enviar o imprimir un archivo sin que cambie la maquetación en el ordenador de quien lo abre. Es útil para currículums, contratos, cartas e informes.",
+      "steps": [
+        "Haz clic en «Convertir Word a PDF» y sube el documento DOC o DOCX.",
+        "Inicia la conversión y espera unos segundos.",
+        "Descarga el PDF y compártelo o imprímelo."
+      ],
+      "privacy": "Para convertir el archivo se envía a nuestro servidor, que lo procesa y te devuelve el resultado. El archivo sirve solo para realizar la conversión solicitada.",
+      "limits": "Se aceptan archivos .doc y .docx de hasta 50 MB. El resultado depende del documento de partida: revisa el PDF antes de enviarlo, sobre todo si contiene tablas, imágenes o fuentes poco comunes.",
+      "faq": [
+        {
+          "q": "¿Qué formatos de Word se aceptan?",
+          "a": "Tanto los archivos .docx como los antiguos .doc, de hasta 50 MB."
+        },
+        {
+          "q": "¿La maquetación del PDF será igual a la del Word?",
+          "a": "Normalmente sí, pero el resultado depende del documento: con tablas, imágenes o fuentes poco comunes conviene revisar el PDF antes de compartirlo."
+        },
+        {
+          "q": "¿Puedo unir varios PDF después de convertirlos?",
+          "a": "Sí: puedes unirlos con la página «Unir PDF», que funciona directamente en el navegador."
+        }
+      ]
+    },
+    "jpg_to_pdf": {
+      "about": "Esta herramienta convierte una o varias imágenes (JPG, PNG o WEBP) en un único PDF. Es útil para enviar fotos de documentos, recibos o apuntes como un solo archivo ordenado, o para crear un PDF a partir de una serie de fotos.",
+      "steps": [
+        "Haz clic en «Convertir imágenes a PDF» y sube una o varias imágenes.",
+        "Inicia la conversión y espera unos segundos.",
+        "Descarga el PDF resultante."
+      ],
+      "privacy": "Las imágenes se envían a nuestro servidor para crear el PDF y sirven solo para esta operación.",
+      "limits": "Se aceptan imágenes PNG, JPG y WEBP, de hasta 50 MB cada una y hasta 20 archivos a la vez, que acaban en un único PDF. Para obtener texto que copiar, usa después la herramienta OCR.",
+      "faq": [
+        {
+          "q": "¿Puedo poner varias imágenes en un solo PDF?",
+          "a": "Sí, puedes subir hasta 20 imágenes juntas y obtener un único PDF."
+        },
+        {
+          "q": "¿Qué formatos de imagen se aceptan?",
+          "a": "JPG (JPEG), PNG y WEBP."
+        },
+        {
+          "q": "¿El texto del PDF será seleccionable?",
+          "a": "Por lo general el PDF contiene las imágenes de las páginas, no texto seleccionable. Para extraer el texto usa la herramienta OCR."
+        }
+      ]
+    },
+    "merge_pdf": {
+      "about": "Con esta herramienta unes dos o más PDF en un único documento, sin instalar programas. Puedes reordenar las páginas arrastrándolas y eliminar las que no necesites antes de descargar el archivo final. Sirve para reunir contratos, formularios, recibos o capítulos en un solo PDF.",
+      "steps": [
+        "Arrastra los PDF al área de carga, o haz clic en ella para elegirlos: si eliges más de uno se colocan en secuencia.",
+        "En la vista previa arrastra las páginas para cambiar su orden, gira o elimina las que no necesites.",
+        "Exporta el PDF y descárgalo."
+      ],
+      "privacy": "Los archivos se procesan por completo en tu navegador: no se suben a ningún servidor. Puedes trabajar también con documentos confidenciales sin compartirlos con terceros.",
+      "limits": "Los cambios no se guardan: si recargas o cierras la pestaña los pierdes, así que descarga el resultado antes de salir. Un PDF protegido con contraseña o muy pesado puede no abrirse o ralentizar el navegador, porque el trabajo lo hace tu dispositivo.",
+      "faq": [
+        {
+          "q": "¿Cómo uno dos PDF?",
+          "a": "Sube los dos archivos juntos: aparecen en secuencia y puedes reordenar las páginas arrastrándolas. Después exporta el resultado como un único PDF."
+        },
+        {
+          "q": "¿Mis PDF se suben a internet?",
+          "a": "No. La unión se hace en tu navegador, así que los archivos permanecen en tu dispositivo."
+        },
+        {
+          "q": "¿Puedo unir solo algunas páginas de un PDF?",
+          "a": "Sí: elimina las páginas que no necesites antes de exportar."
+        }
+      ]
+    },
+    "split_pdf": {
+      "about": "Esta herramienta te permite dividir un PDF y extraer solo las páginas que necesitas: eliminas las sobrantes o usas un intervalo de páginas, y descargas el nuevo PDF. Es útil para enviar un solo capítulo, un formulario sacado de un documento largo o solo las páginas firmadas.",
+      "steps": [
+        "Sube el PDF arrastrándolo al área de carga.",
+        "En la vista previa elimina las páginas que no quieras, o usa el intervalo de páginas para dividir el documento.",
+        "Exporta el PDF y descárgalo: obtendrás un archivo nuevo con solo las páginas elegidas."
+      ],
+      "privacy": "Los archivos se procesan por completo en tu navegador: no se suben a ningún servidor. Puedes trabajar también con documentos confidenciales sin compartirlos con terceros.",
+      "limits": "Los cambios no se guardan: si recargas o cierras la pestaña los pierdes, así que descarga el resultado antes de salir. Un PDF protegido con contraseña o muy pesado puede no abrirse o ralentizar el navegador, porque el trabajo lo hace tu dispositivo.",
+      "faq": [
+        {
+          "q": "¿Cómo extraigo una sola página de un PDF?",
+          "a": "Sube el PDF, elimina todas las páginas salvo la que necesitas y exporta el resultado."
+        },
+        {
+          "q": "¿Se modifica el PDF original?",
+          "a": "No: trabajas en el navegador y descargas un PDF nuevo, mientras que el archivo de partida queda tal cual en tu dispositivo."
+        },
+        {
+          "q": "¿El archivo se sube a un servidor?",
+          "a": "No. El procesamiento se hace en tu navegador, así que el archivo no sale de tu dispositivo."
+        }
+      ]
+    },
+    "rotate_pdf": {
+      "about": "Esta herramienta gira las páginas de un PDF directamente en el navegador: puedes enderezar una página escaneada al revés, arreglar solo las torcidas y dejar las demás como estaban. Después descargas el PDF corregido, sin instalar programas.",
+      "steps": [
+        "Sube el PDF arrastrándolo al área de carga.",
+        "En la vista previa gira las páginas torcidas o boca abajo.",
+        "Exporta el PDF y descárgalo."
+      ],
+      "privacy": "Los archivos se procesan por completo en tu navegador: no se suben a ningún servidor. Puedes trabajar también con documentos confidenciales sin compartirlos con terceros.",
+      "limits": "El giro cambia la orientación de las páginas, no su contenido. Los cambios no se guardan: si recargas o cierras la pestaña los pierdes, así que descarga el resultado antes de salir.",
+      "faq": [
+        {
+          "q": "¿Puedo girar solo algunas páginas?",
+          "a": "Sí: en la vista previa giras las páginas sueltas, y las que no tocas se quedan como están."
+        },
+        {
+          "q": "¿El PDF se sube a internet?",
+          "a": "No. El procesamiento se hace en tu navegador, así que el archivo permanece en tu dispositivo."
+        },
+        {
+          "q": "¿Funciona con un PDF escaneado al revés?",
+          "a": "Sí: gira las páginas boca abajo y exporta el PDF corregido."
+        }
+      ]
+    },
+    "image_to_text": {
+      "about": "Esta herramienta convierte una foto, una captura de pantalla o una página escaneada en texto que puedes seleccionar, copiar y editar, gracias al OCR (reconocimiento óptico de caracteres). Sirve para recuperar el texto de un recibo fotografiado, una diapositiva o un documento impreso.",
+      "steps": [
+        "Arrastra la imagen (PNG, JPG, WEBP, BMP o TIFF) al área de carga.",
+        "Elige el idioma del texto: con el correcto el resultado es mucho más preciso.",
+        "Inicia el reconocimiento y copia el texto obtenido."
+      ],
+      "privacy": "Las imágenes se envían a nuestro servidor solo para el reconocimiento y se procesan en memoria, sin guardarse como archivo. No hace falta crear una cuenta.",
+      "limits": "Puedes subir hasta 30 archivos o páginas a la vez; cada imagen puede pesar hasta 15 MB. La calidad depende de la foto: un texto torcido, borroso o con poca luz reduce la precisión.",
+      "faq": [
+        {
+          "q": "¿Cómo copio el texto de una imagen?",
+          "a": "Sube la imagen, elige el idioma e inicia el reconocimiento: el texto extraído aparece debajo y puedes copiarlo."
+        },
+        {
+          "q": "¿Funciona también con capturas de pantalla?",
+          "a": "Sí, con capturas, fotos de documentos y páginas escaneadas, siempre que el texto sea legible."
+        },
+        {
+          "q": "¿Qué idiomas reconoce?",
+          "a": "Italiano, inglés, español, francés, alemán, portugués y albanés."
+        }
+      ]
+    }
+  },
+  "lab_intents": {
+    "pdf_to_word": {
+      "label": "PDF a Word",
+      "seo_title": "PDF a Word Gratis: Convierte a DOCX",
+      "seo_description": "Convierte PDF a Word (DOCX) en línea y gratis: sube el archivo y descarga el documento editable en segundos. Hasta 50 MB.",
+      "h1": "Convertir PDF a Word",
+      "lead": "Convierte un PDF en un documento Word (DOCX) editable: sube el archivo, inicia la conversión y descarga el resultado.",
+      "cta": "Convertir PDF a Word"
+    },
+    "word_to_pdf": {
+      "label": "Word a PDF",
+      "seo_title": "Word a PDF Gratis: Convierte DOCX",
+      "seo_description": "Convierte Word (DOC y DOCX) a PDF en línea y gratis: sube el documento y descarga el PDF en segundos. Hasta 50 MB.",
+      "h1": "Convertir Word a PDF",
+      "lead": "Convierte un documento Word (DOC o DOCX) en un PDF listo para compartir o imprimir: sube el archivo y descarga el resultado.",
+      "cta": "Convertir Word a PDF"
+    },
+    "jpg_to_pdf": {
+      "label": "JPG a PDF",
+      "seo_title": "JPG a PDF Gratis: Imágenes en un PDF",
+      "seo_description": "Convierte JPG, PNG y WEBP a PDF en línea y gratis: sube una o varias imágenes y descarga un único PDF. Hasta 20 archivos a la vez.",
+      "h1": "Convertir JPG a PDF",
+      "lead": "Convierte una o varias imágenes (JPG, PNG, WEBP) en un único PDF: sube los archivos, inicia la conversión y descarga el documento.",
+      "cta": "Convertir imágenes a PDF"
+    },
+    "merge_pdf": {
+      "label": "Unir PDF",
+      "seo_title": "Unir PDF Gratis: Combina Archivos en Uno",
+      "seo_description": "Une varios PDF en un solo archivo directamente en el navegador, sin subirlos a ningún servidor. Reordena las páginas y descarga el resultado. Gratis.",
+      "h1": "Unir PDF",
+      "lead": "Une dos o más PDF en un único documento: arrástralos aquí, reordena las páginas y descarga el PDF final. Todo en tu navegador."
+    },
+    "split_pdf": {
+      "label": "Dividir PDF",
+      "seo_title": "Dividir PDF Gratis: Extrae las Páginas",
+      "seo_description": "Divide un PDF y extrae solo las páginas que necesitas, en el navegador y sin subir el archivo. Elimina las páginas sobrantes y descarga el resultado.",
+      "h1": "Dividir PDF",
+      "lead": "Divide un PDF en partes o conserva solo las páginas que necesitas: elimina las demás y descarga el resultado. Todo en tu navegador."
+    },
+    "rotate_pdf": {
+      "label": "Girar PDF",
+      "seo_title": "Girar PDF Gratis: Endereza las Páginas",
+      "seo_description": "Gira las páginas de un PDF en línea y gratis, en el navegador y sin subir el archivo. Endereza solo las páginas torcidas y descarga el PDF corregido.",
+      "h1": "Girar PDF",
+      "lead": "Endereza las páginas boca abajo o torcidas de un PDF: gira solo las que necesites y descarga el documento corregido. En tu navegador."
+    },
+    "image_to_text": {
+      "label": "Imagen a texto",
+      "seo_title": "De Imagen a Texto: OCR Gratis en Línea",
+      "seo_description": "Extrae el texto de fotos, capturas e imágenes con OCR en línea gratis, en 7 idiomas y sin registrarte. Copia el texto en segundos.",
+      "h1": "De imagen a texto",
+      "lead": "Convierte una foto, una captura o una página escaneada en texto que puedes copiar y editar: sube la imagen y elige el idioma."
+    }
   }
 }
