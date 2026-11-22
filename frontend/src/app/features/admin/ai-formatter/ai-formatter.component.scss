@@ -318,7 +318,7 @@ app-breadcrumb {
   border-radius: 100px;
   padding: 2px 9px;
   font-size: 0.7rem;
-  color: var(--text-muted, #6e7681);
+  color: color-mix(in srgb, var(--text-muted, #6e7681) 50%, var(--color-text, #e6edf3));
 
   &.meta-accent {
     background: rgba(108, 99, 255, 0.09);

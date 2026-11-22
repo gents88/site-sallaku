@@ -2905,6 +2905,228 @@
         }
       ]
     },
-    "try_tool": "Provo menjëherë mjetin falas"
+    "try_tool": "Provo menjëherë mjetin falas",
+    "pdf_to_word": {
+      "about": "Me këtë mjet e kthen një PDF në dokument Word (DOCX) që mund ta ndryshosh: teksti, titujt, paragrafët dhe listat bëhen sërish të ndryshueshme pa rishkruar asgjë. Shërben kur merr një kontratë, një formular ose një raport në PDF dhe duhet ta korrigjosh, ta plotësosh ose ta ripërdorësh.",
+      "steps": [
+        "Kliko «Konverto PDF në Word» dhe ngarko skedarin PDF.",
+        "Nis konvertimin dhe prit pak sekonda.",
+        "Shkarko dokumentin Word dhe hape me Word ose me një program tjetër shkrimi."
+      ],
+      "privacy": "Për ta konvertuar, skedari dërgohet te serveri ynë, i cili e përpunon dhe të kthen rezultatin. Skedari shërben vetëm për të kryer konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. PDF-të me tekst të zgjedhshëm zakonisht i ruajnë titujt, paragrafët dhe listat, por tabelat dhe strukturat shumë komplekse mund të kërkojnë retushime të vogla në Word. Një PDF e skanuar përbëhet nga imazhe dhe nuk bëhet tekst i ndryshueshëm: nxirre më parë tekstin me mjetin OCR.",
+      "faq": [
+        {
+          "q": "A ruhet formatimi?",
+          "a": "Me PDF që kanë tekst të zgjedhshëm, titujt, paragrafët dhe listat zakonisht ruhen mirë. Strukturat shumë të ndërlikuara, tabelat komplekse ose kolonat e shumta mund të kërkojnë disa retushime pas konvertimit."
+        },
+        {
+          "q": "Mund të konvertoj një PDF të skanuar?",
+          "a": "Jo drejtpërdrejt: një skanim përbëhet nga imazhe. Nxirre më parë tekstin me mjetin OCR, pastaj puno mbi tekstin e marrë."
+        },
+        {
+          "q": "A duhet të instaloj diçka?",
+          "a": "Jo, konvertimi bëhet në internet nga çdo shfletues. Për ta ndryshuar rezultatin duhet Word ose një program që mbështet formatin DOCX."
+        }
+      ]
+    },
+    "word_to_pdf": {
+      "about": "Ky mjet e kthen një dokument Word (DOC ose DOCX) në PDF: formati ideal për ta ndarë, dërguar ose printuar një skedar pa ndryshuar faqosja te kompjuteri i atij që e hap. Është i dobishëm për CV, kontrata, letra dhe raporte.",
+      "steps": [
+        "Kliko «Konverto Word në PDF» dhe ngarko dokumentin DOC ose DOCX.",
+        "Nis konvertimin dhe prit pak sekonda.",
+        "Shkarko PDF-në dhe ndaje ose printoje."
+      ],
+      "privacy": "Për ta konvertuar, skedari dërgohet te serveri ynë, i cili e përpunon dhe të kthen rezultatin. Skedari shërben vetëm për të kryer konvertimin e kërkuar.",
+      "limits": "Pranohen skedarë .doc dhe .docx deri në 50 MB. Rezultati varet nga dokumenti fillestar: kontrollo PDF-në para se ta dërgosh, sidomos nëse përmban tabela, imazhe ose shkronja të veçanta.",
+      "faq": [
+        {
+          "q": "Cilat formate Word pranohen?",
+          "a": "Si skedarët .docx ashtu edhe .doc i vjetër, deri në 50 MB."
+        },
+        {
+          "q": "A do të jetë faqosja e PDF-së njësoj si ajo e Word-it?",
+          "a": "Zakonisht po, por rezultati varet nga dokumenti: me tabela, imazhe ose shkronja të veçanta ia vlen ta kontrollosh PDF-në para se ta ndash."
+        },
+        {
+          "q": "Mund t'i bashkoj disa PDF pasi t'i kem konvertuar?",
+          "a": "Po: mund t'i bashkosh me faqen «Bashko PDF», që punon drejtpërdrejt në shfletues."
+        }
+      ]
+    },
+    "jpg_to_pdf": {
+      "about": "Ky mjet i kthen një ose më shumë imazhe (JPG, PNG ose WEBP) në një PDF të vetme. Është i dobishëm për të dërguar foto dokumentesh, faturash ose shënimesh si një skedar i vetëm i rregullt, ose për të krijuar një PDF nga një seri fotosh.",
+      "steps": [
+        "Kliko «Konverto imazhet në PDF» dhe ngarko një ose më shumë imazhe.",
+        "Nis konvertimin dhe prit pak sekonda.",
+        "Shkarko PDF-në që del."
+      ],
+      "privacy": "Imazhet dërgohen te serveri ynë për të krijuar PDF-në dhe shërbejnë vetëm për këtë veprim.",
+      "limits": "Pranohen imazhe PNG, JPG dhe WEBP, deri në 50 MB secila dhe deri në 20 skedarë për herë, që përfundojnë në një PDF të vetme. Për të marrë tekstin për ta kopjuar përdor më pas mjetin OCR.",
+      "faq": [
+        {
+          "q": "Mund të vë disa imazhe në një PDF të vetme?",
+          "a": "Po, mund të ngarkosh deri në 20 imazhe bashkë dhe të marrësh një PDF të vetme."
+        },
+        {
+          "q": "Cilat formate imazhesh pranohen?",
+          "a": "JPG (JPEG), PNG dhe WEBP."
+        },
+        {
+          "q": "A do të jetë teksti i PDF-së i zgjedhshëm?",
+          "a": "Zakonisht PDF-ja përmban imazhet e faqeve, jo tekst të zgjedhshëm. Për të nxjerrë tekstin përdor mjetin OCR."
+        }
+      ]
+    },
+    "merge_pdf": {
+      "about": "Me këtë mjet bashkon dy ose më shumë PDF në një dokument të vetëm, pa instaluar programe. Mund t'i risistemosh faqet duke i tërhequr dhe të fshish ato që nuk të duhen para se ta shkarkosh skedarin përfundimtar. Shërben për të bashkuar kontrata, formularë, fatura ose kapituj në një PDF të vetme.",
+      "steps": [
+        "Tërhiq PDF-të në zonën e ngarkimit, ose kliko mbi të për t'i zgjedhur: nëse zgjedh më shumë se një, vendosen me radhë.",
+        "Te pamja paraprake tërhiq faqet për të ndryshuar radhën, rrotullo ose fshij ato që nuk të duhen.",
+        "Eksporto PDF-në dhe shkarkoje."
+      ],
+      "privacy": "Skedarët përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server. Mund të punosh edhe me dokumente konfidenciale pa i ndarë me palë të treta.",
+      "limits": "Ndryshimet nuk ruhen: nëse e rifreskon ose e mbyll skedën i humb, ndaj shkarko rezultatin para se të dalësh. Një PDF e mbrojtur me fjalëkalim ose shumë e rëndë mund të mos hapet ose ta ngadalësojë shfletuesin, sepse punën e bën pajisja jote.",
+      "faq": [
+        {
+          "q": "Si i bashkoj dy PDF?",
+          "a": "Ngarko të dy skedarët bashkë: shfaqen me radhë dhe mund t'i risistemosh faqet duke i tërhequr. Pastaj eksportoje rezultatin si një PDF të vetme."
+        },
+        {
+          "q": "A ngarkohen PDF-të e mia në internet?",
+          "a": "Jo. Bashkimi bëhet në shfletuesin tënd, ndaj skedarët mbeten në pajisjen tënde."
+        },
+        {
+          "q": "Mund të bashkoj vetëm disa faqe të një PDF?",
+          "a": "Po: fshij faqet që nuk të duhen para eksportit."
+        }
+      ]
+    },
+    "split_pdf": {
+      "about": "Ky mjet të lejon të ndash një PDF dhe të nxjerrësh vetëm faqet që të duhen: fshin ato të tepërta ose përdor një interval faqesh, dhe shkarkon PDF-në e re. Është i dobishëm për të dërguar vetëm një kapitull, një formular nga një dokument i gjatë ose vetëm faqet e nënshkruara.",
+      "steps": [
+        "Ngarko PDF-në duke e tërhequr në zonën e ngarkimit.",
+        "Te pamja paraprake fshij faqet që nuk i do, ose përdor intervalin e faqeve për të ndarë dokumentin.",
+        "Eksporto PDF-në dhe shkarkoje: do të marrësh një skedar të ri vetëm me faqet e zgjedhura."
+      ],
+      "privacy": "Skedarët përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server. Mund të punosh edhe me dokumente konfidenciale pa i ndarë me palë të treta.",
+      "limits": "Ndryshimet nuk ruhen: nëse e rifreskon ose e mbyll skedën i humb, ndaj shkarko rezultatin para se të dalësh. Një PDF e mbrojtur me fjalëkalim ose shumë e rëndë mund të mos hapet ose ta ngadalësojë shfletuesin, sepse punën e bën pajisja jote.",
+      "faq": [
+        {
+          "q": "Si nxjerr vetëm një faqe nga një PDF?",
+          "a": "Ngarko PDF-në, fshij të gjitha faqet përveç asaj që të duhet dhe eksporto rezultatin."
+        },
+        {
+          "q": "A ndryshohet PDF-ja origjinale?",
+          "a": "Jo: punon në shfletues dhe shkarkon një PDF të re, ndërsa skedari fillestar mbetet siç është në pajisjen tënde."
+        },
+        {
+          "q": "A ngarkohet skedari në një server?",
+          "a": "Jo. Përpunimi bëhet në shfletuesin tënd, ndaj skedari nuk del nga pajisja jote."
+        }
+      ]
+    },
+    "rotate_pdf": {
+      "about": "Ky mjet rrotullon faqet e një PDF drejtpërdrejt në shfletues: mund ta drejtosh një faqe të skanuar përmbys, të rregullosh vetëm ato të shtrembra dhe t'i lësh të tjerat siç ishin. Pastaj shkarkon PDF-në e korrigjuar, pa instaluar programe.",
+      "steps": [
+        "Ngarko PDF-në duke e tërhequr në zonën e ngarkimit.",
+        "Te pamja paraprake rrotullo faqet e veçanta që janë të shtrembra ose të përmbysura.",
+        "Eksporto PDF-në dhe shkarkoje."
+      ],
+      "privacy": "Skedarët përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server. Mund të punosh edhe me dokumente konfidenciale pa i ndarë me palë të treta.",
+      "limits": "Rrotullimi ndryshon orientimin e faqeve, jo përmbajtjen e tyre. Ndryshimet nuk ruhen: nëse e rifreskon ose e mbyll skedën i humb, ndaj shkarko rezultatin para se të dalësh.",
+      "faq": [
+        {
+          "q": "Mund të rrotulloj vetëm disa faqe?",
+          "a": "Po: te pamja paraprake rrotullon faqet e veçanta, ndërsa ato që nuk i prek mbeten siç janë."
+        },
+        {
+          "q": "A ngarkohet PDF-ja në internet?",
+          "a": "Jo. Përpunimi bëhet në shfletuesin tënd, ndaj skedari mbetet në pajisjen tënde."
+        },
+        {
+          "q": "A funksionon me një PDF të skanuar përmbys?",
+          "a": "Po: rrotullo faqet e përmbysura dhe eksporto PDF-në e korrigjuar."
+        }
+      ]
+    },
+    "image_to_text": {
+      "about": "Ky mjet e kthen një foto, një pamje ekrani ose një faqe të skanuar në tekst që mund ta zgjedhësh, kopjosh dhe ndryshosh, falë OCR-it (njohje optike e karaktereve). Shërben për të nxjerrë tekstin nga një faturë e fotografuar, një sllajd ose një dokument i printuar.",
+      "steps": [
+        "Tërhiq imazhin (PNG, JPG, WEBP, BMP ose TIFF) në zonën e ngarkimit.",
+        "Zgjidh gjuhën e tekstit: me të duhurën rezultati është shumë më i saktë.",
+        "Nis njohjen dhe kopjo tekstin e marrë."
+      ],
+      "privacy": "Imazhet dërgohen te serveri ynë vetëm për njohjen dhe përpunohen në memorie, pa u ruajtur si arkiv. Nuk ka nevojë të krijosh llogari.",
+      "limits": "Mund të ngarkosh deri në 30 skedarë ose faqe për herë; çdo imazh mund të peshojë deri në 15 MB. Cilësia varet nga fotoja: teksti i shtrembër, i turbullt ose me pak dritë ul saktësinë.",
+      "faq": [
+        {
+          "q": "Si e kopjoj tekstin nga një imazh?",
+          "a": "Ngarko imazhin, zgjidh gjuhën dhe nis njohjen: teksti i nxjerrë shfaqet poshtë dhe mund ta kopjosh."
+        },
+        {
+          "q": "A funksionon edhe me pamje ekrani?",
+          "a": "Po, me pamje ekrani, foto dokumentesh dhe faqe të skanuara, për sa kohë teksti lexohet."
+        },
+        {
+          "q": "Cilat gjuhë i njeh?",
+          "a": "Italisht, anglisht, spanjisht, frëngjisht, gjermanisht, portugalisht dhe shqip."
+        }
+      ]
+    }
+  },
+  "lab_intents": {
+    "pdf_to_word": {
+      "label": "PDF në Word",
+      "seo_title": "PDF në Word Falas: Konverto në DOCX",
+      "seo_description": "Konverto PDF në Word (DOCX) në internet, falas: ngarko skedarin dhe shkarko dokumentin e ndryshueshëm brenda pak sekondash. Deri në 50 MB.",
+      "h1": "Konverto PDF në Word",
+      "lead": "Kthe një PDF në dokument Word (DOCX) të ndryshueshëm: ngarko skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "cta": "Konverto PDF në Word"
+    },
+    "word_to_pdf": {
+      "label": "Word në PDF",
+      "seo_title": "Word në PDF Falas: Konverto DOCX",
+      "seo_description": "Konverto Word (DOC dhe DOCX) në PDF në internet, falas: ngarko dokumentin dhe shkarko PDF-në brenda pak sekondash. Deri në 50 MB.",
+      "h1": "Konverto Word në PDF",
+      "lead": "Kthe një dokument Word (DOC ose DOCX) në PDF gati për t'u ndarë ose printuar: ngarko skedarin dhe shkarko rezultatin.",
+      "cta": "Konverto Word në PDF"
+    },
+    "jpg_to_pdf": {
+      "label": "JPG në PDF",
+      "seo_title": "JPG në PDF Falas: Imazhet në një PDF",
+      "seo_description": "Konverto JPG, PNG dhe WEBP në PDF në internet, falas: ngarko një ose më shumë imazhe dhe shkarko një PDF të vetme. Deri në 20 skedarë.",
+      "h1": "Konverto JPG në PDF",
+      "lead": "Kthe një ose më shumë imazhe (JPG, PNG, WEBP) në një PDF të vetme: ngarko skedarët, nis konvertimin dhe shkarko dokumentin.",
+      "cta": "Konverto imazhet në PDF"
+    },
+    "merge_pdf": {
+      "label": "Bashko PDF",
+      "seo_title": "Bashko PDF Falas: Disa Skedarë në Një",
+      "seo_description": "Bashko disa PDF në një skedar drejtpërdrejt në shfletues, pa i ngarkuar në asnjë server. Risistemo faqet dhe shkarko rezultatin. Falas.",
+      "h1": "Bashko PDF",
+      "lead": "Bashko dy ose më shumë PDF në një dokument të vetëm: tërhiqi këtu, risistemo faqet dhe shkarko PDF-në përfundimtare. Gjithçka në shfletuesin tënd."
+    },
+    "split_pdf": {
+      "label": "Ndaj PDF",
+      "seo_title": "Ndaj PDF Falas: Nxirr Faqet",
+      "seo_description": "Ndaj një PDF dhe nxirr vetëm faqet që të duhen, në shfletues dhe pa ngarkuar skedarin. Fshij faqet e tepërta dhe shkarko rezultatin.",
+      "h1": "Ndaj PDF",
+      "lead": "Ndaj një PDF në pjesë ose mbaj vetëm faqet që të duhen: fshij të tjerat dhe shkarko rezultatin. Gjithçka në shfletuesin tënd."
+    },
+    "rotate_pdf": {
+      "label": "Rrotullo PDF",
+      "seo_title": "Rrotullo PDF Falas: Drejto Faqet",
+      "seo_description": "Rrotullo faqet e një PDF në internet, falas, në shfletues dhe pa ngarkuar skedarin. Drejto vetëm faqet e shtrembra dhe shkarko PDF-në e saktë.",
+      "h1": "Rrotullo PDF",
+      "lead": "Drejto faqet e përmbysura ose të shtrembra të një PDF: rrotullo vetëm ato që duhen dhe shkarko dokumentin e korrigjuar. Në shfletuesin tënd."
+    },
+    "image_to_text": {
+      "label": "Imazh në tekst",
+      "seo_title": "Nga Imazhi në Tekst: OCR Falas",
+      "seo_description": "Nxirr tekstin nga foto, pamje ekrani dhe imazhe me OCR falas në internet, në 7 gjuhë dhe pa regjistrim. Kopjo tekstin brenda pak sekondash.",
+      "h1": "Nga imazhi në tekst",
+      "lead": "Kthe një foto, një pamje ekrani ose një faqe të skanuar në tekst që mund ta kopjosh e ndryshosh: ngarko imazhin dhe zgjidh gjuhën."
+    }
   }
 }

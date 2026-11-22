@@ -42,6 +42,8 @@ export class PdfEditorComponent implements OnInit {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
   private readonly labInfo = inject(LabInfoService);
+  /** La pagina: lo strumento o una pagina per ricerca specifica che lo riusa (rotta con data.labIntent). */
+  readonly page = this.labInfo.page('pdf-editor');
   private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly workspace = inject(WorkspaceService);
@@ -79,9 +81,9 @@ export class PdfEditorComponent implements OnInit {
       this.workspaceItem.set(pending);
     }
     this.seo.update({
-      title: this.t.instant('pdf_editor.seo_title'),
-      description: this.t.instant('pdf_editor.seo_description'),
-      url: `${SITE_ORIGIN}${withLangPrefix('/lab/pdf-editor', this.langService.current())}`,
+      title: this.t.instant(this.page.titleKey),
+      description: this.t.instant(this.page.descriptionKey),
+      url: `${SITE_ORIGIN}${withLangPrefix(this.page.path, this.langService.current())}`,
     });
     this.seo.injectJsonLd([
       {
@@ -92,19 +94,19 @@ export class PdfEditorComponent implements OnInit {
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
         featureList: ['Merge PDFs', 'Split & extract pages', 'Rotate & delete pages', 'Add watermark', 'Client-side, no upload'],
         provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
-        ...this.labInfo.appFields('pdf-editor'),
+        ...this.labInfo.appFields(this.page.id),
       },
-      ...this.labInfo.faqSchemas('pdf-editor'),
+      ...this.labInfo.faqSchemas(this.page.id),
       this.seo.breadcrumb([
         { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
         { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },
-        { name: this.t.instant('sidebar.items.pdf_editor'), url: 'https://gentsallaku.it/lab/pdf-editor' },
+        { name: this.t.instant(this.page.labelKey), url: `${SITE_ORIGIN}${withLangPrefix(this.page.path, this.langService.current())}` },
       ]),
     ]);
     this.breadcrumbItems = [
       { label: this.t.instant('nav.home'), path: '/' },
       { label: this.t.instant('sidebar.lab'), path: '/lab' },
-      { label: this.t.instant('sidebar.items.pdf_editor') },
+      { label: this.t.instant(this.page.labelKey) },
     ];
   }
 
