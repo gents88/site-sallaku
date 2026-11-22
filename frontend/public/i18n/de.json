@@ -1329,7 +1329,14 @@
     "preview_prev_page": "Vorherige Seite",
     "preview_next_page": "Nächste Seite",
     "seo_title": "PDF-Suchmaschine für Gemeinfreie Werke — Bücher ohne Urheberrecht",
-    "seo_description": "Suche und lade gemeinfreie Bücher, wissenschaftliche Paper und Open-Access-Artikel herunter, ohne Urheberrechtsprobleme. Durchsuche Internet Archive, Project Gutenberg, arXiv und PubMed Central mit Vorschau vor dem Download."
+    "seo_description": "Suche und lade gemeinfreie Bücher, wissenschaftliche Paper und Open-Access-Artikel herunter, ohne Urheberrechtsprobleme. Durchsuche Internet Archive, Project Gutenberg, arXiv und PubMed Central mit Vorschau vor dem Download.",
+    "filter_favorites": "Favoriten",
+    "results_count": "{{count}} Ergebnisse",
+    "btn_copy_link": "Link kopieren",
+    "link_copied": "Link kopiert",
+    "preview_goto_page": "Gehe zu Seite",
+    "zoom_out": "Verkleinern",
+    "zoom_in": "Vergrößern"
   },
   "convert": {
     "title": "Konverter",

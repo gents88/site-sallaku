@@ -248,6 +248,20 @@ $error-clr:     #f87171;
   }
 }
 
+.chip-count {
+  margin-left: 4px; padding: 1px 7px; border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08); font-size: 11px; font-variant-numeric: tabular-nums;
+}
+
+.results-count { font-size: 12.5px; color: var(--text-secondary, #8b949e); font-variant-numeric: tabular-nums; }
+
+.copy-link-btn {
+  padding: 6px 12px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 600;
+  background: var(--bg-secondary, #161b22); border: 1px solid var(--border-color, #30363d);
+  color: var(--text-secondary, #8b949e); transition: border-color 0.15s, color 0.15s;
+  &:hover { border-color: $accent-border; color: var(--text-primary, #e6edf3); }
+}
+
 .toolbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
 .group-toggle {
@@ -316,6 +330,9 @@ $error-clr:     #f87171;
 }
 
 .result-card {
+  // Le card fuori schermo non vengono layoutate/dipinte finché non servono:
+  // con 50+ risultati e cover esterne taglia il lavoro del primo render.
+  content-visibility: auto; contain-intrinsic-size: auto 300px;
   position: relative;
   display: flex; flex-direction: column; align-items: stretch;
   padding: 0; background: var(--bg-secondary, #161b22);
@@ -489,8 +506,28 @@ $error-clr:     #f87171;
   display: flex; align-items: flex-start; justify-content: center;
   background: #525659; padding: 12px;
 
-  img { max-width: 100%; height: auto; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
+  position: relative;
+  img { max-width: none; flex: 0 0 auto; height: auto; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); transition: opacity 0.15s; }
+  &.is-rendering img { opacity: 0.55; }
 }
+
+.canvas-page-spinner { position: absolute; top: 50%; left: 50%; margin: -10px 0 0 -10px; }
+
+.page-jump {
+  display: inline-flex; align-items: center; gap: 6px;
+  input {
+    width: 54px; padding: 5px 6px; text-align: center; border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25);
+    color: var(--text-primary, #e6edf3); font: inherit;
+    &:focus-visible { outline: 2px solid $accent; outline-offset: 1px; }
+  }
+}
+
+.zoom-group {
+  display: inline-flex; align-items: center; gap: 8px; margin-left: 8px;
+  button { width: 28px; height: 28px; font-size: 16px; }
+}
+.zoom-level { min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
 
 .canvas-page-nav {
   display: flex; align-items: center; justify-content: center; gap: 16px;
@@ -633,5 +670,12 @@ $error-clr:     #f87171;
     margin: 12px 0 0;
     font-size: 13px; line-height: 1.6;
     color: var(--text-secondary, #8b949e);
+  }
+}
+
+// Chi preferisce meno movimento non vede né hover-lift né fade/zoom.
+@media (prefers-reduced-motion: reduce) {
+  .result-card, .result-card .result-cover img, .modal-backdrop, .preview-modal, .canvas-page-wrap img {
+    animation: none !important; transition: none !important; transform: none !important;
   }
 }
