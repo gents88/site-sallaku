@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  Res,
   UseGuards,
   ParseUUIDPipe,
   ParseIntPipe,
@@ -36,6 +37,50 @@ export class ChatbotController {
     const ip: string = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
     const userAgent: string = req.headers?.['user-agent'] ?? '';
     return this.chatbotService.sendMessage(dto.message, dto.sessionId, { ip, userAgent }, dto.lang);
+  }
+
+  /**
+   * Come /message, ma la risposta arriva a pezzi (Server-Sent Events): "delta" con il testo man mano che il
+   * modello lo scrive, poi "done" con il risultato finale (testo pulito, suggerimenti, offerta live) oppure
+   * "error". Il client ripiega su /message se lo stream non parte.
+   */
+  @Post('message/stream')
+  @HttpCode(HttpStatus.OK)
+  @RequireFeature('chatbotEnabled')
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  @ApiOperation({ summary: 'Send a chat message and stream the AI response (SSE)' })
+  async sendMessageStream(@Req() req: any, @Res() res: any, @Body() dto: SendMessageDto) {
+    const ip: string = req.ip || req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '';
+    const userAgent: string = req.headers?.['user-agent'] ?? '';
+
+    res.status(HttpStatus.OK);
+    res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    // Dietro un proxy (Nginx/Apache) il buffer annullerebbe lo streaming.
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders?.();
+
+    // res (non req): in Node recente 'close' su req scatta a richiesta letta, non alla disconnessione.
+    let closed = false;
+    res.on('close', () => { closed = true; });
+    const send = (event: string, data: unknown) => {
+      if (closed || res.writableEnded) return;
+      res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+      // compression() tiene i dati in buffer: senza flush il testo arriverebbe tutto insieme alla fine.
+      res.flush?.();
+    };
+
+    try {
+      const result = await this.chatbotService.sendMessageStream(
+        dto.message, dto.sessionId, { ip, userAgent }, dto.lang, (text) => send('delta', { t: text }),
+      );
+      send('done', result);
+    } catch (err) {
+      send('error', { message: err instanceof Error ? err.message : 'error' });
+    } finally {
+      if (!res.writableEnded) res.end();
+    }
   }
 
   @Get('session/:sessionId')
