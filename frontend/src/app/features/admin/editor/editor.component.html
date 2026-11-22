@@ -44,7 +44,7 @@
 
         <!-- ── Toolbar formattazione ────────────────── -->
         <div class="fmt-bar">
-          <select class="sel" (change)="block($any($event.target).value); $any($event.target).value = ''">
+          <select class="sel" [attr.aria-label]="'editor.style' | translate" (change)="block($any($event.target).value); $any($event.target).value = ''">
             <option value="" disabled selected>{{ 'editor.style' | translate }}</option>
             <option value="p">{{ 'editor.paragraph' | translate }}</option>
             <option value="h1">H1</option>

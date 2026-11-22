@@ -23,16 +23,23 @@ interface LabToolRelations {
  * Gli slug sono verificati contro public/sitemap.xml da lab-info.data.spec.ts.
  */
 export const LAB_RELATIONS: Readonly<Record<string, LabToolRelations>> = {
-  ocr: { tools: ['scanner', 'pdf-editor', 'convert', 'pdf-summary'], articles: ['ocr-online-estrarre-testo-da-scansioni-e-foto', 'scansionare-documenti-con-il-telefono-senza-scanner'] },
+  ocr: { tools: ['image-to-text', 'scanner', 'pdf-editor', 'convert', 'pdf-summary'], articles: ['ocr-online-estrarre-testo-da-scansioni-e-foto', 'scansionare-documenti-con-il-telefono-senza-scanner'] },
   scanner: { tools: ['ocr', 'pdf-editor', 'convert'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'ocr-online-estrarre-testo-da-scansioni-e-foto'] },
-  'pdf-editor': { tools: ['viewer', 'convert', 'ocr'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
+  'pdf-editor': { tools: ['merge-pdf', 'split-pdf', 'rotate-pdf', 'viewer', 'convert'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   viewer: { tools: ['pdf-editor', 'ocr', 'pdf-summary'], articles: ['perche-la-ricerca-nel-pdf-non-trova-niente', 'pdf-accessibili-cosa-serve-davvero'] },
   editor: { tools: ['convert', 'ai-formatter', 'pdf-editor'], articles: ['scrivere-ed-esportare-documenti-pdf-docx-html-senza-word', 'come-convertire-pdf-in-word-senza-perdere-formattazione'] },
-  convert: { tools: ['pdf-editor', 'ocr', 'editor'], articles: ['come-convertire-pdf-in-word-senza-perdere-formattazione', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
+  convert: { tools: ['pdf-to-word', 'word-to-pdf', 'jpg-to-pdf', 'pdf-editor', 'ocr', 'editor'], articles: ['come-convertire-pdf-in-word-senza-perdere-formattazione', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
   'pdf-summary': { tools: ['pdf-translate', 'ocr', 'ai-formatter'], articles: ['riassumere-pdf-con-ai-guida-pratica', 'intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere'] },
   'pdf-translate': { tools: ['pdf-summary', 'ocr', 'convert'], articles: ['pdf-ai-translation-guide-2026', 'riassumere-pdf-con-ai-guida-pratica'] },
   'ai-ppt': { tools: ['ai-formatter', 'pdf-summary', 'editor'], articles: ['creare-presentazione-con-ai-quante-slide-e-quale-stile', 'intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere'] },
   'ai-formatter': { tools: ['editor', 'ai-ppt', 'pdf-summary'], articles: ['intelligenza-artificiale-uso-quotidiano-casi-reali-e-limiti-da-conoscere', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
+  'pdf-to-word': { tools: ['word-to-pdf', 'ocr', 'editor', 'merge-pdf'], articles: ['come-convertire-pdf-in-word-senza-perdere-formattazione', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
+  'word-to-pdf': { tools: ['pdf-to-word', 'merge-pdf', 'jpg-to-pdf', 'editor'], articles: ['come-convertire-pdf-in-word-senza-perdere-formattazione', 'scrivere-ed-esportare-documenti-pdf-docx-html-senza-word'] },
+  'jpg-to-pdf': { tools: ['merge-pdf', 'scanner', 'pdf-to-word', 'image-to-text'], articles: ['scansionare-documenti-con-il-telefono-senza-scanner', 'unire-dividere-ruotare-pdf-senza-caricarli-online'] },
+  'merge-pdf': { tools: ['split-pdf', 'rotate-pdf', 'jpg-to-pdf', 'viewer'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online'] },
+  'split-pdf': { tools: ['merge-pdf', 'rotate-pdf', 'pdf-to-word', 'viewer'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
+  'rotate-pdf': { tools: ['merge-pdf', 'split-pdf', 'viewer', 'image-to-text'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online'] },
+  'image-to-text': { tools: ['scanner', 'pdf-to-word', 'pdf-summary', 'pdf-translate'], articles: ['ocr-online-estrarre-testo-da-scansioni-e-foto', 'scansionare-documenti-con-il-telefono-senza-scanner'] },
   'pdf-search': { tools: ['viewer', 'pdf-summary', 'ocr'], articles: ['come-trovare-scaricare-libri-pdf-gratis-legali'] },
 };
 
@@ -64,9 +71,13 @@ export function allLabArticleSlugs(): { lang: string; slug: string }[] {
   );
 }
 
-/** Articoli collegati a uno strumento a partire dall'articolo (chiave = slug italiano), per i link inversi. */
+/** Al massimo quanti pulsanti "Prova lo strumento" mostrare in fondo a un articolo. */
+const MAX_ARTICLE_TOOLS = 3;
+
+/** Strumenti (e pagine per ricerca specifica) collegati a un articolo, per il riquadro "Prova lo strumento". */
 export function labToolsForArticle(italianSlug: string): NavEntry[] {
   return Object.entries(LAB_RELATIONS)
     .filter(([, r]) => r.articles.includes(italianSlug))
-    .flatMap(([id]) => NAV_REGISTRY.filter(e => e.id === id));
+    .flatMap(([id]) => NAV_REGISTRY.filter(e => e.id === id))
+    .slice(0, MAX_ARTICLE_TOOLS);
 }

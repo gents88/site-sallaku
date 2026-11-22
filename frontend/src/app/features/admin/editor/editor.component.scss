@@ -55,8 +55,8 @@
     .btn { padding: .55rem 1.1rem; border-radius: 9px; border: 1px solid transparent; font-family: inherit; font-size: .875rem; font-weight: 500; cursor: pointer; transition: opacity .15s, transform .1s; }
     .btn:disabled { opacity: .45; cursor: not-allowed; }
     .btn:not(:disabled):active { transform: scale(.97); }
-    .btn-p { background: var(--accent, #6c63ff); color: #fff; font-weight: 600; }
-    .btn-p:not(:disabled):hover { background: #5851e5; }
+    .btn-p { background: #5b52f0; color: #fff; font-weight: 600; }
+    .btn-p:not(:disabled):hover { background: #4c44d9; }
     .btn-s { background: transparent; color: var(--text-primary, #e6edf3); border-color: var(--border-color, #30363d); }
     .btn-s:hover { background: var(--bg-tertiary, #1c2333); }
 

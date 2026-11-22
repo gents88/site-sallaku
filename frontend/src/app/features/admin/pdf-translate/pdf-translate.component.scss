@@ -415,7 +415,7 @@ $error-clr:     #f87171;
   font-size: 15px;
   font-weight: 500;
   color: var(--text-primary, #e6edf3);
-  .drop-link { color: $accent; text-decoration: underline dotted; }
+  .drop-link { color: color-mix(in srgb, $accent 60%, var(--color-text, #e6edf3)); text-decoration: underline dotted; }
 }
 
 .drop-hint { font-size: 12px; color: var(--text-secondary, #8b949e); }
@@ -650,7 +650,7 @@ $error-clr:     #f87171;
   border: 1px solid var(--border, #30363d);
   border-radius: 100px;
   font-size: 12px;
-  color: var(--text-secondary, #8b949e);
+  color: color-mix(in srgb, var(--text-secondary, #8b949e) 55%, var(--color-text, #e6edf3));
   display: flex;
   align-items: center;
   gap: 4px;
