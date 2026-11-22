@@ -1164,7 +1164,8 @@
     "err_generic": "Ocorreu um erro ao analisar o ficheiro.",
     "remove_file": "Remover ficheiro",
     "seo_title": "Resumo de PDF com IA: Pontos-Chave",
-    "seo_description": "Envie um PDF, Word ou TXT e obtenha um resumo gerado por IA instantaneamente. Resumo curto, análise detalhada ou pontos-chave. Resumidor de documentos com IA grátis online."
+    "seo_description": "Envie um PDF, Word ou TXT e obtenha um resumo gerado por IA instantaneamente. Resumo curto, análise detalhada ou pontos-chave. Resumidor de documentos com IA grátis online.",
+    "reading_stats": "{{words}} palavras · ~{{min}} min de leitura"
   },
   "workspace": {
     "badge": "Novo",
@@ -1671,7 +1672,10 @@
     "delete": "Eliminar",
     "persistence_hint": "As alterações não são guardadas: perdem-se ao recarregar ou fechar este separador.",
     "seo_title": "Editor PDF Grátis: Juntar, Dividir, Rodar",
-    "seo_description": "Junte PDFs, divida e extraia páginas, gire ou exclua páginas e adicione marcas d'água — tudo no navegador, os arquivos nunca saem do seu dispositivo."
+    "seo_description": "Junte PDFs, divida e extraia páginas, gire ou exclua páginas e adicione marcas d'água — tudo no navegador, os arquivos nunca saem do seu dispositivo.",
+    "undo": "Desfazer",
+    "duplicate": "Duplicar página",
+    "undone": "Alteração desfeita"
   },
   "viewer": {
     "title": "Visualizador de PDF",
@@ -1819,7 +1823,8 @@
     "chat_error": "A resposta falhou. Tenta de novo.",
     "import_skipped": "{{count}} ficheiro(s) ignorado(s): só é possível importar PDFs para a Biblioteca.",
     "seo_title": "Minha Biblioteca PDF — Arquivo Pessoal com Busca e Chat IA",
-    "seo_description": "Salve os PDFs que encontrar, pesquise-os página por página, anote-os e faça perguntas sobre seus documentos. Tudo permanece no seu navegador, nada é enviado."
+    "seo_description": "Salve os PDFs que encontrar, pesquise-os página por página, anote-os e faça perguntas sobre seus documentos. Tudo permanece no seu navegador, nada é enviado.",
+    "filter_placeholder": "Filtrar por título, autor ou tag…"
   },
   "blog_manage": {
     "title": "Artigos do blog",
