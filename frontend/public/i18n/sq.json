@@ -3361,6 +3361,318 @@
           "a": "Po, të dy e hapin kamerën dhe ofrojnë të lidhen me rrjetin."
         }
       ]
+    },
+    "pdf_to_jpg": {
+      "about": "Kjo faqe konverton skedarët PDF në JPG. Çdo faqe e PDF-së bëhet imazh më vete, e dobishme për të ndarë një faqe në chat ose për prezantim. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin PDF në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë JPG.",
+        "Konverto dhe shkarko skedarin JPG."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj PDF në JPG?",
+          "a": "Shto këtu skedarin PDF, nis konvertimin dhe shkarko skedarin JPG."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "excel_to_pdf": {
+      "about": "Kjo faqe konverton skedarët Excel në PDF. Një fletë llogaritjeje bëhet PDF që duket njësoj në çdo pajisje, gati për dërgim ose printim. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin Excel në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë PDF.",
+        "Konverto dhe shkarko skedarin PDF."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj Excel në PDF?",
+          "a": "Shto këtu skedarin Excel, nis konvertimin dhe shkarko skedarin PDF."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "png_to_jpg": {
+      "about": "Kjo faqe konverton skedarët PNG në JPG. Skedarët JPG janë shumë më të lehtë se PNG, e dobishme për email dhe faqe web. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin PNG në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë JPG.",
+        "Konverto dhe shkarko skedarin JPG."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj PNG në JPG?",
+          "a": "Shto këtu skedarin PNG, nis konvertimin dhe shkarko skedarin JPG."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "webp_to_png": {
+      "about": "Kjo faqe konverton skedarët WebP në PNG. PNG pranohet nga pothuajse çdo program, ndërsa WebP refuzohet ende nga disa. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin WebP në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë PNG.",
+        "Konverto dhe shkarko skedarin PNG."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj WebP në PNG?",
+          "a": "Shto këtu skedarin WebP, nis konvertimin dhe shkarko skedarin PNG."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "jpg_to_png": {
+      "about": "Kjo faqe konverton skedarët JPG në PNG. PNG i ruan skajet e qarta dhe mbështet tejdukshmërinë, e dobishme për logo dhe pamje ekrani. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin JPG në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë PNG.",
+        "Konverto dhe shkarko skedarin PNG."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj JPG në PNG?",
+          "a": "Shto këtu skedarin JPG, nis konvertimin dhe shkarko skedarin PNG."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "html_to_pdf": {
+      "about": "Kjo faqe konverton skedarët HTML në PDF. Një faqe web ose skedar HTML bëhet PDF për arkivim, ndarje ose printim. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin HTML në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë PDF.",
+        "Konverto dhe shkarko skedarin PDF."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj HTML në PDF?",
+          "a": "Shto këtu skedarin HTML, nis konvertimin dhe shkarko skedarin PDF."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "pdf_to_txt": {
+      "about": "Kjo faqe konverton skedarët PDF në TXT. Merr tekstin e thjeshtë të PDF-së, të dobishëm për ta kopjuar, kërkuar ose ripërdorur. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin PDF në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë TXT.",
+        "Konverto dhe shkarko skedarin TXT."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj PDF në TXT?",
+          "a": "Shto këtu skedarin PDF, nis konvertimin dhe shkarko skedarin TXT."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "txt_to_pdf": {
+      "about": "Kjo faqe konverton skedarët TXT në PDF. Një skedar teksti i thjeshtë bëhet PDF gati për ndarje ose printim. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Zgjidh ose tërhiq skedarin TXT në zonën e ngarkimit.",
+        "Kontrollo që formati i daljes të jetë PDF.",
+        "Konverto dhe shkarko skedarin PDF."
+      ],
+      "privacy": "Për të konvertuar, skedari dërgohet në serverin tonë, që e përpunon dhe ta kthen rezultatin. Skedarët shërbejnë vetëm për konvertimin e kërkuar.",
+      "limits": "Skedari mund të peshojë deri në 50 MB. Skedarët shumë të ndërlikuar mund të kenë nevojë për retushime pas konvertimit.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj TXT në PDF?",
+          "a": "Shto këtu skedarin TXT, nis konvertimin dhe shkarko skedarin PDF."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ruhet skedari im?",
+          "a": "Skedari përpunohet vetëm për të bërë konvertimin dhe nuk ruhet për qëllime të tjera."
+        }
+      ]
+    },
+    "webp_to_jpg": {
+      "about": "Kjo faqe konverton skedarët WebP në JPG. JPG hapet kudo, ndërsa imazhet WebP të shkarkuara nga interneti refuzohen nga shumë programe. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Tërhiq skedarët WebP në zonën e ngarkimit, ose kliko për t’i zgjedhur.",
+        "Kontrollo që formati i daljes të jetë JPG dhe zgjidh cilësinë.",
+        "Konverto dhe shkarko çdo skedar, ose të gjithë në një ZIP."
+      ],
+      "privacy": "Skedarët përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server.",
+      "limits": "Imazhet shumë të mëdha ose shumë skedarë njëherësh mund ta ngadalësojnë telefonin, sepse puna bëhet nga pajisja jote.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj WebP në JPG?",
+          "a": "Shto këtu skedarin WebP, nis konvertimin dhe shkarko skedarin JPG."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ngarkohen skedarët e mi?",
+          "a": "Jo. Konvertimi bëhet në shfletuesin tënd dhe skedarët nuk dalin nga pajisja."
+        }
+      ]
+    },
+    "jpg_to_webp": {
+      "about": "Kjo faqe konverton skedarët JPG në WebP. Skedarët WebP janë më të lehtë se JPG me të njëjtën cilësi, dhe faqet web ngarkohen më shpejt. Zgjidh skedarin, nis konvertimin dhe shkarko rezultatin.",
+      "steps": [
+        "Tërhiq skedarët JPG në zonën e ngarkimit, ose kliko për t’i zgjedhur.",
+        "Kontrollo që formati i daljes të jetë WebP dhe zgjidh cilësinë.",
+        "Konverto dhe shkarko çdo skedar, ose të gjithë në një ZIP."
+      ],
+      "privacy": "Skedarët përpunohen tërësisht në shfletuesin tënd: nuk ngarkohen në asnjë server.",
+      "limits": "Imazhet shumë të mëdha ose shumë skedarë njëherësh mund ta ngadalësojnë telefonin, sepse puna bëhet nga pajisja jote.",
+      "faq": [
+        {
+          "q": "Si ta konvertoj JPG në WebP?",
+          "a": "Shto këtu skedarin JPG, nis konvertimin dhe shkarko skedarin WebP."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim."
+        },
+        {
+          "q": "A ngarkohen skedarët e mi?",
+          "a": "Jo. Konvertimi bëhet në shfletuesin tënd dhe skedarët nuk dalin nga pajisja."
+        }
+      ]
+    },
+    "whatsapp_qr_code": {
+      "about": "Një kod QR për WhatsApp hap një bisedë me numrin tënd, me mesazh të plotësuar nëse do. Është i dobishëm në vitrina, menu, letërnjoftime biznesi dhe fletushka. Shkruaj numrin me kodin e shtetit dhe shkarko kodin në PNG ose SVG.",
+      "steps": [
+        "Shkruaj numrin me kodin e shtetit dhe, nëse do, një mesazh të plotësuar.",
+        "Rregullo ngjyrat dhe madhësinë.",
+        "Skano kodin me telefon për ta provuar, pastaj shkarkoje ose printoje."
+      ],
+      "privacy": "Kodi gjenerohet në shfletuesin tënd dhe ajo që shkruan nuk dërgohet askund.",
+      "limits": "Provoje gjithmonë kodin me telefon para se ta printosh.",
+      "faq": [
+        {
+          "q": "Si ta krijoj një kod QR për WhatsApp?",
+          "a": "Shkruaj këtu numrin me kodin e shtetit, shto një mesazh opsional dhe shkarko kodin."
+        },
+        {
+          "q": "A mund ta plotësoj mesazhin paraprakisht?",
+          "a": "Po: kush e skanon kodin e gjen tekstin gati për dërgim."
+        },
+        {
+          "q": "A është falas?",
+          "a": "Po, falas dhe pa regjistrim. Kodi gjenerohet në shfletuesin tënd."
+        }
+      ]
+    },
+    "vcard_qr_code": {
+      "about": "Një kod QR kontakti përmban emrin, telefonin, emailin, kompaninë dhe faqen në formatin vCard. I printuar në kartëvizitë ose në nënshkrimin e emailit, të ruan pa shkruar asgjë. Shkarkoje në PNG ose SVG.",
+      "steps": [
+        "Plotëso emrin, telefonin, emailin, kompaninë dhe faqen.",
+        "Rregullo ngjyrat dhe madhësinë.",
+        "Skano kodin me telefon për ta kontrolluar, pastaj shkarkoje ose printoje."
+      ],
+      "privacy": "Kodi gjenerohet në shfletuesin tënd dhe ajo që shkruan nuk dërgohet askund.",
+      "limits": "Provoje gjithmonë kodin me telefon para se ta printosh.",
+      "faq": [
+        {
+          "q": "Si ta bëj kodin QR për kartëvizitën time?",
+          "a": "Shkruaj këtu kontaktet e tua dhe shkarko kodin në SVG për printim."
+        },
+        {
+          "q": "Çfarë është një vCard?",
+          "a": "Një format standard i të dhënave të kontaktit që e kupton çdo telefon."
+        },
+        {
+          "q": "A dërgohen të dhënat e mia diku?",
+          "a": "Jo. Kodi gjenerohet në shfletuesin tënd."
+        }
+      ]
+    },
+    "edit_pdf": {
+      "about": "Ky redaktues punon me faqet e një PDF-je: tërhiqi për t’i rirenditur, rrotulloji ose fshiji ato që nuk të duhen, shto faqe nga PDF të tjera dhe eksporto një skedar të ri. Asgjë nuk ngarkohet, ndaj mund ta përdorësh për dokumente konfidenciale.",
+      "steps": [
+        "Hap PDF-në ose tërhiqe në zonën e ngarkimit.",
+        "Rirendit, rrotullo ose fshi faqe, ose shto skedarë të tjerë.",
+        "Eksporto PDF-në dhe shkarkoje."
+      ],
+      "privacy": "PDF-ja përpunohet tërësisht në shfletuesin tënd: nuk ngarkohet në asnjë server.",
+      "limits": "Një PDF shumë e madhe ose e mbrojtur me fjalëkalim mund të mos hapet ose ta ngadalësojë shfletuesin. Shkarko rezultatin para se ta mbyllësh skedën.",
+      "faq": [
+        {
+          "q": "Si ta redaktoj një PDF falas?",
+          "a": "Hape këtu, ndrysho faqet që të duhen dhe shkarko PDF-në e re: pa regjistrim."
+        },
+        {
+          "q": "A ngarkohet PDF-ja ime në internet?",
+          "a": "Jo. Puna bëhet në shfletuesin tënd."
+        },
+        {
+          "q": "A mund ta ndryshoj tekstin brenda faqeve?",
+          "a": "Ky redaktues punon me faqe të plota. Për tekst, shto shënime ose plotëso fusha me mjetin Plotëso dhe nënshkruaj."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3457,6 +3769,97 @@
       "seo_description": "Krijo falas një kod QR për Wi-Fi: shkruaj emrin e rrjetit dhe fjalëkalimin, shkarko PNG ose SVG dhe lër mysafirët të lidhen me një skanim.",
       "h1": "Gjenerator kodi QR për Wi-Fi",
       "lead": "Lër mysafirët të lidhen në Wi-Fi-n tënd duke skanuar një kod: shkruaj emrin e rrjetit dhe fjalëkalimin, pastaj shkarko ose printo. Asgjë nuk dërgohet."
+    },
+    "pdf_to_jpg": {
+      "label": "PDF në JPG",
+      "seo_title": "PDF në JPG Falas — Konvertues Online",
+      "seo_description": "Konverto PDF në JPG online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto PDF në JPG",
+      "lead": "Tërhiq këtu skedarin PDF, konvertoje në JPG dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "excel_to_pdf": {
+      "label": "Excel në PDF",
+      "seo_title": "Excel në PDF Falas — Konvertues Online",
+      "seo_description": "Konverto Excel në PDF online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto Excel në PDF",
+      "lead": "Tërhiq këtu skedarin Excel, konvertoje në PDF dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "png_to_jpg": {
+      "label": "PNG në JPG",
+      "seo_title": "PNG në JPG Falas — Konvertues Online",
+      "seo_description": "Konverto PNG në JPG online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto PNG në JPG",
+      "lead": "Tërhiq këtu skedarin PNG, konvertoje në JPG dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "webp_to_png": {
+      "label": "WebP në PNG",
+      "seo_title": "WebP në PNG Falas — Konvertues Online",
+      "seo_description": "Konverto WebP në PNG online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto WebP në PNG",
+      "lead": "Tërhiq këtu skedarin WebP, konvertoje në PNG dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "jpg_to_png": {
+      "label": "JPG në PNG",
+      "seo_title": "JPG në PNG Falas — Konvertues Online",
+      "seo_description": "Konverto JPG në PNG online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto JPG në PNG",
+      "lead": "Tërhiq këtu skedarin JPG, konvertoje në PNG dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "html_to_pdf": {
+      "label": "HTML në PDF",
+      "seo_title": "HTML në PDF Falas — Konvertues Online",
+      "seo_description": "Konverto HTML në PDF online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto HTML në PDF",
+      "lead": "Tërhiq këtu skedarin HTML, konvertoje në PDF dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "pdf_to_txt": {
+      "label": "PDF në TXT",
+      "seo_title": "PDF në TXT Falas — Konvertues Online",
+      "seo_description": "Konverto PDF në TXT online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto PDF në TXT",
+      "lead": "Tërhiq këtu skedarin PDF, konvertoje në TXT dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "txt_to_pdf": {
+      "label": "TXT në PDF",
+      "seo_title": "TXT në PDF Falas — Konvertues Online",
+      "seo_description": "Konverto TXT në PDF online falas. Zgjidh skedarin, konverto dhe shkarko rezultatin: pa instaluar asgjë dhe pa regjistrim.",
+      "h1": "Konverto TXT në PDF",
+      "lead": "Tërhiq këtu skedarin TXT, konvertoje në PDF dhe shkarko rezultatin brenda pak sekondash. Falas dhe pa regjistrim."
+    },
+    "webp_to_jpg": {
+      "label": "WebP në JPG",
+      "seo_title": "WebP në JPG Falas — Konvertues Online",
+      "seo_description": "Konverto WebP në JPG falas, drejtpërdrejt në shfletues: pa ngarkim, pa regjistrim, konvertim i shumëfishtë dhe shkarkim në ZIP.",
+      "h1": "Konverto WebP në JPG",
+      "lead": "Tërhiq skedarët WebP, konvertoji në JPG dhe shkarkoji një nga një ose në ZIP. Gjithçka mbetet në shfletuesin tënd."
+    },
+    "jpg_to_webp": {
+      "label": "JPG në WebP",
+      "seo_title": "JPG në WebP Falas — Konvertues Online",
+      "seo_description": "Konverto JPG në WebP falas, drejtpërdrejt në shfletues: pa ngarkim, pa regjistrim, konvertim i shumëfishtë dhe shkarkim në ZIP.",
+      "h1": "Konverto JPG në WebP",
+      "lead": "Tërhiq skedarët JPG, konvertoji në WebP dhe shkarkoji një nga një ose në ZIP. Gjithçka mbetet në shfletuesin tënd."
+    },
+    "whatsapp_qr_code": {
+      "label": "Kod QR për WhatsApp",
+      "seo_title": "Gjenerator Kodi QR për WhatsApp Falas — Lidhje për të Biseduar me Ty",
+      "seo_description": "Krijo falas një kod QR për WhatsApp: shkruaj numrin dhe një mesazh opsional, shkarko PNG ose SVG. Klientët e skanojnë dhe nisin një bisedë.",
+      "h1": "Gjenerator kodi QR për WhatsApp",
+      "lead": "Lër klientët të nisin një bisedë në WhatsApp me ty duke skanuar një kod. Shkruaj numrin dhe një mesazh opsional, pastaj shkarko ose printo."
+    },
+    "vcard_qr_code": {
+      "label": "Kod QR kontakti",
+      "seo_title": "Gjenerator Kodi QR vCard Falas — Kod QR për Kartëvizitë",
+      "seo_description": "Krijo falas një kod QR kontakti: emri, telefoni, emaili, kompania dhe faqja në një vCard. Shkarko PNG ose SVG për kartëvizita.",
+      "h1": "Gjenerator kodi QR kontakti (vCard)",
+      "lead": "Vendos kontaktet e tua në një kod QR: kush e skanon të ruan në kontakte me një prekje. Falas, asgjë nuk ngarkohet."
+    },
+    "edit_pdf": {
+      "label": "Redakto PDF",
+      "seo_title": "Redakto PDF Online Falas — Rirendit, Fshi dhe Rrotullo Faqe, Pa Ngarkim",
+      "seo_description": "Redakto një PDF online falas: rirendit, fshi, rrotullo dhe bashko faqe, pastaj shkarko. Punon në shfletues, skedari nuk ngarkohet kurrë.",
+      "h1": "Redakto një PDF",
+      "lead": "Hap një PDF, rirendit, rrotullo ose fshi faqet, bashko skedarë të tjerë dhe shkarko rezultatin. Gjithçka bëhet në shfletuesin tënd."
     }
   },
   "sign_pdf": {

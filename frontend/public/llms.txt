@@ -36,6 +36,10 @@ Gli strumenti sono gratuiti e senza registrazione. Firma, compressione, foto e Q
 - [Riduci peso PDF](https://gentsallaku.it/lab/reduce-pdf-size): comprime un PDF pesante per inviarlo per email
 - [Compila e firma PDF](https://gentsallaku.it/lab/fill-pdf): compila moduli e firma senza stampare
 - [QR code Wi-Fi](https://gentsallaku.it/lab/wifi-qr-code): codice per far collegare gli ospiti al Wi-Fi con una scansione
+- [PDF in JPG](https://gentsallaku.it/lab/pdf-to-jpg), [Excel in PDF](https://gentsallaku.it/lab/excel-to-pdf), [HTML in PDF](https://gentsallaku.it/lab/html-to-pdf), [PDF in TXT](https://gentsallaku.it/lab/pdf-to-txt), [TXT in PDF](https://gentsallaku.it/lab/txt-to-pdf): conversioni di documento
+- [PNG in JPG](https://gentsallaku.it/lab/png-to-jpg), [JPG in PNG](https://gentsallaku.it/lab/jpg-to-png), [WebP in PNG](https://gentsallaku.it/lab/webp-to-png), [WebP in JPG](https://gentsallaku.it/lab/webp-to-jpg), [JPG in WebP](https://gentsallaku.it/lab/jpg-to-webp): conversioni di immagine
+- [Modifica PDF](https://gentsallaku.it/lab/edit-pdf): riordina, elimina, ruota e unisce le pagine di un PDF
+- [QR code WhatsApp](https://gentsallaku.it/lab/whatsapp-qr-code), [QR code biglietto da visita (vCard)](https://gentsallaku.it/lab/vcard-qr-code)
 - [PDF in Word](https://gentsallaku.it/lab/pdf-to-word), [Word in PDF](https://gentsallaku.it/lab/word-to-pdf), [JPG in PDF](https://gentsallaku.it/lab/jpg-to-pdf), [Unisci PDF](https://gentsallaku.it/lab/merge-pdf), [Dividi PDF](https://gentsallaku.it/lab/split-pdf), [Ruota PDF](https://gentsallaku.it/lab/rotate-pdf), [Immagine in testo](https://gentsallaku.it/lab/image-to-text)
 
 ## Note legali
