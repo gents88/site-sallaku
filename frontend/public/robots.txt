@@ -7,8 +7,13 @@ Allow: /
 # Block the admin dashboard (CMS login/content management)
 Disallow: /dashboard/
 
-# Block backend API endpoints
-Disallow: /api/
+# /api/ NON va bloccato: le pagine prerenderizzate, una volta caricate,
+# richiedono di nuovo i dati a /api/v1 (articolo, progetti, flag). Googlebot
+# rispetta robots.txt anche per queste richieste: con "Disallow: /api/" la
+# chiamata falliva e la pagina diventava "Articolo non trovato", cioè 244
+# articoli del blog segnalati come soft 404 (Search Console, 2026-11).
+# Le risposte API non finiscono nell'indice comunque: Apache le serve con
+# X-Robots-Tag: noindex (frontend/public/.htaccess).
 Disallow: /auth/
 Disallow: /analytics/
 Disallow: /audit/
@@ -16,17 +21,20 @@ Disallow: /stats/
 Disallow: /system/
 Disallow: /cron/
 
-# Block AI training crawlers
+# Block AI *training* crawlers only. Agents that open a page because a user
+# asked (ChatGPT-User, Claude-User, Perplexity-User) and AI search crawlers
+# (OAI-SearchBot, Claude-SearchBot, PerplexityBot) follow the "*" group above:
+# blocking them hid the site from AI answers, against llms.txt (2026-11-03).
 User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
 Disallow: /
 
 User-agent: CCBot
 Disallow: /
 
 User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
 Disallow: /
 
 User-agent: Google-Extended

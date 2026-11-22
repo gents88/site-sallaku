@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../../environments/environment';
 import { AnalyticsTrackingService } from './analytics-tracking.service';
+import { loadChatMessages, saveChatMessages, StoredChatMessage } from '../utils/chat-history-storage';
 
 export type LiveHandoffState =
   | 'idle'
@@ -30,7 +31,29 @@ export const SOCKET_IO = new InjectionToken<typeof io>('SOCKET_IO', { providedIn
 
 const DISMISS_COOLDOWN_MS = 10 * 60_000;
 const AUTO_MINIMIZE_MS = 8_000;
+const TYPING_THROTTLE_MS = 2_500;
 const DISMISS_KEY_PREFIX = 'live_handoff_dismissed_';
+const LIVE_MESSAGES_KEY = 'live_handoff_messages';
+/** Stessa chiave di ChatbotService: i messaggi live appartengono alla conversazione di quella sessione. */
+const CHAT_SESSION_KEY = 'chatbot_session_id';
+
+/** Messaggi live ripresi dopo un ricaricamento, solo se la conversazione a cui appartengono esiste ancora. */
+function restoredLiveMessages(): LiveHandoffMessage[] {
+  try {
+    if (typeof sessionStorage === 'undefined' || !sessionStorage.getItem(CHAT_SESSION_KEY)) return [];
+  } catch {
+    return [];
+  }
+  return loadChatMessages(LIVE_MESSAGES_KEY).map((m) => ({
+    from: m.role === 'agent' ? 'agent' : 'visitor',
+    text: m.content,
+    sentAt: m.timestamp,
+  }));
+}
+
+function storableLiveMessages(messages: readonly LiveHandoffMessage[]): StoredChatMessage[] {
+  return messages.map((m) => ({ role: m.from === 'agent' ? 'agent' : 'user', content: m.text, timestamp: m.sentAt }));
+}
 
 @Injectable({ providedIn: 'root' })
 export class LiveHandoffService {
@@ -44,6 +67,7 @@ export class LiveHandoffService {
   private sessionId: string | null = null;
   private minimizeTimer?: ReturnType<typeof setTimeout>;
   private pollTimer?: ReturnType<typeof setInterval>;
+  private lastTypingSentAt = 0;
 
   private readonly _state = new BehaviorSubject<LiveHandoffState>('idle');
   readonly state$: Observable<LiveHandoffState> = this._state.asObservable();
@@ -51,8 +75,13 @@ export class LiveHandoffService {
   private readonly _minimized = new BehaviorSubject<boolean>(false);
   readonly minimized$: Observable<boolean> = this._minimized.asObservable();
 
-  private readonly _liveMessages = new BehaviorSubject<LiveHandoffMessage[]>([]);
+  private readonly _liveMessages = new BehaviorSubject<LiveHandoffMessage[]>(restoredLiveMessages());
   readonly liveMessages$: Observable<LiveHandoffMessage[]> = this._liveMessages.asObservable();
+
+  /** I messaggi della chat live si salvano a ogni cambiamento: dopo un reload la conversazione c'è ancora. */
+  private readonly persistLiveMessages = this._liveMessages.subscribe((messages) =>
+    saveChatMessages(LIVE_MESSAGES_KEY, storableLiveMessages(messages)),
+  );
 
   get state(): LiveHandoffState {
     return this._state.getValue();
@@ -101,6 +130,54 @@ export class LiveHandoffService {
         },
         error: () => this._state.next('idle'),
       });
+  }
+
+  /**
+   * Riprende una chat live interrotta da un ricaricamento della pagina. Dopo il reload il
+   * servizio riparte da `idle` senza socket, ma la richiesta è ancora attiva sul server:
+   * Gent continuerebbe a scrivere e il visitatore non riceverebbe nulla, né i messaggi né
+   * la chiusura. Si riprende se la chat è ancora aperta. Se Gent l'ha chiusa mentre la pagina era
+   * chiusa o ricaricata e c'è stato uno scambio, si mostra l'avviso di chiusura accanto alla
+   * cronologia ripresa; una richiesta scaduta senza scambi non si mostra.
+   */
+  restore(sessionId: string): void {
+    if (!sessionId || this.state !== 'idle' || this.socket) return;
+
+    this.http.get<{ status: string }>(`${this.apiUrl}/${sessionId}/live-handoff/status`).subscribe({
+      next: ({ status }) => {
+        // L'utente può aver avviato una richiesta nuova mentre la risposta era in volo.
+        if (this.state !== 'idle' || this.socket) return;
+
+        if (status === 'closed' && this._liveMessages.getValue().length > 0) {
+          this._state.next('closed');
+          return;
+        }
+
+        const resumed: LiveHandoffState | null =
+          status === 'requested' || status === 'notified' ? 'request_sent'
+          : status === 'agent_joining' ? 'agent_joining'
+          : status === 'live' ? 'live'
+          : null;
+        if (!resumed) return;
+
+        this.sessionId = sessionId;
+        this._state.next(resumed);
+        this.connectSocket(sessionId);
+      },
+      error: () => undefined,
+    });
+  }
+
+  /**
+   * "Il visitatore sta scrivendo", mostrato a Gent. Solo a chat live e al massimo un evento
+   * ogni 2,5 s: il server scarta comunque oltre 6 eventi in 10 s per socket.
+   */
+  sendTyping(): void {
+    if (!this.socket || !this.sessionId || this.state !== 'live') return;
+    const now = Date.now();
+    if (now - this.lastTypingSentAt < TYPING_THROTTLE_MS) return;
+    this.lastTypingSentAt = now;
+    this.socket.emit('visitor_typing', { sessionId: this.sessionId });
   }
 
   sendLiveMessage(text: string): void {

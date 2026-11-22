@@ -5,6 +5,23 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AdminNotificationsService } from '../../../core/services/admin-notifications.service';
 import { NavIconComponent } from '../nav-icon/nav-icon.component';
 
+/** Margine minimo fra il pannello e i bordi dello schermo. */
+const PANEL_MARGIN_PX = 12;
+
+/**
+ * Di quanto spostare in orizzontale il pannello perché stia dentro lo schermo.
+ *
+ * Il pannello è agganciato al bordo destro del campanello, che nella barra sta in mezzo
+ * (fra ricerca, lingua e tema): su un telefono la sua parte sinistra finiva fuori schermo.
+ * Positivo = verso destra. Se il pannello è più largo dello spazio disponibile lo allinea a sinistra.
+ */
+export function panelShift(left: number, right: number, viewportWidth: number, margin = PANEL_MARGIN_PX): number {
+  if (right - left > viewportWidth - 2 * margin) return margin - left;
+  if (left < margin) return margin - left;
+  if (right > viewportWidth - margin) return viewportWidth - margin - right;
+  return 0;
+}
+
 /** Campanello admin in navbar: cosa aspetta un'azione, con link diretti. */
 @Component({
   selector: 'app-notification-bell',
@@ -22,7 +39,8 @@ import { NavIconComponent } from '../nav-icon/nav-icon.component';
     </button>
 
     @if (open()) {
-      <div id="nb-panel" class="nb-panel" role="dialog" [attr.aria-label]="'notifications.label' | translate">
+      <div id="nb-panel" class="nb-panel" role="dialog" [attr.aria-label]="'notifications.label' | translate"
+           [style.transform]="shiftX() ? 'translateX(' + shiftX() + 'px)' : null">
         <h2 class="nb-title">{{ 'notifications.label' | translate }}</h2>
         <ul class="nb-list">
           @for (row of rows(); track row.key) {
@@ -67,7 +85,11 @@ import { NavIconComponent } from '../nav-icon/nav-icon.component';
       background: #ef4444; color: #fff; font-size: .68rem; font-weight: 700; line-height: 18px; text-align: center;
     }
     .nb-panel {
-      position: absolute; top: calc(100% + 8px); right: 0; z-index: 1300; width: min(320px, calc(100vw - 24px));
+      position: absolute; top: calc(100% + 8px); right: 0; z-index: 1300;
+      /* Nessun box-sizing globale: senza border-box padding e bordo si sommano alla larghezza e il pannello sborda. */
+      box-sizing: border-box; width: min(320px, calc(100vw - 24px));
+      /* Su schermi bassi (telefono in orizzontale, tastiera) la lista scorre invece di uscire dallo schermo. */
+      max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain;
       padding: 1rem; border-radius: 16px; background: var(--bg-secondary, #161b22);
       border: 1px solid var(--border-color, #30363d); box-shadow: 0 20px 50px rgba(0,0,0,.35);
     }
@@ -80,6 +102,10 @@ import { NavIconComponent } from '../nav-icon/nav-icon.component';
       strong { font-variant-numeric: tabular-nums; }
     }
     .nb-row--urgent strong { color: #ef4444; }
+    /* Dito, non puntatore: righe alte almeno 44px. */
+    @media (pointer: coarse) {
+      .nb-row { min-height: 44px; align-items: center; }
+    }
     .nb-recent li { display: flex; gap: .5rem; align-items: baseline; font-size: .82rem; padding: .3rem .6rem; }
     .nb-type { font-weight: 600; white-space: nowrap; }
     .nb-recent__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); }
@@ -92,6 +118,8 @@ export class NotificationBellComponent {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   readonly open = signal(false);
+  /** Spostamento orizzontale (px) che tiene il pannello dentro lo schermo, vedi panelShift. */
+  readonly shiftX = signal(0);
 
   readonly rows = computed(() => {
     const s = this.notifications.summary();
@@ -106,11 +134,32 @@ export class NotificationBellComponent {
 
   toggle(): void {
     this.open.update(v => !v);
-    if (this.open()) this.notifications.refresh();
+    if (this.open()) {
+      this.notifications.refresh();
+      // Il pannello esiste solo dopo il render: si misura al giro successivo.
+      setTimeout(() => this.reposition());
+    } else {
+      this.shiftX.set(0);
+    }
   }
 
   close(): void {
     this.open.set(false);
+    this.shiftX.set(0);
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (this.open()) this.reposition();
+  }
+
+  /** Misura il pannello com'è senza spostamento e calcola di quanto va riportato dentro lo schermo. */
+  private reposition(): void {
+    const panel = this.host.nativeElement.querySelector<HTMLElement>('.nb-panel');
+    if (!panel) return;
+    const rect = panel.getBoundingClientRect();
+    const naturalLeft = rect.left - this.shiftX();
+    this.shiftX.set(Math.round(panelShift(naturalLeft, naturalLeft + rect.width, window.innerWidth)));
   }
 
   @HostListener('document:keydown.escape')

@@ -7,6 +7,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AboutService } from '../../core/services/about.service';
 import { ProjectsService } from '../../core/services/projects.service';
 import { ExperiencesService } from '../../core/services/experiences.service';
+import { TestimonialsService } from '../../core/services/testimonials.service';
 import { SeoService, SITE_ORIGIN } from '../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../core/services/language.service';
 import { About } from '../../core/models/about.model';
@@ -18,8 +19,7 @@ import { TrackClickDirective } from '../../shared/directives/track-click.directi
 import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
-import { HERO_KPI_TARGETS, kpiCountUpValues, prefersReducedMotion } from './kpi-count-up';
-import { jumpToSection } from './jump-to-section';
+import { consumePreScroll, jumpToSection, sectionForUrl } from './jump-to-section';
 
 interface TechItem { name: string; icon: string; isFab?: boolean; }
 interface TechGroup { titleKey: string; icon: string; items: TechItem[]; }
@@ -43,15 +43,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = true;
 
   private observer: IntersectionObserver | null = null;
-  private kpiObserver: IntersectionObserver | null = null;
   private scrollTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly platformId = inject(PLATFORM_ID);
+  /** La sezione Testimonianze esiste solo se ce n'è almeno una pubblicata. */
+  readonly hasTestimonials = inject(TestimonialsService).hasPublic();
 
   // Valori reali fin dal primo render (SSR/prerender, no-JS, reduced motion):
   // il conteggio da zero è solo un effetto aggiunto nel browser.
-  kpiValues: number[] = [...HERO_KPI_TARGETS];
-  private kpiAnimated = false;
-  private kpiFrame: number | null = null;
 
   /* ── Static data (identical to httpdocs/index.html) ─── */
   readonly frontendTechs: TechItem[] = [
@@ -218,7 +216,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Self-referencing profile URL for the current language — fed to app-social-share in the about section. */
   get profileUrl(): string {
     const lang = this.langService.current();
-    return lang === 'it' ? `${SITE_ORIGIN}/` : `${SITE_ORIGIN}${withLangPrefix('/homepage', lang)}`;
+    return `${SITE_ORIGIN}${withLangPrefix('/', lang)}`;
   }
 
   constructor(
@@ -238,13 +236,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // homepage/about/tech-stack/experience/skills/services all render this
     // same component (scroll-to-section deep links), so they've always
     // intentionally collapsed to one canonical rather than 9 separate ones.
-    // For the Italian default that's the bare root ('/', rewritten to
-    // homepage/index.html by .htaccess); other languages have no such
-    // bare-root rewrite, so their canonical points at the actual
-    // prerendered /xx/homepage file — self-referencing correctly instead of
-    // (as before this fix) always pointing back at the Italian root, which
-    // contradicted hreflang's claim that e.g. /en/homepage is a real,
-    // independent language variant.
+    // The canonical is the language root ('/', '/en', '/de'…), which .htaccess
+    // serves from <lang>/homepage/index.html. /xx/homepage stays reachable as
+    // a duplicate that canonicalizes here, and hreflang (SeoService) points at
+    // the same roots so canonical and alternates agree.
     const canonicalUrl = this.profileUrl;
     this.seo.update({
       title: 'Senior Front-End & API Developer',
@@ -319,68 +314,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
 
-    // Conteggio dei KPI: i valori dell'HTML prerenderizzato restano finché
-    // l'osservatore non ha detto dove si trova l'hero. Se è già in vista non si
-    // anima nulla: azzerarli e ricontarli era un cambiamento visibile (e 1,5 s
-    // di change detection a ogni frame) proprio durante il caricamento. Se è
-    // fuori vista si azzerano senza che si veda e contano quando ci entra.
-    // Con prefers-reduced-motion restano sempre i valori finali.
-    const kpiEl = document.querySelector('.hero-kpis');
-    if (kpiEl && !prefersReducedMotion() && typeof IntersectionObserver !== 'undefined') {
-      let firstCheck = true;
-      this.kpiObserver = new IntersectionObserver(
-        (entries) => {
-          const visible = entries[0].isIntersecting;
-          if (firstCheck) {
-            firstCheck = false;
-            if (visible) {
-              this.kpiObserver?.disconnect();
-            } else {
-              this.kpiValues = this.kpiValues.map(() => 0);
-              this.cdr.markForCheck();
-            }
-            return;
-          }
-          if (visible && !this.kpiAnimated) {
-            this.kpiAnimated = true;
-            this.animateCountUp();
-            this.kpiObserver?.disconnect();
-          }
-        },
-        { threshold: 0.25 },
-      );
-      this.kpiObserver.observe(kpiEl);
-    }
-
-    // Scroll to section based on current route: /about → #about, /tech-stack → #tech-stack etc.
-    const urlPath = this.router.url.split('?')[0].replace(/^\//,'');
-    const sectionMap: Record<string, string> = {
-      'about': 'about',
-      'tech-stack': 'tech-stack',
-      'experience': 'experience',
-      'skills': 'skills',
-      'services': 'services',
-    };
-    const sectionId = sectionMap[urlPath];
-    if (sectionId) {
+    // /about → #about, /tech-stack → #tech-stack ecc., anche con il prefisso lingua
+    // (prima /en/about restava sull'hero). Al caricamento diretto la pagina è già
+    // stata posizionata dallo script inline di index.html, prima del primo paint.
+    const sectionId = sectionForUrl(this.router.url);
+    if (sectionId && !consumePreScroll(document, sectionId)) {
       this.scrollTimer = setTimeout(() => jumpToSection(document, sectionId), 100);
     }
-  }
-
-  private animateCountUp(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      this.kpiValues = [...HERO_KPI_TARGETS];
-      return;
-    }
-    const duration = 1500;
-    const start = performance.now();
-    const update = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1);
-      this.kpiValues = kpiCountUpValues(HERO_KPI_TARGETS, progress);
-      this.cdr.markForCheck();
-      this.kpiFrame = progress < 1 ? requestAnimationFrame(update) : null;
-    };
-    this.kpiFrame = requestAnimationFrame(update);
   }
 
   /**
@@ -413,8 +353,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
-    this.kpiObserver?.disconnect();
-    if (this.kpiFrame !== null) cancelAnimationFrame(this.kpiFrame);
     if (this.scrollTimer !== null) {
       clearTimeout(this.scrollTimer);
       this.scrollTimer = null;

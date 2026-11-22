@@ -1,4 +1,4 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpContextToken, HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { SnackbarService } from '../services/snackbar.service';
@@ -25,13 +25,19 @@ import { SnackbarService } from '../services/snackbar.service';
  * these 5 messages in English as a last-resort fallback for genuine network/
  * server failures, which is what they're for.
  */
+/**
+ * Per le chiamate che mostrano già un loro messaggio d'errore tradotto (es. la
+ * password sbagliata nella cancellazione dell'account): niente toast generico.
+ */
+export const SKIP_ERROR_TOAST = new HttpContextToken<boolean>(() => false);
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const snackbar = inject(SnackbarService);
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
       // Skip auth errors — handled by authInterceptor
-      if (err.status === 401) {
+      if (err.status === 401 || req.context.get(SKIP_ERROR_TOAST)) {
         return throwError(() => err);
       }
 

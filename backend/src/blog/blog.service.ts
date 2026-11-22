@@ -188,6 +188,11 @@ export class BlogService implements OnApplicationBootstrap {
     return post;
   }
 
+  /** Public: true if a published post answers to this slug (Italian or any translation). */
+  async existsPublished(slug: string): Promise<boolean> {
+    return !!(await this.postModel.exists({ ...anySlug(slug), published: true }));
+  }
+
   /** Admin: all posts — with optional pagination (omit page/limit to get all) */
   async findAll(page?: number, limit?: number): Promise<PostDocument[] | { data: PostDocument[]; total: number; page: number; totalPages: number }> {
     if (page !== undefined || limit !== undefined) {

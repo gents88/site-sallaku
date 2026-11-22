@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
+import { Component, importProvidersFrom, PLATFORM_ID, SimpleChange } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { Location } from '@angular/common';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { BlogDetailComponent, activeHeadingIndex, postShareImageUrl, readingProgressOf } from './blog-detail.component';
 import { BlogService } from '../../../core/services/blog.service';
@@ -12,6 +12,8 @@ import { LanguageService } from '../../../core/services/language.service';
 import { Post } from '../../../core/models/post.model';
 import { ReadingHistoryService } from '../../../core/services/reading-history.service';
 import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
+import { provideFeatureFlagsStub } from '../../../core/services/feature-flags.testing';
+import { NewsletterSignupComponent } from '../../../shared/components/newsletter-signup/newsletter-signup.component';
 
 const post = {
   _id: '1', slug: 'blinisht', slug_sq: 'blinishti', title: 'Blinisht', title_sq: 'Blinishti', excerpt: '', tags: [],
@@ -30,11 +32,11 @@ const published = [
 describe('BlogDetailComponent view tracking', () => {
   // Ogni create('browser') registra il post nella cronologia di lettura (localStorage condiviso fra spec).
   afterEach(() => localStorage.clear());
-  function create(platform: 'browser' | 'server', urlSlug = 'blinisht') {
-    const location = { replaceState: vi.fn() };
-    const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})) };
+  function create(platform: 'browser' | 'server', urlSlug = 'blinisht', getStatus?: number) {
+    const location = { replaceState: vi.fn(), path: vi.fn(() => `/sq/blog/${urlSlug}`) };
+    const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})), setNoIndex: vi.fn() };
     const blogService = {
-      getBySlug: vi.fn(() => of(post)),
+      getBySlug: vi.fn(() => (getStatus ? throwError(() => ({ status: getStatus })) : of(post))),
       trackView: vi.fn(() => of(undefined)),
       getPublishedAll: vi.fn(() => of(published)),
     };
@@ -48,6 +50,7 @@ describe('BlogDetailComponent view tracking', () => {
         { provide: Location, useValue: location },
         { provide: LanguageService, useValue: { current: () => 'sq' } },
         { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub(),
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -56,6 +59,18 @@ describe('BlogDetailComponent view tracking', () => {
     component.ngOnInit();
     return { component, fixture, blogService, location, seo };
   }
+
+  it('articolo inesistente: stato non trovato e noindex (Apache risponde 200, sarebbe un soft 404)', () => {
+    const { component, seo } = create('browser', 'non-esiste', 404);
+    expect(component.notFound).toBe(true);
+    expect(seo.setNoIndex).toHaveBeenCalledWith(true);
+  });
+
+  it('errore di rete o del server: nessun noindex (l\'articolo può esistere)', () => {
+    const { component, seo } = create('browser', 'blinisht', 500);
+    expect(component.notFound).toBe(true);
+    expect(seo.setNoIndex).not.toHaveBeenCalled();
+  });
 
   it('counts a view in the browser', () => {
     const { component, blogService } = create('browser');
@@ -180,6 +195,7 @@ describe('BlogDetailComponent publish from preview', () => {
         { provide: SeoService, useValue: { update: vi.fn() } },
         { provide: LanguageService, useValue: { current: () => 'it' } },
         { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub(),
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -216,6 +232,19 @@ describe('BlogDetailComponent publish from preview', () => {
     expect(component.post?.viewCount).toBe(42);
   });
 
+  it('mostra il breadcrumb per tornare indietro: Dashboard → elenco articoli → titolo', () => {
+    const { fixture, component } = createPreview(false);
+    expect(component.breadcrumbItems.map(i => i.path)).toEqual(['/dashboard', '/dashboard/blog', undefined]);
+    expect(component.breadcrumbItems[2].label).toBe(component.localizedTitle);
+    const links = Array.from(fixture.nativeElement.querySelectorAll('.breadcrumb a')) as HTMLAnchorElement[];
+    expect(links.map(a => a.getAttribute('href'))).toEqual(['/dashboard', '/dashboard/blog']);
+  });
+
+  it("l'anteprima non ha più il vecchio link «Dashboard» nella barra degli strumenti (c'è il breadcrumb)", () => {
+    const { fixture } = createPreview(false);
+    expect(fixture.nativeElement.querySelector('.post-article__toolbar .back-link')).toBeNull();
+  });
+
   it('computes an estimated reading time of at least one minute', () => {
     const { component } = createPreview(true);
     expect(component.readingMinutes).toBeGreaterThanOrEqual(1);
@@ -240,6 +269,7 @@ describe('BlogDetailComponent table of contents', () => {
         { provide: SeoService, useValue: { update: vi.fn() } },
         { provide: LanguageService, useValue: { current: () => lang } },
         { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub(),
       ],
     });
     const fixture = TestBed.createComponent(BlogDetailComponent);
@@ -390,5 +420,49 @@ describe('postShareImageUrl', () => {
     const a = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-05T00:00:00Z' }, 'it', api);
     const b = postShareImageUrl({ slug: 'x', updatedAt: '2026-10-06T00:00:00Z' }, 'it', api);
     expect(a).not.toBe(b);
+  });
+});
+
+@Component({ selector: 'app-newsletter-signup', standalone: true, template: '<div class="stub-newsletter"></div>' })
+class StubNewsletterSignup {}
+
+describe('BlogDetailComponent newsletter a fine articolo', () => {
+  const published = { ...post, published: true, content: '<p>testo</p>' } as unknown as Post;
+
+  function createPublic(newsletterSignupEnabled: boolean) {
+    TestBed.configureTestingModule({
+      providers: [
+        importProvidersFrom(TranslateModule.forRoot()),
+        provideRouter([]),
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        { provide: BlogService, useValue: { getBySlug: vi.fn(() => of(published)), trackView: vi.fn(() => of(undefined)), getPublishedAll: vi.fn(() => of([])) } },
+        { provide: SeoService, useValue: { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})), setNoIndex: vi.fn() } },
+        { provide: Location, useValue: { replaceState: vi.fn(), path: vi.fn(() => '/blog/blinisht') } },
+        { provide: LanguageService, useValue: { current: () => 'it' } },
+        { provide: NotFoundReporterService, useValue: { report: vi.fn() } },
+        provideFeatureFlagsStub({ newsletterSignupEnabled }),
+      ],
+    });
+    TestBed.overrideComponent(BlogDetailComponent, {
+      remove: { imports: [NewsletterSignupComponent] },
+      add: { imports: [StubNewsletterSignup] },
+    });
+    const fixture = TestBed.createComponent(BlogDetailComponent);
+    fixture.componentInstance.slug = 'blinisht';
+    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  }
+
+  afterEach(() => localStorage.clear());
+
+  it('articolo pubblico con iscrizione attiva: il modulo compare dopo la condivisione', () => {
+    const el = createPublic(true);
+    expect(el.querySelector('.post-newsletter app-newsletter-signup')).not.toBeNull();
+  });
+
+  it('con il flag newsletter spento non compare', () => {
+    const el = createPublic(false);
+    expect(el.querySelector('app-newsletter-signup')).toBeNull();
   });
 });

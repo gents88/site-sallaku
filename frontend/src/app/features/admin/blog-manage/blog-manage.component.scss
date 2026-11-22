@@ -348,6 +348,18 @@
     h3 { margin: 0 0 0.2rem; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   }
 
+  // Il titolo apre la modifica come il pulsante a matita
+  &__title-link {
+    all: unset;
+    display: block;
+    cursor: pointer;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover { text-decoration: underline; }
+    &:focus-visible { outline: 2px solid var(--primary-400); outline-offset: 2px; border-radius: 2px; }
+  }
+
   &__badges { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
   &__actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
 }
@@ -415,7 +427,7 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 10px;
 
-  &__buttons { display: flex; gap: 0.25rem; flex: 1; }
+  &__buttons { display: flex; gap: 0.25rem; flex: 1; flex-wrap: wrap; min-width: 0; }
 }
 
 .lang-tab {
@@ -554,7 +566,7 @@
 .status-filter {
   display: inline-flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem;
   button {
-    display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .9rem; border-radius: 999px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: .4rem; padding: .4rem .9rem; min-height: 40px; border-radius: 999px; cursor: pointer;
     border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); font-size: .85rem;
     span { font-variant-numeric: tabular-nums; opacity: .8; }
     &.active { background: rgba(79, 106, 245, .15); border-color: rgba(79, 106, 245, .5); color: var(--text-primary); }

@@ -1,11 +1,13 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, signal, effect, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { SnackbarService } from '../../../core/services/snackbar.service';
 import {
   SavedResultsService,
   SavedResult,
@@ -36,6 +38,8 @@ export class MySavedResultsComponent implements OnInit {
   private readonly savedResults = inject(SavedResultsService);
   readonly auth = inject(AuthService);
   readonly authModal = inject(AuthModalService);
+  private readonly router = inject(Router);
+  private readonly snackbar = inject(SnackbarService);
 
   readonly toolIcon = TOOL_ICON;
   breadcrumbItems: BreadcrumbItem[] = [];
@@ -46,6 +50,16 @@ export class MySavedResultsComponent implements OnInit {
   readonly expandedDetail = signal<SavedResult | null>(null);
   readonly detailLoading = signal(false);
   readonly errorMsg = signal('');
+
+  // Cancellazione dell'account (GDPR art. 17): pannello di conferma in pagina.
+  readonly accountLabel = computed(() => this.auth.currentUser()?.email || this.auth.currentUser()?.name || '');
+  readonly confirmingDelete = signal(false);
+  /** Vero finché GET /auth/me non dice il contrario: nel dubbio si chiede la password. */
+  readonly needsPassword = signal(true);
+  readonly deletePassword = signal('');
+  readonly deleting = signal(false);
+  /** Chiave di traduzione dell'errore da mostrare, '' se nessuno. */
+  readonly deleteError = signal('');
 
   constructor() {
     // Re-fetch whenever auth flips to logged-in (covers logging in from the
@@ -119,6 +133,40 @@ export class MySavedResultsComponent implements OnInit {
           this.expandedId.set(null);
           this.expandedDetail.set(null);
         }
+      },
+    });
+  }
+
+  startDelete(): void {
+    this.confirmingDelete.set(true);
+    this.deletePassword.set('');
+    this.deleteError.set('');
+    this.needsPassword.set(true);
+    this.auth.accountHasPassword().subscribe({
+      next: (has) => this.needsPassword.set(has),
+      error: () => { /* resta true: il server ignora la password degli account solo-OTP */ },
+    });
+  }
+
+  cancelDelete(): void {
+    this.confirmingDelete.set(false);
+    this.deletePassword.set('');
+    this.deleteError.set('');
+  }
+
+  confirmDelete(): void {
+    this.deleting.set(true);
+    this.deleteError.set('');
+    this.auth.deleteAccount(this.needsPassword() ? this.deletePassword() : undefined).subscribe({
+      next: () => {
+        this.deleting.set(false);
+        this.confirmingDelete.set(false);
+        this.snackbar.show(this.t.instant('account.done'), 'success');
+        void this.router.navigateByUrl(withLangPrefix('/', this.langService.current()));
+      },
+      error: (err: { status?: number }) => {
+        this.deleting.set(false);
+        this.deleteError.set(err?.status === 400 ? 'account.wrong_password' : 'account.error');
       },
     });
   }

@@ -141,6 +141,10 @@ const publicPages: Route[] = [
     loadComponent: () => import('./features/admin/library/library.component').then(m => m.LibraryComponent),
   },
   {
+    path: 'lab/open-file',
+    loadComponent: () => import('./features/admin/open-file/open-file.component').then(m => m.OpenFileComponent),
+  },
+  {
     path: 'lab/i-miei-file',
     loadComponent: () => import('./features/admin/my-saved-results/my-saved-results.component').then(m => m.MySavedResultsComponent),
   },
@@ -165,6 +169,10 @@ const publicPages: Route[] = [
   {
     path: 'cookie-policy',
     loadComponent: () => import('./features/legal/cookie-policy/cookie-policy.component').then(m => m.CookiePolicyComponent),
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('./features/legal/terms/terms.component').then(m => m.TermsComponent),
   },
 ];
 
@@ -221,5 +229,9 @@ export const routes: Routes = [
 
   // ── Fallback ──────────────────────────────────────
   // Home come prima, ma il percorso finisce nella lista 404 della dashboard.
-  { path: '**', canActivate: [notFoundGuard], children: [] },
+  {
+    path: '**',
+    canActivate: [notFoundGuard],
+    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent),
+  },
 ];
