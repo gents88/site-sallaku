@@ -1,8 +1,8 @@
     <div class="cp-page">
       <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
       <header class="cp-header">
-        <h1 class="cp-title">🔤 {{ 'ocr.title' | translate }}</h1>
-        <p class="cp-subtitle">{{ 'ocr.subtitle' | translate }}</p>
+        <h1 class="cp-title">🔤 {{ (page.headingKey ?? 'ocr.title') | translate }}</h1>
+        <p class="cp-subtitle">{{ (page.leadKey ?? 'ocr.subtitle') | translate }}</p>
       </header>
 
       @if (workspaceItem()) {
@@ -181,4 +181,4 @@
       }
     </div>
 
-<app-lab-tool-info tool="ocr" />
+<app-lab-tool-info [tool]="page.id" />

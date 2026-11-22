@@ -7,7 +7,7 @@ import { expect, test } from '@playwright/test';
  * "critical": le "minor/moderate" vengono stampate per essere sistemate
  * senza bloccare la pipeline.
  */
-const PAGES = ['/', '/projects', '/blog', '/contact', '/testimonials', '/lab', '/en/lab', '/lab/pdf-summary'];
+const PAGES = ['/', '/projects', '/blog', '/contact', '/testimonials', '/lab', '/en/lab', '/lab/pdf-summary', '/lab/pdf-editor', '/lab/convert', '/lab/editor', '/lab/merge-pdf', '/en/lab/pdf-to-word'];
 
 for (const scheme of ['light', 'dark'] as const) for (const path of PAGES) {
   test(`a11y (${scheme}): ${path}`, async ({ page }, testInfo) => {

@@ -3,8 +3,16 @@
       <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
 
       <header class="cp-header">
-        <h1 class="cp-title">{{ 'convert.title' | translate }}</h1>
-        <p class="cp-subtitle">{{ totalCount }} {{ 'convert.subtitle' | translate }}</p>
+        <h1 class="cp-title">{{ (page.headingKey ?? 'convert.title') | translate }}</h1>
+        @if (page.leadKey) {
+          <p class="cp-subtitle">{{ page.leadKey | translate }}</p>
+        } @else {
+          <p class="cp-subtitle">{{ totalCount }} {{ 'convert.subtitle' | translate }}</p>
+        }
+        @if (intentDef; as def) {
+          <!-- Pagina per ricerca specifica (es. PDF in Word): un clic apre direttamente quella conversione. -->
+          <button type="button" class="btn btn-primary cp-intent-cta" (click)="open(def)">{{ page.ctaKey! | translate }}</button>
+        }
         <a class="cp-blog-link" [routerLink]="blogGuideUrl">📖 {{ 'convert.blog_link' | translate }}</a>
         <div class="cp-search-wrap">
           <span class="cp-search-icon">🔍</span>
@@ -27,23 +35,21 @@
           </div>
           <div class="cp-grid">
             @for (item of favoriteItems(); track item.id) {
-              <button class="cp-card cp-card--fav" (click)="open(item)">
-                <div class="cp-card-badges">
-                  <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
-                  <span class="cp-arrow">→</span>
-                  <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
-                </div>
-                <span class="cp-card-label">{{ item.label | translate }}</span>
-                <!-- span, not button: nesting an interactive control inside the card
-                     <button> is invalid HTML — the browser silently re-parents it on
-                     parse, which desyncs the DOM Angular's hydration expects to find
-                     from what's actually there and crashes hydration reconciliation. -->
-                <span class="cp-fav cp-fav--active" role="button" tabindex="0"
-                      [attr.aria-label]="'convert.remove_fav' | translate"
-                      (click)="toggleFav($event, item.id)"
-                      (keydown.enter)="toggleFav($event, item.id)"
-                      (keydown.space)="toggleFav($event, item.id); $event.preventDefault()">★</span>
-              </button>
+              <div class="cp-card cp-card--fav">
+                <button class="cp-card-main" (click)="open(item)">
+                  <div class="cp-card-badges">
+                    <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
+                    <span class="cp-arrow">→</span>
+                    <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+                  </div>
+                  <span class="cp-card-label">{{ item.label | translate }}</span>
+                </button>
+                <!-- Pulsante fratello (non annidato) del pulsante principale: un controllo
+                     dentro un altro <button> è HTML non valido e rompe l'idratazione. -->
+                <button class="cp-fav cp-fav--active"
+                        [attr.aria-label]="'convert.remove_fav' | translate"
+                        (click)="toggleFav($event, item.id)">★</button>
+              </div>
             }
           </div>
         </section>
@@ -71,26 +77,22 @@
           </div>
           <div class="cp-grid">
             @for (item of g.items; track item.id) {
-              <button class="cp-card"
-                      [class.cp-card--fav]="favorites().has(item.id)"
-                      (click)="open(item)">
-                <div class="cp-card-badges">
-                  <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
-                  <span class="cp-arrow">→</span>
-                  <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
-                </div>
-                <span class="cp-card-label">{{ item.label | translate }}</span>
-                <!-- span, not button — see the comment on the matching favorite toggle above. -->
-                <span class="cp-fav"
-                      role="button" tabindex="0"
-                      [class.cp-fav--active]="favorites().has(item.id)"
-                      [attr.aria-label]="(favorites().has(item.id) ? 'convert.remove_fav' : 'convert.add_fav') | translate"
-                      (click)="toggleFav($event, item.id)"
-                      (keydown.enter)="toggleFav($event, item.id)"
-                      (keydown.space)="toggleFav($event, item.id); $event.preventDefault()">
+              <div class="cp-card" [class.cp-card--fav]="favorites().has(item.id)">
+                <button class="cp-card-main" (click)="open(item)">
+                  <div class="cp-card-badges">
+                    <span class="cp-badge" [attr.data-fmt]="item.from">{{ item.from }}</span>
+                    <span class="cp-arrow">→</span>
+                    <span class="cp-badge" [attr.data-fmt]="item.to">{{ item.to }}</span>
+                  </div>
+                  <span class="cp-card-label">{{ item.label | translate }}</span>
+                </button>
+                <button class="cp-fav"
+                        [class.cp-fav--active]="favorites().has(item.id)"
+                        [attr.aria-label]="(favorites().has(item.id) ? 'convert.remove_fav' : 'convert.add_fav') | translate"
+                        (click)="toggleFav($event, item.id)">
                   {{ favorites().has(item.id) ? '★' : '☆' }}
-                </span>
-              </button>
+                </button>
+              </div>
             }
           </div>
         </section>
@@ -294,4 +296,4 @@
       </section>
     </div>
 
-<app-lab-tool-info tool="convert" />
+<app-lab-tool-info [tool]="page.id" />

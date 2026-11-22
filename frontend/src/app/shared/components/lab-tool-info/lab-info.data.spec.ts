@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { LAB_RELATIONS, allLabArticleSlugs, labInfoKey, labToolsForArticle, relatedLabArticles, relatedLabTools } from './lab-info.data';
+import { LAB_INTENTS } from '../../../core/navigation/lab-intents';
 import { NAV_REGISTRY } from '../../../core/navigation/nav-registry';
 
 describe('lab-info.data', () => {
@@ -36,16 +37,18 @@ describe('lab-info.data', () => {
   });
 
   it('dall\'articolo si risale agli strumenti', () => {
-    expect(labToolsForArticle('ocr-online-estrarre-testo-da-scansioni-e-foto').map(e => e.id)).toEqual(['ocr', 'scanner']);
+    expect(labToolsForArticle('ocr-online-estrarre-testo-da-scansioni-e-foto').map(e => e.id)).toEqual(['ocr', 'scanner', 'image-to-text']);
     expect(labToolsForArticle('non-esiste')).toEqual([]);
   });
 
   // Ogni pagina di strumento deve includere il contenuto informativo e restare una pagina vera:
   // un template ridotto al solo <app-lab-tool-info> (file svuotato per errore) non darebbe errori nei test.
   it('la pagina di ogni strumento include il contenuto informativo e il suo template non è vuoto', () => {
-    for (const tool of Object.keys(LAB_RELATIONS)) {
+    // Le pagine per ricerca specifica (lab-intents) riusano il componente dello strumento padre.
+    const intents = new Set(Object.keys(LAB_INTENTS));
+    for (const tool of Object.keys(LAB_RELATIONS).filter(id => !intents.has(id))) {
       const html = readFileSync(resolve(process.cwd(), `src/app/features/admin/${tool}/${tool}.component.html`), 'utf8');
-      expect(html, `${tool}: manca <app-lab-tool-info>`).toContain(`<app-lab-tool-info tool="${tool}" />`);
+      expect(html, `${tool}: manca <app-lab-tool-info>`).toMatch(new RegExp(`<app-lab-tool-info (tool="${tool}"|\\[tool\\]="page\\.id") />`));
       expect(html.split('\n').length, `${tool}: template quasi vuoto`).toBeGreaterThan(60);
     }
   });
