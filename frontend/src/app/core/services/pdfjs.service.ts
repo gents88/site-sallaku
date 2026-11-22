@@ -66,7 +66,7 @@ export class PdfjsService {
    * sfora il tetto, si riduce quanto basta.
    *
    * Con `retryIfBlank`, un risultato interamente bianco viene rifatto a metà
-   * risoluzione: è il sintomo tipico di un canvas troppo grande per il dispositivo.
+   * risoluzione (fino a due volte): è il sintomo tipico di un canvas troppo grande per il dispositivo.
    * `onBlank` viene chiamata se il risultato finale è comunque tutto bianco.
    */
   async renderPageToBlob(page: PdfPage, scale = 2, opts: { maxPixels?: number; retryIfBlank?: boolean; onBlank?: () => void } = {}): Promise<Blob> {
@@ -78,15 +78,30 @@ export class PdfjsService {
     }
 
     let canvas = await this.renderToCanvas(page, effective);
-    if (opts.retryIfBlank && this.isBlank(canvas) && effective > 0.5) {
-      canvas = await this.renderToCanvas(page, effective / 2);
+    // Su iPhone/Android un canvas troppo grande, o la memoria già occupata da altri canvas, dà una
+    // pagina bianca senza errori: si riprova a risoluzione dimezzata, fino a due volte, liberando ogni
+    // canvas scartato (Safari lo tiene in memoria finché non gli si azzera la dimensione).
+    for (let attempt = 0; opts.retryIfBlank && attempt < 2 && effective > 0.4 && this.isBlank(canvas); attempt++) {
+      this.releaseCanvas(canvas);
+      effective /= 2;
+      canvas = await this.renderToCanvas(page, effective);
     }
-    // Ancora bianca dopo il tentativo: o la pagina è davvero vuota o il dispositivo non regge il canvas.
+    // Ancora bianca dopo i tentativi: o la pagina è davvero vuota o il dispositivo non regge il canvas.
     // Chi chiama lo spiega all'utente invece di mostrare un foglio bianco senza dire nulla.
     if (opts.onBlank && this.isBlank(canvas)) opts.onBlank();
+    const done = canvas;
     return new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas.toBlob failed'))), 'image/png');
+      done.toBlob((b) => {
+        this.releaseCanvas(done);
+        if (b) resolve(b);
+        else reject(new Error('canvas.toBlob failed'));
+      }, 'image/png');
     });
+  }
+
+  private releaseCanvas(canvas: HTMLCanvasElement): void {
+    canvas.width = 0;
+    canvas.height = 0;
   }
 
   private async renderToCanvas(page: PdfPage, scale: number): Promise<HTMLCanvasElement> {
