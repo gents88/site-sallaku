@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { DashboardCardComponent } from '../../components/dashboard-card/dashboard-card.component';
 import { AcquisitionPanelComponent } from '../../panels/acquisition-panel.component';
@@ -9,7 +8,7 @@ import { LeadAttributionPanelComponent } from '../../panels/lead-attribution-pan
 @Component({
   selector: 'app-acquisition-section',
   standalone: true,
-  imports: [MatIconModule, TranslateModule, DashboardCardComponent, AcquisitionPanelComponent, LeadAttributionPanelComponent],
+  imports: [TranslateModule, DashboardCardComponent, AcquisitionPanelComponent, LeadAttributionPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './acquisition-section.component.html',
   styleUrls: ['./acquisition-section.component.scss'],

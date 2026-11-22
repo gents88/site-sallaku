@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild, effect, inject, untracked, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -39,6 +40,7 @@ import {
   SecuritySummary,
 } from './admin-dashboard.service';
 import { failedSectionLabels, sparkline } from './dashboard-metrics';
+import { COLLAPSIBLE_SECTIONS, loadOpenSections, saveOpenSections } from './dashboard-sections';
 import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
 import { LeadsPanelComponent } from './panels/leads-panel.component';
 import { OpsSectionComponent } from './sections/ops-section/ops-section.component';
@@ -89,7 +91,7 @@ export interface DashboardNavItem {
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule, RouterLink, FormsModule, MatButtonModule, MatIconModule, TranslateModule, ConfirmDialogComponent,
+    CommonModule, RouterLink, FormsModule, MatButtonModule, MatExpansionModule, MatIconModule, TranslateModule, ConfirmDialogComponent,
     DashboardCardComponent, LeadsPanelComponent,
     OpsSectionComponent, ContentSectionComponent, ActivitySectionComponent, VisitorsSectionComponent,
     AcquisitionSectionComponent, SeoSectionComponent, UtilitySectionComponent, ChatSessionsSectionComponent,
@@ -197,6 +199,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (latest) untracked(() => this.loadLive());
   });
 
+  /** Sezioni aperte dell'accordion (memorizzate nel browser). */
+  readonly openSections = signal<ReadonlySet<string>>(loadOpenSections());
+
   private readonly acquisitionSection = viewChild(AcquisitionSectionComponent);
   private readonly chatSessions = viewChild(ChatSessionsSectionComponent);
 
@@ -245,8 +250,36 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ];
   }
 
+  isOpen(id: string): boolean {
+    return this.openSections().has(id);
+  }
+
+  setOpen(id: string, open: boolean): void {
+    if (this.isOpen(id) === open) return;
+    const next = new Set(this.openSections());
+    if (open) next.add(id);
+    else next.delete(id);
+    this.updateOpenSections(next);
+  }
+
+  expandAll(): void {
+    this.updateOpenSections(new Set(COLLAPSIBLE_SECTIONS));
+  }
+
+  collapseAll(): void {
+    this.updateOpenSections(new Set());
+  }
+
+  /** Dall'indice: apre la sezione se è chiusa, poi ci porta. */
   scrollTo(id: string): void {
-    this.document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.setOpen(id, true);
+    // Un frame per lasciare al pannello il tempo di aprirsi e creare il contenuto.
+    setTimeout(() => this.document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }
+
+  private updateOpenSections(next: ReadonlySet<string>): void {
+    this.openSections.set(next);
+    saveOpenSections(next);
   }
 
   /** Pulsante "Aggiorna": salta la cache di 30s del server. */
@@ -423,10 +456,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.selectedIds.size > 0;
   }
 
-  /** Dal pannello Utility: carica le chat di oggi e porta alla sezione. */
+  /** Dal pannello Utility: apre la sezione chat, carica le chat di oggi e ci porta. */
   loadTodaySessions(): void {
-    this.chatSessions()?.load();
     this.scrollTo('dash-chat');
+    // La sezione chat si crea all'apertura del pannello: si carica al frame successivo.
+    setTimeout(() => this.chatSessions()?.load());
   }
 
   async logout(): Promise<void> {

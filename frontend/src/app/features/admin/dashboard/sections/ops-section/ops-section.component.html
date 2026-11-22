@@ -1,4 +1,3 @@
-<h2 class="section-label"><mat-icon>monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}</h2>
 <div class="analytics-grid">
   <app-dashboard-card titleKey="ai_usage.title" descKey="ai_usage.desc" icon="bolt" periodKey="dashboard_ux.period_today">
     <app-ai-usage-panel [data]="aiUsage()" [failed]="failed().has('aiUsage')" />
