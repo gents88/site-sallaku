@@ -36,6 +36,7 @@
               "__BUILD_TIME__": "''"
             },
             "allowedCommonJsDependencies": [
+              "heic2any",
               "prismjs",
               "prismjs/components/prism-typescript",
               "prismjs/components/prism-javascript",
