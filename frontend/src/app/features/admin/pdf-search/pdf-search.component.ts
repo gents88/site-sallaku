@@ -18,8 +18,8 @@ import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/l
 import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 const MOBILE_QUERY = '(max-width: 640px)';
-const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg'];
-const PAPER_SOURCES: PdfSource[] = ['arxiv', 'pmc'];
+const BOOK_SOURCES: PdfSource[] = ['internet_archive', 'gutenberg', 'wikimedia'];
+const PAPER_SOURCES: PdfSource[] = ['arxiv', 'pmc', 'zenodo'];
 const RECENT_SEARCHES_KEY = 'pdf-search-recent-queries';
 const MAX_RECENT_SEARCHES = 8;
 const FAVORITES_KEY = 'pdf-search-favorites';
