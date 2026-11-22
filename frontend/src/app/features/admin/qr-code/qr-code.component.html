@@ -1,0 +1,137 @@
+<div class="cp-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+  <header class="cp-header">
+    <h1 class="cp-title">▦ {{ 'qr_code.title' | translate }}</h1>
+    <p class="cp-subtitle">{{ 'qr_code.subtitle' | translate }}</p>
+  </header>
+
+  <div class="type-row" role="group" [attr.aria-label]="'qr_code.type_label' | translate">
+    @for (tp of types; track tp) {
+      <button type="button" class="type-chip" [class.type-chip--on]="type() === tp" [attr.aria-pressed]="type() === tp" (click)="setType(tp)">
+        <span aria-hidden="true">{{ icons[tp] }}</span> {{ 'qr_code.type_' + tp | translate }}
+      </button>
+    }
+  </div>
+
+  <div class="layout">
+    <!-- ── Dati ─────────────────────────────────── -->
+    <div class="col-form">
+      <section class="cp-panel">
+        <h2 class="sec-title">{{ 'qr_code.content_label' | translate }}</h2>
+        @switch (type()) {
+          @case ('url') {
+            <label class="f"><span>{{ 'qr_code.f_url' | translate }}</span>
+              <input type="text" inputmode="url" autocomplete="off" [value]="field('url')" (input)="setField('url', $any($event.target).value)" [placeholder]="'qr_code.ph_url' | translate"></label>
+          }
+          @case ('text') {
+            <label class="f"><span>{{ 'qr_code.f_text' | translate }}</span>
+              <textarea rows="4" [value]="field('text')" (input)="setField('text', $any($event.target).value)" [placeholder]="'qr_code.ph_text' | translate"></textarea></label>
+          }
+          @case ('wifi') {
+            <label class="f"><span>{{ 'qr_code.f_ssid' | translate }}</span>
+              <input type="text" autocomplete="off" [value]="field('ssid')" (input)="setField('ssid', $any($event.target).value)"></label>
+            <label class="f"><span>{{ 'qr_code.f_security' | translate }}</span>
+              <select [value]="field('security') || 'WPA'" (change)="setSecurity($any($event.target).value)">
+                <option value="WPA">WPA / WPA2 / WPA3</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">{{ 'qr_code.sec_none' | translate }}</option>
+              </select></label>
+            @if (field('security') !== 'nopass') {
+              <label class="f"><span>{{ 'qr_code.f_password' | translate }}</span>
+                <input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" [value]="field('password')" (input)="setField('password', $any($event.target).value)"></label>
+            }
+            <label class="check"><input type="checkbox" [checked]="field('hidden') === 'true'" (change)="setHidden($any($event.target).checked)"> {{ 'qr_code.f_hidden' | translate }}</label>
+          }
+          @case ('contact') {
+            <div class="row2">
+              <label class="f"><span>{{ 'qr_code.f_first' | translate }}</span><input type="text" autocomplete="off" [value]="field('firstName')" (input)="setField('firstName', $any($event.target).value)"></label>
+              <label class="f"><span>{{ 'qr_code.f_last' | translate }}</span><input type="text" autocomplete="off" [value]="field('lastName')" (input)="setField('lastName', $any($event.target).value)"></label>
+            </div>
+            <div class="row2">
+              <label class="f"><span>{{ 'qr_code.f_phone' | translate }}</span><input type="tel" autocomplete="off" [value]="field('phone')" (input)="setField('phone', $any($event.target).value)"></label>
+              <label class="f"><span>{{ 'qr_code.f_email' | translate }}</span><input type="email" autocomplete="off" [value]="field('email')" (input)="setField('email', $any($event.target).value)"></label>
+            </div>
+            <div class="row2">
+              <label class="f"><span>{{ 'qr_code.f_org' | translate }}</span><input type="text" autocomplete="off" [value]="field('org')" (input)="setField('org', $any($event.target).value)"></label>
+              <label class="f"><span>{{ 'qr_code.f_website' | translate }}</span><input type="text" inputmode="url" autocomplete="off" [value]="field('website')" (input)="setField('website', $any($event.target).value)"></label>
+            </div>
+          }
+          @case ('email') {
+            <label class="f"><span>{{ 'qr_code.f_to' | translate }}</span><input type="email" autocomplete="off" [value]="field('to')" (input)="setField('to', $any($event.target).value)"></label>
+            <label class="f"><span>{{ 'qr_code.f_subject' | translate }}</span><input type="text" autocomplete="off" [value]="field('subject')" (input)="setField('subject', $any($event.target).value)"></label>
+            <label class="f"><span>{{ 'qr_code.f_body' | translate }}</span><textarea rows="3" [value]="field('body')" (input)="setField('body', $any($event.target).value)"></textarea></label>
+          }
+          @case ('phone') {
+            <label class="f"><span>{{ 'qr_code.f_phone' | translate }}</span><input type="tel" autocomplete="off" [value]="field('phone')" (input)="setField('phone', $any($event.target).value)" [placeholder]="'qr_code.ph_phone' | translate"></label>
+          }
+          @case ('whatsapp') {
+            <label class="f"><span>{{ 'qr_code.f_wa_phone' | translate }}</span><input type="tel" autocomplete="off" [value]="field('wa_phone')" (input)="setField('wa_phone', $any($event.target).value)" [placeholder]="'qr_code.ph_wa_phone' | translate"></label>
+            <label class="f"><span>{{ 'qr_code.f_wa_text' | translate }}</span><textarea rows="3" [value]="field('wa_text')" (input)="setField('wa_text', $any($event.target).value)"></textarea></label>
+          }
+        }
+        @if (type() === 'wifi' || type() === 'contact') {
+          <p class="privacy-note">🔒 {{ 'qr_code.privacy_sensitive' | translate }}</p>
+        }
+      </section>
+
+      <details class="cp-panel opts">
+        <summary>{{ 'qr_code.options' | translate }}</summary>
+        <div class="opts-grid">
+          <div class="f">
+            <span id="qr-ec-label">{{ 'qr_code.ec_label' | translate }}</span>
+            <div class="seg" role="radiogroup" aria-labelledby="qr-ec-label">
+              @for (l of ecLevels; track l) {
+                <button type="button" role="radio" class="seg-btn" [class.seg-btn--on]="ec() === l" [attr.aria-checked]="ec() === l" (click)="setEc(l)">{{ l }}</button>
+              }
+            </div>
+            <small>{{ 'qr_code.ec_hint' | translate }}</small>
+          </div>
+          <label class="f"><span>{{ 'qr_code.margin_label' | translate }}</span>
+            <input type="number" min="0" max="10" [value]="margin()" (input)="setMargin($any($event.target).value)"></label>
+          <label class="f"><span>{{ 'qr_code.size_label' | translate }}</span>
+            <select [value]="pngSize()" (change)="setPngSize($any($event.target).value)">
+              @for (s of pngSizes; track s) { <option [value]="s" [selected]="pngSize() === s">{{ s }} px</option> }
+            </select></label>
+          <div class="f colors">
+            <span>{{ 'qr_code.colors_label' | translate }}</span>
+            <div class="color-row">
+              <label class="color"><input type="color" [value]="fg()" (input)="setFg($any($event.target).value)" [attr.aria-label]="'qr_code.fg' | translate"> {{ 'qr_code.fg' | translate }}</label>
+              <label class="color"><input type="color" [value]="bg()" (input)="setBg($any($event.target).value)" [attr.aria-label]="'qr_code.bg' | translate"> {{ 'qr_code.bg' | translate }}</label>
+              <button type="button" class="link-btn" (click)="swapColors()">⇄ {{ 'qr_code.swap' | translate }}</button>
+              <button type="button" class="link-btn" (click)="resetColors()">{{ 'qr_code.reset' | translate }}</button>
+            </div>
+          </div>
+        </div>
+        @if (warning() === 'low-contrast') { <p class="notice notice--warn" role="alert">⚠️ {{ 'qr_code.warn_contrast' | translate }}</p> }
+        @if (warning() === 'inverted') { <p class="notice notice--warn" role="alert">⚠️ {{ 'qr_code.warn_inverted' | translate }}</p> }
+      </details>
+    </div>
+
+    <!-- ── Anteprima ────────────────────────────── -->
+    <aside class="col-preview">
+      <section class="cp-panel preview" aria-live="polite">
+        @if (previewUrl(); as src) {
+          <div class="qr-frame" [style.background]="bg()">
+            <img class="qr-img" [src]="src" [alt]="'qr_code.alt' | translate" width="320" height="320">
+          </div>
+          <p class="qr-meta">{{ 'qr_code.meta' | translate: { modules: modules(), px: pngInfo()?.side } }}</p>
+          <div class="actions">
+            <button type="button" class="btn-main" (click)="downloadPng()">📥 PNG</button>
+            <button type="button" class="btn-ghost" (click)="downloadSvg()">📐 SVG</button>
+            @if (canCopyImage()) {
+              <button type="button" class="btn-ghost" (click)="copyImage()">{{ copied() ? ('qr_code.copied' | translate) : ('📋 ' + ('qr_code.copy' | translate)) }}</button>
+            }
+            <button type="button" class="btn-ghost" (click)="sendToWorkspace()">{{ sent() ? ('qr_code.sent' | translate) : ('🔗 ' + ('qr_code.workspace_send' | translate)) }}</button>
+          </div>
+          <p class="scan-tip">{{ 'qr_code.scan_tip' | translate }}</p>
+        } @else if (built().tooLong) {
+          <div class="empty" role="alert"><span class="empty-icon">⚠️</span><p>{{ 'qr_code.too_long' | translate }}</p></div>
+        } @else {
+          <div class="empty"><span class="empty-icon">▦</span><p>{{ 'qr_code.empty' | translate }}</p></div>
+        }
+      </section>
+    </aside>
+  </div>
+</div>
+
+<app-lab-tool-info [tool]="page.id" />

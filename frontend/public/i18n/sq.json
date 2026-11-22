@@ -72,7 +72,8 @@
       "live_chat": "Bisedë live",
       "sign_pdf": "Nënshkruaj PDF",
       "compress_pdf": "Ngjesh PDF",
-      "image_tools": "Foto dhe HEIC"
+      "image_tools": "Foto dhe HEIC",
+      "qr_code": "QR Code"
     }
   },
   "lang": {
@@ -1538,7 +1539,9 @@
     "compress_pdf_title": "Ngjesh PDF",
     "compress_pdf_desc": "Zvogëlo madhësinë e një PDF-je për ta dërguar me email ose ngarkuar, me tre nivele ngjeshjeje.",
     "image_tools_title": "Foto: HEIC në JPG, ndrysho madhësinë, ngjesh",
-    "image_tools_desc": "Konverto foto HEIC në JPG, ndrysho madhësinë dhe ngjesh shumë imazhe njëherësh dhe hiq të dhënat GPS."
+    "image_tools_desc": "Konverto foto HEIC në JPG, ndrysho madhësinë dhe ngjesh shumë imazhe njëherësh dhe hiq të dhënat GPS.",
+    "qr_code_title": "Gjenerator QR Code",
+    "qr_code_desc": "Krijo QR code për lidhje, Wi-Fi, kontakte, email dhe WhatsApp dhe shkarkoji në PNG ose SVG."
   },
   "about_manage": {
     "title": "Seksioni About",
@@ -3181,6 +3184,39 @@
           "a": "Po, falas dhe pa regjistrim."
         }
       ]
+    },
+    "qr_code": {
+      "about": "Gjeneratori i QR code e kthen një lidhje, tekst, rrjet Wi‑Fi, kartëvizitë, email, numër telefoni ose mesazh WhatsApp në një QR code që çdo kamerë telefoni e lexon. Zgjidh ngjyrat dhe madhësinë dhe shkarkoje kodin si imazh PNG ose si SVG i shkallëzueshëm për printim. Kodi krijohet në shfletuesin tënd nga ajo që shkruan.",
+      "steps": [
+        "Zgjidh llojin e kodit: Lidhje, Tekst, Wi‑Fi, Kontakt, Email, Telefon ose WhatsApp.",
+        "Plotëso të dhënat: kodi shfaqet djathtas ndërsa shkruan.",
+        "Hap “Opsione” për të ndryshuar korrigjimin e gabimeve, margjinën, madhësinë dhe ngjyrat.",
+        "Skanoje me telefon për ta kontrolluar, pastaj shkarko PNG ose SVG."
+      ],
+      "privacy": "Gjithçka që shkruan kthehet në kod në shfletuesin tënd dhe nuk dërgohet kurrë në server. Nuk ka gjurmim të përmbajtjes dhe as regjistrim.",
+      "limits": "Një QR code mban vetëm një sasi të kufizuar teksti (disa mijëra karaktere); përmbajtja më e gjatë refuzohet. Kodet janë statike: pas printimit nuk mund të ndryshohen as të numërohen dhe nuk skadojnë kurrë. Përdor kod të errët mbi sfond të çelët me kontrast të mjaftueshëm, përndryshe disa lexues nuk e lexojnë.",
+      "faq": [
+        {
+          "q": "A është falas dhe pa filigran?",
+          "a": "Po. Kodet janë falas, pa filigran dhe nuk skadojnë kurrë."
+        },
+        {
+          "q": "A dërgohet diku ajo që shkruaj?",
+          "a": "Jo. Kodi gjenerohet në shfletuesin tënd; asgjë nuk ngarkohet."
+        },
+        {
+          "q": "PNG apo SVG?",
+          "a": "PNG për ekrane, dokumente dhe rrjete sociale; SVG për printim, sepse mbetet i mprehtë në çdo madhësi."
+        },
+        {
+          "q": "Si bëhet një QR code për Wi‑Fi?",
+          "a": "Zgjidh Wi‑Fi, shkruaj emrin e rrjetit dhe fjalëkalimin dhe printo kodin: të ftuarit e skanojnë dhe lidhen pa shkruar fjalëkalimin."
+        },
+        {
+          "q": "Pse telefoni im nuk e lexon kodin?",
+          "a": "Zakonisht për kontrast të ulët, ngjyra të anasjella ose madhësi printimi shumë të vogël. Përdor kod të errët mbi sfond të çelët dhe të paktën 2 cm të gjerë."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3391,5 +3427,64 @@
     "note_skipped": "{{count}} skedar(ë) u anashkaluan: nuk janë imazhe.",
     "note_too_big": "{{count}} skedar(ë) u anashkaluan: mbi {{max}} MB.",
     "note_limit": "U shtuan vetëm {{max}} skedarët e parë."
+  },
+  "qr_code": {
+    "title": "Gjenerator QR Code",
+    "subtitle": "Krijo një QR code për një lidhje, Wi‑Fi, kontakt, email ose WhatsApp dhe shkarkoje në PNG ose SVG — në shfletues, pa regjistrim.",
+    "seo_title": "Gjenerator QR Code Falas — Lidhje, Wi-Fi, Kontakt, WhatsApp (PNG dhe SVG)",
+    "seo_description": "Krijo QR code online falas: lidhje, tekst, Wi-Fi, kartëvizitë, email, telefon dhe WhatsApp. Zgjidh ngjyrat dhe madhësinë, shkarko PNG ose SVG. Gjithçka ndodh në shfletuesin tënd.",
+    "alt": "Paraqitja paraprake e QR code",
+    "type_label": "Lloji i QR code",
+    "type_url": "Lidhje",
+    "type_text": "Tekst",
+    "type_wifi": "Wi‑Fi",
+    "type_contact": "Kontakt",
+    "type_email": "Email",
+    "type_phone": "Telefon",
+    "type_whatsapp": "WhatsApp",
+    "content_label": "Përmbajtja",
+    "f_url": "Adresa e uebit",
+    "ph_url": "shembull.al/faqja",
+    "f_text": "Tekst",
+    "ph_text": "Shkruaj çfarëdo teksti",
+    "f_ssid": "Emri i rrjetit (SSID)",
+    "f_security": "Siguria",
+    "sec_none": "Pa fjalëkalim",
+    "f_password": "Fjalëkalimi",
+    "f_hidden": "Rrjet i fshehur",
+    "f_first": "Emri",
+    "f_last": "Mbiemri",
+    "f_phone": "Telefon",
+    "ph_phone": "+355 69 123 4567",
+    "f_email": "Email",
+    "f_org": "Kompania",
+    "f_website": "Faqja e uebit",
+    "f_to": "Email i marrësit",
+    "f_subject": "Subjekti",
+    "f_body": "Mesazhi",
+    "f_wa_phone": "Numri i WhatsApp (me prefiks ndërkombëtar)",
+    "ph_wa_phone": "+355 69 123 4567",
+    "f_wa_text": "Mesazh i para-plotësuar (opsional)",
+    "privacy_sensitive": "Ajo që shkruan kthehet në kod në shfletuesin tënd dhe nuk dërgohet askund. Kushdo që skanon kodin mund ta lexojë: mos ndaj kode me fjalëkalim me njerëz që nuk u beson.",
+    "options": "Opsione",
+    "ec_label": "Korrigjimi i gabimeve",
+    "ec_hint": "Nivelet më të larta lexohen edhe kur kodi është i ndotur ose pjesërisht i mbuluar, por e bëjnë më të dendur. M është zgjedhje e mirë.",
+    "margin_label": "Margjina (module)",
+    "size_label": "Madhësia PNG",
+    "colors_label": "Ngjyrat",
+    "fg": "Kodi",
+    "bg": "Sfondi",
+    "swap": "Ndërro",
+    "reset": "Rivendos",
+    "warn_contrast": "Kontrast i ulët: shumë telefona nuk do ta lexojnë këtë kod. Përdor një kod shumë më të errët mbi sfond më të çelët.",
+    "warn_inverted": "Kod i çelët mbi sfond të errët: disa lexues nuk i lexojnë kodet e anasjellta. E errët mbi të çelët është më e sigurta.",
+    "meta": "{{modules}}×{{px}}",
+    "copy": "Kopjo imazhin",
+    "copied": "U kopjua",
+    "workspace_send": "Dërgo te Workspace",
+    "sent": "U dërgua",
+    "scan_tip": "Para se të printosh, skano kodin me telefon për ta kontrolluar. Për printim përdor SVG dhe mbaje të paktën 2 cm të gjerë.",
+    "too_long": "Kjo përmbajtje është shumë e gjatë për një QR code. Shkurtoje ose ul nivelin e korrigjimit të gabimeve.",
+    "empty": "Plotëso të dhënat në të majtë: kodi shfaqet këtu ndërsa shkruan."
   }
 }
