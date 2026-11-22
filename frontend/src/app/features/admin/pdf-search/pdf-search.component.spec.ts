@@ -483,5 +483,24 @@ describe('PdfSearchComponent', () => {
       for (let i = 0; i < 10; i++) component.zoomOut();
       expect(component.canZoomOut()).toBe(false);
     });
+
+    it('lo swipe orizzontale cambia pagina, quello verticale o corto no', () => {
+      configure();
+      const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+      component.canvasNumPages.set(5);
+      component.canvasPageNum.set(2);
+      const touch = (x: number, y: number) => ({ touches: [{ clientX: x, clientY: y }], changedTouches: [{ clientX: x, clientY: y }] }) as unknown as TouchEvent;
+      const swipe = (x0: number, y0: number, x1: number, y1: number) => {
+        component.onSwipeStart(touch(x0, y0));
+        component.onSwipeEnd(touch(x1, y1));
+      };
+      swipe(200, 100, 100, 105); // sinistra → avanti
+      expect(component.canvasPageNum()).toBe(3);
+      swipe(100, 100, 200, 100); // destra → indietro
+      expect(component.canvasPageNum()).toBe(2);
+      swipe(100, 100, 120, 100); // troppo corto
+      swipe(100, 100, 200, 300); // prevalentemente verticale
+      expect(component.canvasPageNum()).toBe(2);
+    });
   });
 });
