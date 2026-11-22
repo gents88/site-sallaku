@@ -92,7 +92,7 @@
           <div class="results-grid">
             @for (r of favorites(); track r.id) {
               <button type="button" class="result-card" [attr.title]="r.title" (click)="select(r)">
-                <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
                   @if (r.coverUrl && !coverFailed(r.id)) {
                     <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" (error)="onCoverError(r.id)" />
                   } @else {
@@ -105,7 +105,7 @@
                     <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
                   }
                   <div class="result-meta">
-                    <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                    <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
                       {{ r.sourceLabel }}
                     </span>
                   </div>
@@ -201,7 +201,7 @@
             [attr.title]="r.title"
             (click)="select(r)"
           >
-            <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+            <div class="result-cover" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
               @if (r.coverUrl && !coverFailed(r.id)) {
                 <img [src]="r.coverUrl" [alt]="r.title" loading="lazy" (error)="onCoverError(r.id)" />
               } @else {
@@ -218,7 +218,7 @@
                 <p class="result-author">{{ 'pdf_search.result_by' | translate }} {{ r.author }}</p>
               }
               <div class="result-meta">
-                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'">
+                <span class="source-pill" [class.source-ia]="r.source === 'internet_archive'" [class.source-gb]="r.source === 'gutenberg'" [class.source-arxiv]="r.source === 'arxiv'" [class.source-pmc]="r.source === 'pmc'" [class.source-zenodo]="r.source === 'zenodo'" [class.source-wm]="r.source === 'wikimedia'">
                   {{ r.sourceLabel }}
                 </span>
                 @if (r.year) { <span class="year-pill">{{ r.year }}</span> }
@@ -327,26 +327,28 @@
 
         <div class="preview-actions">
           <a class="btn-download" [href]="sel.pdfUrl" target="_blank" rel="noopener" (click)="trackDownload(sel)">
-            📥 {{ 'pdf_search.btn_download' | translate }}
+            <span class="btn-ico" aria-hidden="true">📥</span><span class="btn-label">{{ 'pdf_search.btn_download' | translate }}</span>
           </a>
-          <button type="button" class="btn-library" [disabled]="savingToLibrary()" (click)="saveToLibrary(sel)">
+          <button type="button" class="btn-library" [disabled]="savingToLibrary()" (click)="saveToLibrary(sel)"
+            [attr.aria-label]="((justSaved() || isInLibrary(sel)) ? 'pdf_search.library_saved' : 'pdf_search.btn_save_library') | translate">
             @if (savingToLibrary()) {
               <span class="spinner"></span>
             } @else if (justSaved() || isInLibrary(sel)) {
-              ✓ {{ 'pdf_search.library_saved' | translate }}
+              <span class="btn-ico" aria-hidden="true">✓</span><span class="btn-label">{{ 'pdf_search.library_saved' | translate }}</span>
             } @else {
-              📚 {{ 'pdf_search.btn_save_library' | translate }}
+              <span class="btn-ico" aria-hidden="true">📚</span><span class="btn-label">{{ 'pdf_search.btn_save_library' | translate }}</span>
             }
           </button>
-          <button type="button" class="btn-workspace" [disabled]="sendingToWorkspace()" (click)="sendToWorkspace(sel)">
+          <button type="button" class="btn-workspace" [disabled]="sendingToWorkspace()" (click)="sendToWorkspace(sel)"
+            [attr.aria-label]="(justSent() ? 'pdf_search.workspace_sent' : 'pdf_search.btn_send_workspace') | translate">
             @if (sendingToWorkspace()) {
               <span class="spinner"></span>
             } @else {
-              {{ justSent() ? '✓' : '🔗' }} {{ justSent() ? ('pdf_search.workspace_sent' | translate) : ('pdf_search.btn_send_workspace' | translate) }}
+              <span class="btn-ico" aria-hidden="true">{{ justSent() ? '✓' : '🔗' }}</span><span class="btn-label">{{ justSent() ? ('pdf_search.workspace_sent' | translate) : ('pdf_search.btn_send_workspace' | translate) }}</span>
             }
           </button>
-          <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener">
-            {{ 'pdf_search.btn_source_page' | translate }} →
+          <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener" [attr.aria-label]="'pdf_search.btn_source_page' | translate">
+            <span class="btn-ico" aria-hidden="true">↗</span><span class="btn-label">{{ 'pdf_search.btn_source_page' | translate }}</span>
           </a>
         </div>
       </div>
