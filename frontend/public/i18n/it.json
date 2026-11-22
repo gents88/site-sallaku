@@ -4093,6 +4093,7 @@
     "b_published": "pubblicati",
     "b_drafts": "bozze",
     "b_today": "visitatori oggi",
-    "b_clicks": "clic da Google"
+    "b_clicks": "clic da Google",
+    "total": "totale"
   }
 }
