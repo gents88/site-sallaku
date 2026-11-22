@@ -50,6 +50,8 @@ export class AiQuotaComponent {
   readonly view = computed(() => {
     const s = this.quota.status();
     if (!s) return null;
+    // Risposta incompleta del server: meglio nulla che "rimaste {{remaining}}" col segnaposto in vista.
+    if (typeof s.remaining !== 'number' || typeof s.limit !== 'number') return null;
     if (s.unavailable) return { kind: 'unavailable' as const, key: 'ai_quota.unavailable', params: {}, percent: 0 };
     if (s.remaining <= 0) return { kind: 'out' as const, key: 'ai_quota.exhausted', params: { time: formatResetTime(s.resetsAt) }, percent: 0 };
     const percent = s.limit > 0 ? Math.round((s.remaining / s.limit) * 100) : 0;

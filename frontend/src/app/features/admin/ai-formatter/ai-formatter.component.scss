@@ -1,3 +1,6 @@
+/* Titoli a gradiente: l'inizio chiaro (#e6edf3) è per il tema scuro, su sfondo chiaro il testo spariva. */
+:host-context([data-theme='light']) { --title-grad-start: #1e1b4b; --title-grad-end: #6d28d9; }
+
 // ── Variables / tokens (matching the app's design system) ──────────────
 :host {
   display: block;
@@ -221,7 +224,7 @@ app-breadcrumb {
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 6px;
-    background: linear-gradient(130deg, #e6edf3 40%, #a78bfa 100%);
+    background: linear-gradient(130deg, var(--title-grad-start, #e6edf3) 40%, var(--title-grad-end, #a78bfa) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -702,7 +705,7 @@ app-breadcrumb {
       font-size: 1.35rem;
       font-weight: 800;
       margin: 0 0 14px;
-      background: linear-gradient(130deg, #e6edf3 40%, #a78bfa 100%);
+      background: linear-gradient(130deg, var(--title-grad-start, #e6edf3) 40%, var(--title-grad-end, #a78bfa) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
