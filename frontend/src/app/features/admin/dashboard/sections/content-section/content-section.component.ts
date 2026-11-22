@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { NotFoundSummary, OverviewSection, ScheduledPost, SecuritySummary, TranslationHealth } from '../../admin-dashboard.service';
 import { DashboardCardComponent } from '../../components/dashboard-card/dashboard-card.component';
@@ -13,7 +12,7 @@ import { SecurityPanelComponent } from '../../panels/security-panel.component';
   selector: 'app-content-section',
   standalone: true,
   imports: [
-    MatIconModule, TranslateModule, DashboardCardComponent,
+    TranslateModule, DashboardCardComponent,
     TranslationHealthPanelComponent, ScheduledPostsPanelComponent, NotFoundPanelComponent, SecurityPanelComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
