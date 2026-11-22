@@ -547,13 +547,11 @@ export interface PartialOverview {
 }
 
 /**
- * Sezioni "vive", ricaricate a ogni giro di polling: chat live in attesa,
- * contatti e visite di oggi, errori, consumo AI, lead e sicurezza. Il resto
- * (aggregazioni pesanti sulle visite, SEO, sistema) si aggiorna più di rado.
+ * Sezioni ricaricate quando arriva una notifica admin in tempo reale (nuovo
+ * contatto, richiesta di chat live, nota, testimonianza): contatori e messaggi
+ * recenti, chat live in attesa, lead. Il resto si aggiorna con "Aggiorna".
  */
-export const LIVE_SECTIONS: readonly OverviewSection[] = [
-  'core', 'liveHandoffs', 'serverErrors', 'aiUsage', 'leads', 'security', 'chatbotStats',
-];
+export const LIVE_SECTIONS: readonly OverviewSection[] = ['core', 'liveHandoffs', 'leads'];
 
 /**
  * Riempie i buchi con valori vuoti (così il template non deve gestire null
@@ -598,7 +596,7 @@ export class AdminDashboardService {
     return this.http.get<RawOverview>(url).pipe(map(raw => normalizeOverview(raw)));
   }
 
-  /** Solo alcune sezioni dell'overview (polling leggero), senza cache lato server. */
+  /** Solo alcune sezioni dell'overview (aggiornamento su notifica), senza cache lato server. */
   loadSections(keys: readonly OverviewSection[]): Observable<PartialOverview> {
     const url = `${this.api}/stats/overview?sections=${keys.join(',')}`;
     return this.http.get<RawOverview>(url).pipe(
