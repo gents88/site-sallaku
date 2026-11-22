@@ -4075,5 +4075,24 @@
     "scan_tip": "Para se të printosh, skano kodin me telefon për ta kontrolluar. Për printim përdor SVG dhe mbaje të paktën 2 cm të gjerë.",
     "too_long": "Kjo përmbajtje është shumë e gjatë për një QR code. Shkurtoje ose ul nivelin e korrigjimit të gabimeve.",
     "empty": "Plotëso të dhënat në të majtë: kodi shfaqet këtu ndërsa shkruan."
+  },
+  "dash_v2": {
+    "attention_title": "Për t’u trajtuar tani",
+    "attention_clear": "Gjithçka në rregull: asgjë nuk kërkon vëmendjen tënde",
+    "att_live": "bisedë live në pritje",
+    "att_unread": "mesazhe të palexuara",
+    "att_followups": "ndjekje që skadojnë",
+    "att_errors": "gabime serveri të hapura",
+    "att_broken": "lidhje të thyera (404)",
+    "att_translations": "artikuj me probleme përkthimi",
+    "b_errors": "gabime të hapura",
+    "b_warnings": "paralajmërime",
+    "b_translations": "artikuj me probleme përkthimi",
+    "b_broken": "lidhje të thyera",
+    "b_scheduled": "artikuj të planifikuar",
+    "b_published": "të publikuara",
+    "b_drafts": "drafte",
+    "b_today": "vizitorë sot",
+    "b_clicks": "klikime nga Google"
   }
 }

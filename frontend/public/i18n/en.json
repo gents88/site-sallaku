@@ -4075,5 +4075,24 @@
     "scan_tip": "Before printing, scan the code with your phone to check it. For print use SVG, and keep it at least 2 cm wide.",
     "too_long": "This content is too long for a QR code. Shorten it or lower the error correction level.",
     "empty": "Fill in the details on the left: the code appears here as you type."
+  },
+  "dash_v2": {
+    "attention_title": "Needs your attention",
+    "attention_clear": "All clear: nothing needs your attention",
+    "att_live": "live chat waiting",
+    "att_unread": "unread messages",
+    "att_followups": "follow-ups due",
+    "att_errors": "open server errors",
+    "att_broken": "broken links (404)",
+    "att_translations": "posts with translation issues",
+    "b_errors": "open errors",
+    "b_warnings": "warnings",
+    "b_translations": "posts with translation issues",
+    "b_broken": "broken links",
+    "b_scheduled": "scheduled posts",
+    "b_published": "published",
+    "b_drafts": "drafts",
+    "b_today": "visitors today",
+    "b_clicks": "clicks from Google"
   }
 }

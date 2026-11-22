@@ -73,33 +73,73 @@
     </nav>
 
     <div id="dash-overview" class="dash-anchor">
-      <!-- Stats grid -->
-      <div class="stats-grid">
-        @for (stat of stats; track stat.labelKey) {
-          <a [routerLink]="stat.route" [queryParams]="stat.query ?? null" class="stat-card card">
-            <div class="stat-card__icon" [style.background]="stat.color + '22'" [style.color]="stat.color">
-              <mat-icon>{{ stat.icon }}</mat-icon>
+      <!-- Numeri chiave -->
+      <div class="stats-grid stats-grid--primary">
+        @for (stat of primaryStats; track stat.labelKey) {
+          <a [routerLink]="stat.route" [queryParams]="stat.query ?? null" class="stat-card stat-card--primary" [style.--stat-color]="stat.color">
+            <div class="stat-card__head">
+              <span class="stat-card__icon" aria-hidden="true"><mat-icon>{{ stat.icon }}</mat-icon></span>
+              <span class="stat-card__label">{{ stat.labelKey | translate }}</span>
             </div>
-            <div class="stat-card__content">
-              <p class="stat-card__value">{{ stat.value ?? '—' }}</p>
-              <p class="stat-card__label text-muted">{{ stat.labelKey | translate }}</p>
-              @if (stat.spark) {
-                <!-- Ultimi 7 giorni, dati reali (contatti/visite per giorno). -->
-                <div class="stat-mini-chart" aria-hidden="true" [title]="'admin.last_7_days' | translate">
-                  @for (bar of stat.spark; track $index) {
-                    <span class="stat-mini-chart__bar" [style.height.%]="bar" [style.background]="stat.color"></span>
-                  }
-                </div>
-              }
-            </div>
+            <p class="stat-card__value">{{ stat.value === null ? '—' : (stat.value | number) }}</p>
+            @if (stat.spark) {
+              <!-- Ultimi 7 giorni, dati reali (contatti/visite per giorno). -->
+              <div class="stat-mini-chart" aria-hidden="true" [title]="'admin.last_7_days' | translate">
+                @for (bar of stat.spark.slice(-14); track $index) {
+                  <span class="stat-mini-chart__bar" [style.height.%]="bar"></span>
+                }
+              </div>
+            }
+          </a>
+        }
+      </div>
+      <!-- Contenuti: riga compatta -->
+      <div class="stats-grid stats-grid--compact">
+        @for (stat of compactStats; track stat.labelKey) {
+          <a [routerLink]="stat.route" [queryParams]="stat.query ?? null" class="stat-card stat-card--compact" [style.--stat-color]="stat.color">
+            <span class="stat-card__icon" aria-hidden="true"><mat-icon>{{ stat.icon }}</mat-icon></span>
+            <span class="stat-card__text">
+              <span class="stat-card__value">{{ stat.value === null ? '—' : (stat.value | number) }}</span>
+              <span class="stat-card__label">{{ stat.labelKey | translate }}</span>
+            </span>
           </a>
         }
       </div>
 
+      <!-- ── Da fare adesso ── -->
+      <section class="attention" [class.attention--clear]="attention.length === 0" [attr.aria-label]="'dash_v2.attention_title' | translate">
+        <h2 class="attention__title">
+          <mat-icon aria-hidden="true">{{ attention.length ? 'error_outline' : 'check_circle' }}</mat-icon>
+          {{ (attention.length ? 'dash_v2.attention_title' : 'dash_v2.attention_clear') | translate }}
+        </h2>
+        @if (attention.length) {
+          <ul class="attention__list">
+            @for (item of attention; track item.id) {
+              <li>
+                @if (item.route) {
+                  <a class="attention__item attention__item--{{ item.tone }}" [routerLink]="item.route">
+                    <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+                    <strong>{{ item.count }}</strong><span>{{ item.labelKey | translate }}</span>
+                    <mat-icon class="attention__go" aria-hidden="true">arrow_forward</mat-icon>
+                  </a>
+                } @else {
+                  <button type="button" class="attention__item attention__item--{{ item.tone }}" (click)="scrollTo(item.section!)">
+                    <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+                    <strong>{{ item.count }}</strong><span>{{ item.labelKey | translate }}</span>
+                    <mat-icon class="attention__go" aria-hidden="true">arrow_forward</mat-icon>
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
       <!-- ── Chat live: rientro nelle sessioni aperte ────────────────────────
            Senza questa card l'unico modo per tornare in una chat da cui si è
            usciti sarebbe ritrovare la vecchia email di notifica. -->
-      <section class="card live-chat-card" [class.live-chat-card--empty]="liveHandoffs.length === 0">
+      @if (liveHandoffs.length > 0) {
+      <section class="card live-chat-card">
         <div class="live-chat-card__header">
           <div class="live-chat-card__title">
             <mat-icon>support_agent</mat-icon>
@@ -117,9 +157,6 @@
           }
         </div>
 
-        @if (liveHandoffs.length === 0) {
-          <p class="live-chat-card__empty text-muted">{{ 'live_handoff.card_empty' | translate }}</p>
-        } @else {
           <ul class="live-chat-list">
             @for (session of liveHandoffs; track session.requestId) {
               <li class="live-chat-item" [class.live-chat-item--live]="session.status === 'live'">
@@ -137,11 +174,11 @@
               </li>
             }
           </ul>
-        }
       </section>
+      }
 
       <!-- ── Lead: pipeline dei contatti e follow-up ── -->
-      <div class="analytics-grid">
+      <div id="dash-leads" class="analytics-grid dash-anchor">
         <app-dashboard-card titleKey="leads.title" descKey="leads.desc" icon="handshake">
           <app-leads-panel [data]="leads" [failed]="isFailed('leads')" />
         </app-dashboard-card>
@@ -150,6 +187,14 @@
 
     <!-- Sezioni richiudibili: il contenuto di una sezione chiusa non viene creato.
          Aperta/chiusa resta memorizzato nel browser (DashboardComponent.openSections). -->
+<ng-template #badges let-id>
+      @for (b of badgesFor(id); track b.labelKey) {
+        <span class="dash-badge dash-badge--{{ b.tone }}">
+          <mat-icon aria-hidden="true">{{ b.icon }}</mat-icon>{{ b.value }}<span class="sr-only"> {{ b.labelKey | translate }}</span>
+        </span>
+      }
+    </ng-template>
+
     <mat-accordion class="dash-accordion" multi>
       <mat-expansion-panel
         id="dash-ops"
@@ -162,6 +207,7 @@
           <mat-panel-title class="dash-panel__title">
             <mat-icon aria-hidden="true">monitor_heart</mat-icon>{{ 'ops_health.section' | translate }}
           </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-ops' }" /></span>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           <app-ops-section
@@ -185,6 +231,7 @@
           <mat-panel-title class="dash-panel__title">
             <mat-icon aria-hidden="true">edit_note</mat-icon>{{ 'content_health.section' | translate }}
           </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-content' }" /></span>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           <app-content-section
@@ -209,6 +256,7 @@
           <mat-panel-title class="dash-panel__title">
             <mat-icon aria-hidden="true">show_chart</mat-icon>{{ 'dashboard_ux.activity_section' | translate }}
           </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-activity' }" /></span>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           @defer (on viewport; prefetch on idle) {
@@ -240,6 +288,7 @@
           <mat-panel-title class="dash-panel__title">
             <mat-icon aria-hidden="true">people</mat-icon>{{ 'admin.visitor_analytics' | translate }}
           </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-visitors' }" /></span>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           @defer (on viewport; prefetch on idle) {
@@ -266,6 +315,7 @@
           <mat-panel-title class="dash-panel__title">
             <mat-icon aria-hidden="true">public</mat-icon>{{ 'dashboard_ux.acquisition_section' | translate }}
           </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-acquisition' }" /></span>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           @defer (on viewport; prefetch on idle) {
@@ -288,6 +338,7 @@
             <mat-panel-title class="dash-panel__title">
               <mat-icon aria-hidden="true">search</mat-icon>{{ 'admin.seo_title' | translate }}
             </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-seo' }" /></span>
           </mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
               @defer (on viewport; prefetch on idle) {
@@ -310,6 +361,7 @@
           <mat-panel-title class="dash-panel__title">
             <mat-icon aria-hidden="true">build_circle</mat-icon>{{ 'admin.utility_section' | translate }}
           </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-utility' }" /></span>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           @defer (on viewport; prefetch on idle) {
@@ -343,6 +395,7 @@
           <mat-panel-title class="dash-panel__title">
             <mat-icon aria-hidden="true">forum</mat-icon>{{ 'admin.chat_sessions_section' | translate }}
           </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-chat' }" /></span>
         </mat-expansion-panel-header>
         <ng-template matExpansionPanelContent>
           <app-chat-sessions-section [interactionsToday]="chatbotStats.interactionsToday" />
@@ -380,6 +433,7 @@
                 <span class="section-unread-badge" [attr.aria-label]="unreadCount + ' unread'">{{ unreadCount }}</span>
               }
             </mat-panel-title>
+          <span class="dash-panel__badges"><ng-container *ngTemplateOutlet="badges; context: { $implicit: 'dash-messages' }" /></span>
           </mat-expansion-panel-header>
           <ng-template matExpansionPanelContent>
           <div class="contacts-list card">
