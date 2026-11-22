@@ -1,0 +1,236 @@
+:host { display: block; }
+
+.cp-page { min-height: 100%; padding: 2rem; background: var(--bg-primary, #0d1117); max-width: 1000px; margin: 0 auto; }
+.cp-header { margin-bottom: 1.5rem; }
+.cp-title { font-size: 1.75rem; font-weight: 700; color: var(--text-primary, #e6edf3); margin: 0 0 0.25rem; }
+.cp-subtitle { color: var(--text-secondary, #8b949e); margin: 0; font-size: 0.9rem; }
+
+.cp-panel {
+  background: var(--bg-secondary, #161b22); border: 1px solid var(--border-color, #30363d);
+  border-radius: 14px; padding: 1.1rem; margin-bottom: 1.1rem; color: var(--text-primary, #e6edf3);
+}
+
+// ── Apertura ────────────────────────────────────────────────────
+.dz {
+  border: 2px dashed var(--border-strong, #5f6b82); border-radius: 12px; padding: 2rem 1rem;
+  text-align: center; cursor: pointer; display: grid; gap: .3rem; transition: border-color .18s, background .18s;
+}
+.dz:hover, .dz--drag { border-color: var(--accent, #5b52f0); background: rgba(108, 99, 255, .06); }
+.dz-icon { font-size: 1.9rem; line-height: 1; }
+.dz small { color: var(--text-secondary, #8b949e); }
+
+.progress-wrap { margin-top: 1rem; }
+.progress-bar { height: 3px; background: var(--bg-tertiary, #1c2333); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; width: 40%; background: var(--accent, #5b52f0); border-radius: 2px; animation: sp-slide 1.1s ease-in-out infinite; }
+@keyframes sp-slide { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
+
+.msg { padding: .55rem .8rem; border-radius: 8px; background: rgba(251, 191, 36, .1); border: 1px solid rgba(251, 191, 36, .35); font-size: .85rem; color: var(--c-amber, #fbbf24); margin: 1rem 0 0; }
+.msg--ok { background: rgba(52, 211, 153, .1); border-color: rgba(52, 211, 153, .35); color: var(--c-green, #34d399); }
+
+.privacy-note { margin: .9rem 0 0; font-size: .78rem; color: var(--text-secondary, #8b949e); }
+.disclaimer { margin: .35rem 0 0; font-size: .75rem; color: var(--text-muted, #7a879c); line-height: 1.5; }
+
+// ── Banner workspace ────────────────────────────────────────────
+.workspace-banner {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 1.25rem; padding: 10px 13px;
+  background: rgba(108, 99, 255, .09); border: 1px solid rgba(108, 99, 255, .3); border-radius: 8px;
+}
+.workspace-banner-icon { font-size: 1.1rem; flex-shrink: 0; }
+.workspace-banner-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.workspace-banner-text strong { font-size: .8rem; font-weight: 600; color: var(--text-primary, #e6edf3); }
+.workspace-banner-filename { font-size: .75rem; color: var(--text-secondary, #8b949e); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-banner-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.workspace-btn {
+  padding: 8px 12px; background: transparent; border: 1px solid var(--border-strong, #5f6b82); border-radius: 8px;
+  color: var(--text-primary, #e6edf3); font-size: .8rem; cursor: pointer; white-space: nowrap; min-height: 38px;
+  &.primary { background: var(--accent, #5b52f0); border-color: var(--accent, #5b52f0); color: #fff; }
+  &:hover { opacity: .88; }
+}
+
+// ── Strumenti ───────────────────────────────────────────────────
+.tool-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+.tool-row--meta { margin-top: .75rem; align-items: center; gap: .4rem .9rem; }
+.tool {
+  display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; padding: 0 .95rem;
+  border-radius: 10px; border: 1px solid var(--border-strong, #5f6b82); background: transparent;
+  color: var(--text-primary, #e6edf3); font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer;
+  transition: background .15s, border-color .15s;
+  &:hover { border-color: var(--accent, #5b52f0); background: rgba(108, 99, 255, .08); }
+  &:focus-visible { outline: 2px solid var(--accent, #5b52f0); outline-offset: 2px; }
+}
+.tool--primary { background: var(--accent, #5b52f0); border-color: var(--accent, #5b52f0); color: #fff; &:hover { background: var(--accent, #5b52f0); opacity: .9; } }
+.tool--icon { width: 44px; padding: 0; justify-content: center; font-size: 1.15rem; }
+
+.ink { display: inline-flex; gap: .45rem; align-items: center; }
+.ink-dot {
+  width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer;
+  box-shadow: 0 0 0 1px var(--border-strong, #5f6b82);
+  &--on { box-shadow: 0 0 0 2px var(--bg-secondary, #161b22), 0 0 0 4px var(--accent, #5b52f0); }
+}
+.link-btn {
+  background: none; border: 0; padding: .35rem .2rem; min-height: 36px; font: inherit; font-size: .82rem;
+  color: var(--accent-text, #a5a0ff); cursor: pointer; text-decoration: underline; text-underline-offset: 3px;
+  &:disabled { opacity: .4; cursor: not-allowed; text-decoration: none; }
+}
+.hint-line { margin: .8rem 0 0; font-size: .8rem; color: var(--text-secondary, #8b949e); }
+
+.sel-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-top: .85rem; padding-top: .85rem; border-top: 1px solid var(--border-subtle, #30363d); }
+.sel-text {
+  flex: 1 1 200px; min-width: 0; min-height: 40px; padding: 0 .7rem; border-radius: 8px; font: inherit; font-size: .9rem;
+  background: var(--input-bg, rgba(255, 255, 255, .05)); color: var(--text-primary, #e6edf3); border: 1px solid var(--border-strong, #5f6b82);
+  &:focus-visible { outline: 2px solid var(--accent, #5b52f0); outline-offset: 1px; }
+}
+.sel-btn {
+  min-width: 40px; min-height: 40px; padding: 0 .6rem; border-radius: 8px; font: inherit; font-size: 1rem; cursor: pointer;
+  border: 1px solid var(--border-strong, #5f6b82); background: transparent; color: var(--text-primary, #e6edf3);
+  &:hover { border-color: var(--accent, #5b52f0); }
+}
+.sel-btn--wide { font-size: .78rem; }
+.sel-btn--danger:hover { border-color: var(--c-red, #f87171); }
+
+// ── Pagina ──────────────────────────────────────────────────────
+.stage-panel { padding: .75rem; }
+.page-nav { display: flex; align-items: center; gap: .6rem; margin-bottom: .6rem; flex-wrap: wrap; }
+.nav-btn {
+  width: 40px; height: 40px; border-radius: 8px; font-size: 1.25rem; line-height: 1; cursor: pointer;
+  border: 1px solid var(--border-strong, #5f6b82); background: transparent; color: var(--text-primary, #e6edf3);
+  &:disabled { opacity: .35; cursor: not-allowed; }
+}
+.page-jump { display: inline-flex; align-items: center; gap: .4rem; color: var(--text-secondary, #8b949e); font-size: .9rem; }
+.page-jump input {
+  width: 58px; height: 40px; text-align: center; border-radius: 8px; font: inherit; font-size: 16px;
+  border: 1px solid var(--border-strong, #5f6b82); background: var(--input-bg, transparent); color: var(--text-primary, #e6edf3);
+}
+.page-count { margin-left: auto; font-size: .8rem; color: var(--text-secondary, #8b949e); }
+
+.stage {
+  position: relative; width: 100%; max-width: 860px; margin: 0 auto; overflow: hidden;
+  background: #fff; border-radius: 6px; box-shadow: 0 4px 18px rgba(0, 0, 0, .35);
+  // lo scorrimento verticale resta al browser; trascinamento e pizzico dei campi li gestiamo noi
+  touch-action: pan-y;
+  user-select: none; -webkit-user-select: none;
+}
+.stage-img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.stage-spinner { position: absolute; top: 50%; left: 50%; margin: -10px 0 0 -10px; }
+
+.field {
+  position: absolute; cursor: grab; touch-action: none; box-sizing: border-box;
+  outline: 1px dashed transparent; outline-offset: 2px; border-radius: 3px;
+  &:hover { outline-color: rgba(91, 82, 240, .55); }
+  &:focus-visible { outline: 2px solid #5b52f0; }
+  img { display: block; width: 100%; height: 100%; pointer-events: none; object-fit: fill; }
+}
+.field--selected { outline: 2px solid #5b52f0; cursor: grabbing; background: rgba(91, 82, 240, .06); }
+.field--text { width: auto; height: auto; white-space: pre; line-height: 1.2; padding: 0 2px; }
+.field-text { display: block; font-family: Helvetica, Arial, sans-serif; line-height: 1.2; pointer-events: none; }
+.handle {
+  position: absolute; right: -9px; bottom: -9px; width: 20px; height: 20px; border-radius: 50%;
+  background: #5b52f0; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .4); cursor: nwse-resize; touch-action: none;
+  // area di tocco più generosa del pallino visibile
+  &::after { content: ''; position: absolute; inset: -12px; }
+}
+
+// ── Esportazione ────────────────────────────────────────────────
+.export-row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+.btn-download, .btn-main {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 46px; padding: 0 1.3rem;
+  border-radius: 10px; border: 0; font: inherit; font-weight: 700; font-size: .92rem; cursor: pointer;
+  background: var(--gradient-button, #5b52f0); color: #fff;
+  &:disabled { opacity: .45; cursor: not-allowed; }
+  &:focus-visible { outline: 2px solid var(--accent, #5b52f0); outline-offset: 2px; }
+}
+.btn-ghost {
+  min-height: 46px; padding: 0 1.1rem; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer;
+  background: transparent; color: var(--text-primary, #e6edf3); border: 1px solid var(--border-strong, #5f6b82);
+}
+
+// ── Finestra della firma ────────────────────────────────────────
+.pad-backdrop {
+  position: fixed; inset: 0; z-index: 1600; display: flex; align-items: center; justify-content: center; padding: 1rem;
+  background: rgba(0, 0, 0, .65); backdrop-filter: blur(3px);
+}
+.pad {
+  width: min(680px, 100%); max-height: 100%; overflow: auto; display: flex; flex-direction: column; gap: .8rem;
+  padding: 1.1rem; border-radius: 16px; background: var(--bg-secondary, #161b22); color: var(--text-primary, #e6edf3);
+  border: 1px solid var(--border-color, #30363d); box-shadow: 0 24px 64px rgba(0, 0, 0, .5);
+}
+.pad-head { display: flex; align-items: center; justify-content: space-between; }
+.pad-head h2 { margin: 0; font-size: 1.05rem; }
+.pad-x {
+  width: 40px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 1rem;
+  border: 1px solid var(--border-strong, #5f6b82); background: transparent; color: var(--text-secondary, #8b949e);
+}
+.pad-tabs { display: flex; gap: .4rem; }
+.pad-tab {
+  flex: 1; min-height: 42px; border-radius: 9px; font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border-strong, #5f6b82); background: transparent; color: var(--text-secondary, #8b949e);
+  &--on { background: var(--accent, #5b52f0); border-color: var(--accent, #5b52f0); color: #fff; }
+}
+.pad-body { display: flex; flex-direction: column; gap: .6rem; }
+.pad-canvas {
+  width: 100%; aspect-ratio: 640 / 240; border-radius: 10px; background: #fff; touch-action: none; cursor: crosshair;
+  border: 1px dashed var(--border-strong, #5f6b82);
+  // la linea guida della firma
+  background-image: linear-gradient(to right, transparent 0, transparent 100%);
+}
+.pad-hint { margin: 0; font-size: .78rem; color: var(--text-secondary, #8b949e); text-align: center; }
+.pad-input {
+  min-height: 46px; padding: 0 .85rem; border-radius: 10px; font: inherit; font-size: 16px;
+  background: var(--input-bg, transparent); color: var(--text-primary, #e6edf3); border: 1px solid var(--border-strong, #5f6b82);
+  &:focus-visible { outline: 2px solid var(--accent, #5b52f0); outline-offset: 1px; }
+}
+.pad-fonts { display: grid; gap: .45rem; }
+.pad-font {
+  min-height: 64px; padding: .4rem 1rem; border-radius: 10px; cursor: pointer; text-align: left; overflow: hidden;
+  background: #fff; border: 2px solid var(--border-strong, #5f6b82); text-overflow: ellipsis; white-space: nowrap;
+  font-size: inherit;
+  &--on { border-color: var(--accent, #5b52f0); box-shadow: 0 0 0 2px rgba(91, 82, 240, .25); }
+}
+.pad-upload {
+  display: grid; gap: .25rem; place-items: center; text-align: center; padding: 1.4rem 1rem; cursor: pointer; border-radius: 10px;
+  border: 2px dashed var(--border-strong, #5f6b82); font-weight: 600;
+  small { font-weight: 400; color: var(--text-secondary, #8b949e); }
+  &:hover { border-color: var(--accent, #5b52f0); }
+}
+.pad-preview { display: grid; place-items: center; padding: .6rem; border-radius: 10px; background: #fff; max-height: 140px; overflow: hidden; }
+.pad-preview img { max-width: 100%; max-height: 120px; object-fit: contain; }
+.pad-check { display: inline-flex; align-items: center; gap: .5rem; font-size: .85rem; cursor: pointer; min-height: 36px; }
+.pad-check input { width: 18px; height: 18px; accent-color: var(--accent, #5b52f0); }
+.pad-foot { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem 1rem; }
+.pad-check--remember { margin-left: auto; font-size: .8rem; color: var(--text-secondary, #8b949e); }
+.pad-actions { display: flex; justify-content: flex-end; gap: .6rem; }
+
+// ── Telefono ────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  .cp-page { padding: 1rem; }
+  .cp-title { font-size: 1.35rem; }
+  .stage-panel { padding: .4rem; }
+  // Tutti i pulsanti su una riga (se non ci stanno vanno a capo): la pagina deve comparire il più in alto possibile.
+  .tool-row { gap: .4rem; }
+  .tool { padding: 0 .5rem; gap: .3rem; font-size: .8rem; }
+  .tool--icon { width: 40px; }
+  .tool-row--meta { margin-top: .5rem; gap: .2rem .7rem; }
+  .hint-line { margin-top: .5rem; }
+  .tools-panel { padding: .8rem; margin-bottom: .75rem; }
+  .page-count { flex-basis: 100%; margin-left: 0; }
+  .export-row > * { flex: 1 1 100%; }
+
+  // La tab bar del sito sta sopra la modale (z-index più alto): si lascia sotto lo spazio che occupa
+  // invece di combatterla, così "Usa firma" resta sempre raggiungibile.
+  .pad-backdrop {
+    align-items: flex-end; padding: 0 0 calc(var(--bottom-tabbar-height, 60px) + env(safe-area-inset-bottom, 0px));
+  }
+  .pad { border-radius: 16px 16px 0 0; width: 100%; padding: .9rem; }
+  .pad-actions > * { flex: 1; }
+  .pad-check--remember { margin-left: 0; flex-basis: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill { animation: none; }
+}
+
+.spinner {
+  display: inline-block; width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .35); border-top-color: #fff; animation: spin .7s linear infinite;
+}
+.stage-spinner { border-color: rgba(91, 82, 240, .3); border-top-color: #5b52f0; width: 20px; height: 20px; }

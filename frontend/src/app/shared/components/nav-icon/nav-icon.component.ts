@@ -38,6 +38,7 @@ export const NAV_ICONS: Record<string, string> = {
   puzzle: '<path d="M10 4.5a2 2 0 0 1 4 0V6h4v4h-1.5a2 2 0 0 0 0 4H18v4.5h-4.5V17a2 2 0 0 0-4 0v1.5H5V14h1.5a2 2 0 0 0 0-4H5V6h5z"/>',
   folder: '<path d="M3.5 7a2 2 0 0 1 2-2H10l2 2.5h6.5a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>',
   pen: '<path d="M14 3.5H6.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2H11"/><path d="M14 3.5 19.5 9v2"/><path d="m15.5 20.5 5-5-2-2-5 5-.5 2.5z"/>',
+  signature: '<path d="M3.5 16.5c2.2-3.4 3.4-6.5 4.6-6.5 1.5 0 .3 5.2 1.9 5.2 1.3 0 1.7-3 3-3 1 0 .6 2 1.6 2"/><path d="M4 20.5h10"/><path d="m14 11.5 4.8-4.8a1.5 1.5 0 0 1 2.1 2.1L16.1 13.6 13.5 14z"/>',
   eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
   pencil: '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="m14.5 7.5 3 3"/>',
   swap: '<path d="M4 8h14"/><path d="m14.5 4.5 3.5 3.5-3.5 3.5"/><path d="M20 16H6"/><path d="m9.5 12.5-3.5 3.5 3.5 3.5"/>',
@@ -70,7 +71,7 @@ export const NAV_ICON_COLORS: Record<string, string> = {
   send: '#ec4899', chat: '#14b8a6', article: '#10b981', star: '#f59e0b', shield: '#64748b',
   flask: '#8b5cf6', rocket: '#f97316', dashboard: '#6366f1', 'search-doc': '#3b82f6', books: '#d97706',
   summary: '#0d9488', globe: '#06b6d4', slides: '#f97316', puzzle: '#22c55e', folder: '#f59e0b',
-  pen: '#ec4899', eye: '#0ea5e9', pencil: '#ca8a04', swap: '#22c55e', 'text-scan': '#6366f1',
+  pen: '#ec4899', signature: '#e11d48', eye: '#0ea5e9', pencil: '#ca8a04', swap: '#22c55e', 'text-scan': '#6366f1',
   camera: '#f43f5e', bot: '#a855f7', headset: '#ef4444', palette: '#ec4899', logout: '#ef4444', sun: '#f59e0b', moon: '#818cf8', monitor: '#64748b',
 };
 
