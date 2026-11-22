@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef, HostListener, ViewChild, effect, inject, untracked, viewChild } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { AdminNotificationsService } from '../../../core/services/admin-notifications.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { DonutItem } from '../../../shared/components/donut-chart/donut-chart.component';
 import {
@@ -37,7 +38,7 @@ import {
   NotFoundSummary,
   SecuritySummary,
 } from './admin-dashboard.service';
-import { DASHBOARD_POLL_MS, failedSectionLabels, needsFullRefresh, shouldRefreshOnVisible, sparkline } from './dashboard-metrics';
+import { failedSectionLabels, sparkline } from './dashboard-metrics';
 import { DashboardCardComponent } from './components/dashboard-card/dashboard-card.component';
 import { LeadsPanelComponent } from './panels/leads-panel.component';
 import { OpsSectionComponent } from './sections/ops-section/ops-section.component';
@@ -79,9 +80,10 @@ export interface DashboardNavItem {
  * gestisce i messaggi; le sezioni (sections/*) li mostrano e quelle sotto la
  * piega si caricano solo quando ci si arriva (@defer on viewport).
  *
- * Polling: ogni DASHBOARD_POLL_MS solo le sezioni vive (LIVE_SECTIONS: chat
- * live, contatori, errori…), ogni DASHBOARD_FULL_REFRESH_MS tutto. Il pulsante
- * "Aggiorna" ricarica sempre tutto saltando la cache del server.
+ * Nessun aggiornamento a intervalli: i dati si ricaricano con "Aggiorna"
+ * (saltando la cache del server). Fa eccezione quello che arriva in tempo reale
+ * dal WebSocket admin (nuovo contatto, richiesta di chat live…): allora si
+ * ricaricano solo le sezioni interessate (LIVE_SECTIONS).
  */
 @Component({
   selector: 'app-dashboard',
@@ -173,8 +175,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   visitorStats!: VisitorStats;
 
   lastLoadedAt: Date | null = null;
-  /** Ultimo caricamento completo (tutte le sezioni): il polling leggero lo rinnova ogni DASHBOARD_FULL_REFRESH_MS. */
-  private lastFullAt: Date | null = null;
   /** Dati dell'ultimo snapshot, su cui si fondono gli aggiornamenti parziali. */
   private lastData: DashboardOverviewData | null = null;
   /** Sezioni che il server non è riuscito a caricare nell'ultimo snapshot. */
@@ -184,11 +184,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   /** Refresh successivi al primo: niente schermata di caricamento, solo l'icona che gira. */
   refreshing = false;
   private readonly document = inject(DOCUMENT);
-  private readonly onVisibilityChange = () => {
-    if (shouldRefreshOnVisible(this.document.hidden, this.lastLoadedAt)) this.poll();
-  };
+  private readonly notifications = inject(AdminNotificationsService);
   private dataSubscription: Subscription | null = null;
-  private refreshInterval: ReturnType<typeof setInterval> | null = null;
+  /** Ultima notifica già gestita: l'effect parte anche alla creazione, senza eventi nuovi. */
+  private lastNotification: unknown = null;
+
+  /** Notifica admin in tempo reale → ricarica solo contatori, messaggi, chat live e lead. */
+  private readonly onAdminNotification = effect(() => {
+    const latest = this.notifications.recent()[0] ?? null;
+    if (latest === this.lastNotification) return;
+    this.lastNotification = latest;
+    if (latest) untracked(() => this.loadLive());
+  });
 
   private readonly acquisitionSection = viewChild(AcquisitionSectionComponent);
   private readonly chatSessions = viewChild(ChatSessionsSectionComponent);
@@ -214,22 +221,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.lastNotification = this.notifications.recent()[0] ?? null;
     this.loadData();
-    // In una scheda nascosta non si interroga il server: al ritorno si
-    // aggiorna subito se lo snapshot è più vecchio del polling.
-    this.refreshInterval = setInterval(() => {
-      if (!this.document.hidden) this.poll();
-    }, DASHBOARD_POLL_MS);
-    this.document.addEventListener('visibilitychange', this.onVisibilityChange);
   }
 
   ngOnDestroy(): void {
     this.dataSubscription?.unsubscribe();
-    this.document.removeEventListener('visibilitychange', this.onVisibilityChange);
-    if (this.refreshInterval !== null) {
-      clearInterval(this.refreshInterval);
-      this.refreshInterval = null;
-    }
   }
 
   /** Indice delle sezioni: la SEO compare solo se Search Console è configurato, i messaggi solo se ce ne sono. */
@@ -265,21 +262,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return failedSectionLabels(this.failedSections);
   }
 
-  /** Giro di polling: tutto ogni DASHBOARD_FULL_REFRESH_MS, altrimenti solo le sezioni vive. */
-  poll(): void {
-    if (needsFullRefresh(this.lastFullAt) || !this.lastData) {
-      this.loadData();
-    } else {
-      this.loadLive();
-    }
-  }
-
   loadData(fresh = false): void {
     this.refreshing = !this.loading;
     this.dataSubscription?.unsubscribe();
     this.dataSubscription = this.adminDashboard.loadOverview(fresh).subscribe({
       next: (overview) => {
-        this.lastFullAt = new Date();
         // I pannelli Provenienza e Contatti caricano da soli: al giro completo si aggiornano anche loro.
         if (this.lastData) this.acquisitionSection()?.reload();
         this.applyOverview(overview);
@@ -288,8 +275,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** Solo le sezioni vive, fuse con lo snapshot in pagina. */
+  /** Solo le sezioni toccate da una notifica, fuse con lo snapshot in pagina. */
   private loadLive(): void {
+    if (!this.lastData) return;
     this.dataSubscription?.unsubscribe();
     this.dataSubscription = this.adminDashboard.loadSections(LIVE_SECTIONS).subscribe({
       next: (partial) => this.applyPartial(partial),

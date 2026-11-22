@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DashboardComponent } from './dashboard.component';
 import { AdminDashboardService, DashboardOverview, OverviewSection, normalizeOverview } from './admin-dashboard.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AdminNotification, AdminNotificationsService } from '../../../core/services/admin-notifications.service';
 import { provideFeatureFlagsStub } from '../../../core/services/feature-flags.testing';
 
 function overview(errors: string[] = [], sections: Record<string, unknown> = {}): DashboardOverview {
@@ -27,12 +28,14 @@ function overview(errors: string[] = [], sections: Record<string, unknown> = {})
 async function setup(load: AdminDashboardService['loadOverview'], sections: AdminDashboardService['loadSections'] = () => of({ data: {}, requested: new Set<OverviewSection>(), failed: new Set<OverviewSection>() })) {
   const loadOverview = vi.fn(load);
   const loadSections = vi.fn(sections);
+  const recent = signal<AdminNotification[]>([]);
   TestBed.configureTestingModule({
     imports: [DashboardComponent, TranslateModule.forRoot()],
     providers: [
       provideRouter([]),
       provideNoopAnimations(),
       provideFeatureFlagsStub(),
+      { provide: AdminNotificationsService, useValue: { recent } },
       { provide: AuthService, useValue: { currentUser: signal(null), isAdmin: signal(true), logout: vi.fn() } },
       { provide: AdminDashboardService, useValue: { loadOverview, loadSections, getTodaySessions: vi.fn(() => of({ data: [], total: 0, page: 1, totalPages: 1 })), getAcquisition: vi.fn(() => of({ days: 30, totalEntries: 0, previousTotalEntries: 0, sources: [], referrers: [], entryPages: [], recentVisits: [] })), getLeadAttribution: vi.fn(() => of({ days: 30, totalLeads: 0, previousTotalLeads: 0, byKind: [], bySource: [], byReferrer: [], byEntryPage: [], articles: [] })) } },
     ],
@@ -41,7 +44,7 @@ async function setup(load: AdminDashboardService['loadOverview'], sections: Admi
   await TestBed.compileComponents();
   const fixture = TestBed.createComponent(DashboardComponent);
   fixture.detectChanges();
-  return { fixture, component: fixture.componentInstance, loadOverview, loadSections, el: fixture.nativeElement as HTMLElement };
+  return { fixture, component: fixture.componentInstance, loadOverview, loadSections, recent, el: fixture.nativeElement as HTMLElement };
 }
 
 describe('DashboardComponent', () => {
@@ -104,43 +107,33 @@ describe('DashboardComponent', () => {
     expect(loadOverview).toHaveBeenLastCalledWith(true);
   });
 
-  it('skips polling while the tab is hidden', async () => {
+  it('non si aggiorna da sola col passare del tempo', async () => {
     vi.useFakeTimers();
-    const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
     const { loadOverview, loadSections } = await setup(() => of(overview()));
-    vi.advanceTimersByTime(60_000 * 3);
+    vi.advanceTimersByTime(60 * 60_000);
     expect(loadOverview).toHaveBeenCalledTimes(1);
     expect(loadSections).not.toHaveBeenCalled();
-    hidden.mockReturnValue(false);
-    vi.advanceTimersByTime(60_000);
-    expect(loadSections).toHaveBeenCalledTimes(1);
-    hidden.mockRestore();
   });
 
-  it('il polling ricarica ogni minuto solo le sezioni vive e tutto ogni 10 minuti', async () => {
-    vi.useFakeTimers();
-    const { loadOverview, loadSections } = await setup(() => of(overview()));
-    vi.advanceTimersByTime(60_000);
-    expect(loadSections).toHaveBeenCalledTimes(1);
-    expect(loadSections.mock.calls[0][0]).toEqual(expect.arrayContaining(['core', 'liveHandoffs', 'serverErrors']));
-    expect(loadOverview).toHaveBeenCalledTimes(1);
-    vi.advanceTimersByTime(60_000 * 9);
-    expect(loadOverview).toHaveBeenCalledTimes(2);
-  });
-
-  it('un aggiornamento parziale sostituisce solo le sezioni ricevute', async () => {
-    vi.useFakeTimers();
+  it('una notifica in tempo reale ricarica solo contatori, messaggi, chat live e lead', async () => {
     const partial = {
       data: { liveHandoffs: [{ requestId: 'r1', status: 'requested', requestedAt: '2026-11-22T10:00:00Z' }] } as never,
-      requested: new Set(['liveHandoffs', 'serverErrors']) as never,
-      failed: new Set(['serverErrors']) as never,
+      requested: new Set<OverviewSection>(['core', 'liveHandoffs', 'leads']),
+      failed: new Set<OverviewSection>(['leads']),
     };
-    const { component } = await setup(() => of(overview()), () => of(partial));
-    vi.advanceTimersByTime(60_000);
+    const { fixture, component, loadOverview, loadSections, recent } = await setup(() => of(overview()), () => of(partial));
+    expect(loadSections).not.toHaveBeenCalled();
+
+    recent.set([{ type: 'live_handoff', at: '2026-11-22T10:00:00Z', title: 'Chat' }]);
+    fixture.detectChanges();
+
+    expect(loadSections).toHaveBeenCalledTimes(1);
+    expect(loadSections.mock.calls[0][0]).toEqual(['core', 'liveHandoffs', 'leads']);
+    expect(loadOverview).toHaveBeenCalledTimes(1);
     expect(component.liveHandoffs).toHaveLength(1);
     // Il resto dello snapshot resta quello di prima.
     expect(component.stats.find(s => s.labelKey === 'admin.projects')!.value).toBe(3);
-    expect(component.isFailed('serverErrors')).toBe(true);
+    expect(component.isFailed('leads')).toBe(true);
   });
 
   it('l\'indice porta alle sezioni e mostra la SEO solo se Search Console è configurato', async () => {
