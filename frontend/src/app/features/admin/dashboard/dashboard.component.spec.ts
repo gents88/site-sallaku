@@ -33,7 +33,7 @@ function setup(load: AdminDashboardService['loadOverview']) {
       provideNoopAnimations(),
       provideFeatureFlagsStub(),
       { provide: AuthService, useValue: { currentUser: signal(null), isAdmin: signal(true), logout: vi.fn() } },
-      { provide: AdminDashboardService, useValue: { loadOverview, getTodaySessions: vi.fn(() => of({ data: [], total: 0, page: 1, totalPages: 1 })) } },
+      { provide: AdminDashboardService, useValue: { loadOverview, getTodaySessions: vi.fn(() => of({ data: [], total: 0, page: 1, totalPages: 1 })), getAcquisition: vi.fn(() => of({ days: 30, totalEntries: 0, sources: [], referrers: [], entryPages: [], recentVisits: [] })) } },
     ],
   });
   const fixture = TestBed.createComponent(DashboardComponent);
