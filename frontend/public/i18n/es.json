@@ -72,7 +72,8 @@
       "live_chat": "Chat en vivo",
       "sign_pdf": "Firmar PDF",
       "compress_pdf": "Comprimir PDF",
-      "image_tools": "Fotos y HEIC"
+      "image_tools": "Fotos y HEIC",
+      "qr_code": "Código QR"
     }
   },
   "lang": {
@@ -1538,7 +1539,9 @@
     "compress_pdf_title": "Comprimir PDF",
     "compress_pdf_desc": "Reduce el tamaño de un PDF para enviarlo por correo o subirlo, con tres niveles de compresión.",
     "image_tools_title": "Fotos: HEIC a JPG, redimensiona, comprime",
-    "image_tools_desc": "Convierte fotos HEIC a JPG, redimensiona y comprime muchas imágenes a la vez y elimina los datos GPS."
+    "image_tools_desc": "Convierte fotos HEIC a JPG, redimensiona y comprime muchas imágenes a la vez y elimina los datos GPS.",
+    "qr_code_title": "Generador de Códigos QR",
+    "qr_code_desc": "Crea códigos QR para enlaces, Wi-Fi, contactos, correo y WhatsApp y descárgalos en PNG o SVG."
   },
   "about_manage": {
     "title": "Sección About",
@@ -3181,6 +3184,39 @@
           "a": "Sí, gratis y sin registro."
         }
       ]
+    },
+    "qr_code": {
+      "about": "El generador de códigos QR convierte un enlace, un texto, una red Wi‑Fi, una tarjeta de contacto, un correo, un número de teléfono o un mensaje de WhatsApp en un código QR que cualquier cámara de móvil puede leer. Elige los colores y el tamaño y descarga el código como imagen PNG o como SVG escalable para imprimir. El código se crea en tu navegador a partir de lo que escribes.",
+      "steps": [
+        "Elige el tipo de código: Enlace, Texto, Wi‑Fi, Contacto, Correo, Teléfono o WhatsApp.",
+        "Rellena los datos: el código aparece a la derecha mientras escribes.",
+        "Abre “Opciones” para cambiar la corrección de errores, el margen, el tamaño y los colores.",
+        "Escanéalo con el móvil para comprobarlo y luego descarga el PNG o el SVG."
+      ],
+      "privacy": "Todo lo que escribes se convierte en código en tu navegador y nunca se envía a un servidor. No hay seguimiento del contenido ni registro.",
+      "limits": "Un código QR solo puede contener una cantidad limitada de texto (unos miles de caracteres); el contenido más largo se rechaza. Los códigos son estáticos: no se pueden editar ni contar tras imprimirlos y nunca caducan. Usa un código oscuro sobre fondo claro con contraste suficiente, o algunos lectores no lo leerán.",
+      "faq": [
+        {
+          "q": "¿Es gratis y sin marca de agua?",
+          "a": "Sí. Los códigos son gratuitos, sin marca de agua y no caducan."
+        },
+        {
+          "q": "¿Lo que escribo se envía a algún sitio?",
+          "a": "No. El código se genera en tu navegador; no se sube nada."
+        },
+        {
+          "q": "¿Descargo PNG o SVG?",
+          "a": "PNG para pantallas, documentos y redes sociales; SVG para imprimir, porque se ve nítido a cualquier tamaño."
+        },
+        {
+          "q": "¿Cómo hago un código QR de Wi‑Fi?",
+          "a": "Elige Wi‑Fi, introduce el nombre de la red y la contraseña e imprime el código: los invitados lo escanean y entran sin escribir la contraseña."
+        },
+        {
+          "q": "¿Por qué mi móvil no lee el código?",
+          "a": "Normalmente por poco contraste, colores invertidos o un tamaño de impresión demasiado pequeño. Usa un código oscuro sobre fondo claro y de al menos 2 cm de ancho."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3391,5 +3427,64 @@
     "note_skipped": "{{count}} archivo(s) omitidos: no son imágenes.",
     "note_too_big": "{{count}} archivo(s) omitidos: superan {{max}} MB.",
     "note_limit": "Solo se añadieron los primeros {{max}} archivos."
+  },
+  "qr_code": {
+    "title": "Generador de Códigos QR",
+    "subtitle": "Crea un código QR para un enlace, el Wi‑Fi, un contacto, un correo o WhatsApp y descárgalo en PNG o SVG — en el navegador, sin registro.",
+    "seo_title": "Generador de Códigos QR Gratis — Enlace, Wi-Fi, Contacto, WhatsApp (PNG y SVG)",
+    "seo_description": "Crea códigos QR online gratis: enlace, texto, Wi-Fi, tarjeta de contacto, correo, teléfono y WhatsApp. Elige colores y tamaño, descarga PNG o SVG. Todo ocurre en tu navegador.",
+    "alt": "Vista previa del código QR",
+    "type_label": "Tipo de código QR",
+    "type_url": "Enlace",
+    "type_text": "Texto",
+    "type_wifi": "Wi‑Fi",
+    "type_contact": "Contacto",
+    "type_email": "Correo",
+    "type_phone": "Teléfono",
+    "type_whatsapp": "WhatsApp",
+    "content_label": "Contenido",
+    "f_url": "Dirección web",
+    "ph_url": "ejemplo.com/pagina",
+    "f_text": "Texto",
+    "ph_text": "Escribe cualquier texto",
+    "f_ssid": "Nombre de la red (SSID)",
+    "f_security": "Seguridad",
+    "sec_none": "Sin contraseña",
+    "f_password": "Contraseña",
+    "f_hidden": "Red oculta",
+    "f_first": "Nombre",
+    "f_last": "Apellidos",
+    "f_phone": "Teléfono",
+    "ph_phone": "+34 600 123 456",
+    "f_email": "Correo",
+    "f_org": "Empresa",
+    "f_website": "Sitio web",
+    "f_to": "Correo del destinatario",
+    "f_subject": "Asunto",
+    "f_body": "Mensaje",
+    "f_wa_phone": "Número de WhatsApp (con prefijo internacional)",
+    "ph_wa_phone": "+34 600 123 456",
+    "f_wa_text": "Mensaje predefinido (opcional)",
+    "privacy_sensitive": "Lo que escribes se convierte en código en tu navegador y no se envía a ningún sitio. Quien escanee el código puede leerlo: no compartas códigos con contraseña con personas en las que no confíes.",
+    "options": "Opciones",
+    "ec_label": "Corrección de errores",
+    "ec_hint": "Los niveles más altos se leen aunque el código esté sucio o parcialmente tapado, pero lo hacen más denso. M es una buena opción.",
+    "margin_label": "Margen (módulos)",
+    "size_label": "Tamaño PNG",
+    "colors_label": "Colores",
+    "fg": "Código",
+    "bg": "Fondo",
+    "swap": "Invertir",
+    "reset": "Restablecer",
+    "warn_contrast": "Contraste bajo: muchos móviles no podrán leer este código. Usa un código mucho más oscuro sobre un fondo más claro.",
+    "warn_inverted": "Código claro sobre fondo oscuro: algunos lectores no leen códigos invertidos. Oscuro sobre claro es lo más seguro.",
+    "meta": "{{modules}}×{{px}}",
+    "copy": "Copiar imagen",
+    "copied": "Copiado",
+    "workspace_send": "Enviar a Workspace",
+    "sent": "Enviado",
+    "scan_tip": "Antes de imprimir, escanea el código con tu móvil para comprobarlo. Para imprimir usa el SVG y que mida al menos 2 cm de ancho.",
+    "too_long": "Este contenido es demasiado largo para un código QR. Acórtalo o baja el nivel de corrección de errores.",
+    "empty": "Rellena los datos de la izquierda: el código aparece aquí mientras escribes."
   }
 }
