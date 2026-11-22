@@ -115,6 +115,10 @@
     font-size: 0.78rem;
     letter-spacing: 0.02em;
     transition: color var(--transition-fast);
+    /* Bersaglio di tocco di almeno 24px: prima 15–21px, difficile da colpire su telefono. */
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
 
     &:hover { color: var(--primary-400); }
   }
