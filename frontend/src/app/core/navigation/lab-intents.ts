@@ -22,6 +22,12 @@ export const LAB_INTENTS: Readonly<Record<string, LabIntent>> = {
   'split-pdf': { tool: 'pdf-editor', icon: 'pen' },
   'rotate-pdf': { tool: 'pdf-editor', icon: 'pen' },
   'image-to-text': { tool: 'ocr', icon: 'text-scan' },
+  'heic-to-jpg': { tool: 'image-tools', icon: 'image' },
+  'resize-image': { tool: 'image-tools', icon: 'image' },
+  'compress-image': { tool: 'image-tools', icon: 'image' },
+  'reduce-pdf-size': { tool: 'compress-pdf', icon: 'compress' },
+  'fill-pdf': { tool: 'sign-pdf', icon: 'signature' },
+  'wifi-qr-code': { tool: 'qr-code', icon: 'qr' },
 };
 
 /** Intento a cui appartiene `id`, o null se è uno strumento "normale". */

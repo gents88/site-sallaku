@@ -379,7 +379,7 @@ export class ToolsComponent implements OnInit {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       name: 'AI & PDF Tools',
-      description: 'Free AI-powered document tools: PDF translator, AI slides generator, text formatter, PDF summarizer.',
+      description: 'Free document and image tools that run in your browser: sign PDF, compress PDF, HEIC to JPG, QR codes, PDF translator, AI slides generator, text formatter, PDF summarizer, OCR and converters.',
       url: 'https://gentsallaku.it/lab',
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
       hasPart: [
@@ -396,6 +396,10 @@ export class ToolsComponent implements OnInit {
         { '@type': 'WebApplication', name: 'PDF Search', url: 'https://gentsallaku.it/lab/pdf-search', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'My PDF Library', url: 'https://gentsallaku.it/lab/library', applicationCategory: 'UtilitiesApplication' },
         { '@type': 'WebApplication', name: 'Workflow', url: 'https://gentsallaku.it/lab/workspace', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Sign PDF', url: 'https://gentsallaku.it/lab/sign-pdf', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'Compress PDF', url: 'https://gentsallaku.it/lab/compress-pdf', applicationCategory: 'UtilitiesApplication' },
+        { '@type': 'WebApplication', name: 'HEIC to JPG, Image Resizer and Compressor', url: 'https://gentsallaku.it/lab/image-tools', applicationCategory: 'MultimediaApplication' },
+        { '@type': 'WebApplication', name: 'QR Code Generator', url: 'https://gentsallaku.it/lab/qr-code', applicationCategory: 'UtilitiesApplication' },
       ],
     },
     this.seo.breadcrumb([

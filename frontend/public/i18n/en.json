@@ -3217,6 +3217,150 @@
           "a": "Usually because of low contrast, inverted colours, or a printed size that is too small. Use a dark code on a light background and at least 2 cm wide."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "iPhones save photos in HEIC, a format that Windows, many websites and older apps cannot open. This tool converts HEIC and HEIF files to JPG or PNG directly in your browser, keeping the quality you choose and offering a ZIP download for many photos at once.",
+      "steps": [
+        "Drag your HEIC photos into the upload area, or click it to choose them.",
+        "Check that the format is JPG and pick the quality you prefer.",
+        "Convert and download each photo, or all of them as a single ZIP."
+      ],
+      "privacy": "Photos are processed entirely in your browser: they are not uploaded to any server and nobody else can see them.",
+      "limits": "Very large photos or many files at once can slow down a phone, because your device does the work. Work in small batches if needed.",
+      "faq": [
+        {
+          "q": "How do I open HEIC photos on Windows?",
+          "a": "Convert them to JPG with this tool: it works in the browser, with no software to install."
+        },
+        {
+          "q": "Do my photos get uploaded?",
+          "a": "No. The conversion happens on your device, so the photos never leave it."
+        },
+        {
+          "q": "Can I convert many HEIC files at once?",
+          "a": "Yes: add them together and download everything as a ZIP."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Use this tool to reduce the pixel size of one or more photos, for example to send them by email, upload them to a form or publish them on a website. The proportions are kept, and you can also change the format and quality of the result.",
+      "steps": [
+        "Add one or more images.",
+        "Choose the longest side in pixels and the output format.",
+        "Download the resized images, one by one or as a ZIP."
+      ],
+      "privacy": "Photos are processed entirely in your browser: they are not uploaded to any server and nobody else can see them.",
+      "limits": "Very large photos or many files at once can slow down a phone, because your device does the work. Work in small batches if needed.",
+      "faq": [
+        {
+          "q": "How do I resize a photo without distorting it?",
+          "a": "Set only the longest side: the other one is calculated to keep the proportions."
+        },
+        {
+          "q": "Is the original file changed?",
+          "a": "No. You download a new file and the original stays untouched."
+        },
+        {
+          "q": "Which formats can I use?",
+          "a": "JPG, PNG and WebP, plus HEIC photos from iPhones as input."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "Large photos are slow to send and to load. This tool shrinks them by lowering the quality a little and limiting the pixel size, and shows you how much space you save for each file before you download it.",
+      "steps": [
+        "Add the photos you want to lighten.",
+        "Choose the quality: around 70% is a good balance between weight and sharpness.",
+        "Check the saving shown for each file and download the result."
+      ],
+      "privacy": "Photos are processed entirely in your browser: they are not uploaded to any server and nobody else can see them.",
+      "limits": "Very large photos or many files at once can slow down a phone, because your device does the work. Work in small batches if needed.",
+      "faq": [
+        {
+          "q": "How can I make a photo lighter for email?",
+          "a": "Compress it at around 70% quality and limit the longest side to about 2000 pixels."
+        },
+        {
+          "q": "Will the quality get worse?",
+          "a": "A little, but at moderate settings the difference is hard to see on screen."
+        },
+        {
+          "q": "Are my photos sent to a server?",
+          "a": "No. Compression happens in your browser."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "Scanned or image-heavy PDFs can be too big to send. This tool offers a lossless optimisation that keeps text selectable and a stronger mode that rebuilds the pages as images at the quality you choose, with a clear before-and-after size.",
+      "steps": [
+        "Drop the PDF into the upload area.",
+        "Pick the mode and the level: light, medium or strong.",
+        "Check the saving and download the lighter PDF."
+      ],
+      "privacy": "The PDF is processed entirely in your browser: it is not uploaded to any server, so you can work on confidential documents.",
+      "limits": "Very large or password-protected PDFs may not open or may slow down the browser, because your device does the work. Download the result before closing the tab.",
+      "faq": [
+        {
+          "q": "How do I reduce a PDF to under 2 MB?",
+          "a": "Try the strong level: it lowers the resolution of the pages. Check the result before sending it."
+        },
+        {
+          "q": "Is the text still selectable?",
+          "a": "With the lossless mode yes. The image mode turns pages into pictures, so the text is no longer selectable."
+        },
+        {
+          "q": "Is my PDF uploaded?",
+          "a": "No. Everything is done in your browser."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Use this tool to complete forms and sign contracts without printing. You can draw or type your signature, place text and dates anywhere on the page, move and resize them, then export a new PDF.",
+      "steps": [
+        "Open the PDF to fill in.",
+        "Create your signature or add text and date fields, then place them on the page.",
+        "Export and download the signed PDF."
+      ],
+      "privacy": "The PDF is processed entirely in your browser: it is not uploaded to any server, so you can work on confidential documents.",
+      "limits": "Very large or password-protected PDFs may not open or may slow down the browser, because your device does the work. Download the result before closing the tab.",
+      "faq": [
+        {
+          "q": "How do I sign a PDF without printing it?",
+          "a": "Draw or type your signature here, place it on the page and download the PDF."
+        },
+        {
+          "q": "Is it legally valid?",
+          "a": "It is a simple electronic signature, enough for many everyday documents. Some contracts require a qualified signature: check the rules that apply to you."
+        },
+        {
+          "q": "Is my document uploaded?",
+          "a": "No. The document and your signature stay in your browser."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "A Wi-Fi QR code contains the network name, the security type and the password. Phones that scan it offer to connect without typing anything. Print it for your home, shop or guest room, in PNG or SVG.",
+      "steps": [
+        "Enter the network name and choose the security type; add the password.",
+        "Adjust colours and size if you like.",
+        "Scan the code with your phone to test it, then download or print it."
+      ],
+      "privacy": "The code is generated in your browser and what you type is never sent anywhere.",
+      "limits": "Anyone who scans the code can read its content, so do not share Wi-Fi codes with people you do not trust. Always test the code with your phone before printing it.",
+      "faq": [
+        {
+          "q": "How do I share my Wi-Fi password with a QR code?",
+          "a": "Enter network name and password here, download the code and show or print it: guests scan it to connect."
+        },
+        {
+          "q": "Is the password safe?",
+          "a": "The code is generated in your browser and never sent anywhere, but anyone who scans it can read the password."
+        },
+        {
+          "q": "Does it work on iPhone and Android?",
+          "a": "Yes, both open the camera and offer to join the network."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3415,48 @@
       "seo_description": "Extract text from photos, screenshots and images with free online OCR, in 7 languages and without signing up. Copy the text in seconds.",
       "h1": "Image to text",
       "lead": "Turn a photo, a screenshot or a scanned page into text you can copy and edit: upload the image and choose the language."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC to JPG",
+      "seo_title": "HEIC to JPG Converter Free — iPhone Photos, No Upload",
+      "seo_description": "Convert HEIC and HEIF photos from your iPhone to JPG or PNG for free. Everything runs in your browser: no upload, no sign-up, batch conversion and ZIP download.",
+      "h1": "Convert HEIC to JPG",
+      "lead": "Turn iPhone HEIC photos into JPG that opens everywhere. Drop the files, convert and download them, one by one or as a ZIP. No upload."
+    },
+    "resize_image": {
+      "label": "Resize image",
+      "seo_title": "Resize Image Online Free — Change Photo Size, No Upload",
+      "seo_description": "Resize photos and images online for free: set the longest side, keep the proportions and download JPG, PNG or WebP. It runs in your browser, with no upload.",
+      "h1": "Resize an image",
+      "lead": "Make a photo smaller or fit a size limit: choose the longest side, keep the proportions and download it. Everything stays in your browser."
+    },
+    "compress_image": {
+      "label": "Compress image",
+      "seo_title": "Compress Image Online Free — Reduce Photo Size (JPG, PNG, WebP)",
+      "seo_description": "Compress photos and images for free: lower the file weight, see the saving and download JPG or WebP. Everything runs in your browser, with no upload.",
+      "h1": "Compress an image",
+      "lead": "Reduce the weight of your photos without visible quality loss: pick the quality, compare the sizes and download. No upload, no sign-up."
+    },
+    "reduce_pdf_size": {
+      "label": "Reduce PDF size",
+      "seo_title": "Reduce PDF Size Free — Compress PDF Online, No Upload",
+      "seo_description": "Reduce the size of a PDF for free: three compression levels, see the saving before downloading. It runs in your browser, so your file is never uploaded.",
+      "h1": "Reduce PDF size",
+      "lead": "Make a heavy PDF light enough to email or upload: choose the level, see how much you save and download. Your file never leaves your device."
+    },
+    "fill_pdf": {
+      "label": "Sign and fill PDF",
+      "seo_title": "Fill and Sign PDF Free — Add Text, Date and Signature Online",
+      "seo_description": "Fill in and sign a PDF for free: draw or type your signature, add text and dates anywhere, and download. Runs in your browser, no upload, no sign-up.",
+      "h1": "Fill and sign a PDF",
+      "lead": "Open a form, type in the fields, add your signature and the date, then download the PDF. Nothing is uploaded and no account is needed."
+    },
+    "wifi_qr_code": {
+      "label": "Wi-Fi QR code",
+      "seo_title": "Wi-Fi QR Code Generator Free — Share Your Password with a Scan",
+      "seo_description": "Create a Wi-Fi QR code for free: enter the network name and password, download PNG or SVG and let guests connect with one scan. Runs in your browser.",
+      "h1": "Wi-Fi QR code generator",
+      "lead": "Let guests join your Wi-Fi by scanning a code: enter network name and password, then download or print it. Nothing is sent anywhere."
     }
   },
   "sign_pdf": {

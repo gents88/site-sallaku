@@ -1,8 +1,8 @@
 <div class="cp-page">
   <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
   <header class="cp-header">
-    <h1 class="cp-title">▦ {{ 'qr_code.title' | translate }}</h1>
-    <p class="cp-subtitle">{{ 'qr_code.subtitle' | translate }}</p>
+    <h1 class="cp-title">▦ {{ (page.headingKey ?? 'qr_code.title') | translate }}</h1>
+    <p class="cp-subtitle">{{ (page.leadKey ?? 'qr_code.subtitle') | translate }}</p>
   </header>
 
   <div class="type-row" role="group" [attr.aria-label]="'qr_code.type_label' | translate">

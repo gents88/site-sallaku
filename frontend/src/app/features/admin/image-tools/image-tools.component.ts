@@ -85,6 +85,13 @@ export class ImageToolsComponent implements OnInit, OnDestroy {
   private cancelRequested = false;
 
   ngOnInit(): void {
+    // Le pagine per ricerca specifica partono già con le impostazioni giuste: chi arriva da "heic to jpg"
+    // non deve toccare nulla, chi cerca "ridimensiona immagine" trova già un lato lungo ragionevole.
+    switch (this.page.intent) {
+      case 'heic-to-jpg': this.format.set('jpeg'); this.maxSide.set(null); this.quality.set(0.92); break;
+      case 'resize-image': this.maxSide.set(1280); break;
+      case 'compress-image': this.maxSide.set(2048); this.quality.set(0.7); break;
+    }
     const pending = this.workspace.peek();
     if (pending && pending.kind === 'file' && pending.blob && isImageFile(pending.filename, pending.mime ?? '')) this.workspaceItem.set(pending);
 

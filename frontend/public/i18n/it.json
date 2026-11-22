@@ -3217,6 +3217,150 @@
           "a": "Di solito per scarso contrasto, colori invertiti o una dimensione di stampa troppo piccola. Usa un codice scuro su sfondo chiaro e largo almeno 2 cm."
         }
       ]
+    },
+    "heic_to_jpg": {
+      "about": "Gli iPhone salvano le foto in HEIC, un formato che Windows, molti siti e le app più vecchie non riescono ad aprire. Questo strumento converte i file HEIC e HEIF in JPG o PNG direttamente nel browser, con la qualità che scegli e il download in ZIP per più foto insieme.",
+      "steps": [
+        "Trascina le foto HEIC nell’area di caricamento, oppure cliccala per sceglierle.",
+        "Controlla che il formato sia JPG e scegli la qualità.",
+        "Converti e scarica ogni foto, oppure tutte insieme in un unico ZIP."
+      ],
+      "privacy": "Le foto vengono elaborate interamente nel tuo browser: non sono caricate su alcun server e nessun altro può vederle.",
+      "limits": "Foto molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo. Se serve, procedi a piccoli gruppi.",
+      "faq": [
+        {
+          "q": "Come apro le foto HEIC su Windows?",
+          "a": "Convertile in JPG con questo strumento: funziona nel browser, senza installare nulla."
+        },
+        {
+          "q": "Le mie foto vengono caricate online?",
+          "a": "No. La conversione avviene sul tuo dispositivo e le foto non ne escono."
+        },
+        {
+          "q": "Posso convertire molti file HEIC insieme?",
+          "a": "Sì: aggiungili tutti e scarica il risultato in un unico ZIP."
+        }
+      ]
+    },
+    "resize_image": {
+      "about": "Usa questo strumento per ridurre le dimensioni in pixel di una o più foto, ad esempio per inviarle per email, caricarle in un modulo o pubblicarle su un sito. Le proporzioni restano invariate e puoi cambiare anche formato e qualità del risultato.",
+      "steps": [
+        "Aggiungi una o più immagini.",
+        "Scegli il lato maggiore in pixel e il formato di uscita.",
+        "Scarica le immagini ridimensionate, una per una o in ZIP."
+      ],
+      "privacy": "Le foto vengono elaborate interamente nel tuo browser: non sono caricate su alcun server e nessun altro può vederle.",
+      "limits": "Foto molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo. Se serve, procedi a piccoli gruppi.",
+      "faq": [
+        {
+          "q": "Come ridimensiono una foto senza deformarla?",
+          "a": "Imposta solo il lato maggiore: l’altro viene calcolato per mantenere le proporzioni."
+        },
+        {
+          "q": "Il file originale viene modificato?",
+          "a": "No. Scarichi un nuovo file e l’originale resta intatto."
+        },
+        {
+          "q": "Quali formati posso usare?",
+          "a": "JPG, PNG e WebP, oltre alle foto HEIC degli iPhone in ingresso."
+        }
+      ]
+    },
+    "compress_image": {
+      "about": "Le foto grandi sono lente da inviare e da caricare. Questo strumento le alleggerisce abbassando un po’ la qualità e limitando le dimensioni in pixel, e ti mostra quanto spazio risparmi per ogni file prima di scaricarlo.",
+      "steps": [
+        "Aggiungi le foto da alleggerire.",
+        "Scegli la qualità: intorno al 70% è un buon equilibrio tra peso e nitidezza.",
+        "Controlla il risparmio mostrato per ogni file e scarica il risultato."
+      ],
+      "privacy": "Le foto vengono elaborate interamente nel tuo browser: non sono caricate su alcun server e nessun altro può vederle.",
+      "limits": "Foto molto grandi o tanti file insieme possono rallentare il telefono, perché il lavoro lo fa il tuo dispositivo. Se serve, procedi a piccoli gruppi.",
+      "faq": [
+        {
+          "q": "Come alleggerisco una foto per l’email?",
+          "a": "Comprimila intorno al 70% di qualità e limita il lato maggiore a circa 2000 pixel."
+        },
+        {
+          "q": "La qualità peggiora?",
+          "a": "Un poco, ma con impostazioni moderate la differenza è difficile da notare a schermo."
+        },
+        {
+          "q": "Le mie foto vanno su un server?",
+          "a": "No. La compressione avviene nel tuo browser."
+        }
+      ]
+    },
+    "reduce_pdf_size": {
+      "about": "I PDF scansionati o pieni di immagini possono essere troppo grandi da inviare. Lo strumento offre un’ottimizzazione senza perdite che mantiene il testo selezionabile e una modalità più forte che ricostruisce le pagine come immagini alla qualità scelta, con il peso prima e dopo ben visibile.",
+      "steps": [
+        "Trascina il PDF nell’area di caricamento.",
+        "Scegli la modalità e il livello: leggero, medio o forte.",
+        "Controlla il risparmio e scarica il PDF più leggero."
+      ],
+      "privacy": "Il PDF viene elaborato interamente nel tuo browser: non è caricato su alcun server, quindi puoi lavorare anche su documenti riservati.",
+      "limits": "Un PDF molto grande o protetto da password può non aprirsi o rallentare il browser, perché il lavoro lo fa il tuo dispositivo. Scarica il risultato prima di chiudere la scheda.",
+      "faq": [
+        {
+          "q": "Come porto un PDF sotto i 2 MB?",
+          "a": "Prova il livello forte: abbassa la risoluzione delle pagine. Controlla il risultato prima di inviarlo."
+        },
+        {
+          "q": "Il testo resta selezionabile?",
+          "a": "Con la modalità senza perdite sì. La modalità a immagini trasforma le pagine in figure, quindi il testo non è più selezionabile."
+        },
+        {
+          "q": "Il mio PDF viene caricato online?",
+          "a": "No. Tutto avviene nel tuo browser."
+        }
+      ]
+    },
+    "fill_pdf": {
+      "about": "Usa questo strumento per compilare moduli e firmare contratti senza stampare. Puoi disegnare o scrivere la firma, posizionare testo e date ovunque nella pagina, spostarli e ridimensionarli, poi esportare un nuovo PDF.",
+      "steps": [
+        "Apri il PDF da compilare.",
+        "Crea la firma o aggiungi campi di testo e data, poi posizionali sulla pagina.",
+        "Esporta e scarica il PDF firmato."
+      ],
+      "privacy": "Il PDF viene elaborato interamente nel tuo browser: non è caricato su alcun server, quindi puoi lavorare anche su documenti riservati.",
+      "limits": "Un PDF molto grande o protetto da password può non aprirsi o rallentare il browser, perché il lavoro lo fa il tuo dispositivo. Scarica il risultato prima di chiudere la scheda.",
+      "faq": [
+        {
+          "q": "Come firmo un PDF senza stamparlo?",
+          "a": "Disegna o scrivi la firma qui, posizionala sulla pagina e scarica il PDF."
+        },
+        {
+          "q": "Ha valore legale?",
+          "a": "È una firma elettronica semplice, sufficiente per molti documenti quotidiani. Alcuni contratti richiedono una firma qualificata: verifica le regole che ti riguardano."
+        },
+        {
+          "q": "Il mio documento viene caricato?",
+          "a": "No. Il documento e la firma restano nel tuo browser."
+        }
+      ]
+    },
+    "wifi_qr_code": {
+      "about": "Un QR code Wi-Fi contiene il nome della rete, il tipo di sicurezza e la password. I telefoni che lo inquadrano propongono di collegarsi senza scrivere nulla. Stampalo per casa, negozio o camera degli ospiti, in PNG o SVG.",
+      "steps": [
+        "Inserisci il nome della rete, scegli il tipo di sicurezza e aggiungi la password.",
+        "Regola colori e dimensione, se vuoi.",
+        "Inquadra il codice con il telefono per provarlo, poi scaricalo o stampalo."
+      ],
+      "privacy": "Il codice viene generato nel tuo browser e quello che scrivi non viene inviato da nessuna parte.",
+      "limits": "Chiunque scansioni il codice può leggerne il contenuto: non condividere codici Wi-Fi con persone di cui non ti fidi. Prova sempre il codice con il telefono prima di stamparlo.",
+      "faq": [
+        {
+          "q": "Come condivido la password del Wi-Fi con un QR code?",
+          "a": "Inserisci qui nome rete e password, scarica il codice e mostralo o stampalo: gli ospiti lo inquadrano per collegarsi."
+        },
+        {
+          "q": "La password è al sicuro?",
+          "a": "Il codice è generato nel tuo browser e non viene inviato da nessuna parte, ma chiunque lo scansioni può leggere la password."
+        },
+        {
+          "q": "Funziona su iPhone e Android?",
+          "a": "Sì, entrambi aprono la fotocamera e propongono di collegarsi alla rete."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3271,6 +3415,48 @@
       "seo_description": "Estrai il testo da foto, screenshot e immagini con l'OCR online gratuito, in 7 lingue e senza registrazione. Copia il testo in pochi secondi.",
       "h1": "Da immagine a testo",
       "lead": "Trasforma una foto, uno screenshot o una pagina scansionata in testo che puoi copiare e modificare: carica l'immagine e scegli la lingua."
+    },
+    "heic_to_jpg": {
+      "label": "HEIC in JPG",
+      "seo_title": "Da HEIC a JPG Gratis — Converti le Foto dell’iPhone, Senza Caricarle",
+      "seo_description": "Converti le foto HEIC e HEIF dell’iPhone in JPG o PNG gratis. Tutto avviene nel browser: nessun caricamento, nessuna registrazione, conversione multipla e download in ZIP.",
+      "h1": "Converti HEIC in JPG",
+      "lead": "Trasforma le foto HEIC dell’iPhone in JPG che si aprono ovunque. Trascina i file, converti e scarica uno per uno o in ZIP. Senza caricamenti."
+    },
+    "resize_image": {
+      "label": "Ridimensiona immagine",
+      "seo_title": "Ridimensiona Immagine Online Gratis — Cambia le Dimensioni, Senza Caricare",
+      "seo_description": "Ridimensiona foto e immagini online gratis: scegli il lato maggiore, mantieni le proporzioni e scarica JPG, PNG o WebP. Funziona nel browser, senza caricamenti.",
+      "h1": "Ridimensiona un’immagine",
+      "lead": "Rendi una foto più piccola o rispetta un limite di dimensioni: scegli il lato maggiore, mantieni le proporzioni e scarica. Tutto resta nel browser."
+    },
+    "compress_image": {
+      "label": "Comprimi immagine",
+      "seo_title": "Comprimi Immagine Online Gratis — Riduci il Peso delle Foto (JPG, PNG, WebP)",
+      "seo_description": "Comprimi foto e immagini gratis: riduci il peso del file, vedi il risparmio e scarica JPG o WebP. Tutto avviene nel browser, senza caricamenti.",
+      "h1": "Comprimi un’immagine",
+      "lead": "Riduci il peso delle foto senza perdita di qualità visibile: scegli la qualità, confronta le dimensioni e scarica. Senza caricamenti né registrazione."
+    },
+    "reduce_pdf_size": {
+      "label": "Riduci peso PDF",
+      "seo_title": "Riduci Peso PDF Gratis — Comprimi PDF Online, Senza Caricarlo",
+      "seo_description": "Riduci le dimensioni di un PDF gratis: tre livelli di compressione e il risparmio visibile prima di scaricare. Funziona nel browser, il file non viene mai caricato.",
+      "h1": "Riduci il peso di un PDF",
+      "lead": "Rendi un PDF pesante abbastanza leggero da inviarlo per email o caricarlo: scegli il livello, vedi quanto risparmi e scarica. Il file non lascia il tuo dispositivo."
+    },
+    "fill_pdf": {
+      "label": "Compila e firma PDF",
+      "seo_title": "Compila e Firma PDF Gratis — Aggiungi Testo, Data e Firma Online",
+      "seo_description": "Compila e firma un PDF gratis: disegna o scrivi la firma, aggiungi testo e date ovunque e scarica. Funziona nel browser, senza caricamenti né registrazione.",
+      "h1": "Compila e firma un PDF",
+      "lead": "Apri un modulo, scrivi nei campi, aggiungi firma e data e scarica il PDF. Nessun caricamento e nessun account."
+    },
+    "wifi_qr_code": {
+      "label": "QR code Wi-Fi",
+      "seo_title": "Generatore QR Code Wi-Fi Gratis — Condividi la Password con una Scansione",
+      "seo_description": "Crea un QR code per il Wi-Fi gratis: inserisci nome rete e password, scarica PNG o SVG e fai collegare gli ospiti con una scansione. Funziona nel browser.",
+      "h1": "Generatore di QR code Wi-Fi",
+      "lead": "Fai collegare gli ospiti al tuo Wi-Fi con una scansione: inserisci nome rete e password, poi scarica o stampa il codice. Nulla viene inviato."
     }
   },
   "sign_pdf": {
