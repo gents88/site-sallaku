@@ -71,7 +71,8 @@
       "ai_assistant": "Assistente IA",
       "live_chat": "Chat ao vivo",
       "sign_pdf": "Assinar PDF",
-      "compress_pdf": "Comprimir PDF"
+      "compress_pdf": "Comprimir PDF",
+      "image_tools": "Fotos e HEIC"
     }
   },
   "lang": {
@@ -1535,7 +1536,9 @@
     "sign_pdf_title": "Assinar PDF",
     "sign_pdf_desc": "Assine um PDF com uma assinatura desenhada, digitada ou enviada e adicione texto, data e marcas.",
     "compress_pdf_title": "Comprimir PDF",
-    "compress_pdf_desc": "Reduza o tamanho de um PDF para enviá-lo por e-mail ou carregá-lo, com três níveis de compressão."
+    "compress_pdf_desc": "Reduza o tamanho de um PDF para enviá-lo por e-mail ou carregá-lo, com três níveis de compressão.",
+    "image_tools_title": "Fotos: HEIC para JPG, redimensionar, comprimir",
+    "image_tools_desc": "Converta fotos HEIC em JPG, redimensione e comprima várias imagens de uma vez e remova os dados de GPS."
   },
   "about_manage": {
     "title": "Secção About",
@@ -3145,6 +3148,39 @@
           "a": "Sim, grátis e sem cadastro."
         }
       ]
+    },
+    "image_tools": {
+      "about": "Esta ferramenta converte fotos entre JPG, PNG e WebP, transforma fotos HEIC do iPhone em JPG e diminui as imagens redimensionando-as e baixando a qualidade. Você pode processar até 40 imagens de uma vez e baixá-las juntas em um ZIP. Tudo acontece no seu navegador e a localização e outros dados ocultos de cada foto são removidos do novo arquivo.",
+      "steps": [
+        "Solte as fotos no quadro ou escolha-as no dispositivo (HEIC, JPG, PNG, WebP…).",
+        "Escolha o formato, o lado mais longo (por exemplo 1920 px para web ou e-mail) e, para JPG e WebP, a qualidade.",
+        "Toque em “Converter” e confira o tamanho antes e depois de cada imagem.",
+        "Baixe os arquivos um a um ou todos juntos em um ZIP."
+      ],
+      "privacy": "As imagens são processadas inteiramente no seu navegador e nunca são enviadas. Os novos arquivos não têm posição GPS, dados da câmera nem outros metadados.",
+      "limits": "Na primeira vez que abre um arquivo HEIC, o navegador baixa um pequeno decodificador, o que pode levar alguns segundos (o Safari abre HEIC diretamente). Fotos acima de cerca de 64 megapixels são ignoradas e o limite é de 40 arquivos de até 60 MB. Converter de novo uma imagem com perdas sempre piora um pouco a qualidade: guarde os originais.",
+      "faq": [
+        {
+          "q": "Como converter HEIC em JPG?",
+          "a": "Solte aqui as fotos HEIC, deixe o formato em JPG e toque em Converter. Você pode baixá-las uma a uma ou em um ZIP."
+        },
+        {
+          "q": "Minhas fotos são enviadas para algum lugar?",
+          "a": "Não. Elas são convertidas no seu navegador e nunca saem do seu dispositivo."
+        },
+        {
+          "q": "A localização GPS é removida?",
+          "a": "Sim. Os novos arquivos são criados apenas a partir dos pixels da imagem, então localização, modelo da câmera e outros metadados não são copiados."
+        },
+        {
+          "q": "Que tamanho escolher para e-mail ou web?",
+          "a": "Um lado longo de 1920 px com qualidade de 80–85% é um bom equilíbrio. Use 1280 px ou menos para miniaturas."
+        },
+        {
+          "q": "É grátis?",
+          "a": "Sim, grátis e sem cadastro."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3312,5 +3348,48 @@
     "err_open": "Não foi possível abrir este PDF. Ele pode estar danificado ou protegido por senha.",
     "err_compress": "Não foi possível comprimir o PDF. Tente outro nível ou um arquivo menor.",
     "err_too_many_pages": "Este PDF tem páginas demais para o navegador (limite 400)."
+  },
+  "image_tools": {
+    "title": "Fotos: HEIC para JPG, redimensionar, comprimir",
+    "subtitle": "Converta fotos HEIC do iPhone em JPG, redimensione e comprima várias imagens de uma vez — no navegador, sem enviá-las.",
+    "seo_title": "Converter HEIC em JPG, Redimensionar e Comprimir Imagens Online Grátis",
+    "seo_description": "Converta HEIC em JPG, redimensione e comprima fotos online de graça. Várias imagens de uma vez, dados de GPS removidos, download em ZIP. Tudo acontece no seu navegador: nada é enviado.",
+    "drop_prompt": "Solte as fotos aqui ou clique para escolher",
+    "add_more": "Adicionar mais fotos",
+    "drop_hint": "HEIC, JPG, PNG, WebP, GIF, BMP — até 40 arquivos por vez",
+    "privacy_note": "Suas fotos ficam no seu dispositivo e nunca são enviadas. A localização (GPS) e outros dados ocultos são removidos dos novos arquivos.",
+    "workspace_banner_title": "Há uma imagem no Workspace",
+    "workspace_banner_use": "Usar",
+    "workspace_banner_dismiss": "Ignorar",
+    "files_title": "{{count}} arquivos selecionados",
+    "clear_all": "Remover todos",
+    "remove": "Remover",
+    "format_label": "Salvar como",
+    "fmt_jpeg": "JPG",
+    "fmt_jpeg_desc": "O melhor para fotos. Leve e aceito em todo lugar.",
+    "fmt_png": "PNG",
+    "fmt_png_desc": "Sem perda de qualidade e mantém a transparência. Arquivos maiores.",
+    "fmt_webp": "WebP",
+    "fmt_webp_desc": "O mais leve para a web. Nem todos os programas aceitam.",
+    "size_label": "Lado mais longo",
+    "size_original": "Tamanho original",
+    "quality_label": "Qualidade",
+    "btn_convert": "Converter",
+    "progress": "Imagem {{done}} de {{total}}",
+    "decoding_heic": "Decodificando HEIC (na primeira vez pode levar alguns segundos)",
+    "cancel": "Cancelar",
+    "cancelled": "Conversão cancelada.",
+    "result_title": "{{count}} convertidas",
+    "smaller": "{{percent}}% menores",
+    "bigger": "{{percent}}% maiores",
+    "download": "Baixar",
+    "download_zip": "Baixar tudo (ZIP)",
+    "workspace_send": "Enviar para o Workspace",
+    "failed_title": "{{count}} não puderam ser convertidas",
+    "failed_hint": "O arquivo pode estar danificado, grande demais ou em um formato que o navegador não abre.",
+    "err_all_failed": "Nenhum arquivo pôde ser convertido.",
+    "note_skipped": "{{count}} arquivo(s) ignorados: não são imagens.",
+    "note_too_big": "{{count}} arquivo(s) ignorados: maiores que {{max}} MB.",
+    "note_limit": "Apenas os primeiros {{max}} arquivos foram adicionados."
   }
 }

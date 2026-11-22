@@ -71,7 +71,8 @@
       "ai_assistant": "AI Assistant",
       "live_chat": "Live chat",
       "sign_pdf": "Sign PDF",
-      "compress_pdf": "Compress PDF"
+      "compress_pdf": "Compress PDF",
+      "image_tools": "Photos & HEIC"
     }
   },
   "lang": {
@@ -1535,7 +1536,9 @@
     "sign_pdf_title": "Sign PDF",
     "sign_pdf_desc": "Sign a PDF with a drawn, typed or uploaded signature and add text, date and check marks.",
     "compress_pdf_title": "Compress PDF",
-    "compress_pdf_desc": "Reduce the size of a PDF to send it by email or upload it, with three levels of compression."
+    "compress_pdf_desc": "Reduce the size of a PDF to send it by email or upload it, with three levels of compression.",
+    "image_tools_title": "Photos: HEIC to JPG, resize, compress",
+    "image_tools_desc": "Convert HEIC photos to JPG, resize and compress many images at once, and remove GPS data."
   },
   "about_manage": {
     "title": "About Section",
@@ -3145,6 +3148,39 @@
           "a": "Yes, free and with no sign-up."
         }
       ]
+    },
+    "image_tools": {
+      "about": "This tool converts photos between JPG, PNG and WebP, turns iPhone HEIC photos into JPG, and shrinks images by resizing them and lowering the quality. You can process up to 40 images at once and download them together as a ZIP. Everything happens in your browser, and the location and other hidden data of each photo are removed from the new file.",
+      "steps": [
+        "Drop your photos in the box or choose them from your device (HEIC, JPG, PNG, WebP…).",
+        "Pick the format, the longest side (for example 1920 px for the web or email) and, for JPG and WebP, the quality.",
+        "Press “Convert” and check the size before and after for each image.",
+        "Download the files one by one or all together as a ZIP."
+      ],
+      "privacy": "The images are processed entirely in your browser and are never uploaded. The new files have no GPS position, camera data or other metadata.",
+      "limits": "The first time you open a HEIC file the browser downloads a small decoder, which can take a few seconds (Safari opens HEIC directly). Photos above about 64 megapixels are skipped, and the limit is 40 files of up to 60 MB each. Converting a lossy image again always loses a little quality, so keep your originals.",
+      "faq": [
+        {
+          "q": "How do I convert HEIC to JPG?",
+          "a": "Drop the HEIC photos here, leave the format on JPG and press Convert. You can download them one by one or as a ZIP."
+        },
+        {
+          "q": "Are my photos uploaded anywhere?",
+          "a": "No. They are converted in your browser and never leave your device."
+        },
+        {
+          "q": "Is the GPS location removed?",
+          "a": "Yes. The new files are created from the image pixels only, so location, camera model and other metadata are not copied."
+        },
+        {
+          "q": "What size should I choose for email or the web?",
+          "a": "A longest side of 1920 px with 80–85% quality is a good balance. Use 1280 px or less for small previews."
+        },
+        {
+          "q": "Is it free?",
+          "a": "Yes, free and with no sign-up."
+        }
+      ]
     }
   },
   "lab_intents": {
@@ -3312,5 +3348,48 @@
     "err_open": "This PDF could not be opened. It may be damaged or protected by a password.",
     "err_compress": "The PDF could not be compressed. Try another level or a smaller file.",
     "err_too_many_pages": "This PDF has too many pages for the browser (limit 400)."
+  },
+  "image_tools": {
+    "title": "Photos: HEIC to JPG, resize, compress",
+    "subtitle": "Convert iPhone HEIC photos to JPG, resize and compress many images at once — in your browser, without uploading them.",
+    "seo_title": "HEIC to JPG Converter, Resize and Compress Images Online Free",
+    "seo_description": "Convert HEIC to JPG, resize and compress photos online for free. Many images at once, GPS data removed, download as ZIP. Everything runs in your browser — nothing is uploaded.",
+    "drop_prompt": "Drop photos here or click to choose",
+    "add_more": "Add more photos",
+    "drop_hint": "HEIC, JPG, PNG, WebP, GIF, BMP — up to 40 files at once",
+    "privacy_note": "Your photos stay on your device and are never uploaded. Location (GPS) and other hidden data are removed from the new files.",
+    "workspace_banner_title": "An image is waiting in the Workspace",
+    "workspace_banner_use": "Use it",
+    "workspace_banner_dismiss": "Ignore",
+    "files_title": "{{count}} files selected",
+    "clear_all": "Remove all",
+    "remove": "Remove",
+    "format_label": "Save as",
+    "fmt_jpeg": "JPG",
+    "fmt_jpeg_desc": "Best for photos. Small and accepted everywhere.",
+    "fmt_png": "PNG",
+    "fmt_png_desc": "No quality loss and keeps transparency. Larger files.",
+    "fmt_webp": "WebP",
+    "fmt_webp_desc": "The lightest for the web. Not accepted by every program.",
+    "size_label": "Longest side",
+    "size_original": "Original size",
+    "quality_label": "Quality",
+    "btn_convert": "Convert",
+    "progress": "Image {{done}} of {{total}}",
+    "decoding_heic": "Decoding HEIC (first time can take a few seconds)",
+    "cancel": "Cancel",
+    "cancelled": "Conversion cancelled.",
+    "result_title": "{{count}} converted",
+    "smaller": "{{percent}}% smaller",
+    "bigger": "{{percent}}% larger",
+    "download": "Download",
+    "download_zip": "Download all (ZIP)",
+    "workspace_send": "Send to Workspace",
+    "failed_title": "{{count}} could not be converted",
+    "failed_hint": "The file may be damaged, too large, or in a format the browser cannot open.",
+    "err_all_failed": "None of the files could be converted.",
+    "note_skipped": "{{count}} file(s) skipped: they are not images.",
+    "note_too_big": "{{count}} file(s) skipped: larger than {{max}} MB.",
+    "note_limit": "Only the first {{max}} files were added."
   }
 }
