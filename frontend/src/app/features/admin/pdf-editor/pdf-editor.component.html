@@ -1,8 +1,8 @@
     <div class="cp-page">
       <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
       <header class="cp-header">
-        <h1 class="cp-title">🖊️ {{ 'pdf_editor.title' | translate }}</h1>
-        <p class="cp-subtitle">{{ 'pdf_editor.subtitle' | translate }}</p>
+        <h1 class="cp-title">🖊️ {{ (page.headingKey ?? 'pdf_editor.title') | translate }}</h1>
+        <p class="cp-subtitle">{{ (page.leadKey ?? 'pdf_editor.subtitle') | translate }}</p>
       </header>
 
       @if (workspaceItem()) {
@@ -130,4 +130,4 @@
       }
     </div>
 
-<app-lab-tool-info tool="pdf-editor" />
+<app-lab-tool-info [tool]="page.id" />

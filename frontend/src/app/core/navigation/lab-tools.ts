@@ -1,4 +1,5 @@
 import { NAV_REGISTRY, NavEntry } from './nav-registry';
+import { labIntent } from './lab-intents';
 import type { WorkspaceItem } from '../services/workspace.service';
 
 /** Cosa accetta in ingresso uno strumento del Lab (dal workspace o trascinando un file). */
@@ -74,7 +75,9 @@ export function labToolsAccepting(input: LabInput, exceptId?: string | null): Na
 export function labToolIdForUrl(url: string): string | null {
   const match = url.match(/^\/(?:[a-z]{2}\/)?(lab\/[^/?#]+)/);
   if (!match) return null;
-  return NAV_REGISTRY.find(e => e.route === `/${match[1]}`)?.id ?? null;
+  const id = NAV_REGISTRY.find(e => e.route === `/${match[1]}`)?.id ?? null;
+  // Una pagina per ricerca specifica (/lab/merge-pdf) è lo strumento che riusa (pdf-editor).
+  return labIntent(id)?.tool ?? id;
 }
 
 /** La pagina indice /lab (in qualsiasi lingua). */
