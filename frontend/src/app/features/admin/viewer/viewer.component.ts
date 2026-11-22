@@ -17,6 +17,8 @@ import { AskDocumentComponent } from '../../../shared/components/ask-document/as
 import {
   toNormRect, quoteFromRect, annotationsToMarkdown, HIGHLIGHT_COLORS, NormRect,
 } from './viewer-annotations';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabInfoService } from '../../../shared/components/lab-tool-info/lab-info.service';
 
 interface SearchMatch { page: number; }
 
@@ -26,13 +28,14 @@ const MAX_THUMBS = 200;
   selector: 'app-viewer',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateModule, FileDropzoneDirective, RouterLink, FormsModule, BreadcrumbComponent, SampleFileButtonComponent, AskDocumentComponent],
+  imports: [LabToolInfoComponent, TranslateModule, FileDropzoneDirective, RouterLink, FormsModule, BreadcrumbComponent, SampleFileButtonComponent, AskDocumentComponent],
   templateUrl: './viewer.component.html',
   styleUrls: ['./viewer.component.scss'],
 })
 export class ViewerComponent implements OnInit, OnDestroy {
   private readonly pdfjs = inject(PdfjsService);
   private readonly seo = inject(SeoService);
+  private readonly labInfo = inject(LabInfoService);
   private readonly langService = inject(LanguageService);
   private readonly t = inject(TranslateService);
   private readonly library = inject(LibraryService);
@@ -129,6 +132,7 @@ export class ViewerComponent implements OnInit, OnDestroy {
       featureList: ['Page navigation', 'Zoom', 'Full-text search', 'Thumbnail preview', 'Private, no upload'],
       provider: { '@type': 'Person', name: 'Gent Sallaku', url: 'https://gentsallaku.it' },
     },
+    ...this.labInfo.faqSchemas('viewer'),
     this.seo.breadcrumb([
       { name: this.t.instant('nav.home'), url: 'https://gentsallaku.it/' },
       { name: this.t.instant('sidebar.lab'), url: 'https://gentsallaku.it/lab' },

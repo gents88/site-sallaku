@@ -86,6 +86,14 @@ describe('BlogDetailComponent view tracking', () => {
     localStorage.clear();
   });
 
+  it('un articolo su uno strumento del Lab mostra il collegamento allo strumento, gli altri no', () => {
+    const { component } = create('browser');
+    expect(component.labTools).toEqual([]);
+
+    component.post = { ...post, slug: 'ocr-online-estrarre-testo-da-scansioni-e-foto' } as Post;
+    expect(component.labTools.map(t => t.route)).toEqual(['/lab/ocr', '/lab/scanner']);
+  });
+
   it('does not count a view while prerendering on the server', () => {
     const { component, blogService } = create('server');
     expect(component.post).toBe(post);

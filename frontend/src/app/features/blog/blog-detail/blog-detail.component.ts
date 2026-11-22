@@ -27,6 +27,8 @@ import { ViewTransitionNameDirective, ViewTransitionNameOnClickDirective } from 
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
 import { environment } from '../../../../environments/environment';
 import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
+import { labToolsForArticle } from '../../../shared/components/lab-tool-info/lab-info.data';
+import type { NavEntry } from '../../../core/navigation/nav-registry';
 
 /**
  * Quanto del testo è stato letto, da 0 a 1: 0 finché l'inizio del testo non
@@ -172,6 +174,16 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   }
 
   /** Returns the content in the current portal language, falling back to Italian. */
+  /**
+   * Strumenti del Lab di cui parla l'articolo: il riquadro "Prova lo strumento" li
+   * collega alla pagina dello strumento. Insieme ai link dagli strumenti agli
+   * articoli (LabToolInfoComponent) è il collegamento nei due sensi che dice a
+   * Google che pagina e articolo trattano lo stesso argomento.
+   */
+  get labTools(): NavEntry[] {
+    return this.post ? labToolsForArticle(this.post.slug) : [];
+  }
+
   get localizedContent(): string {
     if (!this.post) return '';
     const lang = this.currentLang();

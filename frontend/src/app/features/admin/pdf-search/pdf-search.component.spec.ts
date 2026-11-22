@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { PLATFORM_ID, signal, importProvidersFrom } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -53,6 +54,7 @@ describe('PdfSearchComponent', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         importProvidersFrom(TranslateModule.forRoot()),
         {
           provide: PdfSearchService,
