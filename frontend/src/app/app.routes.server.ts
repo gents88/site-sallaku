@@ -73,6 +73,13 @@ async function fetchProjectSlugs(): Promise<string[]> {
 }
 
 export const serverRoutes: ServerRoute[] = [
+  // Area admin: mai prerenderizzata. Senza questa regola le rotte `:lang/<pagina>` qui sotto catturavano
+  // /dashboard/blog, /dashboard/projects, /dashboard/about e /dashboard/testimonials (con "dashboard" al posto della
+  // lingua) e generavano pagine statiche che al posto della pagina contenevano "Redirecting to /dashboard/login":
+  // ricaricare una di quelle pagine da amministratore riportava al login. Ora sono servite come tutte le altre
+  // pagine admin, dalla shell client (index.csr.html), e decide il guard.
+  { path: 'dashboard', renderMode: RenderMode.Client },
+  { path: 'dashboard/**', renderMode: RenderMode.Client },
   ...PRERENDER_PAGES.map((path): ServerRoute => ({ path, renderMode: RenderMode.Prerender })),
   // /en/homepage, /es/about, /en/lab/pdf-search, ... — one dynamic :lang route
   // per static AND tool page (mirrors app.routes.ts's `:lang` + canMatch
