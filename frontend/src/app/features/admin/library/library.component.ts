@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
 import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { PdfjsService } from '../../../core/services/pdfjs.service';
@@ -55,7 +56,7 @@ export type SortOrder = 'recent' | 'title' | 'size';
   selector: 'app-library',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, TranslateModule, BreadcrumbComponent],
+  imports: [LabToolInfoComponent, CommonModule, FormsModule, TranslateModule, BreadcrumbComponent],
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.scss'],
 })

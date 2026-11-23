@@ -3675,6 +3675,59 @@
           "a": "Este editor trabaja con páginas enteras. Para texto, añade notas o rellena campos con la herramienta de rellenar y firmar."
         }
       ]
+    },
+    "pdf_search": {
+      "about": "La Búsqueda de PDF encuentra libros, artículos científicos y documentos que puedes descargar legalmente. Consulta a la vez Internet Archive, Project Gutenberg, Wikimedia Commons, arXiv, PubMed Central y Zenodo y solo muestra resultados con un PDF realmente disponible. Sirve para hallar clásicos de dominio público, textos de estudio y artículos de acceso abierto sin pasar por sitios dudosos.",
+      "steps": [
+        "Escribe un título, un autor o un tema en el campo de búsqueda y pulsa Buscar.",
+        "Acota con los filtros Libros, Artículos o Favoritos y ordena por relevancia o por año.",
+        "Abre la vista previa para hojear el PDF en el navegador, o descárgalo o ve a la página de la fuente.",
+        "Si quieres conservarlo, guárdalo en la Biblioteca o envíalo al Flujo de trabajo para usarlo con otra herramienta, como Resumen de PDF."
+      ],
+      "privacy": "La búsqueda no requiere registro. Las palabras que escribes solo sirven para consultar los archivos; las búsquedas recientes y los favoritos se quedan en tu navegador.",
+      "limits": "Solo encuentras material de dominio público o de acceso abierto: las obras recientes con derechos de autor no aparecen. Para evitar abusos se permiten unas 20 búsquedas por minuto. Algunas fuentes, como PubMed Central, no permiten la vista previa: en ese caso descarga el PDF y léelo en tu dispositivo."
+    },
+    "library": {
+      "about": "La Biblioteca es tu archivo personal de PDF, guardado en tu navegador. Puedes subir tus archivos o guardar los encontrados con la Búsqueda de PDF, buscar una palabra en todo el contenido página por página, organizarlos con etiquetas y hacer preguntas a tus documentos.",
+      "steps": [
+        "Sube tus PDF con el botón correspondiente, o guarda en la Biblioteca los encontrados con la Búsqueda de PDF.",
+        "Pulsa Indexar: la herramienta extrae el texto de cada página en tu navegador para que se pueda buscar.",
+        "Busca una palabra o frase: ves en qué documentos y páginas aparece. Filtra y ordena por título, etiqueta o tamaño.",
+        "Usa Pregunta a la biblioteca para hacer una pregunta: recibes una respuesta con las páginas de las que procede."
+      ],
+      "privacy": "Los documentos se quedan en tu navegador y no se suben a ningún archivo. Cuando haces una pregunta, al servidor solo llegan los pocos pasajes relevantes, no el archivo entero.",
+      "limits": "Al estar guardada en el navegador, la Biblioteca no se sincroniza entre dispositivos y se vacía si borras los datos del sitio: conserva una copia de los archivos importantes. Solo se pueden importar PDF. Los PDF que son escaneos, sin texto seleccionable, no se pueden buscar hasta que pasen por el OCR.",
+      "faq": [
+        {
+          "q": "¿Dónde se guardan mis PDF?",
+          "a": "En el navegador que estás usando, en tu dispositivo. No hay un archivo en línea, por eso no se encuentran desde otro dispositivo."
+        },
+        {
+          "q": "¿Por qué un documento aparece como \"Escaneo\"?",
+          "a": "Porque sus páginas son imágenes sin texto seleccionable. Pásalo por la herramienta de OCR para obtener el texto y poder buscarlo."
+        }
+      ]
+    },
+    "workspace": {
+      "about": "El Flujo de trabajo sirve para pasar el resultado de una herramienta directamente a la siguiente, sin descargar y volver a subir archivos. Por ejemplo, puedes escanear un documento, extraer su texto con OCR y luego traducirlo o resumirlo, siempre en el mismo recorrido.",
+      "steps": [
+        "Empieza por una de las herramientas de inicio indicadas, por ejemplo Escáner, OCR o Búsqueda de PDF.",
+        "Cuando tengas el resultado, elige enviarlo al Flujo de trabajo.",
+        "Aquí aparece el elemento recibido, con la herramienta de la que viene.",
+        "Elige con qué herramienta continuar, o descarga el archivo o borra el elemento."
+      ],
+      "privacy": "Los elementos en tránsito se quedan en tu navegador durante la sesión y no se guardan en ningún archivo.",
+      "limits": "El contenido no se guarda: se pierde si recargas o cierras la pestaña. Si necesitas conservarlo, descárgalo o guárdalo en la Biblioteca.",
+      "faq": [
+        {
+          "q": "¿El Flujo de trabajo guarda mis archivos?",
+          "a": "No. Los elementos quedan en memoria en la pestaña abierta y desaparecen al recargarla o cerrarla."
+        },
+        {
+          "q": "¿Puedo pasar también texto, no solo archivos?",
+          "a": "Sí. El Flujo de trabajo acepta archivos y texto, por ejemplo el extraído por OCR, y lo ofrece a las herramientas siguientes."
+        }
+      ]
     }
   },
   "lab_intents": {
