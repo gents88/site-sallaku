@@ -41,6 +41,7 @@ frontend/            → Angular 21 SPA (standalone, signals, SSR-capable)
 backend/             → NestJS 11 REST API + WebSocket gateway
 docs/                → Documentazione (guide, SEO, checklist, template)
 scripts/             → Build, deploy, sitemap, backup Mongo, ottimizzazione asset
+backend/scripts/     → Script una tantum sul CMS: seed progetti, bozze di articoli (--apply per scrivere), catalogo Lab
 .github/workflows/   → CI, generazione sitemap, backup MongoDB
 index.html           → Landing page statica legacy (vedi nota sotto)
 docker-compose*.yml  → Stack locale / uat / plesk
@@ -129,10 +130,42 @@ docker compose up --build
 | Scanner | `/lab/scanner` |
 | Workspace | `/lab/workspace` |
 | Libreria | `/lab/library` |
+| Firma e compila PDF | `/lab/sign-pdf` |
+| Comprimi PDF | `/lab/compress-pdf` |
+| Foto: HEIC → JPG, ridimensiona, comprimi | `/lab/image-tools` |
+| Generatore QR code | `/lab/qr-code` |
+
+Firma, compressione, foto e QR code lavorano **nel browser** (nessun file va al server);
+le conversioni di documento (`/lab/convert` e le sue scorciatoie) inviano il file al backend.
+
+#### Pagine per ricerche specifiche
+
+Oltre allo strumento, ogni compito molto cercato ha una pagina sua con titolo, meta, H1, FAQ e dati
+strutturati propri, che riusa lo strumento già impostato: `/lab/heic-to-jpg`, `/lab/png-to-jpg`,
+`/lab/pdf-to-jpg`, `/lab/reduce-pdf-size`, `/lab/fill-pdf`, `/lab/wifi-qr-code`, `/lab/edit-pdf`… (26 in
+tutto, in 7 lingue). Sono definite in `frontend/src/app/core/navigation/lab-intents.ts`; i testi stanno in
+`lab_intents.*` e `lab_info.*` dei file i18n.
+
+**Per aggiungere uno strumento o una pagina di ricerca:**
+1. voce in `core/navigation/nav-registry.json` (alimenta menu, ricerca, prerender e sitemap) e, per una
+   scorciatoia, in `lab-intents.ts`;
+2. testi nelle 7 lingue (`frontend/public/i18n/*.json`) e collegamenti in `lab-info.data.ts`;
+3. `cd backend && npm run build:lab-catalog` (rigenera l'elenco che il chatbot conosce; un test fallisce se è
+   fuori sincronia);
+4. aggiungere la pagina a `frontend/public/llms.txt`.
+
+L'area `/dashboard` non viene mai prerenderizzata (`app.routes.server.ts`, `RenderMode.Client`).
 
 ### 🤖 Chatbot & live handoff
 
 - Chatbot AI sul sito pubblico, con sessioni persistite e transcript via email.
+- **Risposte in streaming** (Server-Sent Events) su `POST /chatbot/message/stream`: il testo compare mentre il
+  modello lo scrive; il client ripiega su `POST /chatbot/message` se lo stream non parte. Le righe di servizio
+  (`LIVE_OFFER`, `SUGGESTIONS`) non vengono mai mostrate (`stream-markers.ts`).
+- **Conosce tutti gli strumenti e gli articoli**: il prompt usa il catalogo del Lab
+  (`backend/src/chatbot/lab-catalog.ts`, generato dal registro di navigazione) e una ricerca leggera
+  multilingua (`retrieval.ts`) che porta nel prompt le pagine e i 3 articoli più pertinenti alla domanda.
+- Risposte predefinite per argomento in 7 lingue quando l'AI non è disponibile.
 - **Live handoff**: se l'utente chiede di parlare con una persona, un popup raccoglie
   la richiesta e apre una **chat live via WebSocket** (Socket.IO) verso l'admin.
 - Rate limit configurabile (`LIVE_HANDOFF_MAX_PER_DAY`, `LIVE_HANDOFF_TIMEOUT_MINUTES`).
@@ -142,6 +175,9 @@ docker compose up --build
 CRUD completo su Progetti, Esperienze, About, Blog, Note, Testimonianze; gestione iscritti
 newsletter con export CSV; inbox contatti paginata; analytics con export CSV; audit trail;
 gestione cron; stato sistema.
+La dashboard apre con i numeri chiave e una fascia «Da fare adesso» (chat in attesa, messaggi non letti,
+follow-up, errori aperti…); le sezioni sono chiuse di default con un riepilogo accanto al titolo e su telefono
+si raggiungono dal menu «Vai a…».
 Login con password **oppure OTP** via email/SMS (`/dashboard/login/otp`).
 
 ### 🌍 Multilingua (i18n)
@@ -327,7 +363,7 @@ Documentazione interattiva su `/api/docs` (Swagger).
 | Newsletter | `/newsletter` | `POST /subscribe` · `GET /confirm` · `GET /unsubscribe` · `GET /admin/subscribers` 🔒 · `GET /admin/counts` 🔒 · `GET /admin/export` 🔒 · `DELETE /admin/subscribers/:id` 🔒 |
 | Contact | `/contact` | `POST /` · `GET /?page&limit&unreadOnly` 🔒 |
 | Search | `/search` | `GET /` · `GET /suggest` |
-| Chatbot | `/chatbot` | `POST /message` · `GET /session/:sessionId` · `POST /send-transcript` · `GET /stats` 🔒 · `GET /sessions/today` 🔒 |
+| Chatbot | `/chatbot` | `POST /message` · `POST /message/stream` (SSE) · `GET /session/:sessionId` · `POST /send-transcript` · `GET /stats` 🔒 · `GET /sessions/today` 🔒 |
 | Live handoff | `/chatbot`, `/admin/live-handoff` | `POST /:sessionId/live-handoff` · `GET /:sessionId/live-handoff/status` · `GET /pending` 🔒 + gateway WebSocket |
 | AI | `/ai` | `POST /summarize-file` · `POST /ask-document` · `POST /format-text` · `POST /generate-ppt` · `POST /translate-pdf` |
 | PDF Search | `/pdf-search` | `GET /` · `GET /gutenberg/:id` · `GET /proxy` |
@@ -374,8 +410,8 @@ Documentazione interattiva su `/api/docs` (Swagger).
 ## 🧪 Test
 
 ```bash
-cd backend  && npm test          # Jest — 29 suite
-cd frontend && npm test          # Karma/Jasmine — 15 suite
+cd backend  && npm test          # Jest — 88 suite
+cd frontend && npm test          # Vitest (ng test) — 173 suite
 cd frontend && npm run test:e2e  # Playwright
 ```
 
