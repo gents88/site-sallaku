@@ -1,3 +1,4 @@
+import { ApplicationRef } from '@angular/core';
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
@@ -48,5 +49,26 @@ describe('Home: strumenti gratuiti, ultimi articoli, call to action', () => {
   it('con degli articoli ne mostra al massimo 3', () => {
     const posts = Array.from({ length: 5 }, (_, i) => ({ _id: `${i}`, slug: `a-${i}`, title: `T${i}`, excerpt: 'x', tags: [] }));
     expect(render(posts).querySelectorAll('#latest-posts .latest-card')).toHaveLength(3);
+  });
+});
+
+describe('Home: hero su telefono e ordine delle sezioni', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('la descrizione dell\'hero parte accorciata e il pulsante la apre', () => {
+    const el = render([]);
+    const desc = el.querySelector('#hero-description') as HTMLElement;
+    const btn = el.querySelector('.hero-more') as HTMLButtonElement;
+    expect(desc.classList.contains('is-collapsed')).toBe(true);
+    expect(btn.getAttribute('aria-expanded')).toBe('false');
+    btn.click();
+    TestBed.inject(ApplicationRef).tick();
+    expect(desc.classList.contains('is-collapsed')).toBe(false);
+    expect(btn.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('gli strumenti vengono subito dopo "Chi sono"', () => {
+    const ids = Array.from(render([]).querySelectorAll('section[id]')).map(s => s.id);
+    expect(ids.indexOf('lab')).toBe(ids.indexOf('about') + 1);
   });
 });

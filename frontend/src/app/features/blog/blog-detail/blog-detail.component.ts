@@ -95,6 +95,12 @@ export class BlogDetailComponent implements OnInit, OnChanges {
   loading = true;
   notFound = false;
   breadcrumbItems: BreadcrumbItem[] = [];
+
+  /** Mostra "Aggiornato il" solo se la modifica è successiva alla pubblicazione di almeno un giorno (non per i ritocchi del giorno stesso). */
+  isMeaningfullyUpdated(post: { publishedAt?: string | Date | null; updatedAt?: string | Date | null }): boolean {
+    if (!post.publishedAt || !post.updatedAt) return false;
+    return new Date(post.updatedAt).getTime() - new Date(post.publishedAt).getTime() > 24 * 3_600_000;
+  }
   /** Self-referencing canonical URL for the current language — also fed to app-social-share. */
   pageUrl = '';
 
