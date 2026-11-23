@@ -4096,5 +4096,25 @@
     "b_clicks": "clicks from Google",
     "total": "total",
     "jump_to": "Jump to…"
+  },
+  "home_v2": {
+    "hero_line": "Albanian from Blinisht, living in Italy. I build software and free tools you can use without signing up.",
+    "cta_tools": "Try the free tools",
+    "cta_projects": "See projects",
+    "origin": "I'm Albanian, originally from Blinisht (Lezhë), and I live in Italy.",
+    "origin_link": "Read the story of Blinisht",
+    "lab_tag": "lab",
+    "lab_title": "Free tools",
+    "lab_lead": "Tools I use and built myself: PDF, images, QR codes, conversions and AI. They run in your browser, no sign-up.",
+    "stat_tools": "tools",
+    "stat_langs": "languages",
+    "stat_signup": "sign-ups required",
+    "lab_see_all": "See all tools",
+    "blog_tag": "blog",
+    "blog_title": "Latest articles",
+    "blog_lead": "Notes on development, tools and stories.",
+    "blog_read": "Read",
+    "blog_all": "All articles",
+    "availability": "I'm not taking on new engagements right now, but feel free to write for a question or a collaboration; I reply when I can."
   }
 }
