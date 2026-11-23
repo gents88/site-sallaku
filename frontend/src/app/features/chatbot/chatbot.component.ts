@@ -102,6 +102,8 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
   followUpSuggestions: string[] = [];
   isLoading = false;
   isOpen = false;
+  /** Elemento che aveva il focus quando la chat è stata aperta: ci si torna alla chiusura. */
+  private chatTrigger: HTMLElement | null = null;
   inputText = '';
   panelView: PanelView = 'chat';
 
@@ -197,7 +199,21 @@ export class ChatbotComponent implements OnInit, OnDestroy, AfterViewChecked {
     );
     this.subs.add(
       this.chatbot.isOpen$.subscribe((open: boolean) => {
+        const wasOpen = this.isOpen;
         this.isOpen = open;
+        if (open && !wasOpen) {
+          const active = typeof document !== 'undefined' ? (document.activeElement as HTMLElement | null) : null;
+          this.chatTrigger = active && active !== document.body ? active : null;
+        } else if (!open && wasOpen && typeof document !== 'undefined') {
+          // Alla chiusura (anche con Esc) il focus torna al pulsante della chat invece di perdersi sul body.
+          setTimeout(() => {
+            const a = document.activeElement;
+            if (a && a !== document.body) return; // l'utente è già andato altrove
+            const target = this.chatTrigger?.isConnected ? this.chatTrigger : document.querySelector<HTMLElement>('.cb-fab');
+            target?.focus();
+            this.chatTrigger = null;
+          }, 0);
+        }
         if (open) {
           this.hideTeaser();
           this.inviteUnread = false;
