@@ -2490,7 +2490,8 @@
     "text": "Die aufgerufene Adresse existiert nicht oder wurde verschoben.",
     "home": "Zur Startseite",
     "blog": "Zum Blog",
-    "lab": "Lab öffnen"
+    "lab": "Lab öffnen",
+    "popular_tools": "Meistgenutzte Tools"
   },
   "account": {
     "section_title": "Dein Konto",
@@ -4116,6 +4117,8 @@
     "blog_lead": "Notizen zu Entwicklung, Tools und Geschichten.",
     "blog_read": "Lesen",
     "blog_all": "Alle Artikel",
-    "availability": "Aktuell nehme ich keine neuen Aufträge an, aber du kannst mir für eine Frage oder Zusammenarbeit schreiben; ich antworte, sobald ich kann."
+    "availability": "Aktuell nehme ich keine neuen Aufträge an, aber du kannst mir für eine Frage oder Zusammenarbeit schreiben; ich antworte, sobald ich kann.",
+    "read_more": "Weiterlesen",
+    "read_less": "Weniger anzeigen"
   }
 }

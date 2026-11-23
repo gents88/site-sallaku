@@ -2490,7 +2490,8 @@
     "text": "L'adresse que tu as ouverte n'existe pas ou a été déplacée.",
     "home": "Retour à l'accueil",
     "blog": "Aller au blog",
-    "lab": "Ouvrir le Lab"
+    "lab": "Ouvrir le Lab",
+    "popular_tools": "Outils les plus utilisés"
   },
   "account": {
     "section_title": "Ton compte",
@@ -4116,6 +4117,8 @@
     "blog_lead": "Notes sur le développement, les outils et des histoires.",
     "blog_read": "Lire",
     "blog_all": "Tous les articles",
-    "availability": "Je ne prends pas de nouvelles missions pour le moment, mais vous pouvez m'écrire pour une question ou une collaboration ; je réponds dès que possible."
+    "availability": "Je ne prends pas de nouvelles missions pour le moment, mais vous pouvez m'écrire pour une question ou une collaboration ; je réponds dès que possible.",
+    "read_more": "Lire la suite",
+    "read_less": "Afficher moins"
   }
 }
