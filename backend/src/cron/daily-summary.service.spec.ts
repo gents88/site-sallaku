@@ -4,7 +4,7 @@ import { TemplateRendererService } from '../mail/template-renderer.service';
 /** Serie giornaliera dal più vecchio a oggi. */
 const days = (counts: number[]) => counts.map((count, i) => ({ date: `2026-11-${16 + i}`, count }));
 
-function build(opts: { overview?: any | null; visits?: any; contactsByDay?: any; contactsFail?: boolean } = {}) {
+function build(opts: { overview?: any | null; visits?: any; contactsByDay?: any; contactsFail?: boolean; chatFail?: boolean } = {}) {
   const renderer = new TemplateRendererService();
   renderer.onModuleInit();
   const send = jest.fn().mockResolvedValue({ success: true, messageId: 'm1', accepted: ['x'], rejected: [] });
@@ -28,7 +28,10 @@ function build(opts: { overview?: any | null; visits?: any; contactsByDay?: any;
         getSections: jest.fn().mockResolvedValue({
           generatedAt: '', errors: [],
           sections: {
-            serverErrors: { open: 2 }, serverHealth: { warnings: [] }, notFound: { open: 0 }, translationHealth: { postsWithIssues: 4 }, scheduledPosts: [],
+            serverErrors: { open: 2 },
+            serverHealth: { warnings: [], backups: { configured: true, stale: false, latest: { ageHours: 6 } }, disk: { freeGb: 22, usedPct: 45, low: false }, memory: { usedPct: 56, low: false } },
+            aiUsage: { tokens: 182000, quota: { dailyTokenBudget: 500000 }, enabled: true },
+            security: { failedLogins24h: 4, otpFailed24h: 0, tokenReuse: 0 }, notFound: { open: 0 }, translationHealth: { postsWithIssues: 4 }, scheduledPosts: [],
             gsc: { configured: true, clicks: 310, impressions: 9100, avgCtr: 3.4, avgPosition: 12.3, topQueries: [{ query: 'png to jpg', clicks: 40, impressions: 800, ctr: 5, position: 7.1 }] },
           },
         }),
@@ -36,10 +39,24 @@ function build(opts: { overview?: any | null; visits?: any; contactsByDay?: any;
     : opts.overview;
   const cfg = { get: jest.fn((k: string) => ({ EMAIL_TO: 'admin@example.test', SITE_URL: 'https://example.test' } as Record<string, string>)[k]) };
   const service = new DailySummaryService(
-    cfg as any, contacts as any, analyticsQuery as any, {} as any, { getTodayInteractionCount: jest.fn().mockResolvedValue(7) } as any,
+    cfg as any, contacts as any, analyticsQuery as any, {} as any, {
+      getTodayInteractionCount: jest.fn().mockResolvedValue(7),
+      getTodaySessions: opts.chatFail
+        ? jest.fn().mockRejectedValue(new Error('db'))
+        : jest.fn().mockResolvedValue({
+            data: [
+              { messages: [
+                { role: 'user', content: 'Come firmo un PDF?', timestamp: new Date('2026-11-23T09:00:00Z') },
+                { role: 'assistant', content: 'Usa lo strumento', timestamp: new Date('2026-11-23T09:00:05Z'), usedFallback: false },
+                { role: 'user', content: 'Gent è <i>italiano</i>?', timestamp: new Date('2026-11-23T09:05:00Z') },
+                { role: 'assistant', content: 'Risposta predefinita', timestamp: new Date('2026-11-23T09:05:02Z'), usedFallback: true },
+              ] },
+            ],
+          }),
+    } as any,
     { send } as any, renderer, {} as any, overview as any,
   );
-  const run = () => (service as any).gatherAndSend(new Date('2026-11-23T21:00:00Z'));
+  const run = () => (service as any).gatherAndSend(new Date());
   return { run, send, analyticsQuery, overview };
 }
 
@@ -114,5 +131,34 @@ describe('DailySummaryService — email delle 22:00', () => {
     const { run, send } = build({ visits: jest.fn().mockResolvedValue({ viewsByDay: days([5]) }), contactsByDay: days([1]) });
     await run();
     expect(send.mock.calls[0][0].html).not.toContain('su ieri');
+  });
+
+  it('mostra le domande fatte oggi al chatbot e quante risposte erano predefinite, senza HTML', async () => {
+    const { run, send } = build();
+    await run();
+    const mail = send.mock.calls[0][0];
+    expect(mail.html).toContain('Chatbot oggi');
+    expect(mail.html).toContain('<strong>2</strong> domande in <strong>1</strong> conversazioni');
+    expect(mail.html).toContain('“Come firmo un PDF?”');
+    expect(mail.html).toContain('Gent è &lt;i&gt;italiano&lt;/i&gt;?');
+    expect(mail.html).not.toContain('<i>italiano</i>');
+    expect(mail.text).toContain('Chatbot oggi: 2 domande in 1 conversazioni, 1 risposte predefinite');
+  });
+
+  it('mostra lo stato del sistema (backup, disco, token AI, accessi falliti)', async () => {
+    const { run, send } = build();
+    await run();
+    const html: string = send.mock.calls[0][0].html;
+    expect(html).toContain('Stato del sistema');
+    expect(html).toContain('6 h fa');
+    expect(html).toContain('22 GB liberi (45% usato)');
+    expect(html).toMatch(/182\.000 su 500\.000 \(36%\)/);
+    expect(html).toContain('Accessi falliti (24 h)');
+  });
+
+  it('se la lettura delle chat fallisce l\'email parte comunque, senza il blocco chatbot', async () => {
+    const { run, send } = build({ chatFail: true });
+    expect(await run()).toBe(true);
+    expect(send.mock.calls[0][0].html).not.toContain('Chatbot oggi');
   });
 });
