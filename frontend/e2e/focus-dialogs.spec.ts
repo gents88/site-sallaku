@@ -71,3 +71,32 @@ test('ricerca: il focus entra nel campo, Tab non esce, Esc riporta il focus al p
   await expect(page.locator('.so-panel')).toHaveCount(0);
   await expect(opener).toBeFocused();
 });
+
+test.describe('menu laterale su telefono', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
+
+  test('si apre da "Altro" col focus sul pulsante di chiusura, Tab non esce e alla chiusura il focus torna a "Altro"', async ({ page }) => {
+    await prepare(page, false);
+    const more = page.locator('button.tab-item[aria-controls="nav-menu"]');
+    await more.click();
+    await page.locator('.nav-menu button.nav-link--button').first().click();
+    await expect(page.locator('#app-sidebar')).toHaveClass(/open/);
+    await expect(page.locator('#app-sidebar .close-btn')).toBeFocused();
+
+    await expectTabStaysInside(page, '#app-sidebar');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#app-sidebar')).not.toHaveClass(/open/);
+    // prima il focus si perdeva sul corpo della pagina
+    await expect(more).toBeFocused();
+  });
+
+  test('anche chiudendo con la X il focus torna a "Altro"', async ({ page }) => {
+    await prepare(page, false);
+    const more = page.locator('button.tab-item[aria-controls="nav-menu"]');
+    await more.click();
+    await page.locator('.nav-menu button.nav-link--button').first().click();
+    await page.locator('#app-sidebar .close-btn').click();
+    await expect(page.locator('#app-sidebar')).not.toHaveClass(/open/);
+    await expect(more).toBeFocused();
+  });
+});
