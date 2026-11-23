@@ -16,6 +16,11 @@
     <p class="hero-description">
       {{ 'hero.description' | translate }}
     </p>
+    <p class="hero-note">{{ 'home_v2.hero_line' | translate }}</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}</a>
+      <a href="#projects" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="hero_projects">{{ 'home_v2.cta_projects' | translate }}</a>
+    </div>
   </div>
   <div class="hero-scroll-indicator">
     <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
@@ -53,6 +58,10 @@
           <div class="profile-heading">
             <strong>Gent Sallaku</strong> — {{ 'hero.role' | translate }}
           </div>
+          <p class="about-origin">
+            {{ 'home_v2.origin' | translate }}
+            <a [routerLink]="'/blog/blinisht-storia-memoria-e-identita-di-un-antico-territorio-della-zadrima-dall-antichita-a-oggi' | langUrl" appTrackClick eventType="cta" label="about_blinisht">{{ 'home_v2.origin_link' | translate }}</a>
+          </p>
         </div>
         <p class="about-bio" [innerHTML]="'about.bio1' | translate"></p>
         <p class="about-bio" [innerHTML]="'about.bio2' | translate"></p>
@@ -204,6 +213,70 @@
   </div>
 </section>
 
+<!-- ══ LAB: STRUMENTI GRATUITI ═══════════════════════ -->
+<section class="section section-alt" id="lab">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">&lt;{{ 'home_v2.lab_tag' | translate }}&gt;</span>
+      <h2 class="section-title">{{ 'home_v2.lab_title' | translate }}</h2>
+      <div class="section-line"></div>
+      <p class="section-subtitle reveal">{{ 'home_v2.lab_lead' | translate }}</p>
+    </div>
+
+    <ul class="lab-stats reveal" role="list">
+      <li><strong>{{ labToolCount }}</strong><span>{{ 'home_v2.stat_tools' | translate }}</span></li>
+      <li><strong>7</strong><span>{{ 'home_v2.stat_langs' | translate }}</span></li>
+      <li><strong>0</strong><span>{{ 'home_v2.stat_signup' | translate }}</span></li>
+    </ul>
+
+    <div class="lab-grid">
+      @for (tool of labTools; track tool.id) {
+        <a class="lab-card glass-card reveal" [routerLink]="tool.route | langUrl"
+           appTrackClick eventType="cta" [label]="'home_lab_' + tool.id" [destination]="tool.route">
+          <span class="lab-card__icon icon-tile" aria-hidden="true"><app-nav-icon [name]="tool.icon" [size]="22" /></span>
+          <span class="lab-card__body">
+            <span class="lab-card__title">{{ 'tools.' + tool.key + '_title' | translate }}</span>
+            <span class="lab-card__desc">{{ 'tools.' + tool.key + '_desc' | translate }}</span>
+          </span>
+          <mat-icon class="lab-card__arrow" aria-hidden="true">arrow_forward</mat-icon>
+        </a>
+      }
+    </div>
+
+    <div class="lab-actions">
+      <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="home_lab_all" destination="/lab">{{ 'home_v2.lab_see_all' | translate }}</a>
+    </div>
+  </div>
+</section>
+
+@if (latestPosts.length) {
+<!-- ══ ULTIMI ARTICOLI ═══════════════════════════════ -->
+<section class="section" id="latest-posts">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">&lt;{{ 'home_v2.blog_tag' | translate }}&gt;</span>
+      <h2 class="section-title">{{ 'home_v2.blog_title' | translate }}</h2>
+      <div class="section-line"></div>
+      <p class="section-subtitle reveal">{{ 'home_v2.blog_lead' | translate }}</p>
+    </div>
+    <div class="latest-grid">
+      @for (post of latestPosts; track post._id) {
+        <article class="latest-card glass-card reveal">
+          <h3 class="latest-card__title">
+            <a [routerLink]="postPath(post) | langUrl" appTrackClick eventType="cta" [label]="'home_post_' + post.slug" [destination]="postPath(post)">{{ postTitle(post) }}</a>
+          </h3>
+          @if (postExcerpt(post)) { <p class="latest-card__excerpt">{{ postExcerpt(post) }}</p> }
+          <a class="latest-card__more" [routerLink]="postPath(post) | langUrl" [attr.aria-label]="('home_v2.blog_read' | translate) + ': ' + postTitle(post)">{{ 'home_v2.blog_read' | translate }} <mat-icon aria-hidden="true">arrow_forward</mat-icon></a>
+        </article>
+      }
+    </div>
+    <div class="lab-actions">
+      <a class="btn btn-outline" [routerLink]="'/blog' | langUrl" appTrackClick eventType="cta" label="home_blog_all" destination="/blog">{{ 'home_v2.blog_all' | translate }}</a>
+    </div>
+  </div>
+</section>
+}
+
 <!-- ══ TESTIMONIALS ════════════════════════════════════ -->
 <!-- Solo se c'è almeno una testimonianza pubblicata: vuota era una sezione bianca. -->
 @if (hasTestimonials()) {
@@ -222,6 +295,7 @@
       <h2 class="section-title">{{ 'services.title' | translate }}</h2>
       <div class="section-line"></div>
       <p class="section-subtitle reveal">{{ 'services.subtitle' | translate }}</p>
+      <p class="availability-note reveal"><mat-icon aria-hidden="true">info</mat-icon> {{ 'home_v2.availability' | translate }}</p>
     </div>
     <div class="services-grid">
       @for (svc of services; track svc.key) {
