@@ -730,7 +730,8 @@
     "latest": "Artigo mais recente",
     "all_posts": "Todos os artigos",
     "not_found": "Artigo não encontrado",
-    "back_to_blog": "Voltar ao blog"
+    "back_to_blog": "Voltar ao blog",
+    "updated_on": "Atualizado em {{date}}"
   },
   "notes": {
     "title": "Notas dos leitores",
@@ -2489,7 +2490,8 @@
     "text": "O endereço que abriste não existe ou foi movido.",
     "home": "Voltar ao início",
     "blog": "Ir para o blog",
-    "lab": "Abrir o Lab"
+    "lab": "Abrir o Lab",
+    "popular_tools": "Ferramentas mais usadas"
   },
   "account": {
     "section_title": "A tua conta",
@@ -4115,6 +4117,8 @@
     "blog_lead": "Notas sobre desenvolvimento, ferramentas e histórias.",
     "blog_read": "Ler",
     "blog_all": "Todos os artigos",
-    "availability": "De momento não aceito novos trabalhos, mas pode escrever-me para uma dúvida ou colaboração; respondo assim que puder."
+    "availability": "De momento não aceito novos trabalhos, mas pode escrever-me para uma dúvida ou colaboração; respondo assim que puder.",
+    "read_more": "Ler mais",
+    "read_less": "Mostrar menos"
   }
 }

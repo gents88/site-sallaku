@@ -34,6 +34,13 @@ describe('NotFoundComponent', () => {
     const { el } = render();
     expect(el.querySelector('h1')?.textContent).toContain('Page not found');
     const hrefs = Array.from(el.querySelectorAll('a')).map(a => a.getAttribute('href'));
-    expect(hrefs).toEqual(['/en', '/en/blog', '/en/lab']);
+    expect(hrefs.slice(0, 3)).toEqual(['/en', '/en/blog', '/en/lab']);
+  });
+
+  it('propone gli strumenti più usati, tutti nella lingua corrente', () => {
+    const { el } = render();
+    const tools = Array.from(el.querySelectorAll('.not-found__tools a')).map(a => a.getAttribute('href'));
+    expect(tools.length).toBeGreaterThanOrEqual(4);
+    tools.forEach(h => expect(h).toMatch(/^\/en\/lab\//));
   });
 });

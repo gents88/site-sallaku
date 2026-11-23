@@ -730,7 +730,8 @@
     "latest": "Neuester Artikel",
     "all_posts": "Alle Artikel",
     "not_found": "Artikel nicht gefunden",
-    "back_to_blog": "Zurück zum Blog"
+    "back_to_blog": "Zurück zum Blog",
+    "updated_on": "Aktualisiert am {{date}}"
   },
   "notes": {
     "title": "Leser-Notizen",
@@ -2489,7 +2490,8 @@
     "text": "Die aufgerufene Adresse existiert nicht oder wurde verschoben.",
     "home": "Zur Startseite",
     "blog": "Zum Blog",
-    "lab": "Lab öffnen"
+    "lab": "Lab öffnen",
+    "popular_tools": "Meistgenutzte Tools"
   },
   "account": {
     "section_title": "Dein Konto",
@@ -4115,6 +4117,8 @@
     "blog_lead": "Notizen zu Entwicklung, Tools und Geschichten.",
     "blog_read": "Lesen",
     "blog_all": "Alle Artikel",
-    "availability": "Aktuell nehme ich keine neuen Aufträge an, aber du kannst mir für eine Frage oder Zusammenarbeit schreiben; ich antworte, sobald ich kann."
+    "availability": "Aktuell nehme ich keine neuen Aufträge an, aber du kannst mir für eine Frage oder Zusammenarbeit schreiben; ich antworte, sobald ich kann.",
+    "read_more": "Weiterlesen",
+    "read_less": "Weniger anzeigen"
   }
 }
