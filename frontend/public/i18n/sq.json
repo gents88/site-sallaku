@@ -730,7 +730,8 @@
     "latest": "Artikulli më i ri",
     "all_posts": "Të gjithë artikujt",
     "not_found": "Artikulli nuk u gjet",
-    "back_to_blog": "Kthehu te blogu"
+    "back_to_blog": "Kthehu te blogu",
+    "updated_on": "Përditësuar më {{date}}"
   },
   "notes": {
     "title": "Shënime nga lexuesit",
