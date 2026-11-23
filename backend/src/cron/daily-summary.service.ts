@@ -12,7 +12,7 @@ import { MailService } from '../mail/mail.service';
 import { TemplateRendererService } from '../mail/template-renderer.service';
 import { CronState, CronStateDocument } from './schemas/cron-state.schema';
 import { AdminOverviewService } from '../stats/admin-overview.service';
-import { buildSubject, buildTodo, buildTrend, formatItalianDate, Trend, TodoItem } from './daily-summary.model';
+import { buildChatSummary, buildSubject, buildSystemRows, buildTodo, buildTrend, formatItalianDate, ChatSummary, SystemRow, Trend, TodoItem } from './daily-summary.model';
 
 const DAILY_SUMMARY_JOB = 'daily-summary';
 
@@ -201,6 +201,12 @@ export class DailySummaryService {
       contactsTrend: extras.contactsTrend,
       todo,
       gsc: extras.sections?.['gsc'] as any,
+      chat: extras.chat,
+      system: buildSystemRows({
+        serverHealth: extras.sections?.['serverHealth'] as any,
+        aiUsage: extras.sections?.['aiUsage'] as any,
+        security: extras.sections?.['security'] as any,
+      }),
     }));
 
     const subject = buildSubject({
@@ -240,6 +246,11 @@ export class DailySummaryService {
         `Località oggi:        ${engagement.locations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'n.d.'}`,
         `Località da sempre:   ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'n.d.'}`,
         ``,
+        ...(extras.chat && extras.chat.questionsCount
+          ? [``, `Chatbot oggi: ${extras.chat.questionsCount} domande in ${extras.chat.sessions} conversazioni, ${extras.chat.fallbackReplies} risposte predefinite`,
+             ...extras.chat.questions.map(q => `  - ${q}`)]
+          : []),
+        ``,
         `Dashboard: ${this.siteUrl()}/dashboard`,
       ].join('\n'),
     });
@@ -276,6 +287,8 @@ export class DailySummaryService {
     contactsTrend?: Trend | null;
     todo?: TodoItem[];
     gsc?: { configured?: boolean; clicks: number; impressions: number; avgCtr: number; avgPosition: number; topQueries: { query: string; clicks: number; position: number }[] } | null;
+    chat?: ChatSummary | null;
+    system?: SystemRow[];
   }): Record<string, unknown> {
     const { date, todaysContacts, todayStats, advanced, engagement, chatInteractions } = data;
     const dashboardUrl = `${this.siteUrl()}/dashboard`;
@@ -307,6 +320,10 @@ export class DailySummaryService {
 
     const todoColor = { bad: '#dc2626', warn: '#b45309', info: '#4338ca' } as const;
     const todo = (data.todo ?? []).map((t) => ({ ...t, color: todoColor[t.tone], url: `${this.siteUrl()}${t.path}` }));
+
+    const toneColor = { ok: '#16a34a', warn: '#b45309', bad: '#dc2626' } as const;
+    const system = (data.system ?? []).map((r) => ({ ...r, color: toneColor[r.tone], dot: r.tone === 'ok' ? '🟢' : r.tone === 'warn' ? '🟠' : '🔴' }));
+    const chat = data.chat && (data.chat.questionsCount > 0 || data.chat.fallbackReplies > 0) ? data.chat : null;
 
     const gsc =
       data.gsc?.configured && (data.gsc.clicks > 0 || data.gsc.impressions > 0)
@@ -376,6 +393,8 @@ export class DailySummaryService {
       kpiRows,
       pages,
       gsc,
+      chat,
+      system,
       tablePairs,
       contacts,
     };
@@ -395,6 +414,7 @@ export class DailySummaryService {
     contactsTrend: Trend | null;
     notifications: Awaited<ReturnType<AdminOverviewService['notificationSummary']>> | null;
     sections: Record<string, unknown> | null;
+    chat: ChatSummary | null;
   }> {
     const safe = async <T>(label: string, fn: () => Promise<T>): Promise<T | null> => {
       try {
@@ -406,14 +426,18 @@ export class DailySummaryService {
     };
 
     // 8 giorni: oggi, ieri e i 6 precedenti per la media.
-    const [visits, contactDays, notifications, overview] = await Promise.all([
+    const dayStart = new Date();
+    dayStart.setHours(0, 0, 0, 0);
+    const [visits, contactDays, notifications, overview, chatPage] = await Promise.all([
       safe('andamento visite', () => this.analyticsQuery.getVisitSummary(8)),
       safe('andamento contatti', () => this.contacts.countByDay(8)),
       this.overview ? safe('notifiche', () => this.overview!.notificationSummary()) : Promise.resolve(null),
       this.overview
         ? safe('sezioni dashboard', () =>
-            this.overview!.getSections(['serverErrors', 'serverHealth', 'notFound', 'translationHealth', 'scheduledPosts', 'gsc']))
+            this.overview!.getSections(['serverErrors', 'serverHealth', 'notFound', 'translationHealth', 'scheduledPosts', 'gsc', 'aiUsage', 'security']))
         : Promise.resolve(null),
+      // Le chat di oggi (fino a 50 conversazioni): domande recenti e risposte di ripiego.
+      safe('chat di oggi', () => this.chatbot.getTodaySessions(1, 50)),
     ]);
 
     return {
@@ -421,6 +445,7 @@ export class DailySummaryService {
       contactsTrend: buildTrend(contactDays?.map((d) => d.count)),
       notifications,
       sections: overview?.sections ?? null,
+      chat: buildChatSummary(chatPage?.data as any, dayStart),
     };
   }
 

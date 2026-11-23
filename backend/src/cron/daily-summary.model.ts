@@ -117,3 +117,97 @@ export function buildSubject(input: { pageViews: number; contacts: number; todo:
 export function formatItalianDate(date: Date): string {
   return date.toLocaleDateString('it-IT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Rome' });
 }
+
+// ── Chatbot di oggi ─────────────────────────────────────────────────────────
+
+export interface ChatSessionLike {
+  messages?: { role: string; content: string; timestamp: Date | string; usedFallback?: boolean }[];
+}
+
+export interface ChatSummary {
+  /** Conversazioni con almeno un messaggio oggi */
+  sessions: number;
+  /** Messaggi scritti dai visitatori oggi */
+  questionsCount: number;
+  /** Risposte date dal ripiego (l'AI non era disponibile o non ha risposto) */
+  fallbackReplies: number;
+  /** Le ultime domande di oggi, accorciate, dalla più recente */
+  questions: string[];
+}
+
+/** Riepilogo delle chat di oggi. null = dato non disponibile (il blocco non si mostra). */
+export function buildChatSummary(sessions: readonly ChatSessionLike[] | null | undefined, since: Date, maxQuestions = 5): ChatSummary | null {
+  if (!sessions) return null;
+  const from = since.getTime();
+  let sessionsToday = 0;
+  let fallbackReplies = 0;
+  const asked: { at: number; text: string }[] = [];
+  for (const s of sessions) {
+    let touched = false;
+    for (const m of s.messages ?? []) {
+      const at = new Date(m.timestamp).getTime();
+      if (!(at >= from)) continue;
+      touched = true;
+      if (m.role === 'user') asked.push({ at, text: m.content });
+      else if (m.role === 'assistant' && m.usedFallback) fallbackReplies++;
+    }
+    if (touched) sessionsToday++;
+  }
+  asked.sort((a, b) => b.at - a.at);
+  const clip = (t: string) => {
+    const one = t.replace(/\s+/g, ' ').trim();
+    return one.length > 90 ? `${one.slice(0, 89)}…` : one;
+  };
+  return { sessions: sessionsToday, questionsCount: asked.length, fallbackReplies, questions: asked.slice(0, maxQuestions).map((q) => clip(q.text)) };
+}
+
+// ── Stato del sistema ───────────────────────────────────────────────────────
+
+export type RowTone = 'ok' | 'warn' | 'bad';
+
+export interface SystemRow {
+  label: string;
+  value: string;
+  tone: RowTone;
+}
+
+export interface SystemInput {
+  serverHealth?: {
+    backups?: { configured?: boolean; stale?: boolean; latest?: { ageHours: number } | null };
+    memory?: { usedPct: number; low?: boolean };
+    disk?: { freeGb: number; usedPct: number; low?: boolean } | null;
+  } | null;
+  aiUsage?: { tokens?: number; quota?: { dailyTokenBudget?: number }; enabled?: boolean } | null;
+  security?: { failedLogins24h?: number; otpFailed24h?: number; tokenReuse?: number } | null;
+}
+
+/** Poche righe sullo stato di server, AI e accessi: servono a vedere a colpo d'occhio se qualcosa non va. */
+export function buildSystemRows(input: SystemInput): SystemRow[] {
+  const rows: SystemRow[] = [];
+  const h = input.serverHealth;
+  if (h?.backups?.configured && h.backups.latest) {
+    const age = Math.round(h.backups.latest.ageHours);
+    rows.push({ label: 'Ultimo backup', value: `${age} h fa${h.backups.stale ? ' (troppo vecchio)' : ''}`, tone: h.backups.stale ? 'bad' : 'ok' });
+  }
+  if (h?.disk) rows.push({ label: 'Disco', value: `${h.disk.freeGb} GB liberi (${h.disk.usedPct}% usato)`, tone: h.disk.low ? 'bad' : 'ok' });
+  if (h?.memory) rows.push({ label: 'Memoria', value: `${h.memory.usedPct}% usata`, tone: h.memory.low ? 'warn' : 'ok' });
+
+  const budget = input.aiUsage?.quota?.dailyTokenBudget;
+  if (input.aiUsage && budget && budget > 0) {
+    const tokens = input.aiUsage.tokens ?? 0;
+    const pct = Math.round((tokens / budget) * 100);
+    rows.push({
+      label: 'Token AI di oggi',
+      value: `${tokens.toLocaleString('it-IT')} su ${budget.toLocaleString('it-IT')} (${pct}%)${input.aiUsage.enabled === false ? ' · AI spenta' : ''}`,
+      tone: pct >= 90 ? 'bad' : pct >= 70 ? 'warn' : 'ok',
+    });
+  }
+
+  const s = input.security;
+  if (s) {
+    const failed = s.failedLogins24h ?? 0;
+    rows.push({ label: 'Accessi falliti (24 h)', value: `${failed}${s.otpFailed24h ? ` · codici OTP errati: ${s.otpFailed24h}` : ''}`, tone: failed >= 10 ? 'bad' : failed >= 3 ? 'warn' : 'ok' });
+    if ((s.tokenReuse ?? 0) > 0) rows.push({ label: 'Token di sessione riusati', value: String(s.tokenReuse), tone: 'bad' });
+  }
+  return rows;
+}
