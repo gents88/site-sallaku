@@ -121,6 +121,37 @@
     </div>
     {{/if}}
 
+    {{#if chat}}
+    <div class="card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin:6px 4px 14px;">
+      <div style="background:#ecfdf5;padding:10px 14px;border-bottom:1px solid #a7f3d0;">
+        <span style="color:#047857;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">🤖 Chatbot oggi</span>
+      </div>
+      <div class="tx" style="padding:12px 14px 6px;font-size:14px;color:#0f172a;">
+        <strong>{{chat.questionsCount}}</strong> domande in <strong>{{chat.sessions}}</strong> conversazioni · <strong>{{chat.fallbackReplies}}</strong> risposte predefinite
+        <span class="muted" style="color:#64748b;font-size:12px;">(l'AI non ha risposto)</span>
+      </div>
+      {{#each chat.questions}}
+      <div class="tx rule" style="padding:7px 14px;font-size:13px;color:#0f172a;border-top:1px solid #f1f5f9;">“{{this}}”</div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if system.length}}
+    <div class="card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin:6px 4px 14px;">
+      <div style="background:#f1f5f9;padding:10px 14px;border-bottom:1px solid #e2e8f0;">
+        <span style="color:#334155;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">🩺 Stato del sistema</span>
+      </div>
+      <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;font-size:13px;">
+        {{#each system}}
+        <tr>
+          <td class="muted rule" style="padding:8px 14px;color:#64748b;border-top:1px solid #f1f5f9;">{{dot}} {{label}}</td>
+          <td class="rule" style="padding:8px 14px;text-align:right;font-weight:600;color:{{color}};border-top:1px solid #f1f5f9;">{{value}}</td>
+        </tr>
+        {{/each}}
+      </table>
+    </div>
+    {{/if}}
+
     <!-- Tabelle di dettaglio: due per riga su schermo largo, una per riga sul telefono -->
     {{#each tablePairs}}
     <div style="font-size:0;text-align:center;">

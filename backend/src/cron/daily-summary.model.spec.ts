@@ -1,4 +1,4 @@
-import { buildSubject, buildTodo, buildTrend, computeDelta, formatItalianDate } from './daily-summary.model';
+import { buildChatSummary, buildSubject, buildSystemRows, buildTodo, buildTrend, computeDelta, formatItalianDate } from './daily-summary.model';
 
 describe('computeDelta', () => {
   it('variazione percentuale con freccia', () => {
@@ -97,5 +97,57 @@ describe('buildSubject', () => {
 describe('formatItalianDate', () => {
   it('data estesa in italiano, fuso di Roma', () => {
     expect(formatItalianDate(new Date('2026-11-23T20:00:00Z'))).toMatch(/lunedì 23 novembre 2026/i);
+  });
+});
+
+describe('buildChatSummary', () => {
+  const since = new Date('2026-11-23T00:00:00Z');
+  const msg = (role: string, content: string, at: string, usedFallback?: boolean) => ({ role, content, timestamp: at, usedFallback });
+
+  it('conta conversazioni, domande e risposte di ripiego di oggi, con le domande più recenti per prime', () => {
+    const s = buildChatSummary([
+      { messages: [msg('user', 'Come firmo un PDF?', '2026-11-23T09:00:00Z'), msg('assistant', 'Usa lo strumento…', '2026-11-23T09:00:05Z', false)] },
+      { messages: [msg('user', 'Gent è italiano?', '2026-11-23T18:00:00Z'), msg('assistant', 'Risposta predefinita', '2026-11-23T18:00:02Z', true)] },
+      { messages: [msg('user', 'vecchia', '2026-11-20T10:00:00Z')] }, // non di oggi
+    ], since)!;
+    expect(s).toMatchObject({ sessions: 2, questionsCount: 2, fallbackReplies: 1 });
+    expect(s.questions).toEqual(['Gent è italiano?', 'Come firmo un PDF?']);
+  });
+
+  it('accorcia le domande lunghe e le porta su una riga', () => {
+    const long = 'a '.repeat(80);
+    const [q] = buildChatSummary([{ messages: [msg('user', `${long}\n\nfine`, '2026-11-23T10:00:00Z')] }], since)!.questions;
+    expect(q.length).toBeLessThanOrEqual(90);
+    expect(q.endsWith('…')).toBe(true);
+    expect(q).not.toContain('\n');
+  });
+
+  it('limita il numero di domande mostrate; senza dati (null) il blocco non c\'è', () => {
+    const many = Array.from({ length: 9 }, (_, i) => msg('user', `d${i}`, `2026-11-23T1${i}:00:00Z`));
+    expect(buildChatSummary([{ messages: many }], since)!.questions).toHaveLength(5);
+    expect(buildChatSummary(null, since)).toBeNull();
+    expect(buildChatSummary([], since)).toMatchObject({ sessions: 0, questionsCount: 0, questions: [] });
+  });
+});
+
+describe('buildSystemRows', () => {
+  it('riassume backup, disco, memoria, token AI e accessi con il tono giusto', () => {
+    const rows = buildSystemRows({
+      serverHealth: { backups: { configured: true, stale: true, latest: { ageHours: 49.6 } }, disk: { freeGb: 3, usedPct: 92, low: true }, memory: { usedPct: 56, low: false } },
+      aiUsage: { tokens: 460000, quota: { dailyTokenBudget: 500000 }, enabled: true },
+      security: { failedLogins24h: 4, otpFailed24h: 1, tokenReuse: 0 },
+    });
+    expect(rows.find((r) => r.label === 'Ultimo backup')).toMatchObject({ value: '50 h fa (troppo vecchio)', tone: 'bad' });
+    expect(rows.find((r) => r.label === 'Disco')).toMatchObject({ tone: 'bad' });
+    expect(rows.find((r) => r.label === 'Memoria')).toMatchObject({ value: '56% usata', tone: 'ok' });
+    expect(rows.find((r) => r.label === 'Token AI di oggi')).toMatchObject({ tone: 'bad' }); // 92%
+    expect(rows.find((r) => r.label.startsWith('Accessi falliti'))).toMatchObject({ value: '4 · codici OTP errati: 1', tone: 'warn' });
+    expect(rows.find((r) => r.label.startsWith('Token di sessione'))).toBeUndefined();
+  });
+
+  it('segnala i token di sessione riusati, e salta ciò che non c\'è', () => {
+    expect(buildSystemRows({ security: { failedLogins24h: 0, tokenReuse: 2 } }).map((r) => r.label)).toEqual(['Accessi falliti (24 h)', 'Token di sessione riusati']);
+    expect(buildSystemRows({})).toEqual([]);
+    expect(buildSystemRows({ aiUsage: { tokens: 10, quota: { dailyTokenBudget: 0 } } })).toEqual([]);
   });
 });
