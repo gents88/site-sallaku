@@ -1,29 +1,26 @@
-<div style="background:#0f1831;border-radius:10px;border:1px solid {{accent}}33;overflow:hidden;">
-  <div style="background:{{accent}}1f;padding:10px 16px;border-bottom:1px solid {{accent}}26;">
-    <span style="color:{{accent}};font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">{{icon}} {{title}}</span>
+<div class="card" style="display:inline-block;vertical-align:top;width:100%;max-width:300px;margin:6px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;box-sizing:border-box;text-align:left;">
+  <div style="background:{{accent}}1a;padding:10px 14px;border-bottom:1px solid {{accent}}33;">
+    <span style="color:{{accent}};font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">{{icon}} {{title}}</span>
   </div>
-  <table role="presentation" style="width:100%;border-collapse:collapse;">
+  <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;">
     {{#each rows}}
-    <tr style="{{#if zebra}}background:rgba(255,255,255,0.02);{{/if}}">
-      {{#if rank}}
-      <td style="padding:7px 0 7px 16px;color:#64748b;font-size:0.8rem;width:24px;">{{rank}}</td>
-      {{/if}}
-      <td style="padding:7px 16px;color:#e2e8f0;font-size:0.85rem;word-break:break-word;">{{label}}</td>
-      <td style="padding:7px 16px 7px 0;width:45%;">
-        <table role="presentation" style="width:100%;border-collapse:collapse;">
+    <tr>
+      <td class="tx" style="padding:7px 8px 7px 14px;color:#0f172a;font-size:13px;word-break:break-word;">{{label}}</td>
+      <td style="padding:7px 14px 7px 0;width:38%;">
+        <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;">
           <tr>
             <td style="vertical-align:middle;">
               <div style="background:{{../accent}}26;border-radius:3px;height:6px;">
                 <div style="background:{{../accent}};height:6px;border-radius:3px;width:{{barWidth}}%;font-size:0;line-height:0;">&nbsp;</div>
               </div>
             </td>
-            <td style="vertical-align:middle;width:44px;text-align:right;color:#94a3b8;font-size:0.82rem;padding-left:8px;">{{count}}</td>
+            <td class="muted" style="vertical-align:middle;width:42px;text-align:right;color:#64748b;font-size:12px;padding-left:6px;">{{count}}</td>
           </tr>
         </table>
       </td>
     </tr>
     {{else}}
-    <tr><td style="padding:12px 16px;color:#475569;font-size:0.83rem;text-align:center;">{{emptyText}}</td></tr>
+    <tr><td class="muted" style="padding:12px 14px;color:#94a3b8;font-size:13px;text-align:center;">{{emptyText}}</td></tr>
     {{/each}}
   </table>
 </div>

@@ -1,118 +1,154 @@
-<div style="font-family:Inter,-apple-system,'Segoe UI',sans-serif;max-width:680px;margin:0 auto;background:#0a0e1a;color:#e2e8f0;border-radius:14px;overflow:hidden;">
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Riepilogo giornaliero</title>
+<style>
+  /* Tema scuro per i client che lo supportano (Apple Mail, Gmail app): senza, i client scelgono da soli come invertire. */
+  @media (prefers-color-scheme: dark) {
+    .page { background: #0b1020 !important; }
+    .wrap { background: #0b1020 !important; }
+    .card { background: #131a2e !important; border-color: #2a3350 !important; }
+    .tx { color: #e2e8f0 !important; }
+    .muted { color: #94a3b8 !important; }
+    .rule { border-color: #2a3350 !important; }
+    .todo { background: #1b1830 !important; border-color: #3b3566 !important; }
+    .clear { background: #0f2a22 !important; border-color: #14532d !important; }
+  }
+  @media only screen and (max-width: 480px) {
+    .pad { padding-left: 12px !important; padding-right: 12px !important; }
+    .hide-sm { display: none !important; }
+  }
+</style>
+</head>
+<body class="page" style="margin:0;padding:0;background:#f1f5f9;">
+<div class="page" style="background:#f1f5f9;padding:16px 8px;">
+<div class="wrap" style="font-family:Inter,-apple-system,'Segoe UI',Roboto,sans-serif;max-width:640px;margin:0 auto;background:#f1f5f9;color:#0f172a;">
 
-  <!-- Header -->
-  <div style="background:linear-gradient(135deg,#1e3a5f,#1e1b4b);padding:32px 36px;border-bottom:1px solid rgba(79,106,245,0.3);">
-    <table role="presentation" style="border-collapse:collapse;">
-      <tr>
-        <td style="padding-right:14px;vertical-align:middle;">
-          <span style="font-family:monospace;font-size:1.8rem;font-weight:700;color:#ffffff;">&lt;GS /&gt;</span>
-        </td>
-        <td style="vertical-align:middle;">
-          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;">Automated Analytics Report</div>
-          <h1 style="color:#ffffff;margin:4px 0 0;font-size:1.3rem;">📊 Daily Summary</h1>
-          <div style="color:#818cf8;font-size:0.88rem;margin-top:2px;">{{date}}</div>
-        </td>
-      </tr>
-    </table>
+  <!-- Intestazione: fondo pieno e testo bianco (non dipende dalla modalità scura del client) -->
+  <div bgcolor="#1e1b4b" style="background:#1e1b4b;border-radius:14px 14px 0 0;padding:26px 28px;">
+    <div style="color:#c7d2fe;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;">&lt;GS /&gt; · Report automatico</div>
+    <h1 style="color:#ffffff;margin:6px 0 2px;font-size:22px;line-height:1.25;">📊 Riepilogo giornaliero</h1>
+    <div style="color:#a5b4fc;font-size:14px;">{{date}}</div>
+    <div style="margin-top:14px;">
+      <a href="{{dashboardUrl}}" style="display:inline-block;background:#6366f1;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 18px;border-radius:10px;">Apri la dashboard →</a>
+    </div>
   </div>
 
-  <div style="padding:28px 32px;">
+  <div class="pad" style="padding:22px 20px 8px;">
 
-    <!-- KPI stat cards -->
-    <div style="margin-bottom:28px;">
-      {{#each kpiRows}}
-      <table role="presentation" style="width:100%;border-collapse:collapse;">
+    <!-- Da fare domani -->
+    {{#if todo.length}}
+    <div class="todo" style="background:#fffbeb;border:1px solid #fcd34d;border-radius:12px;padding:14px 16px;margin-bottom:20px;">
+      <div class="tx" style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:8px;">⚡ Da fare domani</div>
+      <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;">
+        {{#each todo}}
         <tr>
-          {{#each this}}{{> stat-card}}{{/each}}
+          <td style="padding:5px 0;font-size:14px;vertical-align:top;width:26px;">{{icon}}</td>
+          <td class="tx" style="padding:5px 0;font-size:14px;color:#0f172a;">
+            <a href="{{url}}" style="color:{{color}};text-decoration:none;"><strong>{{count}}</strong> {{label}}</a>
+          </td>
         </tr>
+        {{/each}}
       </table>
-      {{/each}}
+    </div>
+    {{else}}
+    <div class="clear" style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:12px 16px;margin-bottom:20px;font-size:14px;color:#166534;">
+      ✅ Tutto a posto: niente da fare per domani.
+    </div>
+    {{/if}}
+
+    <!-- KPI con confronto -->
+    <div style="font-size:0;text-align:center;margin-bottom:14px;">
+      {{#each kpiRows}}{{#each this}}{{> stat-card}}{{/each}}{{/each}}
     </div>
 
-    <!-- Page engagement (today) -->
-    <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(129,140,248,0.25);overflow:hidden;margin-bottom:20px;">
-      <div style="background:rgba(129,140,248,0.12);padding:12px 16px;border-bottom:1px solid rgba(129,140,248,0.2);">
-        <span style="color:#818cf8;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">📄 Page Engagement — Today</span>
+    <!-- Pagine più viste -->
+    <div class="card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin:6px 4px 14px;">
+      <div style="background:#eef2ff;padding:10px 14px;border-bottom:1px solid #c7d2fe;">
+        <span style="color:#4338ca;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">📄 Pagine più viste oggi</span>
       </div>
-      <table role="presentation" style="width:100%;border-collapse:collapse;">
+      <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;font-size:13px;">
         <thead>
-          <tr style="background:rgba(255,255,255,0.03);">
-            <th style="padding:8px 14px;text-align:left;color:#475569;font-size:0.72rem;font-weight:500;">Page</th>
-            <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Views</th>
-            <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Unique</th>
-            <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Views/Visitor</th>
-            <th style="padding:8px 10px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Repeat</th>
-            <th style="padding:8px 14px;text-align:right;color:#475569;font-size:0.72rem;font-weight:500;">Avg Time</th>
+          <tr>
+            <th class="muted" style="padding:8px 14px;text-align:left;color:#64748b;font-size:11px;font-weight:600;">Pagina</th>
+            <th class="muted" style="padding:8px 6px;text-align:right;color:#64748b;font-size:11px;font-weight:600;">Viste</th>
+            <th class="muted hide-sm" style="padding:8px 6px;text-align:right;color:#64748b;font-size:11px;font-weight:600;">Unici</th>
+            <th class="muted" style="padding:8px 14px 8px 6px;text-align:right;color:#64748b;font-size:11px;font-weight:600;">Tempo</th>
           </tr>
         </thead>
         <tbody>
           {{#each pages}}
-          <tr style="{{#if zebra}}background:rgba(255,255,255,0.02);{{/if}}">
-            <td style="padding:8px 14px;color:#e2e8f0;font-size:0.85rem;word-break:break-all;">
+          <tr>
+            <td class="tx rule" style="padding:8px 14px;color:#0f172a;word-break:break-all;border-top:1px solid #f1f5f9;">
               {{path}}
-              <div style="background:rgba(129,140,248,0.15);border-radius:3px;height:4px;margin-top:5px;max-width:180px;">
-                <div style="background:#818cf8;height:4px;border-radius:3px;width:{{barWidth}}%;font-size:0;line-height:0;">&nbsp;</div>
-              </div>
+              <div style="background:#e0e7ff;border-radius:3px;height:4px;margin-top:5px;"><div style="background:#6366f1;height:4px;border-radius:3px;width:{{barWidth}}%;font-size:0;line-height:0;">&nbsp;</div></div>
             </td>
-            <td style="padding:8px 10px;text-align:right;color:#818cf8;font-weight:600;">{{views}}</td>
-            <td style="padding:8px 10px;text-align:right;color:#94a3b8;">{{uniqueVisitors}}</td>
-            <td style="padding:8px 10px;text-align:right;color:#94a3b8;">{{viewsPerVisitor}}×</td>
-            <td style="padding:8px 10px;text-align:right;color:#94a3b8;">{{repeatVisitors}}</td>
-            <td style="padding:8px 14px;text-align:right;color:#94a3b8;">{{avgTime}}</td>
+            <td class="tx rule" style="padding:8px 6px;text-align:right;color:#4338ca;font-weight:700;border-top:1px solid #f1f5f9;">{{views}}</td>
+            <td class="muted rule hide-sm" style="padding:8px 6px;text-align:right;color:#64748b;border-top:1px solid #f1f5f9;">{{uniqueVisitors}}</td>
+            <td class="muted rule" style="padding:8px 14px 8px 6px;text-align:right;color:#64748b;white-space:nowrap;border-top:1px solid #f1f5f9;">{{avgTime}}</td>
           </tr>
           {{else}}
-          <tr><td colspan="6" style="padding:12px 16px;color:#475569;text-align:center;">No page views today</td></tr>
+          <tr><td colspan="4" class="muted" style="padding:14px;color:#94a3b8;text-align:center;">Nessuna visita oggi</td></tr>
           {{/each}}
         </tbody>
       </table>
     </div>
 
-    <!-- Paired half-width breakdown tables -->
+    {{#if gsc}}
+    <!-- Search Console (ultimi 28 giorni) -->
+    <div class="card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin:6px 4px 14px;">
+      <div style="background:#ecfdf5;padding:10px 14px;border-bottom:1px solid #a7f3d0;">
+        <span style="color:#047857;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">🔎 Google Search Console · ultimi 28 giorni</span>
+      </div>
+      <div class="tx" style="padding:12px 14px;font-size:14px;color:#0f172a;">
+        <strong>{{gsc.clicks}}</strong> clic · <strong>{{gsc.impressions}}</strong> impressioni · CTR <strong>{{gsc.ctr}}</strong> · posizione media <strong>{{gsc.position}}</strong>
+      </div>
+      {{#if gsc.queries.length}}
+      <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;font-size:13px;">
+        {{#each gsc.queries}}
+        <tr>
+          <td class="tx rule" style="padding:7px 14px;color:#0f172a;border-top:1px solid #f1f5f9;word-break:break-word;">{{query}}</td>
+          <td class="muted rule" style="padding:7px 8px;text-align:right;color:#64748b;border-top:1px solid #f1f5f9;white-space:nowrap;">{{clicks}} clic</td>
+          <td class="muted rule" style="padding:7px 14px 7px 8px;text-align:right;color:#64748b;border-top:1px solid #f1f5f9;white-space:nowrap;">pos. {{position}}</td>
+        </tr>
+        {{/each}}
+      </table>
+      {{/if}}
+    </div>
+    {{/if}}
+
+    <!-- Tabelle di dettaglio: due per riga su schermo largo, una per riga sul telefono -->
     {{#each tablePairs}}
-    <table role="presentation" style="width:100%;border-collapse:collapse;margin-bottom:20px;">
-      <tr>
-        <td style="padding:0 10px 0 0;vertical-align:top;width:50%;">{{> breakdown-table left}}</td>
-        <td style="padding:0 0 0 10px;vertical-align:top;width:50%;">{{> breakdown-table right}}</td>
-      </tr>
-    </table>
+    <div style="font-size:0;text-align:center;">
+      {{> breakdown-table left}}{{> breakdown-table right}}
+    </div>
     {{/each}}
 
-    <!-- Contact messages today -->
-    <div style="background:#0f1831;border-radius:10px;border:1px solid rgba(245,158,11,0.2);overflow:hidden;">
-      <div style="background:rgba(245,158,11,0.1);padding:12px 16px;border-bottom:1px solid rgba(245,158,11,0.2);">
-        <span style="color:#f59e0b;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">✉️ Contact Messages Today ({{contacts.length}})</span>
+    <!-- Messaggi di contatto -->
+    <div class="card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;margin:6px 4px 14px;">
+      <div style="background:#fffbeb;padding:10px 14px;border-bottom:1px solid #fde68a;">
+        <span style="color:#b45309;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">✉️ Messaggi di contatto oggi ({{contacts.length}})</span>
       </div>
-      <table role="presentation" style="width:100%;border-collapse:collapse;">
-        <thead>
-          <tr style="background:rgba(255,255,255,0.03);">
-            <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Time</th>
-            <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Name</th>
-            <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Email</th>
-            <th style="padding:8px 12px;text-align:left;color:#475569;font-size:0.73rem;font-weight:500;">Preview</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each contacts}}
-          <tr style="{{#if zebra}}background:rgba(255,255,255,0.025);{{/if}}">
-            <td style="padding:8px 12px;color:#94a3b8;font-size:0.8rem;white-space:nowrap;">{{time}}</td>
-            <td style="padding:8px 12px;color:#e2e8f0;font-weight:500;">{{name}}</td>
-            <td style="padding:8px 12px;color:#818cf8;font-size:0.85rem;">{{email}}</td>
-            <td style="padding:8px 12px;color:#94a3b8;font-size:0.85rem;">{{preview}}</td>
-          </tr>
-          {{else}}
-          <tr><td colspan="4" style="padding:14px;color:#475569;text-align:center;">No messages today</td></tr>
-          {{/each}}
-        </tbody>
-      </table>
+      {{#each contacts}}
+      <div class="rule" style="padding:10px 14px;border-top:1px solid #f1f5f9;">
+        <div class="tx" style="font-size:14px;color:#0f172a;"><strong>{{name}}</strong> <span class="muted" style="color:#64748b;font-size:12px;">· {{time}} · {{email}}</span></div>
+        <div class="muted" style="font-size:13px;color:#64748b;margin-top:3px;">{{preview}}</div>
+      </div>
+      {{else}}
+      <div class="muted" style="padding:14px;color:#94a3b8;text-align:center;font-size:13px;">Nessun messaggio oggi</div>
+      {{/each}}
     </div>
 
   </div>
 
-  <!-- Footer -->
-  <div style="background:#070b15;padding:16px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.05);">
-    <p style="margin:0;font-size:0.78rem;color:#334155;">
-      Automated daily report · <a href="https://gentsallaku.it/admin" style="color:#818cf8;">View Dashboard</a>
-      &nbsp;·&nbsp; © {{year}} Gent Sallaku
-    </p>
+  <div class="muted" style="padding:6px 20px 18px;text-align:center;font-size:12px;color:#64748b;">
+    Report automatico delle 22:00 · <a href="{{dashboardUrl}}" style="color:#6366f1;">Apri la dashboard</a> · © {{year}} Gent Sallaku
   </div>
 </div>
+</div>
+</body>
+</html>
