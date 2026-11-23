@@ -2490,7 +2490,8 @@
     "text": "L'indirizzo che hai aperto non esiste o è stato spostato.",
     "home": "Torna alla home",
     "blog": "Vai al blog",
-    "lab": "Apri il Lab"
+    "lab": "Apri il Lab",
+    "popular_tools": "Strumenti più usati"
   },
   "account": {
     "section_title": "Il tuo account",
@@ -4116,6 +4117,8 @@
     "blog_lead": "Appunti di sviluppo, strumenti e storie.",
     "blog_read": "Leggi",
     "blog_all": "Tutti gli articoli",
-    "availability": "Al momento non sto cercando nuovi incarichi: puoi comunque scrivermi per una domanda o una collaborazione, rispondo appena posso."
+    "availability": "Al momento non sto cercando nuovi incarichi: puoi comunque scrivermi per una domanda o una collaborazione, rispondo appena posso.",
+    "read_more": "Leggi tutto",
+    "read_less": "Mostra meno"
   }
 }

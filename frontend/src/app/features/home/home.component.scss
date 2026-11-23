@@ -1078,3 +1078,55 @@ details[open] .faq-chevron { transform: rotate(180deg); color: var(--primary-400
 
   mat-icon { width: 18px; height: 18px; font-size: 18px; }
 }
+
+/* Descrizione dell'hero: su telefono 3 righe + "Leggi tutto", così i pulsanti si vedono senza scorrere */
+.hero-more { display: none; }
+
+@media (max-width: 640px) {
+  /* Meno spazio sopra e sotto: nome, ruolo, descrizione e pulsanti stanno nella prima schermata */
+  .hero { min-height: 0; padding: 96px 20px 64px; align-items: flex-start; }
+  .hero-scroll-indicator { display: none; }
+  .hero-actions { flex-direction: column; align-items: stretch; margin-top: 1rem; width: 100%; .btn { flex: none; box-sizing: border-box; width: 100%; max-width: 100%; height: auto; min-height: 48px; padding: 12px 20px; display: inline-flex; align-items: center; justify-content: center; text-align: center; } }
+  .hero-description.is-collapsed {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .hero-description { margin-bottom: 8px; font-size: 1rem; line-height: 1.65; }
+  .hero-more {
+    display: inline-block;
+    margin: 0 auto 12px;
+    padding: 8px 12px;
+    min-height: 44px;
+    background: none;
+    border: 0;
+    color: var(--primary-400, #818cf8);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .hero-note { margin-top: 0.25rem; }
+
+  /* Le parole chiave: etichette a capo ordinate, senza separatori orfani */
+  .hero-tagline { gap: 8px; margin-bottom: 16px; }
+  .tag-separator { display: none; }
+  .tag {
+    padding: 4px 10px;
+    border: 1px solid var(--border-subtle, rgba(148, 163, 184, 0.3));
+    border-radius: 999px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Riquadro di codice in tema chiaro: colori più scuri per il contrasto (AA) sullo sfondo chiaro */
+:host-context([data-theme='light']) {
+  .code-keyword { color: #7c3aed; }
+  .code-string  { color: #166534; }
+  .code-prop, .code-type, .code-method { color: #1d4ed8; }
+  .code-bool, .code-number { color: #9a3412; }
+  .code-class   { color: #92400e; }
+}

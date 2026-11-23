@@ -13,9 +13,13 @@
       <span class="tag-separator">|</span>
       <span class="tag">{{ 'hero.tagline3' | translate }}</span>
     </div>
-    <p class="hero-description">
+    <p class="hero-description" [class.is-collapsed]="!heroExpanded" id="hero-description">
       {{ 'hero.description' | translate }}
     </p>
+    <button type="button" class="hero-more" (click)="heroExpanded = !heroExpanded"
+            [attr.aria-expanded]="heroExpanded" aria-controls="hero-description">
+      {{ (heroExpanded ? 'home_v2.read_less' : 'home_v2.read_more') | translate }}
+    </button>
     <p class="hero-note">{{ 'home_v2.hero_line' | translate }}</p>
     <div class="hero-actions">
       <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}</a>
@@ -133,6 +137,42 @@
   </div>
 </section>
 
+<!-- ══ LAB: STRUMENTI GRATUITI ═══════════════════════ -->
+<section class="section section-alt" id="lab">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">&lt;{{ 'home_v2.lab_tag' | translate }}&gt;</span>
+      <h2 class="section-title">{{ 'home_v2.lab_title' | translate }}</h2>
+      <div class="section-line"></div>
+      <p class="section-subtitle reveal">{{ 'home_v2.lab_lead' | translate }}</p>
+    </div>
+
+    <ul class="lab-stats reveal" role="list">
+      <li><strong>{{ labToolCount }}</strong><span>{{ 'home_v2.stat_tools' | translate }}</span></li>
+      <li><strong>7</strong><span>{{ 'home_v2.stat_langs' | translate }}</span></li>
+      <li><strong>0</strong><span>{{ 'home_v2.stat_signup' | translate }}</span></li>
+    </ul>
+
+    <div class="lab-grid">
+      @for (tool of labTools; track tool.id) {
+        <a class="lab-card glass-card reveal" [routerLink]="tool.route | langUrl"
+           appTrackClick eventType="cta" [label]="'home_lab_' + tool.id" [destination]="tool.route">
+          <span class="lab-card__icon icon-tile" aria-hidden="true"><app-nav-icon [name]="tool.icon" [size]="22" /></span>
+          <span class="lab-card__body">
+            <span class="lab-card__title">{{ 'tools.' + tool.key + '_title' | translate }}</span>
+            <span class="lab-card__desc">{{ 'tools.' + tool.key + '_desc' | translate }}</span>
+          </span>
+          <mat-icon class="lab-card__arrow" aria-hidden="true">arrow_forward</mat-icon>
+        </a>
+      }
+    </div>
+
+    <div class="lab-actions">
+      <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="home_lab_all" destination="/lab">{{ 'home_v2.lab_see_all' | translate }}</a>
+    </div>
+  </div>
+</section>
+
 <!-- ══ TECH STACK ═════════════════════════════════════ -->
 <section class="section section-alt" id="tech-stack">
   <div class="container">
@@ -210,42 +250,6 @@
       }
     </div>
     }
-  </div>
-</section>
-
-<!-- ══ LAB: STRUMENTI GRATUITI ═══════════════════════ -->
-<section class="section section-alt" id="lab">
-  <div class="container">
-    <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'home_v2.lab_tag' | translate }}&gt;</span>
-      <h2 class="section-title">{{ 'home_v2.lab_title' | translate }}</h2>
-      <div class="section-line"></div>
-      <p class="section-subtitle reveal">{{ 'home_v2.lab_lead' | translate }}</p>
-    </div>
-
-    <ul class="lab-stats reveal" role="list">
-      <li><strong>{{ labToolCount }}</strong><span>{{ 'home_v2.stat_tools' | translate }}</span></li>
-      <li><strong>7</strong><span>{{ 'home_v2.stat_langs' | translate }}</span></li>
-      <li><strong>0</strong><span>{{ 'home_v2.stat_signup' | translate }}</span></li>
-    </ul>
-
-    <div class="lab-grid">
-      @for (tool of labTools; track tool.id) {
-        <a class="lab-card glass-card reveal" [routerLink]="tool.route | langUrl"
-           appTrackClick eventType="cta" [label]="'home_lab_' + tool.id" [destination]="tool.route">
-          <span class="lab-card__icon icon-tile" aria-hidden="true"><app-nav-icon [name]="tool.icon" [size]="22" /></span>
-          <span class="lab-card__body">
-            <span class="lab-card__title">{{ 'tools.' + tool.key + '_title' | translate }}</span>
-            <span class="lab-card__desc">{{ 'tools.' + tool.key + '_desc' | translate }}</span>
-          </span>
-          <mat-icon class="lab-card__arrow" aria-hidden="true">arrow_forward</mat-icon>
-        </a>
-      }
-    </div>
-
-    <div class="lab-actions">
-      <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="home_lab_all" destination="/lab">{{ 'home_v2.lab_see_all' | translate }}</a>
-    </div>
   </div>
 </section>
 

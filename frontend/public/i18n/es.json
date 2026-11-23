@@ -2490,7 +2490,8 @@
     "text": "La dirección que has abierto no existe o se ha movido.",
     "home": "Volver al inicio",
     "blog": "Ir al blog",
-    "lab": "Abrir el Lab"
+    "lab": "Abrir el Lab",
+    "popular_tools": "Herramientas más usadas"
   },
   "account": {
     "section_title": "Tu cuenta",
@@ -4116,6 +4117,8 @@
     "blog_lead": "Notas sobre desarrollo, herramientas e historias.",
     "blog_read": "Leer",
     "blog_all": "Todos los artículos",
-    "availability": "Ahora mismo no acepto nuevos encargos, pero puedes escribirme para una consulta o colaboración; respondo en cuanto puedo."
+    "availability": "Ahora mismo no acepto nuevos encargos, pero puedes escribirme para una consulta o colaboración; respondo en cuanto puedo.",
+    "read_more": "Leer más",
+    "read_less": "Mostrar menos"
   }
 }

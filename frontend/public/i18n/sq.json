@@ -2490,7 +2490,8 @@
     "text": "Adresa që hape nuk ekziston ose është zhvendosur.",
     "home": "Kthehu te kryefaqja",
     "blog": "Shko te blogu",
-    "lab": "Hap Lab-in"
+    "lab": "Hap Lab-in",
+    "popular_tools": "Mjetet më të përdorura"
   },
   "account": {
     "section_title": "Llogaria jote",
@@ -4116,6 +4117,8 @@
     "blog_lead": "Shënime mbi zhvillimin, mjetet dhe histori.",
     "blog_read": "Lexo",
     "blog_all": "Të gjithë artikujt",
-    "availability": "Tani për tani nuk pranoj projekte të reja, por mund të më shkruash për një pyetje ose bashkëpunim; përgjigjem sapo mundem."
+    "availability": "Tani për tani nuk pranoj projekte të reja, por mund të më shkruash për një pyetje ose bashkëpunim; përgjigjem sapo mundem.",
+    "read_more": "Lexo më shumë",
+    "read_less": "Trego më pak"
   }
 }
