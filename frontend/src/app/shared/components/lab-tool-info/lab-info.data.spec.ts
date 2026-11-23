@@ -53,6 +53,23 @@ describe('lab-info.data', () => {
     }
   });
 
+  // Ogni strumento pubblico del Lab (non le pagine per ricerca specifica, che riusano lo strumento padre) deve avere
+  // la guida sotto lo strumento, in tutte le lingue: è il testo che Google e le AI leggono e citano.
+  it('ogni strumento pubblico ha la guida (descrizione e passaggi) in tutte le lingue', () => {
+    const intents = new Set(Object.keys(LAB_INTENTS));
+    const tools = NAV_REGISTRY
+      .filter(e => e.route.startsWith('/lab/') && e.access === 'public' && !intents.has(e.id) && e.prerender)
+      .map(e => labInfoKey(e.id));
+    for (const lang of ['it', 'en', 'es', 'fr', 'de', 'pt', 'sq']) {
+      const json = JSON.parse(readFileSync(resolve(process.cwd(), `public/i18n/${lang}.json`), 'utf8'));
+      for (const tool of tools) {
+        const info = json.lab_info?.[tool];
+        expect(info?.about, `${lang}/${tool}: manca "about"`).toBeTruthy();
+        expect(info?.steps?.length, `${lang}/${tool}: mancano i passaggi`).toBeGreaterThan(0);
+      }
+    }
+  });
+
   // Se un articolo viene rinominato, il link dagli strumenti si romperebbe in silenzio:
   // lo slug deve comparire nella sitemap, che il bot rigenera a ogni deploy.
   it('ogni slug collegato è nella sitemap pubblicata', () => {

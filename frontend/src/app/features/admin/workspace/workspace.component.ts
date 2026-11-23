@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SeoService, SITE_ORIGIN } from '../../../core/services/seo.service';
 import { LanguageService, withLangPrefix } from '../../../core/services/language.service';
 import { BreadcrumbComponent, BreadcrumbItem } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
 import { WorkspaceService, WorkspaceKind } from '../../../core/services/workspace.service';
 
 interface ToolLink {
@@ -48,7 +49,7 @@ const STARTING_TOOLS: ToolLink[] = [
   selector: 'app-workspace',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterLink, TranslateModule, BreadcrumbComponent],
+  imports: [LabToolInfoComponent, CommonModule, RouterLink, TranslateModule, BreadcrumbComponent],
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss'],
 })

@@ -3675,6 +3675,59 @@
           "a": "Ky redaktues punon me faqe të plota. Për tekst, shto shënime ose plotëso fusha me mjetin Plotëso dhe nënshkruaj."
         }
       ]
+    },
+    "pdf_search": {
+      "about": "Kërkimi i PDF gjen libra, artikuj shkencorë dhe dokumente që mund t'i shkarkosh ligjërisht. Kërkon së bashku në Internet Archive, Project Gutenberg, Wikimedia Commons, arXiv, PubMed Central dhe Zenodo dhe shfaq vetëm rezultate me PDF vërtet të disponueshme. Shërben për të gjetur klasikë të domenit publik, tekste studimi dhe artikuj me qasje të hapur pa kaluar nga faqe të dyshimta.",
+      "steps": [
+        "Shkruaj një titull, një autor ose një temë në fushën e kërkimit dhe shtyp Kërko.",
+        "Ngushto rezultatet me filtrat Libra, Punime ose Të preferuara dhe rendit sipas rëndësisë ose vitit.",
+        "Hap pamjen paraprake për të shfletuar PDF-në në shfletues, ose shkarkoje apo shko te faqja e burimit.",
+        "Nëse do ta mbash, ruaje në Bibliotekë ose dërgoje te Rrjedha e punës për ta përdorur me një mjet tjetër, si Përmbledhja e PDF."
+      ],
+      "privacy": "Kërkimi nuk kërkon regjistrim. Fjalët që shkruan përdoren vetëm për të pyetur arkivat; kërkimet e fundit dhe të preferuarat qëndrojnë në shfletuesin tënd.",
+      "limits": "Gjen vetëm material të domenit publik ose me qasje të hapur: veprat e reja të mbrojtura nga e drejta e autorit nuk shfaqen. Për të shmangur abuzimet lejohen rreth 20 kërkime në minutë. Disa burime, si PubMed Central, nuk lejojnë pamjen paraprake: në atë rast shkarko PDF-në dhe lexoje në pajisjen tënde."
+    },
+    "library": {
+      "about": "Biblioteka është arkivi yt personal i PDF-ve, që qëndron në shfletuesin tënd. Mund të ngarkosh skedarët e tu ose të ruash ato që gjen me Kërkimin e PDF, të kërkosh një fjalë në të gjithë përmbajtjen faqe pas faqeje, t'i organizosh me etiketa dhe t'u bësh pyetje dokumenteve të tua.",
+      "steps": [
+        "Ngarko PDF-të me butonin përkatës, ose ruaj në Bibliotekë ato që gjen me Kërkimin e PDF.",
+        "Shtyp Indekso: mjeti nxjerr tekstin e çdo faqeje në shfletuesin tënd që të bëhet i kërkueshëm.",
+        "Kërko një fjalë ose frazë: sheh në cilat dokumente dhe faqe shfaqet. Filtro dhe rendit sipas titullit, etiketës ose madhësisë.",
+        "Përdor Pyet bibliotekën për të bërë një pyetje: merr një përgjigje me faqet nga të cilat vjen."
+      ],
+      "privacy": "Dokumentet qëndrojnë në shfletuesin tënd dhe nuk ngarkohen në ndonjë arkiv. Kur bën një pyetje, te serveri arrijnë vetëm pak pjesët përkatëse, jo i gjithë skedari.",
+      "limits": "Meqë ruhet në shfletues, Biblioteka nuk sinkronizohet mes pajisjeve dhe zbrazet nëse fshin të dhënat e faqes: mbaj një kopje të skedarëve të rëndësishëm. Importohen vetëm PDF. PDF-të që janë skanime, pa tekst të përzgjedhshëm, nuk kërkohen derisa të kalojnë nga OCR.",
+      "faq": [
+        {
+          "q": "Ku ruhen PDF-të e mia?",
+          "a": "Në shfletuesin që po përdor, në pajisjen tënde. Nuk ka arkiv në internet, prandaj nuk gjenden nga një pajisje tjetër."
+        },
+        {
+          "q": "Pse një dokument shënohet \"Skanim\"?",
+          "a": "Sepse faqet e tij janë imazhe pa tekst të përzgjedhshëm. Kalo atë nga mjeti OCR për të marrë tekstin dhe për ta kërkuar."
+        }
+      ]
+    },
+    "workspace": {
+      "about": "Rrjedha e punës shërben për t'ia kaluar rezultatin e një mjeti drejtpërdrejt tjetrit, pa shkarkuar dhe ngarkuar sërish skedarë. Për shembull mund të skanosh një dokument, të nxjerrësh tekstin me OCR dhe pastaj ta përkthesh ose përmbledhësh, gjithmonë në të njëjtën rrugë.",
+      "steps": [
+        "Fillo nga një prej mjeteve të nisjes të listuara, për shembull Skaneri, OCR ose Kërkimi i PDF.",
+        "Kur ke rezultatin, zgjidh ta dërgosh te Rrjedha e punës.",
+        "Këtu shfaqet elementi i marrë, me mjetin nga vjen.",
+        "Zgjidh me cilin mjet të vazhdosh, ose shkarko skedarin apo fshi elementin."
+      ],
+      "privacy": "Elementet në kalim qëndrojnë në shfletuesin tënd gjatë seancës dhe nuk ruhen në ndonjë arkiv.",
+      "limits": "Përmbajtja nuk ruhet: humbet nëse rifreskon ose mbyll skedën. Nëse të duhet ta mbash, shkarkoje ose ruaje në Bibliotekë.",
+      "faq": [
+        {
+          "q": "A i ruan Rrjedha e punës skedarët e mi?",
+          "a": "Jo. Elementet qëndrojnë në memorie në skedën e hapur dhe zhduken kur e rifreskon ose e mbyll."
+        },
+        {
+          "q": "A mund të kaloj edhe tekst, jo vetëm skedarë?",
+          "a": "Po. Rrjedha e punës pranon skedarë dhe tekst, për shembull atë të nxjerrë me OCR, dhe e ofron për mjetet e tjera."
+        }
+      ]
     }
   },
   "lab_intents": {
