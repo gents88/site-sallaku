@@ -20,6 +20,11 @@ import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
 import { consumePreScroll, jumpToSection, sectionForUrl } from './jump-to-section';
+import { BlogService } from '../../core/services/blog.service';
+import { PostSummary, localizedPostText, localizedSlug } from '../../core/models/post.model';
+import { NavIconComponent } from '../../shared/components/nav-icon/nav-icon.component';
+import { NAV_REGISTRY } from '../../core/navigation/nav-registry';
+import { LAB_INTENTS } from '../../core/navigation/lab-intents';
 
 interface TechItem { name: string; icon: string; isFab?: boolean; }
 interface TechGroup { titleKey: string; icon: string; items: TechItem[]; }
@@ -31,7 +36,7 @@ interface ServiceItem { key: string; icon: string; colorClass: string; route?: s
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent, TestimonialsWallComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, MatIconModule, TrackClickDirective, LangUrlPipe, SocialShareComponent, TestimonialsWallComponent, NavIconComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,6 +52,37 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
   /** La sezione Testimonianze esiste solo se ce n'è almeno una pubblicata. */
   readonly hasTestimonials = inject(TestimonialsService).hasPublic();
+  private readonly blogService = inject(BlogService);
+
+  /** Gli ultimi articoli pubblicati; vuoto = la sezione non si mostra. */
+  latestPosts: PostSummary[] = [];
+
+  /**
+   * Strumenti in primo piano nella home: i più cercati. Nome, descrizione e icona vengono dal registro e dai
+   * testi del Lab (stessi testi del menu e delle pagine strumento), così restano allineati.
+   */
+  readonly labTools: { id: string; route: string; icon: string; key: string }[] = [
+    { id: 'pdf-search', key: 'pdf_search' },
+    { id: 'convert', key: 'convert' },
+    { id: 'image-tools', key: 'image_tools' },
+    { id: 'qr-code', key: 'qr_code' },
+    { id: 'sign-pdf', key: 'sign_pdf' },
+    { id: 'compress-pdf', key: 'compress_pdf' },
+    { id: 'ocr', key: 'ocr' },
+    { id: 'pdf-summary', key: 'pdf_summary' },
+  ].map(t => {
+    const entry = NAV_REGISTRY.find(e => e.id === t.id);
+    return { ...t, route: entry?.route ?? `/lab/${t.id}`, icon: entry?.icon ?? 'layers' };
+  });
+
+  /** Strumenti veri del Lab (senza le pagine per ricerche specifiche, che riusano gli stessi). */
+  readonly labToolCount = NAV_REGISTRY.filter(
+    e => e.group === 'tools' && e.access === 'public' && e.route.startsWith('/lab/') && !(e.id in LAB_INTENTS),
+  ).length;
+
+  postTitle(post: PostSummary): string { return localizedPostText(post, 'title', this.langService.current()); }
+  postExcerpt(post: PostSummary): string { return localizedPostText(post, 'excerpt', this.langService.current()); }
+  postPath(post: PostSummary): string { return `/blog/${localizedSlug(post, this.langService.current())}`; }
 
   // Valori reali fin dal primo render (SSR/prerender, no-JS, reduced motion):
   // il conteggio da zero è solo un effetto aggiunto nel browser.
@@ -234,6 +270,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.blogService.getPublished(undefined, 1, 3, this.langService.current()).pipe(
+      catchError(() => of(null)),
+    ).subscribe(res => {
+      this.latestPosts = (res?.data ?? []).slice(0, 3);
+      this.cdr.markForCheck();
+    });
     // homepage/about/tech-stack/experience/skills/services all render this
     // same component (scroll-to-section deep links), so they've always
     // intentionally collapsed to one canonical rather than 9 separate ones.

@@ -4096,5 +4096,25 @@
     "b_clicks": "klikime nga Google",
     "total": "gjithsej",
     "jump_to": "Shko te…"
+  },
+  "home_v2": {
+    "hero_line": "Shqiptar nga Blinishti, jetoj në Itali. Ndërtoj softuer dhe mjete falas që përdoren pa u regjistruar.",
+    "cta_tools": "Provo mjetet falas",
+    "cta_projects": "Shiko projektet",
+    "origin": "Jam shqiptar, me origjinë nga Blinishti (Lezhë), dhe jetoj në Itali.",
+    "origin_link": "Lexo historinë e Blinishtit",
+    "lab_tag": "lab",
+    "lab_title": "Mjete falas",
+    "lab_lead": "Mjete që i përdor dhe i kam ndërtuar vetë: PDF, imazhe, kode QR, konvertime dhe AI. Punojnë në shfletues, pa regjistrim.",
+    "stat_tools": "mjete",
+    "stat_langs": "gjuhë",
+    "stat_signup": "regjistrime të kërkuara",
+    "lab_see_all": "Shiko të gjitha mjetet",
+    "blog_tag": "blog",
+    "blog_title": "Artikujt e fundit",
+    "blog_lead": "Shënime mbi zhvillimin, mjetet dhe histori.",
+    "blog_read": "Lexo",
+    "blog_all": "Të gjithë artikujt",
+    "availability": "Tani për tani nuk pranoj projekte të reja, por mund të më shkruash për një pyetje ose bashkëpunim; përgjigjem sapo mundem."
   }
 }

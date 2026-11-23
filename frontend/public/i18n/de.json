@@ -4096,5 +4096,25 @@
     "b_clicks": "Klicks von Google",
     "total": "gesamt",
     "jump_to": "Gehe zu…"
+  },
+  "home_v2": {
+    "hero_line": "Albaner aus Blinisht, lebt in Italien. Ich baue Software und kostenlose Tools ohne Registrierung.",
+    "cta_tools": "Kostenlose Tools testen",
+    "cta_projects": "Projekte ansehen",
+    "origin": "Ich bin Albaner, stamme aus Blinisht (Lezhë) und lebe in Italien.",
+    "origin_link": "Die Geschichte von Blinisht lesen",
+    "lab_tag": "lab",
+    "lab_title": "Kostenlose Tools",
+    "lab_lead": "Tools, die ich selbst nutze und gebaut habe: PDF, Bilder, QR-Codes, Konvertierungen und KI. Sie laufen im Browser, ohne Registrierung.",
+    "stat_tools": "Tools",
+    "stat_langs": "Sprachen",
+    "stat_signup": "Registrierungen nötig",
+    "lab_see_all": "Alle Tools ansehen",
+    "blog_tag": "blog",
+    "blog_title": "Neueste Artikel",
+    "blog_lead": "Notizen zu Entwicklung, Tools und Geschichten.",
+    "blog_read": "Lesen",
+    "blog_all": "Alle Artikel",
+    "availability": "Aktuell nehme ich keine neuen Aufträge an, aber du kannst mir für eine Frage oder Zusammenarbeit schreiben; ich antworte, sobald ich kann."
   }
 }
