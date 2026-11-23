@@ -72,6 +72,13 @@ describe('BlogDetailComponent view tracking', () => {
     expect(seo.setNoIndex).not.toHaveBeenCalled();
   });
 
+  it('"Aggiornato il" compare solo se la modifica è di più di un giorno dopo la pubblicazione', () => {
+    const { component } = create('browser');
+    expect(component.isMeaningfullyUpdated({ publishedAt: '2026-11-01T10:00:00Z', updatedAt: '2026-11-01T18:00:00Z' })).toBe(false);
+    expect(component.isMeaningfullyUpdated({ publishedAt: '2026-11-01T10:00:00Z', updatedAt: '2026-11-05T10:00:00Z' })).toBe(true);
+    expect(component.isMeaningfullyUpdated({ publishedAt: null, updatedAt: '2026-11-05T10:00:00Z' })).toBe(false);
+  });
+
   it('counts a view in the browser', () => {
     const { component, blogService } = create('browser');
     expect(component.post).toBe(post);

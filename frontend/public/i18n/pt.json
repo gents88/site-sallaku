@@ -730,7 +730,8 @@
     "latest": "Artigo mais recente",
     "all_posts": "Todos os artigos",
     "not_found": "Artigo não encontrado",
-    "back_to_blog": "Voltar ao blog"
+    "back_to_blog": "Voltar ao blog",
+    "updated_on": "Atualizado em {{date}}"
   },
   "notes": {
     "title": "Notas dos leitores",
