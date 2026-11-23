@@ -25,5 +25,7 @@ import { SecurityModule } from '../security/security.module';
   ],
   controllers: [StatsController],
   providers: [AdminOverviewService],
+  // Esportato per il riepilogo giornaliero delle 22:00 (cron), che riusa gli stessi dati della dashboard.
+  exports: [AdminOverviewService],
 })
 export class StatsModule {}
