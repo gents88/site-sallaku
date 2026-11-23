@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
@@ -11,6 +11,8 @@ import { ChatbotService } from '../chatbot/chatbot.service';
 import { MailService } from '../mail/mail.service';
 import { TemplateRendererService } from '../mail/template-renderer.service';
 import { CronState, CronStateDocument } from './schemas/cron-state.schema';
+import { AdminOverviewService } from '../stats/admin-overview.service';
+import { buildChatSummary, buildSubject, buildSystemRows, buildTodo, buildTrend, formatItalianDate, ChatSummary, SystemRow, Trend, TodoItem } from './daily-summary.model';
 
 const DAILY_SUMMARY_JOB = 'daily-summary';
 
@@ -21,6 +23,12 @@ interface StatCardVM {
   label: string;
   value: number | string;
   color: string;
+  /** Confronto con ieri e con la media dei 7 giorni (solo per le metriche che hanno una serie giornaliera). */
+  trend?: {
+    avg7: number;
+    vsYesterday: { label: string; color: string };
+    vsAvg: { label: string; color: string };
+  };
 }
 
 interface BreakdownRowVM {
@@ -53,6 +61,8 @@ export class DailySummaryService {
     private mail: MailService,
     private templates: TemplateRendererService,
     @InjectModel(CronState.name) private cronStateModel: Model<CronStateDocument>,
+    // @Optional: senza, l'email esce come prima (senza "Da fare domani", confronti e Search Console).
+    @Optional() private overview?: AdminOverviewService,
   ) {}
 
   // ── Scheduled jobs ────────────────────────────────────────────────────────
@@ -146,7 +156,7 @@ export class DailySummaryService {
   // ── Data gathering + email sending ───────────────────────────────────────
 
   private async gatherAndSend(now: Date): Promise<boolean> {
-    const dateLabel = now.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+    const dateLabel = formatItalianDate(now);
 
     // ── Gather data in parallel ──────────────────────────────────────────
     this.logger.log('[DailySummary] Gathering analytics data…');
@@ -168,6 +178,18 @@ export class DailySummaryService {
       || this.cfg.get<string>('ADMIN_EMAIL')
       || 'gentsallaku@gmail.com';
 
+    // Confronti, "Da fare domani" e Search Console: un blocco che fallisce si salta, l'email parte comunque.
+    const extras = await this.gatherExtras();
+    const todo = buildTodo({
+      now,
+      notifications: extras.notifications,
+      serverErrors: extras.sections?.['serverErrors'] as any,
+      serverHealth: extras.sections?.['serverHealth'] as any,
+      notFound: extras.sections?.['notFound'] as any,
+      translationHealth: extras.sections?.['translationHealth'] as any,
+      scheduledPosts: extras.sections?.['scheduledPosts'] as any,
+    });
+
     const html = this.templates.render('daily-summary', this.buildTemplateData({
       date: dateLabel,
       todaysContacts,
@@ -175,9 +197,24 @@ export class DailySummaryService {
       advanced,
       engagement,
       chatInteractions,
+      viewsTrend: extras.viewsTrend,
+      contactsTrend: extras.contactsTrend,
+      todo,
+      gsc: extras.sections?.['gsc'] as any,
+      chat: extras.chat,
+      system: buildSystemRows({
+        serverHealth: extras.sections?.['serverHealth'] as any,
+        aiUsage: extras.sections?.['aiUsage'] as any,
+        security: extras.sections?.['security'] as any,
+      }),
     }));
 
-    const subject = `📊 Daily Summary — ${now.toISOString().slice(0, 10)}`;
+    const subject = buildSubject({
+      pageViews: todayStats.todayPageViews,
+      contacts: todaysContacts.length,
+      todo: todo.length,
+      now,
+    });
     this.logger.log(`[DailySummary] Sending email → ${admin} subject="${subject}"`);
 
     const result = await this.mail.send({
@@ -185,26 +222,36 @@ export class DailySummaryService {
       subject,
       html,
       text: [
-        `Daily Summary — ${dateLabel}`,
+        `Riepilogo giornaliero — ${dateLabel}`,
         ``,
-        `Page views today:    ${todayStats.todayPageViews}`,
-        `Unique visitors:     ${todayStats.uniqueVisitorsToday}`,
-        `New / returning:     ${engagement.newVisitors} / ${engagement.returningVisitors}`,
-        `Blog article views:  ${todayStats.todayBlogViews}`,
-        `Chatbot messages:    ${chatInteractions}`,
-        `Contact messages:    ${todaysContacts.length}`,
+        ...(todo.length
+          ? [`Da fare domani:`, ...todo.map(t => `  - ${t.count} ${t.label}`), ``]
+          : [`Tutto a posto: niente da fare per domani.`, ``]),
+        `Visualizzazioni:     ${todayStats.todayPageViews}${extras.viewsTrend ? ` (${extras.viewsTrend.vsYesterday.label} su ieri, media 7 gg: ${extras.viewsTrend.avg7})` : ''}`,
+        `Visitatori unici:    ${todayStats.uniqueVisitorsToday}`,
+        `Nuovi / di ritorno:  ${engagement.newVisitors} / ${engagement.returningVisitors}`,
+        `Visite al blog:      ${todayStats.todayBlogViews}`,
+        `Messaggi chat:       ${chatInteractions}`,
+        `Moduli contatto:     ${todaysContacts.length}${extras.contactsTrend ? ` (${extras.contactsTrend.vsYesterday.label} su ieri)` : ''}`,
         ``,
-        `Top pages today:`,
+        `Pagine più viste oggi:`,
         ...engagement.pages.slice(0, 8).map(p =>
-          `  ${p.path} — ${p.views} views / ${p.uniqueVisitors} unique (${p.viewsPerVisitor}x)` +
-          (p.avgDurationSec != null ? `, avg ${p.avgDurationSec}s` : ''),
+          `  ${p.path} — ${p.views} viste / ${p.uniqueVisitors} unici` +
+          (p.avgDurationSec != null ? `, tempo medio ${p.avgDurationSec}s` : ''),
         ),
         ``,
-        `Sources today: ${engagement.sources.map(s => `${s.label} (${s.count})`).join(', ') || 'N/A'}`,
-        `Top referrers: ${engagement.topReferrers.slice(0, 5).map(r => `${r.label} (${r.count})`).join(', ') || 'N/A'}`,
-        `Campaigns:     ${engagement.campaigns.slice(0, 5).map(c => `${c.label} (${c.count})`).join(', ') || 'N/A'}`,
-        `Locations today:    ${engagement.locations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
-        `Locations all time: ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'N/A'}`,
+        `Sorgenti oggi:        ${engagement.sources.map(s => `${s.label} (${s.count})`).join(', ') || 'n.d.'}`,
+        `Siti di provenienza:  ${engagement.topReferrers.slice(0, 5).map(r => `${r.label} (${r.count})`).join(', ') || 'n.d.'}`,
+        `Campagne:             ${engagement.campaigns.slice(0, 5).map(c => `${c.label} (${c.count})`).join(', ') || 'n.d.'}`,
+        `Località oggi:        ${engagement.locations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'n.d.'}`,
+        `Località da sempre:   ${advanced.topLocations.slice(0, 5).map(l => `${l.label} (${l.count})`).join(', ') || 'n.d.'}`,
+        ``,
+        ...(extras.chat && extras.chat.questionsCount
+          ? [``, `Chatbot oggi: ${extras.chat.questionsCount} domande in ${extras.chat.sessions} conversazioni, ${extras.chat.fallbackReplies} risposte predefinite`,
+             ...extras.chat.questions.map(q => `  - ${q}`)]
+          : []),
+        ``,
+        `Dashboard: ${this.siteUrl()}/dashboard`,
       ].join('\n'),
     });
 
@@ -236,22 +283,58 @@ export class DailySummaryService {
     advanced: Awaited<ReturnType<AnalyticsQueryService['getAdvancedAnalytics']>>;
     engagement: Awaited<ReturnType<AnalyticsQueryService['getDailyEngagementReport']>>;
     chatInteractions: number;
+    viewsTrend?: Trend | null;
+    contactsTrend?: Trend | null;
+    todo?: TodoItem[];
+    gsc?: { configured?: boolean; clicks: number; impressions: number; avgCtr: number; avgPosition: number; topQueries: { query: string; clicks: number; position: number }[] } | null;
+    chat?: ChatSummary | null;
+    system?: SystemRow[];
   }): Record<string, unknown> {
     const { date, todaysContacts, todayStats, advanced, engagement, chatInteractions } = data;
+    const dashboardUrl = `${this.siteUrl()}/dashboard`;
+
+    // Colori dei confronti: verde sale, rosso scende, grigio pari.
+    const deltaColor = { up: '#16a34a', down: '#dc2626', flat: '#64748b' } as const;
+    const withTrend = (t?: Trend | null) =>
+      t
+        ? {
+            avg7: t.avg7,
+            vsYesterday: { label: t.vsYesterday.label, color: deltaColor[t.vsYesterday.direction] },
+            vsAvg: { label: t.vsAvg.label, color: deltaColor[t.vsAvg.direction] },
+          }
+        : undefined;
 
     const kpiRows: StatCardVM[][] = [
       [
-        { icon: '👁️', label: 'Page Views', value: todayStats.todayPageViews, color: '#818cf8' },
-        { icon: '👤', label: 'Unique Visitors', value: todayStats.uniqueVisitorsToday, color: '#38bdf8' },
-        { icon: '🤖', label: 'Chat Messages', value: chatInteractions, color: '#34d399' },
-        { icon: '✉️', label: 'Contact Forms', value: todaysContacts.length, color: '#f59e0b' },
+        { icon: '👁️', label: 'Visualizzazioni', value: todayStats.todayPageViews, color: '#6366f1', trend: withTrend(data.viewsTrend) },
+        { icon: '👤', label: 'Visitatori unici', value: todayStats.uniqueVisitorsToday, color: '#0284c7' },
+        { icon: '🤖', label: 'Messaggi chat', value: chatInteractions, color: '#059669' },
+        { icon: '✉️', label: 'Moduli contatto', value: todaysContacts.length, color: '#d97706', trend: withTrend(data.contactsTrend) },
       ],
       [
-        { icon: '📰', label: 'Blog Views', value: todayStats.todayBlogViews, color: '#a78bfa' },
-        { icon: '🆕', label: 'New Visitors', value: engagement.newVisitors, color: '#4ade80' },
-        { icon: '🔁', label: 'Returning', value: engagement.returningVisitors, color: '#fb7185' },
+        { icon: '📰', label: 'Visite al blog', value: todayStats.todayBlogViews, color: '#7c3aed' },
+        { icon: '🆕', label: 'Nuovi visitatori', value: engagement.newVisitors, color: '#16a34a' },
+        { icon: '🔁', label: 'Di ritorno', value: engagement.returningVisitors, color: '#e11d48' },
       ],
     ];
+
+    const todoColor = { bad: '#dc2626', warn: '#b45309', info: '#4338ca' } as const;
+    const todo = (data.todo ?? []).map((t) => ({ ...t, color: todoColor[t.tone], url: `${this.siteUrl()}${t.path}` }));
+
+    const toneColor = { ok: '#16a34a', warn: '#b45309', bad: '#dc2626' } as const;
+    const system = (data.system ?? []).map((r) => ({ ...r, color: toneColor[r.tone], dot: r.tone === 'ok' ? '🟢' : r.tone === 'warn' ? '🟠' : '🔴' }));
+    const chat = data.chat && (data.chat.questionsCount > 0 || data.chat.fallbackReplies > 0) ? data.chat : null;
+
+    const gsc =
+      data.gsc?.configured && (data.gsc.clicks > 0 || data.gsc.impressions > 0)
+        ? {
+            clicks: data.gsc.clicks,
+            impressions: data.gsc.impressions,
+            ctr: `${data.gsc.avgCtr}%`,
+            position: data.gsc.avgPosition,
+            queries: (data.gsc.topQueries ?? []).slice(0, 5),
+          }
+        : null;
 
     const maxPageViews = Math.max(1, ...engagement.pages.map(p => p.views));
     const pages = engagement.pages.slice(0, 10).map((p, i) => ({
@@ -265,35 +348,37 @@ export class DailySummaryService {
       zebra: i % 2 === 1,
     }));
 
+    // "Dispositivi" e "Località" senza "oggi" sono totali di sempre: prima la tabella dei dispositivi (migliaia)
+    // stava accanto ai numeri di oggi (decine) senza dirlo, e sembrava un errore.
     const tablePairs = [
       {
         left: this.toBreakdownTable(
-          { icon: '📡', title: 'Traffic Sources — Today', accent: '#34d399', emptyText: 'No data' },
+          { icon: '📡', title: 'Sorgenti di traffico · oggi', accent: '#059669', emptyText: 'Nessun dato' },
           engagement.sources, 6),
         right: this.toBreakdownTable(
-          { icon: '📱', title: 'Devices', accent: '#38bdf8', emptyText: 'No data' },
+          { icon: '📱', title: 'Dispositivi · da sempre', accent: '#0284c7', emptyText: 'Nessun dato' },
           advanced.deviceBreakdown, 5),
       },
       {
         left: this.toBreakdownTable(
-          { icon: '🔗', title: 'External Referrers — Today', accent: '#fb7185', emptyText: 'No external referrers' },
+          { icon: '🔗', title: 'Siti di provenienza · oggi', accent: '#e11d48', emptyText: 'Nessun sito esterno' },
           engagement.topReferrers, 6),
         right: this.toBreakdownTable(
-          { icon: '🎯', title: 'UTM Campaigns — Today', accent: '#4ade80', emptyText: 'No campaign traffic' },
+          { icon: '🎯', title: 'Campagne UTM · oggi', accent: '#16a34a', emptyText: 'Nessuna campagna' },
           engagement.campaigns, 6),
       },
       {
         left: this.toBreakdownTable(
-          { icon: '🌍', title: 'Top Visitor Locations — Today', accent: '#818cf8', emptyText: 'No location data today' },
+          { icon: '🌍', title: 'Località dei visitatori · oggi', accent: '#6366f1', emptyText: 'Nessun dato oggi' },
           engagement.locations, 8),
         right: this.toBreakdownTable(
-          { icon: '🌐', title: 'Top Visitor Locations — All Time', accent: '#f59e0b', emptyText: 'No location data' },
+          { icon: '🌐', title: 'Località dei visitatori · da sempre', accent: '#d97706', emptyText: 'Nessun dato' },
           advanced.topLocations, 8),
       },
     ];
 
     const contacts = todaysContacts.map((m, i) => ({
-      time: new Date(m.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      time: new Date(m.createdAt).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' }),
       name: m.name,
       email: m.email,
       preview: `${(m.message ?? '').slice(0, 80)}${(m.message ?? '').length > 80 ? '…' : ''}`,
@@ -303,10 +388,64 @@ export class DailySummaryService {
     return {
       date,
       year: new Date().getFullYear(),
+      dashboardUrl,
+      todo,
       kpiRows,
       pages,
+      gsc,
+      chat,
+      system,
       tablePairs,
       contacts,
+    };
+  }
+
+  /** Indirizzo del sito per i link dell'email (il vecchio "…/admin" non esiste: la dashboard è /dashboard). */
+  private siteUrl(): string {
+    return (this.cfg.get<string>('SITE_URL') || this.cfg.get<string>('FRONTEND_URL') || 'https://gentsallaku.it').replace(/\/+$/, '');
+  }
+
+  /**
+   * Dati per i blocchi nuovi dell'email. Ognuno è indipendente: se uno fallisce si registra un avviso e il blocco
+   * manca, ma l'email parte comunque (il riepilogo delle 22:00 non deve saltare per un dato in più).
+   */
+  private async gatherExtras(): Promise<{
+    viewsTrend: Trend | null;
+    contactsTrend: Trend | null;
+    notifications: Awaited<ReturnType<AdminOverviewService['notificationSummary']>> | null;
+    sections: Record<string, unknown> | null;
+    chat: ChatSummary | null;
+  }> {
+    const safe = async <T>(label: string, fn: () => Promise<T>): Promise<T | null> => {
+      try {
+        return await fn();
+      } catch (err) {
+        this.logger.warn(`[DailySummary] ${label} non disponibile: ${(err as Error)?.message ?? err}`);
+        return null;
+      }
+    };
+
+    // 8 giorni: oggi, ieri e i 6 precedenti per la media.
+    const dayStart = new Date();
+    dayStart.setHours(0, 0, 0, 0);
+    const [visits, contactDays, notifications, overview, chatPage] = await Promise.all([
+      safe('andamento visite', () => this.analyticsQuery.getVisitSummary(8)),
+      safe('andamento contatti', () => this.contacts.countByDay(8)),
+      this.overview ? safe('notifiche', () => this.overview!.notificationSummary()) : Promise.resolve(null),
+      this.overview
+        ? safe('sezioni dashboard', () =>
+            this.overview!.getSections(['serverErrors', 'serverHealth', 'notFound', 'translationHealth', 'scheduledPosts', 'gsc', 'aiUsage', 'security']))
+        : Promise.resolve(null),
+      // Le chat di oggi (fino a 50 conversazioni): domande recenti e risposte di ripiego.
+      safe('chat di oggi', () => this.chatbot.getTodaySessions(1, 50)),
+    ]);
+
+    return {
+      viewsTrend: buildTrend(visits?.viewsByDay.map((d) => d.count)),
+      contactsTrend: buildTrend(contactDays?.map((d) => d.count)),
+      notifications,
+      sections: overview?.sections ?? null,
+      chat: buildChatSummary(chatPage?.data as any, dayStart),
     };
   }
 
