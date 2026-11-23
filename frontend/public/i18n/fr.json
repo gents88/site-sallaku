@@ -3675,6 +3675,59 @@
           "a": "Cet éditeur travaille sur des pages entières. Pour du texte, ajoutez des notes ou remplissez des champs avec l’outil Remplir et signer."
         }
       ]
+    },
+    "pdf_search": {
+      "about": "La Recherche PDF trouve des livres, des articles scientifiques et des documents que vous pouvez télécharger légalement. Elle interroge ensemble Internet Archive, Project Gutenberg, Wikimedia Commons, arXiv, PubMed Central et Zenodo et n'affiche que les résultats dont le PDF est réellement disponible. Elle sert à trouver des classiques du domaine public, des textes d'étude et des articles en accès libre sans passer par des sites douteux.",
+      "steps": [
+        "Saisissez un titre, un auteur ou un sujet dans le champ de recherche et appuyez sur Rechercher.",
+        "Affinez avec les filtres Livres, Articles ou Favoris et triez par pertinence ou par année.",
+        "Ouvrez l'aperçu pour feuilleter le PDF dans le navigateur, ou téléchargez-le ou allez sur la page de la source.",
+        "Pour le garder, enregistrez-le dans la Bibliothèque ou envoyez-le au Flux de travail pour l'utiliser avec un autre outil, comme Résumé PDF."
+      ],
+      "privacy": "La recherche ne demande aucune inscription. Les mots saisis servent uniquement à interroger les archives ; les recherches récentes et les favoris restent dans votre navigateur.",
+      "limits": "Vous ne trouvez que du matériel du domaine public ou en accès libre : les œuvres récentes protégées par le droit d'auteur n'apparaissent pas. Pour éviter les abus, environ 20 recherches par minute sont autorisées. Certaines sources, comme PubMed Central, n'autorisent pas l'aperçu : téléchargez alors le PDF et lisez-le sur votre appareil."
+    },
+    "library": {
+      "about": "La Bibliothèque est votre archive personnelle de PDF, conservée dans votre navigateur. Vous pouvez importer vos fichiers ou enregistrer ceux trouvés avec la Recherche PDF, chercher un mot dans tout le contenu page par page, les organiser avec des étiquettes et poser des questions à vos documents.",
+      "steps": [
+        "Importez vos PDF avec le bouton prévu, ou enregistrez dans la Bibliothèque ceux trouvés avec la Recherche PDF.",
+        "Appuyez sur Indexer : l'outil extrait le texte de chaque page dans votre navigateur pour le rendre consultable.",
+        "Cherchez un mot ou une phrase : vous voyez dans quels documents et pages il apparaît. Filtrez et triez par titre, étiquette ou taille.",
+        "Utilisez Interroger la bibliothèque pour poser une question : vous recevez une réponse avec les pages dont elle provient."
+      ],
+      "privacy": "Les documents restent dans votre navigateur et ne sont pas envoyés vers une archive. Quand vous posez une question, seuls les quelques passages pertinents parviennent au serveur, pas le fichier entier.",
+      "limits": "Étant enregistrée dans le navigateur, la Bibliothèque ne se synchronise pas entre appareils et se vide si vous effacez les données du site : gardez une copie des fichiers importants. Seuls les PDF peuvent être importés. Les PDF qui sont des scans, sans texte sélectionnable, ne sont pas consultables tant qu'ils ne sont pas passés par l'OCR.",
+      "faq": [
+        {
+          "q": "Où sont enregistrés mes PDF ?",
+          "a": "Dans le navigateur que vous utilisez, sur votre appareil. Il n'y a pas d'archive en ligne : c'est pourquoi on ne les retrouve pas depuis un autre appareil."
+        },
+        {
+          "q": "Pourquoi un document est-il marqué « Scan » ?",
+          "a": "Parce que ses pages sont des images sans texte sélectionnable. Passez-le dans l'outil OCR pour obtenir le texte et pouvoir le rechercher."
+        }
+      ]
+    },
+    "workspace": {
+      "about": "Le Flux de travail permet de passer le résultat d'un outil directement au suivant, sans télécharger ni réimporter de fichiers. Par exemple, vous pouvez scanner un document, en extraire le texte avec l'OCR, puis le traduire ou le résumer, toujours dans le même parcours.",
+      "steps": [
+        "Partez de l'un des outils de départ listés, par exemple Scanner, OCR ou Recherche PDF.",
+        "Quand vous avez le résultat, choisissez de l'envoyer au Flux de travail.",
+        "L'élément reçu apparaît ici, avec l'outil dont il provient.",
+        "Choisissez avec quel outil continuer, ou téléchargez le fichier ou supprimez l'élément."
+      ],
+      "privacy": "Les éléments en transit restent dans votre navigateur pendant la durée de la session et ne sont pas enregistrés dans une archive.",
+      "limits": "Le contenu n'est pas enregistré : il est perdu si vous rechargez ou fermez l'onglet. Si vous devez le conserver, téléchargez-le ou enregistrez-le dans la Bibliothèque.",
+      "faq": [
+        {
+          "q": "Le Flux de travail enregistre-t-il mes fichiers ?",
+          "a": "Non. Les éléments restent en mémoire dans l'onglet ouvert et disparaissent quand vous le rechargez ou le fermez."
+        },
+        {
+          "q": "Puis-je transmettre aussi du texte, pas seulement des fichiers ?",
+          "a": "Oui. Le Flux de travail accepte les fichiers et le texte, par exemple celui extrait par l'OCR, et le propose aux outils suivants."
+        }
+      ]
     }
   },
   "lab_intents": {

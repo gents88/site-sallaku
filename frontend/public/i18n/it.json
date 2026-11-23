@@ -3675,6 +3675,59 @@
           "a": "Questo editor lavora su pagine intere. Per il testo, aggiungi note o compila campi con lo strumento Compila e firma."
         }
       ]
+    },
+    "pdf_search": {
+      "about": "La Ricerca PDF cerca libri, articoli scientifici e documenti che puoi scaricare legalmente: interroga insieme Internet Archive, Project Gutenberg, Wikimedia Commons, arXiv, PubMed Central e Zenodo e mostra solo i risultati con un PDF davvero disponibile. Serve per trovare classici di pubblico dominio, testi di studio e paper open access senza passare da siti dubbi.",
+      "steps": [
+        "Scrivi un titolo, un autore o un argomento nel campo di ricerca e premi Cerca.",
+        "Restringi con i filtri Libri, Paper o Preferiti e ordina per rilevanza o per anno.",
+        "Apri l'anteprima per sfogliare il PDF nel browser, oppure scaricalo o vai alla pagina della fonte.",
+        "Se vuoi tenerlo, salvalo in Libreria o mandalo al Flusso di lavoro per usarlo con un altro strumento, ad esempio il Riassunto PDF."
+      ],
+      "privacy": "La ricerca non richiede registrazione. Le parole cercate servono solo a interrogare gli archivi; le ricerche recenti e i preferiti restano nel tuo browser.",
+      "limits": "Trovi solo materiale di pubblico dominio o open access: opere recenti coperte da diritto d'autore non compaiono. Per evitare abusi sono consentite circa 20 ricerche al minuto. Alcune fonti, come PubMed Central, non permettono l'anteprima: in quel caso il PDF si scarica e si legge sul tuo dispositivo."
+    },
+    "library": {
+      "about": "La Libreria è il tuo archivio personale di PDF, che resta nel tuo browser. Puoi caricare i tuoi file o salvare quelli trovati con la Ricerca PDF, cercare una parola in tutto il contenuto, pagina per pagina, ordinarli con i tag e fare domande ai documenti.",
+      "steps": [
+        "Carica i tuoi PDF con il pulsante dedicato, oppure salva in Libreria quelli trovati con la Ricerca PDF.",
+        "Premi Indicizza: lo strumento estrae il testo di ogni pagina nel browser, così diventa ricercabile.",
+        "Cerca una parola o una frase: vedi in quali documenti e pagine compare. Filtra e ordina per titolo, tag o dimensione.",
+        "Usa Chiedi alla libreria per fare una domanda: ricevi una risposta con le pagine da cui deriva."
+      ],
+      "privacy": "I documenti restano nel tuo browser e non vengono caricati su un archivio. Quando fai una domanda, al server arrivano solo i pochi passaggi pertinenti alla domanda, non l'intero file.",
+      "limits": "Essendo salvata nel browser, la Libreria non si sincronizza tra dispositivi e si svuota se cancelli i dati del sito: tieni una copia dei file importanti. Si importano solo PDF. I PDF che sono scansioni, senza testo selezionabile, non si possono cercare finché non passano dall'OCR.",
+      "faq": [
+        {
+          "q": "Dove sono salvati i miei PDF?",
+          "a": "Nel browser che stai usando, sul tuo dispositivo. Non c'è un archivio online: per questo non si ritrovano da un altro dispositivo."
+        },
+        {
+          "q": "Perché un documento risulta \"Scansione\"?",
+          "a": "Perché le sue pagine sono immagini e non contengono testo selezionabile. Passalo allo strumento OCR per ottenere il testo e poterlo cercare."
+        }
+      ]
+    },
+    "workspace": {
+      "about": "Il Flusso di lavoro serve a passare il risultato di uno strumento direttamente al successivo, senza scaricare e ricaricare file. Per esempio puoi scansionare un documento, estrarne il testo con l'OCR, tradurlo o riassumerlo, restando sempre nello stesso percorso.",
+      "steps": [
+        "Parti da uno degli strumenti di partenza elencati, ad esempio Scanner, OCR o Ricerca PDF.",
+        "Quando hai il risultato, scegli di inviarlo al Flusso di lavoro.",
+        "Qui compare l'elemento ricevuto, con l'indicazione dello strumento di provenienza.",
+        "Scegli con quale strumento continuare, oppure scarica il file o cancella l'elemento."
+      ],
+      "privacy": "Gli elementi in transito restano nel tuo browser per la durata della sessione e non vengono salvati su un archivio.",
+      "limits": "Il contenuto non è salvato: si perde se ricarichi o chiudi la scheda. Se ti serve conservarlo, scaricalo o salvalo nella Libreria.",
+      "faq": [
+        {
+          "q": "Il Flusso di lavoro salva i miei file?",
+          "a": "No. Gli elementi restano in memoria nella scheda aperta e spariscono quando la ricarichi o la chiudi."
+        },
+        {
+          "q": "Posso passare anche del testo, non solo file?",
+          "a": "Sì. Il Flusso di lavoro accetta sia file sia testo, ad esempio quello estratto dall'OCR, e lo offre agli strumenti successivi."
+        }
+      ]
     }
   },
   "lab_intents": {

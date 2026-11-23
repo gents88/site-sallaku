@@ -3675,6 +3675,59 @@
           "a": "Este editor trabalha com páginas inteiras. Para texto, adicione notas ou preencha campos com a ferramenta de preencher e assinar."
         }
       ]
+    },
+    "pdf_search": {
+      "about": "A Pesquisa de PDF encontra livros, artigos científicos e documentos que pode descarregar legalmente. Consulta em conjunto o Internet Archive, o Project Gutenberg, a Wikimedia Commons, o arXiv, o PubMed Central e o Zenodo e mostra apenas resultados com um PDF realmente disponível. Serve para encontrar clássicos de domínio público, textos de estudo e artigos de acesso aberto sem passar por sites duvidosos.",
+      "steps": [
+        "Escreva um título, um autor ou um tema no campo de pesquisa e prima Pesquisar.",
+        "Restrinja com os filtros Livros, Artigos ou Favoritos e ordene por relevância ou por ano.",
+        "Abra a pré-visualização para folhear o PDF no navegador, ou descarregue-o ou vá à página da fonte.",
+        "Se quiser guardá-lo, guarde-o na Biblioteca ou envie-o para o Fluxo de trabalho para usar com outra ferramenta, como o Resumo de PDF."
+      ],
+      "privacy": "A pesquisa não exige registo. As palavras que escreve servem apenas para consultar os arquivos; as pesquisas recentes e os favoritos ficam no seu navegador.",
+      "limits": "Só encontra material de domínio público ou de acesso aberto: obras recentes com direitos de autor não aparecem. Para evitar abusos, são permitidas cerca de 20 pesquisas por minuto. Algumas fontes, como o PubMed Central, não permitem a pré-visualização: nesse caso descarregue o PDF e leia-o no seu dispositivo."
+    },
+    "library": {
+      "about": "A Biblioteca é o seu arquivo pessoal de PDF, guardado no seu navegador. Pode carregar os seus ficheiros ou guardar os encontrados com a Pesquisa de PDF, procurar uma palavra em todo o conteúdo página a página, organizá-los com etiquetas e fazer perguntas aos seus documentos.",
+      "steps": [
+        "Carregue os seus PDF com o botão indicado, ou guarde na Biblioteca os encontrados com a Pesquisa de PDF.",
+        "Prima Indexar: a ferramenta extrai o texto de cada página no seu navegador para que se possa pesquisar.",
+        "Procure uma palavra ou frase: vê em que documentos e páginas aparece. Filtre e ordene por título, etiqueta ou tamanho.",
+        "Use Perguntar à biblioteca para fazer uma pergunta: recebe uma resposta com as páginas de onde provém."
+      ],
+      "privacy": "Os documentos ficam no seu navegador e não são enviados para nenhum arquivo. Quando faz uma pergunta, ao servidor chegam apenas as poucas passagens relevantes, não o ficheiro inteiro.",
+      "limits": "Por estar guardada no navegador, a Biblioteca não se sincroniza entre dispositivos e fica vazia se apagar os dados do site: guarde uma cópia dos ficheiros importantes. Só se podem importar PDF. Os PDF que são digitalizações, sem texto selecionável, não podem ser pesquisados até passarem pelo OCR.",
+      "faq": [
+        {
+          "q": "Onde ficam guardados os meus PDF?",
+          "a": "No navegador que está a usar, no seu dispositivo. Não há um arquivo online, por isso não os encontra noutro dispositivo."
+        },
+        {
+          "q": "Porque é que um documento aparece como \"Digitalização\"?",
+          "a": "Porque as suas páginas são imagens sem texto selecionável. Passe-o pela ferramenta de OCR para obter o texto e poder pesquisá-lo."
+        }
+      ]
+    },
+    "workspace": {
+      "about": "O Fluxo de trabalho serve para passar o resultado de uma ferramenta diretamente à seguinte, sem descarregar e voltar a carregar ficheiros. Por exemplo, pode digitalizar um documento, extrair o texto com OCR e depois traduzi-lo ou resumi-lo, sempre no mesmo percurso.",
+      "steps": [
+        "Comece por uma das ferramentas de partida indicadas, por exemplo Digitalizador, OCR ou Pesquisa de PDF.",
+        "Quando tiver o resultado, escolha enviá-lo para o Fluxo de trabalho.",
+        "Aqui aparece o item recebido, com a ferramenta de onde vem.",
+        "Escolha com que ferramenta continuar, ou descarregue o ficheiro ou apague o item."
+      ],
+      "privacy": "Os itens em trânsito ficam no seu navegador durante a sessão e não são guardados em nenhum arquivo.",
+      "limits": "O conteúdo não é guardado: perde-se se recarregar ou fechar o separador. Se precisar de o conservar, descarregue-o ou guarde-o na Biblioteca.",
+      "faq": [
+        {
+          "q": "O Fluxo de trabalho guarda os meus ficheiros?",
+          "a": "Não. Os itens ficam em memória no separador aberto e desaparecem quando o recarrega ou fecha."
+        },
+        {
+          "q": "Posso passar também texto, não só ficheiros?",
+          "a": "Sim. O Fluxo de trabalho aceita ficheiros e texto, por exemplo o extraído por OCR, e oferece-o às ferramentas seguintes."
+        }
+      ]
     }
   },
   "lab_intents": {
