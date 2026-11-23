@@ -730,7 +730,8 @@
     "latest": "Latest article",
     "all_posts": "All articles",
     "not_found": "Article not found",
-    "back_to_blog": "Back to the blog"
+    "back_to_blog": "Back to the blog",
+    "updated_on": "Updated {{date}}"
   },
   "notes": {
     "title": "Reader notes",
@@ -2489,7 +2490,8 @@
     "text": "The address you opened does not exist or has been moved.",
     "home": "Back to the home page",
     "blog": "Go to the blog",
-    "lab": "Open the Lab"
+    "lab": "Open the Lab",
+    "popular_tools": "Most used tools"
   },
   "account": {
     "section_title": "Your account",
@@ -4115,6 +4117,8 @@
     "blog_lead": "Notes on development, tools and stories.",
     "blog_read": "Read",
     "blog_all": "All articles",
-    "availability": "I'm not taking on new engagements right now, but feel free to write for a question or a collaboration; I reply when I can."
+    "availability": "I'm not taking on new engagements right now, but feel free to write for a question or a collaboration; I reply when I can.",
+    "read_more": "Read more",
+    "read_less": "Show less"
   }
 }

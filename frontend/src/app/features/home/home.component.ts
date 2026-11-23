@@ -57,6 +57,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Gli ultimi articoli pubblicati; vuoto = la sezione non si mostra. */
   latestPosts: PostSummary[] = [];
 
+  /** Su telefono la descrizione dell'hero è accorciata (così i pulsanti restano visibili); questo la apre. */
+  heroExpanded = false;
+
   /**
    * Strumenti in primo piano nella home: i più cercati. Nome, descrizione e icona vengono dal registro e dai
    * testi del Lab (stessi testi del menu e delle pagine strumento), così restano allineati.

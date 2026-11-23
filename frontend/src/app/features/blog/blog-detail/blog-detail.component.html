@@ -55,6 +55,10 @@
           } @else {
             <time [dateTime]="post.updatedAt">Bozza — ultimo salvataggio {{ post.updatedAt | localDate: currentLang() : 'long' }}</time>
           }
+          @if (post.published && post.publishedAt && post.updatedAt && isMeaningfullyUpdated(post)) {
+            <span aria-hidden="true">·</span>
+            <time [dateTime]="post.updatedAt">{{ 'blog.updated_on' | translate: { date: (post.updatedAt | localDate: currentLang() : 'long') } }}</time>
+          }
           <span class="post-article__views">
             <mat-icon aria-hidden="true">schedule</mat-icon>
             {{ 'blog.reading_time' | translate: { count: readingMinutes } }}
