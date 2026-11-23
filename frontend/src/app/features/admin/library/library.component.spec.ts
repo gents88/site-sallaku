@@ -15,6 +15,8 @@ import { WorkspaceService } from '../../../core/services/workspace.service';
 import { AnalyticsTrackingService } from '../../../core/services/analytics-tracking.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { BreadcrumbComponent } from '../../../shared/components/breadcrumb/breadcrumb.component';
+import { LabToolInfoComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.component';
+import { LabToolInfoStubComponent } from '../../../shared/components/lab-tool-info/lab-tool-info.testing';
 import { BreadcrumbStubComponent } from '../../../../testing/breadcrumb-stub';
 
 type NewDocMeta = Parameters<LibraryService['add']>[0];
@@ -65,7 +67,7 @@ describe('LibraryComponent', () => {
         { provide: PLATFORM_ID, useValue: 'browser' },
       ],
     });
-    TestBed.overrideComponent(LibraryComponent, { remove: { imports: [BreadcrumbComponent] }, add: { imports: [BreadcrumbStubComponent] } });
+    TestBed.overrideComponent(LibraryComponent, { remove: { imports: [BreadcrumbComponent, LabToolInfoComponent] }, add: { imports: [BreadcrumbStubComponent, LabToolInfoStubComponent] } });
 
     library = TestBed.inject(LibraryService);
   }

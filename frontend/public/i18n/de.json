@@ -3675,6 +3675,59 @@
           "a": "Dieser Editor arbeitet mit ganzen Seiten. Für Text füge Notizen hinzu oder fülle Felder mit dem Werkzeug Ausfüllen und Unterschreiben aus."
         }
       ]
+    },
+    "pdf_search": {
+      "about": "Die PDF-Suche findet Bücher, wissenschaftliche Artikel und Dokumente, die du legal herunterladen kannst. Sie durchsucht Internet Archive, Project Gutenberg, Wikimedia Commons, arXiv, PubMed Central und Zenodo gemeinsam und zeigt nur Ergebnisse mit tatsächlich verfügbarem PDF. So findest du gemeinfreie Klassiker, Lehrtexte und Open-Access-Artikel, ohne dubiose Seiten.",
+      "steps": [
+        "Gib einen Titel, einen Autor oder ein Thema ein und drücke Suchen.",
+        "Grenze die Treffer mit den Filtern Bücher, Paper oder Favoriten ein und sortiere nach Relevanz oder Jahr.",
+        "Öffne die Vorschau, um das PDF im Browser durchzublättern, oder lade es herunter bzw. öffne die Quellseite.",
+        "Zum Behalten speicherst du es in der Bibliothek oder sendest es an den Workflow, um es mit einem anderen Tool zu nutzen, etwa der PDF-Zusammenfassung."
+      ],
+      "privacy": "Die Suche erfordert keine Registrierung. Die eingegebenen Wörter dienen nur der Abfrage der Archive; letzte Suchen und Favoriten bleiben in deinem Browser.",
+      "limits": "Du findest nur gemeinfreies oder Open-Access-Material: aktuelle urheberrechtlich geschützte Werke erscheinen nicht. Gegen Missbrauch sind etwa 20 Suchen pro Minute erlaubt. Einige Quellen, etwa PubMed Central, erlauben keine Vorschau: dann lade das PDF herunter und lies es auf deinem Gerät."
+    },
+    "library": {
+      "about": "Die Bibliothek ist dein persönliches PDF-Archiv, das in deinem Browser bleibt. Du kannst eigene Dateien hochladen oder mit der PDF-Suche gefundene speichern, ein Wort im gesamten Inhalt seitenweise suchen, mit Tags ordnen und Fragen an deine Dokumente stellen.",
+      "steps": [
+        "Lade deine PDFs über die Schaltfläche hoch oder speichere die mit der PDF-Suche gefundenen in der Bibliothek.",
+        "Drücke Indexieren: Das Tool extrahiert den Text jeder Seite in deinem Browser, damit er durchsuchbar wird.",
+        "Suche ein Wort oder einen Satz: Du siehst, in welchen Dokumenten und auf welchen Seiten er vorkommt. Filtere und sortiere nach Titel, Tag oder Größe.",
+        "Mit Bibliothek fragen stellst du eine Frage: Du erhältst eine Antwort mit den Seiten, aus denen sie stammt."
+      ],
+      "privacy": "Die Dokumente bleiben in deinem Browser und werden nicht in ein Archiv hochgeladen. Bei einer Frage erreichen den Server nur die wenigen relevanten Passagen, nicht die ganze Datei.",
+      "limits": "Da sie im Browser gespeichert ist, wird die Bibliothek nicht zwischen Geräten synchronisiert und leert sich, wenn du die Websitedaten löschst: Behalte eine Kopie wichtiger Dateien. Es können nur PDFs importiert werden. PDFs, die Scans ohne auswählbaren Text sind, lassen sich erst durchsuchen, nachdem sie die OCR durchlaufen haben.",
+      "faq": [
+        {
+          "q": "Wo werden meine PDFs gespeichert?",
+          "a": "In dem Browser, den du gerade nutzt, auf deinem Gerät. Es gibt kein Online-Archiv, deshalb findest du sie auf einem anderen Gerät nicht wieder."
+        },
+        {
+          "q": "Warum ist ein Dokument als \"Scan\" markiert?",
+          "a": "Weil seine Seiten Bilder ohne auswählbaren Text sind. Schicke es durch das OCR-Tool, um den Text zu erhalten und durchsuchen zu können."
+        }
+      ]
+    },
+    "workspace": {
+      "about": "Der Workflow reicht das Ergebnis eines Tools direkt an das nächste weiter, ohne Dateien herunterzuladen und erneut hochzuladen. Du kannst zum Beispiel ein Dokument scannen, mit OCR den Text extrahieren und ihn dann übersetzen oder zusammenfassen, immer im selben Ablauf.",
+      "steps": [
+        "Starte mit einem der aufgelisteten Start-Tools, etwa Scanner, OCR oder PDF-Suche.",
+        "Wenn du das Ergebnis hast, sende es an den Workflow.",
+        "Das empfangene Element erscheint hier, mit dem Tool, von dem es kommt.",
+        "Wähle, mit welchem Tool du weitermachst, oder lade die Datei herunter bzw. entferne das Element."
+      ],
+      "privacy": "Elemente in Bearbeitung bleiben für die Dauer der Sitzung in deinem Browser und werden nicht in einem Archiv gespeichert.",
+      "limits": "Der Inhalt wird nicht gespeichert: Er geht verloren, wenn du den Tab neu lädst oder schließt. Wenn du ihn behalten willst, lade ihn herunter oder speichere ihn in der Bibliothek.",
+      "faq": [
+        {
+          "q": "Speichert der Workflow meine Dateien?",
+          "a": "Nein. Die Elemente liegen im Arbeitsspeicher des geöffneten Tabs und verschwinden, wenn du ihn neu lädst oder schließt."
+        },
+        {
+          "q": "Kann ich auch Text weitergeben, nicht nur Dateien?",
+          "a": "Ja. Der Workflow nimmt Dateien und Text an, etwa den per OCR extrahierten, und bietet ihn den nächsten Tools an."
+        }
+      ]
     }
   },
   "lab_intents": {
