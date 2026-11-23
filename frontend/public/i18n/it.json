@@ -4096,5 +4096,25 @@
     "b_clicks": "clic da Google",
     "total": "totale",
     "jump_to": "Vai a…"
+  },
+  "home_v2": {
+    "hero_line": "Albanese di Blinisht, vivo in Italia. Costruisco software e strumenti gratuiti che si usano senza registrarsi.",
+    "cta_tools": "Prova gli strumenti gratuiti",
+    "cta_projects": "Vedi i progetti",
+    "origin": "Sono albanese, originario di Blinisht (Lezhë), e vivo in Italia.",
+    "origin_link": "Leggi la storia di Blinisht",
+    "lab_tag": "lab",
+    "lab_title": "Strumenti gratuiti",
+    "lab_lead": "Strumenti che uso e ho costruito io: PDF, immagini, QR code, conversioni e AI. Funzionano nel browser, senza registrazione.",
+    "stat_tools": "strumenti",
+    "stat_langs": "lingue",
+    "stat_signup": "registrazioni richieste",
+    "lab_see_all": "Vedi tutti gli strumenti",
+    "blog_tag": "blog",
+    "blog_title": "Ultimi articoli",
+    "blog_lead": "Appunti di sviluppo, strumenti e storie.",
+    "blog_read": "Leggi",
+    "blog_all": "Tutti gli articoli",
+    "availability": "Al momento non sto cercando nuovi incarichi: puoi comunque scrivermi per una domanda o una collaborazione, rispondo appena posso."
   }
 }
