@@ -3675,6 +3675,59 @@
           "a": "This editor works on whole pages. For text, add notes or fill fields with the sign and fill tool."
         }
       ]
+    },
+    "pdf_search": {
+      "about": "PDF Search finds books, scientific papers and documents you can legally download. It queries Internet Archive, Project Gutenberg, Wikimedia Commons, arXiv, PubMed Central and Zenodo together and only shows results with a PDF that is really available. Use it to find public-domain classics, study texts and open-access papers without going through dubious sites.",
+      "steps": [
+        "Type a title, an author or a topic in the search box and press Search.",
+        "Narrow the results with the Books, Papers or Favorites filters and sort by relevance or year.",
+        "Open the preview to browse the PDF in your browser, or download it or visit the source page.",
+        "To keep it, save it to the Library or send it to the Workflow to use it with another tool, such as PDF Summary."
+      ],
+      "privacy": "Search needs no sign-up. The words you type are only used to query the archives; recent searches and favorites stay in your browser.",
+      "limits": "You only find public-domain or open-access material: recent works under copyright do not appear. To prevent abuse, about 20 searches per minute are allowed. Some sources, such as PubMed Central, do not allow a preview: in that case download the PDF and read it on your device."
+    },
+    "library": {
+      "about": "The Library is your personal PDF archive, kept in your browser. You can upload your own files or save the ones found with PDF Search, search for a word across all the content page by page, organise them with tags and ask questions to your documents.",
+      "steps": [
+        "Upload your PDFs with the button provided, or save to the Library the ones found with PDF Search.",
+        "Press Index: the tool extracts the text of each page in your browser so it becomes searchable.",
+        "Search for a word or phrase: you see in which documents and pages it appears. Filter and sort by title, tag or size.",
+        "Use Ask the library to ask a question: you get an answer with the pages it comes from."
+      ],
+      "privacy": "Documents stay in your browser and are not uploaded to an archive. When you ask a question, only the few passages relevant to it reach the server, not the whole file.",
+      "limits": "Because it is stored in the browser, the Library does not sync between devices and is emptied if you clear the site's data: keep a copy of important files. Only PDFs can be imported. PDFs that are scans, without selectable text, cannot be searched until they go through OCR.",
+      "faq": [
+        {
+          "q": "Where are my PDFs stored?",
+          "a": "In the browser you are using, on your device. There is no online archive, which is why they cannot be found from another device."
+        },
+        {
+          "q": "Why is a document marked \"Scan\"?",
+          "a": "Because its pages are images with no selectable text. Run it through the OCR tool to get the text and be able to search it."
+        }
+      ]
+    },
+    "workspace": {
+      "about": "The Workflow lets you pass the result of one tool straight to the next, without downloading and re-uploading files. For example you can scan a document, extract its text with OCR, then translate or summarise it, always staying in the same path.",
+      "steps": [
+        "Start from one of the listed starting tools, for example Scanner, OCR or PDF Search.",
+        "When you have the result, choose to send it to the Workflow.",
+        "The received item appears here, with the tool it came from.",
+        "Choose which tool to continue with, or download the file or clear the item."
+      ],
+      "privacy": "Items in transit stay in your browser for the length of the session and are not saved in an archive.",
+      "limits": "The content is not saved: it is lost if you reload or close the tab. If you need to keep it, download it or save it to the Library.",
+      "faq": [
+        {
+          "q": "Does the Workflow save my files?",
+          "a": "No. Items stay in memory in the open tab and disappear when you reload or close it."
+        },
+        {
+          "q": "Can I pass text as well as files?",
+          "a": "Yes. The Workflow accepts both files and text, such as the text extracted by OCR, and offers it to the next tools."
+        }
+      ]
     }
   },
   "lab_intents": {

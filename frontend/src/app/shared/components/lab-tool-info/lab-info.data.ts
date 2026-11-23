@@ -63,6 +63,8 @@ export const LAB_RELATIONS: Readonly<Record<string, LabToolRelations>> = {
   'split-pdf': { tools: ['merge-pdf', 'rotate-pdf', 'pdf-to-word', 'viewer'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online', 'pdf-accessibili-cosa-serve-davvero'] },
   'rotate-pdf': { tools: ['merge-pdf', 'split-pdf', 'viewer', 'image-to-text'], articles: ['unire-dividere-ruotare-pdf-senza-caricarli-online'] },
   'image-to-text': { tools: ['scanner', 'pdf-to-word', 'pdf-summary', 'pdf-translate'], articles: ['ocr-online-estrarre-testo-da-scansioni-e-foto', 'scansionare-documenti-con-il-telefono-senza-scanner'] },
+  library: { tools: ['pdf-search', 'ocr', 'viewer', 'pdf-summary'], articles: ['perche-la-ricerca-nel-pdf-non-trova-niente', 'come-trovare-scaricare-libri-pdf-gratis-legali'] },
+  workspace: { tools: ['scanner', 'ocr', 'pdf-translate', 'pdf-summary', 'convert'], articles: ['riassumere-pdf-con-ai-guida-pratica'] },
   'pdf-search': { tools: ['viewer', 'pdf-summary', 'ocr'], articles: ['come-trovare-scaricare-libri-pdf-gratis-legali'] },
 };
 
