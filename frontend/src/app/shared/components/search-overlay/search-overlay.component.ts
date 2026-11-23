@@ -188,7 +188,14 @@ export class SearchOverlayComponent {
       });
 
     effect(() => {
-      if (this.overlay.open()) {
+      const open = this.overlay.open();
+      if (!open && this.wasOpen) this.restoreFocus();
+      if (open && !this.wasOpen) {
+        const active = typeof document !== 'undefined' ? (document.activeElement as HTMLElement | null) : null;
+        this.trigger = active && active !== document.body ? active : null;
+      }
+      this.wasOpen = open;
+      if (open) {
         this.query.set('');
         this.remote.set([]);
         this.adminRemote.set([]);
@@ -199,8 +206,51 @@ export class SearchOverlayComponent {
     });
   }
 
+  private wasOpen = false;
+  /** Elemento che aveva il focus quando si è aperta la ricerca: alla chiusura ci si torna. */
+  private trigger: HTMLElement | null = null;
+
+  private restoreFocus(): void {
+    const target = this.trigger;
+    this.trigger = null;
+    // Dopo il ciclo di rilevamento: il pannello è già uscito dal DOM e il focus è tornato sul body.
+    setTimeout(() => {
+      const active = document.activeElement;
+      if (active && active !== document.body) return; // l'utente è già andato altrove (es. ha scelto un risultato)
+      if (target?.isConnected) target.focus();
+    });
+  }
+
+  /** Tab resta dentro la finestra di ricerca (campo ↔ "Vedi tutti"): prima scorreva la pagina sotto lo sfondo. */
+  private trapTab(event: KeyboardEvent): void {
+    const panel = document.querySelector<HTMLElement>('.so-panel');
+    if (!panel) return;
+    const focusable = Array.from(panel.querySelectorAll<HTMLElement>('input:not([disabled]), button:not([disabled]), [href], select:not([disabled]), textarea:not([disabled])'));
+    if (!focusable.length) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (!panel.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    } else if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
   @HostListener('window:keydown', ['$event'])
   onGlobalKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Tab' && this.overlay.open()) {
+      this.trapTab(event);
+      return;
+    }
     const isCmdK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
     if (isCmdK) {
       event.preventDefault();

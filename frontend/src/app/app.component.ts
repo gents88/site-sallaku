@@ -1,4 +1,4 @@
-import { ApplicationRef, ChangeDetectionStrategy, Component, HostListener, OnInit, signal, PLATFORM_ID, Inject } from '@angular/core';
+import { ApplicationRef, ChangeDetectionStrategy, Component, HostListener, OnInit, effect, signal, untracked, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -62,6 +62,7 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
         role="dialog"
         aria-modal="true"
         aria-labelledby="account-modal-title"
+        tabindex="-1"
         (click)="$event.stopPropagation()"
         (keydown.tab)="onAccountModalTabKey($event)"
       >
@@ -184,6 +185,8 @@ import { ProfilePhotoComponent } from './shared/components/profile-photo/profile
       animation: accountModalIn 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
       --account-ring: #0d1221;
     }
+
+    .account-modal:focus { outline: none; }
 
     .account-modal__grabber { display: none; }
 
@@ -488,7 +491,41 @@ export class AppComponent implements OnInit {
     public featureFlags: FeatureFlagsService,
     private appRef: ApplicationRef,
     @Inject(PLATFORM_ID) private platformId: object,
-  ) {}
+  ) {
+    // Focus della scheda account: dentro all'apertura, di nuovo sul pulsante che l'ha aperta alla chiusura.
+    effect(() => {
+      const open = this.authModal.accountOpen();
+      if (isPlatformBrowser(this.platformId)) untracked(() => this.onAccountModalToggle(open));
+    });
+  }
+
+  private accountWasOpen = false;
+  private accountTrigger: HTMLElement | null = null;
+
+  /**
+   * Prima il focus restava sul pulsante dietro la scheda: Tab scorreva la pagina sotto il fondo scuro e, alla
+   * chiusura, il focus finiva a caso. All'apertura il focus va sulla scheda (poi Tab scorre i suoi pulsanti,
+   * e il trap lo tiene dentro); alla chiusura torna a chi l'aveva aperta.
+   */
+  private onAccountModalToggle(open: boolean): void {
+    if (open && !this.accountWasOpen) {
+      const active = document.activeElement as HTMLElement | null;
+      this.accountTrigger = active && active !== document.body ? active : null;
+      // La scheda entra nel DOM dopo questo ciclo di rilevamento.
+      setTimeout(() => document.querySelector<HTMLElement>('.account-modal')?.focus());
+    } else if (!open && this.accountWasOpen) {
+      const savedTrigger = this.accountTrigger;
+      this.accountTrigger = null;
+      // Dopo il ciclo di rilevamento: a quel punto la scheda è uscita dal DOM e il focus è tornato sul body.
+      setTimeout(() => {
+        const trigger = savedTrigger?.isConnected ? savedTrigger : document.querySelector<HTMLElement>('.nav-link--account');
+        const active = document.activeElement;
+        // Se nel frattempo il focus è andato altrove di proposito (es. dopo un cambio pagina) non lo si ruba.
+        if (!active || active === document.body) trigger?.focus();
+      });
+    }
+    this.accountWasOpen = open;
+  }
 
   ngOnInit(): void {
     // Activity tracking binds to `window`, which doesn't exist during SSR/prerender.
@@ -547,7 +584,8 @@ export class AppComponent implements OnInit {
     if (focusable.length === 0) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
-    if (ke.shiftKey && document.activeElement === first) {
+    // Con il focus sulla scheda stessa (così si apre) Maiusc+Tab porta all'ultimo pulsante, non fuori.
+    if (ke.shiftKey && (document.activeElement === first || document.activeElement === modal)) {
       ke.preventDefault();
       last.focus();
     } else if (!ke.shiftKey && document.activeElement === last) {
