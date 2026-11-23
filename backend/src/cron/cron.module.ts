@@ -5,6 +5,7 @@ import { CronController } from './cron.controller';
 import { ContactModule } from '../contact/contact.module';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { ChatbotModule } from '../chatbot/chatbot.module';
+import { StatsModule } from '../stats/stats.module';
 import { CronState, CronStateSchema } from './schemas/cron-state.schema';
 
 /**
@@ -16,6 +17,7 @@ import { CronState, CronStateSchema } from './schemas/cron-state.schema';
     ContactModule,
     AnalyticsModule,
     ChatbotModule,
+    StatsModule,
     MongooseModule.forFeature([{ name: CronState.name, schema: CronStateSchema }]),
   ],
   controllers: [CronController],
