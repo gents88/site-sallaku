@@ -268,6 +268,14 @@ export class SidebarComponent {
       }
     });
 
+    // Focus alla chiusura del drawer overlay: torna al pulsante che l'aveva aperto (da telefono la voce
+    // "AI & Strumenti" del menu "Altro", che nel frattempo si è chiuso: si usa la scheda "Altro"). Prima, chiudendo
+    // con la X, con Esc o col tocco fuori, il focus finiva sul corpo della pagina e si "perdeva".
+    effect(() => {
+      const open = this.mode() === 'overlay' && this.drawerOpen();
+      untracked(() => this.onOverlayToggle(open));
+    });
+
     // La scheda vive solo accanto alla rail aperta: se la rail si richiude o si
     // passa all'overlay resterebbe appesa sopra il contenuto.
     effect(() => {
@@ -493,6 +501,39 @@ export class SidebarComponent {
       this.drawer.close();
       this.analytics.trackClick('sidebar', 'sidebar_swipe_close');
     }
+  }
+
+  private overlayWasOpen = false;
+  private overlayOpener: HTMLElement | null = null;
+
+  private isVisible(el: HTMLElement | null | undefined): el is HTMLElement {
+    return !!el && el.isConnected && el.getClientRects().length > 0;
+  }
+
+  private onOverlayToggle(open: boolean): void {
+    const doc = this.elementRef.nativeElement.ownerDocument;
+    if (open && !this.overlayWasOpen) {
+      const active = doc.activeElement as HTMLElement | null;
+      // Aperto dal menu "Altro" (telefono): quel menu si sta chiudendo, il punto di ritorno è la scheda "Altro".
+      const fromMoreSheet = !!active?.closest('.nav-menu');
+      this.overlayOpener = fromMoreSheet
+        ? doc.querySelector<HTMLElement>('button.tab-item[aria-controls="nav-menu"]')
+        : active && active !== doc.body ? active : null;
+    } else if (!open && this.overlayWasOpen) {
+      const opener = this.overlayOpener;
+      this.overlayOpener = null;
+      // Dopo il render: il drawer chiuso è inert e il focus rimasto dentro è già tornato sul body.
+      setTimeout(() => {
+        const active = doc.activeElement;
+        // Se il focus è già altrove (ha tabulato fuori, ha scelto una voce che cambia pagina) non lo si ruba.
+        if (active && active !== doc.body && !this.elementRef.nativeElement.contains(active)) return;
+        const target = this.isVisible(opener)
+          ? opener
+          : doc.querySelector<HTMLElement>('.nav-drawer-toggle') ?? doc.querySelector<HTMLElement>('button.tab-item[aria-controls="nav-menu"]');
+        if (this.isVisible(target)) target.focus();
+      });
+    }
+    this.overlayWasOpen = open;
   }
 
   @HostListener('window:keydown', ['$event'])
