@@ -1130,3 +1130,370 @@ details[open] .faq-chevron { transform: rotate(180deg); color: var(--primary-400
   .code-bool, .code-number { color: #9a3412; }
   .code-class   { color: #92400e; }
 }
+
+/* ══ HERO: nome in alto, poi foto rotonda + titolo e pulsanti ══ */
+.hero-content { max-width: 920px; }
+.hero .hero-name {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.hero .hero-role {
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 36px;
+}
+
+.hero-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.hero-avatar {
+  flex: 0 0 auto;
+  display: block;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px var(--bg-primary, #0b1022), 0 0 0 6px var(--primary-500), 0 20px 50px -15px rgba(79, 70, 229, 0.6);
+
+  img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; display: block; }
+}
+
+.hero-main__text { min-width: 0; }
+
+.hero-headline {
+  margin: 0 0 22px;
+  font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.hero-main .hero-actions { justify-content: flex-start; margin-top: 0; }
+
+.hero .hero-description { font-size: 0.98rem; line-height: 1.7; max-width: 720px; margin: 0 auto 8px; }
+
+@media (max-width: 760px) {
+  .hero-main { flex-direction: column; gap: 20px; text-align: center; margin-bottom: 20px; }
+  .hero-avatar { width: 140px; height: 140px; }
+  .hero-main .hero-actions { justify-content: center; }
+  .hero .hero-role { margin-bottom: 22px; }
+}
+
+/* Hero compatto: sotto si vede già la sezione successiva (gli strumenti), come nell'esempio */
+.hero { min-height: 0; padding-top: 132px; padding-bottom: 64px; }
+.hero-scroll-indicator { display: none; }
+@media (max-width: 640px) { .hero { padding-top: 84px; padding-bottom: 40px; } }
+
+/* ══ HERO: versione più moderna ══════════════════════ */
+.hero .hero-name { letter-spacing: 3px; font-size: clamp(1.3rem, 2.4vw, 1.7rem); font-weight: 800; margin-bottom: 14px; }
+
+.hero .hero-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  background: rgba(99, 102, 241, 0.1);
+  backdrop-filter: blur(8px);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.hero-role__dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #a78bfa;
+  box-shadow: 0 0 0 4px rgba(167, 139, 250, 0.2), 0 0 12px rgba(167, 139, 250, 0.8);
+}
+
+/* foto: anello a gradiente che ruota lentamente + alone */
+.hero-avatar-wrap {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 6px;
+  border-radius: 50%;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #6366f1, #a855f7, #22d3ee, #6366f1);
+    animation: heroRing 8s linear infinite;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -30px;
+    z-index: -2;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.45), transparent 65%);
+    filter: blur(10px);
+  }
+}
+.hero-avatar-wrap .hero-avatar {
+  box-shadow: none;
+  border: 4px solid var(--bg-primary, #0b1022);
+  width: 196px;
+  height: 196px;
+}
+@keyframes heroRing { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .hero-avatar-wrap::before { animation: none; } }
+
+.hero-headline {
+  text-transform: none;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -1.5px;
+  margin-bottom: 26px;
+}
+
+.hero-main .hero-actions .btn {
+  border-radius: 999px;
+  padding-left: 26px;
+  padding-right: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  mat-icon { width: 20px; height: 20px; font-size: 20px; transition: transform var(--transition-base); }
+  &:hover mat-icon { transform: translateX(3px); }
+}
+
+.hero .hero-description { color: var(--text-muted, var(--text-secondary)); max-width: 680px; }
+
+@media (max-width: 760px) {
+  .hero-avatar-wrap .hero-avatar { width: 132px; height: 132px; }
+  .hero-avatar-wrap::after { inset: -20px; }
+  .hero-headline { font-size: clamp(2.2rem, 10vw, 2.8rem); letter-spacing: -1px; }
+}
+
+/* ══ HERO 3D ══════════════════════════════════════════
+   Linguaggio da architetto software, niente effetti "da videogioco":
+   - sfondo a carta da progetto (linee fini + linee principali ogni 5 celle), fermo;
+   - su schermi larghi, a destra, uno schema architetturale a livelli in isometria
+     (client → api → services → data) con i collegamenti verticali tra i nodi;
+   - con mouse e hover vero lo schema ruota verso il puntatore e il testo, disposto su
+     più piani, si inclina appena; l'alone segue il puntatore. Il `transform` di questi
+     tre elementi ([data-hero-tilt], [data-hero-glow]) lo scrive hero-tilt.ts: niente
+     variabili CSS sull'hero, che ereditate farebbero ri-rasterizzare a ogni frame tutti
+     i gradienti dell'hero (vedi il commento in hero-tilt.ts).
+   Niente animazioni continue; con "riduci movimento" tutto resta fermo e dritto. */
+.hero {
+  perspective: 1100px;
+  perspective-origin: 50% 35%;
+  --arch-line: color-mix(in srgb, var(--primary-500) 50%, transparent);
+  --arch-fill: color-mix(in srgb, var(--primary-500) 7%, transparent);
+  --arch-grid: color-mix(in srgb, var(--primary-500) 10%, transparent);
+  --blueprint-major: color-mix(in srgb, var(--primary-500) 9%, transparent);
+  --blueprint-minor: color-mix(in srgb, var(--primary-500) 4%, transparent);
+}
+:host-context([data-theme='light']) .hero {
+  --arch-fill: color-mix(in srgb, var(--primary-500) 5%, transparent);
+  --blueprint-major: color-mix(in srgb, var(--primary-500) 8%, transparent);
+  --blueprint-minor: color-mix(in srgb, var(--primary-500) 3.5%, transparent);
+}
+
+.hero-bg-grid {
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--blueprint-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blueprint-major) 1px, transparent 1px),
+    linear-gradient(var(--blueprint-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blueprint-minor) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 75% 75% at 50% 45%, #000 20%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 75% at 50% 45%, #000 20%, transparent 75%);
+}
+
+/* ── schema architetturale a livelli ── */
+.hero-arch { display: none; }
+
+@media (min-width: 1440px) {
+  .hero-arch {
+    --arch-size: 190px;
+    --arch-gap: 52px;
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 50%;
+    right: clamp(24px, 3vw, 72px);
+    width: 300px;
+    height: 340px;
+    margin-top: -170px;
+    perspective: 1000px;
+    pointer-events: none;
+  }
+}
+
+// il contenitore lo ruota hero-tilt.ts; dentro, la vista isometrica resta fissa
+.hero-arch__tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hero.is-tilting .hero-arch__tilt { transition-duration: 0.25s; }
+
+.hero-arch__scene {
+  position: relative;
+  width: var(--arch-size);
+  height: var(--arch-size);
+  transform-style: preserve-3d;
+  transform: translateY(calc(var(--arch-gap) * 1.2)) rotateX(58deg) rotateZ(-45deg);
+}
+
+.hero-arch__layer {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  border: 1px solid var(--arch-line);
+  border-radius: 10px;
+  background-color: var(--arch-fill);
+  background-image:
+    linear-gradient(var(--arch-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--arch-grid) 1px, transparent 1px);
+  background-size: 19px 19px;
+  background-position: -1px -1px;
+}
+.hero-arch__layer--client   { transform: translateZ(calc(var(--arch-gap) * 3)); }
+.hero-arch__layer--api      { transform: translateZ(calc(var(--arch-gap) * 2)); }
+.hero-arch__layer--services { transform: translateZ(var(--arch-gap)); }
+
+.hero-arch__label {
+  position: absolute;
+  left: 8px;
+  bottom: 7px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  // fondo pieno: le linee dei livelli sotto, viste in trasparenza, non attraversano il nome
+  background: var(--bg-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: color-mix(in srgb, var(--primary-500) 70%, var(--text-primary));
+}
+
+.hero-arch__node {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  transform-style: preserve-3d;
+  border: 1.5px solid var(--arch-line);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  box-shadow: inset 0 0 0 3px var(--arch-fill);
+}
+.hero-arch__node--a { left: 30%; top: 30%; }
+.hero-arch__node--b { left: 50%; top: 50%; }
+.hero-arch__node--c { left: 70%; top: 70%; }
+.hero-arch__node--store { border-radius: 50%; box-shadow: inset 0 0 0 3px var(--arch-fill), 0 0 0 3px var(--arch-fill); }
+
+// collegamento verticale: parte dal centro del nodo e scende fino al livello sotto
+.hero-arch__link {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: var(--arch-gap);
+  margin-left: -0.5px;
+  background: linear-gradient(var(--arch-line), color-mix(in srgb, var(--primary-500) 20%, transparent));
+  transform-origin: top center;
+  transform: rotateX(-90deg);
+}
+
+.hero-glow { display: none; }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hero-content {
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .hero.is-tilting .hero-content { transition-duration: 0.25s; }
+
+  // piani di profondità: la foto è la più vicina, la descrizione resta sul fondo
+  .hero-main,
+  .hero-main__text { transform-style: preserve-3d; }
+  .hero .hero-name { transform: translateZ(20px); }
+  .hero .hero-role { transform: translateZ(30px); }
+  .hero-avatar-wrap { transform: translateZ(60px); }
+  .hero-headline { transform: translateZ(40px); }
+  .hero-main .hero-actions { transform: translateZ(30px); }
+
+  .hero-glow {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 640px;
+    height: 640px;
+    margin: -320px 0 0 -320px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--primary-500) 16%, transparent), transparent 62%);
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .hero.is-tilting .hero-glow { opacity: 1; transition-duration: 0.4s, 0.15s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-arch__tilt { transition: none; }
+}
+
+/* ══ SEZIONI: stesso linguaggio dell'hero ═════════════
+   Etichetta a pillola con punto (come il ruolo nell'hero), titolo grande e stretto,
+   niente lineetta sotto il titolo, pulsanti e chip arrotondati, card più morbide. */
+.section-header { margin-bottom: 56px; }
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  background: rgba(99, 102, 241, 0.1);
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.section-tag__dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2), 0 0 10px rgba(167, 139, 250, 0.7);
+}
+
+.section-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  letter-spacing: -1.5px;
+  line-height: 1.08;
+}
+.section-line { display: none; }
+
+.btn { border-radius: 999px; }
+.project-tag { border-radius: 999px; }
+.glass-card { border-radius: 20px; }
+
+/* Chi sono senza foto: il testo occupa tutta la card */
+.about-intro { padding: 28px 32px; }
+@media (max-width: 640px) { .about-intro { padding: 20px; } }

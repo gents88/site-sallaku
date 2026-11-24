@@ -4172,6 +4172,9 @@
     "blog_all": "Tous les articles",
     "availability": "Je ne prends pas de nouvelles missions pour le moment, mais vous pouvez m'écrire pour une question ou une collaboration ; je réponds dès que possible.",
     "read_more": "Lire la suite",
-    "read_less": "Afficher moins"
+    "read_less": "Afficher moins",
+    "headline": "Je crée des expériences numériques",
+    "headline_lead": "Je crée des expériences",
+    "headline_accent": "numériques"
   }
 }
