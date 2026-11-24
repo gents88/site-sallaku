@@ -1,4 +1,17 @@
+# Un solo gruppo per tutti i crawler che possono leggere il sito, AI di ricerca compresi.
+# Sono nominati uno per uno (oltre a "*") così si vede a colpo d'occhio che non sono bloccati,
+# e condividono le stesse regole: un gruppo con un nome proprio ignora quelle di "*",
+# quindi i Disallow qui sotto valgono per tutti.
+#   OpenAI:      OAI-SearchBot (ricerca di ChatGPT), ChatGPT-User (pagina aperta da un utente)
+#   Perplexity:  PerplexityBot (ricerca), Perplexity-User (pagina aperta da un utente)
+#   Anthropic:   Claude-SearchBot (ricerca), Claude-User (pagina aperta da un utente)
 User-agent: *
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
 Allow: /
 
 # AI & PDF tool pages live under /lab/* (moved from /dashboard/*, 2026-08) —
