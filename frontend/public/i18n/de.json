@@ -256,7 +256,17 @@
     "q2": "Arbeiten Sie auch am Backend?",
     "a2": "Ja, ich habe auch Erfahrung mit .NET, Django, Python, NestJS und der Integration von REST- und GraphQL-API-Diensten.",
     "q4": "Wie kann ich Sie kontaktieren?",
-    "a4": "Sie können mir eine E-Mail senden, mich anrufen oder mich auf LinkedIn mit den Kontaktdaten im obigen Abschnitt erreichen."
+    "a4": "Sie können mir eine E-Mail senden, mich anrufen oder mich auf LinkedIn mit den Kontaktdaten im obigen Abschnitt erreichen.",
+    "q_who": "Wer ist Gent Sallaku?",
+    "a_who": "Ich bin Gent Sallaku, Senior Front-End & API Developer: Albaner aus Blinisht (Lezhë), wohnhaft in Italien. Ich arbeite mit Angular, TypeScript und NestJS und habe Enterprise-Anwendungen in Luft- und Raumfahrt, Verteidigung, Telekommunikation und Banking entwickelt.",
+    "q_merge": "Wie füge ich PDFs online zusammen, ohne sie hochzuladen?",
+    "a_merge": "Mit dem Tool PDF zusammenfügen im Lab: Dateien wählen, neu anordnen und das fertige PDF herunterladen. Die Dateien werden in deinem Browser verarbeitet, ohne Registrierung und ohne Upload auf einen Server.",
+    "q_compress": "Wie verkleinere ich ein PDF für den E-Mail-Versand?",
+    "a_compress": "Mit PDF komprimieren wählst du eine von drei Stufen und siehst sofort, wie viel Platz du sparst, damit die Datei in eine E-Mail oder ein Formular passt. Das PDF wird in deinem Browser verarbeitet und nicht hochgeladen.",
+    "q_heic": "Wie wandle ich HEIC-Fotos vom iPhone in JPG um?",
+    "a_heic": "Zieh die Fotos in das Tool HEIC in JPG: Sie werden im Browser umgewandelt, auch mehrere auf einmal, und einzeln oder als ZIP heruntergeladen. Eine Registrierung ist nicht nötig.",
+    "q_privacy": "Sind die Tools kostenlos? Sind meine Dateien sicher?",
+    "a_privacy": "Sie sind kostenlos und ohne Registrierung. Zusammenfügen, Komprimieren, Signieren, Fotos und QR-Codes laufen in deinem Browser. OCR und die KI-Tools senden das Dokument zur Verarbeitung an den Server: Nutze dafür keine vertraulichen Dateien."
   },
   "contact": {
     "tag": "contact",
@@ -2537,8 +2547,8 @@
     "go_lab": "Zum Lab"
   },
   "page_meta": {
-    "home_title": "Senior Front-End- & API-Entwickler",
-    "home_description": "Senior Front-End-Entwickler mit Schwerpunkt auf Angular, TypeScript, 3D-Datenvisualisierung und Enterprise-Architekturen.",
+    "home_title": "Angular-Entwickler & kostenlose PDF-Tools",
+    "home_description": "Senior-Front-End-Entwickler für Angular. Kostenlose Tools für PDF, Fotos und QR-Codes, ohne Registrierung und fast alle im Browser, ohne Dateien hochzuladen.",
     "blog_title": "Blog — Angular, TypeScript und Webentwicklung",
     "blog_description": "Artikel, Tutorials und Einblicke zu Angular, TypeScript, NestJS, Web-Performance, 3D-Visualisierungen und moderner Webentwicklung."
   },
@@ -4175,6 +4185,7 @@
     "read_less": "Weniger anzeigen",
     "headline": "Ich gestalte digitale Erlebnisse",
     "headline_lead": "Ich gestalte",
-    "headline_accent": "digitale Erlebnisse"
+    "headline_accent": "digitale Erlebnisse",
+    "h1_suffix": "Senior-Angular-Entwickler und Schöpfer kostenloser Tools"
   }
 }

@@ -617,6 +617,8 @@
   /* min(320px, 100%) evita overflow su schermi < 320px */
   grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 16px;
+  /* ogni domanda alta quanto il suo contenuto: con 8 domande, quelle chiuse non si allungano fino alla più alta della riga */
+  align-items: start;
 }
 
 .faq-item {
@@ -1497,3 +1499,16 @@ details[open] .faq-chevron { transform: rotate(180deg); color: var(--primary-400
 /* Chi sono senza foto: il testo occupa tutta la card */
 .about-intro { padding: 28px 32px; }
 @media (max-width: 640px) { .about-intro { padding: 20px; } }
+
+/* Testo dell'H1 letto da motori di ricerca e screen reader (il ruolo è già visibile nell'etichetta sotto il nome) */
+.hero-name__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
