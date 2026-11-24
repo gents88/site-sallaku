@@ -27,6 +27,7 @@ jobs:
 
       - name: Run sitemap generator
         run: |
+          cp frontend/public/sitemap.xml "$RUNNER_TEMP/prev-sitemap.xml" 2>/dev/null || true
           node scripts/generate-sitemap.js
 
       - name: Run RSS feed generator
@@ -46,3 +47,11 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # IndexNow: ogni notte avvisa Bing degli articoli nuovi o aggiornati (pubblicati dal CMS,
+      # quindi senza un push che faccia partire il rilascio). Solo dal giro programmato:
+      # ai push su main ci pensa già il job di deploy, così non si invia due volte.
+      - name: IndexNow
+        if: github.event_name == 'schedule'
+        continue-on-error: true
+        run: node scripts/indexnow.js frontend/public/sitemap.xml "$RUNNER_TEMP/prev-sitemap.xml"
