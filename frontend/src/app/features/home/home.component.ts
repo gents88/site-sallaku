@@ -321,18 +321,30 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
   }
 
+  /** Gli articoli più recenti, solo per l'elenco nei dati strutturati (non vengono mostrati). */
+  private schemaPosts: PostSummary[] = [];
+
+  /** Pagine pubbliche del Lab (strumenti e pagine per ricerca specifica), per i dati strutturati. */
+  private labPages(): { name: string; url: string }[] {
+    const lang = this.langService.current();
+    return NAV_REGISTRY
+      .filter(e => e.route.startsWith('/lab/') && e.access === 'public' && e.prerender)
+      .map(e => ({ name: String(this.translate.instant(e.searchTitleKey ?? e.labelKey)), url: `${SITE_ORIGIN}${withLangPrefix(e.route, lang)}` }))
+      .filter(p => p.name && !p.name.includes('.'));
+  }
+
   /** Argomenti extra letti dal sito (tecnologie di progetti ed esperienze, tag degli articoli): vanno solo nei dati strutturati. */
   private extraTopics: string[] = [];
 
-  /** Tecnologie fisse + argomenti letti dal sito, senza doppioni (maiuscole ignorate), al massimo 80. */
+  /** Tecnologie fisse + argomenti letti dal sito e nomi degli strumenti del Lab, senza doppioni (maiuscole ignorate), al massimo 150. */
   private topics(): string[] {
     const seen = new Set<string>();
     const out: string[] = [];
-    for (const t of [...this.techTags, ...this.extraTopics]) {
+    for (const t of [...this.techTags, ...this.extraTopics, ...this.labPages().map(p => p.name)]) {
       const k = t.trim().toLowerCase();
       if (k && !seen.has(k)) { seen.add(k); out.push(t.trim()); }
     }
-    return out.slice(0, 80);
+    return out.slice(0, 150);
   }
 
   private addTopics(list: string[]): void {
@@ -346,6 +358,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     // Tecnologie e argomenti che il sito mostra davvero (stack, progetti, esperienze, tag degli articoli):
     // sono dati per i motori di ricerca, non testo nascosto nella pagina.
     const topics = this.topics();
+    const lang = this.langService.current();
+    const labPages = this.labPages();
     this.seo.injectJsonLd([
       {
         '@context': 'https://schema.org',
@@ -369,7 +383,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         name: 'Gent Sallaku',
         description: 'Portfolio and blog of Gent Sallaku, Senior Front-End & API Developer',
         author: { '@id': 'https://gentsallaku.it/#person' },
-        keywords: topics.slice(0, 40).join(', '),
+        keywords: topics.slice(0, 60).join(', '),
         potentialAction: {
           '@type': 'SearchAction',
           target: {
@@ -379,6 +393,28 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           'query-input': 'required name=search_term_string',
         },
       },
+      // Elenco degli strumenti del Lab: nome e indirizzo di ogni pagina.
+      {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: this.translate.instant('home_v2.lab_title'),
+        numberOfItems: labPages.length,
+        itemListElement: labPages.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: p.url })),
+      },
+      // Elenco degli articoli più recenti, con estratto e tag: dice di cosa parla il blog.
+      ...(this.schemaPosts.length ? [{
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: this.translate.instant('home_v2.blog_title'),
+        numberOfItems: this.schemaPosts.length,
+        itemListElement: this.schemaPosts.map((post, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: localizedPostText(post, 'title', lang),
+          description: (localizedPostText(post, 'excerpt', lang) ?? '').slice(0, 200) || undefined,
+          url: `${SITE_ORIGIN}${withLangPrefix('/blog/' + localizedSlug(post, lang), lang)}`,
+        })),
+      }] : []),
       // FAQPage: le stesse domande e risposte che la sezione FAQ mostra in pagina (Google lo richiede),
       // nella lingua corrente. È ciò che le chat AI citano per "chi è" e "come si fa".
       {
@@ -401,7 +437,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe(res => {
       const posts = res?.data ?? [];
       this.latestPosts = posts.slice(0, 3);
+      this.schemaPosts = posts.slice(0, 20);
       this.addTopics(topTags(posts, 40));
+      this.injectHomeJsonLd();
       this.cdr.markForCheck();
     });
     // homepage/about/tech-stack/experience/skills/services all render this
