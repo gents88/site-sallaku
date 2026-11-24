@@ -25,9 +25,15 @@ const ROOT = path.resolve(__dirname, '..');
 const sharp = require(path.join(ROOT, 'backend/node_modules/sharp'));
 const ASSETS = path.join(ROOT, 'frontend/src/assets');
 
-/** source → { width, base }: rendered CSS width doubled for 2x displays. */
+/**
+ * source → { width, base }: rendered CSS width doubled for 2x displays.
+ * La foto del sito nasce da profil-naturale.jpeg: lo stesso scatto con il fondo bianco dello
+ * studio sostituito da un fondale grigio-ardesia (segmentazione Vision di macOS, bordi ripuliti
+ * dal bianco). profil.jpeg resta l'originale col fondo bianco: lo usa generate-og-image.js,
+ * che ritaglia la persona proprio grazie al bianco uniforme.
+ */
 const IMAGES = [
-  { src: 'profil.jpeg', base: 'profil', width: 440 },
+  { src: 'profil-naturale.jpeg', base: 'profil', width: 440 },
 ];
 
 async function build({ src, base, width }) {

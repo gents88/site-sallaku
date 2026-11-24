@@ -1,7 +1,37 @@
 <!-- ══ HERO ══════════════════════════════════════════ -->
 <section class="hero" id="homepage">
-  <div class="hero-bg-grid"></div>
-  <div class="hero-content">
+  <!-- 3D (decorativi, vedi "HERO 3D" nello SCSS): carta da progetto, alone che segue il mouse
+       e schema architetturale a livelli in isometria, solo su schermi larghi -->
+  <div class="hero-bg-grid" aria-hidden="true"></div>
+  <div class="hero-glow" aria-hidden="true" data-hero-glow></div>
+  <div class="hero-arch" aria-hidden="true">
+    <div class="hero-arch__tilt" data-hero-tilt="1.5">
+    <div class="hero-arch__scene">
+      <div class="hero-arch__layer hero-arch__layer--client">
+        <span class="hero-arch__label">client</span>
+        <span class="hero-arch__node hero-arch__node--a"><i class="hero-arch__link"></i></span>
+        <span class="hero-arch__node hero-arch__node--c"><i class="hero-arch__link"></i></span>
+      </div>
+      <div class="hero-arch__layer hero-arch__layer--api">
+        <span class="hero-arch__label">api</span>
+        <span class="hero-arch__node hero-arch__node--a"><i class="hero-arch__link"></i></span>
+        <span class="hero-arch__node hero-arch__node--c"><i class="hero-arch__link"></i></span>
+      </div>
+      <div class="hero-arch__layer hero-arch__layer--services">
+        <span class="hero-arch__label">services</span>
+        <span class="hero-arch__node hero-arch__node--a"><i class="hero-arch__link"></i></span>
+        <span class="hero-arch__node hero-arch__node--b"></span>
+        <span class="hero-arch__node hero-arch__node--c"><i class="hero-arch__link"></i></span>
+      </div>
+      <div class="hero-arch__layer hero-arch__layer--data">
+        <span class="hero-arch__label">data</span>
+        <span class="hero-arch__node hero-arch__node--a hero-arch__node--store"></span>
+        <span class="hero-arch__node hero-arch__node--c hero-arch__node--store"></span>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="hero-content" data-hero-tilt="0.5">
     <h1 class="hero-name">Gent <span class="text-gradient">Sallaku</span></h1>
     <p class="hero-role"><span class="hero-role__dot" aria-hidden="true"></span>{{ 'hero.role' | translate }}</p>
 
