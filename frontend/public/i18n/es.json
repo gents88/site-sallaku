@@ -256,7 +256,17 @@
     "q2": "¿También trabajas en backend?",
     "a2": "Sí, también tengo experiencia con .NET, Django, Python, NestJS e integración de servicios API REST y GraphQL.",
     "q4": "¿Cómo puedo contactarte?",
-    "a4": "Puedes enviarme un correo electrónico, llamarme o contactarme en LinkedIn usando los datos de la sección de contacto indicada arriba."
+    "a4": "Puedes enviarme un correo electrónico, llamarme o contactarme en LinkedIn usando los datos de la sección de contacto indicada arriba.",
+    "q_who": "¿Quién es Gent Sallaku?",
+    "a_who": "Soy Gent Sallaku, Senior Front-End & API Developer: albanés de Blinisht (Lezhë), vivo en Italia. Trabajo con Angular, TypeScript y NestJS y tengo experiencia en aplicaciones empresariales en aeroespacial, defensa, telecomunicaciones y banca.",
+    "q_merge": "¿Cómo se unen varios PDF online sin subirlos?",
+    "a_merge": "Con la herramienta Unir PDF del Lab: elige los archivos, reordénalos y descarga el PDF único. Los archivos se procesan en tu navegador, sin registro y sin subirlos a un servidor.",
+    "q_compress": "¿Cómo se reduce el peso de un PDF para enviarlo por correo?",
+    "a_compress": "Con Comprimir PDF eliges uno de tres niveles y ves al instante cuánto espacio ahorras, para que el archivo quepa en un correo o un formulario. El PDF se procesa en tu navegador y no se sube.",
+    "q_heic": "¿Cómo se convierten las fotos HEIC del iPhone a JPG?",
+    "a_heic": "Arrastra las fotos a la herramienta HEIC a JPG: se convierten en el navegador, también en grupo, y se descargan una a una o en un único ZIP. No hace falta registrarse.",
+    "q_privacy": "¿Las herramientas son gratis? ¿Mis archivos están seguros?",
+    "a_privacy": "Son gratuitas y sin registro. Unir, comprimir, firmar, fotos y códigos QR funcionan en tu navegador. El OCR y las herramientas con IA envían el documento al servidor para procesarlo: con esas, evita archivos confidenciales."
   },
   "contact": {
     "tag": "contact",
@@ -2537,8 +2547,8 @@
     "go_lab": "Ir al Lab"
   },
   "page_meta": {
-    "home_title": "Desarrollador Senior Front-End y API",
-    "home_description": "Desarrollador Senior Front-End especializado en Angular, TypeScript, visualización de datos 3D y arquitecturas empresariales.",
+    "home_title": "Desarrollador Angular y herramientas PDF gratis",
+    "home_description": "Desarrollador front-end Angular senior. Herramientas gratuitas para PDF, fotos y códigos QR, sin registro y casi todas en tu navegador, sin subir archivos.",
     "blog_title": "Blog — Angular, TypeScript y desarrollo web",
     "blog_description": "Artículos, tutoriales y análisis sobre Angular, TypeScript, NestJS, rendimiento web, visualizaciones 3D y desarrollo moderno."
   },
@@ -4175,6 +4185,7 @@
     "read_less": "Mostrar menos",
     "headline": "Creo experiencias digitales",
     "headline_lead": "Creo experiencias",
-    "headline_accent": "digitales"
+    "headline_accent": "digitales",
+    "h1_suffix": "desarrollador Angular senior y creador de herramientas gratuitas"
   }
 }

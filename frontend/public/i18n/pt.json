@@ -256,7 +256,17 @@
     "q2": "Você também trabalha com backend?",
     "a2": "Sim, também tenho experiência com .NET, Django, Python, NestJS e integração de serviços de API REST e GraphQL.",
     "q4": "Como posso entrar em contato?",
-    "a4": "Você pode me enviar um email, me ligar ou me contatar no LinkedIn usando as informações na seção de contato acima."
+    "a4": "Você pode me enviar um email, me ligar ou me contatar no LinkedIn usando as informações na seção de contato acima.",
+    "q_who": "Quem é Gent Sallaku?",
+    "a_who": "Sou Gent Sallaku, Senior Front-End & API Developer: albanês de Blinisht (Lezhë), a viver em Itália. Trabalho com Angular, TypeScript e NestJS e tenho experiência em aplicações empresariais nos setores aeroespacial, defesa, telecomunicações e banca.",
+    "q_merge": "Como juntar vários PDF online sem os enviar?",
+    "a_merge": "Com a ferramenta Juntar PDF do Lab: escolha os ficheiros, reordene-os e descarregue o PDF único. Os ficheiros são processados no seu navegador, sem registo e sem os enviar para um servidor.",
+    "q_compress": "Como reduzir o tamanho de um PDF para o enviar por e-mail?",
+    "a_compress": "Com Comprimir PDF escolhe um de três níveis e vê logo quanto espaço poupa, para o ficheiro caber num e-mail ou num formulário. O PDF é processado no seu navegador e não é enviado.",
+    "q_heic": "Como converter as fotos HEIC do iPhone em JPG?",
+    "a_heic": "Arraste as fotos para a ferramenta HEIC para JPG: são convertidas no navegador, também em grupo, e descarregam-se uma a uma ou num único ZIP. Não é preciso registo.",
+    "q_privacy": "As ferramentas são gratuitas? Os meus ficheiros estão seguros?",
+    "a_privacy": "São gratuitas e sem registo. Juntar, comprimir, assinar, fotos e códigos QR funcionam no seu navegador. O OCR e as ferramentas com IA enviam o documento ao servidor para o processar: nesses, evite ficheiros confidenciais."
   },
   "contact": {
     "tag": "contact",
@@ -2537,8 +2547,8 @@
     "go_lab": "Ir para o Lab"
   },
   "page_meta": {
-    "home_title": "Desenvolvedor Sênior Front-End e API",
-    "home_description": "Desenvolvedor Sênior Front-End especializado em Angular, TypeScript, visualização de dados 3D e arquiteturas corporativas.",
+    "home_title": "Programador Angular e ferramentas PDF grátis",
+    "home_description": "Programador front-end Angular sénior. Ferramentas gratuitas para PDF, fotos e códigos QR, sem registo e quase todas no navegador, sem enviar ficheiros.",
     "blog_title": "Blog — Angular, TypeScript e desenvolvimento web",
     "blog_description": "Artigos, tutoriais e análises sobre Angular, TypeScript, NestJS, desempenho web, visualizações 3D e desenvolvimento moderno."
   },
@@ -4175,6 +4185,7 @@
     "read_less": "Mostrar menos",
     "headline": "Crio experiências digitais",
     "headline_lead": "Crio experiências",
-    "headline_accent": "digitais"
+    "headline_accent": "digitais",
+    "h1_suffix": "programador Angular sénior e criador de ferramentas gratuitas"
   }
 }
