@@ -60,6 +60,16 @@
             [attr.aria-expanded]="heroExpanded" aria-controls="hero-description">
       {{ (heroExpanded ? 'home_v2.read_less' : 'home_v2.read_more') | translate }}
     </button>
+
+    <!-- Parole chiave: le tecnologie che uso e gli strumenti del Lab (questi ultimi sono link interni alle pagine). -->
+    <ul class="hero-tags" [attr.aria-label]="'home_v2.tags_label' | translate">
+      @for (tag of techTags; track tag) {
+        <li class="hero-tag">{{ tag }}</li>
+      }
+      @for (tag of toolTags; track tag.route) {
+        <li><a class="hero-tag hero-tag--tool" [routerLink]="tag.route | langUrl" appTrackClick eventType="cta" [label]="'hero_tag_' + tag.id" [destination]="tag.route">{{ 'home_v2.' + tag.key | translate }}</a></li>
+      }
+    </ul>
   </div>
   <div class="hero-scroll-indicator">
     <div class="scroll-mouse"><div class="scroll-wheel"></div></div>

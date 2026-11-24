@@ -4186,6 +4186,12 @@
     "headline": "Ich gestalte digitale Erlebnisse",
     "headline_lead": "Ich gestalte",
     "headline_accent": "digitale Erlebnisse",
-    "h1_suffix": "Senior-Angular-Entwickler und Schöpfer kostenloser Tools"
+    "h1_suffix": "Senior-Angular-Entwickler und Schöpfer kostenloser Tools",
+    "tags_label": "Technologien und Tools",
+    "tag_pdf": "Kostenlose PDF-Tools",
+    "tag_ocr": "OCR online",
+    "tag_qr": "QR-Code",
+    "tag_photo": "HEIC- & JPG-Fotos",
+    "tag_convert": "Dateikonverter"
   }
 }

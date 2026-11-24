@@ -4186,6 +4186,12 @@
     "headline": "Creating digital experiences",
     "headline_lead": "Creating",
     "headline_accent": "digital experiences",
-    "h1_suffix": "senior Angular developer and creator of free tools"
+    "h1_suffix": "senior Angular developer and creator of free tools",
+    "tags_label": "Technologies and tools",
+    "tag_pdf": "Free PDF tools",
+    "tag_ocr": "Online OCR",
+    "tag_qr": "QR code",
+    "tag_photo": "HEIC & JPG photos",
+    "tag_convert": "File converter"
   }
 }

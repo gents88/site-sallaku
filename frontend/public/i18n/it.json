@@ -4186,6 +4186,12 @@
     "headline": "Creo esperienze digitali",
     "headline_lead": "Creo esperienze",
     "headline_accent": "digitali",
-    "h1_suffix": "sviluppatore Angular senior e creatore di strumenti gratuiti"
+    "h1_suffix": "sviluppatore Angular senior e creatore di strumenti gratuiti",
+    "tags_label": "Tecnologie e strumenti",
+    "tag_pdf": "Strumenti PDF gratuiti",
+    "tag_ocr": "OCR online",
+    "tag_qr": "QR code",
+    "tag_photo": "Foto HEIC e JPG",
+    "tag_convert": "Convertitore file"
   }
 }

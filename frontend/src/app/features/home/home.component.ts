@@ -222,6 +222,21 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: 'api',      icon: 'api',             colorClass: 'color-green'  },
   ];
 
+  /** Tecnologie e temi mostrati come etichette sotto l'hero: nomi propri, uguali in tutte le lingue. */
+  readonly techTags = [
+    'Angular', 'TypeScript', 'JavaScript', 'RxJS', 'NestJS', 'Node.js', 'REST API', 'GraphQL',
+    'Data Visualization', '3D Web', 'Cesium.js', 'WebGL', 'Django', '.NET', 'Docker', 'CI/CD',
+  ];
+
+  /** Gli strumenti del Lab più cercati: etichette che portano alla loro pagina. */
+  readonly toolTags: { id: string; route: string; key: string }[] = [
+    { id: 'pdf', route: '/lab', key: 'tag_pdf' },
+    { id: 'ocr', route: '/lab/ocr', key: 'tag_ocr' },
+    { id: 'qr', route: '/lab/qr-code', key: 'tag_qr' },
+    { id: 'photo', route: '/lab/image-tools', key: 'tag_photo' },
+    { id: 'convert', route: '/lab/convert', key: 'tag_convert' },
+  ];
+
   readonly faqItems: FaqItem[] = [
     { qKey: 'faq.q_who', aKey: 'faq.a_who' },
     { qKey: 'faq.q1', aKey: 'faq.a1' },

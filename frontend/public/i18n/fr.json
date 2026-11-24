@@ -4186,6 +4186,12 @@
     "headline": "Je crée des expériences numériques",
     "headline_lead": "Je crée des expériences",
     "headline_accent": "numériques",
-    "h1_suffix": "développeur Angular senior et créateur d'outils gratuits"
+    "h1_suffix": "développeur Angular senior et créateur d'outils gratuits",
+    "tags_label": "Technologies et outils",
+    "tag_pdf": "Outils PDF gratuits",
+    "tag_ocr": "OCR en ligne",
+    "tag_qr": "QR code",
+    "tag_photo": "Photos HEIC et JPG",
+    "tag_convert": "Convertisseur de fichiers"
   }
 }
