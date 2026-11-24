@@ -3,19 +3,21 @@
   <div class="hero-bg-grid"></div>
   <div class="hero-content">
     <h1 class="hero-name">Gent <span class="text-gradient">Sallaku</span></h1>
-    <p class="hero-role">{{ 'hero.role' | translate }}</p>
+    <p class="hero-role"><span class="hero-role__dot" aria-hidden="true"></span>{{ 'hero.role' | translate }}</p>
 
     <div class="hero-main">
       <!-- La stessa foto della sezione Chi sono (sfondo chiaro originale), in un cerchio. -->
+      <div class="hero-avatar-wrap">
       <picture class="hero-avatar">
         <source srcset="assets/profil.avif" type="image/avif" />
         <source srcset="assets/profil.webp" type="image/webp" />
         <img src="assets/profil-440.jpg" alt="Gent Sallaku" width="220" height="210" fetchpriority="high" decoding="async" />
       </picture>
+      </div>
       <div class="hero-main__text">
-        <p class="hero-headline">{{ 'home_v2.headline' | translate }}</p>
+        <p class="hero-headline">{{ 'home_v2.headline_lead' | translate }} <span class="text-gradient">{{ 'home_v2.headline_accent' | translate }}</span></p>
         <div class="hero-actions">
-          <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}</a>
+          <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}<mat-icon aria-hidden="true">arrow_forward</mat-icon></a>
           <a href="#projects" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="hero_projects">{{ 'home_v2.cta_projects' | translate }}</a>
         </div>
       </div>
