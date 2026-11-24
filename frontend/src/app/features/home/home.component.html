@@ -2,17 +2,25 @@
 <section class="hero" id="homepage">
   <div class="hero-bg-grid"></div>
   <div class="hero-content">
-    <h1 class="hero-name">
-      Gent <span class="text-gradient">Sallaku</span>
-    </h1>
-    <h2 class="hero-role">{{ 'hero.role' | translate }}</h2>
-    <div class="hero-tagline">
-      <span class="tag">{{ 'hero.tagline1' | translate }}</span>
-      <span class="tag-separator">|</span>
-      <span class="tag">{{ 'hero.tagline2' | translate }}</span>
-      <span class="tag-separator">|</span>
-      <span class="tag">{{ 'hero.tagline3' | translate }}</span>
+    <h1 class="hero-name">Gent <span class="text-gradient">Sallaku</span></h1>
+    <p class="hero-role">{{ 'hero.role' | translate }}</p>
+
+    <div class="hero-main">
+      <!-- La stessa foto della sezione Chi sono (sfondo chiaro originale), in un cerchio. -->
+      <picture class="hero-avatar">
+        <source srcset="assets/profil.avif" type="image/avif" />
+        <source srcset="assets/profil.webp" type="image/webp" />
+        <img src="assets/profil-440.jpg" alt="Gent Sallaku" width="220" height="210" fetchpriority="high" decoding="async" />
+      </picture>
+      <div class="hero-main__text">
+        <p class="hero-headline">{{ 'home_v2.headline' | translate }}</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}</a>
+          <a href="#projects" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="hero_projects">{{ 'home_v2.cta_projects' | translate }}</a>
+        </div>
+      </div>
     </div>
+
     <p class="hero-description" [class.is-collapsed]="!heroExpanded" id="hero-description">
       {{ 'hero.description' | translate }}
     </p>
@@ -20,11 +28,6 @@
             [attr.aria-expanded]="heroExpanded" aria-controls="hero-description">
       {{ (heroExpanded ? 'home_v2.read_less' : 'home_v2.read_more') | translate }}
     </button>
-    <p class="hero-note">{{ 'home_v2.hero_line' | translate }}</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}</a>
-      <a href="#projects" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="hero_projects">{{ 'home_v2.cta_projects' | translate }}</a>
-    </div>
   </div>
   <div class="hero-scroll-indicator">
     <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
