@@ -20,6 +20,7 @@ import { LangUrlPipe } from '../../shared/pipes/lang-url.pipe';
 import { SocialShareComponent } from '../../shared/components/social-share/social-share.component';
 import { TestimonialsWallComponent } from '../../shared/components/testimonials-wall/testimonials-wall.component';
 import { consumePreScroll, jumpToSection, sectionForUrl } from './jump-to-section';
+import { initHeroTilt } from './hero-tilt';
 import { BlogService } from '../../core/services/blog.service';
 import { PostSummary, localizedPostText, localizedSlug } from '../../core/models/post.model';
 import { NavIconComponent } from '../../shared/components/nav-icon/nav-icon.component';
@@ -49,6 +50,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private observer: IntersectionObserver | null = null;
   private scrollTimer: ReturnType<typeof setTimeout> | null = null;
+  /** Toglie l'inclinazione 3D dell'hero (vedi hero-tilt.ts). */
+  private stopHeroTilt: (() => void) | null = null;
   private readonly platformId = inject(PLATFORM_ID);
   /** La sezione Testimonianze esiste solo se ce n'è almeno una pubblicata. */
   readonly hasTestimonials = inject(TestimonialsService).hasPublic();
@@ -362,6 +365,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
     document.querySelectorAll('.reveal').forEach(el => this.observer?.observe(el));
 
+    // Hero in 3D: si inclina verso il mouse (solo con hover vero e senza "riduci movimento").
+    const hero = document.getElementById('homepage');
+    if (hero) this.stopHeroTilt = initHeroTilt(hero);
+
     // /about → #about, /tech-stack → #tech-stack ecc., anche con il prefisso lingua
     // (prima /en/about restava sull'hero). Al caricamento diretto la pagina è già
     // stata posizionata dallo script inline di index.html, prima del primo paint.
@@ -401,6 +408,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
+    this.stopHeroTilt?.();
+    this.stopHeroTilt = null;
     if (this.scrollTimer !== null) {
       clearTimeout(this.scrollTimer);
       this.scrollTimer = null;
