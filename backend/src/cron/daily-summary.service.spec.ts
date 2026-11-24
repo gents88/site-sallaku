@@ -56,7 +56,9 @@ function build(opts: { overview?: any | null; visits?: any; contactsByDay?: any;
     } as any,
     { send } as any, renderer, {} as any, overview as any,
   );
-  const run = () => (service as any).gatherAndSend(new Date());
+  // Ora fissa: i dati finti sono del 23/11, con l'ora reale il test passava solo quel giorno (CI rossa dal 24/11).
+  const NOW = new Date('2026-11-23T21:00:00Z'); // 22:00 a Roma, quando parte l'email
+  const run = () => (service as any).gatherAndSend(NOW);
   return { run, send, analyticsQuery, overview };
 }
 
