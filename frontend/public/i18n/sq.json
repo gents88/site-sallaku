@@ -4172,6 +4172,7 @@
     "blog_all": "Të gjithë artikujt",
     "availability": "Tani për tani nuk pranoj projekte të reja, por mund të më shkruash për një pyetje ose bashkëpunim; përgjigjem sapo mundem.",
     "read_more": "Lexo më shumë",
-    "read_less": "Trego më pak"
+    "read_less": "Trego më pak",
+    "headline": "Krijoj përvoja digjitale me Angular dhe NestJS"
   }
 }
