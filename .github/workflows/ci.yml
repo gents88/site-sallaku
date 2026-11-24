@@ -308,3 +308,22 @@ jobs:
         env:
           PLESK_SSH: ${{ vars.PLESK_SSH }}
         run: ./scripts/release-frontend-plesk.sh "$RUNNER_TEMP/frontend-dist"
+
+      # IndexNow: dopo il rilascio (il file chiave è già online) avvisa Bing e gli altri
+      # motori delle pagine nuove o cambiate rispetto all'ultimo push su main.
+      # Senza la sitemap precedente (primo invio) le manda tutte. Non blocca mai il rilascio.
+      - name: IndexNow
+        continue-on-error: true
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          PREV="$RUNNER_TEMP/prev-sitemap.xml"
+          KEYFILE=$(ls frontend/public | grep -E '^[a-f0-9]{32}[.]txt$' | head -1)
+          # Solo i cambiati se il commit precedente aveva già la stessa chiave; altrimenti (prima adozione o chiave nuova) tutti.
+          if git fetch -q --depth=1 origin "$BEFORE" 2>/dev/null \
+             && git cat-file -e "$BEFORE:frontend/public/$KEYFILE" 2>/dev/null \
+             && git show "$BEFORE:frontend/public/sitemap.xml" > "$PREV" 2>/dev/null; then
+            node scripts/indexnow.js frontend/public/sitemap.xml "$PREV"
+          else
+            node scripts/indexnow.js frontend/public/sitemap.xml
+          fi
