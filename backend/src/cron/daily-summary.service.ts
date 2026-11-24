@@ -179,7 +179,7 @@ export class DailySummaryService {
       || 'gentsallaku@gmail.com';
 
     // Confronti, "Da fare domani" e Search Console: un blocco che fallisce si salta, l'email parte comunque.
-    const extras = await this.gatherExtras();
+    const extras = await this.gatherExtras(now);
     const todo = buildTodo({
       now,
       notifications: extras.notifications,
@@ -409,7 +409,7 @@ export class DailySummaryService {
    * Dati per i blocchi nuovi dell'email. Ognuno è indipendente: se uno fallisce si registra un avviso e il blocco
    * manca, ma l'email parte comunque (il riepilogo delle 22:00 non deve saltare per un dato in più).
    */
-  private async gatherExtras(): Promise<{
+  private async gatherExtras(now: Date): Promise<{
     viewsTrend: Trend | null;
     contactsTrend: Trend | null;
     notifications: Awaited<ReturnType<AdminOverviewService['notificationSummary']>> | null;
@@ -426,7 +426,8 @@ export class DailySummaryService {
     };
 
     // 8 giorni: oggi, ieri e i 6 precedenti per la media.
-    const dayStart = new Date();
+    // Inizio del giorno dell'email (non dell'ora attuale): conta anche se il riepilogo viene rigenerato dopo mezzanotte.
+    const dayStart = new Date(now);
     dayStart.setHours(0, 0, 0, 0);
     const [visits, contactDays, notifications, overview, chatPage] = await Promise.all([
       safe('andamento visite', () => this.analyticsQuery.getVisitSummary(8)),
