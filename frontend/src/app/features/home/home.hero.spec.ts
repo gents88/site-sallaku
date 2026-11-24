@@ -87,3 +87,15 @@ describe('Home: niente numeri non dimostrabili né dati personali superflui', ()
     expect(render(true).querySelector('#testimonials')).not.toBeNull();
   });
 });
+
+describe("Home: nessuna etichetta di parole chiave nell'interfaccia", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  // Le parole chiave stanno solo nei dati strutturati (home.seo.spec): la pagina non mostra elenchi di etichette.
+  it('l\'hero non ha etichette di parole chiave', () => {
+    const el = render(false);
+    expect(el.querySelector('.hero-tags')).toBeNull();
+    expect(el.querySelector('.hero-tag')).toBeNull();
+    expect(el.querySelector('.hero-tags-more')).toBeNull();
+  });
+});
