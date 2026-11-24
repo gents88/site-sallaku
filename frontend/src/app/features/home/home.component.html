@@ -1,18 +1,58 @@
 <!-- ══ HERO ══════════════════════════════════════════ -->
 <section class="hero" id="homepage">
-  <div class="hero-bg-grid"></div>
-  <div class="hero-content">
-    <h1 class="hero-name">
-      Gent <span class="text-gradient">Sallaku</span>
-    </h1>
-    <h2 class="hero-role">{{ 'hero.role' | translate }}</h2>
-    <div class="hero-tagline">
-      <span class="tag">{{ 'hero.tagline1' | translate }}</span>
-      <span class="tag-separator">|</span>
-      <span class="tag">{{ 'hero.tagline2' | translate }}</span>
-      <span class="tag-separator">|</span>
-      <span class="tag">{{ 'hero.tagline3' | translate }}</span>
+  <!-- 3D (decorativi, vedi "HERO 3D" nello SCSS): carta da progetto, alone che segue il mouse
+       e schema architetturale a livelli in isometria, solo su schermi larghi -->
+  <div class="hero-bg-grid" aria-hidden="true"></div>
+  <div class="hero-glow" aria-hidden="true" data-hero-glow></div>
+  <div class="hero-arch" aria-hidden="true">
+    <div class="hero-arch__tilt" data-hero-tilt="1.5">
+    <div class="hero-arch__scene">
+      <div class="hero-arch__layer hero-arch__layer--client">
+        <span class="hero-arch__label">client</span>
+        <span class="hero-arch__node hero-arch__node--a"><i class="hero-arch__link"></i></span>
+        <span class="hero-arch__node hero-arch__node--c"><i class="hero-arch__link"></i></span>
+      </div>
+      <div class="hero-arch__layer hero-arch__layer--api">
+        <span class="hero-arch__label">api</span>
+        <span class="hero-arch__node hero-arch__node--a"><i class="hero-arch__link"></i></span>
+        <span class="hero-arch__node hero-arch__node--c"><i class="hero-arch__link"></i></span>
+      </div>
+      <div class="hero-arch__layer hero-arch__layer--services">
+        <span class="hero-arch__label">services</span>
+        <span class="hero-arch__node hero-arch__node--a"><i class="hero-arch__link"></i></span>
+        <span class="hero-arch__node hero-arch__node--b"></span>
+        <span class="hero-arch__node hero-arch__node--c"><i class="hero-arch__link"></i></span>
+      </div>
+      <div class="hero-arch__layer hero-arch__layer--data">
+        <span class="hero-arch__label">data</span>
+        <span class="hero-arch__node hero-arch__node--a hero-arch__node--store"></span>
+        <span class="hero-arch__node hero-arch__node--c hero-arch__node--store"></span>
+      </div>
     </div>
+    </div>
+  </div>
+  <div class="hero-content" data-hero-tilt="0.5">
+    <h1 class="hero-name">Gent <span class="text-gradient">Sallaku</span></h1>
+    <p class="hero-role"><span class="hero-role__dot" aria-hidden="true"></span>{{ 'hero.role' | translate }}</p>
+
+    <div class="hero-main">
+      <!-- La stessa foto della sezione Chi sono (sfondo chiaro originale), in un cerchio. -->
+      <div class="hero-avatar-wrap">
+      <picture class="hero-avatar">
+        <source srcset="assets/profil.avif" type="image/avif" />
+        <source srcset="assets/profil.webp" type="image/webp" />
+        <img src="assets/profil-440.jpg" alt="Gent Sallaku" width="220" height="210" fetchpriority="high" decoding="async" />
+      </picture>
+      </div>
+      <div class="hero-main__text">
+        <p class="hero-headline">{{ 'home_v2.headline_lead' | translate }} <span class="text-gradient">{{ 'home_v2.headline_accent' | translate }}</span></p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}<mat-icon aria-hidden="true">arrow_forward</mat-icon></a>
+          <a href="#projects" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="hero_projects">{{ 'home_v2.cta_projects' | translate }}</a>
+        </div>
+      </div>
+    </div>
+
     <p class="hero-description" [class.is-collapsed]="!heroExpanded" id="hero-description">
       {{ 'hero.description' | translate }}
     </p>
@@ -20,11 +60,6 @@
             [attr.aria-expanded]="heroExpanded" aria-controls="hero-description">
       {{ (heroExpanded ? 'home_v2.read_less' : 'home_v2.read_more') | translate }}
     </button>
-    <p class="hero-note">{{ 'home_v2.hero_line' | translate }}</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" [routerLink]="'/lab' | langUrl" appTrackClick eventType="cta" label="hero_tools" destination="/lab">{{ 'home_v2.cta_tools' | translate }}</a>
-      <a href="#projects" class="btn btn-outline" (click)="scrollToSection('projects', $event)" appTrackClick eventType="cta" label="hero_projects">{{ 'home_v2.cta_projects' | translate }}</a>
-    </div>
   </div>
   <div class="hero-scroll-indicator">
     <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
@@ -36,27 +71,12 @@
 <section class="section" id="about">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'about.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'about.tag' | translate }}</span>
       <h2 class="section-title">{{ 'about.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
 
     <div class="about-intro reveal">
-      <div class="about-photo">
-        <figure>
-          <!-- Rendered at 220px wide; the sources are 440px for 2x displays.
-               The original 800x765 JPEG was 102KB to fill a 220px box — AVIF
-               at the same visible quality is 8KB. width/height match the real
-               800:765 aspect ratio so the box is reserved before load (CLS).
-               Regenerate with scripts/optimize-images.js. -->
-          <picture>
-            <source srcset="assets/profil.avif" type="image/avif" />
-            <source srcset="assets/profil.webp" type="image/webp" />
-            <img src="assets/profil-440.jpg" alt="Gent Sallaku" class="profile-photo"
-                 width="220" height="210" loading="lazy" decoding="async" />
-          </picture>
-        </figure>
-      </div>
       <div class="about-body">
         <div class="about-summary">
           <div class="profile-heading">
@@ -141,7 +161,7 @@
 <section class="section section-alt" id="lab">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'home_v2.lab_tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'home_v2.lab_tag' | translate }}</span>
       <h2 class="section-title">{{ 'home_v2.lab_title' | translate }}</h2>
       <div class="section-line"></div>
       <p class="section-subtitle reveal">{{ 'home_v2.lab_lead' | translate }}</p>
@@ -177,7 +197,7 @@
 <section class="section section-alt" id="tech-stack">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'tech.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'tech.tag' | translate }}</span>
       <h2 class="section-title">{{ 'tech.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
@@ -203,7 +223,7 @@
 <section class="section" id="projects">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'projects.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'projects.tag' | translate }}</span>
       <h2 class="section-title">{{ 'projects.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
@@ -258,7 +278,7 @@
 <section class="section" id="latest-posts">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'home_v2.blog_tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'home_v2.blog_tag' | translate }}</span>
       <h2 class="section-title">{{ 'home_v2.blog_title' | translate }}</h2>
       <div class="section-line"></div>
       <p class="section-subtitle reveal">{{ 'home_v2.blog_lead' | translate }}</p>
@@ -295,7 +315,7 @@
 <section class="section section-alt" id="services">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'services.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'services.tag' | translate }}</span>
       <h2 class="section-title">{{ 'services.title' | translate }}</h2>
       <div class="section-line"></div>
       <p class="section-subtitle reveal">{{ 'services.subtitle' | translate }}</p>
@@ -323,7 +343,7 @@
 <section class="section section-alt" id="experience">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'experience.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'experience.tag' | translate }}</span>
       <h2 class="section-title">{{ 'experience.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
@@ -371,7 +391,7 @@
 <section class="section" id="skills">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'skills.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'skills.tag' | translate }}</span>
       <h2 class="section-title">{{ 'skills.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
@@ -416,7 +436,7 @@
 <section class="section section-alt" id="faq">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'faq.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'faq.tag' | translate }}</span>
       <h2 class="section-title">{{ 'faq.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
@@ -442,7 +462,7 @@
 <section class="section section-alt" id="contact">
   <div class="container">
     <div class="section-header reveal">
-      <span class="section-tag">&lt;{{ 'contact.tag' | translate }}&gt;</span>
+      <span class="section-tag"><span class="section-tag__dot" aria-hidden="true"></span>{{ 'contact.tag' | translate }}</span>
       <h2 class="section-title">{{ 'contact.title' | translate }}</h2>
       <div class="section-line"></div>
     </div>
