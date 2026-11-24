@@ -1,0 +1,27 @@
+name: IndexNow (invio manuale)
+
+# Rimanda a Bing e agli altri motori TUTTE le pagine della sitemap. Serve quando l'invio automatico
+# dopo un rilascio non è andato a buon fine: la prima volta Bing risponde 403 "SiteVerificationNotCompleted"
+# finché non ha verificato il file chiave, e i rilasci successivi inviano solo le pagine cambiate.
+# Uso: Actions → "IndexNow (invio manuale)" → Run workflow (branch main).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      # --strict: se Bing rifiuta, il job diventa rosso e il motivo si legge nel log.
+      - name: Invia tutte le pagine
+        run: node scripts/indexnow.js frontend/public/sitemap.xml --all --strict
