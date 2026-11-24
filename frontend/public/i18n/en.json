@@ -256,7 +256,17 @@
     "q2": "Do you also work on backend?",
     "a2": "Yes, I also have experience with .NET, Django, Python, NestJS and integration of REST and GraphQL API services.",
     "q4": "How can I contact you?",
-    "a4": "You can email me, send PEC, call me or reach me on LinkedIn using the contacts in the section above."
+    "a4": "You can email me, send PEC, call me or reach me on LinkedIn using the contacts in the section above.",
+    "q_who": "Who is Gent Sallaku?",
+    "a_who": "I'm Gent Sallaku, a Senior Front-End & API Developer: Albanian, from Blinisht (Lezhë), living in Italy. I work with Angular, TypeScript and NestJS and have built enterprise applications in aerospace, defence, telecoms and banking.",
+    "q_merge": "How do I merge PDFs online without uploading them?",
+    "a_merge": "Use the Merge PDF tool in the Lab: pick the files, reorder them and download the single PDF. Files are processed in your browser, with no sign-up and no upload to a server.",
+    "q_compress": "How do I reduce a PDF's size to send it by email?",
+    "a_compress": "With Compress PDF you pick one of three levels and see right away how much space you save, so the file fits in an email or a form. The PDF is processed in your browser and is not uploaded.",
+    "q_heic": "How do I convert iPhone HEIC photos to JPG?",
+    "a_heic": "Drop your photos into the HEIC to JPG tool: they convert in your browser, in batches too, and download one by one or as a single ZIP. No sign-up needed.",
+    "q_privacy": "Are the tools free? Are my files safe?",
+    "a_privacy": "They are free and need no sign-up. Merge, compress, sign, photo and QR code tools run in your browser. OCR and the AI tools send the document to the server to process it, so avoid confidential files with those."
   },
   "contact": {
     "tag": "contact",
@@ -2537,8 +2547,8 @@
     "go_lab": "Go to the Lab"
   },
   "page_meta": {
-    "home_title": "Senior Front-End & API Developer",
-    "home_description": "Senior Front-End Developer specialising in Angular, TypeScript, 3D data visualization and enterprise architectures.",
+    "home_title": "Angular Developer & Free PDF Tools",
+    "home_description": "Senior front-end Angular developer. Free tools for PDF, photos and QR codes, no sign-up and most of them running in your browser, with no file upload.",
     "blog_title": "Blog — Angular, TypeScript and web development",
     "blog_description": "Articles, tutorials and insights on Angular, TypeScript, NestJS, web performance, 3D visualizations and modern development."
   },
@@ -4175,6 +4185,7 @@
     "read_less": "Show less",
     "headline": "Creating digital experiences",
     "headline_lead": "Creating",
-    "headline_accent": "digital experiences"
+    "headline_accent": "digital experiences",
+    "h1_suffix": "senior Angular developer and creator of free tools"
   }
 }

@@ -256,7 +256,17 @@
     "q2": "A punon edhe me backend?",
     "a2": "Po, kam eksperiencë edhe me .NET, Django, Python, NestJS dhe integrim të shërbimeve API REST dhe GraphQL.",
     "q4": "Si mund të kontaktoj me ty?",
-    "a4": "Mund të më shkruash me email, PEC, të më telefonosh ose të më kontaktosh në LinkedIn duke përdorur kontaktet në seksionin më sipër."
+    "a4": "Mund të më shkruash me email, PEC, të më telefonosh ose të më kontaktosh në LinkedIn duke përdorur kontaktet në seksionin më sipër.",
+    "q_who": "Kush është Gent Sallaku?",
+    "a_who": "Jam Gent Sallaku, Senior Front-End & API Developer: shqiptar nga Blinishti (Lezhë), jetoj në Itali. Punoj me Angular, TypeScript dhe NestJS dhe kam përvojë në aplikacione ndërmarrjesh në sektorët e aerospacës, mbrojtjes, telekomunikacionit dhe bankave.",
+    "q_merge": "Si bashkohen disa PDF online pa i ngarkuar?",
+    "a_merge": "Me mjetin Bashko PDF të Lab-it: zgjidh skedarët, rirenditi dhe shkarko PDF-në e vetme. Skedarët përpunohen në shfletuesin tënd, pa regjistrim dhe pa u ngarkuar në server.",
+    "q_compress": "Si zvogëlohet madhësia e një PDF për ta dërguar me email?",
+    "a_compress": "Me Ngjeshje PDF zgjedh një nga tri nivelet dhe shikon menjëherë sa hapësirë kurseh, që skedari të futet në një email ose formular. PDF-ja përpunohet në shfletuesin tënd dhe nuk ngarkohet.",
+    "q_heic": "Si konvertohen fotot HEIC të iPhone në JPG?",
+    "a_heic": "Zvarrit fotot te mjeti HEIC në JPG: konvertohen në shfletues, edhe në grup, dhe shkarkohen një nga një ose në një ZIP të vetëm. Nuk duhet regjistrim.",
+    "q_privacy": "A janë mjetet falas? A janë skedarët e mi të sigurt?",
+    "a_privacy": "Janë falas dhe pa regjistrim. Bashkimi, ngjeshja, firma, fotot dhe kodet QR punojnë në shfletuesin tënd. OCR dhe mjetet me inteligjencë artificiale e dërgojnë dokumentin te serveri për ta përpunuar: me ato shmang skedarët konfidencialë."
   },
   "contact": {
     "tag": "contact",
@@ -2537,8 +2547,8 @@
     "go_lab": "Shko te Lab"
   },
   "page_meta": {
-    "home_title": "Zhvillues Senior Front-End & API",
-    "home_description": "Zhvillues Senior Front-End i specializuar në Angular, TypeScript, vizualizim 3D të të dhënave dhe arkitektura enterprise.",
+    "home_title": "Zhvillues Angular dhe mjete PDF falas",
+    "home_description": "Zhvillues front-end Angular senior. Mjete falas për PDF, foto dhe kode QR, pa regjistrim dhe pothuajse të gjitha në shfletuesin tënd, pa ngarkuar skedarë.",
     "blog_title": "Blog — Angular, TypeScript dhe zhvillim web",
     "blog_description": "Artikuj, udhëzues dhe analiza për Angular, TypeScript, NestJS, performancën web, vizualizimet 3D dhe zhvillimin modern."
   },
@@ -4175,6 +4185,7 @@
     "read_less": "Trego më pak",
     "headline": "Krijoj përvoja digjitale",
     "headline_lead": "Krijoj përvoja",
-    "headline_accent": "digjitale"
+    "headline_accent": "digjitale",
+    "h1_suffix": "zhvillues Angular senior dhe krijues mjetesh falas"
   }
 }

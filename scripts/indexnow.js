@@ -83,13 +83,14 @@ async function main() {
     console.log(`IndexNow: inviati ${urlList.length} URL (HTTP ${res.status})`);
   } else {
     console.warn(`IndexNow: risposta HTTP ${res.status} ${text.slice(0, 300)}`);
-    process.exitCode = flags.has('--strict') ? 1 : 0;
+    if (flags.has('--strict')) process.exitCode = 1;
   }
 }
 
 if (require.main === module) {
   main().catch((err) => {
     console.warn(`IndexNow: non inviato — ${err.message}`);
+    if (process.argv.includes('--strict')) process.exitCode = 1;
   });
 }
 
