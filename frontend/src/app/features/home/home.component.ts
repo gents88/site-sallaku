@@ -32,6 +32,21 @@ interface TechGroup { titleKey: string; icon: string; items: TechItem[]; }
 interface ProjectItem { icon: string; tags: string[]; titleKey: string; descKey: string; featureKeys: string[]; }
 interface ExpItem { date?: string; dateKey?: string; titleKey: string; roleKey: string; descKey: string; tags: string[]; }
 interface FaqItem { qKey: string; aKey: string; }
+
+/** I tag più usati negli articoli (maiuscole ignorate, vince la grafia più frequente). */
+function topTags(posts: PostSummary[], max: number): string[] {
+  const groups = new Map<string, { n: number; spell: Map<string, number> }>();
+  for (const raw of posts.flatMap(p => p.tags ?? [])) {
+    const tag = raw.trim(); const k = tag.toLowerCase();
+    if (!k) continue;
+    const g = groups.get(k) ?? { n: 0, spell: new Map<string, number>() };
+    g.n++; g.spell.set(tag, (g.spell.get(tag) ?? 0) + 1); groups.set(k, g);
+  }
+  return [...groups.values()]
+    .sort((a, b) => b.n - a.n)
+    .slice(0, max)
+    .map(g => [...g.spell].sort((a, b) => b[1] - a[1])[0][0]);
+}
 interface ServiceItem { key: string; icon: string; colorClass: string; route?: string; }
 
 @Component({
@@ -306,29 +321,31 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     effect(() => { this.langService.current(); this.cdr.markForCheck(); });
   }
 
-  ngOnInit(): void {
-    this.blogService.getPublished(undefined, 1, 3, this.langService.current()).pipe(
-      catchError(() => of(null)),
-    ).subscribe(res => {
-      this.latestPosts = (res?.data ?? []).slice(0, 3);
-      this.cdr.markForCheck();
-    });
-    // homepage/about/tech-stack/experience/skills/services all render this
-    // same component (scroll-to-section deep links), so they've always
-    // intentionally collapsed to one canonical rather than 9 separate ones.
-    // The canonical is the language root ('/', '/en', '/de'…), which .htaccess
-    // serves from <lang>/homepage/index.html. /xx/homepage stays reachable as
-    // a duplicate that canonicalizes here, and hreflang (SeoService) points at
-    // the same roots so canonical and alternates agree.
-    const canonicalUrl = this.profileUrl;
-    this.seo.update({
-      // Tradotti per lingua: prima /en, /de, … avevano tutti lo stesso title
-      // (inglese) e la stessa description (italiana) — duplicati per Google.
-      title: this.translate.instant('page_meta.home_title'),
-      description: this.translate.instant('page_meta.home_description'),
-      url: canonicalUrl,
-    });
+  /** Argomenti extra letti dal sito (tecnologie di progetti ed esperienze, tag degli articoli): vanno solo nei dati strutturati. */
+  private extraTopics: string[] = [];
 
+  /** Tecnologie fisse + argomenti letti dal sito, senza doppioni (maiuscole ignorate), al massimo 80. */
+  private topics(): string[] {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const t of [...this.techTags, ...this.extraTopics]) {
+      const k = t.trim().toLowerCase();
+      if (k && !seen.has(k)) { seen.add(k); out.push(t.trim()); }
+    }
+    return out.slice(0, 80);
+  }
+
+  private addTopics(list: string[]): void {
+    const before = this.topics().length;
+    this.extraTopics = [...this.extraTopics, ...list];
+    if (this.topics().length !== before) this.injectHomeJsonLd();
+  }
+
+  /** Dati strutturati della home. Si rigenerano quando arrivano articoli, progetti ed esperienze (sostituiscono i precedenti). */
+  private injectHomeJsonLd(): void {
+    // Tecnologie e argomenti che il sito mostra davvero (stack, progetti, esperienze, tag degli articoli):
+    // sono dati per i motori di ricerca, non testo nascosto nella pagina.
+    const topics = this.topics();
     this.seo.injectJsonLd([
       {
         '@context': 'https://schema.org',
@@ -338,7 +355,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         url: 'https://gentsallaku.it',
         jobTitle: 'Senior Front-End & API Developer',
         description: 'Senior Front-End & API Developer specializzato in Angular, TypeScript, data visualization 3D e architetture enterprise.',
-        knowsAbout: ['Angular', 'TypeScript', 'JavaScript', 'NestJS', 'Django', 'Cesium.js', 'Data Visualization', 'REST API', 'Docker'],
+        knowsAbout: topics,
         sameAs: [
           'https://github.com/gentsallaku',
           'https://linkedin.com/in/gent-sallaku',
@@ -352,6 +369,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         name: 'Gent Sallaku',
         description: 'Portfolio and blog of Gent Sallaku, Senior Front-End & API Developer',
         author: { '@id': 'https://gentsallaku.it/#person' },
+        keywords: topics.slice(0, 40).join(', '),
         potentialAction: {
           '@type': 'SearchAction',
           target: {
@@ -373,6 +391,36 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
         })),
       },
     ]);
+  }
+
+  ngOnInit(): void {
+    // Stessa richiesta (e stessa cache) dell'elenco del blog: i primi 3 sono "Ultimi articoli", i tag di tutti
+    // finiscono nei dati strutturati (non nella pagina).
+    this.blogService.getPublished(undefined, 1, 50, this.langService.current()).pipe(
+      catchError(() => of(null)),
+    ).subscribe(res => {
+      const posts = res?.data ?? [];
+      this.latestPosts = posts.slice(0, 3);
+      this.addTopics(topTags(posts, 40));
+      this.cdr.markForCheck();
+    });
+    // homepage/about/tech-stack/experience/skills/services all render this
+    // same component (scroll-to-section deep links), so they've always
+    // intentionally collapsed to one canonical rather than 9 separate ones.
+    // The canonical is the language root ('/', '/en', '/de'…), which .htaccess
+    // serves from <lang>/homepage/index.html. /xx/homepage stays reachable as
+    // a duplicate that canonicalizes here, and hreflang (SeoService) points at
+    // the same roots so canonical and alternates agree.
+    const canonicalUrl = this.profileUrl;
+    this.seo.update({
+      // Tradotti per lingua: prima /en, /de, … avevano tutti lo stesso title
+      // (inglese) e la stessa description (italiana) — duplicati per Google.
+      title: this.translate.instant('page_meta.home_title'),
+      description: this.translate.instant('page_meta.home_description'),
+      url: canonicalUrl,
+    });
+
+    this.injectHomeJsonLd();
 
     forkJoin({
       about: this.aboutService.get().pipe(catchError(() => of(null))),
@@ -382,6 +430,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       next: ({ about, projects, experiences }) => {
         this.about = about;
         if (projects.length) this.featuredProjects = projects.filter((p: Project) => p.featured).slice(0, 5);
+        this.addTopics([...projects, ...experiences].flatMap((x: { technologies?: string[] }) => x.technologies ?? []));
         if (experiences.length) this.experiences = experiences.slice(0, 5);
         this.loading = false;
         this.cdr.markForCheck();

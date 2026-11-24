@@ -8,8 +8,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { HomeComponent } from './home.component';
 import { SeoService } from '../../core/services/seo.service';
 import { TestimonialsService } from '../../core/services/testimonials.service';
+import { BlogService } from '../../core/services/blog.service';
+import { of } from 'rxjs';
 
-function render() {
+function render(posts: unknown[] = []) {
   vi.stubGlobal('IntersectionObserver', class { observe() {} unobserve() {} disconnect() {} });
   const seo = { update: vi.fn(), injectJsonLd: vi.fn(), breadcrumb: vi.fn(() => ({})), setNoIndex: vi.fn() };
   TestBed.configureTestingModule({
@@ -17,6 +19,7 @@ function render() {
     providers: [
       provideRouter([]), provideHttpClient(), provideHttpClientTesting(),
       { provide: SeoService, useValue: seo },
+      { provide: BlogService, useValue: { getPublished: () => of({ data: posts, total: posts.length, page: 1, pages: 1 }) } },
       { provide: TestimonialsService, useValue: { hasPublic: () => signal(false), getFeatured: () => ({ subscribe: () => {} }) } },
     ],
   });
@@ -55,5 +58,25 @@ describe('Home: SEO e dati strutturati', () => {
   it('imposta title e description della home dai testi tradotti', () => {
     const { seo } = render();
     expect(seo.update).toHaveBeenCalledWith(expect.objectContaining({ title: 'page_meta.home_title', description: 'page_meta.home_description' }));
+  });
+
+  // Le parole chiave "dietro le quinte" vanno nei dati strutturati (legittimi), mai in testo nascosto nella pagina.
+  it('mette nei dati strutturati le tecnologie e i tag degli articoli, senza aggiungerli alla pagina', () => {
+    const posts = [
+      { _id: '1', slug: 'a', title: 'A', excerpt: '', tags: ['Blinisht', 'storia'], publishedAt: '2026-11-01' },
+      { _id: '2', slug: 'b', title: 'B', excerpt: '', tags: ['blinisht', 'Zadrima'], publishedAt: '2026-11-02' },
+    ];
+    const { seo, el } = render(posts);
+    type Node = { '@type': string; knowsAbout?: string[]; keywords?: string };
+    const calls = seo.injectJsonLd.mock.calls.map(c => c[0] as Node[]).filter(a => Array.isArray(a) && a.some(x => x?.['@type'] === 'Person'));
+    const last = calls[calls.length - 1];
+    const person = last.find(n => n['@type'] === 'Person')!;
+    const site = last.find(n => n['@type'] === 'WebSite')!;
+    expect(person.knowsAbout).toEqual(expect.arrayContaining(['Angular', 'Cesium.js', 'Blinisht', 'storia', 'Zadrima']));
+    expect(person.knowsAbout!.filter(t => t.toLowerCase() === 'blinisht')).toHaveLength(1); // niente doppioni
+    expect(site.keywords).toContain('Angular');
+    // la pagina non mostra i tag degli articoli: sono solo dati per i motori di ricerca
+    expect(el.querySelector('.hero-tags')?.textContent).not.toContain('Zadrima');
+    expect(el.querySelectorAll('[hidden], .visually-hidden, .sr-only')).toHaveLength(0);
   });
 });
