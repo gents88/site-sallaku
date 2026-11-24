@@ -4186,21 +4186,6 @@
     "headline": "Creo experiencias digitales",
     "headline_lead": "Creo experiencias",
     "headline_accent": "digitales",
-    "h1_suffix": "desarrollador Angular senior y creador de herramientas gratuitas",
-    "tags_label": "Tecnologías y herramientas",
-    "tag_pdf": "Herramientas PDF gratis",
-    "tag_ocr": "OCR online",
-    "tag_qr": "Código QR",
-    "tag_photo": "Fotos HEIC y JPG",
-    "tag_convert": "Convertidor de archivos",
-    "tag_merge": "Unir PDF",
-    "tag_compress": "Comprimir PDF",
-    "tag_sign": "Firmar PDF",
-    "tag_heic": "HEIC a JPG",
-    "tag_summary": "Resumen de PDF con IA",
-    "tag_translate": "Traducción de PDF",
-    "tag_books": "Libros PDF gratis",
-    "tags_more": "Mostrar todas las palabras clave",
-    "tags_less": "Mostrar menos"
+    "h1_suffix": "desarrollador Angular senior y creador de herramientas gratuitas"
   }
 }

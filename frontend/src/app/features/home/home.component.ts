@@ -237,31 +237,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     { key: 'api',      icon: 'api',             colorClass: 'color-green'  },
   ];
 
-  /** Tecnologie e temi mostrati come etichette sotto l'hero: nomi propri, uguali in tutte le lingue. */
+  /** Tecnologie del sito (nomi propri, uguali in tutte le lingue): vanno nei dati strutturati, NON nella pagina. */
   readonly techTags = [
     'Angular', 'TypeScript', 'JavaScript', 'RxJS', 'SCSS', 'HTML', 'React', 'NestJS', 'Node.js', 'REST API', 'GraphQL',
     'Python', 'Django', '.NET', 'C#', 'PostgreSQL', 'Data Visualization', 'Chart.js', 'ApexCharts', 'Looker',
     '3D Web', 'Cesium.js', 'WebGL', 'Three.js', 'Docker', 'CI/CD', 'Git', 'Azure',
   ];
-
-  /** Gli strumenti del Lab più cercati: etichette che portano alla loro pagina. */
-  readonly toolTags: { id: string; route: string; key: string }[] = [
-    { id: 'pdf', route: '/lab', key: 'tag_pdf' },
-    { id: 'merge', route: '/lab/merge-pdf', key: 'tag_merge' },
-    { id: 'compress', route: '/lab/compress-pdf', key: 'tag_compress' },
-    { id: 'sign', route: '/lab/sign-pdf', key: 'tag_sign' },
-    { id: 'heic', route: '/lab/heic-to-jpg', key: 'tag_heic' },
-    { id: 'photo', route: '/lab/image-tools', key: 'tag_photo' },
-    { id: 'ocr', route: '/lab/ocr', key: 'tag_ocr' },
-    { id: 'qr', route: '/lab/qr-code', key: 'tag_qr' },
-    { id: 'convert', route: '/lab/convert', key: 'tag_convert' },
-    { id: 'summary', route: '/lab/pdf-summary', key: 'tag_summary' },
-    { id: 'translate', route: '/lab/pdf-translate', key: 'tag_translate' },
-    { id: 'books', route: '/lab/pdf-search', key: 'tag_books' },
-  ];
-
-  /** Su telefono le etichette stanno su poche righe, con "Mostra tutte" per aprirle (così non spingono giù il resto). */
-  tagsExpanded = false;
 
   readonly faqItems: FaqItem[] = [
     { qKey: 'faq.q_who', aKey: 'faq.a_who' },

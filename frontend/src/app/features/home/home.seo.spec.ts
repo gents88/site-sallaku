@@ -88,7 +88,8 @@ describe('Home: SEO e dati strutturati', () => {
     expect(person.knowsAbout!.filter(t => t.toLowerCase() === 'blinisht')).toHaveLength(1); // niente doppioni
     expect(site.keywords).toContain('Angular');
     // la pagina non mostra i tag degli articoli: sono solo dati per i motori di ricerca
-    expect(el.querySelector('.hero-tags')?.textContent).not.toContain('Zadrima');
+    expect(el.querySelector('.hero-tags')).toBeNull();
+    expect(el.textContent).not.toContain('Zadrima');
     expect(el.querySelectorAll('[hidden], .visually-hidden, .sr-only')).toHaveLength(0);
   });
 

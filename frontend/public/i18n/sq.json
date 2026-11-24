@@ -4186,21 +4186,6 @@
     "headline": "Krijoj përvoja digjitale",
     "headline_lead": "Krijoj përvoja",
     "headline_accent": "digjitale",
-    "h1_suffix": "zhvillues Angular senior dhe krijues mjetesh falas",
-    "tags_label": "Teknologji dhe mjete",
-    "tag_pdf": "Mjete PDF falas",
-    "tag_ocr": "OCR online",
-    "tag_qr": "Kod QR",
-    "tag_photo": "Foto HEIC dhe JPG",
-    "tag_convert": "Konvertues skedarësh",
-    "tag_merge": "Bashko PDF",
-    "tag_compress": "Ngjeshje PDF",
-    "tag_sign": "Firmos PDF",
-    "tag_heic": "HEIC në JPG",
-    "tag_summary": "Përmbledhje PDF me AI",
-    "tag_translate": "Përkthim PDF",
-    "tag_books": "Libra PDF falas",
-    "tags_more": "Shfaq të gjitha fjalët kyçe",
-    "tags_less": "Shfaq më pak"
+    "h1_suffix": "zhvillues Angular senior dhe krijues mjetesh falas"
   }
 }

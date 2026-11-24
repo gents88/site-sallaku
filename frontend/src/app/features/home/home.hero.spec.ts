@@ -88,19 +88,14 @@ describe('Home: niente numeri non dimostrabili né dati personali superflui', ()
   });
 });
 
-describe('Home: etichette con le parole chiave nell\'hero', () => {
+describe("Home: nessuna etichetta di parole chiave nell'interfaccia", () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('mostra molte tecnologie e gli strumenti come link alle loro pagine', () => {
+  // Le parole chiave stanno solo nei dati strutturati (home.seo.spec): la pagina non mostra elenchi di etichette.
+  it('l\'hero non ha etichette di parole chiave', () => {
     const el = render(false);
-    const tags = el.querySelectorAll('.hero-tags .hero-tag');
-    expect(tags.length).toBeGreaterThanOrEqual(35);
-    const links = Array.from(el.querySelectorAll('.hero-tags a.hero-tag--tool')).map(a => a.getAttribute('href'));
-    // il test gira con la lingua predefinita: i link hanno il suo prefisso (langUrl)
-    expect(links.map(l => l!.replace(/^\/[a-z]{2}(?=\/lab)/, ''))).toEqual([
-      '/lab', '/lab/merge-pdf', '/lab/compress-pdf', '/lab/sign-pdf', '/lab/heic-to-jpg', '/lab/image-tools',
-      '/lab/ocr', '/lab/qr-code', '/lab/convert', '/lab/pdf-summary', '/lab/pdf-translate', '/lab/pdf-search',
-    ]);
-    expect(el.querySelector('.hero-tags')?.textContent).toContain('Angular');
+    expect(el.querySelector('.hero-tags')).toBeNull();
+    expect(el.querySelector('.hero-tag')).toBeNull();
+    expect(el.querySelector('.hero-tags-more')).toBeNull();
   });
 });
