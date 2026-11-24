@@ -1281,3 +1281,44 @@ details[open] .faq-chevron { transform: rotate(180deg); color: var(--primary-400
   .hero-avatar-wrap::after { inset: -20px; }
   .hero-headline { font-size: clamp(2.2rem, 10vw, 2.8rem); letter-spacing: -1px; }
 }
+
+/* ══ SEZIONI: stesso linguaggio dell'hero ═════════════
+   Etichetta a pillola con punto (come il ruolo nell'hero), titolo grande e stretto,
+   niente lineetta sotto il titolo, pulsanti e chip arrotondati, card più morbide. */
+.section-header { margin-bottom: 56px; }
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  background: rgba(99, 102, 241, 0.1);
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.section-tag__dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2), 0 0 10px rgba(167, 139, 250, 0.7);
+}
+
+.section-title {
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  letter-spacing: -1.5px;
+  line-height: 1.08;
+}
+.section-line { display: none; }
+
+.btn { border-radius: 999px; }
+.project-tag { border-radius: 999px; }
+.glass-card { border-radius: 20px; }
+
+/* Chi sono senza foto: il testo occupa tutta la card */
+.about-intro { padding: 28px 32px; }
+@media (max-width: 640px) { .about-intro { padding: 20px; } }
