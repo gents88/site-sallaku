@@ -42,6 +42,14 @@ Gli strumenti sono gratuiti e senza registrazione. Firma, compressione, foto e Q
 - [QR code WhatsApp](https://gentsallaku.it/lab/whatsapp-qr-code), [QR code biglietto da visita (vCard)](https://gentsallaku.it/lab/vcard-qr-code)
 - [PDF in Word](https://gentsallaku.it/lab/pdf-to-word), [Word in PDF](https://gentsallaku.it/lab/word-to-pdf), [JPG in PDF](https://gentsallaku.it/lab/jpg-to-pdf), [Unisci PDF](https://gentsallaku.it/lab/merge-pdf), [Dividi PDF](https://gentsallaku.it/lab/split-pdf), [Ruota PDF](https://gentsallaku.it/lab/rotate-pdf), [Immagine in testo](https://gentsallaku.it/lab/image-to-text)
 
+## Competenze e argomenti
+
+- Tecnologie: Angular, TypeScript, JavaScript, RxJS, SCSS, HTML, React, NestJS, Node.js, REST API, GraphQL, Python, Django, .NET, C#, PostgreSQL
+- Data visualization e 3D web: Chart.js, ApexCharts, Looker, Cesium.js, WebGL, Three.js
+- Infrastruttura: Docker, CI/CD, Git, Azure
+- Strumenti gratuiti nel Lab: unire, dividere, ruotare e comprimere PDF, firmare PDF, OCR, convertire PDF e Word, HEIC in JPG, ridimensionare e comprimere immagini, QR code, riassunto e traduzione di PDF con AI, ricerca di libri PDF di pubblico dominio
+- Origini e storia: Blinisht (Lezhë, Albania), Zadrima
+
 ## Note legali
 
 - [Privacy policy](https://gentsallaku.it/privacy-policy)
