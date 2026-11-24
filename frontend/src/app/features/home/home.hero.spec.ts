@@ -94,10 +94,13 @@ describe('Home: etichette con le parole chiave nell\'hero', () => {
   it('mostra molte tecnologie e gli strumenti come link alle loro pagine', () => {
     const el = render(false);
     const tags = el.querySelectorAll('.hero-tags .hero-tag');
-    expect(tags.length).toBeGreaterThanOrEqual(15);
+    expect(tags.length).toBeGreaterThanOrEqual(35);
     const links = Array.from(el.querySelectorAll('.hero-tags a.hero-tag--tool')).map(a => a.getAttribute('href'));
     // il test gira con la lingua predefinita: i link hanno il suo prefisso (langUrl)
-    expect(links.map(l => l!.replace(/^\/[a-z]{2}(?=\/lab)/, ''))).toEqual(['/lab', '/lab/ocr', '/lab/qr-code', '/lab/image-tools', '/lab/convert']);
+    expect(links.map(l => l!.replace(/^\/[a-z]{2}(?=\/lab)/, ''))).toEqual([
+      '/lab', '/lab/merge-pdf', '/lab/compress-pdf', '/lab/sign-pdf', '/lab/heic-to-jpg', '/lab/image-tools',
+      '/lab/ocr', '/lab/qr-code', '/lab/convert', '/lab/pdf-summary', '/lab/pdf-translate', '/lab/pdf-search',
+    ]);
     expect(el.querySelector('.hero-tags')?.textContent).toContain('Angular');
   });
 });

@@ -4192,6 +4192,15 @@
     "tag_ocr": "OCR online",
     "tag_qr": "QR code",
     "tag_photo": "Foto HEIC e JPG",
-    "tag_convert": "Convertitore file"
+    "tag_convert": "Convertitore file",
+    "tag_merge": "Unisci PDF",
+    "tag_compress": "Comprimi PDF",
+    "tag_sign": "Firma PDF",
+    "tag_heic": "HEIC in JPG",
+    "tag_summary": "Riassunto PDF con AI",
+    "tag_translate": "Traduzione PDF",
+    "tag_books": "Libri PDF gratis",
+    "tags_more": "Mostra tutte le parole chiave",
+    "tags_less": "Mostra meno"
   }
 }

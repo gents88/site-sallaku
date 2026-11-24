@@ -4192,6 +4192,15 @@
     "tag_ocr": "OCR online",
     "tag_qr": "QR-Code",
     "tag_photo": "HEIC- & JPG-Fotos",
-    "tag_convert": "Dateikonverter"
+    "tag_convert": "Dateikonverter",
+    "tag_merge": "PDFs zusammenfügen",
+    "tag_compress": "PDF komprimieren",
+    "tag_sign": "PDF signieren",
+    "tag_heic": "HEIC in JPG",
+    "tag_summary": "PDF-Zusammenfassung mit KI",
+    "tag_translate": "PDF-Übersetzung",
+    "tag_books": "Kostenlose PDF-Bücher",
+    "tags_more": "Alle Stichwörter anzeigen",
+    "tags_less": "Weniger anzeigen"
   }
 }

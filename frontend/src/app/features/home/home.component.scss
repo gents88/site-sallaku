@@ -1559,3 +1559,23 @@ details[open] .faq-chevron { transform: rotate(180deg); color: var(--primary-400
   .hero-tags { gap: 6px; margin-top: 12px; }
   .hero-tag { padding: 5px 11px; font-size: 0.74rem; }
 }
+
+/* Su telefono le etichette (ora molte) occupano tre righe, con "Mostra tutte" per aprirle */
+.hero-tags-more { display: none; }
+@media (max-width: 640px) {
+  .hero-tags.is-collapsed { max-height: 91px; overflow: hidden; } /* 3 righe esatte: chip alti 26px + 6px di spazio */
+  .hero-tags-more {
+    display: inline-block;
+    margin: 6px auto 0;
+    padding: 8px 12px;
+    min-height: 44px;
+    background: none;
+    border: 0;
+    color: var(--primary-400, #818cf8);
+    font: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+}
