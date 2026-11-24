@@ -223,8 +223,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ];
 
   readonly faqItems: FaqItem[] = [
+    { qKey: 'faq.q_who', aKey: 'faq.a_who' },
     { qKey: 'faq.q1', aKey: 'faq.a1' },
     { qKey: 'faq.q2', aKey: 'faq.a2' },
+    { qKey: 'faq.q_merge', aKey: 'faq.a_merge' },
+    { qKey: 'faq.q_compress', aKey: 'faq.a_compress' },
+    { qKey: 'faq.q_heic', aKey: 'faq.a_heic' },
+    { qKey: 'faq.q_privacy', aKey: 'faq.a_privacy' },
     { qKey: 'faq.q4', aKey: 'faq.a4' },
   ];
 
@@ -329,6 +334,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           'query-input': 'required name=search_term_string',
         },
+      },
+      // FAQPage: le stesse domande e risposte che la sezione FAQ mostra in pagina (Google lo richiede),
+      // nella lingua corrente. È ciò che le chat AI citano per "chi è" e "come si fa".
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: this.faqItems.map(i => ({
+          '@type': 'Question',
+          name: this.translate.instant(i.qKey),
+          acceptedAnswer: { '@type': 'Answer', text: this.translate.instant(i.aKey) },
+        })),
       },
     ]);
 
