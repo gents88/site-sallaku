@@ -69,6 +69,23 @@
   RewriteRule ^fr/blog/comment-jai-diagnostique-et-resolu-une-crise-dindexation-seo-en-production-etude-de-cas/?$ /fr/blog/pourquoi-mon-blog-angulaire-nest-pas-indexe-par-google-et-comment-je-lai-corrige [R=301,L]
   RewriteRule ^de/blog/wie-ich-eine-seo-indexierungskrise-in-produktion-diagnostiziert-und-gelost-habe-eine-fallstudie/?$ /de/blog/warum-mein-angular-blog-nicht-von-google-indiziert-wird-und-wie-ich-das-problem-behoben-habe [R=301,L]
 
+  # Vecchio slug della guida alla migrazione da AngularJS (in tutte le lingue).
+  RewriteRule ^blog/migrazione-angularjs-angular-guida-completa/?$ /blog/migrazione-angularjs-angular [R=301,L]
+  RewriteRule ^en/blog/migrazione-angularjs-angular-guida-completa/?$ /en/blog/migrating-from-angularjs-to-angular-complete-guide-strategy-and-best-practices [R=301,L]
+  RewriteRule ^sq/blog/migrazione-angularjs-angular-guida-completa/?$ /sq/blog/migrimi-nga-angularjs-ne-angular-udhezues-i-plote-strategji-dhe-praktika-me-te-mira [R=301,L]
+  RewriteRule ^es/blog/migrazione-angularjs-angular-guida-completa/?$ /es/blog/migracion-de-angularjs-a-angular-guia-completa-estrategia-y-mejores-practicas [R=301,L]
+  RewriteRule ^pt/blog/migrazione-angularjs-angular-guida-completa/?$ /pt/blog/migrando-de-angularjs-para-angular-guia-completo-estrategia-e-melhores-praticas [R=301,L]
+  RewriteRule ^fr/blog/migrazione-angularjs-angular-guida-completa/?$ /fr/blog/migrer-dangularjs-vers-angular-guide-complet-strategie-et-bonnes-pratiques [R=301,L]
+  RewriteRule ^de/blog/migrazione-angularjs-angular-guida-completa/?$ /de/blog/migration-von-angularjs-zu-angular-vollstandiger-leitfaden-strategie-und-best-practices [R=301,L]
+  # Slug troncato (link tagliato) della guida all'indicizzazione su Google (in tutte le lingue).
+  RewriteRule ^blog/come-essere-indiciz/?$ /blog/come-essere-indicizzati-google-search [R=301,L]
+  RewriteRule ^en/blog/come-essere-indiciz/?$ /en/blog/how-to-get-indexed-by-google-search-complete-seo-guide-2026 [R=301,L]
+  RewriteRule ^sq/blog/come-essere-indiciz/?$ /sq/blog/si-te-indeksoheni-nga-kerkimi-ne-google-udhezues-i-plote-seo-2026 [R=301,L]
+  RewriteRule ^es/blog/come-essere-indiciz/?$ /es/blog/como-ser-indexado-por-la-busqueda-de-google-guia-seo-completa-2026 [R=301,L]
+  RewriteRule ^pt/blog/come-essere-indiciz/?$ /pt/blog/como-ser-indexado-pela-pesquisa-google-guia-completo-de-seo-2026 [R=301,L]
+  RewriteRule ^fr/blog/come-essere-indiciz/?$ /fr/blog/comment-etre-indexe-par-la-recherche-google-guide-complet-de-referencement-2026 [R=301,L]
+  RewriteRule ^de/blog/come-essere-indiciz/?$ /de/blog/so-werden-sie-von-der-google-suche-indexiert-vollstandiger-seo-leitfaden-2026 [R=301,L]
+
   # Gli stessi tre articoli raggiunti con lo slug italiano sotto un prefisso di
   # lingua (/en/blog/<slug-italiano>, vecchi link condivisi): il rsync del deploy
   # non cancella le pagine prerenderizzate delle build precedenti, quindi quelle
@@ -92,6 +109,13 @@
   RewriteRule ^es/blog/case-study-crisi-indicizzazione-seo-angular-produzione/?$ /es/blog/por-que-google-no-indexa-mi-blog-de-angular-y-como-lo-solucione [R=301,L]
   RewriteRule ^fr/blog/case-study-crisi-indicizzazione-seo-angular-produzione/?$ /fr/blog/pourquoi-mon-blog-angulaire-nest-pas-indexe-par-google-et-comment-je-lai-corrige [R=301,L]
   RewriteRule ^de/blog/case-study-crisi-indicizzazione-seo-angular-produzione/?$ /de/blog/warum-mein-angular-blog-nicht-von-google-indiziert-wird-und-wie-ich-das-problem-behoben-habe [R=301,L]
+
+  # Indirizzi "alias" degli articoli: lo slug italiano sotto il prefisso di una lingua
+  # (/pt/blog/<slug-italiano>) porta con un 301 allo slug di quella lingua. Le regole le genera la
+  # build (scripts/blog-redirects.js) dagli articoli pubblicati; vanno prima di quelle che servono
+  # i file prerenderizzati, altrimenti l'alias risponderebbe ancora 200.
+  # @blog-alias-redirects:begin
+  # @blog-alias-redirects:end
 
   # Serve the build-time prerendered homepage for the exact root request,
   # keeping the URL as / (canonical) instead of redirecting to /homepage.

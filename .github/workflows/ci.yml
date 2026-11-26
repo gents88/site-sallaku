@@ -120,6 +120,9 @@ jobs:
       - name: Modulepreload script tests
         run: node --test ../scripts/modulepreload-all.test.js
 
+      - name: Blog redirects script tests
+        run: node --test ../scripts/blog-redirects.test.js
+
       # La sitemap si rigenera a ogni build (prebuild) e ogni notte.
       - name: Sitemap script tests
         run: node --test ../scripts/generate-sitemap.test.js
