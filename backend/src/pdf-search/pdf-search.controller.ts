@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, Req, Res, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Query, Param, Req, Res, BadRequestException, HttpException, NotFoundException } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
@@ -22,18 +22,33 @@ export function isProxyAllowed(url: URL): boolean {
     && PROXY_ALLOWED_HOSTS.some((h) => url.hostname === h || url.hostname.endsWith(`.${h}`));
 }
 
+// Un'origine lenta non è un errore nostro. Due attese diverse: il collegamento (intestazioni della risposta) e
+// l'invio del file. Prima un solo timeout di 20 s copriva anche lo scaricamento: se Internet Archive rispondeva e poi
+// mandava il PDF lentamente, il timeout scattava mentre lo si leggeva, fuori dal controllo, e finiva come errore
+// grezzo (500) nel registro della dashboard.
+const PROXY_CONNECT_TIMEOUT_MS = 20_000;
+const PROXY_DOWNLOAD_TIMEOUT_MS = 60_000;
+
+/** Errori di rete o di tempo dell'origine (non della nostra richiesta): vanno in 503. */
+function isUpstreamFailure(err: unknown): boolean {
+  if (err instanceof HttpException) return false; // 400 troppo grande, 404… sono nostri e si propagano
+  return true;
+}
+
 /**
- * Un'origine lenta o irraggiungibile non è un errore nostro: va in 503 invece
- * di un 500 nel registro errori della dashboard: si risponde 503 (come per le
- * funzioni spente), che il registro ignora.
+ * Un'origine lenta o irraggiungibile non è un errore nostro: si risponde 503 (come per le funzioni spente),
+ * che il registro errori della dashboard ignora, invece di un 500.
  */
-async function fetchUpstream(url: URL): Promise<globalThis.Response> {
+async function fetchUpstream(url: URL, ctrl: AbortController): Promise<globalThis.Response> {
+  const timer = setTimeout(() => ctrl.abort(), PROXY_CONNECT_TIMEOUT_MS);
   try {
-    return await fetch(url.toString(), { redirect: 'manual', signal: AbortSignal.timeout(20_000) });
+    return await fetch(url.toString(), { redirect: 'manual', signal: ctrl.signal });
   } catch (err) {
     const name = (err as Error)?.name;
     if (name === 'TimeoutError' || name === 'AbortError') throw new FeatureUnavailableException('The source took too long to respond');
     throw new FeatureUnavailableException('Could not reach the source');
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -41,10 +56,10 @@ async function fetchUpstream(url: URL): Promise<globalThis.Response> {
  * fetch() con redirect gestiti a mano: quello automatico seguirebbe un 302
  * verso qualsiasi host, scavalcando l'allow-list controllata solo sul primo URL.
  */
-async function fetchAllowListed(start: URL): Promise<globalThis.Response> {
+async function fetchAllowListed(start: URL, ctrl: AbortController): Promise<globalThis.Response> {
   let current = start;
   for (let hop = 0; hop <= PROXY_MAX_REDIRECTS; hop++) {
-    const res = await fetchUpstream(current);
+    const res = await fetchUpstream(current, ctrl);
     if (res.status < 300 || res.status >= 400) return res;
 
     const location = res.headers.get('location');
@@ -164,7 +179,8 @@ export class PdfSearchController {
     if (parsed.protocol !== 'https:') throw new BadRequestException('url must use https');
     if (!isProxyAllowed(parsed)) throw new BadRequestException('url host is not allow-listed');
 
-    const upstream = await fetchAllowListed(parsed);
+    const ctrl = new AbortController();
+    const upstream = await fetchAllowListed(parsed, ctrl);
     if (!upstream.ok) throw new NotFoundException('Could not fetch the requested file');
 
     const contentType = upstream.headers.get('content-type') ?? '';
@@ -173,7 +189,20 @@ export class PdfSearchController {
     const contentLength = Number(upstream.headers.get('content-length') ?? '0');
     if (contentLength > PROXY_MAX_BYTES) throw new BadRequestException('File is too large to proxy');
 
-    const buffer = await readCapped(upstream, PROXY_MAX_BYTES);
+    // Il file arriva a pezzi: anche qui un'origine lenta o che chiude la connessione a metà è un 503, non un 500.
+    const downloadTimer = setTimeout(() => ctrl.abort(), PROXY_DOWNLOAD_TIMEOUT_MS);
+    let buffer: Buffer;
+    try {
+      buffer = await readCapped(upstream, PROXY_MAX_BYTES);
+    } catch (err) {
+      if (!isUpstreamFailure(err)) throw err;
+      const name = (err as Error)?.name;
+      throw new FeatureUnavailableException(name === 'TimeoutError' || name === 'AbortError'
+        ? 'The source was too slow to send the file'
+        : 'The source interrupted the download');
+    } finally {
+      clearTimeout(downloadTimer);
+    }
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Cache-Control', 'public, max-age=3600');

@@ -185,6 +185,35 @@ describe('PdfSearchController', () => {
       await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(FeatureUnavailableException);
     });
 
+    // Il PDF arriva a pezzi: il timeout può scattare mentre lo si legge, dopo che l'origine ha già risposto.
+    // Era un TimeoutError grezzo (500 nel registro errori della dashboard), ora è un 503 come gli altri.
+    it('un\'origine che risponde ma manda il file troppo lentamente dà 503, non un 500', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true, status: 200,
+        headers: { get: (name: string) => (name === 'content-type' ? 'application/pdf' : null) },
+        body: { getReader: () => ({ read: () => Promise.reject(Object.assign(new Error('The operation was aborted due to timeout'), { name: 'TimeoutError' })), cancel: jest.fn() }) },
+      } as unknown as Response);
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(FeatureUnavailableException);
+    });
+
+    it('una connessione chiusa a metà download dà 503', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true, status: 200,
+        headers: { get: (name: string) => (name === 'content-type' ? 'application/pdf' : null) },
+        body: { getReader: () => ({ read: () => Promise.reject(new TypeError('terminated')), cancel: jest.fn() }) },
+      } as unknown as Response);
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(FeatureUnavailableException);
+    });
+
+    it('un file troppo grande resta un 400 (errore della richiesta, non dell\'origine)', async () => {
+      const { upstream } = streamingUpstream([60 * 1024 * 1024, 60 * 1024 * 1024]);
+      fetchMock.mockResolvedValue(upstream);
+
+      await expect(controller.proxyPdf('https://archive.org/x.pdf', mockResponse() as unknown as Response)).rejects.toBeInstanceOf(BadRequestException);
+    });
+
     it('un\'origine irraggiungibile dà 503', async () => {
       fetchMock.mockRejectedValue(new TypeError('fetch failed'));
 
