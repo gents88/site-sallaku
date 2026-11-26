@@ -26,6 +26,12 @@
             <strong [title]="'server_errors.total' | translate">×{{ e.count | number }}</strong>
           </div>
           <span class="err-row__msg">{{ e.name }}: {{ e.message || '—' }}</span>
+          @if (explain(e); as why) {
+            <p class="err-why" [class.err-why--calm]="why.kind === 'passeggero'">
+              <strong>{{ why.kind === 'passeggero' ? 'In parole semplici (di solito passeggero)' : 'In parole semplici (da guardare)' }}</strong>
+              {{ why.text }} <span class="err-why__advice">{{ why.advice }}</span>
+            </p>
+          }
           <span class="panel-sub">{{ 'server_errors.last_seen' | translate }} {{ e.lastSeenAt | date: 'dd/MM HH:mm' }} · {{ 'server_errors.today_count' | translate: { n: e.today } }}</span>
           @if (expanded() === e._id && e.stack) {
             <pre class="err-stack">{{ e.stack }}</pre>
