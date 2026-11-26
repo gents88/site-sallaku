@@ -9,3 +9,12 @@
 .err-stack { margin: 0; max-height: 220px; overflow: auto; padding: 0.6rem; border-radius: 8px;
   background: color-mix(in srgb, var(--color-text-muted) 10%, transparent); font-size: 0.72rem; white-space: pre-wrap; }
 .panel-list > li { display: block; }
+
+// Spiegazione in parole semplici: due toni, calmo (si risolve da solo) e da guardare.
+.err-why { margin: 0; padding: 0.5rem 0.65rem; border-radius: 8px; font-size: 0.8rem; line-height: 1.5;
+  border-left: 3px solid var(--color-warning, #d97706);
+  background: color-mix(in srgb, var(--color-warning, #d97706) 10%, transparent); }
+.err-why--calm { border-left-color: var(--color-success, #16a34a);
+  background: color-mix(in srgb, var(--color-success, #16a34a) 10%, transparent); }
+.err-why strong { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.85; }
+.err-why__advice { display: block; margin-top: 0.15rem; opacity: 0.85; }

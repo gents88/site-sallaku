@@ -44,6 +44,25 @@ describe('ServerErrorsPanelComponent', () => {
     expect(el.querySelector('pre')).toBeNull();
   });
 
+  it('sotto il messaggio tecnico mostra la spiegazione in parole semplici, in italiano', () => {
+    const { el } = setup();
+    const why = el.querySelector('.err-why');
+    expect(why).not.toBeNull();
+    expect(why!.textContent).toContain('In parole semplici');
+    expect(why!.textContent).toContain('indice'); // MongoServerError: text index required
+  });
+
+  it('il timeout del proxy PDF è spiegato come passeggero (tono calmo)', () => {
+    const { el } = setup({
+      ...DATA,
+      recent: [{ ...DATA.recent[0], name: 'TimeoutError', message: 'The operation was aborted due to timeout', route: '/api/v1/pdf-search/proxy', path: '/api/v1/pdf-search/proxy' }],
+    });
+    const why = el.querySelector('.err-why')!;
+    expect(why.classList.contains('err-why--calm')).toBe(true);
+    expect(why.textContent).toContain('troppo lentamente');
+    expect(why.textContent).toContain('scaricamento di un PDF');
+  });
+
   it('expands the stack on demand', () => {
     const { fixture, el, button } = setup();
     button('server_errors.show_stack').click();
