@@ -123,6 +123,9 @@ jobs:
       - name: Blog redirects script tests
         run: node --test ../scripts/blog-redirects.test.js
 
+      - name: Dist check script tests
+        run: node --test ../scripts/check-dist.test.js
+
       # La sitemap si rigenera a ogni build (prebuild) e ogni notte.
       - name: Sitemap script tests
         run: node --test ../scripts/generate-sitemap.test.js
@@ -131,6 +134,10 @@ jobs:
       # modificato e il commit mostrato nel sito avrebbe il suffisso "+"
       - name: Build (production)
         run: BUILD_COMMIT="$(git rev-parse --short HEAD)" npm run build:prod
+
+      # Link e risorse interne, titoli/canonical/H1, segnaposto, traduzioni mancanti, segreti nella build.
+      - name: Dist check (link, SEO, segnaposto, segreti)
+        run: node ../scripts/check-dist.js dist/portfolio-frontend/browser
 
       # Il deploy su Plesk (push su main) carica proprio questa build
       - name: Upload build

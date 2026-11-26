@@ -1112,3 +1112,11 @@ app-my-saved-results {
   .icon-tile--lift:focus-visible .icon-tile { transform: none; transition: none; }
 }
 
+
+/* Anello di focus per i pulsanti Material usati con la tastiera (di base Material non ne disegna uno visibile,
+   per esempio sull'icona di ricerca nella barra in alto). */
+.mat-mdc-icon-button:focus-visible,
+.mat-mdc-button-base:focus-visible {
+  outline: 2px solid var(--primary-500, #4f6af5);
+  outline-offset: 2px;
+}
