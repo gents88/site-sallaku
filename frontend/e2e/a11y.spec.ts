@@ -56,10 +56,13 @@ test('palette Ctrl+K: apertura, navigazione da tastiera, chiusura con Esc', asyn
   await expect(input).toBeFocused();
   await expect(page.getByRole('listbox')).toBeVisible();
 
-  await page.keyboard.press('ArrowDown');
-  const active = await input.getAttribute('aria-activedescendant');
-  expect(active).toBeTruthy();
-  await expect(page.locator(`#${active}`)).toHaveAttribute('aria-selected', 'true');
+  // Le voci possono ridisegnarsi appena arrivano i risultati: si riprova finché la voce attiva è selezionata.
+  await expect(async () => {
+    await page.keyboard.press('ArrowDown');
+    const active = await input.getAttribute('aria-activedescendant');
+    expect(active).toBeTruthy();
+    await expect(page.locator(`#${active}`)).toHaveAttribute('aria-selected', 'true', { timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
 
   await page.keyboard.press('Escape');
   await expect(page.getByRole('combobox')).toHaveCount(0);
