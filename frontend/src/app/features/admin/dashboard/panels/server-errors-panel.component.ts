@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { AdminDashboardService, ServerErrorSummary } from '../admin-dashboard.service';
+import { AdminDashboardService, ServerErrorSummary, ServerErrorView } from '../admin-dashboard.service';
+import { ErrorExplanation, explainServerError } from './explain-server-error';
 
 /** Ultimi errori 5xx raggruppati: senza Sentry è l'unico modo di sapere che qualcosa si è rotto. */
 @Component({
@@ -23,6 +24,11 @@ export class ServerErrorsPanelComponent {
   readonly expanded = signal<string | null>(null);
   readonly busy = signal(false);
   readonly error = signal(false);
+
+  /** Spiegazione in parole semplici (solo italiano: la legge solo chi amministra il sito). */
+  explain(e: ServerErrorView): ErrorExplanation {
+    return explainServerError(e);
+  }
 
   toggle(id: string): void {
     this.expanded.update((cur) => (cur === id ? null : id));
