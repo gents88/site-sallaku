@@ -60,6 +60,12 @@ if (result.status === 0) {
   const preloads = spawnSync(process.execPath, [path.join(__dirname, 'modulepreload-all.js'), browserDir], { stdio: 'inherit' });
   if (preloads.status !== 0) console.warn('[ng-build] modulepreload-all non riuscito: restano i preload di Angular.');
 
+  // Redirect 301 dagli indirizzi alias degli articoli (slug italiano sotto il prefisso di una lingua)
+  // verso quelli giusti: si generano dagli articoli scaricati per il prerender (vedi
+  // scripts/blog-redirects.js, che senza articoli lascia il .htaccess com'è).
+  const aliases = spawnSync(process.execPath, [path.join(__dirname, 'blog-redirects.js'), browserDir], { stdio: 'inherit' });
+  if (aliases.status !== 0) console.warn('[ng-build] blog-redirects non riuscito: il .htaccess resta com\'è.');
+
   // CSP senza 'unsafe-inline' per gli script: gli hash si conoscono solo a build finita (vedi
   // scripts/csp-hashes.js, che in caso di dubbio lascia il .htaccess com'è).
   const hashes = spawnSync(
