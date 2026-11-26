@@ -28,7 +28,7 @@ export class TestimonialsService {
     if (!this.hasPublicRequested) {
       this.hasPublicRequested = true;
       this.list(1, 0).subscribe({
-        next: (res) => this._hasPublic.set((res.total ?? res.data.length) > 0),
+        next: (res) => this._hasPublic.set((res.total ?? res.data?.length ?? 0) > 0),
         error: () => this._hasPublic.set(false),
       });
     }
