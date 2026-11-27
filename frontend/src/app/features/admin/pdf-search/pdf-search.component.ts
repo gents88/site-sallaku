@@ -396,6 +396,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.mobileQuery?.removeEventListener('change', this.onMobileQueryChange);
+    this.setMaximized(false);
     this._revokePreview();
     this.disposeCanvasViewer();
   }
@@ -729,7 +730,56 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     } catch { /* clipboard non disponibile: nessun feedback fuorviante */ }
   }
 
+  /** Lettore a tutto schermo: occupa tutta la finestra e nasconde la barra in basso del sito. */
+  readonly maximized = signal(false);
+
+  toggleMaximize(): void {
+    this.setMaximized(!this.maximized());
+  }
+
+  /** A tutto schermo i comandi si nascondono da soli e ricompaiono muovendo il mouse o toccando lo schermo. */
+  readonly controlsVisible = signal(true);
+  private hideControlsTimer: ReturnType<typeof setTimeout> | null = null;
+
+  showControls(): void {
+    if (!this.maximized()) return;
+    if (!this.controlsVisible()) this.controlsVisible.set(true);
+    if (this.hideControlsTimer) clearTimeout(this.hideControlsTimer);
+    this.hideControlsTimer = setTimeout(() => {
+      // Con il puntatore sopra i comandi, o il focus da tastiera su uno di essi, restano visibili.
+      const bars = document.querySelectorAll('.preview-modal--max .preview-header, .preview-modal--max .preview-bottom');
+      const busy = Array.from(bars).some((b) => b.matches(':hover') || !!b.querySelector(':focus-visible'));
+      if (busy) this.showControls(); else this.controlsVisible.set(false);
+    }, 3000);
+  }
+
+  private setMaximized(on: boolean): void {
+    this.maximized.set(on);
+    if (this.hideControlsTimer) { clearTimeout(this.hideControlsTimer); this.hideControlsTimer = null; }
+    this.controlsVisible.set(true);
+    if (on) this.showControls();
+    if (!isPlatformBrowser(this.platformId)) return;
+    document.body.classList.toggle('pdf-reader-max', on);
+    // Schermo intero vero (nasconde anche la barra del browser) dove il browser lo permette:
+    // computer e Android. Su iPhone non esiste per questi elementi: resta la finestra ingrandita.
+    try {
+      if (on) {
+        const el = document.querySelector('.modal-backdrop') as HTMLElement | null;
+        if (el?.requestFullscreen && !document.fullscreenElement) void el.requestFullscreen().catch(() => { /* rifiutato: resta la finestra ingrandita */ });
+      } else if (document.fullscreenElement) {
+        void document.exitFullscreen().catch(() => { /* già uscito */ });
+      }
+    } catch { /* API non disponibile */ }
+  }
+
+  /** Uscendo dallo schermo intero con Esc o dal browser, anche il lettore torna alle dimensioni normali. */
+  @HostListener('document:fullscreenchange')
+  onFullscreenChange(): void {
+    if (this.maximized() && !document.fullscreenElement) this.setMaximized(false);
+  }
+
   closePreview(): void {
+    this.setMaximized(false);
     this.selected.set(null);
     this.previewLoading.set(false);
     this._revokePreview();
