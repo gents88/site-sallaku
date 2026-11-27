@@ -54,3 +54,11 @@ test('isInternal distingue link interni ed esterni', () => {
   assert.ok(!isInternal('mailto:a@b.it'));
   assert.ok(!isInternal('#top'));
 });
+
+test('negli articoli gli esempi di codice non sono segnalati, le chiavi vere sì', () => {
+  const body = '<h1>T</h1><pre>{{ name() }} undefined placeholder auth.logout mongodb://u:p4ssw0rd@db.local/x</pre>';
+  const d = site({ 'i18n/it.json': '{"auth":{}}', 'homepage/index.html': page('<h1>A</h1>'), 'about/index.html': page('<h1>B</h1>'), 'blog/post/index.html': page(body) });
+  assert.deepStrictEqual(check(d).problems, []);
+  const d2 = site({ 'homepage/index.html': page('<h1>A</h1>'), 'about/index.html': page('<h1>B</h1>'), 'blog/post/index.html': page(body + '<code>AKIAABCDEFGHIJKLMNOP</code>') });
+  assert.deepStrictEqual(check(d2).problems.map((p) => p.kind), ['segreto']);
+});
