@@ -485,6 +485,18 @@ $error-clr:     #f87171;
 
 .preview-header-info { min-width: 0; flex: 1; }
 
+.preview-max {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+  background: transparent; border: 1px solid var(--border-color, #30363d);
+  color: var(--text-secondary, #8b949e); cursor: pointer; font-size: 15px; line-height: 1;
+
+  &:hover { border-color: var(--primary-500, #4f6af5); color: var(--text-primary, #e6edf3); }
+}
+
+// Lettore ingrandito: tutta la finestra, senza bordi, sopra la barra del sito.
+.modal-backdrop--max { padding: 0 !important; z-index: 10100 !important; }
+.preview-modal--max { width: 100% !important; height: 100% !important; max-height: 100% !important; border-radius: 0 !important; border: 0; }
+
 .preview-close {
   flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
   background: transparent; border: 1px solid var(--border-color, #30363d);
@@ -657,7 +669,7 @@ $error-clr:     #f87171;
     }
     p { display: none; }
   }
-  .preview-close { width: 36px; height: 36px; font-size: 15px; }
+  .preview-close, .preview-max { width: 36px; height: 36px; font-size: 15px; }
 
   // Il documento usa quasi tutta la larghezza.
   .canvas-page-wrap { padding: 4px; }

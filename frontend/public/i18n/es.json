@@ -1293,6 +1293,8 @@
     "no_results_subtitle": "Prueba con otro título o autor.",
     "result_by": "de",
     "preview_close": "Cerrar",
+    "preview_maximize": "Maximizar",
+    "preview_restore": "Minimizar",
     "preview_loading": "Cargando vista previa…",
     "btn_download": "Descargar PDF",
     "btn_source_page": "Ver página de origen",

@@ -1293,6 +1293,8 @@
     "no_results_subtitle": "Prova con un altro titolo o autore.",
     "result_by": "di",
     "preview_close": "Chiudi",
+    "preview_maximize": "Ingrandisci a tutto schermo",
+    "preview_restore": "Riduci",
     "preview_loading": "Caricamento anteprima…",
     "btn_download": "Scarica PDF",
     "btn_source_page": "Vedi pagina sorgente",
