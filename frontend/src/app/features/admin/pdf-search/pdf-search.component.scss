@@ -628,6 +628,8 @@ $error-clr:     #f87171;
   border-top: 1px solid var(--border-color, #30363d);
 }
 
+.btn-short { display: none; }
+
 .btn-download,
 .btn-source,
 .btn-workspace,
@@ -713,6 +715,12 @@ $error-clr:     #f87171;
       font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
     }
     .btn-ico { font-size: 18px; }
+    // Gli altri tre mostrano un'etichetta breve sotto l'icona: una freccia o un libro da soli non dicono cosa fanno.
+    .btn-library, .btn-workspace, .btn-source {
+      flex-direction: column; gap: 2px; height: 52px; min-height: 52px;
+      .btn-ico { font-size: 16px; line-height: 1; }
+      .btn-short { display: block; font-size: 10px; line-height: 1.1; font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
     // Il download mantiene l'etichetta (azione principale), gli altri solo l'icona.
     .btn-library .btn-label, .btn-workspace .btn-label, .btn-source .btn-label {
       position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
