@@ -354,9 +354,9 @@
             @if (savingToLibrary()) {
               <span class="spinner"></span>
             } @else if (justSaved() || isInLibrary(sel)) {
-              <span class="btn-ico" aria-hidden="true">✓</span><span class="btn-label">{{ 'pdf_search.library_saved' | translate }}</span>
+              <span class="btn-ico" aria-hidden="true">✓</span><span class="btn-label">{{ 'pdf_search.library_saved' | translate }}</span><span class="btn-short" aria-hidden="true">{{ 'pdf_search.short_saved' | translate }}</span>
             } @else {
-              <span class="btn-ico" aria-hidden="true">📚</span><span class="btn-label">{{ 'pdf_search.btn_save_library' | translate }}</span>
+              <span class="btn-ico" aria-hidden="true">📚</span><span class="btn-label">{{ 'pdf_search.btn_save_library' | translate }}</span><span class="btn-short" aria-hidden="true">{{ 'pdf_search.short_library' | translate }}</span>
             }
           </button>
           <button type="button" class="btn-workspace" [disabled]="sendingToWorkspace()" (click)="sendToWorkspace(sel)"
@@ -364,11 +364,11 @@
             @if (sendingToWorkspace()) {
               <span class="spinner"></span>
             } @else {
-              <span class="btn-ico" aria-hidden="true">{{ justSent() ? '✓' : '🔗' }}</span><span class="btn-label">{{ justSent() ? ('pdf_search.workspace_sent' | translate) : ('pdf_search.btn_send_workspace' | translate) }}</span>
+              <span class="btn-ico" aria-hidden="true">{{ justSent() ? '✓' : '🔗' }}</span><span class="btn-label">{{ justSent() ? ('pdf_search.workspace_sent' | translate) : ('pdf_search.btn_send_workspace' | translate) }}</span><span class="btn-short" aria-hidden="true">{{ (justSent() ? 'pdf_search.short_sent' : 'pdf_search.short_workspace') | translate }}</span>
             }
           </button>
           <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener" [attr.aria-label]="'pdf_search.btn_source_page' | translate">
-            <span class="btn-ico" aria-hidden="true">↗</span><span class="btn-label">{{ 'pdf_search.btn_source_page' | translate }}</span>
+            <span class="btn-ico" aria-hidden="true">↗</span><span class="btn-label">{{ 'pdf_search.btn_source_page' | translate }}</span><span class="btn-short" aria-hidden="true">{{ 'pdf_search.short_source' | translate }}</span>
           </a>
         </div>
         </div>
