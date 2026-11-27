@@ -495,6 +495,26 @@ $error-clr:     #f87171;
 
 // Lettore ingrandito: tutta la finestra, senza bordi, sopra la barra del sito.
 .modal-backdrop--max { padding: 0 !important; z-index: 10100 !important; }
+.preview-bottom { display: flex; flex-direction: column; flex-shrink: 0; }
+
+// A tutto schermo il documento riempie tutto e i comandi gli stanno sopra: si nascondono quando non servono.
+.preview-modal--max {
+  position: relative;
+  .preview-body { position: absolute; inset: 0; }
+  .preview-header, .preview-bottom {
+    position: absolute; left: 0; right: 0; z-index: 5;
+    background: var(--bg-secondary, #161b22);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .preview-header { top: 0; }
+  .preview-bottom { bottom: 0; }
+}
+.preview-modal--idle {
+  .preview-header { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+  .preview-bottom { transform: translateY(100%); opacity: 0; pointer-events: none; }
+}
+@media (prefers-reduced-motion: reduce) { .preview-modal--max .preview-header, .preview-modal--max .preview-bottom { transition: none; } }
+
 .preview-modal--max { width: 100% !important; height: 100% !important; max-height: 100% !important; max-width: none !important; border-radius: 0 !important; border: 0; }
 
 .preview-close {

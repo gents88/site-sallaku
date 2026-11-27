@@ -257,7 +257,7 @@
   <!-- ── PREVIEW MODAL ─────────────────────────────────────────────────────── -->
   @if (selected(); as sel) {
     <div class="modal-backdrop" [class.modal-backdrop--max]="maximized()" (click)="closePreview()">
-      <div class="preview-modal" [class.preview-modal--max]="maximized()" [class.preview-modal--compact]="useCanvasViewer() && canvasViewerFailed()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()" (keydown.tab)="onPreviewTabKey($event)">
+      <div class="preview-modal" [class.preview-modal--max]="maximized()" [class.preview-modal--idle]="maximized() && !controlsVisible()" (pointermove)="showControls()" (pointerdown)="showControls()" (touchstart)="showControls()" (focusin)="showControls()" [class.preview-modal--compact]="useCanvasViewer() && canvasViewerFailed()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()" (keydown.tab)="onPreviewTabKey($event)">
         <div class="preview-header">
           <div class="preview-header-cover">
             @if (sel.coverUrl && !coverFailed(sel.id)) {
@@ -325,6 +325,7 @@
           }
         </div>
 
+        <div class="preview-bottom">
         @if (useCanvasViewer() && canvasNumPages() > 0) {
           <div class="canvas-page-nav">
             <button type="button" (click)="prevCanvasPage()" [disabled]="canvasPageNum() <= 1" [attr.aria-label]="'pdf_search.preview_prev_page' | translate">‹</button>
@@ -369,6 +370,7 @@
           <a class="btn-source" [href]="sel.detailsUrl" target="_blank" rel="noopener" [attr.aria-label]="'pdf_search.btn_source_page' | translate">
             <span class="btn-ico" aria-hidden="true">↗</span><span class="btn-label">{{ 'pdf_search.btn_source_page' | translate }}</span>
           </a>
+        </div>
         </div>
       </div>
     </div>
