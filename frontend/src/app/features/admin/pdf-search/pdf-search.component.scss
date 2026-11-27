@@ -485,6 +485,38 @@ $error-clr:     #f87171;
 
 .preview-header-info { min-width: 0; flex: 1; }
 
+.preview-max {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+  background: transparent; border: 1px solid var(--border-color, #30363d);
+  color: var(--text-secondary, #8b949e); cursor: pointer; font-size: 15px; line-height: 1;
+
+  &:hover { border-color: var(--primary-500, #4f6af5); color: var(--text-primary, #e6edf3); }
+}
+
+// Lettore ingrandito: tutta la finestra, senza bordi, sopra la barra del sito.
+.modal-backdrop--max { padding: 0 !important; z-index: 10100 !important; }
+.preview-bottom { display: flex; flex-direction: column; flex-shrink: 0; }
+
+// A tutto schermo il documento riempie tutto e i comandi gli stanno sopra: si nascondono quando non servono.
+.preview-modal--max {
+  position: relative;
+  .preview-body { position: absolute; inset: 0; }
+  .preview-header, .preview-bottom {
+    position: absolute; left: 0; right: 0; z-index: 5;
+    background: var(--bg-secondary, #161b22);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .preview-header { top: 0; }
+  .preview-bottom { bottom: 0; }
+}
+.preview-modal--idle {
+  .preview-header { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+  .preview-bottom { transform: translateY(100%); opacity: 0; pointer-events: none; }
+}
+@media (prefers-reduced-motion: reduce) { .preview-modal--max .preview-header, .preview-modal--max .preview-bottom { transition: none; } }
+
+.preview-modal--max { width: 100% !important; height: 100% !important; max-height: 100% !important; max-width: none !important; border-radius: 0 !important; border: 0; }
+
 .preview-close {
   flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
   background: transparent; border: 1px solid var(--border-color, #30363d);
@@ -596,6 +628,8 @@ $error-clr:     #f87171;
   border-top: 1px solid var(--border-color, #30363d);
 }
 
+.btn-short { display: none; }
+
 .btn-download,
 .btn-source,
 .btn-workspace,
@@ -657,7 +691,7 @@ $error-clr:     #f87171;
     }
     p { display: none; }
   }
-  .preview-close { width: 36px; height: 36px; font-size: 15px; }
+  .preview-close, .preview-max { width: 36px; height: 36px; font-size: 15px; }
 
   // Il documento usa quasi tutta la larghezza.
   .canvas-page-wrap { padding: 4px; }
@@ -666,8 +700,9 @@ $error-clr:     #f87171;
   .canvas-page-nav {
     flex-wrap: nowrap; gap: 4px; padding: 4px 8px; justify-content: space-between; font-size: 12px;
     button { width: 36px; height: 36px; }
+    .nav-max { font-size: 17px; }
     .zoom-group { margin-left: 0; gap: 4px; button { width: 36px; height: 36px; } }
-    .zoom-level { min-width: 36px; }
+    .zoom-level { min-width: 34px; }
     .page-jump { gap: 4px; input { width: 46px; height: 36px; font-size: 16px; } } // 16px evita lo zoom automatico di iOS
   }
 
@@ -680,6 +715,12 @@ $error-clr:     #f87171;
       font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
     }
     .btn-ico { font-size: 18px; }
+    // Gli altri tre mostrano un'etichetta breve sotto l'icona: una freccia o un libro da soli non dicono cosa fanno.
+    .btn-library, .btn-workspace, .btn-source {
+      flex-direction: column; gap: 2px; height: 52px; min-height: 52px;
+      .btn-ico { font-size: 16px; line-height: 1; }
+      .btn-short { display: block; font-size: 10px; line-height: 1.1; font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
     // Il download mantiene l'etichetta (azione principale), gli altri solo l'icona.
     .btn-library .btn-label, .btn-workspace .btn-label, .btn-source .btn-label {
       position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
