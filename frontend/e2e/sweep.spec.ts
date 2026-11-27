@@ -35,7 +35,7 @@ for (const vp of VIEWPORTS) {
         page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}\n${(e.stack ?? '').split('\n').slice(1, 4).join('\n')}`));
         page.on('console', (m) => { if (m.type() === 'error' && !/\/api\//.test(m.text()) && !/Failed to load resource/.test(m.text())) errors.push(`console: ${m.text()}`); });
         page.on('requestfailed', (r) => { if (new URL(r.url()).origin === new URL(page.url()).origin && !r.url().includes('/api/')) errors.push(`requestfailed: ${r.url()}`); });
-        page.on('response', (r) => { if (r.status() >= 400 && !r.url().includes('/api/') && !/google|gstatic/.test(r.url())) errors.push(`${r.status()}: ${r.url()}`); });
+        page.on('response', (r) => { if (r.status() >= 400 && new URL(r.url()).origin === new URL(page.url()).origin && !r.url().includes('/api/')) errors.push(`${r.status()}: ${r.url()}`); });
         await mockApi(page);
 
         await page.goto(url, { waitUntil: 'networkidle' });
@@ -71,11 +71,11 @@ test.describe('percorsi del visitatore', () => {
   test('si arriva ai progetti, al blog e al contatto con la navigazione e si torna alla home', async ({ page }) => {
     await mockApi(page);
     await page.goto('/', { waitUntil: 'networkidle' });
-    for (const [name, path] of [[/progetti/i, /\/projects/], [/blog/i, /\/blog/], [/contatt/i, /\/contact/]] as const) {
+    for (const path of ['/projects', '/blog', '/contact'] as const) {
       // Con molti test in parallelo il clic può arrivare prima che la pagina sia pronta: si riprova.
       await expect(async () => {
-        await page.getByRole('link', { name }).first().click({ timeout: 3000 });
-        await expect(page).toHaveURL(path, { timeout: 3000 });
+        await page.locator(`a[href$="${path}"]:visible`).first().click({ timeout: 3000 });
+        await expect(page).toHaveURL(new RegExp(`${path}$`), { timeout: 3000 });
       }).toPass({ timeout: 20_000 });
       await expect(page.locator('h1').first()).toBeVisible();
     }

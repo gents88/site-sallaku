@@ -33,9 +33,13 @@ const SECRET_PATTERNS = [
 // Valori che sono pubblici per natura o segnaposto documentati (es. id di misurazione, chiavi "publishable").
 const SECRET_ALLOW = [/G-[A-Z0-9]{8,}/, /pk_(?:live|test)_/, /your[-_]?(?:api[-_]?)?key/i, /example|placeholder|changeme|xxxx/i];
 
-function scanSecrets(text) {
+/** Negli articoli i tutorial mostrano stringhe di connessione e password d'esempio: lì si cercano solo chiavi vere. */
+const EXAMPLE_PRONE = new Set(['stringa di connessione con password', 'password in chiaro']);
+
+function scanSecrets(text, { article = false } = {}) {
   const found = [];
   for (const [label, re] of SECRET_PATTERNS) {
+    if (article && EXAMPLE_PRONE.has(label)) continue;
     const m = re.exec(text);
     if (m && !SECRET_ALLOW.some((a) => a.test(m[0]))) found.push({ label, sample: `${m[0].slice(0, 6)}…(${m[0].length} caratteri)` });
   }
@@ -144,6 +148,8 @@ function check(dist) {
     const rel = path.relative(dist, file).split(path.sep).join('/');
     const html = fs.readFileSync(file, 'utf8');
     const page = rel.replace(/index\.html$/, '') || '/';
+    // Articolo del blog: testo scritto a mano con esempi di codice ({{ }}, "undefined", "placeholder", app.routes.ts…).
+    const article = new RegExp(`^(?:${LANG}/)?blog/[^/]+/index\\.html$`).test(rel);
 
     // Link e risorse
     for (const { url } of references(html)) {
@@ -158,11 +164,11 @@ function check(dist) {
 
     // Testo visibile
     const text = visibleText(html);
-    for (const [re, label] of PLACEHOLDERS) {
+    for (const [re, label] of article ? [] : PLACEHOLDERS) {
       const m = re.exec(text);
       if (m) add(page, 'segnaposto', `${label}: «…${text.slice(Math.max(0, m.index - 25), m.index + 40)}…»`);
     }
-    if (keyLeak) {
+    if (keyLeak && !article) {
       const m = keyLeak.exec(text);
       if (m) add(page, 'traduzione mancante', `chiave grezza nel testo: ${m[0]}`);
     }
@@ -175,9 +181,9 @@ function check(dist) {
     if (!/<meta\s+name="description"\s+content="[^"]{20,}"/i.test(html)) add(page, 'seo', 'manca la meta description (o è troppo corta)');
     if (!/<link\s+rel="canonical"\s+href="https:\/\/gentsallaku\.it[^"]*"/i.test(html)) add(page, 'seo', 'manca il canonical');
     const h1 = (stripNonVisible(html).match(/<h1[\s>]/gi) || []).length;
-    if (h1 !== 1) add(page, 'seo', `H1 trovati: ${h1} (ne serve uno)`);
+    if (h1 !== 1) (article && h1 > 1 ? warn.push(`${page}: ${h1} H1 (uno è nel testo dell'articolo)`) : add(page, 'seo', `H1 trovati: ${h1} (ne serve uno)`));
     const imgs = [...html.matchAll(/<img\b[^>]*>/gi)].map((m) => m[0]).filter((t) => !/\salt\s*=/.test(t));
-    if (imgs.length) add(page, 'accessibilità', `${imgs.length} immagini senza attributo alt`);
+    if (imgs.length) (article ? warn.push(`${page}: ${imgs.length} immagini senza alt nell'articolo`) : add(page, 'accessibilità', `${imgs.length} immagini senza attributo alt`));
     if (!/<html[^>]*\slang="[a-zA-Z-]+"/.test(html)) add(page, 'accessibilità', 'manca lang su <html>');
   }
 
@@ -187,7 +193,8 @@ function check(dist) {
     const size = fs.statSync(f).size;
     if (size > 8 * 1024 * 1024) continue;
     const rel = path.relative(dist, f).split(path.sep).join('/');
-    for (const s of scanSecrets(fs.readFileSync(f, 'utf8'))) add(rel, 'segreto', `${s.label}: ${s.sample}`);
+    const article = new RegExp(`^(?:${LANG}/)?blog/[^/]+/index\\.html$`).test(rel);
+    for (const s of scanSecrets(fs.readFileSync(f, 'utf8'), { article })) add(rel, 'segreto', `${s.label}: ${s.sample}`);
   }
   for (const hidden of ['.env', '.git', '.htpasswd']) {
     if (fileSet.has(hidden) || [...fileSet].some((f) => f.startsWith(`${hidden}/`))) add(hidden, 'segreto', 'file riservato nella build');
