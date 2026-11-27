@@ -29,6 +29,7 @@ import { environment } from '../../../../environments/environment';
 import { NotFoundReporterService } from '../../../core/services/not-found-reporter.service';
 import { labToolsForArticle } from '../../../shared/components/lab-tool-info/lab-info.data';
 import type { NavEntry } from '../../../core/navigation/nav-registry';
+import { normalizeArticleHtml } from './article-html';
 
 /**
  * Quanto del testo è stato letto, da 0 a 1: 0 finché l'inizio del testo non
@@ -190,7 +191,16 @@ export class BlogDetailComponent implements OnInit, OnChanges {
     return this.post ? labToolsForArticle(this.post.slug) : [];
   }
 
+  private normalizedCache: { raw: string; html: string } | null = null;
+
   get localizedContent(): string {
+    const raw = this.rawLocalizedContent();
+    if (!raw) return raw;
+    if (this.normalizedCache?.raw !== raw) this.normalizedCache = { raw, html: normalizeArticleHtml(raw) };
+    return this.normalizedCache.html;
+  }
+
+  private rawLocalizedContent(): string {
     if (!this.post) return '';
     const lang = this.currentLang();
     if (lang === 'en' && this.post.content_en) return this.post.content_en;
