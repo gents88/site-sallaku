@@ -678,8 +678,9 @@ $error-clr:     #f87171;
   .canvas-page-nav {
     flex-wrap: nowrap; gap: 4px; padding: 4px 8px; justify-content: space-between; font-size: 12px;
     button { width: 36px; height: 36px; }
+    .nav-max { font-size: 17px; }
     .zoom-group { margin-left: 0; gap: 4px; button { width: 36px; height: 36px; } }
-    .zoom-level { min-width: 36px; }
+    .zoom-level { min-width: 34px; }
     .page-jump { gap: 4px; input { width: 46px; height: 36px; font-size: 16px; } } // 16px evita lo zoom automatico di iOS
   }
 

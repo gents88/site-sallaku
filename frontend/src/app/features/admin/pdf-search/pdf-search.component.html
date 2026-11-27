@@ -270,9 +270,11 @@
             <h3>{{ sel.title }}</h3>
             @if (sel.author) { <p>{{ 'pdf_search.result_by' | translate }} {{ sel.author }}</p> }
           </div>
+          @if (!useCanvasViewer()) {
           <button type="button" class="preview-max" (click)="toggleMaximize()" [attr.aria-pressed]="maximized()"
-            [attr.aria-label]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate"
-            [title]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate">{{ maximized() ? '⤡' : '⤢' }}</button>
+              [attr.aria-label]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate"
+              [title]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate">{{ maximized() ? '⤡' : '⤢' }}</button>
+          }
           <button #previewCloseBtn type="button" class="preview-close" (click)="closePreview()" [attr.aria-label]="'pdf_search.preview_close' | translate">✕</button>
         </div>
 
@@ -336,6 +338,9 @@
               <span class="zoom-level">{{ zoomPercent() }}%</span>
               <button type="button" (click)="zoomIn()" [disabled]="!canZoomIn()" [attr.aria-label]="'pdf_search.zoom_in' | translate">+</button>
             </span>
+            <button type="button" class="nav-max" (click)="toggleMaximize()" [attr.aria-pressed]="maximized()"
+              [attr.aria-label]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate"
+              [title]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate">{{ maximized() ? '⤡' : '⤢' }}</button>
           </div>
         }
 
