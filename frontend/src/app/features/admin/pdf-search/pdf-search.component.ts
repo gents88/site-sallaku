@@ -739,7 +739,24 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   private setMaximized(on: boolean): void {
     this.maximized.set(on);
-    if (isPlatformBrowser(this.platformId)) document.body.classList.toggle('pdf-reader-max', on);
+    if (!isPlatformBrowser(this.platformId)) return;
+    document.body.classList.toggle('pdf-reader-max', on);
+    // Schermo intero vero (nasconde anche la barra del browser) dove il browser lo permette:
+    // computer e Android. Su iPhone non esiste per questi elementi: resta la finestra ingrandita.
+    try {
+      if (on) {
+        const el = document.querySelector('.modal-backdrop') as HTMLElement | null;
+        if (el?.requestFullscreen && !document.fullscreenElement) void el.requestFullscreen().catch(() => { /* rifiutato: resta la finestra ingrandita */ });
+      } else if (document.fullscreenElement) {
+        void document.exitFullscreen().catch(() => { /* già uscito */ });
+      }
+    } catch { /* API non disponibile */ }
+  }
+
+  /** Uscendo dallo schermo intero con Esc o dal browser, anche il lettore torna alle dimensioni normali. */
+  @HostListener('document:fullscreenchange')
+  onFullscreenChange(): void {
+    if (this.maximized() && !document.fullscreenElement) this.setMaximized(false);
   }
 
   closePreview(): void {

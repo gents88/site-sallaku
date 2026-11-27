@@ -495,7 +495,7 @@ $error-clr:     #f87171;
 
 // Lettore ingrandito: tutta la finestra, senza bordi, sopra la barra del sito.
 .modal-backdrop--max { padding: 0 !important; z-index: 10100 !important; }
-.preview-modal--max { width: 100% !important; height: 100% !important; max-height: 100% !important; border-radius: 0 !important; border: 0; }
+.preview-modal--max { width: 100% !important; height: 100% !important; max-height: 100% !important; max-width: none !important; border-radius: 0 !important; border: 0; }
 
 .preview-close {
   flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
