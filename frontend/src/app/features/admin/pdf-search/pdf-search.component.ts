@@ -396,6 +396,7 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.mobileQuery?.removeEventListener('change', this.onMobileQueryChange);
+    this.setMaximized(false);
     this._revokePreview();
     this.disposeCanvasViewer();
   }
@@ -729,7 +730,20 @@ export class PdfSearchComponent implements OnInit, OnDestroy {
     } catch { /* clipboard non disponibile: nessun feedback fuorviante */ }
   }
 
+  /** Lettore a tutto schermo: occupa tutta la finestra e nasconde la barra in basso del sito. */
+  readonly maximized = signal(false);
+
+  toggleMaximize(): void {
+    this.setMaximized(!this.maximized());
+  }
+
+  private setMaximized(on: boolean): void {
+    this.maximized.set(on);
+    if (isPlatformBrowser(this.platformId)) document.body.classList.toggle('pdf-reader-max', on);
+  }
+
   closePreview(): void {
+    this.setMaximized(false);
     this.selected.set(null);
     this.previewLoading.set(false);
     this._revokePreview();

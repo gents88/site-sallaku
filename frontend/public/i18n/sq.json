@@ -1293,6 +1293,8 @@
     "no_results_subtitle": "Provo një titull ose autor tjetër.",
     "result_by": "nga",
     "preview_close": "Mbyll",
+    "preview_maximize": "Zmadho",
+    "preview_restore": "Zvogëlo",
     "preview_loading": "Duke ngarkuar parashikimin…",
     "btn_download": "Shkarko PDF",
     "btn_source_page": "Shiko faqen burimore",

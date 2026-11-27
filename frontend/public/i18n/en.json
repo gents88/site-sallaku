@@ -1293,6 +1293,8 @@
     "no_results_subtitle": "Try a different title or author.",
     "result_by": "by",
     "preview_close": "Close",
+    "preview_maximize": "Maximize",
+    "preview_restore": "Minimize",
     "preview_loading": "Loading preview…",
     "btn_download": "Download PDF",
     "btn_source_page": "View source page",

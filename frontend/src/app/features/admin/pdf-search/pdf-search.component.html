@@ -256,8 +256,8 @@
 
   <!-- ── PREVIEW MODAL ─────────────────────────────────────────────────────── -->
   @if (selected(); as sel) {
-    <div class="modal-backdrop" (click)="closePreview()">
-      <div class="preview-modal" [class.preview-modal--compact]="useCanvasViewer() && canvasViewerFailed()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()" (keydown.tab)="onPreviewTabKey($event)">
+    <div class="modal-backdrop" [class.modal-backdrop--max]="maximized()" (click)="closePreview()">
+      <div class="preview-modal" [class.preview-modal--max]="maximized()" [class.preview-modal--compact]="useCanvasViewer() && canvasViewerFailed()" role="dialog" aria-modal="true" [attr.aria-label]="sel.title" (click)="$event.stopPropagation()" (keydown.tab)="onPreviewTabKey($event)">
         <div class="preview-header">
           <div class="preview-header-cover">
             @if (sel.coverUrl && !coverFailed(sel.id)) {
@@ -270,6 +270,9 @@
             <h3>{{ sel.title }}</h3>
             @if (sel.author) { <p>{{ 'pdf_search.result_by' | translate }} {{ sel.author }}</p> }
           </div>
+          <button type="button" class="preview-max" (click)="toggleMaximize()" [attr.aria-pressed]="maximized()"
+            [attr.aria-label]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate"
+            [title]="(maximized() ? 'pdf_search.preview_restore' : 'pdf_search.preview_maximize') | translate">{{ maximized() ? '⤡' : '⤢' }}</button>
           <button #previewCloseBtn type="button" class="preview-close" (click)="closePreview()" [attr.aria-label]="'pdf_search.preview_close' | translate">✕</button>
         </div>
 

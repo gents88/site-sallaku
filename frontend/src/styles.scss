@@ -1120,3 +1120,6 @@ app-my-saved-results {
   outline: 2px solid var(--primary-500, #4f6af5);
   outline-offset: 2px;
 }
+
+/* Lettore PDF ingrandito (ricerca PDF): la barra in basso del sito non deve coprire i comandi. */
+body.pdf-reader-max .bottom-tabbar { display: none !important; }

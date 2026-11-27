@@ -484,6 +484,22 @@ describe('PdfSearchComponent', () => {
       expect(component.canZoomOut()).toBe(false);
     });
 
+    it('ingrandisci/riduci: alterna lo stato, nasconde la barra del sito e si azzera alla chiusura', () => {
+      configure();
+      const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
+      expect(component.maximized()).toBe(false);
+      component.toggleMaximize();
+      expect(component.maximized()).toBe(true);
+      expect(document.body.classList.contains('pdf-reader-max')).toBe(true);
+      component.toggleMaximize();
+      expect(component.maximized()).toBe(false);
+      expect(document.body.classList.contains('pdf-reader-max')).toBe(false);
+      component.toggleMaximize();
+      component.closePreview();
+      expect(component.maximized()).toBe(false);
+      expect(document.body.classList.contains('pdf-reader-max')).toBe(false);
+    });
+
     it('lo swipe orizzontale cambia pagina, quello verticale o corto no', () => {
       configure();
       const component = TestBed.createComponent(PdfSearchComponent).componentInstance;
